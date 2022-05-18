@@ -20,6 +20,7 @@ import { CorevaluesModule } from './INFRA/corevalues/corevalues.module';
 import { EulasModule } from './INFRA/eulas/eulas.module';
 import { FsChunksModule } from './INFRA/fs.chunks/fs.chunks.module';
 import { FsfilesModule } from './INFRA/fsfiles/fsfiles.module';
+import { InterestsModule } from './INFRA/interests/interests.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -29,6 +30,7 @@ import { FsfilesModule } from './INFRA/fsfiles/fsfiles.module';
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   InterestsModule,
    FsfilesModule,
    FsChunksModule,
    EulasModule,
