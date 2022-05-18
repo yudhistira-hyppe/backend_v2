@@ -12,6 +12,10 @@ import { AuthModule } from './auth/auth.module';
 import { DomaineventsModule } from './TRANS/domainevents/domainevents.module';
 import { ActivityeventsModule } from './TRANS/activityevents/activityevents.module';
 import { OauthclientdetailsModule } from './TRANS/oauthclientdetails/oauthclientdetails.module';
+import { AreasModule } from './INFRA/areas/areas.module';
+import { CitiesModule } from './INFRA/cities/cities.module';
+import { CountriesModule } from './INFRA/countries/countries.module';
+import { DocumentsModule } from './INFRA/documents/documents.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -21,6 +25,10 @@ import { OauthclientdetailsModule } from './TRANS/oauthclientdetails/oauthclient
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   DocumentsModule,
+   CountriesModule,
+   CitiesModule,
+   AreasModule,
    OauthclientdetailsModule,
    ActivityeventsModule,
    DomaineventsModule,
