@@ -21,6 +21,7 @@ import { EulasModule } from './INFRA/eulas/eulas.module';
 import { FsChunksModule } from './INFRA/fs.chunks/fs.chunks.module';
 import { FsfilesModule } from './INFRA/fsfiles/fsfiles.module';
 import { InterestsModule } from './INFRA/interests/interests.module';
+import { InterestsRepoModule } from './INFRA/interests_repo/interests_repo.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -30,6 +31,7 @@ import { InterestsModule } from './INFRA/interests/interests.module';
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   InterestsRepoModule,
    InterestsModule,
    FsfilesModule,
    FsChunksModule,
