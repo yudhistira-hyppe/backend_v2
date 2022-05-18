@@ -18,6 +18,8 @@ import { CountriesModule } from './INFRA/countries/countries.module';
 import { DocumentsModule } from './INFRA/documents/documents.module';
 import { CorevaluesModule } from './INFRA/corevalues/corevalues.module';
 import { EulasModule } from './INFRA/eulas/eulas.module';
+import { FsChunksModule } from './INFRA/fs.chunks/fs.chunks.module';
+import { FsfilesModule } from './INFRA/fsfiles/fsfiles.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -27,6 +29,8 @@ import { EulasModule } from './INFRA/eulas/eulas.module';
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   FsfilesModule,
+   FsChunksModule,
    EulasModule,
    CorevaluesModule,
    DocumentsModule,
