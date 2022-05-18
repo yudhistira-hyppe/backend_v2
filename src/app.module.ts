@@ -9,6 +9,8 @@ import { SnapshoteventsModule } from './TRANS/snapshotevents/snapshotevents.modu
 import { SagasModule } from './TRANS/sagas/sagas.module';
 import { AdrolesModule } from './TRANS/adroles/adroles.module';
 import { AuthModule } from './auth/auth.module';
+import { DomaineventsModule } from './TRANS/domainevents/domainevents.module';
+import { ActivityeventsModule } from './TRANS/activityevents/activityevents.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -18,6 +20,8 @@ import { AuthModule } from './auth/auth.module';
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   ActivityeventsModule,
+   DomaineventsModule,
     JwtrefreshtokenModule,
     SnapshoteventsModule,
     SagasModule,
