@@ -16,6 +16,8 @@ import { AreasModule } from './INFRA/areas/areas.module';
 import { CitiesModule } from './INFRA/cities/cities.module';
 import { CountriesModule } from './INFRA/countries/countries.module';
 import { DocumentsModule } from './INFRA/documents/documents.module';
+import { CorevaluesModule } from './INFRA/corevalues/corevalues.module';
+import { EulasModule } from './INFRA/eulas/eulas.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -25,6 +27,8 @@ import { DocumentsModule } from './INFRA/documents/documents.module';
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   EulasModule,
+   CorevaluesModule,
    DocumentsModule,
    CountriesModule,
    CitiesModule,
