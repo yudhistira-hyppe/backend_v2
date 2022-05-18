@@ -11,6 +11,7 @@ import { AdrolesModule } from './TRANS/adroles/adroles.module';
 import { AuthModule } from './auth/auth.module';
 import { DomaineventsModule } from './TRANS/domainevents/domainevents.module';
 import { ActivityeventsModule } from './TRANS/activityevents/activityevents.module';
+import { OauthclientdetailsModule } from './TRANS/oauthclientdetails/oauthclientdetails.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -20,6 +21,7 @@ import { ActivityeventsModule } from './TRANS/activityevents/activityevents.modu
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   OauthclientdetailsModule,
    ActivityeventsModule,
    DomaineventsModule,
     JwtrefreshtokenModule,
