@@ -5,7 +5,7 @@ import { Activityevents } from './schemas/activityevents.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 
-@Controller('activityevents')
+@Controller('api/activityevents')
 export class ActivityeventsController {
 
     constructor(private readonly activityeventsService: ActivityeventsService) {}
