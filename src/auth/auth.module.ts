@@ -11,8 +11,10 @@ import { JwtRefreshStrategy } from './jwt.refresh.strategy';
 import { UserbasicsModule } from '../TRANS/userbasics/userbasics.module';
 import { UserdevicesModule } from '../TRANS/userdevices/userdevices.module';
 import { JwtrefreshtokenModule } from '../TRANS/jwtrefreshtoken/jwtrefreshtoken.module';
+import { CountriesModule } from '../INFRA/countries/countries.module';
+import { LanguagesModule } from '../INFRA/languages/languages.module';
 @Module({
-  imports: [UserauthsModule,UserbasicsModule,UserdevicesModule,JwtrefreshtokenModule,PassportModule, JwtModule.register({
+  imports: [UserauthsModule,UserbasicsModule,UserdevicesModule,JwtrefreshtokenModule,PassportModule,CountriesModule,LanguagesModule,JwtModule.register({
     secret: process.env.JWT_ACCESS_TOKEN_SECRET,
     signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },
   }),],
