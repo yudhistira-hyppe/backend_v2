@@ -9,10 +9,11 @@ import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
 import { UserbasicsModule } from '../TRANS/userbasics/userbasics.module';
 import { UserdevicesModule } from '../TRANS/userdevices/userdevices.module';
+import { JwtrefreshtokenModule } from '../TRANS/jwtrefreshtoken/jwtrefreshtoken.module';
 @Module({
-  imports: [UserauthsModule,UserbasicsModule,UserdevicesModule,PassportModule, JwtModule.register({
-    secret: jwtConstants.secret,
-    signOptions: { expiresIn: '60s' },
+  imports: [UserauthsModule,UserbasicsModule,UserdevicesModule,JwtrefreshtokenModule,PassportModule, JwtModule.register({
+    secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+    signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },
   }),],
   controllers: [AuthController],
   providers: [AuthService,LocalStrategy,JwtStrategy]
