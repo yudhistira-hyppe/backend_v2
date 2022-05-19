@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { JwtrefreshtokenService } from '../TRANS/jwtrefreshtoken/jwtrefreshtoken.service';
 import { UserauthsService } from '../TRANS/userauths/userauths.service';
 import { UserbasicsService } from '../TRANS/userbasics/userbasics.service';
 import { UserdevicesService } from '../TRANS/userdevices/userdevices.service';
@@ -11,7 +12,8 @@ export class AuthService {
       private userauthsService: UserauthsService,
       private jwtService: JwtService,
       private userbasicsService:UserbasicsService,
-      private userdevicesService: UserdevicesService
+      private userdevicesService: UserdevicesService,
+      private jwtrefreshtokenService: JwtrefreshtokenService
     ) {}
 
    
@@ -46,6 +48,8 @@ export class AuthService {
       const payload = { email: user.email, sub: user.userID };
       const datauserauthsService = await this.userauthsService.findOne(user._doc.email);
       const datauserbasicsService = await this.userbasicsService.findOne(user._doc.email);
+
+      //this.jwtrefreshtokenService.create()
 
       const messages = {
         "info":["Device activity logging successful"],
