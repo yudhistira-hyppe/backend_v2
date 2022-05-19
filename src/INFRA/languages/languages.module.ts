@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { LanguagesService } from './Languages.service';
-import { LanguagesController } from './Languages.controller';
+import { LanguagesService } from './languages.service';
+import { LanguagesController } from './languages.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Languages, LanguagesSchema } from './schemas/Languages.schema';
+import { Languages, LanguagesSchema } from './schemas/languages.schema';
 
 @Module({
   imports: [
