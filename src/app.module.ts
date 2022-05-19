@@ -9,6 +9,19 @@ import { SnapshoteventsModule } from './TRANS/snapshotevents/snapshotevents.modu
 import { SagasModule } from './TRANS/sagas/sagas.module';
 import { AdrolesModule } from './TRANS/adroles/adroles.module';
 import { AuthModule } from './auth/auth.module';
+import { DomaineventsModule } from './TRANS/domainevents/domainevents.module';
+import { ActivityeventsModule } from './TRANS/activityevents/activityevents.module';
+import { OauthclientdetailsModule } from './TRANS/oauthclientdetails/oauthclientdetails.module';
+import { AreasModule } from './INFRA/areas/areas.module';
+import { CitiesModule } from './INFRA/cities/cities.module';
+import { CountriesModule } from './INFRA/countries/countries.module';
+import { DocumentsModule } from './INFRA/documents/documents.module';
+import { CorevaluesModule } from './INFRA/corevalues/corevalues.module';
+import { EulasModule } from './INFRA/eulas/eulas.module';
+import { FsChunksModule } from './INFRA/fs.chunks/fs.chunks.module';
+import { FsfilesModule } from './INFRA/fsfiles/fsfiles.module';
+import { InterestsModule } from './INFRA/interests/interests.module';
+import { InterestsRepoModule } from './INFRA/interests_repo/interests_repo.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -18,6 +31,19 @@ import { AuthModule } from './auth/auth.module';
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   InterestsRepoModule,
+   InterestsModule,
+   FsfilesModule,
+   FsChunksModule,
+   EulasModule,
+   CorevaluesModule,
+   DocumentsModule,
+   CountriesModule,
+   CitiesModule,
+   AreasModule,
+   OauthclientdetailsModule,
+   ActivityeventsModule,
+   DomaineventsModule,
     JwtrefreshtokenModule,
     SnapshoteventsModule,
     SagasModule,
