@@ -28,6 +28,11 @@ import { ReactionsRepoModule } from './INFRA/reactions_repo/reactions_repo.modul
 import { ReportsModule } from './INFRA/reports/reports.module';
 import { TemplatesModule } from './INFRA/templates/templates.module';
 import { TemplatesRepoModule } from './INFRA/templates_repo/templates_repo.module';
+import { WelcomenotesModule } from './INFRA/welcomenotes/welcomenotes.module';
+import { ContentdailyqueueModule } from './CONTENT/contentdailyqueue/contentdailyqueue.module';
+import { ContenteventsModule } from './CONTENT/contentevents/contentevents.module';
+import { ContentqmaticModule } from './CONTENT/contentqmatic/contentqmatic.module';
+import { DisqusModule } from './CONTENT/disqus/disqus.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -37,6 +42,11 @@ import { TemplatesRepoModule } from './INFRA/templates_repo/templates_repo.modul
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   DisqusModule,
+   ContentqmaticModule,
+   ContenteventsModule,
+   ContentdailyqueueModule,
+   WelcomenotesModule,
    TemplatesRepoModule,
    TemplatesModule,
    ReportsModule,
