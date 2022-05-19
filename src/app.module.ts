@@ -33,6 +33,7 @@ import { ContentdailyqueueModule } from './CONTENT/contentdailyqueue/contentdail
 import { ContenteventsModule } from './CONTENT/contentevents/contentevents.module';
 import { ContentqmaticModule } from './CONTENT/contentqmatic/contentqmatic.module';
 import { DisqusModule } from './CONTENT/disqus/disqus.module';
+import { DisquscontactsModule } from './CONTENT/disquscontacts/disquscontacts.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -42,6 +43,7 @@ import { DisqusModule } from './CONTENT/disqus/disqus.module';
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   DisquscontactsModule,
    DisqusModule,
    ContentqmaticModule,
    ContenteventsModule,
