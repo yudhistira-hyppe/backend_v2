@@ -5,6 +5,9 @@ import { UserbasicsService } from '../TRANS/userbasics/userbasics.service';
 import { UserdevicesService } from '../TRANS/userdevices/userdevices.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+
+var randtoken = require('rand-token');
+
 @Injectable()
 export class AuthService {
 
@@ -33,13 +36,13 @@ export class AuthService {
       return null;
     }
 
-    // async generateRefreshToken(userId):  Promise<string>{
-    //   var refreshToken = randtoken.generate(16);
-    //   var expirydate =new Date();
-    //   expirydate.setDate(expirydate.getDate() + 6);
-    //   //await this.usersService.saveorupdateRefreshToke(refreshToken, userId, expirydate);
-    //   return refreshToken
-    // }
+    async generateRefreshToken(email):  Promise<string>{
+      var refreshToken = randtoken.generate(16);
+      var expirydate = new Date();
+      expirydate.setDate(expirydate.getDate() + 6);
+      await this.jwtrefreshtokenService.saveorupdateRefreshToken(refreshToken, email, expirydate);
+      return refreshToken
+    }
 
 
 
@@ -67,6 +70,7 @@ export class AuthService {
         "username":datauserauthsService.username
       };
       return {
+        //refreshToken: await this.generateRefreshToken(user._doc.email),
         response_code: 202,
         data,
         messages,
