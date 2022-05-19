@@ -31,4 +31,11 @@ export class JwtrefreshtokenService {
           .exec();
         return deletedCat;
       }
+
+      async saveorupdateRefreshToken(refresh_token_id:string, email:String, exp){
+        console.log(exp);
+        console.log(email);
+        var _class = "nest.js.JwtRefreshToken";
+        await this.jwtrefreshtokenModel.updateOne({email:email,_class:_class},{refresh_token_id:refresh_token_id,exp:exp.getTime()});
+      }
 }

@@ -2,27 +2,31 @@ import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, ExtractJwt } from 'passport-jwt'
 import { AuthService } from "./auth.service";
+import { JwtrefreshtokenService } from "../TRANS/jwtrefreshtoken/jwtrefreshtoken.service";
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh-token') {
-    constructor(
-        @InjectRepository(UserRepository)
-        private userRepository: UserRepository,
-        private authService: AuthService
-    ){
-        super({
-            jwtFromRequest: ExtractJwt.fromBodyField('refresh_token'),
-            secretOrKey: process.env.JWT_REFRESH_TOKEN_SECRET || dbConfig.refreshSecret
-        })
+    constructor(private jwtrefreshtokenService:JwtrefreshtokenService) {
+    super({
+      jwtFromRequest: ExtractJwt.fromBodyField('refreshToken'),
+      ignoreExpiration: true,
+      secretOrKey: process.env.JWT_REFRESH_TOKEN_SECRET,
+      passReqToCallback:true
+    });
+  }
+ 
+  async validate(req,payload: any) {
+    var user = await this.jwtrefreshtokenService.findOne(payload.email);
+    if(!user){
+        throw new UnauthorizedException();
     }
-
-    async validate(payload: JwtPayload) {
-        const { username } = payload
-        const user = await this.userRepository.findOne({ username })
-
-        if (!user) {
-            throw new UnauthorizedException()
-        }
-        return user
+    if(req.body.refreshToken != (await user).refresh_token_id){
+        throw new UnauthorizedException();
     }
+    if( new Date() > new Date(((await user).exp).numberLong.toString())){
+      throw new UnauthorizedException();
+    }
+    return { userID: payload.sub, email:payload.email};
+    
+  }
 }
