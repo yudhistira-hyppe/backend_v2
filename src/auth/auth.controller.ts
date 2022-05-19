@@ -5,10 +5,18 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 @Controller()
 export class AuthController {
-    constructor(private authService: AuthService) {}
-   @UseGuards(LocalAuthGuard)
+  
+  constructor(private authService: AuthService) {}
+
+  @UseGuards(LocalAuthGuard)
   @Post('api/auth/login')
-  async login(@Request() req) {
+    async login(@Request() req) {
     return this.authService.login(req.user);
   }
+
+  // @UseGuards(AuthGuard('jwt-refresh-token'))
+  // @Post('api/auth/refreshtoken')
+  // async refreshToken(@Request() req){
+  //   return await this.authService.login(req.user);
+  // }
 }

@@ -7,6 +7,7 @@ import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
+import { JwtRefreshStrategy } from './jwt.refresh.strategy';
 import { UserbasicsModule } from '../TRANS/userbasics/userbasics.module';
 import { UserdevicesModule } from '../TRANS/userdevices/userdevices.module';
 import { JwtrefreshtokenModule } from '../TRANS/jwtrefreshtoken/jwtrefreshtoken.module';
@@ -16,6 +17,6 @@ import { JwtrefreshtokenModule } from '../TRANS/jwtrefreshtoken/jwtrefreshtoken.
     signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },
   }),],
   controllers: [AuthController],
-  providers: [AuthService,LocalStrategy,JwtStrategy]
+  providers: [AuthService,LocalStrategy,JwtStrategy,JwtRefreshStrategy]
 })
 export class AuthModule {}
