@@ -22,6 +22,12 @@ import { FsChunksModule } from './INFRA/fs.chunks/fs.chunks.module';
 import { FsfilesModule } from './INFRA/fsfiles/fsfiles.module';
 import { InterestsModule } from './INFRA/interests/interests.module';
 import { InterestsRepoModule } from './INFRA/interests_repo/interests_repo.module';
+import { LanguagesModule } from './INFRA/languages/languages.module';
+import { ReactionsModule } from './INFRA/reactions/reactions.module';
+import { ReactionsRepoModule } from './INFRA/reactions_repo/reactions_repo.module';
+import { ReportsModule } from './INFRA/reports/reports.module';
+import { TemplatesModule } from './INFRA/templates/templates.module';
+import { TemplatesRepoModule } from './INFRA/templates_repo/templates_repo.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -31,6 +37,12 @@ import { InterestsRepoModule } from './INFRA/interests_repo/interests_repo.modul
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   TemplatesRepoModule,
+   TemplatesModule,
+   ReportsModule,
+   ReactionsRepoModule,
+   ReactionsModule,
+   LanguagesModule,
    InterestsRepoModule,
    InterestsModule,
    FsfilesModule,
