@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post ,UseGuards} from '@nestjs/common';
 import { UserdevicesService } from './userdevices.service';
 import { CreateUserdeviceDto } from './dto/create-userdevice.dto';
 import { Userdevice } from './schemas/userdevice.schema';
-
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 @Controller('api/userdevices')
 export class UserdevicesController {
 
@@ -12,7 +12,7 @@ export class UserdevicesController {
   async create(@Body() CreateUserdeviceDto: CreateUserdeviceDto) {
     await this.userdevicesService.create(CreateUserdeviceDto);
   }
-
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(): Promise<Userdevice[]> {
     return this.userdevicesService.findAll();

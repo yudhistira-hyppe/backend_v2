@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
 import { AdrolesService } from './adroles.service';
 import { CreateAdrolesDto } from './dto/create-adroles.dto';
 import { Adroles } from './schemas/adroles.schema';
-
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 @Controller('api/adroles')
 export class AdrolesController {
 
@@ -12,7 +12,7 @@ export class AdrolesController {
         async create(@Body() CreateAdrolesDto: CreateAdrolesDto) {
           await this.adrolesService.create(CreateAdrolesDto);
         }
-      
+        @UseGuards(JwtAuthGuard)
         @Get()
         async findAll(): Promise<Adroles[]> {
           return this.adrolesService.findAll();

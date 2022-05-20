@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post ,UseGuards} from '@nestjs/common';
 import { SnapshoteventsService } from './snapshotevents.service';
 import { CreateSnapshoteventsDto } from './dto/create-snapshotevents.dto';
 import { Snapshotevents } from './schemas/snapshotevents.schema';
-
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 @Controller('api/snapshotevents')
 export class SnapshoteventsController {
     constructor(private readonly snapshoteventsService: SnapshoteventsService) {}
@@ -11,7 +11,7 @@ export class SnapshoteventsController {
     async create(@Body() CreateSnapshoteventsDto: CreateSnapshoteventsDto) {
       await this.snapshoteventsService.create(CreateSnapshoteventsDto);
     }
-  
+    @UseGuards(JwtAuthGuard)
     @Get()
     async findAll(): Promise<Snapshotevents[]> {
       return this.snapshoteventsService.findAll();
