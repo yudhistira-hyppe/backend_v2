@@ -43,6 +43,8 @@ import { MediaprofilepictsModule } from './CONTENT/mediaprofilepicts/mediaprofil
 import { MediaproofpictsModule } from './CONTENT/mediaproofpicts/mediaproofpicts.module';
 import { MediastoriesModule } from './CONTENT/mediastories/mediastories.module';
 import { MediavideosModule } from './CONTENT/mediavideos/mediavideos.module';
+import { NotificationsModule } from './CONTENT/notifications/notifications.module';
+import { PostsModule } from './CONTENT/posts/posts.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -52,6 +54,8 @@ import { MediavideosModule } from './CONTENT/mediavideos/mediavideos.module';
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   PostsModule,
+   NotificationsModule,
    MediavideosModule,
    MediastoriesModule,
    MediaproofpictsModule,
