@@ -35,6 +35,7 @@ import { ContentqmaticModule } from './CONTENT/contentqmatic/contentqmatic.modul
 import { DisqusModule } from './CONTENT/disqus/disqus.module';
 import { DisquscontactsModule } from './CONTENT/disquscontacts/disquscontacts.module';
 import { DisquslogsModule } from './CONTENT/disquslogs/disquslogs.module';
+import { InsightlogsModule } from './CONTENT/insightlogs/insightlogs.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -44,6 +45,7 @@ import { DisquslogsModule } from './CONTENT/disquslogs/disquslogs.module';
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   InsightlogsModule,
    DisquslogsModule,
    DisquscontactsModule,
    DisqusModule,
