@@ -30,4 +30,9 @@ export class UserdevicesController {
   async delete(@Param('id') id: string) {
     return this.userdevicesService.delete(id);
   }
+
+  @Post('countUserActive')
+  async countUserActive(): Promise<Object> {
+    return this.userdevicesService.countAllUserActiveDay(30);
+  }
 }
