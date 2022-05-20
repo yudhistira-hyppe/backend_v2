@@ -37,7 +37,15 @@ export class CreateUserbasicDto {
       id:String;
       db:String;
     };
-    readonly userInterests:[];
+    readonly userInterests:[
+      {
+        ref:String;
+        id:{
+          oid: String;
+        };
+        db:String;
+      }
+    ];
     readonly userAuth:{
       ref:String;
       id:{
