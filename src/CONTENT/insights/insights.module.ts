@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { InsightsService } from './Insights.service';
-import { InsightsController } from './Insights.controller';
+import { InsightsService } from './insights.service';
+import { InsightsController } from './insights.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Insights, InsightsSchema } from './schemas/Insights.schema';
+import { Insights, InsightsSchema } from './schemas/insights.schema';
 
 @Module({
 

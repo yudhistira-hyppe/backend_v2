@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
-import { InsightsService } from './Insights.service';
-import { CreateInsightsDto } from './dto/create-Insights.dto';
-import { Insights } from './schemas/Insights.schema';
+import { InsightsService } from './insights.service';
+import { CreateInsightsDto } from './dto/create-insights.dto';
+import { Insights } from './schemas/insights.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 

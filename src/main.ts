@@ -1,8 +1,21 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as fs from 'fs';
+
+const httpsOptions = {
+  key: fs.readFileSync('D:/MyWork/NodeJs/Hyppe/ssl/local/server.key'),
+  cert: fs.readFileSync('D:/MyWork/NodeJs/Hyppe/ssl/local/server.crt'),
+};
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule,{
+  httpsOptions,
+});
+  app.enableCors({
+            origin: true,
+            methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+            credentials: true,
+        });
   await app.listen(5000);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }

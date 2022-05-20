@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MediaprofilepictsService } from './Mediaprofilepicts.service';
-import { MediaprofilepictsController } from './Mediaprofilepicts.controller';
+import { MediaprofilepictsService } from './mediaprofilepicts.service';
+import { MediaprofilepictsController } from './mediaprofilepicts.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Mediaprofilepicts, MediaprofilepictsSchema } from './schemas/Mediaprofilepicts.schema';
+import { Mediaprofilepicts, MediaprofilepictsSchema } from './schemas/mediaprofilepicts.schema';
 
 @Module({
     imports: [

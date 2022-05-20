@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
-import { InterestsService } from './Interests.service';
-import { CreateInterestsDto } from './dto/create-Interests.dto';
-import { Interests } from './schemas/Interests.schema';
+import { InterestsService } from './interests.service';
+import { CreateInterestsDto } from './dto/create-interests.dto';
+import { Interests } from './schemas/interests.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/interests')
