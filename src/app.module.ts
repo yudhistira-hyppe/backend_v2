@@ -36,6 +36,13 @@ import { DisqusModule } from './CONTENT/disqus/disqus.module';
 import { DisquscontactsModule } from './CONTENT/disquscontacts/disquscontacts.module';
 import { DisquslogsModule } from './CONTENT/disquslogs/disquslogs.module';
 import { InsightlogsModule } from './CONTENT/insightlogs/insightlogs.module';
+import { InsightsModule } from './CONTENT/insights/insights.module';
+import { MediadiariesModule } from './CONTENT/mediadiaries/mediadiaries.module';
+import { MediapictsModule } from './CONTENT/mediapicts/mediapicts.module';
+import { MediaprofilepictsModule } from './CONTENT/mediaprofilepicts/mediaprofilepicts.module';
+import { MediaproofpictsModule } from './CONTENT/mediaproofpicts/mediaproofpicts.module';
+import { MediastoriesModule } from './CONTENT/mediastories/mediastories.module';
+import { MediavideosModule } from './CONTENT/mediavideos/mediavideos.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -45,6 +52,13 @@ import { InsightlogsModule } from './CONTENT/insightlogs/insightlogs.module';
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   MediavideosModule,
+   MediastoriesModule,
+   MediaproofpictsModule,
+   MediaprofilepictsModule,
+   MediapictsModule,
+   MediadiariesModule,
+   InsightsModule,
    InsightlogsModule,
    DisquslogsModule,
    DisquscontactsModule,
