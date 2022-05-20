@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateInsightsDto } from './dto/create-Insights.dto';
-import { Insights, InsightsDocument } from './schemas/Insights.schema';
+import { CreateInsightsDto } from './dto/create-insights.dto';
+import { Insights, InsightsDocument } from './schemas/insights.schema';
 
 
 @Injectable()
@@ -25,8 +25,8 @@ export class InsightsService {
     //    async findOne(id: string): Promise<Insights> {
     //     return this.InsightsModel.findOne({ _id: id }).exec();
     //   }
-    async findOne(email: string): Promise<Insights> {
-        return this.InsightsModel.findOne({ email: email }).exec();
+    async findOne(_id: string): Promise<Insights> {
+        return this.InsightsModel.findOne({ _id: _id }).exec();
       }
       async delete(id: string) {
         const deletedCat = await this.InsightsModel

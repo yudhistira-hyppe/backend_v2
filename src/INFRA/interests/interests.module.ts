@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { InterestsService } from './Interests.service';
-import { InterestsController } from './Interests.controller';
+import { InterestsService } from './interests.service';
+import { InterestsController } from './interests.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Interests, InterestsSchema } from './schemas/Interests.schema';
+import { Interests, InterestsSchema } from './schemas/interests.schema';
 
 @Module({
     imports: [

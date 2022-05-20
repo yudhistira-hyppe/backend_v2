@@ -13,8 +13,11 @@ import { UserdevicesModule } from '../TRANS/userdevices/userdevices.module';
 import { JwtrefreshtokenModule } from '../TRANS/jwtrefreshtoken/jwtrefreshtoken.module';
 import { CountriesModule } from '../INFRA/countries/countries.module';
 import { LanguagesModule } from '../INFRA/languages/languages.module';
+import { MediaprofilepictsModule } from '../CONTENT/mediaprofilepicts/mediaprofilepicts.module';
+import { InsightsModule } from '../CONTENT/insights/insights.module';
+import { InterestsModule } from '../INFRA/interests/interests.module';
 @Module({
-  imports: [UserauthsModule,UserbasicsModule,UserdevicesModule,JwtrefreshtokenModule,PassportModule,CountriesModule,LanguagesModule,JwtModule.register({
+  imports: [UserauthsModule,UserbasicsModule,UserdevicesModule,JwtrefreshtokenModule,PassportModule,CountriesModule,LanguagesModule,MediaprofilepictsModule,InsightsModule,InterestsModule,JwtModule.register({
     secret: process.env.JWT_ACCESS_TOKEN_SECRET,
     signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },
   }),],

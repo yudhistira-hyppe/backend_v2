@@ -72,6 +72,7 @@ export class Userbasic {
 
  @Prop()
  userInterests:[]
+ 
  @Prop({ type: Object })
  userAuth: {
     ref:String

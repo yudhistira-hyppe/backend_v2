@@ -5,6 +5,9 @@ import { UserbasicsService } from '../TRANS/userbasics/userbasics.service';
 import { UserdevicesService } from '../TRANS/userdevices/userdevices.service';
 import { CountriesService } from '../INFRA/countries/countries.service';
 import { LanguagesService } from '../INFRA/languages/languages.service';
+import { MediaprofilepictsService } from '../CONTENT/mediaprofilepicts/mediaprofilepicts.service';
+import { InsightsService } from '../CONTENT/insights/insights.service';
+import { InterestsService } from '../INFRA/interests/interests.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
@@ -20,7 +23,10 @@ export class AuthService {
       private userdevicesService: UserdevicesService,
       private jwtrefreshtokenService: JwtrefreshtokenService,
       private countriesService: CountriesService,
-      private languagesService: LanguagesService
+      private languagesService: LanguagesService,
+      private mediaprofilepictsService: MediaprofilepictsService,
+      private insightsService: InsightsService,
+      private interestsService: InterestsService
     ) {}
 
    
@@ -58,10 +64,45 @@ export class AuthService {
       
       var countries_json = JSON.parse(JSON.stringify(datauserbasicsService.countries));
       var languages_json = JSON.parse(JSON.stringify(datauserbasicsService.languages));
-      
+      var mediaprofilepicts_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
+      var insights_json = JSON.parse(JSON.stringify(datauserbasicsService.insight));
+      //var interests_json_array = JSON.parse(JSON.stringify(datauserbasicsService.userInterests));
+
+          console.log(datauserbasicsService.userInterests);
+      var interests_array = [];
+      // if(datauserbasicsService.userInterests.length>0){
+      //   for(let i = 0;i<datauserbasicsService.userInterests.length;i++){
+      //     var interests_json = JSON.parse(JSON.stringify(datauserbasicsService.userInterests[i]));
+      //     console.log(interests_json);
+      //     const interests = await this.interestsService.findOne(interests_json.$id);
+      //     //interests_array[i] = interests.interestName;
+      //   }
+      // }
+
       const countries = await this.countriesService.findOne(countries_json.$id);
       const languages = await this.languagesService.findOne(languages_json.$id);
+      const mediaprofilepicts = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
+      const insights = await this.insightsService.findOne(insights_json.$id);
 
+      var mediaUri =mediaprofilepicts.mediaUri
+      let result = "/profilepict/"+mediaUri.replace("_0001.jpeg", "");
+      var mediaprofilepicts_res = { 
+        mediaBasePath:mediaprofilepicts.mediaBasePath,
+        mediaUri:mediaprofilepicts.mediaUri,
+        mediaType:mediaprofilepicts.mediaType,
+        mediaEndpoint:result 
+      };
+
+      var insights_res = { 
+        shares:insights.shares,
+        followers:insights.followers,
+        comments:insights.comments,
+        followings:insights.followings,
+        reactions:insights.reactions,
+        posts:insights.posts,
+        views:insights.views,
+        likes:insights.likes
+      };
       //this.jwtrefreshtokenService.create()
 
       const messages = {
@@ -73,14 +114,14 @@ export class AuthService {
         "idProofNumber":datauserbasicsService.idProofNumber,
         "roles":datauserauthsService.roles,
         "fullName":datauserbasicsService.fullName,
-        "avatar":datauserbasicsService.profilePict,
+        "avatar":mediaprofilepicts_res,
         "isIdVerified":datauserbasicsService.isIdVerified,
         "isEmailVerified":datauserauthsService.isEmailVerified,
         "token":"Bearer "+ this.jwtService.sign(payload),
         "idProofStatus":datauserbasicsService.idProofStatus,
-        "insight":[],
+        "insight":insights_res,
         "langIso": languages.langIso,
-        "interest": [],
+        "interest": interests_array,
         "event": datauserbasicsService.event,
         "email": datauserbasicsService.email,
         "username": datauserauthsService.username,
