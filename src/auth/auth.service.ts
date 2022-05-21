@@ -68,12 +68,19 @@ export class AuthService {
       var insights_json = JSON.parse(JSON.stringify(datauserbasicsService.insight));
       //var interests_json_array = JSON.parse(JSON.stringify(datauserbasicsService.userInterests));
 
-          console.log(datauserbasicsService.userInterests);
+          console.log( datauserbasicsService.insight);
+          console.log(datauserbasicsService.userInterests[0]);
+
+          console.log( JSON.parse(JSON.stringify(datauserbasicsService.insight)));
+          console.log( JSON.parse(JSON.stringify(datauserbasicsService.userInterests)));
+          var asdasd = JSON.parse(JSON.stringify(datauserbasicsService.userInterests));
+          console.log(asdasd[0]);
+          console.log(JSON.parse(JSON.stringify(asdasd[0])));
       var interests_array = [];
       // if(datauserbasicsService.userInterests.length>0){
       //   for(let i = 0;i<datauserbasicsService.userInterests.length;i++){
       //     var interests_json = JSON.parse(JSON.stringify(datauserbasicsService.userInterests[i]));
-      //     console.log(interests_json);
+      //     console.log(datauserbasicsService.userInterests[i]);
       //     const interests = await this.interestsService.findOne(interests_json.$id);
       //     //interests_array[i] = interests.interestName;
       //   }

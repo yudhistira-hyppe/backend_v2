@@ -70,16 +70,15 @@ export class Userbasic {
     db:String
  }
 
- @Prop([{type:Object}])
- userInterests:[
-   {
-      ref:String;
-      id:{
-        oid: String;
+  @Prop({ type: [{}] })
+ userInterests:[{
+    ref:String
+    id:{
+        oid:String
       };
-      db:String;
-    }
- ]
+    db:String
+ }]
+
  @Prop({ type: Object })
  userAuth: {
     ref:String
