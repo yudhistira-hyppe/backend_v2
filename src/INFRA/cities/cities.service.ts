@@ -19,7 +19,7 @@ export class CitiesService {
       }
       
 
-       async findOne(id: string): Promise<Cities> {
+       async findOne(id: String): Promise<Cities> {
         return this.citiesModel.findOne({ _id: id }).exec();
       }
     

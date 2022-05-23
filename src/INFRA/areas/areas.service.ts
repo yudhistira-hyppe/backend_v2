@@ -21,10 +21,12 @@ export class AreasService {
       }
       
 
-       async findOne(id: string): Promise<Areas> {
-        return this.areasModel.findOne({ _id: id }).exec();
+      //  async findOne(id: string): Promise<Areas> {
+      //   return this.areasModel.findOne({ _id: id }).exec();
+      // }
+      async findOne(countryID: String): Promise<Areas> {
+        return this.areasModel.findOne({ countryID: countryID }).exec();
       }
-    
       async delete(id: string) {
         const deletedCat = await this.areasModel
           .findByIdAndRemove({ _id: id })

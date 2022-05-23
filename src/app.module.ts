@@ -45,6 +45,7 @@ import { MediastoriesModule } from './CONTENT/mediastories/mediastories.module';
 import { MediavideosModule } from './CONTENT/mediavideos/mediavideos.module';
 import { NotificationsModule } from './CONTENT/notifications/notifications.module';
 import { PostsModule } from './CONTENT/posts/posts.module';
+import { ProfileModule } from './TRANS/profile/profile.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -54,6 +55,7 @@ import { PostsModule } from './CONTENT/posts/posts.module';
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   ProfileModule,
    PostsModule,
    NotificationsModule,
    MediavideosModule,
