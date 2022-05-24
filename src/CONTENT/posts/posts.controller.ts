@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
-import { PostsService } from './Posts.service';
-import { CreatePostsDto } from './dto/create-Posts.dto';
-import { Posts } from './schemas/Posts.schema';
+import { PostsService } from './posts.service';
+import { CreatePostsDto } from './dto/create-posts.dto';
+import { Posts } from './schemas/posts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/posts')

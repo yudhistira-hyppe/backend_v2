@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { PostsService } from './Posts.service';
-import { PostsController } from './Posts.controller';
+import { PostsService } from './posts.service';
+import { PostsController } from './posts.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Posts, PostsSchema } from './schemas/Posts.schema';
+import { Posts, PostsSchema } from './schemas/posts.schema';
 
 @Module({
 

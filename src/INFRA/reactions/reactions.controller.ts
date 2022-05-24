@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
-import { ReactionsService } from './Reactions.service';
-import { CreateReactionsDto } from './dto/create-Reactions.dto';
-import { Reactions } from './schemas/Reactions.schema';
+import { ReactionsService } from './reactions.service';
+import { CreateReactionsDto } from './dto/create-reactions.dto';
+import { Reactions } from './schemas/reactions.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/reactions')

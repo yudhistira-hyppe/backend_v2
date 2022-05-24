@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { DisquslogsService } from './Disquslogs.service';
-import { DisquslogsController } from './Disquslogs.controller';
+import { DisquslogsService } from './disquslogs.service';
+import { DisquslogsController } from './disquslogs.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Disquslogs, DisquslogsSchema } from './schemas/Disquslogs.schema';
+import { Disquslogs, DisquslogsSchema } from './schemas/disquslogs.schema';
 
 @Module({
     imports: [

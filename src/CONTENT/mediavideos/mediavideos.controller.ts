@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
-import { MediavideosService } from './Mediavideos.service';
-import { CreateMediavideosDto } from './dto/create-Mediavideos.dto';
-import { Mediavideos } from './schemas/Mediavideos.schema';
+import { MediavideosService } from './mediavideos.service';
+import { CreateMediavideosDto } from './dto/create-mediavideos.dto';
+import { Mediavideos } from './schemas/mediavideos.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/mediavideos')

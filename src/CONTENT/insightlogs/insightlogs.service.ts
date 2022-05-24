@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateInsightlogsDto } from './dto/create-Insightlogs.dto';
-import { Insightlogs, InsightlogsDocument } from './schemas/Insightlogs.schema';
+import { CreateInsightlogsDto } from './dto/create-insightlogs.dto';
+import { Insightlogs, InsightlogsDocument } from './schemas/insightlogs.schema';
 
 @Injectable()
 export class InsightlogsService {

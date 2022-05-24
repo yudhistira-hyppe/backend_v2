@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ContentqmaticService } from './Contentqmatic.service';
-import { ContentqmaticController } from './Contentqmatic.controller';
+import { ContentqmaticService } from './contentqmatic.service';
+import { ContentqmaticController } from './contentqmatic.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Contentqmatic, ContentqmaticSchema } from './schemas/Contentqmatic.schema';
+import { Contentqmatic, ContentqmaticSchema } from './schemas/contentqmatic.schema';
 
 @Module({
     imports: [

@@ -1,51 +1,52 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserdevicesModule } from './TRANS/userdevices/userdevices.module';
-import { UserbasicsModule } from './TRANS/userbasics/userbasics.module';
-import { UserauthsModule } from './TRANS/userauths/userauths.module';
-import { JwtrefreshtokenModule } from './TRANS/jwtrefreshtoken/jwtrefreshtoken.module';
+import { UserdevicesModule } from './trans/userdevices/userdevices.module';
+import { UserbasicsModule } from './trans/userbasics/userbasics.module';
+import { UserauthsModule } from './trans/userauths/userauths.module';
+import { JwtrefreshtokenModule } from './trans/jwtrefreshtoken/jwtrefreshtoken.module';
 import { ConfigModule } from '@nestjs/config';
-import { SnapshoteventsModule } from './TRANS/snapshotevents/snapshotevents.module';
-import { SagasModule } from './TRANS/sagas/sagas.module';
-import { AdrolesModule } from './TRANS/adroles/adroles.module';
+import { SnapshoteventsModule } from './trans/snapshotevents/snapshotevents.module';
+import { SagasModule } from './trans/sagas/sagas.module';
+import { AdrolesModule } from './trans/adroles/adroles.module';
 import { AuthModule } from './auth/auth.module';
-import { DomaineventsModule } from './TRANS/domainevents/domainevents.module';
-import { ActivityeventsModule } from './TRANS/activityevents/activityevents.module';
-import { OauthclientdetailsModule } from './TRANS/oauthclientdetails/oauthclientdetails.module';
-import { AreasModule } from './INFRA/areas/areas.module';
-import { CitiesModule } from './INFRA/cities/cities.module';
-import { CountriesModule } from './INFRA/countries/countries.module';
-import { DocumentsModule } from './INFRA/documents/documents.module';
-import { CorevaluesModule } from './INFRA/corevalues/corevalues.module';
-import { EulasModule } from './INFRA/eulas/eulas.module';
-import { FsChunksModule } from './INFRA/fs.chunks/fs.chunks.module';
-import { FsfilesModule } from './INFRA/fsfiles/fsfiles.module';
-import { InterestsModule } from './INFRA/interests/interests.module';
-import { InterestsRepoModule } from './INFRA/interests_repo/interests_repo.module';
-import { LanguagesModule } from './INFRA/languages/languages.module';
-import { ReactionsModule } from './INFRA/reactions/reactions.module';
-import { ReactionsRepoModule } from './INFRA/reactions_repo/reactions_repo.module';
-import { ReportsModule } from './INFRA/reports/reports.module';
-import { TemplatesModule } from './INFRA/templates/templates.module';
-import { TemplatesRepoModule } from './INFRA/templates_repo/templates_repo.module';
-import { WelcomenotesModule } from './INFRA/welcomenotes/welcomenotes.module';
-import { ContentdailyqueueModule } from './CONTENT/contentdailyqueue/contentdailyqueue.module';
-import { ContenteventsModule } from './CONTENT/contentevents/contentevents.module';
-import { ContentqmaticModule } from './CONTENT/contentqmatic/contentqmatic.module';
-import { DisqusModule } from './CONTENT/disqus/disqus.module';
-import { DisquscontactsModule } from './CONTENT/disquscontacts/disquscontacts.module';
-import { DisquslogsModule } from './CONTENT/disquslogs/disquslogs.module';
-import { InsightlogsModule } from './CONTENT/insightlogs/insightlogs.module';
-import { InsightsModule } from './CONTENT/insights/insights.module';
-import { MediadiariesModule } from './CONTENT/mediadiaries/mediadiaries.module';
-import { MediapictsModule } from './CONTENT/mediapicts/mediapicts.module';
-import { MediaprofilepictsModule } from './CONTENT/mediaprofilepicts/mediaprofilepicts.module';
-import { MediaproofpictsModule } from './CONTENT/mediaproofpicts/mediaproofpicts.module';
-import { MediastoriesModule } from './CONTENT/mediastories/mediastories.module';
-import { MediavideosModule } from './CONTENT/mediavideos/mediavideos.module';
-import { NotificationsModule } from './CONTENT/notifications/notifications.module';
-import { PostsModule } from './CONTENT/posts/posts.module';
-import { ProfileModule } from './TRANS/profile/profile.module';
+import { DomaineventsModule } from './trans/domainevents/domainevents.module';
+import { ActivityeventsModule } from './trans/activityevents/activityevents.module';
+import { OauthclientdetailsModule } from './trans/oauthclientdetails/oauthclientdetails.module';
+import { AreasModule } from './infra/areas/areas.module';
+import { CitiesModule } from './infra/cities/cities.module';
+import { CountriesModule } from './infra/countries/countries.module';
+import { DocumentsModule } from './infra/documents/documents.module';
+import { CorevaluesModule } from './infra/corevalues/corevalues.module';
+import { EulasModule } from './infra/eulas/eulas.module';
+import { FsChunksModule } from './infra/fs.chunks/fs.chunks.module';
+import { FsfilesModule } from './infra/fsfiles/fsfiles.module';
+import { InterestsModule } from './infra/interests/interests.module';
+import { InterestsRepoModule } from './infra/interests_repo/interests_repo.module';
+import { LanguagesModule } from './infra/languages/languages.module';
+import { ReactionsModule } from './infra/reactions/reactions.module';
+import { ReactionsRepoModule } from './infra/reactions_repo/reactions_repo.module';
+import { ReportsModule } from './infra/reports/reports.module';
+import { TemplatesModule } from './infra/templates/templates.module';
+import { TemplatesRepoModule } from './infra/templates_repo/templates_repo.module';
+import { WelcomenotesModule } from './infra/welcomenotes/welcomenotes.module';
+import { ContentdailyqueueModule } from './content/contentdailyqueue/contentdailyqueue.module';
+import { ContenteventsModule } from './content/contentevents/contentevents.module';
+import { ContentqmaticModule } from './content/contentqmatic/contentqmatic.module';
+import { DisqusModule } from './content/disqus/disqus.module';
+import { DisquscontactsModule } from './content/disquscontacts/disquscontacts.module';
+import { DisquslogsModule } from './content/disquslogs/disquslogs.module';
+import { InsightlogsModule } from './content/insightlogs/insightlogs.module';
+import { InsightsModule } from './content/insights/insights.module';
+import { MediadiariesModule } from './content/mediadiaries/mediadiaries.module';
+import { MediapictsModule } from './content/mediapicts/mediapicts.module';
+import { MediaprofilepictsModule } from './content/mediaprofilepicts/mediaprofilepicts.module';
+import { MediaproofpictsModule } from './content/mediaproofpicts/mediaproofpicts.module';
+import { MediastoriesModule } from './content/mediastories/mediastories.module';
+import { MediavideosModule } from './content/mediavideos/mediavideos.module';
+import { NotificationsModule } from './content/notifications/notifications.module';
+import { PostsModule } from './content/posts/posts.module';
+import { ProfileModule } from './trans/profile/profile.module';
+import { GetuserprofilesModule } from './trans/getuserprofiles/getuserprofiles.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -55,6 +56,7 @@ import { ProfileModule } from './TRANS/profile/profile.module';
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   GetuserprofilesModule,
    ProfileModule,
    PostsModule,
    NotificationsModule,

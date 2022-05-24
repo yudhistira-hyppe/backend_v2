@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MediastoriesService } from './Mediastories.service';
-import { MediastoriesController } from './Mediastories.controller';
+import { MediastoriesService } from './mediastories.service';
+import { MediastoriesController } from './mediastories.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Mediastories, MediastoriesSchema } from './schemas/Mediastories.schema';
+import { Mediastories, MediastoriesSchema } from './schemas/mediastories.schema';
 
 @Module({
 

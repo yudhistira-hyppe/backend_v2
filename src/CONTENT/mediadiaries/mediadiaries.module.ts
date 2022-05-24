@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MediadiariesService } from './Mediadiaries.service';
-import { MediadiariesController } from './Mediadiaries.controller';
+import { MediadiariesService } from './mediadiaries.service';
+import { MediadiariesController } from './mediadiaries.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Mediadiaries, MediadiariesSchema } from './schemas/Mediadiaries.schema';
+import { Mediadiaries, MediadiariesSchema } from './schemas/mediadiaries.schema';
 
 @Module({
     imports: [

@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { JwtrefreshtokenService } from '../TRANS/jwtrefreshtoken/jwtrefreshtoken.service';
-import { UserauthsService } from '../TRANS/userauths/userauths.service';
-import { UserbasicsService } from '../TRANS/userbasics/userbasics.service';
-import { UserdevicesService } from '../TRANS/userdevices/userdevices.service';
-import { CountriesService } from '../INFRA/countries/countries.service';
-import { LanguagesService } from '../INFRA/languages/languages.service';
-import { MediaprofilepictsService } from '../CONTENT/mediaprofilepicts/mediaprofilepicts.service';
-import { InsightsService } from '../CONTENT/insights/insights.service';
-import { InterestsService } from '../INFRA/interests/interests.service';
+import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken.service';
+import { UserauthsService } from '../trans/userauths/userauths.service';
+import { UserbasicsService } from '../trans/userbasics/userbasics.service';
+import { UserdevicesService } from '../trans/userdevices/userdevices.service';
+import { CountriesService } from '../infra/countries/countries.service';
+import { LanguagesService } from '../infra/languages/languages.service';
+import { MediaprofilepictsService } from '../content/mediaprofilepicts/mediaprofilepicts.service';
+import { InsightsService } from '../content/insights/insights.service';
+import { InterestsService } from '../infra/interests/interests.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 
@@ -74,9 +74,9 @@ export class AuthService {
           console.log( JSON.parse(JSON.stringify(datauserbasicsService.insight)));
           console.log( JSON.parse(JSON.stringify(datauserbasicsService.userInterests)));
           var asdasd = JSON.parse(JSON.stringify(datauserbasicsService.userInterests));
-          console.log(asdasd[0]);
-          console.log(JSON.parse(JSON.stringify(asdasd[0])));
-      var interests_array = [];
+          // console.log(asdasd[0]);
+          // console.log(JSON.parse(JSON.stringify(asdasd[0])));
+          var interests_array = [];
       // if(datauserbasicsService.userInterests.length>0){
       //   for(let i = 0;i<datauserbasicsService.userInterests.length;i++){
       //     var interests_json = JSON.parse(JSON.stringify(datauserbasicsService.userInterests[i]));

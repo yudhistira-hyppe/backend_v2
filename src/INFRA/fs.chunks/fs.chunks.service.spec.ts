@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Fs.ChunksService } from './fs.chunks.service';
+import { FsChunksService } from './fs.chunks.service';
 
 describe('Fs.ChunksService', () => {
-  let service: Fs.ChunksService;
+  let service: FsChunksService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [Fs.ChunksService],
+      providers: [FsChunksService],
     }).compile();
 
-    service = module.get<Fs.ChunksService>(Fs.ChunksService);
+    service = module.get<FsChunksService>(FsChunksService);
   });
 
   it('should be defined', () => {

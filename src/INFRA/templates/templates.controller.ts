@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
-import { TemplatesService } from './Templates.service';
-import { CreateTemplatesDto } from './dto/create-Templates.dto';
-import { Templates } from './schemas/Templates.schema';
+import { TemplatesService } from './templates.service';
+import { CreateTemplatesDto } from './dto/create-templates.dto';
+import { Templates } from './schemas/templates.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/templates')

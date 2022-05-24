@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateContentqmaticDto } from './dto/create-Contentqmatic.dto';
-import { Contentqmatic, ContentqmaticDocument } from './schemas/Contentqmatic.schema';
+import { CreateContentqmaticDto } from './dto/create-contentqmatic.dto';
+import { Contentqmatic, ContentqmaticDocument } from './schemas/contentqmatic.schema';
 
 @Injectable()
 export class ContentqmaticService {

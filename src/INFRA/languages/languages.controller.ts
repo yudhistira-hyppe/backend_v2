@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
 import { LanguagesService } from './languages.service';
-import { CreateLanguagesDto } from './dto/create-Languages.dto';
+import { CreateLanguagesDto } from './dto/create-languages.dto';
 import { Languages } from './schemas/languages.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 

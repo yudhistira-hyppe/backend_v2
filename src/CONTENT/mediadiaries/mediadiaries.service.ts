@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateMediadiariesDto } from './dto/create-Mediadiaries.dto';
-import { Mediadiaries, MediadiariesDocument } from './schemas/Mediadiaries.schema';
+import { CreateMediadiariesDto } from './dto/create-mediadiaries.dto';
+import { Mediadiaries, MediadiariesDocument } from './schemas/mediadiaries.schema';
 
 @Injectable()
 export class MediadiariesService {

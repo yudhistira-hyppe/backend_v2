@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ReactionsService } from './Reactions.service';
-import { ReactionsController } from './Reactions.controller';
+import { ReactionsService } from './reactions.service';
+import { ReactionsController } from './reactions.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Reactions, ReactionsSchema } from './schemas/Reactions.schema';
+import { Reactions, ReactionsSchema } from './schemas/reactions.schema';
 @Module({
     imports: [
         ConfigModule.forRoot(),

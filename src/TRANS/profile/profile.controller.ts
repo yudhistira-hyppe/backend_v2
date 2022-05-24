@@ -2,15 +2,15 @@ import { Controller,Post,Get,BadRequestException,Req, Body,UseGuards} from '@nes
 import { FileSystemStoredFile, FormDataRequest } from 'nestjs-form-data';
 import { ProfileService } from './profile.service';
 import { UserbasicsService } from '../userbasics/userbasics.service';
-import { CountriesService } from '../../INFRA/countries/countries.service';
-import { CitiesService } from '../../INFRA/cities/cities.service';
-import { UserauthsService } from '../../TRANS/userauths/userauths.service';
-import { AreasService } from '../../INFRA/areas/areas.service';
-import { InsightsService } from '../../CONTENT/insights/insights.service';
-import { LanguagesService } from '../../INFRA/languages/languages.service';
-import { InterestsService } from '../../INFRA/interests/interests.service';
+import { CountriesService } from '../../infra/countries/countries.service';
+import { CitiesService } from '../../infra/cities/cities.service';
+import { UserauthsService } from '../../trans/userauths/userauths.service';
+import { AreasService } from '../../infra/areas/areas.service';
+import { InsightsService } from '../../content/insights/insights.service';
+import { LanguagesService } from '../../infra/languages/languages.service';
+import { InterestsService } from '../../infra/interests/interests.service';
 import { JwtService } from '@nestjs/jwt';
-import { MediaprofilepictsService } from '../../CONTENT/mediaprofilepicts/mediaprofilepicts.service';
+import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 @Controller('api/profile')

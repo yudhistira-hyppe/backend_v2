@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
-import { InsightlogsService } from './Insightlogs.service';
-import { CreateInsightlogsDto } from './dto/create-Insightlogs.dto';
-import { Insightlogs } from './schemas/Insightlogs.schema';
+import { InsightlogsService } from './insightlogs.service';
+import { CreateInsightlogsDto } from './dto/create-insightlogs.dto';
+import { Insightlogs } from './schemas/insightlogs.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 

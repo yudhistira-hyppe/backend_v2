@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateTemplatesRepoDto } from './dto/create-TemplatesRepo.dto';
-import { TemplatesRepo, TemplatesRepoDocument } from './schemas/TemplatesRepo.schema';
+import { CreateTemplatesRepoDto } from './dto/create-templatesrepo.dto';
+import { TemplatesRepo, TemplatesRepoDocument } from './schemas/templatesrepo.schema';
 
 @Injectable()
 export class TemplatesRepoService {
