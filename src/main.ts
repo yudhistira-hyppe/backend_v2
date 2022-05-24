@@ -7,8 +7,8 @@ import * as fs from 'fs';
 //   cert: fs.readFileSync('D:/MyWork/NodeJs/Hyppe/ssl/local/server.crt'),
 // };
 const httpsOptions = {
-  key: fs.readFileSync('C:/ProjectHyppe/crt/hyppe.key'),
-  cert: fs.readFileSync('C:/ProjectHyppe/crt/hyppe.crt')
+  key: fs.readFileSync('C:/projecthyppe/crt/hyppe.key'),
+  cert: fs.readFileSync('C:/projecthyppe/crt/hyppe.crt')
 };
 
 async function bootstrap() {
