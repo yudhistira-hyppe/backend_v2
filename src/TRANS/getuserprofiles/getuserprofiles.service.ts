@@ -28,12 +28,37 @@ export class GetuserprofilesService {
         }
         return query;
       }
-    
-      // async findOne(id: string): Promise<Getuserprofiles> {
-      //   return this.GetuserprofilesModel.findOne({ _id: id }).exec();
-      // }
-      async findOne(fullName: string): Promise<Getuserprofiles> {
-        return this.getuserprofilesModel.findOne({ fullName: fullName }).exec();
+      async findAlls(): Promise<Getuserprofiles[]> {
+        return this.getuserprofilesModel.find().exec();
+      }
+      async findfullname(fullName: String): Promise<Getuserprofiles> {
+        return this.getuserprofilesModel.findOne({ fullName: fullName}).exec();
+      }
+      async findgender(gender:String): Promise<Getuserprofiles> {
+        return this.getuserprofilesModel.findOne({ gender:gender }).exec();
+      }
+      async findfullnamegender(fullName: String,gender:String): Promise<Getuserprofiles> {
+        return this.getuserprofilesModel.findOne({ fullName: fullName,gender:gender }).exec();
+      }
+
+      async findTypeAkun(fullName: String,roles:String): Promise<Getuserprofiles> {
+        return this.getuserprofilesModel.findOne({ fullName: fullName,roles:roles }).exec();
+      }
+
+      async findroles(roles: String): Promise<Getuserprofiles> {
+        return this.getuserprofilesModel.findOne({ roles: roles}).exec();
+      }
+      async findfullnameroles(fullName: String,roles: String): Promise<Getuserprofiles> {
+        return this.getuserprofilesModel.findOne({fullName:fullName, roles: roles}).exec();
+      }
+      async findfullnamegenderroles(fullName: String,roles: String,gender:String): Promise<Getuserprofiles> {
+        return this.getuserprofilesModel.findOne({fullName:fullName, roles: roles,gender:gender}).exec();
+      }
+      async findgenderroles(roles: String,gender:String): Promise<Getuserprofiles> {
+        return this.getuserprofilesModel.findOne({ roles: roles,gender:gender}).exec();
+      }
+      async findumur(dob: String): Promise<Getuserprofiles> {
+        return this.getuserprofilesModel.findOne({ dob: dob}).exec();
       }
       async delete(id: string) {
         const deletedCat = await this.getuserprofilesModel
