@@ -7,30 +7,35 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/insights')
 export class InsightsController {
+  constructor(private readonly InsightsService: InsightsService) {}
 
-    constructor(private readonly InsightsService: InsightsService) {}
+  @Post()
+  async create(@Body() CreateInsightsDto: CreateInsightsDto) {
+    await this.InsightsService.create(CreateInsightsDto);
+  }
 
-    @Post()
-    async create(@Body() CreateInsightsDto: CreateInsightsDto) {
-      await this.InsightsService.create(CreateInsightsDto);
-    }
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async findAll(): Promise<Insights[]> {
+    return this.InsightsService.findAll();
+  }
+  // @Get(':id')
+  // async findOneId(@Param('id') id: string): Promise<Insights> {
+  //   return this.InsightsService.findOne(id);
+  // }
+  @Get(':email')
+  async findOneId(@Param('email') email: string): Promise<Insights> {
+    return this.InsightsService.findOne(email);
+  }
 
-    @Get()
-    @UseGuards(JwtAuthGuard)
-    async findAll(): Promise<Insights[]> {
-      return this.InsightsService.findAll();
-    }
-    // @Get(':id')
-    // async findOneId(@Param('id') id: string): Promise<Insights> {
-    //   return this.InsightsService.findOne(id);
-    // }
-    @Get(':email')
-    async findOneId(@Param('email') email: string): Promise<Insights> {
-      return this.InsightsService.findOne(email);
-    }
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    return this.InsightsService.delete(id);
+  }
 
-    @Delete(':id')
-    async delete(@Param('id') id: string) {
-      return this.InsightsService.delete(id);
-    }
+  @UseGuards(JwtAuthGuard)
+  @Post('engagement')
+  async countPost(@Body('year') year: number): Promise<Object> {
+    return this.InsightsService.Engagement(year);
+  }
 }

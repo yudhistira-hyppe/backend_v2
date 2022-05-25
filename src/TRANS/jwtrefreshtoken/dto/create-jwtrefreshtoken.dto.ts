@@ -1,14 +1,9 @@
 export class CreateJwtrefreshtokenDto {
-  
-
-    readonly _id: { oid:String;  };
-    readonly refresh_token_id: String;
-    readonly  email: String;
-    readonly  iat: {numberLong:String};
-      readonly  exp: {numberLong:String};
-      readonly  userAuth: {
-        ref: String;
-        id:{ oid:String;  };
-      }
-    readonly _class:String;
-  }
+  readonly _id: { oid: String };
+  refresh_token_id: String;
+  email: String;
+  iat: { numberLong: String };
+  exp: { numberLong: String };
+  userAuth: String;
+  _class: String;
+}

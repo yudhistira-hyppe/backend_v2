@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserbasicDto } from './dto/create-userbasic.dto';
@@ -6,30 +6,230 @@ import { Userbasic, UserbasicDocument } from './schemas/userbasic.schema';
 
 @Injectable()
 export class UserbasicsService {
+  constructor(
+    @InjectModel(Userbasic.name)
+    private readonly userbasicModel: Model<UserbasicDocument>,
+  ) {}
 
-    constructor(
-        @InjectModel(Userbasic.name) private readonly userbasicModel: Model<UserbasicDocument>,
-      ) {}
-    
-      async create(CreateUserbasicDto: CreateUserbasicDto): Promise<Userbasic> {
-        const createUserbasicDto = await this.userbasicModel.create(CreateUserbasicDto);
-        return createUserbasicDto;
-      }
-    
-      async findAll(): Promise<Userbasic[]> {
-        return this.userbasicModel.find().exec();
-      }
-    
-      // async findOne(id: string): Promise<Userbasic> {
-      //   return this.userbasicModel.findOne({ _id: id }).exec();
-      // }
-      async findOne(email: string): Promise<Userbasic> {
-        return this.userbasicModel.findOne({ email: email }).exec();
-      }
-      async delete(id: string) {
-        const deletedCat = await this.userbasicModel
-          .findByIdAndRemove({ _id: id })
-          .exec();
-        return deletedCat;
-      }
+  async create(CreateUserbasicDto: CreateUserbasicDto): Promise<Userbasic> {
+    const createUserbasicDto = await this.userbasicModel.create(
+      CreateUserbasicDto,
+    );
+    return createUserbasicDto;
+  }
+
+  async findAll(): Promise<Userbasic[]> {
+    return this.userbasicModel.find().exec();
+  }
+
+  async findOne(email: string): Promise<Userbasic> {
+    return this.userbasicModel.findOne({ email: email }).exec();
+  }
+
+  async delete(id: string) {
+    const deletedCat = await this.userbasicModel
+      .findByIdAndRemove({ _id: id })
+      .exec();
+    return deletedCat;
+  }
+
+  async UserAge(): Promise<Object> {
+    var GetCount = this.userbasicModel
+      .aggregate([
+        {
+          $addFields: {
+            age: {
+              $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+            },
+          },
+        },
+        {
+          $project: {
+            age: '$age',
+            email: '$email',
+          },
+        },
+      ])
+      .exec();
+    return GetCount;
+  }
+
+  async UserActiveLastYear(year: number): Promise<Object> {
+    var currentTime = new Date();
+    var year_param = 0;
+    if (year != undefined) {
+      year_param = year;
+    } else {
+      year_param = currentTime.getFullYear();
+    }
+    const monthsArray = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    var GetCount = this.userbasicModel
+      .aggregate([
+        {
+          $addFields: {
+            userAuth_id: '$userAuth.$id',
+          },
+        },
+        {
+          $sort: { '_id.year_month': 1 },
+        },
+        {
+          $lookup: {
+            from: 'userauths',
+            localField: 'userAuth_id',
+            foreignField: '_id',
+            as: 'userAuth_data',
+          },
+        },
+        {
+          $project: {
+            createdAt: '$createdAt',
+            first: { $arrayElemAt: ['$userAuth_data', 0] },
+          },
+        },
+        {
+          $addFields: {
+            userAuth_id__: '$first.isEnabled',
+          },
+        },
+        {
+          $project: {
+            IsActive: '$userAuth_id__',
+            createdAt: '$createdAt',
+            YearcreatedAt: { $toInt: { $substrCP: ['$createdAt', 0, 4] } },
+            year_param: { $toInt: year_param.toString() },
+          },
+        },
+        {
+          $match: {
+            IsActive: true,
+            YearcreatedAt: year_param,
+          },
+        },
+        {
+          $group: {
+            _id: { year_month: { $substrCP: ['$createdAt', 0, 7] } },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            count: 1,
+            month_: { $toInt: { $substrCP: ['$_id.year_month', 5, 2] } },
+            month_name_: {
+              $arrayElemAt: [
+                monthsArray,
+                {
+                  $subtract: [
+                    { $toInt: { $substrCP: ['$_id.year_month', 5, 2] } },
+                    1,
+                  ],
+                },
+              ],
+            },
+            year_: { $substrCP: ['$_id.year_month', 0, 4] },
+          },
+        },
+        {
+          $project: {
+            _id: 0,
+            month_name: '$month_name_',
+            month: '$month_',
+            year: { $toInt: '$year_' },
+            count: 1,
+          },
+        },
+      ])
+      .exec();
+    return GetCount;
+  }
+
+  async UserActiveDay(day: number): Promise<Object> {
+    if (day == undefined) {
+      throw new BadRequestException('Unabled to proceed');
+    }
+    var TODAY = new Date();
+    var TODAY_BEFORE = new Date(new Date().setDate(new Date().getDate() - day));
+    var GetCount = this.userbasicModel
+      .aggregate([
+        {
+          $addFields: {
+            userAuth_id: '$userAuth.$id',
+            createdAt_: { $toDate: { $substrCP: ['$createdAt', 0, 10] } },
+            today: { $toDate: { $substrCP: [TODAY, 0, 10] } },
+            today_before: { $toDate: { $substrCP: [TODAY_BEFORE, 0, 10] } },
+          },
+        },
+        {
+          $sort: { '_id.year_month': 1 },
+        },
+        {
+          $match: {
+            createdAt_: { $gte: TODAY_BEFORE, $lt: TODAY },
+          },
+        },
+        {
+          $lookup: {
+            from: 'userauths',
+            localField: 'userAuth_id',
+            foreignField: '_id',
+            as: 'userAuth_data',
+          },
+        },
+        {
+          $project: {
+            createdAt: '$createdAt',
+            first: { $arrayElemAt: ['$userAuth_data', 0] },
+          },
+        },
+        {
+          $addFields: {
+            userAuth_id__: '$first.isEnabled',
+          },
+        },
+        {
+          $project: {
+            IsActive: '$userAuth_id__',
+            createdAt: '$createdAt',
+          },
+        },
+        {
+          $match: {
+            IsActive: true,
+          },
+        },
+        {
+          $group: {
+            _id: { createdAt_data: { $substrCP: ['$createdAt', 0, 10] } },
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { createdAt_data: 1 },
+        },
+        {
+          $project: {
+            _id: 0,
+            date: '$_id.createdAt_data',
+            count: 1,
+          },
+        },
+      ])
+      .exec();
+    return GetCount;
+  }
 }
