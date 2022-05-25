@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
-import { DisqusService } from './Disqus.service';
-import { CreateDisqusDto } from './dto/create-Disqus.dto';
-import { Disqus } from './schemas/Disqus.schema';
+import { DisqusService } from './disqus.service';
+import { CreateDisqusDto } from './dto/create-disqus.dto';
+import { Disqus } from './schemas/disqus.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/disqus')

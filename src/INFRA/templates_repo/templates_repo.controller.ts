@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
 import { TemplatesRepoService } from './templates_repo.service';
-import { CreateTemplatesRepoDto } from './dto/create-TemplatesRepo.dto';
-import { TemplatesRepo } from './schemas/TemplatesRepo.schema';
+import { CreateTemplatesRepoDto } from './dto/create-templatesrepo.dto';
+import { TemplatesRepo } from './schemas/templatesrepo.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/templatesrepo')

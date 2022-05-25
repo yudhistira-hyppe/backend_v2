@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateReactionsDto } from './dto/create-Reactions.dto';
-import { Reactions, ReactionsDocument } from './schemas/Reactions.schema';
+import { CreateReactionsDto } from './dto/create-reactions.dto';
+import { Reactions, ReactionsDocument } from './schemas/reactions.schema';
 
 @Injectable()
 export class ReactionsService {

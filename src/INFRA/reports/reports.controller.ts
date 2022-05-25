@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
-import { ReportsService } from './Reports.service';
-import { CreateReportsDto } from './dto/create-Reports.dto';
-import { Reports } from './schemas/Reports.schema';
+import { ReportsService } from './reports.service';
+import { CreateReportsDto } from './dto/create-reports.dto';
+import { Reports } from './schemas/reports.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/reports')

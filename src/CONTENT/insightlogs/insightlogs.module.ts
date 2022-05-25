@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { InsightlogsService } from './Insightlogs.service';
-import { InsightlogsController } from './Insightlogs.controller';
+import { InsightlogsService } from './insightlogs.service';
+import { InsightlogsController } from './insightlogs.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Insightlogs, InsightlogsSchema } from './schemas/Insightlogs.schema';
+import { Insightlogs, InsightlogsSchema } from './schemas/insightlogs.schema';
 
 @Module({
 

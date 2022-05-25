@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
-import { MediadiariesService } from './Mediadiaries.service';
-import { CreateMediadiariesDto } from './dto/create-Mediadiaries.dto';
-import { Mediadiaries } from './schemas/Mediadiaries.schema';
+import { MediadiariesService } from './mediadiaries.service';
+import { CreateMediadiariesDto } from './dto/create-mediadiaries.dto';
+import { Mediadiaries } from './schemas/mediadiaries.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 

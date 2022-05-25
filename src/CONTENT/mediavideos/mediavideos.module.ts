@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { MediavideosService } from './Mediavideos.service';
-import { MediavideosController } from './Mediavideos.controller';
+import { MediavideosService } from './mediavideos.service';
+import { MediavideosController } from './mediavideos.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Mediavideos, MediavideosSchema } from './schemas/Mediavideos.schema';
+import { Mediavideos, MediavideosSchema } from './schemas/mediavideos.schema';
 
 @Module({
 

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateMediapictsDto } from './dto/create-Mediapicts.dto';
-import { Mediapicts, MediapictsDocument } from './schemas/Mediapicts.schema';
+import { CreateMediapictsDto } from './dto/create-mediapicts.dto';
+import { Mediapicts, MediapictsDocument } from './schemas/mediapicts.schema';
 
 @Injectable()
 export class MediapictsService {

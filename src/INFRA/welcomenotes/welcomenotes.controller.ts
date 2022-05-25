@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
-import { WelcomenotesService } from './Welcomenotes.service';
-import { CreateWelcomenotesDto } from './dto/create-Welcomenotes.dto';
-import { Welcomenotes } from './schemas/Welcomenotes.schema';
+import { WelcomenotesService } from './welcomenotes.service';
+import { CreateWelcomenotesDto } from './dto/create-welcomenotes.dto';
+import { Welcomenotes } from './schemas/welcomenotes.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/welcomenotes')

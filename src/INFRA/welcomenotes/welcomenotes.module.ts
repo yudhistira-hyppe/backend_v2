@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { WelcomenotesService } from './Welcomenotes.service';
-import { WelcomenotesController } from './Welcomenotes.controller';
+import { WelcomenotesService } from './welcomenotes.service';
+import { WelcomenotesController } from './welcomenotes.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Welcomenotes, WelcomenotesSchema } from './schemas/Welcomenotes.schema';
+import { Welcomenotes, WelcomenotesSchema } from './schemas/welcomenotes.schema';
 
 @Module({
     imports: [

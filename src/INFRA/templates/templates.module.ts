@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TemplatesService } from './Templates.service';
-import { TemplatesController } from './Templates.controller';
+import { TemplatesService } from './templates.service';
+import { TemplatesController } from './templates.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Templates, TemplatesSchema } from './schemas/Templates.schema';
+import { Templates, TemplatesSchema } from './schemas/templates.schema';
 @Module({
     imports: [
         ConfigModule.forRoot(),

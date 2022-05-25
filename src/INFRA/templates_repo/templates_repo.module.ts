@@ -3,7 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { TemplatesRepoService } from './templates_repo.service';
 import { TemplatesRepoController } from './templates_repo.controller';
 import { ConfigModule } from '@nestjs/config';
-import { TemplatesRepo, TemplatesRepoSchema } from './schemas/TemplatesRepo.schema';
+import { TemplatesRepo, TemplatesRepoSchema } from './schemas/templatesrepo.schema';
 @Module({
     imports: [
         ConfigModule.forRoot(),

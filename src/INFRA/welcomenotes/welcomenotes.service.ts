@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateWelcomenotesDto } from './dto/create-Welcomenotes.dto';
-import { Welcomenotes, WelcomenotesDocument } from './schemas/Welcomenotes.schema';
+import { CreateWelcomenotesDto } from './dto/create-welcomenotes.dto';
+import { Welcomenotes, WelcomenotesDocument } from './schemas/welcomenotes.schema';
 
 @Injectable()
 export class WelcomenotesService {

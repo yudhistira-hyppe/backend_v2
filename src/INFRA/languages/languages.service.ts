@@ -2,7 +2,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateLanguagesDto } from './dto/create-Languages.dto';
+import { CreateLanguagesDto } from './dto/create-languages.dto';
 import { Languages, LanguagesDocument } from './schemas/languages.schema';
 
 @Injectable()

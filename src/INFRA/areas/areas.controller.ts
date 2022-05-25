@@ -21,9 +21,9 @@ export class AreasController {
       return this.areasService.findAll();
     }
   
-    @Get(':id')
-    async findOneId(@Param('id') id: string): Promise<Areas> {
-      return this.areasService.findOne(id);
+    @Get(':countryID')
+    async findOneId(@Param('countryID') countryID: String): Promise<Areas> {
+      return this.areasService.findOne(countryID);
     }
 
     @Delete(':id')

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateDisquscontactsDto } from './dto/create-Disquscontacts.dto';
-import { Disquscontacts, DisquscontactsDocument } from './schemas/Disquscontacts.schema';
+import { CreateDisquscontactsDto } from './dto/create-disquscontacts.dto';
+import { Disquscontacts, DisquscontactsDocument } from './schemas/disquscontacts.schema';
 
 @Injectable()
 export class DisquscontactsService {

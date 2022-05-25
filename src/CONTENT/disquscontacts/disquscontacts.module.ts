@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { DisquscontactsService } from './Disquscontacts.service';
-import { DisquscontactsController } from './Disquscontacts.controller';
+import { DisquscontactsService } from './disquscontacts.service';
+import { DisquscontactsController } from './disquscontacts.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Disquscontacts, DisquscontactsSchema } from './schemas/Disquscontacts.schema';
+import { Disquscontacts, DisquscontactsSchema } from './schemas/disquscontacts.schema';
 
 @Module({
     imports: [

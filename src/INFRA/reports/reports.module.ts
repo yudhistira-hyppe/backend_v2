@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ReportsService } from './Reports.service';
-import { ReportsController } from './Reports.controller';
+import { ReportsService } from './reports.service';
+import { ReportsController } from './reports.controller';
 import { ConfigModule } from '@nestjs/config';
-import { Reports, ReportsSchema } from './schemas/Reports.schema';
+import { Reports, ReportsSchema } from './schemas/reports.schema';
 
 @Module({
 

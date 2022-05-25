@@ -2,6 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as fs from 'fs';
 
+// const httpsOptions = {
+//   key: fs.readFileSync('D:/MyWork/NodeJs/Hyppe/ssl/local/server.key'),
+//   cert: fs.readFileSync('D:/MyWork/NodeJs/Hyppe/ssl/local/server.crt'),
+// };
 const httpsOptions = {
   key: fs.readFileSync('D:/MyWork/Hyppe/Source/SSL/projectcom/server.key'),
   cert: fs.readFileSync('D:/MyWork/Hyppe/Source/SSL/projectcom/server.crt')

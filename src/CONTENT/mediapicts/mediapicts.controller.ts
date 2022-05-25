@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
-import { MediapictsService } from './Mediapicts.service';
-import { CreateMediapictsDto } from './dto/create-Mediapicts.dto';
-import { Mediapicts } from './schemas/Mediapicts.schema';
+import { MediapictsService } from './mediapicts.service';
+import { CreateMediapictsDto } from './dto/create-mediapicts.dto';
+import { Mediapicts } from './schemas/mediapicts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/mediapicts')
