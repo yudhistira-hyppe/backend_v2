@@ -5,7 +5,7 @@ import { Getuserprofiles } from './schemas/getuserprofiles.schema';
 import { UserbasicsService } from '../userbasics/userbasics.service';
 import { CountriesService } from '../../infra/countries/countries.service';
 import { CitiesService } from '../../infra/cities/cities.service';
-import { UserauthsService } from '../../trans/userauths/userauths.service';
+import { UserauthsService } from '../userauths/userauths.service';
 import { AreasService } from '../../infra/areas/areas.service';
 import { InsightsService } from '../../content/insights/insights.service';
 import { LanguagesService } from '../../infra/languages/languages.service';

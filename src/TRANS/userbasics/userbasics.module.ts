@@ -4,7 +4,7 @@ import { UserbasicsController } from './userbasics.controller';
 import { UserbasicsService } from './userbasics.service';
 import { ConfigModule } from '@nestjs/config';
 import { Userbasic, UserbasicSchema } from './schemas/userbasic.schema';
-import { LanguagesModule } from 'src/INFRA/languages/languages.module';
+import { LanguagesModule } from 'src/infra/languages/languages.module';
 
 @Module({
 

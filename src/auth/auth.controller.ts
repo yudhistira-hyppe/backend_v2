@@ -3,7 +3,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 import { JwtRefreshAuthGuard } from './refresh-auth.guard';
-import { JwtrefreshtokenService } from 'src/TRANS/jwtrefreshtoken/jwtrefreshtoken.service';
+import { JwtrefreshtokenService } from 'src/trans/jwtrefreshtoken/jwtrefreshtoken.service';
 
 @Controller()
 export class AuthController {

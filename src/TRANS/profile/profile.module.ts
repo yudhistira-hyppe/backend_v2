@@ -6,7 +6,7 @@ import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { CountriesModule } from '../../infra/countries/countries.module';
 import { CitiesModule } from '../../infra/cities/cities.module';
 import { AreasModule } from '../../infra/areas/areas.module';
-import { UserauthsModule } from '../../trans/userauths/userauths.module';
+import { UserauthsModule } from '../userauths/userauths.module';
 import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediaprofilepicts.module';
 import { InsightsModule} from '../../content/insights/insights.module';
 import { LanguagesModule} from '../../infra/languages/languages.module';
