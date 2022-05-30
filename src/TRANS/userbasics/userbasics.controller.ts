@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post,UseGuards,Put } from '@nestjs/common';
 import { UserbasicsService } from './userbasics.service';
 import { CreateUserbasicDto } from './dto/create-userbasic.dto';
 import { Userbasic } from './schemas/userbasic.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { Res, HttpStatus, Response } from '@nestjs/common';
 
 @Controller('api/userbasics')
 export class UserbasicsController {
@@ -50,5 +51,20 @@ export class UserbasicsController {
   @Post('userage')
   async userage(): Promise<Object> {
     return this.userbasicsService.UserAge();
+  }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  async update(@Res() res, @Param('id') id: string, @Body() createUserbasicDto: CreateUserbasicDto) {
+    const messages = {
+      "info":["The update successful"],
+    };
+    let data = await this.userbasicsService.update(id, createUserbasicDto);
+    return res.status(HttpStatus.OK).json({
+      response_code: 202,
+      "data":data,
+      "message": messages
+  })
   }
 }

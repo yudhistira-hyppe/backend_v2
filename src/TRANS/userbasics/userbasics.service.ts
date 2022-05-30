@@ -35,6 +35,16 @@ export class UserbasicsService {
     return deletedCat;
   }
 
+  async update(id: string, createUserbasicDto: CreateUserbasicDto): Promise<Userbasic> {
+    
+    let data = await this.userbasicModel.findByIdAndUpdate(id, createUserbasicDto, { 'new': true })
+    
+    if (!data) {
+      throw new Error("Todo is not found!")
+    }
+    return data;
+  }
+
   async UserAge(): Promise<Object> {
     const languages = await this.languagesService.findAll();
     var GetCount = this.userbasicModel
