@@ -24,6 +24,7 @@ export class UserbasicsController {
   // async findOne(@Param('id') id: string): Promise<Userbasic> {
   //   return this.userbasicsService.findOne(id);
   // }
+  @UseGuards(JwtAuthGuard)
   @Get(':email')
   async findOne(@Param('email') email: string): Promise<Userbasic> {
     return this.userbasicsService.findOne(email);
