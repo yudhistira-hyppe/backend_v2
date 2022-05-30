@@ -5,9 +5,8 @@ import { UserauthsModule } from '../trans/userauths/userauths.module';
 import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './local.strategy';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './constants';
 import { JwtStrategy } from './jwt.strategy';
-import { JwtRefreshStrategy } from './jwt.refresh.strategy';
+import { JwtRefreshStrategy } from './refresh.strategy';
 import { UserbasicsModule } from '../trans/userbasics/userbasics.module';
 import { UserdevicesModule } from '../trans/userdevices/userdevices.module';
 import { JwtrefreshtokenModule } from '../trans/jwtrefreshtoken/jwtrefreshtoken.module';
@@ -16,9 +15,9 @@ import { LanguagesModule } from '../infra/languages/languages.module';
 import { MediaprofilepictsModule } from '../content/mediaprofilepicts/mediaprofilepicts.module';
 import { InsightsModule } from '../content/insights/insights.module';
 import { InterestsModule } from '../infra/interests/interests.module';
-//test
+import { InterestsRepoModule } from '../infra/interests_repo/interests_repo.module';
 @Module({
-  imports: [UserauthsModule,UserbasicsModule,UserdevicesModule,JwtrefreshtokenModule,PassportModule,CountriesModule,LanguagesModule,MediaprofilepictsModule,InsightsModule,InterestsModule,JwtModule.register({
+  imports: [UserauthsModule,UserbasicsModule,UserdevicesModule,JwtrefreshtokenModule,PassportModule,CountriesModule,LanguagesModule,MediaprofilepictsModule,InsightsModule,InterestsModule,InterestsRepoModule,JwtModule.register({
     secret: process.env.JWT_ACCESS_TOKEN_SECRET,
     signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },
   }),],
