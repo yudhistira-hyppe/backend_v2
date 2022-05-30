@@ -69,34 +69,51 @@ export class PostsService {
       },
       {
         $match: {
-          isCertified: true,
+          isCertified: { $ne: null },
           YearcreatedAt: year_param,
         },
       },
       {
         $group: {
-          _id: { year_month: { $substrCP: ['$createdAt', 0, 7] } },
-          count: { $sum: 1 },
+          _id: {
+            year_month: { $substrCP: ['$createdAt', 0, 7] },
+            isCertified_data: '$isCertified',
+          },
+          isCertified_data_count: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.year_month',
+          log: {
+            $push: {
+              isCertified_data: '$_id.isCertified_data',
+              isCertified_data_count_: '$isCertified_data_count',
+            },
+          },
+          count: { $sum: '$isCertified_data_count' },
         },
       },
       {
         $project: {
           _id: 0,
           count: 1,
-          month_: { $toInt: { $substrCP: ['$_id.year_month', 5, 2] } },
+          month_int: { $toInt: { $substrCP: ['$_id', 5, 2] } },
+          month_: { $substrCP: ['$_id', 5, 2] },
+          monet: '$log',
           month_name_: {
             $arrayElemAt: [
               monthsArray,
               {
-                $subtract: [
-                  { $toInt: { $substrCP: ['$_id.year_month', 5, 2] } },
-                  1,
-                ],
+                $subtract: [{ $toInt: { $substrCP: ['$_id', 5, 2] } }, 1],
               },
             ],
           },
-          year_: { $substrCP: ['$_id.year_month', 0, 4] },
+          year_: { $substrCP: ['$_id', 0, 4] },
         },
+      },
+      {
+        $sort: { month_int: 1 },
       },
       {
         $project: {
@@ -104,7 +121,8 @@ export class PostsService {
           month_name: '$month_name_',
           month: '$month_',
           year: { $toInt: '$year_' },
-          count: 1,
+          monitize: '$monet',
+          count_all: { $sum: '$monet.isCertified_data_count_' },
         },
       },
     ]).exec();

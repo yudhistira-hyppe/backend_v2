@@ -4,10 +4,12 @@ import { UserbasicsController } from './userbasics.controller';
 import { UserbasicsService } from './userbasics.service';
 import { ConfigModule } from '@nestjs/config';
 import { Userbasic, UserbasicSchema } from './schemas/userbasic.schema';
+import { LanguagesModule } from 'src/INFRA/languages/languages.module';
 
 @Module({
 
     imports: [
+        LanguagesModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Userbasic.name, schema: UserbasicSchema }],'SERVER_TRANS')
     ],

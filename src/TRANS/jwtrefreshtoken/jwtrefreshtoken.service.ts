@@ -61,7 +61,7 @@ export class JwtrefreshtokenService {
       var data = new CreateJwtrefreshtokenDto();
       data.refresh_token_id = refresh_token_id;
       data.email = email;
-      data.exp = exp.getTime();
+      data.exp = exp;
       data.userAuth = 'DBRef("userauths", ObjectId("' + data_user._id + '"))';
       data._class = _class;
       await this.jwtrefreshtokenModel.create(data);

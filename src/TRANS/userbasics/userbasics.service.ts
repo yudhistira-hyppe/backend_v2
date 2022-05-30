@@ -3,10 +3,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserbasicDto } from './dto/create-userbasic.dto';
 import { Userbasic, UserbasicDocument } from './schemas/userbasic.schema';
+import { LanguagesService } from 'src/INFRA/languages/languages.service';
 
 @Injectable()
 export class UserbasicsService {
   constructor(
+    private languagesService: LanguagesService,
     @InjectModel(Userbasic.name)
     private readonly userbasicModel: Model<UserbasicDocument>,
   ) {}
@@ -34,21 +36,42 @@ export class UserbasicsService {
   }
 
   async UserAge(): Promise<Object> {
+    const languages = await this.languagesService.findAll();
     var GetCount = this.userbasicModel
       .aggregate([
         {
           $addFields: {
+            userAuth_id: '$userAuth.$id',
+            languages_id: '$languages.$id',
+            countries_id: '$countries.$id',
             age: {
-              $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              $dateDiff: {
+                startDate: { $toDate: '$dob' },
+                endDate: '$$NOW',
+                unit: 'year',
+              },
             },
+          },
+        },
+        {
+          $lookup: {
+            from: 'userauths',
+            localField: 'userAuth_id',
+            foreignField: '_id',
+            as: 'userAuth_data',
           },
         },
         {
           $project: {
             age: '$age',
             email: '$email',
-          },
+            userAuth: '$userAuth',
+            languages: '$languages.$id',
+            languages_name_: languages.filter(function (e) {
+                return (e._id.oid = '$languages.$id');
+            })
         },
+      }
       ])
       .exec();
     return GetCount;
