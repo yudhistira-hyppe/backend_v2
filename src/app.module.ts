@@ -89,7 +89,7 @@ import { GetuserprofilesModule } from './trans/getuserprofiles/getuserprofiles.m
    CorevaluesModule,
    DocumentsModule,
    CountriesModule,
-   CitiesModule,
+  // CitiesModule,
    AreasModule,
    OauthclientdetailsModule,
    ActivityeventsModule,

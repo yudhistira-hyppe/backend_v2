@@ -57,7 +57,7 @@ export class GetuserprofilesController {
       return this.getuserprofilesService.delete(id);
     }
 
-    @Get('api/getuserprofiles')
+    @Get('getuserprofiles')
     //@FormDataRequest()
     @UseGuards(JwtAuthGuard)
     async profileuser(@Req() request: Request): Promise<any> {
@@ -68,8 +68,10 @@ export class GetuserprofilesController {
       var umurs=null;
       var roles=null;
       var interest=[];
+      var data=null;
       var datauserbasicsService=null;
       var lisdatatagllahir=null;
+      var usservice=null;
     
       if(request_json["fullName"] !== undefined && request_json["gender"] === undefined && request_json["roles"]=== undefined){
         fullNames=request_json["fullName"];
@@ -110,134 +112,132 @@ export class GetuserprofilesController {
         genders=request_json["gender"];
         fullNames=request_json["fullName"];
         datauserbasicsService = await this.getuserprofilesService.findfullnamegenderroles(fullNames,roles,genders);
+
+        
      
       }
-    //  else if(request_json["umur"] !== undefined ){
-    //     umurs=request_json["umur"];
-    //     lisdatatagllahir=await this.getuserprofilesService.findAlls();
-    //     var request_jsonss = JSON.parse(JSON.stringify(lisdatatagllahir));
-    //     console.log(request_jsonss);
-    //    // let tgl=new Date(datatagllahir.data.dob);
-    //    for (let i = 0; i < lisdatatagllahir.length; i++) {
-    //    var tt=request_jsonss[i].dob;
-    //    let tgl=new Date(tt);
-    //    var monthuser=tgl.getTime();
-    //    var age_dtuser = new Date(monthuser); 
-    //    var yearuser = age_dtuser.getUTCFullYear();  
+     else if(request_json["umur"] !== undefined ){
+        umurs=request_json["umur"];
+      if(umurs==="<15"){
+        datauserbasicsService = await this.getuserprofilesService.findAllage15();
 
-    //      var month_diff = Date.now() - tgl.getTime();  
-    //     var age_dt = new Date(month_diff);   
-    //     var year = age_dt.getUTCFullYear();  
-    //     var age = Math.abs(year - yearuser);  
-    //    console.log(age);
-    //   }
-
-    //     console.log(lisdatatagllahir);
-
-    //     datauserbasicsService = await this.getuserprofilesService.findumur(umurs);
-    //   }
+        var leng=datauserbasicsService.length();
+        console.log(leng);
+  
+      }
+    
+     
+      
+      
+      }
       else{
        
        throw new BadRequestException("Unabled to proceed"); 
       }
-      // if(request_json["gender"] !== undefined){
-      //   genders = request_json["gender"];
-      // }else{
-      //   throw new BadRequestException("Unabled to proceed"); 
-      // }
+      // try{
+      //   emails=datauserbasicsService.email;
+      //   }
+      //   catch(err){
+      //     throw new BadRequestException("Data tidak ditemukan"); 
+      //   }
+      //   const datauserauthsService = await this.userauthsService.findOne(emails);
+       
+      //   var countries_json = JSON.parse(JSON.stringify(datauserbasicsService.countries));
+      //   var cities_json = JSON.parse(JSON.stringify(datauserbasicsService.cities));
+      //   var languages_json = JSON.parse(JSON.stringify(datauserbasicsService.languages));
+      //   var mediaprofilepicts_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
+      //   var insights_json = JSON.parse(JSON.stringify(datauserbasicsService.insight));
+      //   var interest_json = JSON.parse(JSON.stringify(datauserbasicsService.userInterests));
+      //   const countries = await this.countriesService.findOne(countries_json.$id);
+      //   const cities = await this.citiesService.findOne(cities_json.$id);
+      //   const mediaprofilepicts = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
+      //   const areas = await this.areasService.findOne(countries.countryID);
+      //   const insights = await this.insightsService.findOne(insights_json.$id);
+      //   const languages = await this.languagesService.findOne(languages_json.$id);
+      //   const interests = await this.interestsService.findOne(interest_json.$id);
+      //   var mediaUri =mediaprofilepicts.mediaUri;
+    
+      //   let result = "/profilepict/"+mediaUri.replace("_0001.jpeg", "");
+      //     var mediaprofilepicts_res = { 
+      //       mediaBasePath:mediaprofilepicts.mediaBasePath,
+      //       mediaUri:mediaprofilepicts.mediaUri,
+      //       mediaType:mediaprofilepicts.mediaType,
+      //       mediaEndpoint:result 
+      //     };
+      //     var insights_res = { 
+      //       shares:insights.shares,
+      //       followers:insights.followers,
+      //       comments:insights.comments,
+      //       followings:insights.followings,
+      //       reactions:insights.reactions,
+      //       posts:insights.posts,
+      //       views:insights.views,
+      //       likes:insights.likes
+      //     };
+    
+      //     try{
+      //      interest = [{ 
+      //       interestName: interests.interestName,
+      //       icon: interests.icon,
+      //       createdAt: interests.createdAt,
+      //       updatedAt: interests.updatedAt,
+      //       _class: interests._class,
+      //     }];
+      //   }catch(err){
+      //     interest=[];
+      //   }
+       
+    
+      //    data=[{
+      //     "areas":areas.stateName,
+      //     "country": countries.country,
+      //     "gender":datauserbasicsService.gender,
+      //     "idProofNumber":datauserbasicsService.idProofNumber,
+      //     "city": cities.cityName,
+      //     "mobileNumber":datauserbasicsService.mobileNumber,
+      //     "roles":datauserauthsService.roles,
+      //     "fullName": datauserbasicsService.fullName,
+      //     "bio": datauserbasicsService.bio,
+      //     "avatar":mediaprofilepicts_res,
+      //   "isIdVerified": datauserbasicsService.isIdVerified,
+      //   "isEmailVerified": datauserauthsService.isEmailVerified,
+      //   "idProofStatus": datauserbasicsService.idProofStatus,
+      //   "insight":insights_res,
+      //   "langIso": languages.langIso,
+      //   "interest": interest,
+      //   "dob": datauserbasicsService.dob,
+      //   "event": datauserbasicsService.event,
+      //   "email": datauserbasicsService.email,
+      //   "username": datauserauthsService.username,
+      //   "isComplete": datauserbasicsService.isComplete,
+      //   "status": datauserbasicsService.status,
+      //   }];
 
-      // if(request_json["roles"] !== undefined){
-      //   fullNames = request_json["roles"];
-      // }else{
-      //   throw new BadRequestException("Unabled to proceed"); 
-      // }
 
 
-      
-
-      try{
-      emails=datauserbasicsService.email;
-      }
-      catch(err){
-        throw new BadRequestException("Data tidak ditemukan"); 
-      }
-      const datauserauthsService = await this.userauthsService.findOne(emails);
      
-      var countries_json = JSON.parse(JSON.stringify(datauserbasicsService.countries));
-      var cities_json = JSON.parse(JSON.stringify(datauserbasicsService.cities));
-      var languages_json = JSON.parse(JSON.stringify(datauserbasicsService.languages));
-      var mediaprofilepicts_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
-      var insights_json = JSON.parse(JSON.stringify(datauserbasicsService.insight));
-      var interest_json = JSON.parse(JSON.stringify(datauserbasicsService.userInterests));
-      const countries = await this.countriesService.findOne(countries_json.$id);
-      const cities = await this.citiesService.findOne(cities_json.$id);
-      const mediaprofilepicts = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
-      const areas = await this.areasService.findOne(countries.countryID);
-      const insights = await this.insightsService.findOne(insights_json.$id);
-      const languages = await this.languagesService.findOne(languages_json.$id);
-      const interests = await this.interestsService.findOne(interest_json.$id);
-      var mediaUri =mediaprofilepicts.mediaUri;
   
-      let result = "/profilepict/"+mediaUri.replace("_0001.jpeg", "");
-        var mediaprofilepicts_res = { 
-          mediaBasePath:mediaprofilepicts.mediaBasePath,
-          mediaUri:mediaprofilepicts.mediaUri,
-          mediaType:mediaprofilepicts.mediaType,
-          mediaEndpoint:result 
-        };
-        var insights_res = { 
-          shares:insights.shares,
-          followers:insights.followers,
-          comments:insights.comments,
-          followings:insights.followings,
-          reactions:insights.reactions,
-          posts:insights.posts,
-          views:insights.views,
-          likes:insights.likes
-        };
-  
-        try{
-         interest = [{ 
-          interestName: interests.interestName,
-          icon: interests.icon,
-          createdAt: interests.createdAt,
-          updatedAt: interests.updatedAt,
-          _class: interests._class,
-        }];
-      }catch(err){
-        interest=[];
-      }
+      return {    response_code: 202,
+        data,};
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('api/getuserprofiles')
+    async findAllage15(@Req() request: Request): Promise<Object> {
+      var request_json = JSON.parse(JSON.stringify(request.body));
+      var umurs=null;
+      var data=null;
       const messages = {
         "info":["The process successful"],
       };
-  
-      const data=[{
-        "areas":areas.stateName,
-        "country": countries.country,
-        "gender":datauserbasicsService.gender,
-        "idProofNumber":datauserbasicsService.idProofNumber,
-        "city": cities.cityName,
-        "mobileNumber":datauserbasicsService.mobileNumber,
-        "roles":datauserauthsService.roles,
-        "fullName": datauserbasicsService.fullName,
-        "bio": datauserbasicsService.bio,
-        "avatar":mediaprofilepicts_res,
-      "isIdVerified": datauserbasicsService.isIdVerified,
-      "isEmailVerified": datauserauthsService.isEmailVerified,
-      "idProofStatus": datauserbasicsService.idProofStatus,
-      "insight":insights_res,
-      "langIso": languages.langIso,
-      "interest": interest,
-      "dob": datauserbasicsService.dob,
-      "event": datauserbasicsService.event,
-      "email": datauserbasicsService.email,
-      "username": datauserauthsService.username,
-      "isComplete": datauserbasicsService.isComplete,
-      "status": datauserbasicsService.status,
-      }];
-  
+
+      umurs=request_json["umur"];
+      if(umurs==="<15"){
+       data=await this.getuserprofilesService.findAllage15();
+      }
+     
       return {    response_code: 202,
-        data,
+        "data":data,
         messages};
     }
 }

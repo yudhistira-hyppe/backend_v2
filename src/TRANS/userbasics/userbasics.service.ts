@@ -15,6 +15,19 @@ export class UserbasicsService {
         const createUserbasicDto = await this.userbasicModel.create(CreateUserbasicDto);
         return createUserbasicDto;
       }
+
+    
+
+      async update(id: string, CreateUserbasicDto: CreateUserbasicDto): Promise<Userbasic> {
+        const createUserbasicDto = await this.userbasicModel.findByIdAndUpdate(id, CreateUserbasicDto, { 'new': true })
+        const messages = {
+          "info":["The process successful"],
+        };
+        if (!createUserbasicDto) {
+          throw new Error("Todo is not found!")
+        }
+         return createUserbasicDto;
+      }
     
       async findAll(): Promise<Userbasic[]> {
         return this.userbasicModel.find().exec();
@@ -32,4 +45,7 @@ export class UserbasicsService {
           .exec();
         return deletedCat;
       }
+
+
+   
 }

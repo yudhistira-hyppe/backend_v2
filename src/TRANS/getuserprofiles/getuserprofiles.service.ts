@@ -3,12 +3,17 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateGetuserprofilesDto } from './dto/create-getuserprofiles.dto';
 import { Getuserprofiles, GetuserprofilesDocument } from './schemas/getuserprofiles.schema';
+import { CitiesService } from '../../infra/cities/cities.service';
+// import { Cities, CitiesDocument } from '../../infra/cities/schemas/cities.schema';
+import { InjectConnection } from '@nestjs/mongoose';
+import { Connection } from 'mongoose';
+import moment from 'moment';
 
 @Injectable()
 export class GetuserprofilesService {
 
     constructor(
-        @InjectModel(Getuserprofiles.name) private readonly getuserprofilesModel: Model<GetuserprofilesDocument>,
+        @InjectModel(Getuserprofiles.name) private readonly getuserprofilesModel: Model<GetuserprofilesDocument>,private citiesService: CitiesService,@InjectConnection('hyppe_infra_db') private connection: Connection
       ) {}
     
       async create(CreateGetuserprofilesDto: CreateGetuserprofilesDto): Promise<Getuserprofiles> {
@@ -57,9 +62,92 @@ export class GetuserprofilesService {
       async findgenderroles(roles: String,gender:String): Promise<Getuserprofiles> {
         return this.getuserprofilesModel.findOne({ roles: roles,gender:gender}).exec();
       }
-      async findumur(dob: String): Promise<Getuserprofiles> {
-        return this.getuserprofilesModel.findOne({ dob: dob}).exec();
+      async findumur(age: Number): Promise<Getuserprofiles> {
+        return this.getuserprofilesModel.findOne({ age: age}).exec();
       }
+
+    
+     
+  
+      async findAllage15(): Promise<Object> {
+        var dbx=await this.connection.db.collection('cities').find();
+      
+        const query = this.getuserprofilesModel.aggregate(
+          [
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+             
+                        age: {
+                          $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+                        },
+                    
+                    },
+                    
+         
+       },
+      
+      { $match : { age : { $gt: 0, $lt: 14 } } ,},
+
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+      {
+        $addFields: {
+         
+          cities_id:'$cities.$id',
+                  
+                },
+                
+     
+   }, {
+    $lookup: {
+      from:'cities' ,
+      localField: 'cities_id',
+      foreignField: '_id',
+      as: 'cities_data',
+    },
+  },
+      {
+        
+        $project: {
+          gender:'$gender',
+          idProofNumber:'$idProofNumber',
+          fullName:'$fullName',
+          bio:'$bio',
+          dob:'$dob',
+          age: '$age',
+          mobileNumber:'$mobileNumber', 
+           cities:'$cities_data',
+          email: '$email',
+          isIdVerified:'$isIdVerified',
+          idProofStatus:'$idProofStatus',
+          event:'$event',
+          isComplete:'$isComplete',
+          status:'$status',
+          username:'$userAuth_data.username',
+          uname:'$username[0]',
+          roles:'$userAuth_data.roles'
+       
+          
+
+        },
+      },
+     
+    ]) ;
+
+    
+     
+        return query;
+      }
+
+     
+     
       async delete(id: string) {
         const deletedCat = await this.getuserprofilesModel
           .findByIdAndRemove({ _id: id })

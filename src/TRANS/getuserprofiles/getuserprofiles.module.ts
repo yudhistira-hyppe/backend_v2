@@ -14,12 +14,20 @@ import { InsightsModule} from '../../content/insights/insights.module';
 import { LanguagesModule} from '../../infra/languages/languages.module';
 import { InterestsModule } from '../../infra/interests/interests.module';
 import { FileSystemStoredFile, FormDataRequest,NestjsFormDataModule } from 'nestjs-form-data';
+
 @Module({
  
   imports: [
     ConfigModule.forRoot(),UserbasicsModule, NestjsFormDataModule,CountriesModule,AreasModule,UserauthsModule,CitiesModule,MediaprofilepictsModule,InsightsModule,LanguagesModule,InterestsModule,
 
-    MongooseModule.forFeature([{ name: Getuserprofiles.name, schema: GetuserprofilesSchema }],'SERVER_TRANS')
+    MongooseModule.forFeature([{ name: Getuserprofiles.name, schema: GetuserprofilesSchema }],'SERVER_TRANS'),
+    MongooseModule.forRoot('mongodb://127.0.0.1:27017/hyppe_infra_db', {
+      connectionName: 'hyppe_infra_db',
+      
+    }),  MongooseModule.forRoot('mongodb://127.0.0.1:27017/hyppe_trans_db', {
+      connectionName: 'hyppe_trans_db',
+      
+    }),
 ],
 controllers: [GetuserprofilesController],
 exports: [GetuserprofilesService],
