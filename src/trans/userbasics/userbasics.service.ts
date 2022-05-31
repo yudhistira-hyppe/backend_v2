@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { CreateUserbasicDto } from './dto/create-userbasic.dto';
 import { Userbasic, UserbasicDocument } from './schemas/userbasic.schema';
 import { LanguagesService } from '../../infra/languages/languages.service';
@@ -8,9 +8,9 @@ import { LanguagesService } from '../../infra/languages/languages.service';
 @Injectable()
 export class UserbasicsService {
   constructor(
-    private languagesService: LanguagesService,
     @InjectModel(Userbasic.name)
     private readonly userbasicModel: Model<UserbasicDocument>,
+    private readonly languagesService: LanguagesService,
   ) {}
 
   async create(CreateUserbasicDto: CreateUserbasicDto): Promise<Userbasic> {
@@ -36,44 +36,99 @@ export class UserbasicsService {
   }
 
   async UserAge(): Promise<Object> {
-    const languages = await this.languagesService.findAll();
+    //const languages__ = await this.languagesService.findAll();
+    
     var GetCount = this.userbasicModel
-      .aggregate([
-        {
-          $addFields: {
-            userAuth_id: '$userAuth.$id',
-            languages_id: '$languages.$id',
-            countries_id: '$countries.$id',
-            age: {
-              $dateDiff: {
-                startDate: { $toDate: '$dob' },
-                endDate: '$$NOW',
-                unit: 'year',
+      .aggregate(
+        [
+          {
+            $addFields: {
+              userAuth_id: '$userAuth.$id',
+              languages_id: '$languages.$id',
+              countries_id: '$countries.$id',
+              age: {
+                $dateDiff: {
+                  startDate: { $toDate: '$dob' },
+                  endDate: '$$NOW',
+                  unit: 'year',
+                },
               },
             },
           },
-        },
-        {
-          $lookup: {
-            from: 'userauths',
-            localField: 'userAuth_id',
-            foreignField: '_id',
-            as: 'userAuth_data',
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
           },
-        },
-        {
-          $project: {
-            age: '$age',
-            email: '$email',
-            userAuth: '$userAuth',
-            languages: '$languages.$id',
-            languages_name_: languages.filter(function (e) {
-                return (e._id.oid = '$languages.$id');
-            })
-        },
-      }
-      ])
+          {
+            $match: {
+              email: 'randyaji.ra@gmail.com',
+            },
+          },
+          {
+            $project: {
+              age: '$age',
+              email: '$email',
+              userAuth: '$userAuth',
+              languages: '$languages.$id',
+              // languages_name_: languages.find(function (e) {
+              //   console.log('$languages.$id');
+              //   return (e._id.oid = '$languages.$id');
+              // }),
+
+              languages_name_1: console.log('$languages.id'),
+              // languages_name_0: await this.languagesService.findOne(
+              //   "'$languages.$id'",
+              // ),
+            },
+          },
+//           { 
+//             $merge: {
+//               into: { db: <db>, coll: <collection> },
+// on: "_id"
+// whenMatched: [
+// { $project: {
+// value: { $function: {
+// body: <reduceFunction>,
+// args: [
+// "$_id",
+// [ "$value", "$$new.value" ]
+// ],
+// lang: "js"
+// } }
+// } }
+// ]
+// whenNotMatched: "insert"
+// } },
+        ],
+
+        // function (err, results) {
+        //   languagesService_: LanguagesService;
+        //   const languages__l = this.UserActiveLastYear(2002);
+        //   this
+        //       console.log(languages__l);
+        //   // if (!err) {
+        //   //   results.forEach((result) => {
+        //   //     console.log(result.languages.toString());
+        //   //     const languages_0 = this.findOneId
+        //   //     // const languages_0 = await this.languagesService.findOneId();
+        //   //     console.log(languages_0);
+        //   //   });
+        //   // }
+        //   //callback(err, results);
+        // },
+      )
       .exec();
+    //   var data = null;
+    // (await GetCount).forEach(async (result) => {
+    //   const languages_0 = await this.languagesService.findOne(result.languages);
+    //   data = result;
+    //   result.lagu = languages_0;
+    // });
+    // console.log(data);
     return GetCount;
   }
 
@@ -256,3 +311,4 @@ export class UserbasicsService {
     return GetCount;
   }
 }
+

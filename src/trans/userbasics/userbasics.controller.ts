@@ -46,7 +46,7 @@ export class UserbasicsController {
     return this.userbasicsService.UserActiveDay(day);
   }
 
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Post('userage')
   async userage(): Promise<Object> {
     return this.userbasicsService.UserAge();
