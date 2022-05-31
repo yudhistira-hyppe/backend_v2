@@ -8,9 +8,9 @@ import { LanguagesService } from '../../infra/languages/languages.service';
 @Injectable()
 export class UserbasicsService {
   constructor(
-    private languagesService: LanguagesService,
     @InjectModel(Userbasic.name)
     private readonly userbasicModel: Model<UserbasicDocument>,
+    private readonly languagesService: LanguagesService,
   ) {}
 
   async create(CreateUserbasicDto: CreateUserbasicDto): Promise<Userbasic> {
@@ -34,17 +34,7 @@ export class UserbasicsService {
       .exec();
     return deletedCat;
   }
-
-  async update(id: string, createUserbasicDto: CreateUserbasicDto): Promise<Userbasic> {
-    
-    let data = await this.userbasicModel.findByIdAndUpdate(id, createUserbasicDto, { 'new': true })
-    
-    if (!data) {
-      throw new Error("Todo is not found!")
-    }
-    return data;
-  }
-
+  
   async UserAge(): Promise<Object> {
     const languages = await this.languagesService.findAll();
     var GetCount = this.userbasicModel
@@ -78,10 +68,10 @@ export class UserbasicsService {
             userAuth: '$userAuth',
             languages: '$languages.$id',
             languages_name_: languages.filter(function (e) {
-                return (e._id.oid = '$languages.$id');
-            })
+              return (e._id.oid = '$languages.$id');
+            }),
+          },
         },
-      }
       ])
       .exec();
     return GetCount;
@@ -266,3 +256,4 @@ export class UserbasicsService {
     return GetCount;
   }
 }
+

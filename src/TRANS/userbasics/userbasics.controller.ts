@@ -1,10 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Post,UseGuards,Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
 import { UserbasicsService } from './userbasics.service';
 import { CreateUserbasicDto } from './dto/create-userbasic.dto';
 import { Userbasic } from './schemas/userbasic.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+<<<<<<< HEAD:src/TRANS/userbasics/userbasics.controller.ts
 import { Res, HttpStatus, Response } from '@nestjs/common';
 import { isEmpty } from 'rxjs';
+=======
+>>>>>>> f1483346193b684b7b42145ec069ff2127955e63:src/trans/userbasics/userbasics.controller.ts
 
 @Controller('api/userbasics')
 export class UserbasicsController {
@@ -25,7 +28,6 @@ export class UserbasicsController {
   // async findOne(@Param('id') id: string): Promise<Userbasic> {
   //   return this.userbasicsService.findOne(id);
   // }
-  @UseGuards(JwtAuthGuard)
   @Get(':email')
   async findOne(@Res() res,@Param('email') email: string): Promise<Userbasic> {
     
@@ -76,11 +78,12 @@ export class UserbasicsController {
     return this.userbasicsService.UserActiveDay(day);
   }
 
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   @Post('userage')
   async userage(): Promise<Object> {
     return this.userbasicsService.UserAge();
   }
+<<<<<<< HEAD:src/TRANS/userbasics/userbasics.controller.ts
 
 
   @UseGuards(JwtAuthGuard)
@@ -108,5 +111,7 @@ export class UserbasicsController {
       "message": messagesEror
   });
   }
+=======
+>>>>>>> f1483346193b684b7b42145ec069ff2127955e63:src/trans/userbasics/userbasics.controller.ts
 }
 }
