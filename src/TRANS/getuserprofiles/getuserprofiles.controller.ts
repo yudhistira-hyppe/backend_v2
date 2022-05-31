@@ -134,10 +134,10 @@ export class GetuserprofilesController {
      
   
        data=[{
-        "areas":countries.country,
-      //   "country": countries.country,
-      //   "gender":datauserbasicsService.gender,
-      //   "idProofNumber":datauserbasicsService.idProofNumber,
+        "areas":areas.stateName,
+        "country": countries.country,
+         "gender":datauserbasicsService[i].gender,
+         "idProofNumber":datauserbasicsService[i].idProofNumber,
       //   "city": cities.cityName,
       //   "mobileNumber":datauserbasicsService.mobileNumber,
       //   "roles":datauserauthsService.roles,

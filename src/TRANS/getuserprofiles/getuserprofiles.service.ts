@@ -39,9 +39,9 @@ export class GetuserprofilesService {
       async findAlls(): Promise<Getuserprofiles[]> {
         return this.getuserprofilesModel.find().exec();
       }
-      // async findfullname(fullName: String): Promise<Getuserprofiles> {
-      //   return this.getuserprofilesModel.findOne({ fullName: fullName}).exec();
-      // }
+      async findfullnames(fullName: String): Promise<Object> {
+        return this.getuserprofilesModel.find({ fullName: fullName}).exec();
+      }
       async findgender(gender:String): Promise<Getuserprofiles> {
         return this.getuserprofilesModel.findOne({ gender:gender }).exec();
       }
@@ -85,7 +85,7 @@ export class GetuserprofilesService {
                     },
        },
       
-       { $match : { fullName : fullNames } ,},
+       { $match : { fullName : '%'+fullNames+'%' } ,},
 
       // {
       //   $lookup: {
