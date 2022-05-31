@@ -1,0 +1,492 @@
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { CreateContenteventsDto } from './dto/create-contentevents.dto';
+import { Contentevents, ContenteventsDocument } from './schemas/contentevents.schema';
+
+@Injectable()
+export class ContenteventsService {
+  constructor(
+    @InjectModel(Contentevents.name, 'SERVER_CONTENT')
+    private readonly ContenteventsModel: Model<ContenteventsDocument>,
+  ) {}
+
+  async create(
+    CreateContenteventsDto: CreateContenteventsDto,
+  ): Promise<Contentevents> {
+    const createContenteventsDto = await this.ContenteventsModel.create(
+      CreateContenteventsDto,
+    );
+    return createContenteventsDto;
+  }
+
+  async findAll(): Promise<Contentevents[]> {
+    return this.ContenteventsModel.find().exec();
+  }
+
+  //    async findOne(id: string): Promise<Contentevents> {
+  //     return this.ContenteventsModel.findOne({ _id: id }).exec();
+  //   }
+  async findOne(email: string): Promise<Contentevents> {
+    return this.ContenteventsModel.findOne({ email: email }).exec();
+  }
+  async delete(id: string) {
+    const deletedCat = await this.ContenteventsModel.findByIdAndRemove({
+      _id: id,
+    }).exec();
+    return deletedCat;
+  }
+
+  async UserActivityNow(date: Date): Promise<Object> {
+    const HoursArray = [
+      '00:00-01:00',
+      '01:00-02:00',
+      '02:00-03:00',
+      '03:00-04:00',
+      '04:00-05:00',
+      '05:00-06:00',
+      '06:00-07:00',
+      '07:00-08:00',
+      '08:00-09:00',
+      '09:00-10:00',
+      '10:00-11:00',
+      '11:00-12:00',
+      '12:00-13:00',
+      '13:00-14:00',
+      '14:00-15:00',
+      '15:00-16:00',
+      '16:00-17:00',
+      '17:00-18:00',
+      '18:00-19:00',
+      '19:00-20:00',
+      '20:00-21:00',
+      '21:00-22:00',
+      '22:00-23:00',
+      '23:00-00:00',
+    ];
+    var GetCount = this.ContenteventsModel.aggregate([
+      {
+        $addFields: {
+          createdAt_date_only: { $substrCP: ['$createdAt', 0, 10] },
+          createdAt_: { $toDate: '$createdAt' },
+        },
+      },
+      {
+        $match: {
+          createdAt_date_only: date,
+        },
+      },
+      {
+        $project: {
+          h: { $hour: '$createdAt_' },
+          email: '$email',
+        },
+      },
+      {
+        $group: {
+          _id: {
+            hour_group: '$h',
+            email_group: '$email',
+          },
+          email_count: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.hour_group',
+          log: {
+            $push: {
+              email: '$_id.email_group',
+              count_activity: '$email_count',
+            },
+          },
+          count: { $sum: '$email_count' },
+        },
+      },
+      {
+        $sort: { _id: 1 },
+      },
+      {
+        $project: {
+          _id: 0,
+          date: date,
+          hour: {
+            $arrayElemAt: [
+              HoursArray,
+              {
+                $subtract: ['$_id', 0],
+              },
+            ],
+          },
+          user_activity_count: { $size: '$log' },
+          count_all_activity: '$count',
+          user_activity: '$log',
+        },
+      },
+    ]).exec();
+    return GetCount;
+  }
+
+  async UserActivityYear(year: number): Promise<Object> {
+    var currentTime = new Date();
+    var year_param = 0;
+    if (year != undefined) {
+      year_param = year;
+    } else {
+      year_param = currentTime.getFullYear();
+    }
+    const monthsArray = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    var GetCount = this.ContenteventsModel.aggregate([
+      {
+        $addFields: {
+          createdAt_date_only: { $substrCP: ['$createdAt', 0, 10] },
+          createdAt_: { $toDate: '$createdAt' },
+          YearcreatedAt: { $toInt: { $substrCP: ['$createdAt', 0, 4] } },
+          year_param: { $toInt: year_param.toString() },
+        },
+      },
+      {
+        $match: {
+          YearcreatedAt: year_param,
+        },
+      },
+      // {
+      //   $sort: { createdAt_: 1 },
+      // },
+      {
+        $group: {
+          _id: {
+            year_month: { $substrCP: ['$createdAt', 0, 7] },
+            email_group: '$email',
+          },
+          email_count: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.year_month',
+          log: {
+            $push: {
+              email: '$_id.email_group',
+              count_activity: '$email_count',
+            },
+          },
+          count: { $sum: '$email_count' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          count: 1,
+          month_int: { $toInt: { $substrCP: ['$_id', 5, 2] } },
+          month_: { $substrCP: ['$_id', 5, 2] },
+          monet: '$log',
+          month_name_: {
+            $arrayElemAt: [
+              monthsArray,
+              {
+                $subtract: [{ $toInt: { $substrCP: ['$_id', 5, 2] } }, 1],
+              },
+            ],
+          },
+          year_: { $substrCP: ['$_id', 0, 4] },
+        },
+      },
+      {
+        $sort: { month_int: 1 },
+      },
+      {
+        $project: {
+          _id: 0,
+          year: { $toInt: '$year_' },
+          month: '$month_',
+          month_name: '$month_name_',
+          //monitize: '$monet',
+          count_user: { $size: '$monet' },
+        },
+      },
+      // {
+      //   $sort: { createdAt_: 1 },
+      // },
+      // {
+      //   $group: {
+      //     _id: {
+      //       createdAt_data: '$createdAt_date_only',
+      //       email_group: '$email',
+      //     },
+      //     email_count: { $sum: 1 },
+      //   },
+      // },
+      // {
+      //   $group: {
+      //     _id: '$_id.createdAt_data',
+      //     log: {
+      //       $push: {
+      //         email: '$_id.email_group',
+      //         count_activity: '$email_count',
+      //       },
+      //     },
+      //     count: { $sum: '$email_count' },
+      //   },
+      // },
+      // {
+      //   $project: {
+      //     _id: 0,
+      //     date: '$_id',
+      //     user_activity_count: { $size: '$log' },
+      //     count_all_activity: '$count',
+      //     user_activity: '$log',
+      //   },
+      // },
+      // {
+      //   $sort: { date: 1 },
+      // },
+    ]).exec();
+    return GetCount;
+  }
+
+  async UserActivityBeforeToday(day: number): Promise<Object> {
+    if (day == undefined) {
+      throw new BadRequestException('Unabled to proceed');
+    }
+    var TODAY = new Date();
+    var TODAY_BEFORE = new Date(new Date().setDate(new Date().getDate() - day));
+    var GetCount = this.ContenteventsModel.aggregate([
+      {
+        $addFields: {
+          createdAt_date_only: { $substrCP: ['$createdAt', 0, 10] },
+          createdAt_: { $toDate: '$createdAt' },
+          today: { $toDate: { $substrCP: [TODAY, 0, 10] } },
+          today_before: { $toDate: { $substrCP: [TODAY_BEFORE, 0, 10] } },
+        },
+      },
+      {
+        $match: {
+          createdAt_: { $gte: TODAY_BEFORE, $lt: TODAY },
+        },
+      },
+      {
+        $sort: { createdAt_: 1 },
+      },
+      {
+        $group: {
+          _id: {
+            createdAt_data: '$createdAt_date_only',
+            email_group: '$email',
+          },
+          email_count: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.createdAt_data',
+          log: {
+            $push: {
+              email: '$_id.email_group',
+              count_activity: '$email_count',
+            },
+          },
+          count: { $sum: '$email_count' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          date: '$_id',
+          user_activity_count: { $size: '$log' },
+          count_all_activity: '$count',
+          user_activity: '$log',
+        },
+      },
+      {
+        $sort: { date: 1 },
+      },
+    ]).exec();
+    return GetCount;
+  }
+
+  async UserActivitySize(day: number): Promise<Object> {
+    const DayNameIndoArray = [
+      'Minggu',
+      'Senin',
+      'Selasa',
+      'Rabu',
+      'Kamis',
+      'Jumat',
+      'Sabtu',
+    ];
+    const DayNameEnglishArray = [
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+    ];
+    if (day == undefined) {
+      throw new BadRequestException('Unabled to proceed');
+    }
+    var TODAY = new Date();
+    var TODAY_BEFORE = new Date(new Date().setDate(new Date().getDate() - day));
+    var GetCount = this.ContenteventsModel.aggregate([
+      {
+        $addFields: {
+          createdAt_date_only: { $substrCP: ['$createdAt', 0, 10] },
+          createdAt_: { $toDate: '$createdAt' },
+          today: { $toDate: { $substrCP: [TODAY, 0, 10] } },
+          today_before: { $toDate: { $substrCP: [TODAY_BEFORE, 0, 10] } },
+        },
+      },
+      {
+        $match: {
+          createdAt_: { $gte: TODAY_BEFORE, $lt: TODAY },
+          eventType: {
+            $in: ['LIKE', 'VIEW', 'CREATE_POST', 'COMMENT', 'REACTION', 'POST'],
+          },
+        },
+      },
+      {
+        $sort: { createdAt_: 1 },
+      },
+      {
+        $group: {
+          _id: {
+            createdAt_data: '$createdAt_date_only',
+            eventType_group: '$eventType',
+          },
+          eventType_count: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.createdAt_data',
+          log: {
+            $push: {
+              eventType: '$_id.eventType_group',
+              count_eventType: '$eventType_count',
+            },
+          },
+          count: { $sum: '$eventType_count' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          day_name: {
+            $arrayElemAt: [
+              DayNameEnglishArray,
+              {
+                $subtract: [{ $toInt: { $dayOfWeek: { $toDate: '$_id' } } }, 1],
+              },
+            ],
+          },
+          date: '$_id',
+          count_all_event: '$count',
+          eventType_activity: '$log',
+        },
+      },
+      {
+        $sort: { date: 1 },
+      },
+    ]).exec();
+    return GetCount;
+  }
+
+  async UserActivitySizeYear(year: number): Promise<Object> {
+    var currentTime = new Date();
+    var year_param = 0;
+    if (year != undefined) {
+      year_param = year;
+    } else {
+      year_param = currentTime.getFullYear();
+    }
+    const monthsArray = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    var GetCount = this.ContenteventsModel.aggregate([
+      {
+        $addFields: {
+          createdAt_date_only: { $substrCP: ['$createdAt', 0, 10] },
+          createdAt_: { $toDate: '$createdAt' },
+          YearcreatedAt: { $toInt: { $substrCP: ['$createdAt', 0, 4] } },
+          year_param: { $toInt: year_param.toString() },
+        },
+      },
+      {
+        $match: {
+          YearcreatedAt: year_param,
+          eventType: {
+            $in: ['LIKE', 'VIEW', 'CREATE_POST', 'COMMENT', 'REACTION', 'POST'],
+          },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year_month: { $substrCP: ['$createdAt', 0, 7] },
+            eventType_group: '$eventType',
+          },
+          eventType_count: { $sum: 1 },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.year_month',
+          log: {
+            $push: {
+              eventType: '$_id.eventType_group',
+              count_eventType: '$eventType_count',
+            },
+          },
+          count: { $sum: '$eventType_count' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          year: { $toInt: { $substrCP: ['$_id', 0, 4] } },
+          month_int: { $toInt: { $substrCP: ['$_id', 5, 2] } },
+          month_name: {
+            $arrayElemAt: [
+              monthsArray,
+              {
+                $subtract: [{ $toInt: { $substrCP: ['$_id', 5, 2] } }, 1],
+              },
+            ],
+          },
+          count_all_event: '$count',
+          eventType_activity: '$log',
+        },
+      },
+      {
+        $sort: { month_int: 1 },
+      },
+    ]).exec();
+    return GetCount;
+  }
+}
