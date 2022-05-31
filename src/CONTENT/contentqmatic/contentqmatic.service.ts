@@ -6,29 +6,32 @@ import { Contentqmatic, ContentqmaticDocument } from './schemas/contentqmatic.sc
 
 @Injectable()
 export class ContentqmaticService {
+  constructor(
+    @InjectModel(Contentqmatic.name, 'SERVER_CONTENT')
+    private readonly ContentqmaticModel: Model<ContentqmaticDocument>,
+  ) {}
 
-    constructor(
-        @InjectModel(Contentqmatic.name) private readonly ContentqmaticModel: Model<ContentqmaticDocument>,
-      ) {}
-     
-      async create(CreateContentqmaticDto: CreateContentqmaticDto): Promise<Contentqmatic> {
-        const createContentqmaticDto = await this.ContentqmaticModel.create(CreateContentqmaticDto);
-        return createContentqmaticDto;
-      }
-    
-      async findAll(): Promise<Contentqmatic[]> {
-        return this.ContentqmaticModel.find().exec();
-      }
-      
+  async create(
+    CreateContentqmaticDto: CreateContentqmaticDto,
+  ): Promise<Contentqmatic> {
+    const createContentqmaticDto = await this.ContentqmaticModel.create(
+      CreateContentqmaticDto,
+    );
+    return createContentqmaticDto;
+  }
 
-       async findOne(id: string): Promise<Contentqmatic> {
-        return this.ContentqmaticModel.findOne({ _id: id }).exec();
-      }
-    
-      async delete(id: string) {
-        const deletedCat = await this.ContentqmaticModel
-          .findByIdAndRemove({ _id: id })
-          .exec();
-        return deletedCat;
-      }
+  async findAll(): Promise<Contentqmatic[]> {
+    return this.ContentqmaticModel.find().exec();
+  }
+
+  async findOne(id: string): Promise<Contentqmatic> {
+    return this.ContentqmaticModel.findOne({ _id: id }).exec();
+  }
+
+  async delete(id: string) {
+    const deletedCat = await this.ContentqmaticModel.findByIdAndRemove({
+      _id: id,
+    }).exec();
+    return deletedCat;
+  }
 }

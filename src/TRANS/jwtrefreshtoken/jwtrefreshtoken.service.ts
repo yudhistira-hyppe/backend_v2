@@ -10,7 +10,7 @@ import { Userbasic } from '../userbasics/schemas/userbasic.schema';
 @Injectable()
 export class JwtrefreshtokenService {
   constructor(
-    @InjectModel(Jwtrefreshtoken.name)
+    @InjectModel(Jwtrefreshtoken.name, 'SERVER_TRANS')
     private readonly jwtrefreshtokenModel: Model<JwtrefreshtokenDocument>,
     private userauthsService: UserauthsService,
   ) {}
@@ -53,7 +53,12 @@ export class JwtrefreshtokenService {
     return deletedCat;
   }
 
-  async saveorupdateRefreshToken(refresh_token_id: string, email: string, exp,iat) {
+  async saveorupdateRefreshToken(
+    refresh_token_id: string,
+    email: string,
+    exp,
+    iat,
+  ) {
     var _class = 'nest.js.JwtRefreshToken';
     var user = await this.findOne(email);
     if (!user) {

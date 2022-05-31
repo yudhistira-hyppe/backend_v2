@@ -6,29 +6,32 @@ import { Mediadiaries, MediadiariesDocument } from './schemas/mediadiaries.schem
 
 @Injectable()
 export class MediadiariesService {
+  constructor(
+    @InjectModel(Mediadiaries.name, 'SERVER_CONTENT')
+    private readonly MediadiariesModel: Model<MediadiariesDocument>,
+  ) {}
 
-    constructor(
-        @InjectModel(Mediadiaries.name) private readonly MediadiariesModel: Model<MediadiariesDocument>,
-      ) {}
-     
-      async create(CreateMediadiariesDto: CreateMediadiariesDto): Promise<Mediadiaries> {
-        const createMediadiariesDto = await this.MediadiariesModel.create(CreateMediadiariesDto);
-        return createMediadiariesDto;
-      }
-    
-      async findAll(): Promise<Mediadiaries[]> {
-        return this.MediadiariesModel.find().exec();
-      }
-      
+  async create(
+    CreateMediadiariesDto: CreateMediadiariesDto,
+  ): Promise<Mediadiaries> {
+    const createMediadiariesDto = await this.MediadiariesModel.create(
+      CreateMediadiariesDto,
+    );
+    return createMediadiariesDto;
+  }
 
-       async findOne(id: string): Promise<Mediadiaries> {
-        return this.MediadiariesModel.findOne({ _id: id }).exec();
-      }
-  
-      async delete(id: string) {
-        const deletedCat = await this.MediadiariesModel
-          .findByIdAndRemove({ _id: id })
-          .exec();
-        return deletedCat;
-      }
+  async findAll(): Promise<Mediadiaries[]> {
+    return this.MediadiariesModel.find().exec();
+  }
+
+  async findOne(id: string): Promise<Mediadiaries> {
+    return this.MediadiariesModel.findOne({ _id: id }).exec();
+  }
+
+  async delete(id: string) {
+    const deletedCat = await this.MediadiariesModel.findByIdAndRemove({
+      _id: id,
+    }).exec();
+    return deletedCat;
+  }
 }

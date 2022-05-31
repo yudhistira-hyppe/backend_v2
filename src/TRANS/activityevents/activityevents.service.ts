@@ -6,7 +6,7 @@ import { Activityevents, ActivityeventsDocument } from './schemas/activityevents
 @Injectable()
 export class ActivityeventsService {
   constructor(
-    @InjectModel(Activityevents.name)
+    @InjectModel(Activityevents.name, 'SERVER_TRANS')
     private readonly activityeventsModel: Model<ActivityeventsDocument>,
   ) {}
 

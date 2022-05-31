@@ -8,7 +8,7 @@ import { Insights, InsightsDocument } from './schemas/insights.schema';
 @Injectable()
 export class InsightsService {
   constructor(
-    @InjectModel(Insights.name)
+    @InjectModel(Insights.name, 'SERVER_CONTENT')
     private readonly InsightsModel: Model<InsightsDocument>,
   ) {}
 
@@ -90,7 +90,7 @@ export class InsightsService {
         },
       },
       {
-        $sort: { '_id.month_group':1 },
+        $sort: { '_id.month_group': 1 },
       },
       {
         $project: {

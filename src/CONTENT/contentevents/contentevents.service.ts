@@ -7,7 +7,7 @@ import { Contentevents, ContenteventsDocument } from './schemas/contentevents.sc
 @Injectable()
 export class ContenteventsService {
   constructor(
-    @InjectModel(Contentevents.name)
+    @InjectModel(Contentevents.name, 'SERVER_CONTENT')
     private readonly ContenteventsModel: Model<ContenteventsDocument>,
   ) {}
 

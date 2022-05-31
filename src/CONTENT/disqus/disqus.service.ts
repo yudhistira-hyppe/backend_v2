@@ -6,31 +6,30 @@ import { Disqus, DisqusDocument } from './schemas/disqus.schema';
 
 @Injectable()
 export class DisqusService {
+  constructor(
+    @InjectModel(Disqus.name, 'SERVER_CONTENT')
+    private readonly DisqusModel: Model<DisqusDocument>,
+  ) {}
 
-    constructor(
-        @InjectModel(Disqus.name) private readonly DisqusModel: Model<DisqusDocument>,
-      ) {}
-     
-      async create(CreateDisqusDto: CreateDisqusDto): Promise<Disqus> {
-        const createDisqusDto = await this.DisqusModel.create(CreateDisqusDto);
-        return createDisqusDto;
-      }
-    
-      async findAll(): Promise<Disqus[]> {
-        return this.DisqusModel.find().exec();
-      }
-      
+  async create(CreateDisqusDto: CreateDisqusDto): Promise<Disqus> {
+    const createDisqusDto = await this.DisqusModel.create(CreateDisqusDto);
+    return createDisqusDto;
+  }
 
-    //    async findOne(id: string): Promise<Disqus> {
-    //     return this.DisqusModel.findOne({ _id: id }).exec();
-    //   }
-    async findOne(email: string): Promise<Disqus> {
-        return this.DisqusModel.findOne({ email: email }).exec();
-      }
-      async delete(id: string) {
-        const deletedCat = await this.DisqusModel
-          .findByIdAndRemove({ _id: id })
-          .exec();
-        return deletedCat;
-      }
+  async findAll(): Promise<Disqus[]> {
+    return this.DisqusModel.find().exec();
+  }
+
+  //    async findOne(id: string): Promise<Disqus> {
+  //     return this.DisqusModel.findOne({ _id: id }).exec();
+  //   }
+  async findOne(email: string): Promise<Disqus> {
+    return this.DisqusModel.findOne({ email: email }).exec();
+  }
+  async delete(id: string) {
+    const deletedCat = await this.DisqusModel.findByIdAndRemove({
+      _id: id,
+    }).exec();
+    return deletedCat;
+  }
 }

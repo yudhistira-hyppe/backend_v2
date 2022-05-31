@@ -6,29 +6,31 @@ import { Contentdailyqueues, ContentdailyqueuesDocument } from './schemas/conten
 
 @Injectable()
 export class ContentdailyqueueService {
+  constructor(
+    @InjectModel(Contentdailyqueues.name, 'SERVER_CONTENT')
+    private readonly ContentdailyqueuesModel: Model<ContentdailyqueuesDocument>,
+  ) {}
 
-    constructor(
-        @InjectModel(Contentdailyqueues.name) private readonly ContentdailyqueuesModel: Model<ContentdailyqueuesDocument>,
-      ) {}
-     
-      async create(CreateContentdailyqueuesDto: CreateContentdailyqueuesDto): Promise<Contentdailyqueues> {
-        const createContentdailyqueuesDto = await this.ContentdailyqueuesModel.create(CreateContentdailyqueuesDto);
-        return createContentdailyqueuesDto;
-      }
-    
-      async findAll(): Promise<Contentdailyqueues[]> {
-        return this.ContentdailyqueuesModel.find().exec();
-      }
-      
+  async create(
+    CreateContentdailyqueuesDto: CreateContentdailyqueuesDto,
+  ): Promise<Contentdailyqueues> {
+    const createContentdailyqueuesDto =
+      await this.ContentdailyqueuesModel.create(CreateContentdailyqueuesDto);
+    return createContentdailyqueuesDto;
+  }
 
-       async findOne(id: string): Promise<Contentdailyqueues> {
-        return this.ContentdailyqueuesModel.findOne({ _id: id }).exec();
-      }
-    
-      async delete(id: string) {
-        const deletedCat = await this.ContentdailyqueuesModel
-          .findByIdAndRemove({ _id: id })
-          .exec();
-        return deletedCat;
-      }
+  async findAll(): Promise<Contentdailyqueues[]> {
+    return this.ContentdailyqueuesModel.find().exec();
+  }
+
+  async findOne(id: string): Promise<Contentdailyqueues> {
+    return this.ContentdailyqueuesModel.findOne({ _id: id }).exec();
+  }
+
+  async delete(id: string) {
+    const deletedCat = await this.ContentdailyqueuesModel.findByIdAndRemove({
+      _id: id,
+    }).exec();
+    return deletedCat;
+  }
 }

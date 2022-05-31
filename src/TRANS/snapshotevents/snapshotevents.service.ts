@@ -6,28 +6,32 @@ import { Snapshotevents, SnapshoteventsDocument } from './schemas/snapshotevents
 
 @Injectable()
 export class SnapshoteventsService {
+  constructor(
+    @InjectModel(Snapshotevents.name, 'SERVER_TRANS')
+    private readonly snapshoteventsModel: Model<SnapshoteventsDocument>,
+  ) {}
 
-    constructor(
-        @InjectModel(Snapshotevents.name) private readonly snapshoteventsModel: Model<SnapshoteventsDocument>,
-      ) {}
-    
-      async create(CreateSnapshoteventsDto: CreateSnapshoteventsDto): Promise<Snapshotevents> {
-        const createSnapshoteventsDto = await this.snapshoteventsModel.create(CreateSnapshoteventsDto);
-        return createSnapshoteventsDto;
-      }
-    
-      async findAll(): Promise<Snapshotevents[]> {
-        return this.snapshoteventsModel.find().exec();
-      }
-    
-      async findOne(id: string): Promise<Snapshotevents> {
-        return this.snapshoteventsModel.findOne({ _id: id }).exec();
-      }
-    
-      async delete(id: string) {
-        const deletedCat = await this.snapshoteventsModel
-          .findByIdAndRemove({ _id: id })
-          .exec();
-        return deletedCat;
-      }
+  async create(
+    CreateSnapshoteventsDto: CreateSnapshoteventsDto,
+  ): Promise<Snapshotevents> {
+    const createSnapshoteventsDto = await this.snapshoteventsModel.create(
+      CreateSnapshoteventsDto,
+    );
+    return createSnapshoteventsDto;
+  }
+
+  async findAll(): Promise<Snapshotevents[]> {
+    return this.snapshoteventsModel.find().exec();
+  }
+
+  async findOne(id: string): Promise<Snapshotevents> {
+    return this.snapshoteventsModel.findOne({ _id: id }).exec();
+  }
+
+  async delete(id: string) {
+    const deletedCat = await this.snapshoteventsModel
+      .findByIdAndRemove({ _id: id })
+      .exec();
+    return deletedCat;
+  }
 }

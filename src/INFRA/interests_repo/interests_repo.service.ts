@@ -6,28 +6,32 @@ import { Interestsrepo, InterestsrepoDocument } from './schemas/interests_repo.s
 
 @Injectable()
 export class InterestsRepoService {
-    constructor(
-        @InjectModel(Interestsrepo.name) private readonly interestsrepoModel: Model<InterestsrepoDocument>,
-      ) {}
-     
-      async create(CreateInterestsRepoDto: CreateInterestsRepoDto): Promise<Interestsrepo> {
-        const createInterestsRepoDto = await this.interestsrepoModel.create(CreateInterestsRepoDto);
-        return createInterestsRepoDto;
-      }
-    
-      async findAll(): Promise<Interestsrepo[]> {
-        return this.interestsrepoModel.find().exec();
-      }
-      
+  constructor(
+    @InjectModel(Interestsrepo.name, 'SERVER_INFRA')
+    private readonly interestsrepoModel: Model<InterestsrepoDocument>,
+  ) {}
 
-       async findOne(id: string): Promise<Interestsrepo> {
-        return this.interestsrepoModel.findOne({ _id: id }).exec();
-      }
-    
-      async delete(id: string) {
-        const deletedCat = await this.interestsrepoModel
-          .findByIdAndRemove({ _id: id })
-          .exec();
-        return deletedCat;
-      }
+  async create(
+    CreateInterestsRepoDto: CreateInterestsRepoDto,
+  ): Promise<Interestsrepo> {
+    const createInterestsRepoDto = await this.interestsrepoModel.create(
+      CreateInterestsRepoDto,
+    );
+    return createInterestsRepoDto;
+  }
+
+  async findAll(): Promise<Interestsrepo[]> {
+    return this.interestsrepoModel.find().exec();
+  }
+
+  async findOne(id: string): Promise<Interestsrepo> {
+    return this.interestsrepoModel.findOne({ _id: id }).exec();
+  }
+
+  async delete(id: string) {
+    const deletedCat = await this.interestsrepoModel
+      .findByIdAndRemove({ _id: id })
+      .exec();
+    return deletedCat;
+  }
 }

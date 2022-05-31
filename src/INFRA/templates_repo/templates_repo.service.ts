@@ -6,28 +6,32 @@ import { TemplatesRepo, TemplatesRepoDocument } from './schemas/templatesrepo.sc
 
 @Injectable()
 export class TemplatesRepoService {
-    constructor(
-        @InjectModel(TemplatesRepo.name) private readonly TemplatesRepoModel: Model<TemplatesRepoDocument>,
-      ) {}
-     
-      async create(CreateTemplatesRepoDto: CreateTemplatesRepoDto): Promise<TemplatesRepo> {
-        const createTemplatesRepoDto = await this.TemplatesRepoModel.create(CreateTemplatesRepoDto);
-        return createTemplatesRepoDto;
-      }
-    
-      async findAll(): Promise<TemplatesRepo[]> {
-        return this.TemplatesRepoModel.find().exec();
-      }
-      
+  constructor(
+    @InjectModel(TemplatesRepo.name, 'SERVER_INFRA')
+    private readonly TemplatesRepoModel: Model<TemplatesRepoDocument>,
+  ) {}
 
-       async findOne(id: string): Promise<TemplatesRepo> {
-        return this.TemplatesRepoModel.findOne({ _id: id }).exec();
-      }
-    
-      async delete(id: string) {
-        const deletedCat = await this.TemplatesRepoModel
-          .findByIdAndRemove({ _id: id })
-          .exec();
-        return deletedCat;
-      }
+  async create(
+    CreateTemplatesRepoDto: CreateTemplatesRepoDto,
+  ): Promise<TemplatesRepo> {
+    const createTemplatesRepoDto = await this.TemplatesRepoModel.create(
+      CreateTemplatesRepoDto,
+    );
+    return createTemplatesRepoDto;
+  }
+
+  async findAll(): Promise<TemplatesRepo[]> {
+    return this.TemplatesRepoModel.find().exec();
+  }
+
+  async findOne(id: string): Promise<TemplatesRepo> {
+    return this.TemplatesRepoModel.findOne({ _id: id }).exec();
+  }
+
+  async delete(id: string) {
+    const deletedCat = await this.TemplatesRepoModel.findByIdAndRemove({
+      _id: id,
+    }).exec();
+    return deletedCat;
+  }
 }

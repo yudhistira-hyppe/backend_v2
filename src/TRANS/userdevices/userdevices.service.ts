@@ -8,7 +8,7 @@ import { Userdevice, UserdeviceDocument } from './schemas/userdevice.schema';
 export class UserdevicesService {
 
     constructor(
-        @InjectModel(Userdevice.name) private readonly userdeviceModel: Model<UserdeviceDocument>,
+        @InjectModel(Userdevice.name,'SERVER_TRANS') private readonly userdeviceModel: Model<UserdeviceDocument>,
       ) {}
     
       async create(CreateUserdeviceDto: CreateUserdeviceDto): Promise<Userdevice> {

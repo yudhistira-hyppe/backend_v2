@@ -8,7 +8,8 @@ import { Posts, PostsDocument } from './schemas/posts.schema';
 @Injectable()
 export class PostsService {
   constructor(
-    @InjectModel(Posts.name) private readonly PostsModel: Model<PostsDocument>,
+    @InjectModel(Posts.name, 'SERVER_CONTENT')
+    private readonly PostsModel: Model<PostsDocument>,
   ) {}
 
   async create(CreatePostsDto: CreatePostsDto): Promise<Posts> {

@@ -6,29 +6,32 @@ import { Mediavideos, MediavideosDocument } from './schemas/mediavideos.schema';
 
 @Injectable()
 export class MediavideosService {
+  constructor(
+    @InjectModel(Mediavideos.name, 'SERVER_CONTENT')
+    private readonly MediavideosModel: Model<MediavideosDocument>,
+  ) {}
 
-    constructor(
-        @InjectModel(Mediavideos.name) private readonly MediavideosModel: Model<MediavideosDocument>,
-      ) {}
-     
-      async create(CreateMediavideosDto: CreateMediavideosDto): Promise<Mediavideos> {
-        const createMediavideosDto = await this.MediavideosModel.create(CreateMediavideosDto);
-        return createMediavideosDto;
-      }
-    
-      async findAll(): Promise<Mediavideos[]> {
-        return this.MediavideosModel.find().exec();
-      }
-      
+  async create(
+    CreateMediavideosDto: CreateMediavideosDto,
+  ): Promise<Mediavideos> {
+    const createMediavideosDto = await this.MediavideosModel.create(
+      CreateMediavideosDto,
+    );
+    return createMediavideosDto;
+  }
 
-       async findOne(id: string): Promise<Mediavideos> {
-        return this.MediavideosModel.findOne({ _id: id }).exec();
-      }
-  
-      async delete(id: string) {
-        const deletedCat = await this.MediavideosModel
-          .findByIdAndRemove({ _id: id })
-          .exec();
-        return deletedCat;
-      }
+  async findAll(): Promise<Mediavideos[]> {
+    return this.MediavideosModel.find().exec();
+  }
+
+  async findOne(id: string): Promise<Mediavideos> {
+    return this.MediavideosModel.findOne({ _id: id }).exec();
+  }
+
+  async delete(id: string) {
+    const deletedCat = await this.MediavideosModel.findByIdAndRemove({
+      _id: id,
+    }).exec();
+    return deletedCat;
+  }
 }
