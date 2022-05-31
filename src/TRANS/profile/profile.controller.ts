@@ -28,7 +28,7 @@ export class ProfileController {
     ) {}
 
 
-  @Get()
+  @Post()
   //@FormDataRequest()
   @UseGuards(JwtAuthGuard)
   async profileuser(@Req() request: Request): Promise<any> {
