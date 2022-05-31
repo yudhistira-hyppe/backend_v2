@@ -1,8 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post,UseGuards,Put } from '@nestjs/common';
 import { UserbasicsService } from './userbasics.service';
 import { CreateUserbasicDto } from './dto/create-userbasic.dto';
 import { Userbasic } from './schemas/userbasic.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { Res, HttpStatus, Response } from '@nestjs/common';
+import { isEmpty } from 'rxjs';
 
 @Controller('api/userbasics')
 export class UserbasicsController {
@@ -24,9 +26,36 @@ export class UserbasicsController {
   //   return this.userbasicsService.findOne(id);
   // }
   @Get(':email')
-  async findOne(@Param('email') email: string): Promise<Userbasic> {
-    return this.userbasicsService.findOne(email);
+  async findOne(@Res() res,@Param('email') email: string): Promise<Userbasic> {
+    
+
+    const messagesEror = {
+      "info":["Todo is not found!"],
+    };
+
+   
+  const messages = {
+    "info":["The process successful"],
+  };
+ 
+  try{
+    let data= await this.userbasicsService.findOne(email);
+
+    return res.status(HttpStatus.OK).json({
+      response_code: 202,
+      "data":data,
+      "message": messages
+  });
+  }catch(e){
+    return res.status(HttpStatus.BAD_REQUEST).json({
+     
+      "message": messagesEror
+  });
   }
+   
+  }
+
+
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.userbasicsService.delete(id);
@@ -51,4 +80,32 @@ export class UserbasicsController {
   async userage(): Promise<Object> {
     return this.userbasicsService.UserAge();
   }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  async update(@Res() res, @Param('id') id: string, @Body() createUserbasicDto: CreateUserbasicDto) {
+   
+    const messages = {
+      "info":["The update successful"],
+    };
+
+    const messagesEror = {
+      "info":["Todo is not found!"],
+    };
+
+  try{
+    let data = await this.userbasicsService.update(id, createUserbasicDto);
+    res.status(HttpStatus.OK).json({
+      response_code: 202,
+      "data":data,
+      "message": messages
+  });
+  }catch(e){
+    res.status(HttpStatus.BAD_REQUEST).json({
+     
+      "message": messagesEror
+  });
+  }
+}
 }

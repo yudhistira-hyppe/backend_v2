@@ -20,6 +20,15 @@ export class UserbasicsService {
     return createUserbasicDto;
   }
 
+  async update(id: string, createUserbasicDto: CreateUserbasicDto): Promise<Userbasic> {
+    let data = await this.userbasicModel.findByIdAndUpdate(id, createUserbasicDto, { 'new': true })
+    
+    if (!data) {
+      throw new Error("Todo is not found!")
+    }
+      return data;
+  }
+
   async findAll(): Promise<Userbasic[]> {
     return this.userbasicModel.find().exec();
   }
