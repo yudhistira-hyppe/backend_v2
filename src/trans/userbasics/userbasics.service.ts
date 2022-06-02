@@ -150,6 +150,7 @@ export class UserbasicsService {
             createdAt: '$createdAt',
             YearcreatedAt: { $toInt: { $substrCP: ['$createdAt', 0, 4] } },
             year_param: { $toInt: year_param.toString() },
+            
           },
         },
         {

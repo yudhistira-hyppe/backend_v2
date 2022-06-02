@@ -24,26 +24,26 @@ export class AuthController {
   @HttpCode(HttpStatus.ACCEPTED)
   async refreshToken(
     @Body('email') email: string,
-    @Body('refreshToken') refreshToken: string,
+    @Body('refreshToken') refreshToken: string, // @UseGuards(JwtAuthGuard)
+  // @Post('api/user/logout')
+  // @HttpCode(HttpStatus.ACCEPTED)
+  // async logout(@Body('email') email: string, @Req() request: any) {
+  //   await this.jwtrefreshtokenService.removeRefreshToken(email);
+  //   request.res.setHeader(
+  //     'Set-Cookie',
+  //     'Authentication=; HttpOnly; Path=/; Max-Age=0',
+  //     'Refresh=; HttpOnly; Path=/; Max-Age=0',
+  //   );
+  //   return {
+  //     response_code: 202,
+  //     messages: {
+  //       info: ['Logout successful'],
+  //     },
+  //   };
+  // }
   ) {
     return await this.authService.refreshToken(email, refreshToken);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('api/user/logout')
-  @HttpCode(HttpStatus.ACCEPTED)
-  async logout(@Body('email') email: string, @Req() request: any) {
-    await this.jwtrefreshtokenService.removeRefreshToken(email);
-    request.res.setHeader(
-      'Set-Cookie',
-      'Authentication=; HttpOnly; Path=/; Max-Age=0',
-      'Refresh=; HttpOnly; Path=/; Max-Age=0',
-    );
-    return {
-      response_code: 202,
-      messages: {
-        info: ['Logout successful'],
-      },
-    };
-  }
+ 
 }

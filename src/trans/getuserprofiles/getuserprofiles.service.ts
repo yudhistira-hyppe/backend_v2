@@ -1,14 +1,28 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable,BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateGetuserprofilesDto } from './dto/create-getuserprofiles.dto';
 import { Getuserprofiles, GetuserprofilesDocument } from './schemas/getuserprofiles.schema';
-
+import { CountriesService } from '../../infra/countries/countries.service';
+import { CitiesService } from '../../infra/cities/cities.service';
+import { AreasService } from '../../infra/areas/areas.service';
+import { LanguagesService } from '../../infra/languages/languages.service';
+import { InsightsService } from '../../content/insights/insights.service';
+import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
+import { InterestsRepoService } from '../../infra/interests_repo/interests_repo.service';
 @Injectable()
 export class GetuserprofilesService {
   constructor(
     @InjectModel(Getuserprofiles.name, 'SERVER_TRANS')
     private readonly getuserprofilesModel: Model<GetuserprofilesDocument>,
+    private readonly countriesService: CountriesService,
+    private readonly citiesService: CitiesService,
+    private readonly areasService: AreasService,
+    private readonly languagesService: LanguagesService,
+    private readonly insightsService: InsightsService,
+    private readonly mediaprofilepictsService: MediaprofilepictsService,
+    private readonly interestsRepoService: InterestsRepoService,
+    
   ) {}
 
   async create(
@@ -30,64 +44,6972 @@ export class GetuserprofilesService {
     }
     return query;
   }
-  async findAlls(): Promise<Getuserprofiles[]> {
-    return this.getuserprofilesModel.find().exec();
+  
+ 
+
+async findata(fullName: string,gender:string,roles:string,age: string){
+
+  const countries = await this.countriesService.findcountries();
+  const cities= await this.citiesService.findcities();
+  const areas= await this.areasService.findarea();
+  const languanges = await this.languagesService.findlanguanges();
+  const insight = await this.insightsService.findinsight();
+  const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+  const interes = await this.interestsRepoService.findinterst();
+ 
+ 
+ 
+  if(fullName !== undefined && gender === undefined && roles === undefined && age === undefined){
+    const query =await this.getuserprofilesModel.aggregate([
+      {$match:{fullName: {
+        $regex: fullName
+      }}},
+      {
+        $addFields: {
+          userAuth_id:'$userAuth.$id',
+          countries_id: '$countries.$id',
+          cities_id:'$cities.$id',
+          areas_id:'$states.$id',
+          languages_id: '$languages.$id',
+          insight_id: '$insight.$id',
+          profilePict_id: '$profilePict.$id',
+          interest_id: '$userInterests.$id',
+          concat:'/profilepict',
+          age: {
+            $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'interests_repo2',
+          localField: 'interest_id',
+          foreignField: '_id',
+          as: 'interes_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts2',
+          localField: 'profilePict_id',
+          foreignField: '_id',
+          as: 'profilePict_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'countries2',
+          localField: 'countries_id',
+          foreignField: '_id',
+          as: 'countries_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'languages2',
+          localField: 'languages_id',
+          foreignField: '_id',
+          as: 'languages_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'cities2',
+          localField: 'cities_id',
+          foreignField: '_id',
+          as: 'cities_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'areas2',
+          localField: 'areas_id',
+          foreignField: '_id',
+          as: 'areas_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'insights2',
+          localField: 'insight_id',
+          foreignField: '_id',
+          as: 'insight_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+  
+      {
+        $project: {
+          createdAt:'$createdAt',
+          auth: { $arrayElemAt: ['$userAuth_data', 0] },
+          citi: { $arrayElemAt: ['$cities_data', 0] },
+          countri:{ $arrayElemAt: ['$countries_data', 0] },
+          language:{ $arrayElemAt: ['$languages_data', 0] },
+          areas:{ $arrayElemAt: ['$areas_data', 0] },
+          insights:{ $arrayElemAt: ['$insight_data', 0] },
+          profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+          fullName:'$fullName',
+          username: '$auth.userName',
+          area:'$areas.stateName',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          countries: '$countri.country',
+          cities: '$citi.cityName',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+          dob: '$dob',
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+                     shares:'$insights.shares',
+                      followers:'$insights.followers',
+                      comments:'$insights.comments',
+                      followings:'$insights.followings',
+                      reactions:'$insights.reactions',
+                      posts:'$insights.posts',
+                      views:'$insights.views',
+                      likes:'$insights.likes'
+        },
+        avatar:{
+          mediaBasePath:'$profilpict.mediaBasePath',
+          mediaUri:'$profilpict.mediaUri',
+          mediaType:'$profilpict.mediaType',
+          mediaEndpoint:'$profilpict.fsTargetUri',
+          medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          
+        },
+        interest: '$interes_data',
+      }
+    },
+    {
+      $addFields: {
+       
+        concat:'/profilepict',
+       pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+      },
+    },
+      {
+        $project: {
+          createdAt:'$createdAt',
+          interest: '$interest',
+          username: '$auth.username',
+          fullName:'$fullName',
+          countries: '$countri.country',
+          area:'$areas.stateName',
+          cities: '$citi.cityName',
+          dob: '$dob',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+         
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+            shares:'$insights.shares',
+             followers:'$insights.followers',
+             comments:'$insights.comments',
+             followings:'$insights.followings',
+             reactions:'$insights.reactions',
+             posts:'$insights.posts',
+             views:'$insights.views',
+             likes:'$insights.likes'
+  },    avatar:{
+    mediaBasePath:'$profilpict.mediaBasePath',
+    mediaUri:'$profilpict.mediaUri',
+    mediaType:'$profilpict.mediaType',
+    mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+   
+  }, 
+      },
+   },{$sort: { createdAt: -1 },},
+    ]);
+    return query;
   }
-  async findfullname(fullName: String): Promise<Getuserprofiles> {
-    return this.getuserprofilesModel.findOne({ fullName: fullName }).exec();
+  else if(fullName === undefined && gender !== undefined && roles === undefined && age === undefined){
+    const query =await this.getuserprofilesModel.aggregate([
+      {$match:{gender: gender}},
+      {
+        $addFields: {
+          userAuth_id:'$userAuth.$id',
+          countries_id: '$countries.$id',
+          cities_id:'$cities.$id',
+          areas_id:'$states.$id',
+          languages_id: '$languages.$id',
+          insight_id: '$insight.$id',
+          profilePict_id: '$profilePict.$id',
+          interest_id: '$userInterests.$id',
+          concat:'/profilepict',
+          age: {
+            $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'interests_repo2',
+          localField: 'interest_id',
+          foreignField: '_id',
+          as: 'interes_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts2',
+          localField: 'profilePict_id',
+          foreignField: '_id',
+          as: 'profilePict_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'countries2',
+          localField: 'countries_id',
+          foreignField: '_id',
+          as: 'countries_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'languages2',
+          localField: 'languages_id',
+          foreignField: '_id',
+          as: 'languages_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'cities2',
+          localField: 'cities_id',
+          foreignField: '_id',
+          as: 'cities_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'areas2',
+          localField: 'areas_id',
+          foreignField: '_id',
+          as: 'areas_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'insights2',
+          localField: 'insight_id',
+          foreignField: '_id',
+          as: 'insight_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+  
+      {
+        $project: {
+          createdAt:'$createdAt',
+          auth: { $arrayElemAt: ['$userAuth_data', 0] },
+          citi: { $arrayElemAt: ['$cities_data', 0] },
+          countri:{ $arrayElemAt: ['$countries_data', 0] },
+          language:{ $arrayElemAt: ['$languages_data', 0] },
+          areas:{ $arrayElemAt: ['$areas_data', 0] },
+          insights:{ $arrayElemAt: ['$insight_data', 0] },
+          profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+          fullName:'$fullName',
+          username: '$auth.userName',
+          area:'$areas.stateName',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          countries: '$countri.country',
+          cities: '$citi.cityName',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+          dob: '$dob',
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+                     shares:'$insights.shares',
+                      followers:'$insights.followers',
+                      comments:'$insights.comments',
+                      followings:'$insights.followings',
+                      reactions:'$insights.reactions',
+                      posts:'$insights.posts',
+                      views:'$insights.views',
+                      likes:'$insights.likes'
+        },
+        avatar:{
+          mediaBasePath:'$profilpict.mediaBasePath',
+          mediaUri:'$profilpict.mediaUri',
+          mediaType:'$profilpict.mediaType',
+          mediaEndpoint:'$profilpict.fsTargetUri',
+          medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          
+        },
+        interest: '$interes_data',
+      }
+    },
+    {
+      $addFields: {
+       
+        concat:'/profilepict',
+       pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+      },
+    },
+      {
+        $project: {
+          createdAt:'$createdAt',
+          interest: '$interest',
+          username: '$auth.username',
+          fullName:'$fullName',
+          countries: '$countri.country',
+          area:'$areas.stateName',
+          cities: '$citi.cityName',
+          dob: '$dob',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+         
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+            shares:'$insights.shares',
+             followers:'$insights.followers',
+             comments:'$insights.comments',
+             followings:'$insights.followings',
+             reactions:'$insights.reactions',
+             posts:'$insights.posts',
+             views:'$insights.views',
+             likes:'$insights.likes'
+  },    avatar:{
+    mediaBasePath:'$profilpict.mediaBasePath',
+    mediaUri:'$profilpict.mediaUri',
+    mediaType:'$profilpict.mediaType',
+    mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+   
+  }, 
+      },
+   }, {$sort: { createdAt: -1 },},
+    ]);
+    return query;
   }
-  async findgender(gender: String): Promise<Getuserprofiles> {
-    return this.getuserprofilesModel.findOne({ gender: gender }).exec();
+  else if(fullName === undefined && gender === undefined && roles !== undefined && age === undefined){
+    const query =await this.getuserprofilesModel.aggregate([
+   
+      {
+        $addFields: {
+          userAuth_id:'$userAuth.$id',
+          countries_id: '$countries.$id',
+          cities_id:'$cities.$id',
+          areas_id:'$states.$id',
+          languages_id: '$languages.$id',
+          insight_id: '$insight.$id',
+          profilePict_id: '$profilePict.$id',
+          interest_id: '$userInterests.$id',
+          concat:'/profilepict',
+          age: {
+            $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'interests_repo2',
+          localField: 'interest_id',
+          foreignField: '_id',
+          as: 'interes_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts2',
+          localField: 'profilePict_id',
+          foreignField: '_id',
+          as: 'profilePict_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'countries2',
+          localField: 'countries_id',
+          foreignField: '_id',
+          as: 'countries_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'languages2',
+          localField: 'languages_id',
+          foreignField: '_id',
+          as: 'languages_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'cities2',
+          localField: 'cities_id',
+          foreignField: '_id',
+          as: 'cities_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'areas2',
+          localField: 'areas_id',
+          foreignField: '_id',
+          as: 'areas_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'insights2',
+          localField: 'insight_id',
+          foreignField: '_id',
+          as: 'insight_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+  
+      {
+        $project: {
+          createdAt:'$createdAt',
+          auth: { $arrayElemAt: ['$userAuth_data', 0] },
+          citi: { $arrayElemAt: ['$cities_data', 0] },
+          countri:{ $arrayElemAt: ['$countries_data', 0] },
+          language:{ $arrayElemAt: ['$languages_data', 0] },
+          areas:{ $arrayElemAt: ['$areas_data', 0] },
+          insights:{ $arrayElemAt: ['$insight_data', 0] },
+          profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+          fullName:'$fullName',
+          username: '$auth.userName',
+          area:'$areas.stateName',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          countries: '$countri.country',
+          cities: '$citi.cityName',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+          dob: '$dob',
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+                     shares:'$insights.shares',
+                      followers:'$insights.followers',
+                      comments:'$insights.comments',
+                      followings:'$insights.followings',
+                      reactions:'$insights.reactions',
+                      posts:'$insights.posts',
+                      views:'$insights.views',
+                      likes:'$insights.likes'
+        },
+        avatar:{
+          mediaBasePath:'$profilpict.mediaBasePath',
+          mediaUri:'$profilpict.mediaUri',
+          mediaType:'$profilpict.mediaType',
+          mediaEndpoint:'$profilpict.fsTargetUri',
+          medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          
+        },
+        interest: '$interes_data',
+      }
+    },
+    {
+      $addFields: {
+       
+        concat:'/profilepict',
+       pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+      },
+    },
+   
+      {
+        $project: {
+          createdAt:'$createdAt',
+          interest: '$interest',
+          username: '$auth.username',
+          fullName:'$fullName',
+          countries: '$countri.country',
+          area:'$areas.stateName',
+          cities: '$citi.cityName',
+          dob: '$dob',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+         
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+            shares:'$insights.shares',
+             followers:'$insights.followers',
+             comments:'$insights.comments',
+             followings:'$insights.followings',
+             reactions:'$insights.reactions',
+             posts:'$insights.posts',
+             views:'$insights.views',
+             likes:'$insights.likes'
+  },    avatar:{
+    mediaBasePath:'$profilpict.mediaBasePath',
+    mediaUri:'$profilpict.mediaUri',
+    mediaType:'$profilpict.mediaType',
+    mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+   
+  }, 
+      },
+   }, {$match:{roles: roles}}, {$sort: { createdAt: -1 },},
+    ]);
+    return query;
   }
-  async findfullnamegender(
-    fullName: String,
-    gender: String,
-  ): Promise<Getuserprofiles> {
-    return this.getuserprofilesModel
-      .findOne({ fullName: fullName, gender: gender })
-      .exec();
+  else if(fullName === undefined && gender === undefined && roles=== undefined && age !== undefined){
+    if(age=="<15"){
+      const  query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {$match:{age:{ $gt: 0, $lt: 15 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },{$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="15-25"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {$match:{age:{ $gt: 14, $lt: 26 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       }, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="26-35"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {$match:{age:{ $gt: 25, $lt: 36 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       }, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="36-50"){
+        const  query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {$match:{age:{ $gt: 35, $lt: 51 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },{$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age==">50"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {$match:{age:{ $gt: 50, $lt: 200 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },{$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }
+  }
+  else if(fullName !== undefined && gender !== undefined && roles === undefined && age === undefined){
+    const query =await this.getuserprofilesModel.aggregate([
+      {$match:{fullName: {$regex: fullName},gender:gender}},
+      {
+        $addFields: {
+          userAuth_id:'$userAuth.$id',
+          countries_id: '$countries.$id',
+          cities_id:'$cities.$id',
+          areas_id:'$states.$id',
+          languages_id: '$languages.$id',
+          insight_id: '$insight.$id',
+          profilePict_id: '$profilePict.$id',
+          interest_id: '$userInterests.$id',
+          concat:'/profilepict',
+          age: {
+            $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'interests_repo2',
+          localField: 'interest_id',
+          foreignField: '_id',
+          as: 'interes_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts2',
+          localField: 'profilePict_id',
+          foreignField: '_id',
+          as: 'profilePict_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'countries2',
+          localField: 'countries_id',
+          foreignField: '_id',
+          as: 'countries_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'languages2',
+          localField: 'languages_id',
+          foreignField: '_id',
+          as: 'languages_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'cities2',
+          localField: 'cities_id',
+          foreignField: '_id',
+          as: 'cities_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'areas2',
+          localField: 'areas_id',
+          foreignField: '_id',
+          as: 'areas_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'insights2',
+          localField: 'insight_id',
+          foreignField: '_id',
+          as: 'insight_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+  
+      {
+        $project: {
+          createdAt:'$createdAt',
+          auth: { $arrayElemAt: ['$userAuth_data', 0] },
+          citi: { $arrayElemAt: ['$cities_data', 0] },
+          countri:{ $arrayElemAt: ['$countries_data', 0] },
+          language:{ $arrayElemAt: ['$languages_data', 0] },
+          areas:{ $arrayElemAt: ['$areas_data', 0] },
+          insights:{ $arrayElemAt: ['$insight_data', 0] },
+          profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+          fullName:'$fullName',
+          username: '$auth.userName',
+          area:'$areas.stateName',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          countries: '$countri.country',
+          cities: '$citi.cityName',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+          dob: '$dob',
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+                     shares:'$insights.shares',
+                      followers:'$insights.followers',
+                      comments:'$insights.comments',
+                      followings:'$insights.followings',
+                      reactions:'$insights.reactions',
+                      posts:'$insights.posts',
+                      views:'$insights.views',
+                      likes:'$insights.likes'
+        },
+        avatar:{
+          mediaBasePath:'$profilpict.mediaBasePath',
+          mediaUri:'$profilpict.mediaUri',
+          mediaType:'$profilpict.mediaType',
+          mediaEndpoint:'$profilpict.fsTargetUri',
+          medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          
+        },
+        interest: '$interes_data',
+      }
+    },
+    {
+      $addFields: {
+       
+        concat:'/profilepict',
+       pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+      },
+    },
+      {
+        $project: {
+          createdAt:'$createdAt',
+          interest: '$interest',
+          username: '$auth.username',
+          fullName:'$fullName',
+          countries: '$countri.country',
+          area:'$areas.stateName',
+          cities: '$citi.cityName',
+          dob: '$dob',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+         
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+            shares:'$insights.shares',
+             followers:'$insights.followers',
+             comments:'$insights.comments',
+             followings:'$insights.followings',
+             reactions:'$insights.reactions',
+             posts:'$insights.posts',
+             views:'$insights.views',
+             likes:'$insights.likes'
+  },    avatar:{
+    mediaBasePath:'$profilpict.mediaBasePath',
+    mediaUri:'$profilpict.mediaUri',
+    mediaType:'$profilpict.mediaType',
+    mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+   
+  }, 
+      },
+   },{$sort: { createdAt: -1 },},
+    ]);
+    return query;
+  }
+  else if(fullName !== undefined && gender === undefined && roles !== undefined && age === undefined){
+    const query =await this.getuserprofilesModel.aggregate([
+  
+      {
+        $addFields: {
+          userAuth_id:'$userAuth.$id',
+          countries_id: '$countries.$id',
+          cities_id:'$cities.$id',
+          areas_id:'$states.$id',
+          languages_id: '$languages.$id',
+          insight_id: '$insight.$id',
+          profilePict_id: '$profilePict.$id',
+          interest_id: '$userInterests.$id',
+          concat:'/profilepict',
+          age: {
+            $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'interests_repo2',
+          localField: 'interest_id',
+          foreignField: '_id',
+          as: 'interes_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts2',
+          localField: 'profilePict_id',
+          foreignField: '_id',
+          as: 'profilePict_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'countries2',
+          localField: 'countries_id',
+          foreignField: '_id',
+          as: 'countries_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'languages2',
+          localField: 'languages_id',
+          foreignField: '_id',
+          as: 'languages_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'cities2',
+          localField: 'cities_id',
+          foreignField: '_id',
+          as: 'cities_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'areas2',
+          localField: 'areas_id',
+          foreignField: '_id',
+          as: 'areas_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'insights2',
+          localField: 'insight_id',
+          foreignField: '_id',
+          as: 'insight_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+  
+      {
+        $project: {
+          createdAt:'$createdAt',
+          auth: { $arrayElemAt: ['$userAuth_data', 0] },
+          citi: { $arrayElemAt: ['$cities_data', 0] },
+          countri:{ $arrayElemAt: ['$countries_data', 0] },
+          language:{ $arrayElemAt: ['$languages_data', 0] },
+          areas:{ $arrayElemAt: ['$areas_data', 0] },
+          insights:{ $arrayElemAt: ['$insight_data', 0] },
+          profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+          fullName:'$fullName',
+          username: '$auth.userName',
+          area:'$areas.stateName',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          countries: '$countri.country',
+          cities: '$citi.cityName',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+          dob: '$dob',
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+                     shares:'$insights.shares',
+                      followers:'$insights.followers',
+                      comments:'$insights.comments',
+                      followings:'$insights.followings',
+                      reactions:'$insights.reactions',
+                      posts:'$insights.posts',
+                      views:'$insights.views',
+                      likes:'$insights.likes'
+        },
+        avatar:{
+          mediaBasePath:'$profilpict.mediaBasePath',
+          mediaUri:'$profilpict.mediaUri',
+          mediaType:'$profilpict.mediaType',
+          mediaEndpoint:'$profilpict.fsTargetUri',
+          medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          
+        },
+        interest: '$interes_data',
+      }
+    },
+    {
+      $addFields: {
+       
+        concat:'/profilepict',
+       pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+      },
+    },
+      {
+        $project: {
+          createdAt:'$createdAt',
+          interest: '$interest',
+          username: '$auth.username',
+          fullName:'$fullName',
+          countries: '$countri.country',
+          area:'$areas.stateName',
+          cities: '$citi.cityName',
+          dob: '$dob',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+         
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+            shares:'$insights.shares',
+             followers:'$insights.followers',
+             comments:'$insights.comments',
+             followings:'$insights.followings',
+             reactions:'$insights.reactions',
+             posts:'$insights.posts',
+             views:'$insights.views',
+             likes:'$insights.likes'
+  },    avatar:{
+    mediaBasePath:'$profilpict.mediaBasePath',
+    mediaUri:'$profilpict.mediaUri',
+    mediaType:'$profilpict.mediaType',
+    mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+   
+  }, 
+      },
+   },{$match:{fullName: {$regex: fullName},roles:roles}}, {$sort: { createdAt: -1 },},
+    ]);
+    return query;
+  }
+  else if(fullName !== undefined && gender === undefined && roles=== undefined && age !== undefined){
+    if(age=="<15"){
+      const  query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          
+          {$match:{fullName: { $regex: fullName},age:{ $gt: 0, $lt: 15 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },{$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="15-25"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {$match:{fullName: { $regex: fullName},age:{ $gt: 14, $lt: 26 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },{$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="26-35"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {$match:{fullName: { $regex: fullName},age:{ $gt: 25, $lt: 36 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },{$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="36-50"){
+        const  query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {$match:{fullName: { $regex: fullName},age:{ $gt: 35, $lt: 51 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },{$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age==">50"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {$match:{fullName: { $regex: fullName},age:{ $gt: 50, $lt: 200 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       }, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }
+  }
+  else if(fullName === undefined && gender !== undefined && roles !== undefined && age === undefined){
+    const query =await this.getuserprofilesModel.aggregate([
+     
+      {
+        $addFields: {
+          userAuth_id:'$userAuth.$id',
+          countries_id: '$countries.$id',
+          cities_id:'$cities.$id',
+          areas_id:'$states.$id',
+          languages_id: '$languages.$id',
+          insight_id: '$insight.$id',
+          profilePict_id: '$profilePict.$id',
+          interest_id: '$userInterests.$id',
+          concat:'/profilepict',
+          age: {
+            $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'interests_repo2',
+          localField: 'interest_id',
+          foreignField: '_id',
+          as: 'interes_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts2',
+          localField: 'profilePict_id',
+          foreignField: '_id',
+          as: 'profilePict_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'countries2',
+          localField: 'countries_id',
+          foreignField: '_id',
+          as: 'countries_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'languages2',
+          localField: 'languages_id',
+          foreignField: '_id',
+          as: 'languages_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'cities2',
+          localField: 'cities_id',
+          foreignField: '_id',
+          as: 'cities_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'areas2',
+          localField: 'areas_id',
+          foreignField: '_id',
+          as: 'areas_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'insights2',
+          localField: 'insight_id',
+          foreignField: '_id',
+          as: 'insight_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+  
+      {
+        $project: {
+          createdAt:'$createdAt',
+          auth: { $arrayElemAt: ['$userAuth_data', 0] },
+          citi: { $arrayElemAt: ['$cities_data', 0] },
+          countri:{ $arrayElemAt: ['$countries_data', 0] },
+          language:{ $arrayElemAt: ['$languages_data', 0] },
+          areas:{ $arrayElemAt: ['$areas_data', 0] },
+          insights:{ $arrayElemAt: ['$insight_data', 0] },
+          profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+          fullName:'$fullName',
+          username: '$auth.userName',
+          area:'$areas.stateName',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          countries: '$countri.country',
+          cities: '$citi.cityName',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+          dob: '$dob',
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+                     shares:'$insights.shares',
+                      followers:'$insights.followers',
+                      comments:'$insights.comments',
+                      followings:'$insights.followings',
+                      reactions:'$insights.reactions',
+                      posts:'$insights.posts',
+                      views:'$insights.views',
+                      likes:'$insights.likes'
+        },
+        avatar:{
+          mediaBasePath:'$profilpict.mediaBasePath',
+          mediaUri:'$profilpict.mediaUri',
+          mediaType:'$profilpict.mediaType',
+          mediaEndpoint:'$profilpict.fsTargetUri',
+          medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          
+        },
+        interest: '$interes_data',
+      }
+    },
+    {
+      $addFields: {
+       
+        concat:'/profilepict',
+       pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+      },
+    },
+      {
+        $project: {
+          createdAt:'$createdAt',
+          interest: '$interest',
+          username: '$auth.username',
+          fullName:'$fullName',
+          countries: '$countri.country',
+          area:'$areas.stateName',
+          cities: '$citi.cityName',
+          dob: '$dob',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+         
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+            shares:'$insights.shares',
+             followers:'$insights.followers',
+             comments:'$insights.comments',
+             followings:'$insights.followings',
+             reactions:'$insights.reactions',
+             posts:'$insights.posts',
+             views:'$insights.views',
+             likes:'$insights.likes'
+  },    avatar:{
+    mediaBasePath:'$profilpict.mediaBasePath',
+    mediaUri:'$profilpict.mediaUri',
+    mediaType:'$profilpict.mediaType',
+    mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+   
+  }, 
+      },
+   }, {$match:{gender:gender,roles:roles}},{$sort: { createdAt: -1 },},
+    ]);
+    return query;
+  }
+  else if(fullName === undefined && gender !== undefined && roles=== undefined && age !== undefined){
+    if(age=="<15"){
+      const  query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          
+          {$match:{gender: gender,age:{ $gt: 0, $lt: 15 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       }, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="15-25"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {$match:{gender: gender,age:{ $gt: 14, $lt: 26 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       }, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="26-35"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {$match:{gender: gender,age:{ $gt: 25, $lt: 36 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       }, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="36-50"){
+        const  query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {$match:{gender: gender,age:{ $gt: 35, $lt: 51 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       }, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age==">50"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {$match:{gender: gender,age:{ $gt: 50, $lt: 200 }}},
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       }, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }
+  }
+  else if(fullName === undefined && gender === undefined && roles !== undefined && age !== undefined){
+    if(age=="<15"){
+      const  query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },   {$match:{roles: roles,age:{ $gt: 0, $lt: 15 }}},{$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="15-25"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },  {$match:{roles: roles,age:{ $gt: 14, $lt: 26 }}}, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="26-35"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },  {$match:{roles: roles,age:{ $gt: 25, $lt: 36 }}}, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="36-50"){
+        const  query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       }, {$match:{roles: roles,age:{ $gt: 35, $lt: 51 }}}, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age==">50"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },  {$match:{roles: roles,age:{ $gt: 50, $lt: 200 }}}, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }
+  }
+  else if(fullName === undefined && gender !== undefined && roles !== undefined && age !== undefined){
+    if(age=="<15"){
+      const  query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },   {$match:{gender:gender,roles: roles,age:{ $gt: 0, $lt: 15 }}}, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="15-25"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },  {$match:{gender:gender,roles: roles,age:{ $gt: 14, $lt: 26 }}}, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="26-35"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },  {$match:{gender:gender,roles: roles,age:{ $gt: 25, $lt: 36 }}},{$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="36-50"){
+        const  query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       }, {$match:{gender:gender,roles: roles,age:{ $gt: 35, $lt: 51 }}},{$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age==">50"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },  {$match:{gender:gender,roles: roles,age:{ $gt: 50, $lt: 200 }}},{$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }
+  }
+  else if(fullName !== undefined && gender !== undefined && roles !== undefined && age !== undefined){
+    if(age=="<15"){
+      const  query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },   {$match:{fullName: { $regex: fullName},gender:gender,roles: roles,age:{ $gt: 0, $lt: 15 }}},{$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="15-25"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },  {$match:{fullName: { $regex: fullName},gender:gender,roles: roles,age:{ $gt: 14, $lt: 26 }}},{$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="26-35"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },  {$match:{fullName: { $regex: fullName},gender:gender,roles: roles,age:{ $gt: 25, $lt: 36 }}}, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age=="36-50"){
+        const  query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       }, {$match:{fullName: { $regex: fullName},gender:gender,roles: roles,age:{ $gt: 35, $lt: 51 }}}, {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }else if(age==">50"){
+        const query =await this.getuserprofilesModel.aggregate([
+      
+          {
+            $addFields: {
+              userAuth_id:'$userAuth.$id',
+              countries_id: '$countries.$id',
+              cities_id:'$cities.$id',
+              areas_id:'$states.$id',
+              languages_id: '$languages.$id',
+              insight_id: '$insight.$id',
+              profilePict_id: '$profilePict.$id',
+              interest_id: '$userInterests.$id',
+              concat:'/profilepict',
+              age: {
+                $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+              },
+            },
+          },
+          {
+            $lookup: {
+              from: 'interests_repo2',
+              localField: 'interest_id',
+              foreignField: '_id',
+              as: 'interes_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'mediaprofilepicts2',
+              localField: 'profilePict_id',
+              foreignField: '_id',
+              as: 'profilePict_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'countries2',
+              localField: 'countries_id',
+              foreignField: '_id',
+              as: 'countries_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'languages2',
+              localField: 'languages_id',
+              foreignField: '_id',
+              as: 'languages_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'cities2',
+              localField: 'cities_id',
+              foreignField: '_id',
+              as: 'cities_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'areas2',
+              localField: 'areas_id',
+              foreignField: '_id',
+              as: 'areas_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'insights2',
+              localField: 'insight_id',
+              foreignField: '_id',
+              as: 'insight_data',
+            },
+          },
+          {
+            $lookup: {
+              from: 'userauths',
+              localField: 'userAuth_id',
+              foreignField: '_id',
+              as: 'userAuth_data',
+            },
+          },
+      
+          {
+            $project: {
+              createdAt:'$createdAt',
+              auth: { $arrayElemAt: ['$userAuth_data', 0] },
+              citi: { $arrayElemAt: ['$cities_data', 0] },
+              countri:{ $arrayElemAt: ['$countries_data', 0] },
+              language:{ $arrayElemAt: ['$languages_data', 0] },
+              areas:{ $arrayElemAt: ['$areas_data', 0] },
+              insights:{ $arrayElemAt: ['$insight_data', 0] },
+              profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+              fullName:'$fullName',
+              username: '$auth.userName',
+              area:'$areas.stateName',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              countries: '$countri.country',
+              cities: '$citi.cityName',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+              dob: '$dob',
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                         shares:'$insights.shares',
+                          followers:'$insights.followers',
+                          comments:'$insights.comments',
+                          followings:'$insights.followings',
+                          reactions:'$insights.reactions',
+                          posts:'$insights.posts',
+                          views:'$insights.views',
+                          likes:'$insights.likes'
+            },
+            avatar:{
+              mediaBasePath:'$profilpict.mediaBasePath',
+              mediaUri:'$profilpict.mediaUri',
+              mediaType:'$profilpict.mediaType',
+              mediaEndpoint:'$profilpict.fsTargetUri',
+              medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+              
+            },
+            interest: '$interes_data',
+          }
+        },
+        {
+          $addFields: {
+           
+            concat:'/profilepict',
+           pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
+        },
+          {
+            $project: {
+              createdAt:'$createdAt',
+              interest: '$interest',
+              username: '$auth.username',
+              fullName:'$fullName',
+              countries: '$countri.country',
+              area:'$areas.stateName',
+              cities: '$citi.cityName',
+              dob: '$dob',
+              age: '$age',
+              email: '$email',
+              gender: '$gender',
+              bio:'$bio',
+              idProofNumber: '$idProofNumber',
+              mobileNumber: '$mobileNumber',
+              roles:'$auth.roles',
+             
+              event: '$event',
+              isComplete:'$isComplete',
+              status: '$status',
+              langIso:'$language.langIso',
+              insight:{
+                shares:'$insights.shares',
+                 followers:'$insights.followers',
+                 comments:'$insights.comments',
+                 followings:'$insights.followings',
+                 reactions:'$insights.reactions',
+                 posts:'$insights.posts',
+                 views:'$insights.views',
+                 likes:'$insights.likes'
+      },    avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+       
+      }, 
+          },
+       },  {$match:{fullName: { $regex: fullName},gender:gender,roles: roles,age:{ $gt: 50, $lt: 200 }}},
+        {$sort: { createdAt: -1 },},
+        ]);
+        return query;
+      }
+  }
+  else{
+    const query =await this.getuserprofilesModel.aggregate([
+      {
+        $addFields: {
+          userAuth_id:'$userAuth.$id',
+          countries_id: '$countries.$id',
+          cities_id:'$cities.$id',
+          areas_id:'$states.$id',
+          languages_id: '$languages.$id',
+          insight_id: '$insight.$id',
+          profilePict_id: '$profilePict.$id',
+          interest_id: '$userInterests.$id',
+          concat:'/profilepict',
+          age: {
+            $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+          },
+        },
+      },
+      {
+        $lookup: {
+          from: 'interests_repo2',
+          localField: 'interest_id',
+          foreignField: '_id',
+          as: 'interes_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts2',
+          localField: 'profilePict_id',
+          foreignField: '_id',
+          as: 'profilePict_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'countries2',
+          localField: 'countries_id',
+          foreignField: '_id',
+          as: 'countries_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'languages2',
+          localField: 'languages_id',
+          foreignField: '_id',
+          as: 'languages_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'cities2',
+          localField: 'cities_id',
+          foreignField: '_id',
+          as: 'cities_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'areas2',
+          localField: 'areas_id',
+          foreignField: '_id',
+          as: 'areas_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'insights2',
+          localField: 'insight_id',
+          foreignField: '_id',
+          as: 'insight_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+  
+      {
+        $project: {
+          createdAt:'$createdAt',
+          auth: { $arrayElemAt: ['$userAuth_data', 0] },
+          citi: { $arrayElemAt: ['$cities_data', 0] },
+          countri:{ $arrayElemAt: ['$countries_data', 0] },
+          language:{ $arrayElemAt: ['$languages_data', 0] },
+          areas:{ $arrayElemAt: ['$areas_data', 0] },
+          insights:{ $arrayElemAt: ['$insight_data', 0] },
+          profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+          fullName:'$fullName',
+          username: '$auth.userName',
+          area:'$areas.stateName',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          countries: '$countri.country',
+          cities: '$citi.cityName',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+          dob: '$dob',
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+                     shares:'$insights.shares',
+                      followers:'$insights.followers',
+                      comments:'$insights.comments',
+                      followings:'$insights.followings',
+                      reactions:'$insights.reactions',
+                      posts:'$insights.posts',
+                      views:'$insights.views',
+                      likes:'$insights.likes'
+        },
+        avatar:{
+          mediaBasePath:'$profilpict.mediaBasePath',
+          mediaUri:'$profilpict.mediaUri',
+          mediaType:'$profilpict.mediaType',
+          mediaEndpoint:'$profilpict.fsTargetUri',
+          medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          
+        },
+        interest: '$interes_data',
+      }
+    },
+    {
+      $addFields: {
+       
+        concat:'/profilepict',
+       pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+      },
+    },
+      {
+        $project: {
+          createdAt:'$createdAt',
+          interest: '$interest',
+          username: '$auth.username',
+          fullName:'$fullName',
+          countries: '$countri.country',
+          area:'$areas.stateName',
+          cities: '$citi.cityName',
+          dob: '$dob',
+          age: '$age',
+          email: '$email',
+          gender: '$gender',
+          bio:'$bio',
+          idProofNumber: '$idProofNumber',
+          mobileNumber: '$mobileNumber',
+          roles:'$auth.roles',
+         
+          event: '$event',
+          isComplete:'$isComplete',
+          status: '$status',
+          langIso:'$language.langIso',
+          insight:{
+            shares:'$insights.shares',
+             followers:'$insights.followers',
+             comments:'$insights.comments',
+             followings:'$insights.followings',
+             reactions:'$insights.reactions',
+             posts:'$insights.posts',
+             views:'$insights.views',
+             likes:'$insights.likes'
+  },    avatar:{
+    mediaBasePath:'$profilpict.mediaBasePath',
+    mediaUri:'$profilpict.mediaUri',
+    mediaType:'$profilpict.mediaType',
+    mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+   
+  }, 
+      },
+   },{$sort: { createdAt: -1 },},
+    ]);
+    return query;
   }
 
-  async findTypeAkun(
-    fullName: String,
-    roles: String,
-  ): Promise<Getuserprofiles> {
-    return this.getuserprofilesModel
-      .findOne({ fullName: fullName, roles: roles })
-      .exec();
-  }
 
-  async findroles(roles: String): Promise<Getuserprofiles> {
-    return this.getuserprofilesModel.findOne({ roles: roles }).exec();
-  }
-  async findfullnameroles(
-    fullName: String,
-    roles: String,
-  ): Promise<Getuserprofiles> {
-    return this.getuserprofilesModel
-      .findOne({ fullName: fullName, roles: roles })
-      .exec();
-  }
-  async findfullnamegenderroles(
-    fullName: String,
-    roles: String,
-    gender: String,
-  ): Promise<Getuserprofiles> {
-    return this.getuserprofilesModel
-      .findOne({ fullName: fullName, roles: roles, gender: gender })
-      .exec();
-  }
-  async findgenderroles(
-    roles: String,
-    gender: String,
-  ): Promise<Getuserprofiles> {
-    return this.getuserprofilesModel
-      .findOne({ roles: roles, gender: gender })
-      .exec();
-  }
-  async findumur(dob: String): Promise<Getuserprofiles> {
-    return this.getuserprofilesModel.findOne({ dob: dob }).exec();
-  }
+ 
+   
+  
+}
+
+
+
+
+
+
+
+async findfullnameage15(fullName:string,age: string){
+
+  const countries = await this.countriesService.findcountries();
+  const cities= await this.citiesService.findcities();
+  const areas= await this.areasService.findarea();
+  const languanges = await this.languagesService.findlanguanges();
+  const insight = await this.insightsService.findinsight();
+  const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+  const interes = await this.interestsRepoService.findinterst();
+  const query =await this.getuserprofilesModel.aggregate([
+  
+    {
+      $addFields: {
+        userAuth_id:'$userAuth.$id',
+        countries_id: '$countries.$id',
+        cities_id:'$cities.$id',
+        areas_id:'$states.$id',
+        languages_id: '$languages.$id',
+        insight_id: '$insight.$id',
+        profilePict_id: '$profilePict.$id',
+        interest_id: '$userInterests.$id',
+        concat:'/profilepict',
+        age: {
+          $dateDiff: { startDate: { $toDate: '$dob'}, endDate: '$$NOW', unit: 'year' },
+        },
+      },
+    },
+    {$match:{fullName: {
+      $regex: fullName
+    },age:{ $gt: 0, $lt: 14 }}},
+    {
+      $lookup: {
+        from: 'interests_repo2',
+        localField: 'interest_id',
+        foreignField: '_id',
+        as: 'interes_data',
+      },
+    },
+    {
+      $lookup: {
+        from: 'mediaprofilepicts2',
+        localField: 'profilePict_id',
+        foreignField: '_id',
+        as: 'profilePict_data',
+      },
+    },
+    {
+      $lookup: {
+        from: 'countries2',
+        localField: 'countries_id',
+        foreignField: '_id',
+        as: 'countries_data',
+      },
+    },
+    {
+      $lookup: {
+        from: 'languages2',
+        localField: 'languages_id',
+        foreignField: '_id',
+        as: 'languages_data',
+      },
+    },
+    {
+      $lookup: {
+        from: 'cities2',
+        localField: 'cities_id',
+        foreignField: '_id',
+        as: 'cities_data',
+      },
+    },
+    {
+      $lookup: {
+        from: 'areas2',
+        localField: 'areas_id',
+        foreignField: '_id',
+        as: 'areas_data',
+      },
+    },
+    {
+      $lookup: {
+        from: 'insights2',
+        localField: 'insight_id',
+        foreignField: '_id',
+        as: 'insight_data',
+      },
+    },
+    {
+      $lookup: {
+        from: 'userauths',
+        localField: 'userAuth_id',
+        foreignField: '_id',
+        as: 'userAuth_data',
+      },
+    },
+
+    {
+      $project: {
+  
+        auth: { $arrayElemAt: ['$userAuth_data', 0] },
+        citi: { $arrayElemAt: ['$cities_data', 0] },
+        countri:{ $arrayElemAt: ['$countries_data', 0] },
+        language:{ $arrayElemAt: ['$languages_data', 0] },
+        areas:{ $arrayElemAt: ['$areas_data', 0] },
+        insights:{ $arrayElemAt: ['$insight_data', 0] },
+        profilpict:{ $arrayElemAt: ['$profilePict_data', 0] },
+        fullName:'$fullName',
+        username: '$auth.userName',
+        area:'$areas.stateName',
+        age: '$age',
+        email: '$email',
+        gender: '$gender',
+        bio:'$bio',
+        idProofNumber: '$idProofNumber',
+        countries: '$countri.country',
+        cities: '$citi.cityName',
+        mobileNumber: '$mobileNumber',
+        roles:'$auth.roles',
+        dob: '$dob',
+        event: '$event',
+        isComplete:'$isComplete',
+        status: '$status',
+        langIso:'$language.langIso',
+        insight:{
+                   shares:'$insights.shares',
+                    followers:'$insights.followers',
+                    comments:'$insights.comments',
+                    followings:'$insights.followings',
+                    reactions:'$insights.reactions',
+                    posts:'$insights.posts',
+                    views:'$insights.views',
+                    likes:'$insights.likes'
+      },
+      avatar:{
+        mediaBasePath:'$profilpict.mediaBasePath',
+        mediaUri:'$profilpict.mediaUri',
+        mediaType:'$profilpict.mediaType',
+        mediaEndpoint:'$profilpict.fsTargetUri',
+        medreplace:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+        
+      },
+      interest: '$interes_data',
+    }
+  },
+  {
+    $addFields: {
+     
+      concat:'/profilepict',
+     pict:{ $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+    },
+  },
+    {
+      $project: {
+     
+        interest: '$interest',
+        username: '$auth.username',
+        fullName:'$fullName',
+        countries: '$countri.country',
+        area:'$areas.stateName',
+        cities: '$citi.cityName',
+        dob: '$dob',
+        age: '$age',
+        email: '$email',
+        gender: '$gender',
+        bio:'$bio',
+        idProofNumber: '$idProofNumber',
+        mobileNumber: '$mobileNumber',
+        roles:'$auth.roles',
+       
+        event: '$event',
+        isComplete:'$isComplete',
+        status: '$status',
+        langIso:'$language.langIso',
+        insight:{
+          shares:'$insights.shares',
+           followers:'$insights.followers',
+           comments:'$insights.comments',
+           followings:'$insights.followings',
+           reactions:'$insights.reactions',
+           posts:'$insights.posts',
+           views:'$insights.views',
+           likes:'$insights.likes'
+},    avatar:{
+  mediaBasePath:'$profilpict.mediaBasePath',
+  mediaUri:'$profilpict.mediaUri',
+  mediaType:'$profilpict.mediaType',
+  mediaEndpoint:{ $concat: [ "$concat", "/", "$pict" ] },
+ 
+}, 
+    },
+ }
+  ]);
+  return query;
+}
   async delete(id: string) {
     const deletedCat = await this.getuserprofilesModel
       .findByIdAndRemove({ _id: id })

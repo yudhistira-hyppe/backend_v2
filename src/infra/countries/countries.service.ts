@@ -31,4 +31,25 @@ export class CountriesService {
       .exec();
     return deletedCat;
   }
+
+  async findcountries(){
+    const query =await this.countriesModel.aggregate([
+  
+      {
+        $lookup: {
+          from: 'countries',
+          localField: 'countries.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      },{
+        $out:{
+          db:'hyppe_trans_db',
+          coll:'countries2'
+        }
+      },
+     
+    ]);
+    return query;
+  }
 }

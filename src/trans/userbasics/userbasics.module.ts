@@ -5,11 +5,12 @@ import { UserbasicsService } from './userbasics.service';
 import { ConfigModule } from '@nestjs/config';
 import { Userbasic, UserbasicSchema } from './schemas/userbasic.schema';
 import { LanguagesModule } from '../../infra/languages/languages.module';
-
+import { CountriesModule } from '../../infra/countries/countries.module';
 @Module({
 
     imports: [
         LanguagesModule,
+        CountriesModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Userbasic.name, schema: UserbasicSchema }],'SERVER_TRANS')
     ],

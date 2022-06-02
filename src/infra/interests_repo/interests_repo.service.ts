@@ -34,4 +34,25 @@ export class InterestsRepoService {
       .exec();
     return deletedCat;
   }
+
+  async findinterst(){
+    const query =await this.interestsrepoModel.aggregate([
+  
+      {
+        $lookup: {
+          from: 'interests_repo',
+          localField: 'interests_repo.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      },{
+        $out:{
+          db:'hyppe_trans_db',
+          coll:'interests_repo2'
+        }
+      },
+     
+    ]);
+    return query;
+  }
 }

@@ -119,4 +119,25 @@ export class InsightsService {
     ]).exec();
     return GetCount;
   }
+
+  async findinsight(){
+    const query =await this.InsightsModel.aggregate([
+  
+      {
+        $lookup: {
+          from: 'insights',
+          localField: 'insights.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      },{
+        $out:{
+          db:'hyppe_trans_db',
+          coll:'insights2'
+        }
+      },
+     
+    ]);
+    return query;
+  }
 }

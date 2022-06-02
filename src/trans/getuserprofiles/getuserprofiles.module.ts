@@ -13,11 +13,13 @@ import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediapr
 import { InsightsModule} from '../../content/insights/insights.module';
 import { LanguagesModule} from '../../infra/languages/languages.module';
 import { InterestsModule } from '../../infra/interests/interests.module';
+import { InterestsRepoModule } from '../../infra/interests_repo/interests_repo.module';
+
 import { FileSystemStoredFile, FormDataRequest,NestjsFormDataModule } from 'nestjs-form-data';
 @Module({
  
   imports: [
-    ConfigModule.forRoot(),UserbasicsModule, NestjsFormDataModule,CountriesModule,AreasModule,UserauthsModule,CitiesModule,MediaprofilepictsModule,InsightsModule,LanguagesModule,InterestsModule,
+    ConfigModule.forRoot(),UserbasicsModule, NestjsFormDataModule,CountriesModule,AreasModule,InterestsRepoModule,UserauthsModule,CitiesModule,MediaprofilepictsModule,InsightsModule,LanguagesModule,InterestsModule,
 
     MongooseModule.forFeature([{ name: Getuserprofiles.name, schema: GetuserprofilesSchema }],'SERVER_TRANS')
 ],

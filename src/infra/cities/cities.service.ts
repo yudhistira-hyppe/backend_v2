@@ -29,4 +29,25 @@ export class CitiesService {
       .exec();
     return deletedCat;
   }
+
+  async findcities(){
+    const query =await this.citiesModel.aggregate([
+  
+      {
+        $lookup: {
+          from: 'cities',
+          localField: 'cities.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      },{
+        $out:{
+          db:'hyppe_trans_db',
+          coll:'cities2'
+        }
+      },
+     
+    ]);
+    return query;
+  }
 }

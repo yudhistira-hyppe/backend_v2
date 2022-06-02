@@ -33,4 +33,25 @@ export class LanguagesService {
     }).exec();
     return deletedCat;
   }
+
+  async findlanguanges(){
+    const query =await this.LanguagesModel.aggregate([
+  
+      {
+        $lookup: {
+          from: 'languages',
+          localField: 'languages.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      },{
+        $out:{
+          db:'hyppe_trans_db',
+          coll:'languages2'
+        }
+      },
+     
+    ]);
+    return query;
+  }
 }

@@ -29,6 +29,7 @@
     "@nestjs/passport": "^8.2.1",
     "@nestjs/platform-express": "^8.0.0",
     "bcrypt": "^5.0.1",
+    "mongodb": "^4.6.0",
     "mongoose": "^6.3.3",
     "nestjs-form-data": "^1.6.3",
     "nestjs-keyset-paginator": "^3.0.4",
