@@ -76,6 +76,28 @@ export class GetusercontentsController {
         return {    response_code: 202, data, messages}; 
     }
 
+    @Post('api/getusercontents/monetize')
+    @UseGuards(JwtAuthGuard)
+    async contentusermonetize(@Req() request: Request): Promise<any> {
+
+        var email=null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if(request_json["email"] !== undefined){
+            email=request_json["email"] ;
+        }else{
+            throw new BadRequestException("Unabled to proceed"); 
+        }
+
+
+        const messages = {
+        "info":["The process successful"],
+        };
+   
+      let  data = await this.getusercontentsService.findmonetize(email);     
+
+        return {    response_code: 202, data, messages}; 
+    }
+
     @Post('api/getusercontents/search')
     @UseGuards(JwtAuthGuard)
     async contentusersearch(@Req() request: Request): Promise<any> {
