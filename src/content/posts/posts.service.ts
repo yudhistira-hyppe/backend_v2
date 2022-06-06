@@ -27,6 +27,7 @@ export class PostsService {
   async findOne(email: string): Promise<Posts> {
     return this.PostsModel.findOne({ email: email }).exec();
   }
+
   async delete(id: string) {
     const deletedCat = await this.PostsModel.findByIdAndRemove({
       _id: id,
@@ -148,6 +149,927 @@ export class PostsService {
       },
      
     ]);
-    return query;
+    return query;}
+    
+  async regcontenMonetize(): Promise<Object> {
+    var GetCount = this.PostsModel.aggregate([
+      {
+        $addFields: {
+          contentMedias_id: '$contentMedias.$id',
+          contentMedias_ref: { $arrayElemAt: ['$contentMedias.$ref', 0] },
+          metadata_duration: '$metadata.duration',
+          metadata_duration_second: {
+            $floor: {
+              $mod: ['$metadata.duration', 60],
+            },
+          },
+          metadata_duration_minute: {
+            $floor: {
+              $divide: [
+                {
+                  $mod: [{ $mod: ['$metadata.duration', 60] }, 3600],
+                },
+                60,
+              ],
+            },
+          },
+          metadata_duration_hour: {
+            $floor: {
+              $divide: [
+                {
+                  $mod: [{ $mod: ['$metadata.duration', 60] }, 86400],
+                },
+                3600,
+              ],
+            },
+          },
+        },
+      },
+      {
+        $sort: { createdAt: 1 },
+      },
+      {
+        $match: {
+          isCertified: false,
+          active: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediavideos',
+          localField: 'contentMedias_id',
+          foreignField: '_id',
+          as: 'contentMedias_mediavideos',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediapicts',
+          localField: 'contentMedias_id',
+          foreignField: '_id',
+          as: 'contentMedias_mediapicts',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediadiaries',
+          localField: 'contentMedias_id',
+          foreignField: '_id',
+          as: 'contentMedias_mediadiaries',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediastories',
+          localField: 'contentMedias_id',
+          foreignField: '_id',
+          as: 'contentMedias_mediastories',
+        },
+      },
+      {
+        $group: {
+          _id: '$isCertified',
+          log: {
+            $push: {
+              email: '$email',
+              postType: {
+                $switch: {
+                  branches: [
+                    {
+                      case: { $eq: ['$postType', 'vid'] },
+                      then: 'HyppeVid',
+                    },
+                    {
+                      case: { $eq: ['$postType', 'pic'] },
+                      then: 'HyppePic',
+                    },
+                    {
+                      case: { $eq: ['$postType', 'diary'] },
+                      then: 'HyppeDiary',
+                    },
+                    {
+                      case: { $eq: ['$postType', 'story'] },
+                      then: 'HyppeStory',
+                    },
+                  ],
+                  default: [],
+                },
+              },
+              duration: {
+                $cond: {
+                  if: { $ne: ['$metadata_duration_hour', 0] },
+                  then: {
+                    $cond: {
+                      if: { $lt: ['$metadata_duration_minute', 10] },
+                      then: {
+                        $cond: {
+                          if: { $lt: ['$metadata_duration_second', 10] },
+                          then: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_hour',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                          else: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_hour',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                        },
+                      },
+                      else: {
+                        $cond: {
+                          if: { $lt: ['$metadata_duration_second', 10] },
+                          then: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_hour',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                          else: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_hour',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  },
+                  else: {
+                    $cond: {
+                      if: { $lt: ['$metadata_duration_minute', 10] },
+                      then: {
+                        $cond: {
+                          if: { $lt: ['$metadata_duration_second', 10] },
+                          then: {
+                            $concat: [
+                              '0',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                          else: {
+                            $concat: [
+                              '0',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                        },
+                      },
+                      else: {
+                        $cond: {
+                          if: { $lt: ['$metadata_duration_second', 10] },
+                          then: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                          else: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              description: '$description',
+              visibility: '$visibility',
+              tags: '$tags',
+              allowComments: '$allowComments',
+              metadata: '$metadata',
+              likes: '$likes',
+              views: '$views',
+              shares: '$shares',
+              comments: '$comments',
+              reactions: '$reactions',
+              // contentMedias_ref: '$contentMedias_ref',
+              // contentMedias_id: '$contentMedias_id',
+              // contentMedias_ref: '$customfield',
+              // contentMedias_mediavideos: '$contentMedias_mediavideos',
+              // contentMedias_mediapicts: '$contentMedias_mediavideos',
+              // contentMedias_mediadiaries: '$contentMedias_mediavideos',
+              // contentMedias_mediastories: '$contentMedias_mediastories',
+              contentMedias: {
+                $switch: {
+                  branches: [
+                    {
+                      case: { $eq: ['$contentMedias_ref', 'mediavideos'] },
+                      then: '$contentMedias_mediavideos',
+                    },
+                    {
+                      case: { $eq: ['$contentMedias_ref', 'mediapicts'] },
+                      then: '$contentMedias_mediapicts',
+                    },
+                    {
+                      case: { $eq: ['$contentMedias_ref', 'mediadiaries'] },
+                      then: '$contentMedias_mediadiaries',
+                    },
+                    {
+                      case: { $eq: ['$contentMedias_ref', 'mediastories'] },
+                      then: '$contentMedias_mediastories',
+                    },
+                  ],
+                  default: [],
+                },
+              },
+            },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          count: '$count',
+          content: '$log',
+        },
+      },
+    ]).exec();
+    return GetCount;
+  }
+
+  async newcontenMonetize(): Promise<Object> {
+    var GetCount = this.PostsModel.aggregate([
+      {
+        $addFields: {
+          contentMedias_id: '$contentMedias.$id',
+          contentMedias_ref: { $arrayElemAt: ['$contentMedias.$ref', 0] },
+          metadata_duration: '$metadata.duration',
+          metadata_duration_second: {
+            $floor: {
+              $mod: ['$metadata.duration', 60],
+            },
+          },
+          metadata_duration_minute: {
+            $floor: {
+              $divide: [
+                {
+                  $mod: [{ $mod: ['$metadata.duration', 60] }, 3600],
+                },
+                60,
+              ],
+            },
+          },
+          metadata_duration_hour: {
+            $floor: {
+              $divide: [
+                {
+                  $mod: [{ $mod: ['$metadata.duration', 60] }, 86400],
+                },
+                3600,
+              ],
+            },
+          },
+        },
+      },
+      {
+        $sort: { createdAt: 1 },
+      },
+      {
+        $match: {
+          isCertified: true,
+          active: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediavideos',
+          localField: 'contentMedias_id',
+          foreignField: '_id',
+          as: 'contentMedias_mediavideos',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediapicts',
+          localField: 'contentMedias_id',
+          foreignField: '_id',
+          as: 'contentMedias_mediapicts',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediadiaries',
+          localField: 'contentMedias_id',
+          foreignField: '_id',
+          as: 'contentMedias_mediadiaries',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediastories',
+          localField: 'contentMedias_id',
+          foreignField: '_id',
+          as: 'contentMedias_mediastories',
+        },
+      },
+      {
+        $group: {
+          _id: '$isCertified',
+          log: {
+            $push: {
+              email: '$email',
+              postType: {
+                $switch: {
+                  branches: [
+                    {
+                      case: { $eq: ['$postType', 'vid'] },
+                      then: 'HyppeVid',
+                    },
+                    {
+                      case: { $eq: ['$postType', 'pic'] },
+                      then: 'HyppePic',
+                    },
+                    {
+                      case: { $eq: ['$postType', 'diary'] },
+                      then: 'HyppeDiary',
+                    },
+                    {
+                      case: { $eq: ['$postType', 'story'] },
+                      then: 'HyppeStory',
+                    },
+                  ],
+                  default: [],
+                },
+              },
+              duration: {
+                $cond: {
+                  if: { $ne: ['$metadata_duration_hour', 0] },
+                  then: {
+                    $cond: {
+                      if: { $lt: ['$metadata_duration_minute', 10] },
+                      then: {
+                        $cond: {
+                          if: { $lt: ['$metadata_duration_second', 10] },
+                          then: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_hour',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                          else: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_hour',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                        },
+                      },
+                      else: {
+                        $cond: {
+                          if: { $lt: ['$metadata_duration_second', 10] },
+                          then: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_hour',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                          else: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_hour',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  },
+                  else: {
+                    $cond: {
+                      if: { $lt: ['$metadata_duration_minute', 10] },
+                      then: {
+                        $cond: {
+                          if: { $lt: ['$metadata_duration_second', 10] },
+                          then: {
+                            $concat: [
+                              '0',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                          else: {
+                            $concat: [
+                              '0',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                        },
+                      },
+                      else: {
+                        $cond: {
+                          if: { $lt: ['$metadata_duration_second', 10] },
+                          then: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                          else: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              description: '$description',
+              visibility: '$visibility',
+              tags: '$tags',
+              allowComments: '$allowComments',
+              metadata: '$metadata',
+              likes: '$likes',
+              views: '$views',
+              shares: '$shares',
+              comments: '$comments',
+              reactions: '$reactions',
+              // contentMedias_ref: '$contentMedias_ref',
+              // contentMedias_id: '$contentMedias_id',
+              // contentMedias_ref: '$customfield',
+              // contentMedias_mediavideos: '$contentMedias_mediavideos',
+              // contentMedias_mediapicts: '$contentMedias_mediavideos',
+              // contentMedias_mediadiaries: '$contentMedias_mediavideos',
+              // contentMedias_mediastories: '$contentMedias_mediastories',
+              contentMedias: {
+                $switch: {
+                  branches: [
+                    {
+                      case: { $eq: ['$contentMedias_ref', 'mediavideos'] },
+                      then: '$contentMedias_mediavideos',
+                    },
+                    {
+                      case: { $eq: ['$contentMedias_ref', 'mediapicts'] },
+                      then: '$contentMedias_mediapicts',
+                    },
+                    {
+                      case: { $eq: ['$contentMedias_ref', 'mediadiaries'] },
+                      then: '$contentMedias_mediadiaries',
+                    },
+                    {
+                      case: { $eq: ['$contentMedias_ref', 'mediastories'] },
+                      then: '$contentMedias_mediastories',
+                    },
+                  ],
+                  default: [],
+                },
+              },
+            },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          count: '$count',
+          content: '$log',
+        },
+      },
+    ]).exec();
+    return GetCount;
+  }
+
+  async getContent(email: string, type: string): Promise<Object> {
+    var GetCount = this.PostsModel.aggregate([
+      {
+        $addFields: {
+          contentMedias_id: '$contentMedias.$id',
+          contentMedias_ref: { $arrayElemAt: ['$contentMedias.$ref', 0] },
+          metadata_duration: '$metadata.duration',
+          metadata_duration_second: {
+            $floor: {
+              $mod: ['$metadata.duration', 60],
+            },
+          },
+          metadata_duration_minute: {
+            $floor: {
+              $divide: [
+                {
+                  $mod: [{ $mod: ['$metadata.duration', 60] }, 3600],
+                },
+                60,
+              ],
+            },
+          },
+          metadata_duration_hour: {
+            $floor: {
+              $divide: [
+                {
+                  $mod: [{ $mod: ['$metadata.duration', 60] }, 86400],
+                },
+                3600,
+              ],
+            },
+          },
+        },
+      },
+      {
+        $sort: { createdAt: 1 },
+      },
+      {
+        $match: {
+          email: email,
+          //isCertified: false,
+          //active: true,
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediavideos',
+          localField: 'contentMedias_id',
+          foreignField: '_id',
+          as: 'contentMedias_mediavideos',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediapicts',
+          localField: 'contentMedias_id',
+          foreignField: '_id',
+          as: 'contentMedias_mediapicts',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediadiaries',
+          localField: 'contentMedias_id',
+          foreignField: '_id',
+          as: 'contentMedias_mediadiaries',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediastories',
+          localField: 'contentMedias_id',
+          foreignField: '_id',
+          as: 'contentMedias_mediastories',
+        },
+      },
+      {
+        $group: {
+          _id: '$isCertified',
+          log: {
+            $push: {
+              email: '$email',
+              postType: {
+                $switch: {
+                  branches: [
+                    {
+                      case: { $eq: ['$postType', 'vid'] },
+                      then: 'HyppeVid',
+                    },
+                    {
+                      case: { $eq: ['$postType', 'pic'] },
+                      then: 'HyppePic',
+                    },
+                    {
+                      case: { $eq: ['$postType', 'diary'] },
+                      then: 'HyppeDiary',
+                    },
+                    {
+                      case: { $eq: ['$postType', 'story'] },
+                      then: 'HyppeStory',
+                    },
+                  ],
+                  default: [],
+                },
+              },
+              duration: {
+                $cond: {
+                  if: { $ne: ['$metadata_duration_hour', 0] },
+                  then: {
+                    $cond: {
+                      if: { $lt: ['$metadata_duration_minute', 10] },
+                      then: {
+                        $cond: {
+                          if: { $lt: ['$metadata_duration_second', 10] },
+                          then: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_hour',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                          else: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_hour',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                        },
+                      },
+                      else: {
+                        $cond: {
+                          if: { $lt: ['$metadata_duration_second', 10] },
+                          then: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_hour',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                          else: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_hour',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  },
+                  else: {
+                    $cond: {
+                      if: { $lt: ['$metadata_duration_minute', 10] },
+                      then: {
+                        $cond: {
+                          if: { $lt: ['$metadata_duration_second', 10] },
+                          then: {
+                            $concat: [
+                              '0',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                          else: {
+                            $concat: [
+                              '0',
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                        },
+                      },
+                      else: {
+                        $cond: {
+                          if: { $lt: ['$metadata_duration_second', 10] },
+                          then: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              '0',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                          else: {
+                            $concat: [
+                              {
+                                $toString: '$metadata_duration_minute',
+                              },
+                              ':',
+                              {
+                                $toString: '$metadata_duration_second',
+                              },
+                            ],
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              description: '$description',
+              visibility: '$visibility',
+              tags: '$tags',
+              allowComments: '$allowComments',
+              metadata: '$metadata',
+              likes: '$likes',
+              views: '$views',
+              shares: '$shares',
+              comments: '$comments',
+              reactions: '$reactions',
+              // contentMedias_ref: '$contentMedias_ref',
+              // contentMedias_id: '$contentMedias_id',
+              // contentMedias_ref: '$customfield',
+              // contentMedias_mediavideos: '$contentMedias_mediavideos',
+              // contentMedias_mediapicts: '$contentMedias_mediavideos',
+              // contentMedias_mediadiaries: '$contentMedias_mediavideos',
+              // contentMedias_mediastories: '$contentMedias_mediastories',
+              contentMedias: {
+                $switch: {
+                  branches: [
+                    {
+                      case: { $eq: ['$contentMedias_ref', 'mediavideos'] },
+                      then: '$contentMedias_mediavideos',
+                    },
+                    {
+                      case: { $eq: ['$contentMedias_ref', 'mediapicts'] },
+                      then: '$contentMedias_mediapicts',
+                    },
+                    {
+                      case: { $eq: ['$contentMedias_ref', 'mediadiaries'] },
+                      then: '$contentMedias_mediadiaries',
+                    },
+                    {
+                      case: { $eq: ['$contentMedias_ref', 'mediastories'] },
+                      then: '$contentMedias_mediastories',
+                    },
+                  ],
+                  default: [],
+                },
+              },
+            },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          count: '$count',
+          content: '$log',
+        },
+      },
+    ]).exec();
+    return GetCount;
   }
 }
