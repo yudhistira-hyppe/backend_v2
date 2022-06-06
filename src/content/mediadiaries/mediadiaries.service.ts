@@ -34,4 +34,25 @@ export class MediadiariesService {
     }).exec();
     return deletedCat;
   }
+
+  async finddiaries(){
+    const query =await this.MediadiariesModel.aggregate([
+  
+      {
+        $lookup: {
+          from: 'mediadiaries',
+          localField: 'mediadiaries.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      },{
+        $out:{
+          db:'hyppe_trans_db',
+          coll:'mediadiaries2'
+        }
+      },
+     
+    ]);
+    return query;
+  }
 }

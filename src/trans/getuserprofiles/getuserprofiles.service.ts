@@ -1356,7 +1356,7 @@ async findata(fullName: string,gender:string,roles:string,age: string){
               },
             },
           },
-          {$match:{age:{ $gt: 50, $lt: 200 }}},
+          {$match:{age:{ $gt: 50,}}},
           {
             $lookup: {
               from: 'interests_repo2',
@@ -2634,7 +2634,7 @@ async findata(fullName: string,gender:string,roles:string,age: string){
               },
             },
           },
-          {$match:{fullName: { $regex: fullName},age:{ $gt: 50, $lt: 200 }}},
+          {$match:{fullName: { $regex: fullName},age:{ $gt: 50 }}},
           {
             $lookup: {
               from: 'interests_repo2',
@@ -3730,7 +3730,7 @@ async findata(fullName: string,gender:string,roles:string,age: string){
               },
             },
           },
-          {$match:{gender: gender,age:{ $gt: 50, $lt: 200 }}},
+          {$match:{gender: gender,age:{ $gt: 50 }}},
           {
             $lookup: {
               from: 'interests_repo2',
@@ -4799,7 +4799,7 @@ async findata(fullName: string,gender:string,roles:string,age: string){
        
       }, 
           },
-       },  {$match:{roles: roles,age:{ $gt: 50, $lt: 200 }}}, {$sort: { createdAt: -1 },},
+       },  {$match:{roles: roles,age:{ $gt: 50 }}}, {$sort: { createdAt: -1 },},
         ]);
         return query;
       }
@@ -5708,7 +5708,7 @@ async findata(fullName: string,gender:string,roles:string,age: string){
        
       }, 
           },
-       },  {$match:{gender:gender,roles: roles,age:{ $gt: 50, $lt: 200 }}},{$sort: { createdAt: -1 },},
+       },  {$match:{gender:gender,roles: roles,age:{ $gt: 50 }}},{$sort: { createdAt: -1 },},
         ]);
         return query;
       }
@@ -6617,7 +6617,7 @@ async findata(fullName: string,gender:string,roles:string,age: string){
        
       }, 
           },
-       },  {$match:{fullName: { $regex: fullName},gender:gender,roles: roles,age:{ $gt: 50, $lt: 200 }}},
+       },  {$match:{fullName: { $regex: fullName},gender:gender,roles: roles,age:{ $gt: 50 }}},
         {$sort: { createdAt: -1 },},
         ]);
         return query;

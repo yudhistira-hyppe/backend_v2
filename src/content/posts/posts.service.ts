@@ -129,4 +129,25 @@ export class PostsService {
     ]).exec();
     return GetCount;
   }
+
+  async findpost(){
+    const query =await this.PostsModel.aggregate([
+  
+      {
+        $lookup: {
+          from: 'posts',
+          localField: 'posts.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      },{
+        $out:{
+          db:'hyppe_trans_db',
+          coll:'posts2'
+        }
+      },
+     
+    ]);
+    return query;
+  }
 }

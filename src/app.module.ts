@@ -47,6 +47,7 @@ import { NotificationsModule } from './content/notifications/notifications.modul
 import { PostsModule } from './content/posts/posts.module';
 import { ProfileModule } from './trans/profile/profile.module';
 import { GetuserprofilesModule } from './trans/getuserprofiles/getuserprofiles.module';
+import { GetusercontentsModule } from './trans/getusercontents/getusercontents.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -56,6 +57,7 @@ import { GetuserprofilesModule } from './trans/getuserprofiles/getuserprofiles.m
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   GetusercontentsModule,
    GetuserprofilesModule,
    ProfileModule,
    PostsModule,

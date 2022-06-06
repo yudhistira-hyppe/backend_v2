@@ -32,4 +32,25 @@ export class MediapictsService {
     }).exec();
     return deletedCat;
   }
+
+  async findpict(){
+    const query =await this.MediapictsModel.aggregate([
+  
+      {
+        $lookup: {
+          from: 'mediapicts',
+          localField: 'mediapicts.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      },{
+        $out:{
+          db:'hyppe_trans_db',
+          coll:'mediapicts2'
+        }
+      },
+     
+    ]);
+    return query;
+  }
 }

@@ -34,4 +34,24 @@ export class MediavideosService {
     }).exec();
     return deletedCat;
   }
+  async findvideo(){
+    const query =await this.MediavideosModel.aggregate([
+  
+      {
+        $lookup: {
+          from: 'mediavideos',
+          localField: 'mediavideos.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      },{
+        $out:{
+          db:'hyppe_trans_db',
+          coll:'mediavideos2'
+        }
+      },
+     
+    ]);
+    return query;
+  }
 }
