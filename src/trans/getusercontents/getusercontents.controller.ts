@@ -31,6 +31,8 @@ export class GetusercontentsController {
         return {    response_code: 202, data, messages}; 
     }
 
+   
+
     @Post('api/getusercontents/latest')
     @UseGuards(JwtAuthGuard)
     async contentuserlatest(@Req() request: Request): Promise<any> {
@@ -54,6 +56,7 @@ export class GetusercontentsController {
     }
 
     
+  
     @Post('api/getusercontents/popular')
     @UseGuards(JwtAuthGuard)
     async contentuser(@Req() request: Request): Promise<any> {
@@ -124,6 +127,53 @@ export class GetusercontentsController {
    
       let  data = await this.getusercontentsService.findsearch(email,title);     
 
-        return {    response_code: 202, data, messages}; }
+        return {    response_code: 202, data, messages}; 
+    }
+
+
+    @Post('api/getusercontents/management/all')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagement(@Req() request: Request): Promise<any> {
+
+        var email=null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if(request_json["email"] !== undefined){
+            email=request_json["email"] ;
+        }else{
+            throw new BadRequestException("Unabled to proceed"); 
+        }
+
+
+        const messages = {
+        "info":["The process successful"],
+        };
+   
+      let  data = await this.getusercontentsService.findcontentall(email);     
+
+        return {    response_code: 202, data, messages}; 
+    }
+
+    @Post('api/getusercontents/management/grouping')
+    @UseGuards(JwtAuthGuard)
+    async contentmanagemen(@Req() request: Request): Promise<any> {
+
+        var email=null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if(request_json["email"] !== undefined){
+            email=request_json["email"] ;
+        }else{
+            throw new BadRequestException("Unabled to proceed"); 
+        }
+
+
+        const messages = {
+        "info":["The process successful"],
+        };
+   
+      let  data = await this.getusercontentsService.findcontentgroup(email);     
+
+        return {    response_code: 202, data, messages}; 
+    }
+
 
 }

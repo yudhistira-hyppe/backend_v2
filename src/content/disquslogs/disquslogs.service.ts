@@ -32,4 +32,25 @@ export class DisquslogsService {
     }).exec();
     return deletedCat;
   }
+
+  async finddisquslog(){
+    const query =await this.DisquslogsModel.aggregate([
+  
+      {
+        $lookup: {
+          from: 'disquslogs',
+          localField: 'disquslogs.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      },{
+        $out:{
+          db:'hyppe_trans_db',
+          coll:'disquslogs2'
+        }
+      },
+     
+    ]);
+    return query;
+  }
 }

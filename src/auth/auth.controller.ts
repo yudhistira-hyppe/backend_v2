@@ -19,6 +19,12 @@ export class AuthController {
     return this.authService.login(req.user);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('api/user/profile')
+  getProfile(@Request() req) {
+    return req.user;
+  }
+
   @UseGuards(JwtRefreshAuthGuard)
   @Post('api/user/refreshtoken')
   @HttpCode(HttpStatus.ACCEPTED)

@@ -3,6 +3,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserdevicesModule } from './trans/userdevices/userdevices.module';
 import { UserbasicsModule } from './trans/userbasics/userbasics.module';
 import { UserauthsModule } from './trans/userauths/userauths.module';
+import { UserticketsModule } from './trans/usertickets/usertickets.module';
 import { JwtrefreshtokenModule } from './trans/jwtrefreshtoken/jwtrefreshtoken.module';
 import { ConfigModule } from '@nestjs/config';
 import { SnapshoteventsModule } from './trans/snapshotevents/snapshotevents.module';
@@ -57,6 +58,7 @@ import { GetusercontentsModule } from './trans/getusercontents/getusercontents.m
    // UserdevicesModule,
    // UserbasicsModule,
    // UserauthsModule,
+   UserticketsModule,
    GetusercontentsModule,
    GetuserprofilesModule,
    ProfileModule,

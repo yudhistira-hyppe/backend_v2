@@ -11,11 +11,13 @@ import { MediavideosModule} from '../../content/mediavideos/mediavideos.module';
 import { MediapictsModule} from '../../content/mediapicts/mediapicts.module';
 import { UserauthsModule } from '../userauths/userauths.module';
 import { MediadiariesModule} from '../../content/mediadiaries/mediadiaries.module';
+import { DisquslogsModule} from '../../content/disquslogs/disquslogs.module';
+import { DisqusModule} from '../../content/disqus/disqus.module';
 
 @Module({
 
     imports: [
-         ConfigModule.forRoot(),UserauthsModule,MediaprofilepictsModule,InsightsModule,PostsModule,MediavideosModule,MediapictsModule,MediadiariesModule,
+         ConfigModule.forRoot(),UserauthsModule,MediaprofilepictsModule,InsightsModule,PostsModule,MediavideosModule,MediapictsModule,MediadiariesModule,DisquslogsModule,DisqusModule,
     
         MongooseModule.forFeature([{ name: Getusercontents.name, schema: GetusercontentsSchema }],'SERVER_TRANS')
     ],
