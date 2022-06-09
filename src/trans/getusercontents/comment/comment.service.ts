@@ -31,7 +31,21 @@ export class CommentService {
         return deletedCat;
     }
 
+    async update(
+        id: string,
+        createCommentDto: CreateCommentDto,
+    ): Promise<Comment> {
+        let data = await this.commentModel.findByIdAndUpdate(
+            id,
+            createCommentDto,
+            { new: true },
+        );
 
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
+        return data;
+    }
 
     async findlastcomment(email: string) {
         const posts = await this.postsService.findpost();
