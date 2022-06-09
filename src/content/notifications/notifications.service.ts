@@ -9,7 +9,7 @@ export class NotificationsService {
   constructor(
     @InjectModel(Notifications.name, 'SERVER_CONTENT')
     private readonly NotificationsModel: Model<NotificationsDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateNotificationsDto: CreateNotificationsDto,
@@ -37,4 +37,6 @@ export class NotificationsService {
     }).exec();
     return deletedCat;
   }
+
+
 }

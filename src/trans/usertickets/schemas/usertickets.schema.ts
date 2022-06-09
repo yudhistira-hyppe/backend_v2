@@ -22,15 +22,15 @@ IdUser: { oid:string;  }
  @Prop()
   status: string
 
-  @Prop({ type: [{}] })
- Detail:[
-    {
-    IDUser:{ oid:string;  },
-       body: string,
-       datetime: string,
-       status: string
-    }
-  ]
+//   @Prop({ type: [{}] })
+//  Detail:[
+//     {
+//        IDUser:{ oid:string;  },
+//        body: string,
+//        datetime: string,
+//        status: string
+//     }
+//   ]
 
  
 }

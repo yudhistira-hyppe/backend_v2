@@ -5,24 +5,29 @@ import { GetusercontentsService } from './getusercontents.service';
 import { ConfigModule } from '@nestjs/config';
 import { Getusercontents, GetusercontentsSchema } from './schemas/getusercontents.schema';
 import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediaprofilepicts.module';
-import { InsightsModule} from '../../content/insights/insights.module';
-import { PostsModule} from '../../content/posts/posts.module';
-import { MediavideosModule} from '../../content/mediavideos/mediavideos.module';
-import { MediapictsModule} from '../../content/mediapicts/mediapicts.module';
+import { InsightsModule } from '../../content/insights/insights.module';
+import { PostsModule } from '../../content/posts/posts.module';
+import { MediavideosModule } from '../../content/mediavideos/mediavideos.module';
+import { MediapictsModule } from '../../content/mediapicts/mediapicts.module';
 import { UserauthsModule } from '../userauths/userauths.module';
-import { MediadiariesModule} from '../../content/mediadiaries/mediadiaries.module';
-import { DisquslogsModule} from '../../content/disquslogs/disquslogs.module';
-import { DisqusModule} from '../../content/disqus/disqus.module';
+import { MediadiariesModule } from '../../content/mediadiaries/mediadiaries.module';
+import { DisquslogsModule } from '../../content/disquslogs/disquslogs.module';
+import { DisqusModule } from '../../content/disqus/disqus.module';
+import { CommentController } from './comment/comment.controller';
+import { CommentService } from './comment/comment.service';
+import { CommentModule } from './comment/comment.module';
 
 @Module({
 
     imports: [
-         ConfigModule.forRoot(),UserauthsModule,MediaprofilepictsModule,InsightsModule,PostsModule,MediavideosModule,MediapictsModule,MediadiariesModule,DisquslogsModule,DisqusModule,
-    
-        MongooseModule.forFeature([{ name: Getusercontents.name, schema: GetusercontentsSchema }],'SERVER_TRANS')
+        ConfigModule.forRoot(), UserauthsModule, MediaprofilepictsModule, InsightsModule, PostsModule, MediavideosModule, MediapictsModule, MediadiariesModule, DisquslogsModule, DisqusModule, CommentModule,
+
+        MongooseModule.forFeature([{ name: Getusercontents.name, schema: GetusercontentsSchema }], 'SERVER_TRANS'),
+
+
     ],
     controllers: [GetusercontentsController],
     exports: [GetusercontentsService],
     providers: [GetusercontentsService],
 })
-export class GetusercontentsModule {}
+export class GetusercontentsModule { }
