@@ -16,12 +16,26 @@ import { MediaprofilepictsModule } from '../content/mediaprofilepicts/mediaprofi
 import { InsightsModule } from '../content/insights/insights.module';
 import { InterestsModule } from '../infra/interests/interests.module';
 import { InterestsRepoModule } from '../infra/interests_repo/interests_repo.module';
+import { ActivityeventsModule } from '../trans/activityevents/activityevents.module';
 @Module({
-  imports: [UserauthsModule,UserbasicsModule,UserdevicesModule,JwtrefreshtokenModule,PassportModule,CountriesModule,LanguagesModule,MediaprofilepictsModule,InsightsModule,InterestsModule,InterestsRepoModule,JwtModule.register({
-    secret: process.env.JWT_ACCESS_TOKEN_SECRET,
-    signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },
-  }),],
+  imports: [
+    UserauthsModule,
+    UserbasicsModule,
+    UserdevicesModule,
+    JwtrefreshtokenModule,
+    PassportModule,
+    CountriesModule,
+    LanguagesModule,
+    MediaprofilepictsModule,
+    InsightsModule,
+    InterestsModule,
+    InterestsRepoModule,
+    ActivityeventsModule, JwtModule.register({
+      secret: process.env.JWT_ACCESS_TOKEN_SECRET,
+      signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },
+    }),
+  ],
   controllers: [AuthController],
-  providers: [AuthService,LocalStrategy,JwtStrategy,JwtRefreshStrategy]
+  providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
 })
 export class AuthModule {}

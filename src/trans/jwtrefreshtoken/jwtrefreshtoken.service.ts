@@ -82,11 +82,11 @@ export class JwtrefreshtokenService {
     }
   }
 
-  // async removeRefreshToken(email: string) {
-  //   var _class = 'nest.js.JwtRefreshToken';
-  //   return this.jwtrefreshtokenModel.updateOne(
-  //     { email: email, _class: _class },
-  //     { refresh_token_id: null },
-  //   );
-  // }
+  async removeRefreshToken(email: string) {
+    var _class = 'nest.js.JwtRefreshToken';
+    this.jwtrefreshtokenModel.updateOne(
+      { email: email, _class: _class },
+      { refresh_token_id: null },
+    );
+  }
 }
