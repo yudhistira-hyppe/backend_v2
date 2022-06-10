@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post,UseGuards,Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put } from '@nestjs/common';
 import { UserbasicsService } from './userbasics.service';
 import { CreateUserbasicDto } from './dto/create-userbasic.dto';
 import { Userbasic } from './schemas/userbasic.schema';
@@ -8,7 +8,7 @@ import { isEmpty } from 'rxjs';
 
 @Controller('api/userbasics')
 export class UserbasicsController {
-  constructor(private readonly userbasicsService: UserbasicsService) {}
+  constructor(private readonly userbasicsService: UserbasicsService) { }
 
   @Post()
   async create(@Body() CreateUserbasicDto: CreateUserbasicDto) {
@@ -25,34 +25,35 @@ export class UserbasicsController {
   // async findOne(@Param('id') id: string): Promise<Userbasic> {
   //   return this.userbasicsService.findOne(id);
   // }
+  @UseGuards(JwtAuthGuard)
   @Get(':email')
-  async findOne(@Res() res,@Param('email') email: string): Promise<Userbasic> {
-    
+  async findOne(@Res() res, @Param('email') email: string): Promise<Userbasic> {
+
 
     const messagesEror = {
-      "info":["Todo is not found!"],
+      "info": ["Todo is not found!"],
     };
 
-   
-  const messages = {
-    "info":["The process successful"],
-  };
- 
-  try{
-    let data= await this.userbasicsService.findOne(email);
 
-    return res.status(HttpStatus.OK).json({
-      response_code: 202,
-      "data":data,
-      "message": messages
-  });
-  }catch(e){
-    return res.status(HttpStatus.BAD_REQUEST).json({
-     
-      "message": messagesEror
-  });
-  }
-   
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    try {
+      let data = await this.userbasicsService.findOne(email);
+
+      return res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "data": data,
+        "message": messages
+      });
+    } catch (e) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+
+        "message": messagesEror
+      });
+    }
+
   }
 
 
@@ -85,27 +86,27 @@ export class UserbasicsController {
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   async update(@Res() res, @Param('id') id: string, @Body() createUserbasicDto: CreateUserbasicDto) {
-   
+
     const messages = {
-      "info":["The update successful"],
+      "info": ["The update successful"],
     };
 
     const messagesEror = {
-      "info":["Todo is not found!"],
+      "info": ["Todo is not found!"],
     };
 
-  try{
-    let data = await this.userbasicsService.update(id, createUserbasicDto);
-    res.status(HttpStatus.OK).json({
-      response_code: 202,
-      "data":data,
-      "message": messages
-  });
-  }catch(e){
-    res.status(HttpStatus.BAD_REQUEST).json({
-     
-      "message": messagesEror
-  });
+    try {
+      let data = await this.userbasicsService.update(id, createUserbasicDto);
+      res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "data": data,
+        "message": messages
+      });
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+
+        "message": messagesEror
+      });
+    }
   }
-}
 }

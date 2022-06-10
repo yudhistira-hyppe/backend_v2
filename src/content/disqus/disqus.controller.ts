@@ -1,32 +1,34 @@
-import { Body, Controller, Delete, Get, Param, Post,UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, BadRequestException, Res, HttpStatus } from '@nestjs/common';
 import { DisqusService } from './disqus.service';
 import { CreateDisqusDto } from './dto/create-disqus.dto';
 import { Disqus } from './schemas/disqus.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-
+import { Request } from 'express';
 @Controller('api/disqus')
 export class DisqusController {
 
-    constructor(private readonly DisqusService: DisqusService) {}
+  constructor(private readonly DisqusService: DisqusService) { }
 
-    @Post()
-    async create(@Body() CreateDisqusDto: CreateDisqusDto) {
-      await this.DisqusService.create(CreateDisqusDto);
-    }
+  @Post()
+  async create(@Body() CreateDisqusDto: CreateDisqusDto) {
+    await this.DisqusService.create(CreateDisqusDto);
+  }
 
-    @Get()
-    @UseGuards(JwtAuthGuard)
-    async findAll(): Promise<Disqus[]> {
-      return this.DisqusService.findAll();
-    }
-  
-    @Get(':email')
-    async findOneId(@Param('email') email: string): Promise<Disqus> {
-      return this.DisqusService.findOne(email);
-    }
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async findAll(): Promise<Disqus[]> {
+    return this.DisqusService.findAll();
+  }
 
-    @Delete(':id')
-    async delete(@Param('id') id: string) {
-      return this.DisqusService.delete(id);
-    }
+  @Get(':email')
+  async findOneId(@Param('email') email: string): Promise<Disqus> {
+    return this.DisqusService.findOne(email);
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    return this.DisqusService.delete(id);
+  }
+
+
 }

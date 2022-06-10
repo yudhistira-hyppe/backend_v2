@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Req, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, BadRequestException, Res, HttpStatus } from '@nestjs/common';
 import { DisquslogsService } from './disquslogs.service';
 import { CreateDisquslogsDto } from './dto/create-disquslogs.dto';
 import { Disquslogs } from './schemas/disquslogs.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Request } from 'express';
-@Controller()
+@Controller('api/disquslogs')
 export class DisquslogsController {
   constructor(private readonly DisquslogsService: DisquslogsService) { }
 
@@ -29,25 +29,30 @@ export class DisquslogsController {
     return this.DisquslogsService.delete(id);
   }
 
-  // @Post('api/disquslogs/newcomments')
-  // @UseGuards(JwtAuthGuard)
-  // async contentmanagemen(@Req() request: Request): Promise<any> {
+  @UseGuards(JwtAuthGuard)
+  @Put(':id')
+  async update(@Res() res, @Param('id') id: string, @Body() createDisquslogsDto: CreateDisquslogsDto) {
 
-  //   var email = null;
-  //   var request_json = JSON.parse(JSON.stringify(request.body));
-  //   if (request_json["email"] !== undefined) {
-  //     email = request_json["email"];
-  //   } else {
-  //     throw new BadRequestException("Unabled to proceed");
-  //   }
+    const messages = {
+      "info": ["The update successful"],
+    };
 
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
 
-  //   const messages = {
-  //     "info": ["The process successful"],
-  //   };
+    try {
+      let data = await this.DisquslogsService.update(id, createDisquslogsDto);
+      res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "data": data,
+        "message": messages
+      });
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).json({
 
-  //   let data = await this.DisquslogsService.findlastcomment(email);
-
-  //   return { response_code: 202, data, messages };
-  // }
+        "message": messagesEror
+      });
+    }
+  }
 }

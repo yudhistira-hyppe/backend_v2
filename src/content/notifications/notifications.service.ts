@@ -24,6 +24,23 @@ export class NotificationsService {
     return this.NotificationsModel.find().exec();
   }
 
+  async findlatest(email: string): Promise<object> {
+    const query = await this.NotificationsModel.aggregate([
+      { $match: { email: email } },
+      {
+        $addFields: {
+
+          createdAt: "$createdAt"
+        }
+      },
+      { $sort: { createdAt: -1 }, },
+      { $skip: 0 },
+      { $limit: 10 },
+    ]);
+    return query;
+  }
+
+
   //    async findOne(id: string): Promise<Notifications> {
   //     return this.NotificationsModel.findOne({ _id: id }).exec();
   //   }

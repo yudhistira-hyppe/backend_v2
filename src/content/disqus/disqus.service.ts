@@ -9,7 +9,7 @@ export class DisqusService {
   constructor(
     @InjectModel(Disqus.name, 'SERVER_CONTENT')
     private readonly DisqusModel: Model<DisqusDocument>,
-  ) {}
+  ) { }
 
   async create(CreateDisqusDto: CreateDisqusDto): Promise<Disqus> {
     const createDisqusDto = await this.DisqusModel.create(CreateDisqusDto);
@@ -33,9 +33,11 @@ export class DisqusService {
     return deletedCat;
   }
 
-  async finddisqus(){
-    const query =await this.DisqusModel.aggregate([
-  
+
+
+  async finddisqus() {
+    const query = await this.DisqusModel.aggregate([
+
       {
         $lookup: {
           from: 'disqus',
@@ -43,13 +45,13 @@ export class DisqusService {
           foreignField: '_id',
           as: 'roless',
         },
-      },{
-        $out:{
-          db:'hyppe_trans_db',
-          coll:'disqus2'
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'disqus2'
         }
       },
-     
+
     ]);
     return query;
   }

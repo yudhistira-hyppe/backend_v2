@@ -17,12 +17,14 @@ import { CommentController } from './comment/comment.controller';
 import { CommentService } from './comment/comment.service';
 import { CommentModule } from './comment/comment.module';
 
+
 @Module({
 
     imports: [
         ConfigModule.forRoot(), UserauthsModule, MediaprofilepictsModule, InsightsModule, PostsModule, MediavideosModule, MediapictsModule, MediadiariesModule, DisquslogsModule, DisqusModule, CommentModule,
 
         MongooseModule.forFeature([{ name: Getusercontents.name, schema: GetusercontentsSchema }], 'SERVER_TRANS'),
+
 
 
     ],

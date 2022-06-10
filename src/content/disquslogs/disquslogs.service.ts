@@ -54,21 +54,19 @@ export class DisquslogsService {
     return query;
   }
 
-  // async findlastcomment(email: string) {
-  //   const query = await this.DisquslogsModel.aggregate([
-  //     { $match: { receiver: email } },
+  async update(
+    id: string,
+    createDisquslogsDto: CreateDisquslogsDto,
+  ): Promise<Disquslogs> {
+    let data = await this.DisquslogsModel.findByIdAndUpdate(
+      id,
+      createDisquslogsDto,
+      { new: true },
+    );
 
-  //     {
-  //       $addFields: {
-  //         createdAt: '$createdAt',
-
-  //       },
-  //     },
-  //     { $sort: { createdAt: -1 }, },
-  //     { $skip: 0 },
-  //     { $limit: 10 },
-
-  //   ]);
-  //   return query;
-  // }
+    if (!data) {
+      throw new Error('Todo is not found!');
+    }
+    return data;
+  }
 }

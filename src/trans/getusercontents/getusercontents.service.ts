@@ -1854,7 +1854,8 @@ export class GetusercontentsService {
                     "$lookup": {
                       "from": "disquslogsdata",
                       "let": {
-                        "parentIDs": "$parentID"
+                        "parentIDs": "$parentID",
+                        "actives": "$active"
                       },
                       "pipeline": [
                         {
@@ -1871,6 +1872,7 @@ export class GetusercontentsService {
                       "as": "replyLogs"
                     },
                   },
+                  { "$match": { "active": true } },
                   { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
                   { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
                 ],
@@ -1882,6 +1884,7 @@ export class GetusercontentsService {
           "as": "disqusdata"
         }
       },
+
       {
         $lookup: {
           from: 'userbasics',
@@ -2384,6 +2387,7 @@ export class GetusercontentsService {
                       "as": "replyLogs"
                     },
                   },
+                  { "$match": { "active": true } },
                   { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
                   { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
 
@@ -2882,6 +2886,7 @@ export class GetusercontentsService {
                       "as": "replyLogs"
                     },
                   },
+                  { "$match": { "active": true } },
                   { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
                   { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
                 ],
@@ -3381,6 +3386,7 @@ export class GetusercontentsService {
                       "as": "replyLogs"
                     },
                   },
+                  { "$match": { "active": true } },
                   { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
                   { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
 
@@ -3879,6 +3885,7 @@ export class GetusercontentsService {
                       "as": "replyLogs"
                     },
                   },
+                  { "$match": { "active": true } },
                   { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
                   { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
                 ],
@@ -4375,6 +4382,7 @@ export class GetusercontentsService {
                       "as": "replyLogs"
                     },
                   },
+                  { "$match": { "active": true } },
                   { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
                   { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
 
@@ -4874,6 +4882,7 @@ export class GetusercontentsService {
                       "as": "replyLogs"
                     },
                   },
+                  { "$match": { "active": true } },
                   { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
                   { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
                 ],
@@ -5374,6 +5383,7 @@ export class GetusercontentsService {
                       "as": "replyLogs"
                     },
                   },
+                  { "$match": { "active": true } },
                   { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
                   { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
 
@@ -5873,6 +5883,7 @@ export class GetusercontentsService {
                       "as": "replyLogs"
                     },
                   },
+                  { "$match": { "active": true } },
                   { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
                   { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
 
@@ -6374,6 +6385,7 @@ export class GetusercontentsService {
                       "as": "replyLogs"
                     },
                   },
+                  { "$match": { "active": true } },
                   { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
                   { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
 
