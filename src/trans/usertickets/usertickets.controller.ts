@@ -14,7 +14,7 @@ export class UserticketsController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
-  async create(@Body() CreateUserticketsDto: CreateUserticketsDto,@Request() req) {
+  async create(@Res() res,@Body() CreateUserticketsDto: CreateUserticketsDto,@Request() req) {
     const messages = {
       "info":["The update successful"],
     };
@@ -27,10 +27,24 @@ export class UserticketsController {
 
     var ubasic=await this.userbasicsService.findOne(email);
 
-  var iduser=ubasic._id;
+    var iduser=ubasic._id;
  
     CreateUserticketsDto.IdUser=iduser;
     await this.userticketsService.create(CreateUserticketsDto);
+
+    try{
+      let data =  await this.userticketsService.create(CreateUserticketsDto);
+      res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "data":data,
+        "message": messages
+    });
+    }catch(e){
+      res.status(HttpStatus.BAD_REQUEST).json({
+       
+        "message": messagesEror
+    });
+    }
   }
 
 }

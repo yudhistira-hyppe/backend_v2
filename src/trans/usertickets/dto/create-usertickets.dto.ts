@@ -7,11 +7,11 @@ export class CreateUserticketsDto {
       datetime: string;
      IdUser: { oid:String;  };
       status: string;
-     Detail:[{
-     IDUser:{ oid:String;  };
-    body: string;
-    datetime: string;
-    status: string;
-    }];
+    //  Detail:[{
+    //  IDUser:{ oid:String;  };
+    // body: string;
+    // datetime: string;
+    // status: string;
+    // }];
 
   }

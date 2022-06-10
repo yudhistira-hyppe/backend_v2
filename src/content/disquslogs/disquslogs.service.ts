@@ -9,7 +9,7 @@ export class DisquslogsService {
   constructor(
     @InjectModel(Disquslogs.name, 'SERVER_CONTENT')
     private readonly DisquslogsModel: Model<DisquslogsDocument>,
-  ) {}
+  ) { }
 
   async create(CreateDisquslogsDto: CreateDisquslogsDto): Promise<Disquslogs> {
     const createDisquslogsDto = await this.DisquslogsModel.create(
@@ -33,9 +33,9 @@ export class DisquslogsService {
     return deletedCat;
   }
 
-  async finddisquslog(){
-    const query =await this.DisquslogsModel.aggregate([
-  
+  async finddisquslog() {
+    const query = await this.DisquslogsModel.aggregate([
+
       {
         $lookup: {
           from: 'disquslogs',
@@ -43,14 +43,32 @@ export class DisquslogsService {
           foreignField: '_id',
           as: 'roless',
         },
-      },{
-        $out:{
-          db:'hyppe_trans_db',
-          coll:'disquslogs2'
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'disquslogs2'
         }
       },
-     
+
     ]);
     return query;
   }
+
+  // async findlastcomment(email: string) {
+  //   const query = await this.DisquslogsModel.aggregate([
+  //     { $match: { receiver: email } },
+
+  //     {
+  //       $addFields: {
+  //         createdAt: '$createdAt',
+
+  //       },
+  //     },
+  //     { $sort: { createdAt: -1 }, },
+  //     { $skip: 0 },
+  //     { $limit: 10 },
+
+  //   ]);
+  //   return query;
+  // }
 }
