@@ -5,23 +5,22 @@ export type UserdeviceDocument = Userdevice & Document ;
 
 @Schema()
 export class Userdevice {
-   @Prop()
+  @Prop()
   _id: string;
   @Prop()
   deviceID: string;
-
   @Prop()
-  email: String
-
+  email: String;
   @Prop()
-  active: boolean
-
+  active: boolean;
   @Prop()
- createdAt: String
- @Prop()
- updatedAt: String
- @Prop()
- _class:String
+  createdAt: String;
+  @Prop()
+  updatedAt: String;
+  @Prop()
+  _class: String;
+  @Prop()
+  webdeviceID: String;
 }
 
 export const UserdeviceSchema = SchemaFactory.createForClass(Userdevice);

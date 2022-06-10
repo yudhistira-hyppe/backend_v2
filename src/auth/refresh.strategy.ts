@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
+import {
+  BadRequestException,
+  Injectable,
+  UnauthorizedException,
+  NotAcceptableException,
+} from '@nestjs/common';
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, ExtractJwt } from 'passport-jwt'
 import { AuthService } from "./auth.service";
@@ -8,7 +13,17 @@ import { JwtrefreshtokenService } from "../trans/jwtrefreshtoken/jwtrefreshtoken
 export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh-token') {
     constructor(private jwtrefreshtokenService:JwtrefreshtokenService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (Request: any) => {
+          // const decodedJwt = this.jwtService.decode(
+          //   Request.rawHeaders[1].replace('Bearer ', ''),
+          // );
+          if (Request.rawHeaders[0] == 'x-auth-token') {
+            return Request.rawHeaders[1].replace('Bearer ', '');
+          }
+        },
+      ]),
+      //jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: true,
       secretOrKey: process.env.JWT_ACCESS_TOKEN_SECRET,
       passReqToCallback: true,
@@ -17,22 +32,46 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh-
  
   async validate(req,payload: any) {
     if (req.body.email == undefined) {
-      throw new BadRequestException('Unabled to proceed');
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed'],
+        },
+      });
     } 
     if (req.body.refreshToken == undefined) {
-      throw new BadRequestException('Unabled to proceed');
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed'],
+        },
+      });
     } 
     var user = await this.jwtrefreshtokenService.findOne(req.body.email);
     if(!user){
-        throw new UnauthorizedException();
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed'],
+          },
+        });
     }
     if(req.body.refreshToken != (await user.refresh_token_id)){
-        throw new UnauthorizedException();
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Invalid refesh token'],
+          },
+        });
     }
     if (new Date().getTime() > Number(await user.exp)) {
-      throw new UnauthorizedException('token expired');
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed'],
+        },
+      });
     }
     return { userID: payload.sub, email:payload.email};
-    
   }
 }

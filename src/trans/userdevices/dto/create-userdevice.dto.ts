@@ -1,11 +1,11 @@
 export class CreateUserdeviceDto {
   
 
-    readonly _id: String;
-    readonly deviceID: String;
-    readonly  email: String;
-    readonly active: boolean;
-    readonly  createdAt: String;
-    readonly  updatedAt: String;
-    readonly _class:String;
+     _id: String;
+     deviceID: String;
+      email: String;
+     active: boolean;
+      createdAt: String;
+      updatedAt: String;
+     _class:String;
   }

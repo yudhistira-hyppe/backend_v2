@@ -6,8 +6,8 @@ export type ActivityeventsDocument = Activityevents & Document ;
 
 @Schema()
 export class Activityevents {
-   @Prop({type: mongoose.Schema.Types.ObjectId})
-  _id: { oid:String  }
+//    @Prop({type: mongoose.Schema.Types.ObjectId})
+//   _id: { oid:String  }
   @Prop()
   activityEventID: String
   @Prop()

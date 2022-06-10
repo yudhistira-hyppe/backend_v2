@@ -127,4 +127,27 @@ export class ActivityeventsService {
       .exec();
     return GetCount;
   }
+
+  async findParentByDevice(
+    email,
+    login_device,
+    activityType,
+    flowIsDone,
+  ): Promise<Object> {
+    return this.activityeventsModel
+      .find({
+        _class: 'nest.js.Userdevices',
+        'payload.email': email,
+        'payload.login_device': login_device,
+        activityType: activityType,
+        parentActivityEventID: { $eq: null },
+        flowIsDone: flowIsDone,
+      })
+      .exec();
+  }
+
+  async update(param: Object, data: Object) {
+    var _class = 'nest.js.JwtRefreshToken';
+    this.activityeventsModel.updateOne(param, data);
+  }
 }

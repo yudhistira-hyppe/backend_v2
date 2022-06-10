@@ -6,33 +6,49 @@ import { Userdevice, UserdeviceDocument } from './schemas/userdevice.schema';
 
 @Injectable()
 export class UserdevicesService {
+  constructor(
+    @InjectModel(Userdevice.name, 'SERVER_TRANS')
+    private readonly userdeviceModel: Model<UserdeviceDocument>,
+  ) {}
 
-    constructor(
-        @InjectModel(Userdevice.name,'SERVER_TRANS') private readonly userdeviceModel: Model<UserdeviceDocument>,
-      ) {}
-    
-      async create(CreateUserdeviceDto: CreateUserdeviceDto): Promise<Userdevice> {
-        const createUserdeviceDto = await this.userdeviceModel.create(CreateUserdeviceDto);
-        return createUserdeviceDto;
-      }
-    
-      async findAll(): Promise<Userdevice[]> {
-        return this.userdeviceModel.find().exec();
-      }
-    
-      // async findOne(id: string): Promise<Userdevice> {
-      //   return this.userdeviceModel.findOne({ _id: id }).exec();
-      // }
-      
-      async findOne(email: string,deviceID:string): Promise<Userdevice> {
-        return this.userdeviceModel.findOne({ email: email ,deviceID:deviceID}).exec();
-      }
+  async create(CreateUserdeviceDto: CreateUserdeviceDto): Promise<Userdevice> {
+    const createUserdeviceDto = await this.userdeviceModel.create(
+      CreateUserdeviceDto,
+    );
+    return createUserdeviceDto;
+  }
 
-      async delete(id: string) {
-        const deletedCat = await this.userdeviceModel
-          .findByIdAndRemove({ _id: id })
-          .exec();
-        return deletedCat;
-      }
+  async findAll(): Promise<Userdevice[]> {
+    return this.userdeviceModel.find().exec();
+  }
 
+  // async findOne(id: string): Promise<Userdevice> {
+  //   return this.userdeviceModel.findOne({ _id: id }).exec();
+  // }
+
+  async findOne(email: string, deviceID: string): Promise<Userdevice> {
+    return this.userdeviceModel
+      .findOne({ email: email, webdeviceID: deviceID })
+      .exec();
+  }
+
+  async updatebyEmail(email: string,data:Object) {
+    this.userdeviceModel.updateOne({ email: email }, data);
+  }
+
+  async findOneEmail(
+    email: string,
+    deviceID: string,
+  ): Promise<Userdevice> {
+    return this.userdeviceModel
+      .findOne({ email: email, deviceID: deviceID })
+      .exec();
+  }
+
+  async delete(id: string) {
+    const deletedCat = await this.userdeviceModel
+      .findByIdAndRemove({ _id: id })
+      .exec();
+    return deletedCat;
+  }
 }
