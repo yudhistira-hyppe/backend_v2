@@ -4,16 +4,16 @@ import { InsightlogsService } from './insightlogs.service';
 import { InsightlogsController } from './insightlogs.controller';
 import { ConfigModule } from '@nestjs/config';
 import { Insightlogs, InsightlogsSchema } from './schemas/insightlogs.schema';
-
+import { InsightsModule } from '../../content/insights/insights.module';
 @Module({
 
     imports: [
-        ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Insightlogs.name, schema: InsightlogsSchema }],'SERVER_CONTENT')
+        ConfigModule.forRoot(), InsightsModule,
+        MongooseModule.forFeature([{ name: Insightlogs.name, schema: InsightlogsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [InsightlogsController],
     providers: [InsightlogsService],
     exports: [InsightlogsService],
 
 })
-export class InsightlogsModule {}
+export class InsightlogsModule { }

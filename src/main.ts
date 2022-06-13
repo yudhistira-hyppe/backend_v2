@@ -7,19 +7,19 @@ import * as fs from 'fs';
 //   cert: fs.readFileSync('D:/MyWork/NodeJs/Hyppe/ssl/local/server.crt'),
 // };
 const httpsOptions = {
-  key: fs.readFileSync('D:/MyWork/Hyppe/Source/SSL/projectcom/server.key'),
-  cert: fs.readFileSync('D:/MyWork/Hyppe/Source/SSL/projectcom/server.crt'),
+  key: fs.readFileSync('C:/ProjectHyppe/crt/hyppe.key'),
+  cert: fs.readFileSync('C:/ProjectHyppe/crt/hyppe.crt'),
 };
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule,{
-  httpsOptions,
-});
+  const app = await NestFactory.create(AppModule, {
+    httpsOptions,
+  });
   app.enableCors({
-            origin: true,
-            methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-            credentials: true,
-        });
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true,
+  });
   await app.listen(5000);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }

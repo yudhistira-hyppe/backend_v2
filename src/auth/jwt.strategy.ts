@@ -7,14 +7,14 @@ import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(private jwtrefreshtokenService: JwtrefreshtokenService) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (Request: any) => {
-          if (Request.rawHeaders[0] == 'x-auth-token') {
-            return Request.rawHeaders[1].replace('Bearer ', '');
-          }
-        },
-      ]),
-      //jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // jwtFromRequest: ExtractJwt.fromExtractors([
+      //   (Request: any) => {
+      //     if (Request.rawHeaders[0] == 'x-auth-token') {
+      //       return Request.rawHeaders[1].replace('Bearer ', '');
+      //     }
+      //   },
+      // ]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_ACCESS_TOKEN_SECRET,
     });
@@ -22,8 +22,8 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
 
   async validate(payload: any) {
     var user = await this.jwtrefreshtokenService.findOne(payload.email);
-    if (user.refresh_token_id==null) {
-        throw new UnauthorizedException();
+    if (user.refresh_token_id == null) {
+      throw new UnauthorizedException();
     }
     return { userID: payload.sub, email: payload.email };
   }

@@ -79,6 +79,7 @@ export class GetuserprofilesService {
             profilePict_id: '$profilePict.$id',
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
+            email: '$email',
             age: {
               $round: {
                 $divide: [{
@@ -90,6 +91,7 @@ export class GetuserprofilesService {
             }
           },
         },
+
         {
           $lookup: {
             from: 'interests_repo2',
@@ -98,6 +100,7 @@ export class GetuserprofilesService {
             as: 'interes_data',
           },
         },
+
         {
           $lookup: {
             from: 'mediaprofilepicts2',
@@ -157,6 +160,7 @@ export class GetuserprofilesService {
 
         {
           $project: {
+            activity: '$activity',
             createdAt: '$createdAt',
             auth: { $arrayElemAt: ['$userAuth_data', 0] },
             citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -212,6 +216,7 @@ export class GetuserprofilesService {
         },
         {
           $project: {
+
             createdAt: '$createdAt',
             interest: '$interest',
             username: '$auth.username',
@@ -249,7 +254,82 @@ export class GetuserprofilesService {
 
             },
           },
-        }, { $sort: { createdAt: -1 }, },
+        },
+
+        {
+          $lookup: {
+            from: "activityevents",
+            localField: "email",
+            foreignField: "payload.email",
+            as: "activity_data"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$activity_data",
+            "preserveNullAndEmptyArrays": false
+          }
+        },
+        { "$match": { "activity_data.event": "AWAKE" } },
+        { "$sort": { "activity_data.createdAt": -1 }, },
+
+        {
+          "$group": {
+            "_id": "$_id",
+            "name": { "$first": "$fullName" },
+            "tables": { "$push": "$activity_data" },
+            "createdAt": { "$push": "$createdAt" },
+            "fullName": { "$push": "$fullName" },
+            "interest": { "$push": "$interest" },
+            "username": { "$push": "$username" },
+            "avatar": { "$push": "$avatar" },
+            "insight": { "$push": "$insight" },
+            "countries": { "$push": "$countries" },
+            "area": { "$push": "$area" },
+            "cities": { "$push": "$cities" },
+            "dob": { "$push": "$dob" },
+            "age": { "$push": "$age" },
+            "email": { "$push": "$email" },
+            "gender": { "$push": "$gender" },
+            "bio": { "$push": "$bio" },
+            "idProofNumber": { "$push": "$idProofNumber" },
+            "mobileNumber": { "$push": "$mobileNumber" },
+            "roles": { "$push": "$roles" },
+
+            "event": { "$push": "$event" },
+            "isComplete": { "$push": "$isComplete" },
+            "status": { "$push": "$status" },
+            "langIso": { "$push": "$langIso" },
+          }
+        },
+        {
+          $project: {
+            createdAt: { $arrayElemAt: ['$createdAt', 0] },
+            activity: { $arrayElemAt: ['$tables', 0] },
+            fullName: { $arrayElemAt: ['$fullName', 0] },
+            interest: { $arrayElemAt: ['$interest', 0] },
+            username: { $arrayElemAt: ['$username', 0] },
+            avatar: { $arrayElemAt: ['$avatar', 0] },
+            insight: { $arrayElemAt: ['$insight', 0] },
+            countries: { $arrayElemAt: ['$countries', 0] },
+            area: { $arrayElemAt: ['$area', 0] },
+            cities: { $arrayElemAt: ['$cities', 0] },
+            dob: { $arrayElemAt: ['$dob', 0] },
+            age: { $arrayElemAt: ['$age', 0] },
+            email: { $arrayElemAt: ['$email', 0] },
+            gender: { $arrayElemAt: ['$gender', 0] },
+            bio: { $arrayElemAt: ['$bio', 0] },
+            idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+            mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+            roles: { $arrayElemAt: ['$roles', 0] },
+
+            event: { $arrayElemAt: ['$event', 0] },
+            isComplete: { $arrayElemAt: ['$isComplete', 0] },
+            status: { $arrayElemAt: ['$status', 0] },
+            langIso: { $arrayElemAt: ['$langIso', 0] },
+          }
+        },
+        { $sort: { createdAt: -1 }, },
       ]);
       return query;
     }
@@ -267,6 +347,7 @@ export class GetuserprofilesService {
             profilePict_id: '$profilePict.$id',
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
+            email: '$email',
             age: {
               $round: {
                 $divide: [{
@@ -278,6 +359,7 @@ export class GetuserprofilesService {
             }
           },
         },
+
         {
           $lookup: {
             from: 'interests_repo2',
@@ -286,6 +368,7 @@ export class GetuserprofilesService {
             as: 'interes_data',
           },
         },
+
         {
           $lookup: {
             from: 'mediaprofilepicts2',
@@ -345,6 +428,7 @@ export class GetuserprofilesService {
 
         {
           $project: {
+            activity: '$activity',
             createdAt: '$createdAt',
             auth: { $arrayElemAt: ['$userAuth_data', 0] },
             citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -400,6 +484,7 @@ export class GetuserprofilesService {
         },
         {
           $project: {
+
             createdAt: '$createdAt',
             interest: '$interest',
             username: '$auth.username',
@@ -437,7 +522,83 @@ export class GetuserprofilesService {
 
             },
           },
-        }, { $sort: { createdAt: -1 }, },
+        },
+
+        {
+          $lookup: {
+            from: "activityevents",
+            localField: "email",
+            foreignField: "payload.email",
+            as: "activity_data"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$activity_data",
+            "preserveNullAndEmptyArrays": false
+          }
+        },
+        { "$match": { "activity_data.event": "AWAKE" } },
+        { "$sort": { "activity_data.createdAt": -1 }, },
+
+        {
+          "$group": {
+            "_id": "$_id",
+            "name": { "$first": "$fullName" },
+            "tables": { "$push": "$activity_data" },
+            "createdAt": { "$push": "$createdAt" },
+            "fullName": { "$push": "$fullName" },
+            "interest": { "$push": "$interest" },
+            "username": { "$push": "$username" },
+            "avatar": { "$push": "$avatar" },
+            "insight": { "$push": "$insight" },
+            "countries": { "$push": "$countries" },
+            "area": { "$push": "$area" },
+            "cities": { "$push": "$cities" },
+            "dob": { "$push": "$dob" },
+            "age": { "$push": "$age" },
+            "email": { "$push": "$email" },
+            "gender": { "$push": "$gender" },
+            "bio": { "$push": "$bio" },
+            "idProofNumber": { "$push": "$idProofNumber" },
+            "mobileNumber": { "$push": "$mobileNumber" },
+            "roles": { "$push": "$roles" },
+
+            "event": { "$push": "$event" },
+            "isComplete": { "$push": "$isComplete" },
+            "status": { "$push": "$status" },
+            "langIso": { "$push": "$langIso" },
+          }
+        },
+        {
+          $project: {
+            createdAt: { $arrayElemAt: ['$createdAt', 0] },
+            activity: { $arrayElemAt: ['$tables', 0] },
+            fullName: { $arrayElemAt: ['$fullName', 0] },
+            interest: { $arrayElemAt: ['$interest', 0] },
+            username: { $arrayElemAt: ['$username', 0] },
+            avatar: { $arrayElemAt: ['$avatar', 0] },
+            insight: { $arrayElemAt: ['$insight', 0] },
+            countries: { $arrayElemAt: ['$countries', 0] },
+            area: { $arrayElemAt: ['$area', 0] },
+            cities: { $arrayElemAt: ['$cities', 0] },
+            dob: { $arrayElemAt: ['$dob', 0] },
+            age: { $arrayElemAt: ['$age', 0] },
+            email: { $arrayElemAt: ['$email', 0] },
+            gender: { $arrayElemAt: ['$gender', 0] },
+            bio: { $arrayElemAt: ['$bio', 0] },
+            idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+            mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+            roles: { $arrayElemAt: ['$roles', 0] },
+
+            event: { $arrayElemAt: ['$event', 0] },
+            isComplete: { $arrayElemAt: ['$isComplete', 0] },
+            status: { $arrayElemAt: ['$status', 0] },
+            langIso: { $arrayElemAt: ['$langIso', 0] },
+          }
+        },
+
+        { $sort: { createdAt: -1 }, },
       ]);
       return query;
     }
@@ -455,6 +616,7 @@ export class GetuserprofilesService {
             profilePict_id: '$profilePict.$id',
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
+            email: '$email',
             age: {
               $round: {
                 $divide: [{
@@ -466,6 +628,7 @@ export class GetuserprofilesService {
             }
           },
         },
+
         {
           $lookup: {
             from: 'interests_repo2',
@@ -474,6 +637,7 @@ export class GetuserprofilesService {
             as: 'interes_data',
           },
         },
+
         {
           $lookup: {
             from: 'mediaprofilepicts2',
@@ -533,6 +697,7 @@ export class GetuserprofilesService {
 
         {
           $project: {
+            activity: '$activity',
             createdAt: '$createdAt',
             auth: { $arrayElemAt: ['$userAuth_data', 0] },
             citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -586,9 +751,9 @@ export class GetuserprofilesService {
             pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
           },
         },
-
         {
           $project: {
+
             createdAt: '$createdAt',
             interest: '$interest',
             username: '$auth.username',
@@ -626,7 +791,82 @@ export class GetuserprofilesService {
 
             },
           },
-        }, { $match: { roles: roles } }, { $sort: { createdAt: -1 }, },
+        },
+
+        {
+          $lookup: {
+            from: "activityevents",
+            localField: "email",
+            foreignField: "payload.email",
+            as: "activity_data"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$activity_data",
+            "preserveNullAndEmptyArrays": false
+          }
+        },
+        { "$match": { "activity_data.event": "AWAKE" } },
+        { "$sort": { "activity_data.createdAt": -1 }, },
+
+        {
+          "$group": {
+            "_id": "$_id",
+            "name": { "$first": "$fullName" },
+            "tables": { "$push": "$activity_data" },
+            "createdAt": { "$push": "$createdAt" },
+            "fullName": { "$push": "$fullName" },
+            "interest": { "$push": "$interest" },
+            "username": { "$push": "$username" },
+            "avatar": { "$push": "$avatar" },
+            "insight": { "$push": "$insight" },
+            "countries": { "$push": "$countries" },
+            "area": { "$push": "$area" },
+            "cities": { "$push": "$cities" },
+            "dob": { "$push": "$dob" },
+            "age": { "$push": "$age" },
+            "email": { "$push": "$email" },
+            "gender": { "$push": "$gender" },
+            "bio": { "$push": "$bio" },
+            "idProofNumber": { "$push": "$idProofNumber" },
+            "mobileNumber": { "$push": "$mobileNumber" },
+            "roles": { "$push": "$roles" },
+
+            "event": { "$push": "$event" },
+            "isComplete": { "$push": "$isComplete" },
+            "status": { "$push": "$status" },
+            "langIso": { "$push": "$langIso" },
+          }
+        },
+        {
+          $project: {
+            createdAt: { $arrayElemAt: ['$createdAt', 0] },
+            activity: { $arrayElemAt: ['$tables', 0] },
+            fullName: { $arrayElemAt: ['$fullName', 0] },
+            interest: { $arrayElemAt: ['$interest', 0] },
+            username: { $arrayElemAt: ['$username', 0] },
+            avatar: { $arrayElemAt: ['$avatar', 0] },
+            insight: { $arrayElemAt: ['$insight', 0] },
+            countries: { $arrayElemAt: ['$countries', 0] },
+            area: { $arrayElemAt: ['$area', 0] },
+            cities: { $arrayElemAt: ['$cities', 0] },
+            dob: { $arrayElemAt: ['$dob', 0] },
+            age: { $arrayElemAt: ['$age', 0] },
+            email: { $arrayElemAt: ['$email', 0] },
+            gender: { $arrayElemAt: ['$gender', 0] },
+            bio: { $arrayElemAt: ['$bio', 0] },
+            idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+            mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+            roles: { $arrayElemAt: ['$roles', 0] },
+
+            event: { $arrayElemAt: ['$event', 0] },
+            isComplete: { $arrayElemAt: ['$isComplete', 0] },
+            status: { $arrayElemAt: ['$status', 0] },
+            langIso: { $arrayElemAt: ['$langIso', 0] },
+          }
+        },
+        { $match: { roles: roles } }, { $sort: { createdAt: -1 }, },
       ]);
       return query;
     }
@@ -645,6 +885,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -665,6 +906,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -724,6 +966,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -779,6 +1022,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -816,10 +1060,87 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "15-25") {
+      }
+      else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -833,6 +1154,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -853,6 +1175,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -912,6 +1235,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -967,6 +1291,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -1004,10 +1329,87 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "26-35") {
+      }
+      else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -1021,6 +1423,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -1041,6 +1444,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -1100,6 +1504,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -1155,6 +1560,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -1192,7 +1598,83 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
       } else if (age == "36-50") {
@@ -1209,6 +1691,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -1229,6 +1712,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -1288,6 +1772,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -1343,6 +1828,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -1380,10 +1866,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == ">50") {
+      }
+      else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -1397,6 +1959,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -1417,6 +1980,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -1476,6 +2040,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -1531,6 +2096,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -1568,7 +2134,83 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
       }
@@ -1587,6 +2229,7 @@ export class GetuserprofilesService {
             profilePict_id: '$profilePict.$id',
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
+            email: '$email',
             age: {
               $round: {
                 $divide: [{
@@ -1598,6 +2241,7 @@ export class GetuserprofilesService {
             }
           },
         },
+
         {
           $lookup: {
             from: 'interests_repo2',
@@ -1606,6 +2250,7 @@ export class GetuserprofilesService {
             as: 'interes_data',
           },
         },
+
         {
           $lookup: {
             from: 'mediaprofilepicts2',
@@ -1665,6 +2310,7 @@ export class GetuserprofilesService {
 
         {
           $project: {
+            activity: '$activity',
             createdAt: '$createdAt',
             auth: { $arrayElemAt: ['$userAuth_data', 0] },
             citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -1720,6 +2366,7 @@ export class GetuserprofilesService {
         },
         {
           $project: {
+
             createdAt: '$createdAt',
             interest: '$interest',
             username: '$auth.username',
@@ -1757,7 +2404,82 @@ export class GetuserprofilesService {
 
             },
           },
-        }, { $sort: { createdAt: -1 }, },
+        },
+
+        {
+          $lookup: {
+            from: "activityevents",
+            localField: "email",
+            foreignField: "payload.email",
+            as: "activity_data"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$activity_data",
+            "preserveNullAndEmptyArrays": false
+          }
+        },
+        { "$match": { "activity_data.event": "AWAKE" } },
+        { "$sort": { "activity_data.createdAt": -1 }, },
+
+        {
+          "$group": {
+            "_id": "$_id",
+            "name": { "$first": "$fullName" },
+            "tables": { "$push": "$activity_data" },
+            "createdAt": { "$push": "$createdAt" },
+            "fullName": { "$push": "$fullName" },
+            "interest": { "$push": "$interest" },
+            "username": { "$push": "$username" },
+            "avatar": { "$push": "$avatar" },
+            "insight": { "$push": "$insight" },
+            "countries": { "$push": "$countries" },
+            "area": { "$push": "$area" },
+            "cities": { "$push": "$cities" },
+            "dob": { "$push": "$dob" },
+            "age": { "$push": "$age" },
+            "email": { "$push": "$email" },
+            "gender": { "$push": "$gender" },
+            "bio": { "$push": "$bio" },
+            "idProofNumber": { "$push": "$idProofNumber" },
+            "mobileNumber": { "$push": "$mobileNumber" },
+            "roles": { "$push": "$roles" },
+
+            "event": { "$push": "$event" },
+            "isComplete": { "$push": "$isComplete" },
+            "status": { "$push": "$status" },
+            "langIso": { "$push": "$langIso" },
+          }
+        },
+        {
+          $project: {
+            createdAt: { $arrayElemAt: ['$createdAt', 0] },
+            activity: { $arrayElemAt: ['$tables', 0] },
+            fullName: { $arrayElemAt: ['$fullName', 0] },
+            interest: { $arrayElemAt: ['$interest', 0] },
+            username: { $arrayElemAt: ['$username', 0] },
+            avatar: { $arrayElemAt: ['$avatar', 0] },
+            insight: { $arrayElemAt: ['$insight', 0] },
+            countries: { $arrayElemAt: ['$countries', 0] },
+            area: { $arrayElemAt: ['$area', 0] },
+            cities: { $arrayElemAt: ['$cities', 0] },
+            dob: { $arrayElemAt: ['$dob', 0] },
+            age: { $arrayElemAt: ['$age', 0] },
+            email: { $arrayElemAt: ['$email', 0] },
+            gender: { $arrayElemAt: ['$gender', 0] },
+            bio: { $arrayElemAt: ['$bio', 0] },
+            idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+            mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+            roles: { $arrayElemAt: ['$roles', 0] },
+
+            event: { $arrayElemAt: ['$event', 0] },
+            isComplete: { $arrayElemAt: ['$isComplete', 0] },
+            status: { $arrayElemAt: ['$status', 0] },
+            langIso: { $arrayElemAt: ['$langIso', 0] },
+          }
+        },
+        { $sort: { createdAt: -1 }, },
       ]);
       return query;
     }
@@ -1775,6 +2497,7 @@ export class GetuserprofilesService {
             profilePict_id: '$profilePict.$id',
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
+            email: '$email',
             age: {
               $round: {
                 $divide: [{
@@ -1786,6 +2509,7 @@ export class GetuserprofilesService {
             }
           },
         },
+
         {
           $lookup: {
             from: 'interests_repo2',
@@ -1794,6 +2518,7 @@ export class GetuserprofilesService {
             as: 'interes_data',
           },
         },
+
         {
           $lookup: {
             from: 'mediaprofilepicts2',
@@ -1853,6 +2578,7 @@ export class GetuserprofilesService {
 
         {
           $project: {
+            activity: '$activity',
             createdAt: '$createdAt',
             auth: { $arrayElemAt: ['$userAuth_data', 0] },
             citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -1908,6 +2634,7 @@ export class GetuserprofilesService {
         },
         {
           $project: {
+
             createdAt: '$createdAt',
             interest: '$interest',
             username: '$auth.username',
@@ -1945,7 +2672,82 @@ export class GetuserprofilesService {
 
             },
           },
-        }, { $match: { fullName: { $regex: fullName }, roles: roles } }, { $sort: { createdAt: -1 }, },
+        },
+
+        {
+          $lookup: {
+            from: "activityevents",
+            localField: "email",
+            foreignField: "payload.email",
+            as: "activity_data"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$activity_data",
+            "preserveNullAndEmptyArrays": false
+          }
+        },
+        { "$match": { "activity_data.event": "AWAKE" } },
+        { "$sort": { "activity_data.createdAt": -1 }, },
+
+        {
+          "$group": {
+            "_id": "$_id",
+            "name": { "$first": "$fullName" },
+            "tables": { "$push": "$activity_data" },
+            "createdAt": { "$push": "$createdAt" },
+            "fullName": { "$push": "$fullName" },
+            "interest": { "$push": "$interest" },
+            "username": { "$push": "$username" },
+            "avatar": { "$push": "$avatar" },
+            "insight": { "$push": "$insight" },
+            "countries": { "$push": "$countries" },
+            "area": { "$push": "$area" },
+            "cities": { "$push": "$cities" },
+            "dob": { "$push": "$dob" },
+            "age": { "$push": "$age" },
+            "email": { "$push": "$email" },
+            "gender": { "$push": "$gender" },
+            "bio": { "$push": "$bio" },
+            "idProofNumber": { "$push": "$idProofNumber" },
+            "mobileNumber": { "$push": "$mobileNumber" },
+            "roles": { "$push": "$roles" },
+
+            "event": { "$push": "$event" },
+            "isComplete": { "$push": "$isComplete" },
+            "status": { "$push": "$status" },
+            "langIso": { "$push": "$langIso" },
+          }
+        },
+        {
+          $project: {
+            createdAt: { $arrayElemAt: ['$createdAt', 0] },
+            activity: { $arrayElemAt: ['$tables', 0] },
+            fullName: { $arrayElemAt: ['$fullName', 0] },
+            interest: { $arrayElemAt: ['$interest', 0] },
+            username: { $arrayElemAt: ['$username', 0] },
+            avatar: { $arrayElemAt: ['$avatar', 0] },
+            insight: { $arrayElemAt: ['$insight', 0] },
+            countries: { $arrayElemAt: ['$countries', 0] },
+            area: { $arrayElemAt: ['$area', 0] },
+            cities: { $arrayElemAt: ['$cities', 0] },
+            dob: { $arrayElemAt: ['$dob', 0] },
+            age: { $arrayElemAt: ['$age', 0] },
+            email: { $arrayElemAt: ['$email', 0] },
+            gender: { $arrayElemAt: ['$gender', 0] },
+            bio: { $arrayElemAt: ['$bio', 0] },
+            idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+            mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+            roles: { $arrayElemAt: ['$roles', 0] },
+
+            event: { $arrayElemAt: ['$event', 0] },
+            isComplete: { $arrayElemAt: ['$isComplete', 0] },
+            status: { $arrayElemAt: ['$status', 0] },
+            langIso: { $arrayElemAt: ['$langIso', 0] },
+          }
+        },
+        { $match: { fullName: { $regex: fullName }, roles: roles } }, { $sort: { createdAt: -1 }, },
       ]);
       return query;
     }
@@ -1964,6 +2766,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -1985,6 +2788,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -2044,6 +2848,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -2099,6 +2904,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -2136,10 +2942,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "15-25") {
+      }
+      else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -2153,6 +3035,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -2173,6 +3056,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -2232,6 +3116,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -2287,6 +3172,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -2324,10 +3210,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "26-35") {
+      }
+      else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -2341,6 +3303,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -2361,6 +3324,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -2420,6 +3384,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -2475,6 +3440,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -2512,10 +3478,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "36-50") {
+      }
+      else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -2529,6 +3571,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -2549,6 +3592,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -2608,6 +3652,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -2663,6 +3708,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -2700,10 +3746,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == ">50") {
+      }
+      else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -2717,6 +3839,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -2737,6 +3860,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -2796,6 +3920,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -2851,6 +3976,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -2888,7 +4014,82 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
       }
@@ -2907,6 +4108,7 @@ export class GetuserprofilesService {
             profilePict_id: '$profilePict.$id',
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
+            email: '$email',
             age: {
               $round: {
                 $divide: [{
@@ -2926,6 +4128,7 @@ export class GetuserprofilesService {
             as: 'interes_data',
           },
         },
+
         {
           $lookup: {
             from: 'mediaprofilepicts2',
@@ -2985,6 +4188,7 @@ export class GetuserprofilesService {
 
         {
           $project: {
+            activity: '$activity',
             createdAt: '$createdAt',
             auth: { $arrayElemAt: ['$userAuth_data', 0] },
             citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -3040,6 +4244,7 @@ export class GetuserprofilesService {
         },
         {
           $project: {
+
             createdAt: '$createdAt',
             interest: '$interest',
             username: '$auth.username',
@@ -3077,7 +4282,82 @@ export class GetuserprofilesService {
 
             },
           },
-        }, { $match: { gender: gender, roles: roles } }, { $sort: { createdAt: -1 }, },
+        },
+
+        {
+          $lookup: {
+            from: "activityevents",
+            localField: "email",
+            foreignField: "payload.email",
+            as: "activity_data"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$activity_data",
+            "preserveNullAndEmptyArrays": false
+          }
+        },
+        { "$match": { "activity_data.event": "AWAKE" } },
+        { "$sort": { "activity_data.createdAt": -1 }, },
+
+        {
+          "$group": {
+            "_id": "$_id",
+            "name": { "$first": "$fullName" },
+            "tables": { "$push": "$activity_data" },
+            "createdAt": { "$push": "$createdAt" },
+            "fullName": { "$push": "$fullName" },
+            "interest": { "$push": "$interest" },
+            "username": { "$push": "$username" },
+            "avatar": { "$push": "$avatar" },
+            "insight": { "$push": "$insight" },
+            "countries": { "$push": "$countries" },
+            "area": { "$push": "$area" },
+            "cities": { "$push": "$cities" },
+            "dob": { "$push": "$dob" },
+            "age": { "$push": "$age" },
+            "email": { "$push": "$email" },
+            "gender": { "$push": "$gender" },
+            "bio": { "$push": "$bio" },
+            "idProofNumber": { "$push": "$idProofNumber" },
+            "mobileNumber": { "$push": "$mobileNumber" },
+            "roles": { "$push": "$roles" },
+
+            "event": { "$push": "$event" },
+            "isComplete": { "$push": "$isComplete" },
+            "status": { "$push": "$status" },
+            "langIso": { "$push": "$langIso" },
+          }
+        },
+        {
+          $project: {
+            createdAt: { $arrayElemAt: ['$createdAt', 0] },
+            activity: { $arrayElemAt: ['$tables', 0] },
+            fullName: { $arrayElemAt: ['$fullName', 0] },
+            interest: { $arrayElemAt: ['$interest', 0] },
+            username: { $arrayElemAt: ['$username', 0] },
+            avatar: { $arrayElemAt: ['$avatar', 0] },
+            insight: { $arrayElemAt: ['$insight', 0] },
+            countries: { $arrayElemAt: ['$countries', 0] },
+            area: { $arrayElemAt: ['$area', 0] },
+            cities: { $arrayElemAt: ['$cities', 0] },
+            dob: { $arrayElemAt: ['$dob', 0] },
+            age: { $arrayElemAt: ['$age', 0] },
+            email: { $arrayElemAt: ['$email', 0] },
+            gender: { $arrayElemAt: ['$gender', 0] },
+            bio: { $arrayElemAt: ['$bio', 0] },
+            idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+            mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+            roles: { $arrayElemAt: ['$roles', 0] },
+
+            event: { $arrayElemAt: ['$event', 0] },
+            isComplete: { $arrayElemAt: ['$isComplete', 0] },
+            status: { $arrayElemAt: ['$status', 0] },
+            langIso: { $arrayElemAt: ['$langIso', 0] },
+          }
+        },
+        { $match: { gender: gender, roles: roles } }, { $sort: { createdAt: -1 }, },
       ]);
       return query;
     }
@@ -3096,6 +4376,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -3117,6 +4398,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -3176,6 +4458,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -3231,6 +4514,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -3268,10 +4552,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "15-25") {
+      }
+      else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -3285,6 +4645,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -3305,6 +4666,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -3364,6 +4726,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -3419,6 +4782,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -3456,10 +4820,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "26-35") {
+      }
+      else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -3473,6 +4913,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -3493,6 +4934,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -3552,6 +4994,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -3607,6 +5050,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -3644,10 +5088,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "36-50") {
+      }
+      else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -3661,6 +5181,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -3681,6 +5202,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -3740,6 +5262,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -3795,6 +5318,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -3832,10 +5356,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == ">50") {
+      }
+      else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -3849,6 +5449,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -3869,6 +5470,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -3928,6 +5530,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -3983,6 +5586,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -4020,7 +5624,82 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $sort: { createdAt: -1 }, },
         ]);
         return query;
       }
@@ -4040,6 +5719,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -4060,6 +5740,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -4119,6 +5800,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -4174,6 +5856,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -4211,10 +5894,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { roles: roles, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { roles: roles, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "15-25") {
+      }
+      else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -4228,6 +5987,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -4247,6 +6007,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -4306,6 +6067,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -4361,6 +6123,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -4398,10 +6161,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { roles: roles, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { roles: roles, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "26-35") {
+      }
+      else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -4415,6 +6254,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -4434,6 +6274,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -4493,6 +6334,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -4548,6 +6390,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -4585,10 +6428,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { roles: roles, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { roles: roles, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "36-50") {
+      }
+      else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -4602,6 +6521,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -4621,6 +6541,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -4680,6 +6601,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -4735,6 +6657,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -4772,10 +6695,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { roles: roles, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { roles: roles, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == ">50") {
+      }
+      else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -4789,6 +6788,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -4808,6 +6808,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -4867,6 +6868,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -4922,6 +6924,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -4959,7 +6962,82 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { roles: roles, age: { $gt: 50 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { roles: roles, age: { $gt: 50 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
       }
@@ -4979,6 +7057,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -4999,6 +7078,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -5058,6 +7138,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -5113,6 +7194,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -5150,10 +7232,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { gender: gender, roles: roles, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { gender: gender, roles: roles, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "15-25") {
+      }
+      else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -5167,6 +7325,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -5186,6 +7345,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -5245,6 +7405,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -5300,6 +7461,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -5337,10 +7499,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { gender: gender, roles: roles, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { gender: gender, roles: roles, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "26-35") {
+      }
+      else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -5354,6 +7592,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -5373,6 +7612,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -5432,6 +7672,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -5487,6 +7728,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -5524,10 +7766,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { gender: gender, roles: roles, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { gender: gender, roles: roles, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "36-50") {
+      }
+      else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -5541,6 +7859,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -5560,6 +7879,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -5619,6 +7939,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -5674,6 +7995,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -5711,10 +8033,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { gender: gender, roles: roles, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { gender: gender, roles: roles, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == ">50") {
+      }
+      else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -5728,6 +8126,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -5747,6 +8146,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -5806,6 +8206,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -5861,6 +8262,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -5898,7 +8300,82 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { gender: gender, roles: roles, age: { $gt: 50 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { gender: gender, roles: roles, age: { $gt: 50 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
       }
@@ -5918,6 +8395,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -5929,7 +8407,6 @@ export class GetuserprofilesService {
               }
             },
           },
-
           {
             $lookup: {
               from: 'interests_repo2',
@@ -5938,6 +8415,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -5997,6 +8475,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -6052,6 +8531,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -6089,10 +8569,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "15-25") {
+      }
+      else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -6106,6 +8662,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -6117,6 +8674,7 @@ export class GetuserprofilesService {
               }
             },
           },
+
           {
             $lookup: {
               from: 'interests_repo2',
@@ -6125,6 +8683,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -6184,6 +8743,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -6239,6 +8799,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -6276,10 +8837,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "26-35") {
+      }
+      else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -6293,6 +8930,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -6304,6 +8942,7 @@ export class GetuserprofilesService {
               }
             },
           },
+
           {
             $lookup: {
               from: 'interests_repo2',
@@ -6312,6 +8951,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -6371,6 +9011,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -6426,6 +9067,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -6463,10 +9105,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == "36-50") {
+      }
+      else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -6480,6 +9198,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -6499,6 +9218,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -6558,6 +9278,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -6613,6 +9334,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -6650,10 +9372,86 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, },
         ]);
         return query;
-      } else if (age == ">50") {
+      }
+      else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
           {
@@ -6667,6 +9465,7 @@ export class GetuserprofilesService {
               profilePict_id: '$profilePict.$id',
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
+              email: '$email',
               age: {
                 $round: {
                   $divide: [{
@@ -6686,6 +9485,7 @@ export class GetuserprofilesService {
               as: 'interes_data',
             },
           },
+
           {
             $lookup: {
               from: 'mediaprofilepicts2',
@@ -6745,6 +9545,7 @@ export class GetuserprofilesService {
 
           {
             $project: {
+              activity: '$activity',
               createdAt: '$createdAt',
               auth: { $arrayElemAt: ['$userAuth_data', 0] },
               citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -6800,6 +9601,7 @@ export class GetuserprofilesService {
           },
           {
             $project: {
+
               createdAt: '$createdAt',
               interest: '$interest',
               username: '$auth.username',
@@ -6837,7 +9639,82 @@ export class GetuserprofilesService {
 
               },
             },
-          }, { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 50 } } },
+          },
+
+          {
+            $lookup: {
+              from: "activityevents",
+              localField: "email",
+              foreignField: "payload.email",
+              as: "activity_data"
+            }
+          },
+          {
+            "$unwind": {
+              "path": "$activity_data",
+              "preserveNullAndEmptyArrays": false
+            }
+          },
+          { "$match": { "activity_data.event": "AWAKE" } },
+          { "$sort": { "activity_data.createdAt": -1 }, },
+
+          {
+            "$group": {
+              "_id": "$_id",
+              "name": { "$first": "$fullName" },
+              "tables": { "$push": "$activity_data" },
+              "createdAt": { "$push": "$createdAt" },
+              "fullName": { "$push": "$fullName" },
+              "interest": { "$push": "$interest" },
+              "username": { "$push": "$username" },
+              "avatar": { "$push": "$avatar" },
+              "insight": { "$push": "$insight" },
+              "countries": { "$push": "$countries" },
+              "area": { "$push": "$area" },
+              "cities": { "$push": "$cities" },
+              "dob": { "$push": "$dob" },
+              "age": { "$push": "$age" },
+              "email": { "$push": "$email" },
+              "gender": { "$push": "$gender" },
+              "bio": { "$push": "$bio" },
+              "idProofNumber": { "$push": "$idProofNumber" },
+              "mobileNumber": { "$push": "$mobileNumber" },
+              "roles": { "$push": "$roles" },
+
+              "event": { "$push": "$event" },
+              "isComplete": { "$push": "$isComplete" },
+              "status": { "$push": "$status" },
+              "langIso": { "$push": "$langIso" },
+            }
+          },
+          {
+            $project: {
+              createdAt: { $arrayElemAt: ['$createdAt', 0] },
+              activity: { $arrayElemAt: ['$tables', 0] },
+              fullName: { $arrayElemAt: ['$fullName', 0] },
+              interest: { $arrayElemAt: ['$interest', 0] },
+              username: { $arrayElemAt: ['$username', 0] },
+              avatar: { $arrayElemAt: ['$avatar', 0] },
+              insight: { $arrayElemAt: ['$insight', 0] },
+              countries: { $arrayElemAt: ['$countries', 0] },
+              area: { $arrayElemAt: ['$area', 0] },
+              cities: { $arrayElemAt: ['$cities', 0] },
+              dob: { $arrayElemAt: ['$dob', 0] },
+              age: { $arrayElemAt: ['$age', 0] },
+              email: { $arrayElemAt: ['$email', 0] },
+              gender: { $arrayElemAt: ['$gender', 0] },
+              bio: { $arrayElemAt: ['$bio', 0] },
+              idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+              mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+              roles: { $arrayElemAt: ['$roles', 0] },
+
+              event: { $arrayElemAt: ['$event', 0] },
+              isComplete: { $arrayElemAt: ['$isComplete', 0] },
+              status: { $arrayElemAt: ['$status', 0] },
+              langIso: { $arrayElemAt: ['$langIso', 0] },
+            }
+          },
+          { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 50 } } },
           { $sort: { createdAt: -1 }, },
         ]);
         return query;
@@ -6856,6 +9733,7 @@ export class GetuserprofilesService {
             profilePict_id: '$profilePict.$id',
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
+            email: '$email',
             age: {
               $round: {
                 $divide: [{
@@ -6875,6 +9753,7 @@ export class GetuserprofilesService {
             as: 'interes_data',
           },
         },
+
         {
           $lookup: {
             from: 'mediaprofilepicts2',
@@ -6934,6 +9813,7 @@ export class GetuserprofilesService {
 
         {
           $project: {
+            activity: '$activity',
             createdAt: '$createdAt',
             auth: { $arrayElemAt: ['$userAuth_data', 0] },
             citi: { $arrayElemAt: ['$cities_data', 0] },
@@ -6989,6 +9869,7 @@ export class GetuserprofilesService {
         },
         {
           $project: {
+
             createdAt: '$createdAt',
             interest: '$interest',
             username: '$auth.username',
@@ -7026,7 +9907,82 @@ export class GetuserprofilesService {
 
             },
           },
-        }, { $sort: { createdAt: -1 }, },
+        },
+
+        {
+          $lookup: {
+            from: "activityevents",
+            localField: "email",
+            foreignField: "payload.email",
+            as: "activity_data"
+          }
+        },
+        {
+          "$unwind": {
+            "path": "$activity_data",
+            "preserveNullAndEmptyArrays": false
+          }
+        },
+        { "$match": { "activity_data.event": "AWAKE" } },
+        { "$sort": { "activity_data.createdAt": -1 }, },
+
+        {
+          "$group": {
+            "_id": "$_id",
+            "name": { "$first": "$fullName" },
+            "tables": { "$push": "$activity_data" },
+            "createdAt": { "$push": "$createdAt" },
+            "fullName": { "$push": "$fullName" },
+            "interest": { "$push": "$interest" },
+            "username": { "$push": "$username" },
+            "avatar": { "$push": "$avatar" },
+            "insight": { "$push": "$insight" },
+            "countries": { "$push": "$countries" },
+            "area": { "$push": "$area" },
+            "cities": { "$push": "$cities" },
+            "dob": { "$push": "$dob" },
+            "age": { "$push": "$age" },
+            "email": { "$push": "$email" },
+            "gender": { "$push": "$gender" },
+            "bio": { "$push": "$bio" },
+            "idProofNumber": { "$push": "$idProofNumber" },
+            "mobileNumber": { "$push": "$mobileNumber" },
+            "roles": { "$push": "$roles" },
+
+            "event": { "$push": "$event" },
+            "isComplete": { "$push": "$isComplete" },
+            "status": { "$push": "$status" },
+            "langIso": { "$push": "$langIso" },
+          }
+        },
+        {
+          $project: {
+            createdAt: { $arrayElemAt: ['$createdAt', 0] },
+            activity: { $arrayElemAt: ['$tables', 0] },
+            fullName: { $arrayElemAt: ['$fullName', 0] },
+            interest: { $arrayElemAt: ['$interest', 0] },
+            username: { $arrayElemAt: ['$username', 0] },
+            avatar: { $arrayElemAt: ['$avatar', 0] },
+            insight: { $arrayElemAt: ['$insight', 0] },
+            countries: { $arrayElemAt: ['$countries', 0] },
+            area: { $arrayElemAt: ['$area', 0] },
+            cities: { $arrayElemAt: ['$cities', 0] },
+            dob: { $arrayElemAt: ['$dob', 0] },
+            age: { $arrayElemAt: ['$age', 0] },
+            email: { $arrayElemAt: ['$email', 0] },
+            gender: { $arrayElemAt: ['$gender', 0] },
+            bio: { $arrayElemAt: ['$bio', 0] },
+            idProofNumber: { $arrayElemAt: ['$idProofNumber', 0] },
+            mobileNumber: { $arrayElemAt: ['$mobileNumber', 0] },
+            roles: { $arrayElemAt: ['$roles', 0] },
+
+            event: { $arrayElemAt: ['$event', 0] },
+            isComplete: { $arrayElemAt: ['$isComplete', 0] },
+            status: { $arrayElemAt: ['$status', 0] },
+            langIso: { $arrayElemAt: ['$langIso', 0] },
+          }
+        },
+        { $sort: { createdAt: -1 }, },
       ]);
       return query;
     }

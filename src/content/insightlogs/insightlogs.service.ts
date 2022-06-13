@@ -9,7 +9,7 @@ export class InsightlogsService {
   constructor(
     @InjectModel(Insightlogs.name, 'SERVER_CONTENT')
     private readonly InsightlogsModel: Model<InsightlogsDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateInsightlogsDto: CreateInsightlogsDto,
@@ -33,5 +33,200 @@ export class InsightlogsService {
       _id: id,
     }).exec();
     return deletedCat;
+  }
+
+  async getlike(email: string) {
+    const query = await this.InsightlogsModel.aggregate([
+      {
+        $addFields: {
+          insightID: '$insightID',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: "insights",
+          localField: "insightID",
+          foreignField: "insightID",
+          as: "activity_data"
+        }
+      },
+      { "$match": { "activity_data.email": email, "eventInsight": "LIKE" } },
+
+      {
+        $group: {
+          _id: {
+            tanggal: {
+              $substrCP: [
+                "$createdAt",
+                0,
+                10
+              ]
+            }
+          },
+          like: {
+            $sum: 1
+          },
+          "tables": { "$push": "$activity_data" },
+        }
+      }, {
+        $project: {
+
+          date: "$_id.tanggal",
+          like: 1,
+          activity: { $arrayElemAt: ['$tables', 0] },
+          totalLikes: "$activity.likes"
+
+        }
+      }, {
+        $project: {
+
+          date: "$_id.tanggal",
+          like: 1,
+
+          totalLikes: "$activity.likes"
+
+        }
+      }, {
+        $sort: {
+          date: - 1
+        }
+      }, {
+        $limit: 2
+      },
+    ]).exec();
+
+    return query;
+  }
+
+  async getfollowers(email: string) {
+    const query = await this.InsightlogsModel.aggregate([
+      {
+        $addFields: {
+          insightID: '$insightID',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: "insights",
+          localField: "insightID",
+          foreignField: "insightID",
+          as: "activity_data"
+        }
+      },
+      { "$match": { "activity_data.email": email, "eventInsight": "FOLLOWER" } },
+
+      {
+        $group: {
+          _id: {
+            tanggal: {
+              $substrCP: [
+                "$createdAt",
+                0,
+                10
+              ]
+            }
+          },
+          followers: {
+            $sum: 1
+          },
+          "tables": { "$push": "$activity_data" },
+        }
+      }, {
+        $project: {
+
+          date: "$_id.tanggal",
+          followers: 1,
+          activity: { $arrayElemAt: ['$tables', 0] },
+          totalFollowers: "$activity.followers"
+
+        }
+      }, {
+        $project: {
+
+          date: "$_id.tanggal",
+          followers: 1,
+
+          totalFollowers: "$activity.followers"
+
+        }
+      }, {
+        $sort: {
+          date: - 1
+        }
+      }, {
+        $limit: 2
+      },
+    ]).exec();
+
+    return query;
+  }
+
+  async getfollowing(email: string) {
+    const query = await this.InsightlogsModel.aggregate([
+      {
+        $addFields: {
+          insightID: '$insightID',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: "insights",
+          localField: "insightID",
+          foreignField: "insightID",
+          as: "activity_data"
+        }
+      },
+      { "$match": { "activity_data.email": email, "eventInsight": "FOLLOWING" } },
+
+      {
+        $group: {
+          _id: {
+            tanggal: {
+              $substrCP: [
+                "$createdAt",
+                0,
+                10
+              ]
+            }
+          },
+          followings: {
+            $sum: 1
+          },
+          "tables": { "$push": "$activity_data" },
+        }
+      }, {
+        $project: {
+
+          date: "$_id.tanggal",
+          followings: 1,
+          activity: { $arrayElemAt: ['$tables', 0] },
+          totalFollowing: "$activity.followings"
+
+        }
+      }, {
+        $project: {
+
+          date: "$_id.tanggal",
+          followings: 1,
+
+          totalFollowing: "$activity.followings"
+
+        }
+      }, {
+        $sort: {
+          date: - 1
+        }
+      }, {
+        $limit: 2
+      },
+    ]).exec();
+
+    return query;
   }
 }

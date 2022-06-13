@@ -8,7 +8,7 @@ export class ActivityeventsService {
   constructor(
     @InjectModel(Activityevents.name, 'SERVER_TRANS')
     private readonly activityeventsModel: Model<ActivityeventsDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateActivityeventsDto: CreateActivityeventsDto,
@@ -21,6 +21,20 @@ export class ActivityeventsService {
 
   async findAll(): Promise<Activityevents[]> {
     return this.activityeventsModel.find().exec();
+  }
+
+
+  async findevent(
+    email: string
+  ): Promise<Object> {
+    return this.activityeventsModel
+      .find({
+
+        'payload.email': email
+
+
+      }).sort({ 'createdAt': -1 }).limit(1)
+      .exec();
   }
 
   async findOne(id: string): Promise<Activityevents> {

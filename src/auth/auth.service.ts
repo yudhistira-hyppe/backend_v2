@@ -13,9 +13,9 @@ import { MediaprofilepictsService } from '../content/mediaprofilepicts/mediaprof
 import { InsightsService } from '../content/insights/insights.service';
 import { InterestsService } from '../infra/interests/interests.service';
 import { InterestsRepoService } from '../infra/interests_repo/interests_repo.service';
-import { ActivityeventsService } from '../trans/activityevents/activityevents.service'; 
+import { ActivityeventsService } from '../trans/activityevents/activityevents.service';
 import { CreateUserdeviceDto } from '../trans/userdevices/dto/create-userdevice.dto';
-import { CreateActivityeventsDto } from 'src/trans/activityevents/dto/create-activityevents.dto'; 
+import { CreateActivityeventsDto } from 'src/trans/activityevents/dto/create-activityevents.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { TokenExpiredError } from 'jsonwebtoken';
@@ -37,7 +37,7 @@ export class AuthService {
     private interestsService: InterestsService,
     private interestsRepoService: InterestsRepoService,
     private activityeventsService: ActivityeventsService,
-  ) {}
+  ) { }
 
   async validateUser(
     email: string,
@@ -97,7 +97,7 @@ export class AuthService {
       //   .findParentByDevice(user_email, user_deviceId, Event, false);
       // var _class = 'nest.js.Userdevices';
       // var new_date = new Date().toISOString().replace('T', ' ');
-      
+
       // console.log(user_activityevents);
       // if (!!user_activityevents) {
       //   var data_CreateActivityeventsDto = new CreateActivityeventsDto();

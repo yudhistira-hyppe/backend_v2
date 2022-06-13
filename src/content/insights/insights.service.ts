@@ -10,7 +10,7 @@ export class InsightsService {
   constructor(
     @InjectModel(Insights.name, 'SERVER_CONTENT')
     private readonly InsightsModel: Model<InsightsDocument>,
-  ) {}
+  ) { }
 
   async create(CreateInsightsDto: CreateInsightsDto): Promise<Insights> {
     const createInsightsDto = await this.InsightsModel.create(
@@ -120,9 +120,9 @@ export class InsightsService {
     return GetCount;
   }
 
-  async findinsight(){
-    const query =await this.InsightsModel.aggregate([
-  
+  async findinsight() {
+    const query = await this.InsightsModel.aggregate([
+
       {
         $lookup: {
           from: 'insights',
@@ -130,14 +130,24 @@ export class InsightsService {
           foreignField: '_id',
           as: 'roless',
         },
-      },{
-        $out:{
-          db:'hyppe_trans_db',
-          coll:'insights2'
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'insights2'
         }
       },
-     
+
     ]);
     return query;
   }
+  async getinsight(email: string) {
+    const query = await this.InsightsModel.aggregate([
+
+
+      { "$match": { "email": email } },
+    ]).exec();
+
+    return query;
+  }
+
 }
