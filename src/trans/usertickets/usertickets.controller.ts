@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post,UseGuards,Put,Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Request } from '@nestjs/common';
 import { UserticketsService } from './usertickets.service';
 import { CreateUserticketsDto } from './dto/create-usertickets.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
@@ -7,43 +7,43 @@ import { Res, HttpStatus, Response } from '@nestjs/common';
 import { isEmpty } from 'rxjs';
 
 
-@Controller('api/usertickets')
+@Controller()
 export class UserticketsController {
-    constructor(private readonly userticketsService: UserticketsService,private readonly userbasicsService: UserbasicsService) {}
+  constructor(private readonly userticketsService: UserticketsService, private readonly userbasicsService: UserbasicsService) { }
 
 
-    @UseGuards(JwtAuthGuard)
-    @Post()
-  async create(@Res() res,@Body() CreateUserticketsDto: CreateUserticketsDto,@Request() req) {
+  @UseGuards(JwtAuthGuard)
+  @Post('api/usertickets/user')
+  async create(@Res() res, @Body() CreateUserticketsDto: CreateUserticketsDto, @Request() req) {
     const messages = {
-      "info":["The update successful"],
+      "info": ["The create successful"],
     };
 
     const messagesEror = {
-      "info":["Todo is not found!"],
+      "info": ["Todo is not found!"],
     };
-    var reqdata=req.user;
-    var email=reqdata.email;
+    var reqdata = req.user;
+    var email = reqdata.email;
 
-    var ubasic=await this.userbasicsService.findOne(email);
+    var ubasic = await this.userbasicsService.findOne(email);
 
-    var iduser=ubasic._id;
- 
-    CreateUserticketsDto.IdUser=iduser;
+    var iduser = ubasic._id;
+
+    CreateUserticketsDto.IdUser = iduser;
     await this.userticketsService.create(CreateUserticketsDto);
 
-    try{
-      let data =  await this.userticketsService.create(CreateUserticketsDto);
+    try {
+      let data = await this.userticketsService.create(CreateUserticketsDto);
       res.status(HttpStatus.OK).json({
         response_code: 202,
-        "data":data,
+        "data": data,
         "message": messages
-    });
-    }catch(e){
+      });
+    } catch (e) {
       res.status(HttpStatus.BAD_REQUEST).json({
-       
+
         "message": messagesEror
-    });
+      });
     }
   }
 
