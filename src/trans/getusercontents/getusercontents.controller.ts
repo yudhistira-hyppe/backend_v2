@@ -14,19 +14,31 @@ export class GetusercontentsController {
     async contentuserall(@Req() request: Request): Promise<any> {
 
         var email = null;
+        var skip = 0;
+        var limit = 0;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
         const messages = {
             "info": ["The process successful"],
         };
 
-        let data = await this.getusercontentsService.findalldata(email);
+        let data = await this.getusercontentsService.findalldata(email, skip, limit);
 
         return { response_code: 202, data, messages };
     }
@@ -37,7 +49,8 @@ export class GetusercontentsController {
     @Post('api/getusercontents/latest')
     @UseGuards(JwtAuthGuard)
     async contentuserlatest(@Req() request: Request): Promise<any> {
-
+        var skip = 0;
+        var limit = 0;
         var email = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
@@ -46,12 +59,22 @@ export class GetusercontentsController {
             throw new BadRequestException("Unabled to proceed");
         }
 
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
         const messages = {
             "info": ["The process successful"],
         };
 
-        let data = await this.getusercontentsService.findlatesdata(email);
+        let data = await this.getusercontentsService.findlatesdata(email, skip, limit);
 
         return { response_code: 202, data, messages };
     }
@@ -61,7 +84,8 @@ export class GetusercontentsController {
     @Post('api/getusercontents/popular')
     @UseGuards(JwtAuthGuard)
     async contentuser(@Req() request: Request): Promise<any> {
-
+        var skip = 0;
+        var limit = 0;
         var email = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
@@ -69,13 +93,23 @@ export class GetusercontentsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
         const messages = {
             "info": ["The process successful"],
         };
 
-        let data = await this.getusercontentsService.findpopular(email);
+        let data = await this.getusercontentsService.findpopular(email, skip, limit);
 
         return { response_code: 202, data, messages };
     }
@@ -83,7 +117,8 @@ export class GetusercontentsController {
     @Post('api/getusercontents/monetize')
     @UseGuards(JwtAuthGuard)
     async contentusermonetize(@Req() request: Request): Promise<any> {
-
+        var skip = 0;
+        var limit = 0;
         var email = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
@@ -91,13 +126,23 @@ export class GetusercontentsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
         const messages = {
             "info": ["The process successful"],
         };
 
-        let data = await this.getusercontentsService.findmonetize(email);
+        let data = await this.getusercontentsService.findmonetize(email, skip, limit);
 
         return { response_code: 202, data, messages };
     }
@@ -105,7 +150,8 @@ export class GetusercontentsController {
     @Post('api/getusercontents/search')
     @UseGuards(JwtAuthGuard)
     async contentusersearch(@Req() request: Request): Promise<any> {
-
+        var skip = 0;
+        var limit = 0;
         var email = null;
         var title = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
@@ -120,13 +166,23 @@ export class GetusercontentsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
         const messages = {
             "info": ["The process successful"],
         };
 
-        let data = await this.getusercontentsService.findsearch(email, title);
+        let data = await this.getusercontentsService.findsearch(email, title, skip, limit);
 
         return { response_code: 202, data, messages };
     }

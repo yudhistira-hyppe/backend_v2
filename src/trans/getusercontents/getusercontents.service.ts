@@ -32,7 +32,7 @@ export class GetusercontentsService {
     return this.getusercontentsModel.find().exec();
   }
 
-  async findalldata(email: string): Promise<object> {
+  async findalldata(email: string, skip: number, limit: number): Promise<object> {
     const posts = await this.postsService.findpost();
     const video = await this.mediavideosService.findvideo();
     const pict = await this.mediapictsService.findpict();
@@ -375,8 +375,8 @@ export class GetusercontentsService {
       },
 
       { $sort: { createdAt: -1 }, },
-      { $skip: 0 },
-      { $limit: 10 },
+      { $skip: skip },
+      { $limit: limit },
 
     ]);
 
@@ -384,7 +384,7 @@ export class GetusercontentsService {
   }
 
 
-  async findlatesdata(email: string): Promise<object> {
+  async findlatesdata(email: string, skip: number, limit: number): Promise<object> {
     const posts = await this.postsService.findpost();
     const video = await this.mediavideosService.findvideo();
     const pict = await this.mediapictsService.findpict();
@@ -726,8 +726,8 @@ export class GetusercontentsService {
       },
 
       { $sort: { createdAt: -1 }, },
-      { $skip: 0 },
-      { $limit: 10 },
+      { $skip: skip },
+      { $limit: limit },
 
     ]);
 
@@ -735,7 +735,7 @@ export class GetusercontentsService {
   }
 
 
-  async findpopular(email: string): Promise<object> {
+  async findpopular(email: string, skip: number, limit: number): Promise<object> {
     const posts = await this.postsService.findpost();
     const video = await this.mediavideosService.findvideo();
     const pict = await this.mediapictsService.findpict();
@@ -1078,15 +1078,15 @@ export class GetusercontentsService {
       },
 
       { $sort: { views: -1, likes: -1 }, },
-      { $skip: 0 },
-      { $limit: 10 },
+      { $skip: skip },
+      { $limit: limit },
 
     ]);
 
     return query;
   }
 
-  async findsearch(email: string, title: string): Promise<object> {
+  async findsearch(email: string, title: string, skip: number, limit: number): Promise<object> {
     const posts = await this.postsService.findpost();
     const video = await this.mediavideosService.findvideo();
     const pict = await this.mediapictsService.findpict();
@@ -1429,8 +1429,8 @@ export class GetusercontentsService {
       },
 
       { $sort: { createdAt: -1 }, },
-      { $skip: 0 },
-      { $limit: 10 },
+      { $skip: skip },
+      { $limit: limit },
 
     ]);
 
@@ -1438,7 +1438,7 @@ export class GetusercontentsService {
   }
 
 
-  async findmonetize(email: string): Promise<object> {
+  async findmonetize(email: string, skip: number, limit: number): Promise<object> {
     const posts = await this.postsService.findpost();
     const video = await this.mediavideosService.findvideo();
     const pict = await this.mediapictsService.findpict();
@@ -1785,8 +1785,8 @@ export class GetusercontentsService {
       },
 
       { $sort: { createdAt: -1 }, },
-      { $skip: 0 },
-      { $limit: 10 },
+      { $skip: skip },
+      { $limit: limit },
 
     ]);
 
