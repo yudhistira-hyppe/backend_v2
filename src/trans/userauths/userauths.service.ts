@@ -28,6 +28,10 @@ export class UserauthsService {
   async findOne(email: string): Promise<Userauth> {
     return this.userauthModel.findOne({ email: email }).exec();
   }
+
+  async findOneByEmail(email: string): Promise<any> {
+    return this.userauthModel.findOne({ email: email }).exec();
+  }
   // async findOneId(id: string): Promise<Userauth> {
   //   return this.userauthModel.findOne({ _id: id }).exec();
   // }
@@ -37,5 +41,21 @@ export class UserauthsService {
       .findByIdAndRemove({ _id: id })
       .exec();
     return deletedCat;
+  }
+
+  async updatebyEmail(email: string, data: Object) {
+    this.userauthModel.updateOne(
+      {
+        email: email,
+      },
+      data,
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
   }
 }

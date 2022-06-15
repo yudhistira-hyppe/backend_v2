@@ -1,16 +1,23 @@
-import { Controller, Request, Post,Get, UseGuards, Body, Req, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Request,
+  Post,
+  Get,
+  UseGuards,
+  Body,
+  Req,
+  HttpCode,
+  HttpStatus,
+  Headers,
+} from '@nestjs/common';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 import { JwtRefreshAuthGuard } from './refresh-auth.guard';
-import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken.service';
 
 @Controller()
 export class AuthController {
-  constructor(
-    private authService: AuthService,
-    private jwtrefreshtokenService: JwtrefreshtokenService,
-  ) {}
+  constructor(private authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('api/user/login')
@@ -38,18 +45,28 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('api/user/logout')
   @HttpCode(HttpStatus.ACCEPTED)
-  async logout(@Body('email') email: string, @Req() request: any) {
-    await this.jwtrefreshtokenService.removeRefreshToken(email);
-    request.res.setHeader(
-      'Set-Cookie',
-      'Authentication=; HttpOnly; Path=/; Max-Age=0',
-      'Refresh=; HttpOnly; Path=/; Max-Age=0',
-    );
-    return {
-      response_code: 202,
-      messages: {
-        info: ['Logout successful'],
-      },
-    };
+  async logout(@Req() request: any, @Headers() headers) {
+    return await this.authService.logout(request, headers);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/user/deviceactivity')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async deviceactivity(@Req() request: any, @Headers() headers) {
+    return await this.authService.deviceactivity(request, headers);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/user/recoverpassword')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async recoverpassword(@Req() request: any) {
+    return await this.authService.recoverpassword(request);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/user/changepassword')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async changepassword(@Req() request: any) {
+    return await this.authService.changepassword(request);
   }
 }

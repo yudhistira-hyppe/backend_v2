@@ -4,6 +4,9 @@ export class CreateJwtrefreshtokenDto {
   email: String;
   iat: { numberLong: String };
   exp: { numberLong: String };
-  userAuth: String;
-  _class: String;
+  userAuth: {
+    $ref: String;
+    $id: String;
+  };
+  _class: 'io.melody.core.domain.JwtRefreshToken';
 }

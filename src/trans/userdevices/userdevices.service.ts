@@ -32,14 +32,30 @@ export class UserdevicesService {
       .exec();
   }
 
-  async updatebyEmail(email: string,data:Object) {
-    this.userdeviceModel.updateOne({ email: email }, data);
+  async findOneId(Id: Object): Promise<Userdevice> {
+    return this.userdeviceModel
+      .findOne({ _id: Id })
+      .exec();
   }
 
-  async findOneEmail(
-    email: string,
-    deviceID: string,
-  ): Promise<Userdevice> {
+  async updatebyEmail(email: string, deviceID: string, data: Object) {
+    this.userdeviceModel.updateOne(
+      {
+        email: email,
+        deviceID: deviceID,
+      },
+      data,
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
+  async findOneEmail(email: string, deviceID: string): Promise<Userdevice> {
     return this.userdeviceModel
       .findOne({ email: email, deviceID: deviceID })
       .exec();

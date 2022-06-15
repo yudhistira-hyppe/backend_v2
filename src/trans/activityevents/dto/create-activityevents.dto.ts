@@ -4,8 +4,8 @@ export class CreateActivityeventsDto {
   activityType: String;
   active: boolean;
   status: String;
-  target: String;
   event: String;
+  target: String;
   payload: {
     login_location: {
       latitude: String;
@@ -18,13 +18,14 @@ export class CreateActivityeventsDto {
   };
   createdAt: String;
   updatedAt: String;
+  parentActivityEventID: String;
   sequenceNumber: String;
   flowIsDone: boolean;
   transitions: [
     {
-      ref: String;
-      id: String;
-      db: String;
+      $ref: String;
+      $id: String;
+      $db: String;
     },
   ];
   _class: String;

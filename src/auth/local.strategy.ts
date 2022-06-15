@@ -1,10 +1,8 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
-import {
-  Injectable,
-  NotAcceptableException,
-} from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { JwtrefreshtokenService } from 'src/trans/jwtrefreshtoken/jwtrefreshtoken.service';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -40,12 +38,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         latitude = request_json.location.latitude;
       }
     }
-    const user = await this.authService.validateUser(
-      email,
-      password,
-      deviceId,
-    );
-    if (user == 406){
+    const user = await this.authService.validateUser(email, password);
+    if (user == 'INVALIDCREDENTIALSLID') {
       throw new NotAcceptableException({
         response_code: 406,
         messages: {
@@ -53,11 +47,19 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         },
       });
     }
-    if (!user) {
+    if (user == 'NOTFOUND') {
       throw new NotAcceptableException({
         response_code: 406,
         messages: {
           info: ['User not found'],
+        },
+      });
+    }
+    if (user == 'UNABLEDTOPROCEED') {
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed'],
         },
       });
     }
