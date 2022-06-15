@@ -4,14 +4,16 @@ import { MediapictsService } from './mediapicts.service';
 import { MediapictsController } from './mediapicts.controller';
 import { ConfigModule } from '@nestjs/config';
 import { Mediapicts, MediapictsSchema } from './schemas/mediapicts.schema';
-
+import { MediadiariesModule } from '../../content/mediadiaries/mediadiaries.module';
+import { MediavideosModule } from '../../content/mediavideos/mediavideos.module';
+import { MediastoriesModule } from '../../content/mediastories/mediastories.module';
 @Module({
     imports: [
-        ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Mediapicts.name, schema: MediapictsSchema }],'SERVER_CONTENT')
+        ConfigModule.forRoot(), MediadiariesModule, MediavideosModule, MediastoriesModule,
+        MongooseModule.forFeature([{ name: Mediapicts.name, schema: MediapictsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [MediapictsController],
     providers: [MediapictsService],
     exports: [MediapictsService],
 })
-export class MediapictsModule {}
+export class MediapictsModule { }

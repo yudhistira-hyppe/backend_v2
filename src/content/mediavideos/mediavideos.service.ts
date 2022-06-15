@@ -9,7 +9,7 @@ export class MediavideosService {
   constructor(
     @InjectModel(Mediavideos.name, 'SERVER_CONTENT')
     private readonly MediavideosModel: Model<MediavideosDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateMediavideosDto: CreateMediavideosDto,
@@ -34,9 +34,9 @@ export class MediavideosService {
     }).exec();
     return deletedCat;
   }
-  async findvideo(){
-    const query =await this.MediavideosModel.aggregate([
-  
+  async findvideo() {
+    const query = await this.MediavideosModel.aggregate([
+
       {
         $lookup: {
           from: 'mediavideos',
@@ -44,13 +44,67 @@ export class MediavideosService {
           foreignField: '_id',
           as: 'roless',
         },
-      },{
-        $out:{
-          db:'hyppe_trans_db',
-          coll:'mediavideos2'
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'mediavideos2'
         }
       },
-     
+
+    ]);
+    return query;
+  }
+
+  async findtotalpostmediavid(date: string) {
+
+    var currentdate = new Date(new Date(date).setDate(new Date(date).getDate() + 1));
+    var before = new Date(new Date(date).setDate(new Date(date).getDate() - 7));
+
+    var stdate = currentdate.toISOString();
+    var beforedate = before.toISOString();
+
+    var substrdate = stdate.substring(0, 10);
+    var subbefore = beforedate.substring(0, 10);
+    console.log(subbefore);
+
+    const query = await this.MediavideosModel.aggregate([
+
+      {
+        "$match": {
+          "createdAt": {
+            "$gte": subbefore, "$lte": substrdate
+
+          }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            tanggal: {
+              $substrCP: [
+                "$createdAt",
+                0,
+                10
+              ]
+            }
+          },
+          totalpost: {
+            $sum: 1
+          }
+        }
+      }, {
+        $project: {
+          _id: 0,
+          date: "$_id.tanggal",
+          totalpost: 1,
+
+        }
+      }, {
+        $sort: {
+          date: - 1
+        }
+      },
+
     ]);
     return query;
   }

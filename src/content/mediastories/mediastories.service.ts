@@ -9,7 +9,7 @@ export class MediastoriesService {
   constructor(
     @InjectModel(Mediastories.name, 'SERVER_CONTENT')
     private readonly MediastoriesModel: Model<MediastoriesDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateMediastoriesDto: CreateMediastoriesDto,
@@ -33,5 +33,59 @@ export class MediastoriesService {
       _id: id,
     }).exec();
     return deletedCat;
+  }
+
+  async findtotalpostmediastories(date: string) {
+
+    var currentdate = new Date(new Date(date).setDate(new Date(date).getDate() + 1));
+    var before = new Date(new Date(date).setDate(new Date(date).getDate() - 7));
+
+    var stdate = currentdate.toISOString();
+    var beforedate = before.toISOString();
+
+    var substrdate = stdate.substring(0, 10);
+    var subbefore = beforedate.substring(0, 10);
+    console.log(subbefore);
+
+    const query = await this.MediastoriesModel.aggregate([
+
+      {
+        "$match": {
+          "createdAt": {
+            "$gte": subbefore, "$lte": substrdate
+
+          }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            tanggal: {
+              $substrCP: [
+                "$createdAt",
+                0,
+                10
+              ]
+            }
+          },
+          totalpost: {
+            $sum: 1
+          }
+        }
+      }, {
+        $project: {
+          _id: 0,
+          date: "$_id.tanggal",
+          totalpost: 1,
+
+        }
+      }, {
+        $sort: {
+          date: - 1
+        }
+      },
+
+    ]);
+    return query;
   }
 }

@@ -9,7 +9,7 @@ export class MediadiariesService {
   constructor(
     @InjectModel(Mediadiaries.name, 'SERVER_CONTENT')
     private readonly MediadiariesModel: Model<MediadiariesDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateMediadiariesDto: CreateMediadiariesDto,
@@ -35,9 +35,9 @@ export class MediadiariesService {
     return deletedCat;
   }
 
-  async finddiaries(){
-    const query =await this.MediadiariesModel.aggregate([
-  
+  async finddiaries() {
+    const query = await this.MediadiariesModel.aggregate([
+
       {
         $lookup: {
           from: 'mediadiaries',
@@ -45,13 +45,67 @@ export class MediadiariesService {
           foreignField: '_id',
           as: 'roless',
         },
-      },{
-        $out:{
-          db:'hyppe_trans_db',
-          coll:'mediadiaries2'
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'mediadiaries2'
         }
       },
-     
+
+    ]);
+    return query;
+  }
+
+  async findtotalpostmediadiaries(date: string) {
+
+    var currentdate = new Date(new Date(date).setDate(new Date(date).getDate() + 1));
+    var before = new Date(new Date(date).setDate(new Date(date).getDate() - 7));
+
+    var stdate = currentdate.toISOString();
+    var beforedate = before.toISOString();
+
+    var substrdate = stdate.substring(0, 10);
+    var subbefore = beforedate.substring(0, 10);
+    console.log(subbefore);
+
+    const query = await this.MediadiariesModel.aggregate([
+
+      {
+        "$match": {
+          "createdAt": {
+            "$gte": subbefore, "$lte": substrdate
+
+          }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            tanggal: {
+              $substrCP: [
+                "$createdAt",
+                0,
+                10
+              ]
+            }
+          },
+          totalpost: {
+            $sum: 1
+          }
+        }
+      }, {
+        $project: {
+          _id: 0,
+          date: "$_id.tanggal",
+          totalpost: 1,
+
+        }
+      }, {
+        $sort: {
+          date: - 1
+        }
+      },
+
     ]);
     return query;
   }
