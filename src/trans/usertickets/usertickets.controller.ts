@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Request, Req, BadRequestException } from '@nestjs/common';
 import { UserticketsService } from './usertickets.service';
 import { CreateUserticketsDto } from './dto/create-usertickets.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
@@ -13,7 +13,7 @@ export class UserticketsController {
 
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/usertickets/user')
+  @Post('api/usertickets/createticket')
   async create(@Res() res, @Body() CreateUserticketsDto: CreateUserticketsDto, @Request() req) {
     const messages = {
       "info": ["The create successful"],
@@ -25,12 +25,35 @@ export class UserticketsController {
     var reqdata = req.user;
     var email = reqdata.email;
 
+    var datatiket = await this.userticketsService.findAll();
+    var leng = datatiket.length + 1;
+
+    var curdate = new Date(Date.now());
+    var beforedate = curdate.toISOString();
+
+    var substrtahun = beforedate.substring(0, 4);
+    var numtahun = parseInt(substrtahun);
+
+
+
+    var substrbulan = beforedate.substring(7, 5);
+    var numbulan = parseInt(substrbulan);
+    var substrtanggal = beforedate.substring(10, 8);
+    var numtanggal = parseInt(substrtanggal);
+
+    var rotahun = this.romawi(numtahun);
+    var robulan = this.romawi(numbulan);
+    var rotanggal = this.romawi(numtanggal);
+    var no = "HYPPE/" + (await rotahun).toString() + "/" + (await robulan).toString() + "/" + (await rotanggal).toString() + "/" + leng;
+
     var ubasic = await this.userbasicsService.findOne(email);
 
     var iduser = ubasic._id;
-
+    var dt = new Date(Date.now());
     CreateUserticketsDto.IdUser = iduser;
-    await this.userticketsService.create(CreateUserticketsDto);
+    CreateUserticketsDto.datetime = dt.toISOString();
+    CreateUserticketsDto.status = "onprogress";
+    CreateUserticketsDto.nomortiket = no;
 
     try {
       let data = await this.userticketsService.create(CreateUserticketsDto);
@@ -45,6 +68,75 @@ export class UserticketsController {
         "message": messagesEror
       });
     }
+  }
+
+  @Post('api/usertickets/retrieveticket')
+  @UseGuards(JwtAuthGuard)
+  async retrieve(@Req() request: Request): Promise<any> {
+    const mongoose = require('mongoose');
+    var id = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["id"] !== undefined) {
+      id = request_json["id"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    var idticket = mongoose.Types.ObjectId(request_json["id"]);
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    let data = await this.userticketsService.retrieve(idticket);
+
+    return { response_code: 202, data, messages };
+  }
+
+  @Post('api/usertickets/allticket')
+  @UseGuards(JwtAuthGuard)
+  async all(): Promise<any> {
+    const mongoose = require('mongoose');
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    let data = await this.userticketsService.viewalldata();
+    if (!data) {
+      throw new Error('Todo is not found!');
+    }
+
+    return { response_code: 202, data, messages };
+  }
+
+  async romawi(num: number) {
+    if (typeof num !== 'number')
+      return false;
+
+    var roman = {
+      M: 1000,
+      CM: 900,
+      D: 500,
+      CD: 400,
+      C: 100,
+      XC: 90,
+      L: 50,
+      XL: 40,
+      X: 10,
+      IX: 9,
+      V: 5,
+      IV: 4,
+      I: 1
+    };
+    var str = '';
+
+    for (var i of Object.keys(roman)) {
+      var q = Math.floor(num / roman[i]);
+      num -= q * roman[i];
+      str += i.repeat(q);
+    }
+
+    return str;
   }
 
 }

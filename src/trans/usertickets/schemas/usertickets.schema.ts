@@ -1,12 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 
-export type UserticketsDocument = Usertickets & Document ;
+export type UserticketsDocument = Usertickets & Document;
 
-@Schema({collection:'usertickets'})
+@Schema({ collection: 'usertickets' })
 export class Usertickets {
   //  @Prop({type: mongoose.Schema.Types.ObjectId})
   // _id: { oid:string  }
+  @Prop()
+  nomortiket: string;
+
   @Prop()
   subject: string;
 
@@ -15,24 +18,13 @@ export class Usertickets {
   @Prop()
   datetime: string
 
- 
-@Prop({ type: Object })
-IdUser: { oid:string;  }
- 
- @Prop()
+
+  @Prop({ type: Object })
+  IdUser: { oid: string; }
+
+  @Prop()
   status: string
 
-//   @Prop({ type: [{}] })
-//  Detail:[
-//     {
-//        IDUser:{ oid:string;  },
-//        body: string,
-//        datetime: string,
-//        status: string
-//     }
-//   ]
-
- 
 }
 
 export const UserticketsSchema = SchemaFactory.createForClass(Usertickets);

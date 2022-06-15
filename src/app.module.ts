@@ -50,6 +50,7 @@ import { ProfileModule } from './trans/profile/profile.module';
 import { GetuserprofilesModule } from './trans/getuserprofiles/getuserprofiles.module';
 import { GetusercontentsModule } from './trans/getusercontents/getusercontents.module';
 import { CommentModule } from './trans/getusercontents/comment/comment.module';
+import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -60,6 +61,7 @@ import { CommentModule } from './trans/getusercontents/comment/comment.module';
     // UserbasicsModule,
     // UserauthsModule,
     //CommentModule,
+    UserticketdetailsModule,
     UserticketsModule,
     GetusercontentsModule,
     GetuserprofilesModule,
