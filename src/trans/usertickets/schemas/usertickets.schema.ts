@@ -8,6 +8,9 @@ export class Usertickets {
   //  @Prop({type: mongoose.Schema.Types.ObjectId})
   // _id: { oid:string  }
   @Prop()
+  nomortiket: string;
+
+  @Prop()
   subject: string;
 
   @Prop()

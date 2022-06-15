@@ -11,6 +11,10 @@ export class UserticketsService {
     private readonly userticketsModel: Model<UserticketsDocument>,
 
   ) { }
+
+  async findAll(): Promise<Usertickets[]> {
+    return this.userticketsModel.find().exec();
+  }
   async update(IdUserticket: ObjectId, status: string): Promise<Object> {
     let data = await this.userticketsModel.updateOne({ "_id": IdUserticket },
       { $set: { "status": status } });
@@ -58,6 +62,7 @@ export class UserticketsService {
           },
           replydata: "$tiketdata",
           userrequest: "$userdata.fullName",
+          nomortiket: "$nomortiket",
           email: "$userdata.email",
           subject: "$subject",
           body: "$body",
@@ -69,13 +74,15 @@ export class UserticketsService {
       {
         $project: {
 
-          replydata: "$replydata",
+
+          nomortiket: "$nomortiket",
           userrequest: "$userdata.fullName",
           email: "$userdata.email",
           subject: "$subject",
           body: "$body",
           status: "$status",
-          datetime: "$datetime"
+          datetime: "$datetime",
+          replydata: "$replydata"
 
         }
       }, { $match: { "_id": id } }
@@ -100,6 +107,7 @@ export class UserticketsService {
           userdata: {
             $arrayElemAt: ['$field', 0]
           },
+          nomortiket: "$nomortiket",
           subject: "$subject",
           body: "$body",
           datetime: "$datetime",
@@ -111,7 +119,7 @@ export class UserticketsService {
       {
         $project: {
 
-
+          nomortiket: "$nomortiket",
           fullName: "$userdata.fullName",
           email: "$userdata.email",
           subject: "$subject",
@@ -160,6 +168,7 @@ export class UserticketsService {
           replydata: "$tiketdata",
           userrequest: "$userdata.fullName",
           email: "$userdata.email",
+          nomortiket: "$nomortiket",
           subject: "$subject",
           body: "$body",
           status: "$status",
@@ -169,14 +178,14 @@ export class UserticketsService {
       },
       {
         $project: {
-
-          replydata: "$replydata",
+          nomortiket: "$nomortiket",
           userrequest: "$userdata.fullName",
           email: "$userdata.email",
           subject: "$subject",
           body: "$body",
           status: "$status",
-          datetime: "$datetime"
+          datetime: "$datetime",
+          replydata: "$replydata",
 
         }
       }

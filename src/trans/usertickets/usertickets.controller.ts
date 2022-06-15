@@ -25,13 +25,35 @@ export class UserticketsController {
     var reqdata = req.user;
     var email = reqdata.email;
 
+    var datatiket = await this.userticketsService.findAll();
+    var leng = datatiket.length + 1;
+
+    var curdate = new Date(Date.now());
+    var beforedate = curdate.toISOString();
+
+    var substrtahun = beforedate.substring(0, 4);
+    var numtahun = parseInt(substrtahun);
+
+
+
+    var substrbulan = beforedate.substring(7, 5);
+    var numbulan = parseInt(substrbulan);
+    var substrtanggal = beforedate.substring(10, 8);
+    var numtanggal = parseInt(substrtanggal);
+
+    var rotahun = this.romawi(numtahun);
+    var robulan = this.romawi(numbulan);
+    var rotanggal = this.romawi(numtanggal);
+    var no = "HYPPE/" + (await rotahun).toString() + "/" + (await robulan).toString() + "/" + (await rotanggal).toString() + "/" + leng;
+
     var ubasic = await this.userbasicsService.findOne(email);
 
     var iduser = ubasic._id;
-    var dt = new Date();
+    var dt = new Date(Date.now());
     CreateUserticketsDto.IdUser = iduser;
     CreateUserticketsDto.datetime = dt.toISOString();
     CreateUserticketsDto.status = "onprogress";
+    CreateUserticketsDto.nomortiket = no;
 
     try {
       let data = await this.userticketsService.create(CreateUserticketsDto);
@@ -87,5 +109,34 @@ export class UserticketsController {
     return { response_code: 202, data, messages };
   }
 
+  async romawi(num: number) {
+    if (typeof num !== 'number')
+      return false;
+
+    var roman = {
+      M: 1000,
+      CM: 900,
+      D: 500,
+      CD: 400,
+      C: 100,
+      XC: 90,
+      L: 50,
+      XL: 40,
+      X: 10,
+      IX: 9,
+      V: 5,
+      IV: 4,
+      I: 1
+    };
+    var str = '';
+
+    for (var i of Object.keys(roman)) {
+      var q = Math.floor(num / roman[i]);
+      num -= q * roman[i];
+      str += i.repeat(q);
+    }
+
+    return str;
+  }
 
 }
