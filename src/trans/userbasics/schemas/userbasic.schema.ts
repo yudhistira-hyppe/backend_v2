@@ -5,123 +5,125 @@ export type UserbasicDocument = Userbasic & Document ;
 
 @Schema()
 export class Userbasic {
-   @Prop({type: mongoose.Schema.Types.ObjectId})
-  _id: { oid:String  }
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  _id: { oid: String };
   @Prop()
   profileID: string;
 
   @Prop()
-  email: String
+  email: String;
   @Prop()
-  fullName: String
+  fullName: String;
   @Prop()
-  dob: String
+  dob: String;
   @Prop()
-  gender: String
+  gender: String;
   @Prop()
-  mobileNumber: String
+  mobileNumber: String;
   @Prop()
-  status: String
+  status: String;
   @Prop()
-  event: String
+  event: String;
   @Prop()
-  idProofName: String
+  idProofName: String;
   @Prop()
-  idProofNumber: String
+  idProofNumber: String;
   @Prop()
-  idProofStatus: String
+  idProofStatus: String;
   @Prop()
-  isComplete: boolean
+  isComplete: boolean;
   @Prop()
-  isCelebrity: boolean
+  isCelebrity: boolean;
   @Prop()
-  isIdVerified: boolean
+  isIdVerified: boolean;
   @Prop()
-  isPrivate: boolean
+  isPrivate: boolean;
   @Prop()
-  isFollowPrivate: boolean
+  isFollowPrivate: boolean;
   @Prop()
-  isPostPrivate: boolean
-  
-  @Prop()
- createdAt: String
- @Prop()
- updatedAt: String
+  isPostPrivate: boolean;
 
- @Prop()
-  bio: String
+  @Prop()
+  createdAt: String;
+  @Prop()
+  updatedAt: String;
 
-@Prop({ type: Object })
- profilePict: {
-    ref:String
-    id:String
-    db:String
- }
- @Prop({ type: Object })
- proofPict: {
-    ref:String
-    id:String
-    db:String
- }
- @Prop({ type: Object })
- insight: {
-    ref:String
-    id:String
-    db:String
- }
+  @Prop()
+  bio: String;
+
+  @Prop({ type: Object })
+  profilePict: {
+    ref: String;
+    id: String;
+    db: String;
+  };
+  @Prop({ type: Object })
+  proofPict: {
+    ref: String;
+    id: String;
+    db: String;
+  };
+  @Prop({ type: Object })
+  insight: {
+    ref: String;
+    id: String;
+    db: String;
+  };
 
   @Prop({ type: [{}] })
- userInterests:[{
-    ref:String
-    id:{
-        oid:String
+  userInterests: [
+    {
+      ref: String;
+      id: {
+        oid: String;
       };
-    db:String
- }]
+      db: String;
+    },
+  ];
 
- @Prop({ type: Object })
- userAuth: {
-    ref:String
-    id:{
-        oid:String
-      };
-    db:String
- }
- @Prop({ type: Object })
- cities: {
-    ref:String
-    id:{
-        oid:String
-      };
-    db:String
- }
+  @Prop({ type: Object })
+  userAuth: {
+    ref: String;
+    id: {
+      oid: String;
+    };
+    db: String;
+  };
+  @Prop({ type: Object })
+  cities: {
+    ref: String;
+    id: {
+      oid: String;
+    };
+    db: String;
+  };
 
- @Prop({ type: Object })
- states: {
-    ref:String
-    id:{
-        oid:String
-      };
-    db:String
- }
- @Prop({ type: Object })
- countries: {
-    ref:String
-    id:{
-        oid:String
-      };
-    db:String
- }
- @Prop({ type: Object })
- languages: {
-    ref:String
-    id:{
-        oid:String
-      };
-    db:String
- }
- @Prop()
- _class:String
+  @Prop({ type: Object })
+  states: {
+    ref: String;
+    id: {
+      oid: String;
+    };
+    db: String;
+  };
+  @Prop({ type: Object })
+  countries: {
+    ref: String;
+    id: {
+      oid: String;
+    };
+    db: String;
+  };
+  @Prop({ type: Object })
+  languages: {
+    ref: String;
+    id: {
+      oid: String;
+    };
+    db: String;
+  };
+  @Prop()
+  _class: 'io.melody.core.domain.UserProfile';
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);

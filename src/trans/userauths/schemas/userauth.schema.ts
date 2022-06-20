@@ -5,65 +5,64 @@ export type UserauthDocument = Userauth & Document ;
 
 @Schema()
 export class Userauth {
-   @Prop({type: mongoose.Schema.Types.ObjectId})
-  _id: { oid:String  }
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  _id: { oid: String };
   @Prop()
-  username: string
+  username: string;
   @Prop()
-  password: string
+  password: string;
   @Prop()
-  userID: String
+  userID: String;
   @Prop()
-  email: String
+  email: String;
   @Prop()
-  regSrc: String
+  regSrc: String;
   @Prop()
-  createdAt: String
+  createdAt: String;
   @Prop()
-  updatedAt: String
+  updatedAt: String;
   @Prop()
-  isExpiryPass: boolean
+  isExpiryPass: boolean;
   @Prop()
-  isEmailVerified: boolean
+  isEmailVerified: boolean;
 
-@Prop({ type: Object })
-otpRequestTime: {
-    numberLong:String
- }
- @Prop({ type: Object })
- otpAttempt: {
-    numberLong:String
- }
- @Prop({ type: Object })
- otpNextAttemptAllow: {
-    numberLong:String
- }
- @Prop()
-  isEnabled: boolean
-@Prop()
-  isAccountNonExpired: boolean
+  @Prop({ type: Object })
+  otpRequestTime: {
+    numberLong: String;
+  };
+  @Prop({ type: Object })
+  otpAttempt: {
+    numberLong: String;
+  };
+  @Prop({ type: Object })
+  otpNextAttemptAllow: {
+    numberLong: String;
+  };
   @Prop()
-  isAccountNonLocked: boolean
+  isEnabled: boolean;
   @Prop()
-  isCredentialsNonExpired: boolean
+  isAccountNonExpired: boolean;
+  @Prop()
+  isAccountNonLocked: boolean;
+  @Prop()
+  isCredentialsNonExpired: boolean;
 
+  @Prop()
+  roles: [];
 
- @Prop()
- roles:[]
+  @Prop([{ type: Object }])
+  devices: [
+    {
+      ref: String;
+      id: {
+        oid: String;
+      };
+      db: String;
+    },
+  ];
 
- @Prop([{}])
- devices:[{
-    ref:String
-    id:{
-      oid:String
-    };
-    db:String
-}];
- 
-
-
- @Prop()
- _class:String
+  @Prop()
+  _class: String;
 }
 
 export const UserauthSchema = SchemaFactory.createForClass(Userauth);

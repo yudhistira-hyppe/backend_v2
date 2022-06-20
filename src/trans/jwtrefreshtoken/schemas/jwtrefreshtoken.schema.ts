@@ -18,12 +18,12 @@ export class Jwtrefreshtoken {
   exp: { numberLong: String };
   @Prop({ type: Object })
   userAuth: {
-    type: mongoose.Schema.Types.ObjectId;
-    ref: 'Ingredient';
+    ref: String;
+    id: String;
   };
 
   @Prop()
-  _class: String;
+  _class: 'io.melody.core.domain.JwtRefreshToken';
 }
 
 export const JwtrefreshtokenSchema = SchemaFactory.createForClass(Jwtrefreshtoken);

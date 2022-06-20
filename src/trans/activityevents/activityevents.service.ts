@@ -8,7 +8,7 @@ export class ActivityeventsService {
   constructor(
     @InjectModel(Activityevents.name, 'SERVER_TRANS')
     private readonly activityeventsModel: Model<ActivityeventsDocument>,
-  ) { }
+  ) {}
 
   async create(
     CreateActivityeventsDto: CreateActivityeventsDto,
@@ -23,17 +23,13 @@ export class ActivityeventsService {
     return this.activityeventsModel.find().exec();
   }
 
-
-  async findevent(
-    email: string
-  ): Promise<Object> {
+  async findevent(email: string): Promise<Object> {
     return this.activityeventsModel
       .find({
-
-        'payload.email': email
-
-
-      }).sort({ 'createdAt': -1 }).limit(1)
+        'payload.email': email,
+      })
+      .sort({ createdAt: -1 })
+      .limit(1)
       .exec();
   }
 
@@ -143,25 +139,25 @@ export class ActivityeventsService {
   }
 
   async findParentByDevice(
-    email,
-    login_device,
-    activityType,
-    flowIsDone,
+    email: string,
+    login_device: string,
+    activityType: string,
+    flowIsDone_: boolean,
   ): Promise<Object> {
     return this.activityeventsModel
       .find({
-        _class: 'nest.js.Userdevices',
         'payload.email': email,
         'payload.login_device': login_device,
         activityType: activityType,
         parentActivityEventID: { $eq: null },
-        flowIsDone: flowIsDone,
+        flowIsDone: flowIsDone_,
       })
       .exec();
   }
 
   async update(param: Object, data: Object) {
-    var _class = 'nest.js.JwtRefreshToken';
-    this.activityeventsModel.updateOne(param, data);
+    this.activityeventsModel.updateOne(param, data, function (err, docs) {
+      if (err) {} else {}
+    });
   }
 }

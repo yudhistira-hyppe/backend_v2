@@ -4,14 +4,17 @@ import {
   UnauthorizedException,
   NotAcceptableException,
 } from '@nestjs/common';
-import { PassportStrategy } from "@nestjs/passport";
-import { Strategy, ExtractJwt } from 'passport-jwt'
-import { AuthService } from "./auth.service";
-import { JwtrefreshtokenService } from "../trans/jwtrefreshtoken/jwtrefreshtoken.service";
+import { PassportStrategy } from '@nestjs/passport';
+import { Strategy, ExtractJwt } from 'passport-jwt';
+import { AuthService } from './auth.service';
+import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken.service';
 
 @Injectable()
-export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh-token') {
-    constructor(private jwtrefreshtokenService:JwtrefreshtokenService) {
+export class JwtRefreshStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-refresh-token',
+) {
+  constructor(private jwtrefreshtokenService: JwtrefreshtokenService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (Request: any) => {
@@ -29,8 +32,8 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh-
       passReqToCallback: true,
     });
   }
- 
-  async validate(req,payload: any) {
+
+  async validate(req, payload: any) {
     if (req.body.email == undefined) {
       throw new NotAcceptableException({
         response_code: 406,
@@ -38,7 +41,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh-
           info: ['Unabled to proceed'],
         },
       });
-    } 
+    }
     if (req.body.refreshToken == undefined) {
       throw new NotAcceptableException({
         response_code: 406,
@@ -47,24 +50,33 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh-
         },
       });
     } 
-    var user = await this.jwtrefreshtokenService.findOne(req.body.email);
-    if(!user){
+    try {
+      var user = await this.jwtrefreshtokenService.findOne(req.body.email);
+      if (!user) {
         throw new NotAcceptableException({
           response_code: 406,
           messages: {
             info: ['Unabled to proceed'],
           },
         });
-    }
-    if(req.body.refreshToken != (await user.refresh_token_id)){
+      }
+      if (req.body.refreshToken != (await user.refresh_token_id)) {
         throw new NotAcceptableException({
           response_code: 406,
           messages: {
             info: ['Invalid refesh token'],
           },
         });
-    }
-    if (new Date().getTime() > Number(await user.exp)) {
+      }
+      if (new Date().getTime() > Number(await user.exp)) {
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed'],
+          },
+        });
+      }
+    }catch(err){
       throw new NotAcceptableException({
         response_code: 406,
         messages: {
@@ -72,6 +84,6 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh-
         },
       });
     }
-    return { userID: payload.sub, email:payload.email};
+    return { userID: payload.sub, email: payload.email };
   }
 }

@@ -25,14 +25,12 @@ export class JwtrefreshtokenService {
   }
 
   async findAll(): Promise<Jwtrefreshtoken[]> {
-    var _class = 'nest.js.JwtRefreshToken';
-    return this.jwtrefreshtokenModel.find({ _class: _class }).exec();
+    return this.jwtrefreshtokenModel.find().exec();
   }
 
   async findOne(email: string): Promise<Jwtrefreshtoken> {
-    var _class = 'nest.js.JwtRefreshToken';
     return this.jwtrefreshtokenModel
-      .findOne({ email: email, _class: _class })
+      .findOne({ email: email })
       .exec();
   }
 
@@ -40,7 +38,6 @@ export class JwtrefreshtokenService {
     email: string,
     refresh_token_id: string,
   ): Promise<Jwtrefreshtoken> {
-    var _class = 'nest.js.JwtRefreshToken';
     return this.jwtrefreshtokenModel
       .findOne({ email: email, refresh_token_id: refresh_token_id })
       .exec();
@@ -59,7 +56,6 @@ export class JwtrefreshtokenService {
     exp,
     iat,
   ) {
-    var _class = 'nest.js.JwtRefreshToken';
     var user = await this.findOne(email);
     if (!user) {
       var data_user = await this.userauthsService.findOne(email);
@@ -67,14 +63,17 @@ export class JwtrefreshtokenService {
       data.refresh_token_id = refresh_token_id;
       data.email = email;
       data.exp = exp;
-      data.userAuth = 'DBRef("userauths", ObjectId("' + data_user._id + '"))';
-      data._class = _class;
+      data.iat = iat;
+      data._class = 'io.melody.core.domain.JwtRefreshToken';
+       data.userAuth = {
+        $ref: 'userauths',
+        $id: Object(data_user._id),
+      };
       await this.jwtrefreshtokenModel.create(data);
     } else {
       await this.jwtrefreshtokenModel.updateOne(
-        { email: email, _class: _class },
+        { email: email },
         {
-          refresh_token_id: refresh_token_id,
           exp: exp,
           iat: iat,
         },
@@ -83,9 +82,8 @@ export class JwtrefreshtokenService {
   }
 
   async removeRefreshToken(email: string) {
-    var _class = 'nest.js.JwtRefreshToken';
     this.jwtrefreshtokenModel.updateOne(
-      { email: email, _class: _class },
+      { email: email },
       { refresh_token_id: null },
     );
   }
