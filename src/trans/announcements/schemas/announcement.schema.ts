@@ -8,7 +8,7 @@ export class Announcements {
     //  @Prop({type: mongoose.Schema.Types.ObjectId})
     // _id: { oid:string  }
     @Prop()
-    subject: string;
+    title: string;
 
     @Prop()
     body: string
@@ -31,7 +31,7 @@ export class Announcements {
     status: string
 
     @Prop({ type: [] })
-    detail: [{ iduser: { oid: String; }; }]
+    Detail: []
 
 
 }

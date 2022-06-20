@@ -51,6 +51,9 @@ import { GetuserprofilesModule } from './trans/getuserprofiles/getuserprofiles.m
 import { GetusercontentsModule } from './trans/getusercontents/getusercontents.module';
 import { CommentModule } from './trans/getusercontents/comment/comment.module';
 import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
+import { AnnouncementsModule } from './trans/announcements/announcements.module';
+import { FaqsModule } from './trans/faqs/faqs.module';
+import { FaqdetailsModule } from './trans/faqs/faqdetails/faqdetails.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -61,6 +64,9 @@ import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/u
     // UserbasicsModule,
     // UserauthsModule,
     //CommentModule,
+    FaqdetailsModule,
+    FaqsModule,
+    AnnouncementsModule,
     UserticketdetailsModule,
     UserticketsModule,
     GetusercontentsModule,

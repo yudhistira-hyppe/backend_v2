@@ -1,0 +1,82 @@
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Request, BadRequestException } from '@nestjs/common';
+import { FaqdetailsService } from './faqdetails.service';
+import { CreateFaqdetailsDto } from './dto/create-faqdetails.dto';
+import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
+import { UserbasicsService } from '../../userbasics/userbasics.service';
+import { Res, HttpStatus, Response } from '@nestjs/common';
+import { FaqService } from '../faqs.service';
+
+@Controller()
+export class FaqdetailsController {
+
+    constructor(private readonly faqdetailsService: FaqdetailsService, private readonly userbasicsService: UserbasicsService, readonly faqService: FaqService) { }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('api/faqs/reply')
+    async create(@Res() res, @Body() CreateFaqdetailsDto: CreateFaqdetailsDto, @Request() req) {
+        const messages = {
+            "info": ["The create successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+
+        var request_json = JSON.parse(JSON.stringify(req.body));
+        var IdUserticket = null;
+        var status = null;
+
+        var reqdata = req.user;
+        var email = reqdata.email;
+
+        var ubasic = await this.userbasicsService.findOne(email);
+
+        var iduser = ubasic._id;
+        var dt = new Date();
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        user: mongoose.Types.ObjectId(request_json["Idfaqs"])
+        if (request_json["Idfaqs"] === undefined) {
+            res.status(HttpStatus.BAD_REQUEST).json({
+
+                "message": "ID tiket tidak boleh kosong"
+            });
+
+        }
+        else if (request_json["status"] === undefined) {
+            res.status(HttpStatus.BAD_REQUEST).json({
+
+                "message": "status tidak boleh kosong"
+            });
+
+        }
+
+        else {
+            // status = request_json["status"];
+            IdUserticket = request_json["Idfaqs"];
+            var idusertiket = mongoose.Types.ObjectId(request_json["Idfaqs"]);
+            CreateFaqdetailsDto.IdUser = iduser;
+            CreateFaqdetailsDto.datetime = dt.toISOString();
+            CreateFaqdetailsDto.Idfaqs = idusertiket;
+            try {
+                let data = await this.faqdetailsService.create(CreateFaqdetailsDto);
+                // await this.userticketsService.update(idusertiket, status);
+                res.status(HttpStatus.OK).json({
+                    response_code: 202,
+                    "data": data,
+                    "message": messages
+                });
+            } catch (e) {
+                res.status(HttpStatus.BAD_REQUEST).json({
+
+                    "message": messagesEror
+                });
+            }
+
+        }
+
+    }
+
+}

@@ -2396,7 +2396,8 @@ export class GetuserprofilesService {
               posts: '$insights.posts',
               views: '$insights.views',
               likes: '$insights.likes'
-            }, avatar: {
+            },
+            avatar: {
               mediaBasePath: '$profilpict.mediaBasePath',
               mediaUri: '$profilpict.mediaUri',
               mediaType: '$profilpict.mediaType',

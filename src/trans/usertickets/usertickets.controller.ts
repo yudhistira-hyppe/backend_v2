@@ -108,7 +108,28 @@ export class UserticketsController {
 
     return { response_code: 202, data, messages };
   }
+  @Post('api/usertickets/byuser')
+  @UseGuards(JwtAuthGuard)
+  async retrieveiduser(@Req() request: Request): Promise<any> {
+    const mongoose = require('mongoose');
+    var email = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["email"] !== undefined) {
+      email = request_json["email"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+    var ubasic = await this.userbasicsService.findOne(email);
+    var iduser = ubasic._id.oid;
+    var userid = mongoose.Types.ObjectId(iduser);
+    const messages = {
+      "info": ["The process successful"],
+    };
 
+    let data = await this.userticketsService.retrieveiduser(userid);
+
+    return { response_code: 202, data, messages };
+  }
   async romawi(num: number) {
     if (typeof num !== 'number')
       return false;

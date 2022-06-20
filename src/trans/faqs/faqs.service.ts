@@ -2,27 +2,27 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
-import { CreateUserticketsDto } from './dto/create-usertickets.dto';
-import { Usertickets, UserticketsDocument } from './schemas/usertickets.schema';
+import { CreateFaqsDto } from './dto/create-faqs.dto';
+import { Faqs, FaqsDocument } from './schemas/faqs.schema';
 @Injectable()
-export class UserticketsService {
+export class FaqService {
   constructor(
-    @InjectModel(Usertickets.name, 'SERVER_TRANS')
-    private readonly userticketsModel: Model<UserticketsDocument>,
+    @InjectModel(Faqs.name, 'SERVER_TRANS')
+    private readonly faqsModel: Model<FaqsDocument>,
 
   ) { }
 
-  async findAll(): Promise<Usertickets[]> {
-    return this.userticketsModel.find().exec();
+  async findAll(): Promise<Faqs[]> {
+    return this.faqsModel.find().exec();
   }
   async update(IdUserticket: ObjectId, status: string): Promise<Object> {
-    let data = await this.userticketsModel.updateOne({ "_id": IdUserticket },
+    let data = await this.faqsModel.updateOne({ "_id": IdUserticket },
       { $set: { "status": status } });
     return data;
   }
 
-  async create(CreateUserticketsDto: CreateUserticketsDto): Promise<Usertickets> {
-    let data = await this.userticketsModel.create(CreateUserticketsDto);
+  async create(CreateFaqsDto: CreateFaqsDto): Promise<Faqs> {
+    let data = await this.faqsModel.create(CreateFaqsDto);
 
     if (!data) {
       throw new Error('Todo is not found!');
@@ -31,7 +31,7 @@ export class UserticketsService {
   }
 
   async retrieve(id: object): Promise<object> {
-    const query = await this.userticketsModel.aggregate([
+    const query = await this.faqsModel.aggregate([
       {
         $lookup: {
           from: "userbasics",
@@ -41,16 +41,16 @@ export class UserticketsService {
         }
       }, {
         $lookup: {
-          from: "userticketdetails",
+          from: "faqdetails",
           localField: "_id",
-          foreignField: "IdUserticket",
-          as: "tiketdata"
+          foreignField: "Idfaqs",
+          as: "faqdata"
         }
       },
       {
         $lookup: {
           from: "userbasics",
-          localField: "tiketdata.IdUser",
+          localField: "faqdata.IdUser",
           foreignField: "_id",
           as: "field2"
         }
@@ -60,7 +60,7 @@ export class UserticketsService {
           userdata: {
             $arrayElemAt: ['$userdata', 0]
           },
-          replydata: "$tiketdata",
+          replydata: "$faqdata",
           userrequest: "$userdata.fullName",
           nomortiket: "$nomortiket",
           email: "$userdata.email",
@@ -75,7 +75,7 @@ export class UserticketsService {
         $project: {
 
 
-          nomortiket: "$nomortiket",
+
           userrequest: "$userdata.fullName",
           email: "$userdata.email",
           subject: "$subject",
@@ -92,71 +92,9 @@ export class UserticketsService {
     return query;
   }
 
-  async retrieveiduser(id: object): Promise<object> {
-    const query = await this.userticketsModel.aggregate([
-      {
-        $lookup: {
-          from: "userbasics",
-          localField: "IdUser",
-          foreignField: "_id",
-          as: "userdata"
-        }
-      }, {
-        $lookup: {
-          from: "userticketdetails",
-          localField: "_id",
-          foreignField: "IdUserticket",
-          as: "tiketdata"
-        }
-      },
-      {
-        $lookup: {
-          from: "userbasics",
-          localField: "tiketdata.IdUser",
-          foreignField: "_id",
-          as: "field2"
-        }
-      },
-      {
-        $project: {
-          userdata: {
-            $arrayElemAt: ['$userdata', 0]
-          },
-          replydata: "$tiketdata",
-          userrequest: "$userdata.fullName",
-          nomortiket: "$nomortiket",
-          email: "$userdata.email",
-          subject: "$subject",
-          body: "$body",
-          status: "$status",
-          datetime: "$datetime"
-
-        }
-      },
-      {
-        $project: {
-
-
-          nomortiket: "$nomortiket",
-          userrequest: "$userdata.fullName",
-          email: "$userdata.email",
-          subject: "$subject",
-          body: "$body",
-          status: "$status",
-          datetime: "$datetime",
-          replydata: "$replydata"
-
-        }
-      }, { $match: { IdUser: id } }
-    ]);
-
-
-    return query;
-  }
-
 
   async alldata(): Promise<object> {
-    const query = await this.userticketsModel.aggregate([
+    const query = await this.faqsModel.aggregate([
       {
         $lookup: {
           from: "userbasics",
@@ -169,7 +107,7 @@ export class UserticketsService {
           userdata: {
             $arrayElemAt: ['$field', 0]
           },
-          nomortiket: "$nomortiket",
+
           subject: "$subject",
           body: "$body",
           datetime: "$datetime",
@@ -181,7 +119,7 @@ export class UserticketsService {
       {
         $project: {
 
-          nomortiket: "$nomortiket",
+
           fullName: "$userdata.fullName",
           email: "$userdata.email",
           subject: "$subject",
@@ -198,7 +136,7 @@ export class UserticketsService {
   }
 
   async viewalldata(): Promise<object> {
-    const query = await this.userticketsModel.aggregate([
+    const query = await this.faqsModel.aggregate([
       {
         $lookup: {
           from: "userbasics",
@@ -208,16 +146,16 @@ export class UserticketsService {
         }
       }, {
         $lookup: {
-          from: "userticketdetails",
+          from: "faqdetails",
           localField: "_id",
-          foreignField: "IdUserticket",
-          as: "tiketdata"
+          foreignField: "Idfaqs",
+          as: "faqdata"
         }
       },
       {
         $lookup: {
           from: "userbasics",
-          localField: "tiketdata.IdUser",
+          localField: "faqdata.IdUser",
           foreignField: "_id",
           as: "field2"
         }
@@ -227,7 +165,7 @@ export class UserticketsService {
           userdata: {
             $arrayElemAt: ['$userdata', 0]
           },
-          replydata: "$tiketdata",
+          replydata: "$faqdata",
           userrequest: "$userdata.fullName",
           email: "$userdata.email",
           nomortiket: "$nomortiket",
