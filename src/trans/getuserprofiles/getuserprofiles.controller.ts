@@ -62,8 +62,8 @@ export class GetuserprofilesController {
     var age = null;
     var roles = null;
     var data = null;
-    var skip = null;
-    var limit = null;
+    var page = null;
+
 
     const messages = {
       "info": ["The process successful"],
@@ -73,21 +73,16 @@ export class GetuserprofilesController {
     fullName = request_json["fullName"];
     gender = request_json["gender"];
     roles = request_json["roles"];
-    skip = request_json["skip"];
-    limit = request_json["limit"];
 
-    if (request_json["skip"] !== undefined) {
-      skip = request_json["skip"];
-    } else {
-      throw new BadRequestException("Unabled to proceed");
-    }
-    if (request_json["limit"] !== undefined) {
-      limit = request_json["limit"];
+
+    if (request_json["page"] !== undefined) {
+      page = request_json["page"];
     } else {
       throw new BadRequestException("Unabled to proceed");
     }
 
-    data = await this.getuserprofilesService.findata(fullName, gender, roles, age, skip, limit);
+
+    data = await this.getuserprofilesService.findata(fullName, gender, roles, age, page);
 
     return { response_code: 202, data, messages };
   }

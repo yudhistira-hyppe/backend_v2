@@ -47,7 +47,7 @@ export class GetuserprofilesService {
 
 
 
-  async findata(fullName: string, gender: string, roles: string, age: string, skip: number, limit: number) {
+  async findata(fullName: string, gender: string, roles: string, age: string, page: number) {
 
     const countries = await this.countriesService.findcountries();
     const cities = await this.citiesService.findcities();
@@ -329,8 +329,9 @@ export class GetuserprofilesService {
             langIso: { $arrayElemAt: ['$langIso', 0] },
           }
         },
-        { $sort: { createdAt: -1 }, }, { $skip: skip },
-        { $limit: limit },
+        { $sort: { createdAt: -1 }, },
+        { $skip: page },
+        { $limit: 15 },
       ]);
       return query;
     }
@@ -600,8 +601,8 @@ export class GetuserprofilesService {
         },
 
         { $sort: { createdAt: -1 }, },
-        { $skip: skip },
-        { $limit: limit },
+        { $skip: page },
+        { $limit: 15 },
       ]);
       return query;
     }
@@ -869,8 +870,8 @@ export class GetuserprofilesService {
             langIso: { $arrayElemAt: ['$langIso', 0] },
           }
         },
-        { $match: { roles: roles } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-        { $limit: limit },
+        { $match: { roles: roles } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+        { $limit: 15 },
       ]);
       return query;
     }
@@ -1140,8 +1141,8 @@ export class GetuserprofilesService {
             }
           },
 
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -1410,8 +1411,8 @@ export class GetuserprofilesService {
             }
           },
 
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -1680,8 +1681,8 @@ export class GetuserprofilesService {
             }
           },
 
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       } else if (age == "36-50") {
@@ -1948,8 +1949,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -2218,8 +2219,8 @@ export class GetuserprofilesService {
             }
           },
 
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -2489,8 +2490,8 @@ export class GetuserprofilesService {
             langIso: { $arrayElemAt: ['$langIso', 0] },
           }
         },
-        { $sort: { createdAt: -1 }, }, { $skip: skip },
-        { $limit: limit },
+        { $sort: { createdAt: -1 }, }, { $skip: page },
+        { $limit: 15 },
       ]);
       return query;
     }
@@ -2758,8 +2759,8 @@ export class GetuserprofilesService {
             langIso: { $arrayElemAt: ['$langIso', 0] },
           }
         },
-        { $match: { fullName: { $regex: fullName }, roles: roles } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-        { $limit: limit },
+        { $match: { fullName: { $regex: fullName }, roles: roles } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+        { $limit: 15 },
       ]);
       return query;
     }
@@ -3027,8 +3028,8 @@ export class GetuserprofilesService {
             langIso: { $arrayElemAt: ['$langIso', 0] },
           }
         },
-        { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-        { $limit: limit },
+        { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+        { $limit: 15 },
       ]);
       return query;
     }
@@ -3298,8 +3299,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -3567,8 +3568,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -3836,8 +3837,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -4105,8 +4106,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -4374,8 +4375,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -4643,8 +4644,8 @@ export class GetuserprofilesService {
             langIso: { $arrayElemAt: ['$langIso', 0] },
           }
         },
-        { $match: { gender: gender, roles: roles } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-        { $limit: limit },
+        { $match: { gender: gender, roles: roles } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+        { $limit: 15 },
       ]);
       return query;
     }
@@ -4914,8 +4915,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -5183,8 +5184,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -5452,8 +5453,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -5721,8 +5722,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -5990,8 +5991,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -6261,8 +6262,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { roles: roles, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { roles: roles, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -6530,8 +6531,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { roles: roles, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { roles: roles, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -6799,8 +6800,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { roles: roles, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { roles: roles, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -7068,8 +7069,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { roles: roles, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { roles: roles, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -7337,8 +7338,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { roles: roles, age: { $gt: 50 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { roles: roles, age: { $gt: 50 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -7609,8 +7610,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { gender: gender, roles: roles, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { gender: gender, roles: roles, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -7878,8 +7879,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { gender: gender, roles: roles, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { gender: gender, roles: roles, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -8147,8 +8148,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { gender: gender, roles: roles, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { gender: gender, roles: roles, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -8416,8 +8417,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { gender: gender, roles: roles, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { gender: gender, roles: roles, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -8684,8 +8685,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { gender: gender, roles: roles, age: { $gt: 50 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { gender: gender, roles: roles, age: { $gt: 50 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -8955,8 +8956,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -9225,8 +9226,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -9495,8 +9496,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -9764,8 +9765,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -10034,8 +10035,8 @@ export class GetuserprofilesService {
             }
           },
           { $match: { fullName: { $regex: fullName }, gender: gender, roles: roles, age: { $gt: 50 } } },
-          { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -10304,8 +10305,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { fullName: { $regex: fullName }, gender: gender, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { fullName: { $regex: fullName }, gender: gender, age: { $gt: 0, $lt: 15 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -10574,8 +10575,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { fullName: { $regex: fullName }, gender: gender, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { fullName: { $regex: fullName }, gender: gender, age: { $gt: 14, $lt: 26 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -10844,8 +10845,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { fullName: { $regex: fullName }, gender: gender, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { fullName: { $regex: fullName }, gender: gender, age: { $gt: 25, $lt: 36 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -11112,8 +11113,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { fullName: { $regex: fullName }, gender: gender, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, }, { $skip: skip },
-          { $limit: limit },
+          { $match: { fullName: { $regex: fullName }, gender: gender, age: { $gt: 35, $lt: 51 } } }, { $sort: { createdAt: -1 }, }, { $skip: page },
+          { $limit: 15 },
         ]);
         return query;
       }
@@ -11381,8 +11382,8 @@ export class GetuserprofilesService {
               langIso: { $arrayElemAt: ['$langIso', 0] },
             }
           },
-          { $match: { fullName: { $regex: fullName }, gender: gender, age: { $gt: 50 } } }, { $skip: skip },
-          { $limit: limit },
+          { $match: { fullName: { $regex: fullName }, gender: gender, age: { $gt: 50 } } }, { $skip: page },
+          { $limit: 15 },
           { $sort: { createdAt: -1 }, },
         ]);
         return query;
@@ -11650,8 +11651,8 @@ export class GetuserprofilesService {
             langIso: { $arrayElemAt: ['$langIso', 0] },
           }
         },
-        { $sort: { createdAt: -1 }, }, { $skip: skip },
-        { $limit: limit },
+        { $sort: { createdAt: -1 }, }, { $skip: page },
+        { $limit: 15 },
       ]);
       return query;
     }
