@@ -8,7 +8,7 @@ export class ActivityeventsService {
   constructor(
     @InjectModel(Activityevents.name, 'SERVER_TRANS')
     private readonly activityeventsModel: Model<ActivityeventsDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateActivityeventsDto: CreateActivityeventsDto,
@@ -157,7 +157,38 @@ export class ActivityeventsService {
 
   async update(param: Object, data: Object) {
     this.activityeventsModel.updateOne(param, data, function (err, docs) {
-      if (err) {} else {}
+      if (err) { } else { }
     });
+  }
+
+  async findevents() {
+    const query = await this.activityeventsModel.aggregate([
+      {
+        "$group": {
+          "_id": "$payload.email",
+          "timeAt": {
+            "$last": "$createdAt"
+          },
+          "event": {
+            "$last": "$event"
+          },
+          "eventipe": {
+            "$last": "$event"
+          },
+          "email": {
+            "$last": "$payload.email"
+          }
+        }
+      },
+      {
+        "$match": {
+          "event": "AWAKE"
+        }
+      }
+
+    ]);
+
+    return query;
+
   }
 }

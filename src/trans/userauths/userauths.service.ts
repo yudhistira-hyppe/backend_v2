@@ -9,7 +9,7 @@ export class UserauthsService {
   constructor(
     @InjectModel(Userauth.name, 'SERVER_TRANS')
     private readonly userauthModel: Model<UserauthDocument>,
-  ) {}
+  ) { }
 
   async create(CreateUserauthDto: CreateUserauthDto): Promise<Userauth> {
     const createUserauthDto = await this.userauthModel.create(
@@ -57,5 +57,11 @@ export class UserauthsService {
         }
       },
     );
+  }
+
+  async update(email: string, roles: string): Promise<Object> {
+    let data = await this.userauthModel.updateOne({ "email": email },
+      { $set: { "roles": [roles] } });
+    return data;
   }
 }

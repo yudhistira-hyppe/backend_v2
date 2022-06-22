@@ -15,14 +15,14 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     private userdevicesService: UserdevicesService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (Request: any) => {
-          if (Request.rawHeaders[0] == 'x-auth-token') {
-            return Request.rawHeaders[1].replace('Bearer ', '');
-          }
-        },
-      ]),
-      //jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // jwtFromRequest: ExtractJwt.fromExtractors([
+      //   (Request: any) => {
+      //     if (Request.rawHeaders[0] == 'x-auth-token') {
+      //       return Request.rawHeaders[1].replace('Bearer ', '');
+      //     }
+      //   },
+      // ]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_ACCESS_TOKEN_SECRET,
     });
@@ -36,9 +36,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
         payload.deviceId,
       );
 
-    if(user_userdevicesService != null){
+    if (user_userdevicesService != null) {
       return { userID: payload.sub, email: payload.email };
-    }else{
+    } else {
       throw new NotAcceptableException({
         response_code: 406,
         messages: {

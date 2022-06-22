@@ -25,6 +25,9 @@ export class Usertickets {
   @Prop()
   status: string
 
+  @Prop()
+  tipe: string
+
 }
 
 export const UserticketsSchema = SchemaFactory.createForClass(Usertickets);

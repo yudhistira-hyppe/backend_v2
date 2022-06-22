@@ -15,6 +15,7 @@ import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediap
 import { Request } from 'express';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { PaginationParams } from './utils/paginationParams';
+import { ActivityeventsService } from '../activityevents/activityevents.service';
 
 @Controller()
 export class GetuserprofilesController {
@@ -30,6 +31,7 @@ export class GetuserprofilesController {
     private insightsService: InsightsService,
     private languagesService: LanguagesService,
     private interestsService: InterestsService,
+    private activityeventsService: ActivityeventsService,
 
   ) { }
 
@@ -60,7 +62,8 @@ export class GetuserprofilesController {
     var age = null;
     var roles = null;
     var data = null;
-
+    var skip = null;
+    var limit = null;
 
     const messages = {
       "info": ["The process successful"],
@@ -70,9 +73,24 @@ export class GetuserprofilesController {
     fullName = request_json["fullName"];
     gender = request_json["gender"];
     roles = request_json["roles"];
+    skip = request_json["skip"];
+    limit = request_json["limit"];
 
-    data = await this.getuserprofilesService.findata(fullName, gender, roles, age);
+    if (request_json["skip"] !== undefined) {
+      skip = request_json["skip"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+    if (request_json["limit"] !== undefined) {
+      limit = request_json["limit"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    data = await this.getuserprofilesService.findata(fullName, gender, roles, age, skip, limit);
 
     return { response_code: 202, data, messages };
   }
+
+
 }

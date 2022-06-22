@@ -31,8 +31,6 @@ export class FaqsController {
     var dt = new Date(Date.now());
     CreateFaqsDto.IdUser = iduser;
     CreateFaqsDto.datetime = dt.toISOString();
-    CreateFaqsDto.status = "onprogress";
-
 
     try {
       let data = await this.faqService.create(CreateFaqsDto);
@@ -71,16 +69,22 @@ export class FaqsController {
     return { response_code: 202, data, messages };
   }
 
-  @Post('api/usertickets/allticket')
+  @Post('api/faqs/allfaqs')
   @UseGuards(JwtAuthGuard)
-  async all(): Promise<any> {
+  async all(@Req() request: Request): Promise<any> {
     const mongoose = require('mongoose');
-
+    var tipe = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["tipe"] !== undefined) {
+      tipe = request_json["tipe"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
     const messages = {
       "info": ["The process successful"],
     };
 
-    let data = await this.faqService.viewalldata();
+    let data = await this.faqService.viewalldata(tipe);
     if (!data) {
       throw new Error('Todo is not found!');
     }

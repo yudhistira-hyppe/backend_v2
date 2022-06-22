@@ -33,7 +33,7 @@ export class AuthService {
     private interestsService: InterestsService,
     private interestsRepoService: InterestsRepoService,
     private activityeventsService: ActivityeventsService,
-  ) {}
+  ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
     var isMatch = false;
@@ -154,7 +154,7 @@ export class AuthService {
             messages: {
               info: [
                 'Unabled to proceed Create Activity events Child. Error:' +
-                  err_create_activity_event_child,
+                err_create_activity_event_child,
               ],
             },
           });
@@ -185,7 +185,7 @@ export class AuthService {
             messages: {
               info: [
                 'Unabled to proceed Update Activity events Parent. Error:' +
-                  err_update_activity_event_parent,
+                err_update_activity_event_parent,
               ],
             },
           });
@@ -237,7 +237,7 @@ export class AuthService {
             messages: {
               info: [
                 'Unabled to proceed Create Activity events Parent. Error: ' +
-                  err_create_activity_event_parent,
+                err_create_activity_event_parent,
               ],
             },
           });
@@ -292,7 +292,7 @@ export class AuthService {
             messages: {
               info: [
                 'Unabled to proceed Create Activity events Child. Error: ' +
-                  err_create_activity_event_child,
+                err_create_activity_event_child,
               ],
             },
           });
@@ -317,7 +317,7 @@ export class AuthService {
             messages: {
               info: [
                 'Unabled to proceed Get Userdevices. Error:' +
-                  err_get_userdevices,
+                err_get_userdevices,
               ],
             },
           });
@@ -346,7 +346,7 @@ export class AuthService {
             messages: {
               info: [
                 'Unabled to proceed Create Userdevices. Error:' +
-                  err_create_userdevices,
+                err_create_userdevices,
               ],
             },
           });
@@ -386,7 +386,7 @@ export class AuthService {
           messages: {
             info: [
               'Unabled to proceed Update Devices Userauths. Error:' +
-                err_update_devices_userauths,
+              err_update_devices_userauths,
             ],
           },
         });
@@ -518,7 +518,7 @@ export class AuthService {
         //Get Id Userdevices
         const datauserauthsService_devices =
           datauserauthsService.devices[
-            datauserauthsService.devices.length - 1
+          datauserauthsService.devices.length - 1
           ];
 
         //Ceck Userdevices
@@ -593,7 +593,7 @@ export class AuthService {
       var expdate = new Date();
       expdate.setDate(
         expdate.getDate() +
-          Number(process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME),
+        Number(process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME),
       );
       console.log('asdasdas' + iatdate.getTime());
       await this.jwtrefreshtokenService.saveorupdateRefreshToken(
@@ -701,7 +701,7 @@ export class AuthService {
             messages: {
               info: [
                 'Unabled to proceed Create Activity Event Child. Error:' +
-                  err_create_activity_events_child,
+                err_create_activity_events_child,
               ],
             },
           });
@@ -712,8 +712,8 @@ export class AuthService {
           const data_transitions = user_activityevents[0].transitions;
           data_transitions.push(
             'DBRef("activityevents", "' +
-              ID_child_ActivityEvent +
-              '","hyppe_trans_db")',
+            ID_child_ActivityEvent +
+            '","hyppe_trans_db")',
           );
           const update_activityevents_parent =
             await this.activityeventsService.update(
@@ -746,7 +746,7 @@ export class AuthService {
             messages: {
               info: [
                 'Unabled to proceed Update Activity Event Parent. Error:' +
-                  err_update_activity_events_parent,
+                err_update_activity_events_parent,
               ],
             },
           });
@@ -776,7 +776,7 @@ export class AuthService {
             messages: {
               info: [
                 'Unabled to proceed Update Userdevices. Error:' +
-                  err_update_userdevices,
+                err_update_userdevices,
               ],
             },
           });
@@ -820,7 +820,7 @@ export class AuthService {
     }
     if (
       !((user_event == 'AWAKE' && user_status == 'INITIAL') ||
-      (user_event == 'SLEEP' && user_status == 'ACTIVE'))
+        (user_event == 'SLEEP' && user_status == 'ACTIVE'))
     ) {
       throw new NotAcceptableException({
         response_code: 406,
@@ -884,7 +884,7 @@ export class AuthService {
             messages: {
               info: [
                 'Unabled to proceed Create Activity Event Child. Error:' +
-                  err_create_activity_events_child,
+                err_create_activity_events_child,
               ],
             },
           });
@@ -895,8 +895,8 @@ export class AuthService {
           const data_transitions = user_activityevents[0].transitions;
           data_transitions.push(
             'DBRef("activityevents", "' +
-              ID_child_ActivityEvent +
-              '","hyppe_trans_db")',
+            ID_child_ActivityEvent +
+            '","hyppe_trans_db")',
           );
           await this.activityeventsService.update(
             {
@@ -912,7 +912,7 @@ export class AuthService {
             messages: {
               info: [
                 'Unabled to proceed Update Activity Event Parent. Error:' +
-                  err_update_activity_events_parent,
+                err_update_activity_events_parent,
               ],
             },
           });
@@ -932,12 +932,12 @@ export class AuthService {
         });
       }
     } else {
-        throw new NotAcceptableException({
-          response_code: 406,
-          messages: {
-            info: ['User not found'],
-          },
-        });
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['User not found'],
+        },
+      });
     }
   }
 
@@ -952,5 +952,5 @@ export class AuthService {
     var current_date = new Date().toISOString().replace('T', ' ');
   }
 
-  async changepassword(req: any): Promise<any> {}
+  async changepassword(req: any): Promise<any> { }
 }

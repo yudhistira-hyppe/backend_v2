@@ -11,7 +11,7 @@ export class Faqdetails {
     @Prop({ type: Object })
     Idfaqs: { oid: string; }
     @Prop()
-    subject: string;
+    title: string;
 
     @Prop()
     body: string
@@ -21,9 +21,6 @@ export class Faqdetails {
 
     @Prop({ type: Object })
     IdUser: { oid: string; }
-
-    @Prop()
-    status: string
 
 }
 

@@ -9,19 +9,17 @@ export class Faqs {
   // _id: { oid:string  }
 
   @Prop()
-  subject: string;
-
+  kategori: string;
   @Prop()
-  body: string
+  tipe: string;
+
+
   @Prop()
   datetime: string
 
 
   @Prop({ type: Object })
   IdUser: { oid: string; }
-
-  @Prop()
-  status: string
 
 }
 

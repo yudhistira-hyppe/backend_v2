@@ -61,31 +61,27 @@ export class FaqService {
             $arrayElemAt: ['$userdata', 0]
           },
           replydata: "$faqdata",
-          userrequest: "$userdata.fullName",
-          nomortiket: "$nomortiket",
+          usercreate: "$userdata.fullName",
           email: "$userdata.email",
-          subject: "$subject",
-          body: "$body",
-          status: "$status",
+          kategori: "$kategori",
+          tipe: "$tipe",
           datetime: "$datetime"
 
         }
       },
       {
         $project: {
-
-
-
-          userrequest: "$userdata.fullName",
+          usercreate: "$userdata.fullName",
           email: "$userdata.email",
-          subject: "$subject",
-          body: "$body",
-          status: "$status",
+          kategori: "$kategori",
           datetime: "$datetime",
-          replydata: "$replydata"
+          tipe: "$tipe",
+          replydata: "$replydata",
 
         }
-      }, { $match: { "_id": id } }
+      },
+      { $match: { "_id": id } },
+      { $sort: { datetime: -1 }, },
     ]);
 
 
@@ -93,49 +89,11 @@ export class FaqService {
   }
 
 
-  async alldata(): Promise<object> {
-    const query = await this.faqsModel.aggregate([
-      {
-        $lookup: {
-          from: "userbasics",
-          localField: "IdUser",
-          foreignField: "_id",
-          as: "field"
-        }
-      }, {
-        $project: {
-          userdata: {
-            $arrayElemAt: ['$field', 0]
-          },
-
-          subject: "$subject",
-          body: "$body",
-          datetime: "$datetime",
-          status: "$status",
-          fullName: "$userdata.fullName"
-
-        }
-      },
-      {
-        $project: {
 
 
-          fullName: "$userdata.fullName",
-          email: "$userdata.email",
-          subject: "$subject",
-          body: "$body",
-          status: "$status",
-          datetime: "$datetime"
-
-        }
-      }
-    ]);
 
 
-    return query;
-  }
-
-  async viewalldata(): Promise<object> {
+  async viewalldata(tipe: string): Promise<object> {
     const query = await this.faqsModel.aggregate([
       {
         $lookup: {
@@ -166,29 +124,26 @@ export class FaqService {
             $arrayElemAt: ['$userdata', 0]
           },
           replydata: "$faqdata",
-          userrequest: "$userdata.fullName",
+          usercreate: "$userdata.fullName",
           email: "$userdata.email",
-          nomortiket: "$nomortiket",
-          subject: "$subject",
-          body: "$body",
-          status: "$status",
+          kategori: "$kategori",
+          tipe: "$tipe",
           datetime: "$datetime"
 
         }
       },
       {
         $project: {
-          nomortiket: "$nomortiket",
-          userrequest: "$userdata.fullName",
+          usercreate: "$userdata.fullName",
           email: "$userdata.email",
-          subject: "$subject",
-          body: "$body",
-          status: "$status",
+          kategori: "$kategori",
           datetime: "$datetime",
+          tipe: "$tipe",
           replydata: "$replydata",
 
         }
       },
+      { $match: { "tipe": tipe } },
       { $sort: { datetime: -1 }, },
     ]);
 

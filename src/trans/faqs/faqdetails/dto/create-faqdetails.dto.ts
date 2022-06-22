@@ -6,11 +6,10 @@ export class CreateFaqdetailsDto {
     // readonly _id: { oid:string;  };
 
     Idfaqs: { oid: String; };
-    subject: string;
+    title: string;
     body: string;
     datetime: string;
     IdUser: { oid: String; };
-    status: string;
 
 
 }

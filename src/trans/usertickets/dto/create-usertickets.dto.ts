@@ -8,6 +8,7 @@ export class CreateUserticketsDto {
   datetime: string;
   IdUser: { oid: String; };
   status: string;
+  tipe: string;
 
 
 }

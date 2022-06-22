@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Req, Request, Query, Headers } from '@nestjs/common';
 import { UserbasicsService } from './userbasics.service';
 import { CreateUserbasicDto } from './dto/create-userbasic.dto';
 import { Userbasic } from './schemas/userbasic.schema';
@@ -57,6 +57,8 @@ export class UserbasicsController {
   }
 
 
+
+
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.userbasicsService.delete(id);
@@ -108,5 +110,41 @@ export class UserbasicsController {
         "message": messagesEror
       });
     }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('v2/interest?')
+  async getinterest(@Request() req, @Headers('x-auth-token') auth: string, @Res() res, @Query('langIso') langIso: string, @Query('pageNumber') pageNumber: number, @Query('pageRow') pageRow: number, @Query('search') search: string): Promise<Userbasic> {
+    //console.log(auth);
+    var reqdata = req.user;
+    var email = reqdata.email;
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+
+
+    const messages = {
+      "info": ["Interests retrieved"],
+    };
+
+    var pgnumber = parseInt(pageNumber.toString());
+    var pgrow = parseInt(pageRow.toString());
+    try {
+      let data = await this.userbasicsService.getinterest(email, langIso, pgnumber, pgrow, search);
+
+      return res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "total": pgrow.toString(),
+        "data": data,
+        "message": messages,
+        "page": pgnumber.toString()
+      });
+    } catch (e) {
+      return res.status(HttpStatus.BAD_REQUEST).json({
+
+        "message": e.toString()
+      });
+    }
+
   }
 }

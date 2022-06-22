@@ -16,17 +16,17 @@ export class JwtRefreshStrategy extends PassportStrategy(
 ) {
   constructor(private jwtrefreshtokenService: JwtrefreshtokenService) {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (Request: any) => {
-          // const decodedJwt = this.jwtService.decode(
-          //   Request.rawHeaders[1].replace('Bearer ', ''),
-          // );
-          if (Request.rawHeaders[0] == 'x-auth-token') {
-            return Request.rawHeaders[1].replace('Bearer ', '');
-          }
-        },
-      ]),
-      //jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // jwtFromRequest: ExtractJwt.fromExtractors([
+      //   (Request: any) => {
+      //     // const decodedJwt = this.jwtService.decode(
+      //     //   Request.rawHeaders[1].replace('Bearer ', ''),
+      //     // );
+      //     if (Request.rawHeaders[0] == 'x-auth-token') {
+      //       return Request.rawHeaders[1].replace('Bearer ', '');
+      //     }
+      //   },
+      // ]),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: true,
       secretOrKey: process.env.JWT_ACCESS_TOKEN_SECRET,
       passReqToCallback: true,
@@ -49,7 +49,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
           info: ['Unabled to proceed'],
         },
       });
-    } 
+    }
     try {
       var user = await this.jwtrefreshtokenService.findOne(req.body.email);
       if (!user) {
@@ -76,7 +76,7 @@ export class JwtRefreshStrategy extends PassportStrategy(
           },
         });
       }
-    }catch(err){
+    } catch (err) {
       throw new NotAcceptableException({
         response_code: 406,
         messages: {
