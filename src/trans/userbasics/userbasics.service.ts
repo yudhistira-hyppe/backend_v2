@@ -312,5 +312,34 @@ export class UserbasicsService {
 
     return query;
   }
+
+
+  async viewdatabyuser(id: object): Promise<object> {
+    const query = await this.userbasicModel.aggregate([
+      {
+        $match: {
+          _id: id
+        }
+      },
+      {
+        $lookup: {
+          from: "announcements",
+          localField: "_id",
+          foreignField: "Detail.iduser",
+          as: "pengumuman"
+        }
+      },
+      {
+        $project: {
+          email: "$email",
+          fullName: "$fullName",
+          info: "$pengumuman"
+        }
+      },
+    ]);
+
+
+    return query;
+  }
 }
 

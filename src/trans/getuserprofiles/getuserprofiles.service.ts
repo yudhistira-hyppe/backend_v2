@@ -11660,6 +11660,21 @@ export class GetuserprofilesService {
 
   }
 
+  async totalcount() {
+    const query = await this.getuserprofilesModel.aggregate([{
+      $group: {
+        _id: null,
+        countrow: {
+          $sum: 1
+        }
+      }
+    }, {
+      $project: {
+        _id: 0
+      }
+    }]);
+    return query;
+  }
 
   async delete(id: string) {
     const deletedCat = await this.getuserprofilesModel

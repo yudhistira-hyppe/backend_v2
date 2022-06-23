@@ -63,7 +63,7 @@ export class GetuserprofilesController {
     var roles = null;
     var data = null;
     var page = null;
-
+    var countrow = null;
 
     const messages = {
       "info": ["The process successful"],
@@ -83,8 +83,9 @@ export class GetuserprofilesController {
 
 
     data = await this.getuserprofilesService.findata(fullName, gender, roles, age, page);
-
-    return { response_code: 202, data, messages };
+    countrow = await this.getuserprofilesService.totalcount();
+    var totalrow = countrow[0].countrow;
+    return { response_code: 202, data, totalrow, messages };
   }
 
 

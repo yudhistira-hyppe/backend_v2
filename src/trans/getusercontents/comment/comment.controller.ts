@@ -31,6 +31,27 @@ export class CommentController {
 
         return { response_code: 202, data, messages };
     }
+    @Post('disquslogs')
+    @UseGuards(JwtAuthGuard)
+    async comment(@Req() request: Request): Promise<any> {
+
+        var postID = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        let data = await this.getcommentService.findcomment(postID);
+
+        return { response_code: 202, data, messages };
+    }
 
     @UseGuards(JwtAuthGuard)
     @Put(':id')
