@@ -240,14 +240,31 @@ export class GetusercontentsController {
         var dataoener = await this.getusercontentsService.findmanagementcontentowner(email);
         var latestownership = dataoener[0];
         var dataregion = await this.getusercontentsService.findmanagementcontentregion(email);
-        var recentlyregion = dataregion[0];
+        var recentlyregion = dataregion;
+        var lengregion = dataregion.length;
+
+        var dataregionall = await this.getusercontentsService.findmanagementcontentallregion(email);
+        var totalpost = dataregionall.length;
+        var datapost = [];
+
+        var obj = {};
+        for (var x = 0; x < lengregion; x++) {
+            var loc = dataregion[x]._id;
+            var tepost = dataregion[x].totalpost * 100 / totalpost;
+            var tpost = tepost.toFixed(2);
+            obj = { "_id": loc, "totalpost": tpost };
+            datapost.push(obj);
+        }
+
+
+
         var datatraffic = await this.getusercontentsService.findmanagementcontenttrafic(email);
         var traffic = datatraffic[0];
         var datamoderate = await this.getusercontentsService.findmanagementcontentmoderate(email);
         var moderate = datamoderate[0];
         data = [{
             "popular": popular, "mostlikes": mostlikes, "mostshares": mostshares, "latestpost": latestpost, "latestmonetize": latestmonetize, "latestownership": latestownership,
-            "recentlyregion": recentlyregion, "traffic": traffic, "moderate": moderate
+            "recentlyregion": datapost, "traffic": traffic, "moderate": moderate
         }];
         return { response_code: 202, data, messages };
     }
