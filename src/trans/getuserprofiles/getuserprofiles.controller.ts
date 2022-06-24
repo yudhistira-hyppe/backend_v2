@@ -83,8 +83,9 @@ export class GetuserprofilesController {
 
 
     data = await this.getuserprofilesService.findata(fullName, gender, roles, age, page);
-    countrow = await this.getuserprofilesService.totalcount();
-    var totalrow = countrow[0].countrow;
+
+
+    var totalrow = data.length;
     return { response_code: 202, data, totalrow, messages };
   }
 
