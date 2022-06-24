@@ -32,4 +32,13 @@ export class AccountbalancesService {
         ]);
         return query;
     }
+
+    async findsaldoall() {
+        const query = await this.accountbalancesModel.aggregate([
+            { $group: { _id: null, totalsaldo: { $sum: { $subtract: ["$kredit", "$debet"] } }, totalpenarikan: { $sum: "$debet" } } },
+
+
+        ]);
+        return query;
+    }
 }

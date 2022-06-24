@@ -12,21 +12,22 @@ export class AccountbalancesController {
     @UseGuards(JwtAuthGuard)
     async search(@Req() request: Request): Promise<any> {
         var email = null;
-
+        var data = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-        var ubasic = await this.userbasicsService.findOne(email);
+            var ubasic = await this.userbasicsService.findOne(email);
 
-        var iduser = ubasic._id;
+            var iduser = ubasic._id;
+            data = await this.accountbalancesService.findsaldo(iduser);
+        } else {
+            data = await this.accountbalancesService.findsaldoall();
+        }
+
         const messages = {
             "info": ["The process successful"],
         };
 
-        let data = await this.accountbalancesService.findsaldo(iduser);
 
         return { response_code: 202, data, messages };
     }
