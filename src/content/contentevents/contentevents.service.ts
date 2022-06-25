@@ -9,7 +9,7 @@ export class ContenteventsService {
   constructor(
     @InjectModel(Contentevents.name, 'SERVER_CONTENT')
     private readonly ContenteventsModel: Model<ContenteventsDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateContenteventsDto: CreateContenteventsDto,
@@ -488,5 +488,26 @@ export class ContenteventsService {
       },
     ]).exec();
     return GetCount;
+  }
+
+  async findcontent() {
+    const query = await this.ContenteventsModel.aggregate([
+
+      {
+        $lookup: {
+          from: 'contentevents',
+          localField: 'contentevents.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'contentevents2'
+        }
+      },
+
+    ]);
+    return query;
   }
 }

@@ -55,6 +55,7 @@ import { AnnouncementsModule } from './trans/announcements/announcements.module'
 import { FaqsModule } from './trans/faqs/faqs.module';
 import { FaqdetailsModule } from './trans/faqs/faqdetails/faqdetails.module';
 import { AccountbalancesModule } from './trans/accountbalances/accountbalances.module';
+import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents/getcontentevents.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -65,6 +66,7 @@ import { AccountbalancesModule } from './trans/accountbalances/accountbalances.m
     // UserbasicsModule,
     // UserauthsModule,
     //CommentModule,
+    GetcontenteventsModule,
     AccountbalancesModule,
     FaqdetailsModule,
     FaqsModule,
