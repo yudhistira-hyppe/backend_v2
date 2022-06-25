@@ -269,5 +269,55 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
+    @Post('api/getusercontents/time')
+    @UseGuards(JwtAuthGuard)
+    async contentusertime(@Req() request: Request): Promise<any> {
+        var DateDiff = require('date-diff');
+
+        var postID = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        let datatime = await this.getusercontentsService.findtime(postID);
+
+        var createdate = datatime[0].createdAt;
+
+        var subtahun = createdate.substring(0, 4);
+        var subbulan = createdate.substring(7, 5);
+        var subtanggal = createdate.substring(10, 8);
+        var datatimestr = subtahun + "-" + subbulan + "-" + subtanggal;
+
+        var curdate = new Date(Date.now());
+        var beforedate = curdate.toISOString();
+
+        var substrtahun = beforedate.substring(0, 4);
+        var substrbulan = beforedate.substring(7, 5);
+        var substrtanggal = beforedate.substring(10, 8);
+        var datestr = substrtahun + "-" + substrbulan + "-" + substrtanggal;
+
+        var date1 = new Date(datatimestr);
+        var date2 = new Date(datestr);
+
+        // To calculate the time difference of two dates
+        var Difference_In_Time = date2.getTime() - date1.getTime();
+
+        // To calculate the no. of days between two dates
+        var hours = Difference_In_Time / (1000 * 3600 * 24) * 24;
+        var minutes = hours * 60;
+        var seconds = minutes * 60;
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+
+
+
+
+        return { response_code: 202, hours, minutes, seconds, messages };
+    }
 
 }

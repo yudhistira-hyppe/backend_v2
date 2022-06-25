@@ -5396,6 +5396,32 @@ export class GetusercontentsService {
     return query;
   }
 
+  async findtime(postID: string) {
+
+    const query = await this.getusercontentsModel.aggregate([
+
+      {
+        $match: {
+
+          postID: postID
+
+        }
+
+      },
+      {
+        $project: {
+
+          createdAt: "$createdAt"
+
+
+        }
+      },
+
+    ]);
+
+
+    return query;
+  }
 
 }
 
