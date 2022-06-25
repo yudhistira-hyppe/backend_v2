@@ -3,12 +3,12 @@ import { AppModule } from './app.module';
 import * as fs from 'fs';
 
 // const httpsOptions = {
-//   key: fs.readFileSync('D:/MyWork/NodeJs/Hyppe/ssl/local/server.key'),
-//   cert: fs.readFileSync('D:/MyWork/NodeJs/Hyppe/ssl/local/server.crt'),
+// key: fs.readFileSync('/home/ubuntu/workspace/SSL/hyppe.key'),
+// cert: fs.readFileSync('/home/ubuntu/workspace/SSL/hyppe.crt'),
 // };
 const httpsOptions = {
-  key: fs.readFileSync('C:/ProjectHyppe/crt/server.key'),
-  cert: fs.readFileSync('C:/ProjectHyppe/crt/server.crt'),
+  key: fs.readFileSync('/home/ubuntu/workspace/SSL/hyppe.key'),
+  cert: fs.readFileSync('/home/ubuntu/workspace/SSL/hyppe.crt'),
 };
 
 async function bootstrap() {
