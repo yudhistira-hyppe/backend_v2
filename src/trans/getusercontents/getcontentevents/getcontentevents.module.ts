@@ -5,11 +5,12 @@ import { GetcontenteventsController } from './getcontentevents.controller';
 import { ConfigModule } from '@nestjs/config';
 import { Getcontentevents, GetcontenteventsSchema } from './schemas/getcontentevents.schema';
 import { ContenteventsModule } from '../../../content/contentevents/contentevents.module';
+import { CountriesModule } from '../../../infra/countries/countries.module';
 
 @Module({
 
     imports: [
-        ConfigModule.forRoot(), ContenteventsModule,
+        ConfigModule.forRoot(), ContenteventsModule, CountriesModule,
         MongooseModule.forFeature([{ name: Getcontentevents.name, schema: GetcontenteventsSchema }], 'SERVER_TRANS')
     ],
     controllers: [GetcontenteventsController],

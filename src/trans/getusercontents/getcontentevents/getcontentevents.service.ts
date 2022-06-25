@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateGetcontenteventsDto } from './dto/create-getcontentevents.dto';
 import { ContenteventsService } from '../../../content/contentevents/contentevents.service';
+import { CountriesService } from '../../../infra/countries/countries.service';
 import { Getcontentevents, GetcontenteventsDocument } from './schemas/getcontentevents.schema';
 
 @Injectable()
@@ -11,6 +12,7 @@ export class GetcontenteventsService {
         @InjectModel(Getcontentevents.name, 'SERVER_TRANS')
         private readonly getcontenteventsModel: Model<GetcontenteventsDocument>,
         private readonly contenteventsService: ContenteventsService,
+        private readonly countriesService: CountriesService,
     ) { }
 
     async findgender(postID: string) {
@@ -330,5 +332,71 @@ export class GetcontenteventsService {
 
         return query;
     }
+    async findlocation(postID: string) {
+        const countries = await this.countriesService.findcountries();
+        const posts = await this.contenteventsService.findcontent();
+        const query = await this.getcontenteventsModel.aggregate([
 
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "email",
+                    foreignField: "email",
+                    as: "field"
+                }
+            },
+            {
+                $lookup: {
+                    from: 'countries2',
+                    localField: 'field.countries.$id',
+                    foreignField: '_id',
+                    as: 'countries_data',
+
+                },
+
+            },
+            {
+                "$unwind": {
+                    "path": "$countries_data",
+                    "preserveNullAndEmptyArrays": false
+                }
+            },
+            {
+                $match: {
+                    $or: [
+                        {
+                            eventType: "LIKE"
+                        },
+                        {
+                            eventType: "COMMENT"
+                        },
+                        {
+                            eventType: "VIEW"
+                        }
+                    ],
+                    $and: [
+                        {
+                            postID: postID
+                        },
+                        {
+                            event: "DONE"
+                        },
+
+
+                    ]
+                }
+            },
+            {
+                $group: {
+                    _id: "$countries_data.country",
+                    totalpost: {
+                        $sum: 1
+                    }
+                }
+            }
+        ]);
+
+
+        return query;
+    }
 }

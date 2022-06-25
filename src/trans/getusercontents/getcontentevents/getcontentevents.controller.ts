@@ -109,12 +109,23 @@ export class GetcontenteventsController {
             dataages.push(objage40);
         }
 
+        let datalocation = await this.getcontenteventsService.findlocation(postID);
 
 
+        var lenglocation = datalocation.length;
+        var datapostloc = [];
 
+        var totalpostloc = dataall.length;
+        var objloc = {};
+        for (var x = 0; x < lenglocation; x++) {
+            var location = datalocation[x]._id;
+            var tepostloc = datalocation[x].totalpost * 100 / totalpostloc;
+            var tpostloc = tepostloc.toFixed(2);
+            objloc = { "_id": location, "totalpost": tpostloc };
+            datapostloc.push(objloc);
+        }
 
-
-        var data = { "gender": datapost, "age": dataages };
+        var data = { "gender": datapost, "age": dataages, "location": datapostloc };
         return { response_code: 202, data, messages };
     }
 }

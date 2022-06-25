@@ -291,24 +291,21 @@ export class GetusercontentsController {
         var subtanggal = createdate.substring(10, 8);
         var datatimestr = subtahun + "-" + subbulan + "-" + subtanggal;
 
-        var curdate = new Date(Date.now());
-        var beforedate = curdate.toISOString();
 
-        var substrtahun = beforedate.substring(0, 4);
-        var substrbulan = beforedate.substring(7, 5);
-        var substrtanggal = beforedate.substring(10, 8);
-        var datestr = substrtahun + "-" + substrbulan + "-" + substrtanggal;
 
+
+        var today = new Date();
         var date1 = new Date(datatimestr);
-        var date2 = new Date(datestr);
 
-        // To calculate the time difference of two dates
-        var Difference_In_Time = date2.getTime() - date1.getTime();
 
-        // To calculate the no. of days between two dates
-        var hours = Difference_In_Time / (1000 * 3600 * 24) * 24;
-        var minutes = hours * 60;
-        var seconds = minutes * 60;
+        var diffDays = Math.floor(today.getTime() - date1.getTime()) / (1000 * 60 * 60 * 24);
+        var diffsec = Math.round(today.getTime() - date1.getTime()) / (1000) % 60;
+        var diffMins = Math.round(today.getTime() - date1.getTime()) / (1000 * 60) % 60;
+        var diffHrs = Math.floor(today.getTime() - date1.getTime()) / (1000 * 60 * 60) % 24;
+        var days = diffDays.toFixed(0);
+        var hours = diffHrs.toFixed(0);
+        var minutes = diffMins.toFixed(0);;
+        var seconds = diffsec.toFixed(0);
         const messages = {
             "info": ["The process successful"],
         };
@@ -317,7 +314,7 @@ export class GetusercontentsController {
 
 
 
-        return { response_code: 202, hours, minutes, seconds, messages };
+        return { response_code: 202, days, hours, minutes, seconds, messages };
     }
 
 }
