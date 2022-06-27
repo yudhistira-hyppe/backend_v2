@@ -2,14 +2,11 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as fs from 'fs';
 
-// const httpsOptions = {
-// key: fs.readFileSync('/home/ubuntu/workspace/SSL/hyppe.key'),
-// cert: fs.readFileSync('/home/ubuntu/workspace/SSL/hyppe.crt'),
-// };
 const httpsOptions = {
   key: fs.readFileSync('/home/ubuntu/workspace/SSL/hyppe.key'),
   cert: fs.readFileSync('/home/ubuntu/workspace/SSL/hyppe.crt'),
 };
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
