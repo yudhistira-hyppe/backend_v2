@@ -24,25 +24,58 @@ export class GetcontenteventsController {
         const messages = {
             "info": ["The process successful"],
         };
+        var datagenderperempuan = 0;
+        var datagenderlaki = 0;
+        var datagendermale = 0;
+        var datagenderfemale = 0;
 
         let datagender = await this.getcontenteventsService.findgender(postID);
 
         let dataall = await this.getcontenteventsService.findall(postID);
-        var lenggender = datagender.length;
+        let dataperempuan = await this.getcontenteventsService.findgender_perempuan(postID);
+        let datalaki = await this.getcontenteventsService.findgender_laki(postID);
+        let datamale = await this.getcontenteventsService.findgenderMale(postID);
+        let datafemale = await this.getcontenteventsService.findgenderFeMale(postID);
+        //  var lenggender = datagender.length;
         var datapost = [];
+        try {
+            datagenderperempuan = dataperempuan[0].totalpost;
+        } catch (e) {
+            datagenderperempuan = 0;
+        }
+
+        try {
+            datagenderlaki = datalaki[0].totalpost;
+        } catch (e) {
+            datagenderlaki = 0;
+        }
+        try {
+            datagendermale = datamale[0].totalpost;
+        } catch (e) {
+            datagendermale = 0;
+        }
+        try {
+            datagenderfemale = datafemale[0].totalpost;
+        } catch (e) {
+            datagenderfemale = 0;
+        }
+
+        var totalmale = datagenderlaki + datagendermale;
+        var totalfemale = datagenderfemale + datagenderperempuan;
+        var totalpost = dataall.length;
+
+
+        var tepostmale = totalmale * 100 / totalpost;
+        var tpostmale = tepostmale.toFixed(2);
+
+        var tepostfemale = totalfemale * 100 / totalpost;
+        var tpostfemale = tepostfemale.toFixed(2);
+        console.log(tpostfemale);
+        datapost = [{ "_id": "MALE", "totalpost": tpostmale }, { "_id": "FEMALE", "totalpost": tpostfemale }];
+
         var totalage = 0;
         var totalage40 = 0;
         var totalage14 = 0;
-        var totalpost = dataall.length;
-        var obj = {};
-        for (var x = 0; x < lenggender; x++) {
-            var gender = datagender[x]._id;
-            var tepost = datagender[x].totalpost * 100 / totalpost;
-            var tpost = tepost.toFixed(2);
-            obj = { "_id": gender, "totalpost": tpost };
-            datapost.push(obj);
-        }
-
         var dataages = [];
         var objage14 = {};
 

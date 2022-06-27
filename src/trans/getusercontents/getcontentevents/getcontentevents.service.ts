@@ -71,6 +71,331 @@ export class GetcontenteventsService {
         return query;
     }
 
+    async findgender_perempuan(postID: string) {
+        const posts = await this.contenteventsService.findcontent();
+        const query = await this.getcontenteventsModel.aggregate([
+
+
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "email",
+                    foreignField: "email",
+                    as: "field"
+                }
+            }, {
+                $unwind: {
+                    path: "$field",
+                    preserveNullAndEmptyArrays: false
+                }
+            },
+            {
+                $addFields: {
+                    gender: '$field.gender',
+
+
+                },
+            },
+            {
+                $match: {
+                    $or: [
+                        {
+                            eventType: "LIKE"
+                        },
+                        {
+                            eventType: "COMMENT"
+                        },
+                        {
+                            eventType: "VIEW"
+                        },
+
+                    ],
+                    $and: [
+                        {
+                            postID: postID
+                        },
+
+                        {
+                            event: "DONE"
+                        }, {
+                            gender: " Perempuan"
+                        }
+                    ]
+                }
+            }, {
+                $group: {
+                    _id: "$field.gender",
+                    totalpost: {
+                        $sum: 1
+                    }
+                }
+            }
+        ]);
+
+
+        return query;
+    }
+
+    async findgenderMale(postID: string) {
+        const posts = await this.contenteventsService.findcontent();
+        const query = await this.getcontenteventsModel.aggregate([
+
+
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "email",
+                    foreignField: "email",
+                    as: "field"
+                }
+            }, {
+                $unwind: {
+                    path: "$field",
+                    preserveNullAndEmptyArrays: false
+                }
+            },
+            {
+                $addFields: {
+                    gender: '$field.gender',
+
+
+                },
+            },
+            {
+                $match: {
+                    $or: [
+                        {
+                            eventType: "LIKE"
+                        },
+                        {
+                            eventType: "COMMENT"
+                        },
+                        {
+                            eventType: "VIEW"
+                        },
+
+                    ],
+                    $and: [
+                        {
+                            postID: postID
+                        },
+
+                        {
+                            event: "DONE"
+                        }, {
+                            gender: "MALE"
+                        }
+                    ]
+                }
+            }, {
+                $group: {
+                    _id: "$field.gender",
+                    totalpost: {
+                        $sum: 1
+                    }
+                }
+            }
+        ]);
+
+
+        return query;
+    }
+
+    async findgenderFeMale(postID: string) {
+        const posts = await this.contenteventsService.findcontent();
+        const query = await this.getcontenteventsModel.aggregate([
+
+
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "email",
+                    foreignField: "email",
+                    as: "field"
+                }
+            }, {
+                $unwind: {
+                    path: "$field",
+                    preserveNullAndEmptyArrays: false
+                }
+            },
+            {
+                $addFields: {
+                    gender: '$field.gender',
+
+
+                },
+            },
+            {
+                $match: {
+                    $or: [
+                        {
+                            eventType: "LIKE"
+                        },
+                        {
+                            eventType: "COMMENT"
+                        },
+                        {
+                            eventType: "VIEW"
+                        },
+
+                    ],
+                    $and: [
+                        {
+                            postID: postID
+                        },
+
+                        {
+                            event: "DONE"
+                        }, {
+                            gender: "FEMALE"
+                        }
+                    ]
+                }
+            }, {
+                $group: {
+                    _id: "$field.gender",
+                    totalpost: {
+                        $sum: 1
+                    }
+                }
+            }
+        ]);
+
+
+        return query;
+    }
+
+    async findgender_laki(postID: string) {
+        const posts = await this.contenteventsService.findcontent();
+        const query = await this.getcontenteventsModel.aggregate([
+
+
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "email",
+                    foreignField: "email",
+                    as: "field"
+                }
+            }, {
+                $unwind: {
+                    path: "$field",
+                    preserveNullAndEmptyArrays: false
+                }
+            },
+            {
+                $addFields: {
+                    gender: '$field.gender',
+
+
+                },
+            },
+            {
+                $match: {
+                    $or: [
+                        {
+                            eventType: "LIKE"
+                        },
+                        {
+                            eventType: "COMMENT"
+                        },
+                        {
+                            eventType: "VIEW"
+                        },
+
+                    ],
+                    $and: [
+                        {
+                            postID: postID
+                        },
+
+                        {
+                            event: "DONE"
+                        }, {
+                            gender: "Laki-laki"
+                        }
+                    ]
+                }
+            }, {
+                $group: {
+                    _id: "$field.gender",
+                    totalpost: {
+                        $sum: 1
+                    }
+                }
+            }
+        ]);
+
+
+        return query;
+    }
+
+    async findgender_FeMale(postID: string) {
+        const posts = await this.contenteventsService.findcontent();
+        const query = await this.getcontenteventsModel.aggregate([
+
+
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "email",
+                    foreignField: "email",
+                    as: "field"
+                }
+            }, {
+                $unwind: {
+                    path: "$field",
+                    preserveNullAndEmptyArrays: false
+                }
+            },
+            {
+                $addFields: {
+                    gender: '$field.gender',
+
+
+                },
+            },
+            {
+                $match: {
+                    $or: [
+                        {
+                            eventType: "LIKE"
+                        },
+                        {
+                            eventType: "COMMENT"
+                        },
+                        {
+                            eventType: "VIEW"
+                        },
+
+                    ],
+                    $and: [
+                        {
+                            postID: postID
+                        },
+
+                        {
+                            event: "DONE"
+                        }, {
+                            gender: " FEMALE"
+                        }
+                    ]
+                }
+            }, {
+                $group: {
+                    _id: "$field.gender",
+                    totalpost: {
+                        $sum: 1
+                    }
+                }
+            }
+        ]);
+
+
+        return query;
+    }
+
     async findall(postID: string) {
         const posts = await this.contenteventsService.findcontent();
         const query = await this.getcontenteventsModel.aggregate([

@@ -94,7 +94,7 @@ export class UserticketsService {
     return query;
   }
 
-  async searchdata(status: string, tipe: string): Promise<object> {
+  async searchdata(status: string, tipe: string, page: number, limit: number) {
     const query = await this.userticketsModel.aggregate([
       {
         $lookup: {
@@ -152,7 +152,71 @@ export class UserticketsService {
 
         }
       }, { $match: { "status": status, "tipe": tipe } },
-      { $sort: { datetime: -1 }, },
+      { $sort: { datetime: -1 }, }, { $skip: page }, { $limit: limit }
+    ]);
+
+
+    return query;
+  }
+  async searchdataall(status: string, tipe: string) {
+    const query = await this.userticketsModel.aggregate([
+      {
+        $lookup: {
+          from: "userbasics",
+          localField: "IdUser",
+          foreignField: "_id",
+          as: "userdata"
+        }
+      }, {
+        $lookup: {
+          from: "userticketdetails",
+          localField: "_id",
+          foreignField: "IdUserticket",
+          as: "tiketdata"
+        }
+      },
+      {
+        $lookup: {
+          from: "userbasics",
+          localField: "tiketdata.IdUser",
+          foreignField: "_id",
+          as: "field2"
+        }
+      },
+      {
+        $project: {
+          userdata: {
+            $arrayElemAt: ['$userdata', 0]
+          },
+          replydata: "$tiketdata",
+          userrequest: "$userdata.fullName",
+          nomortiket: "$nomortiket",
+          email: "$userdata.email",
+          subject: "$subject",
+          body: "$body",
+          status: "$status",
+          tipe: "$tipe",
+          datetime: "$datetime"
+
+        }
+      },
+      {
+        $project: {
+
+
+          nomortiket: "$nomortiket",
+          userrequest: "$userdata.fullName",
+          email: "$userdata.email",
+          subject: "$subject",
+          body: "$body",
+          status: "$status",
+          tipe: "$tipe",
+          datetime: "$datetime",
+          replydata: "$replydata"
+
+        }
+      }, { $match: { "status": status, "tipe": tipe } },
+      { $sort: { datetime: -1 }, }
     ]);
 
 
@@ -163,7 +227,7 @@ export class UserticketsService {
 
 
 
-  async alldatatiket(tipe: string): Promise<object> {
+  async alldatatiket(tipe: string, page: number, limit: number) {
     const query = await this.userticketsModel.aggregate([
       {
         $lookup: {
@@ -221,7 +285,73 @@ export class UserticketsService {
 
         }
       }, { $match: { "tipe": tipe } },
-      { $sort: { datetime: -1 }, },
+      { $sort: { datetime: -1 }, }, { $skip: page }, { $limit: limit }
+    ]);
+
+
+
+    return query;
+  }
+
+  async all(tipe: string) {
+    const query = await this.userticketsModel.aggregate([
+      {
+        $lookup: {
+          from: "userbasics",
+          localField: "IdUser",
+          foreignField: "_id",
+          as: "userdata"
+        }
+      }, {
+        $lookup: {
+          from: "userticketdetails",
+          localField: "_id",
+          foreignField: "IdUserticket",
+          as: "tiketdata"
+        }
+      },
+      {
+        $lookup: {
+          from: "userbasics",
+          localField: "tiketdata.IdUser",
+          foreignField: "_id",
+          as: "field2"
+        }
+      },
+      {
+        $project: {
+          userdata: {
+            $arrayElemAt: ['$userdata', 0]
+          },
+          replydata: "$tiketdata",
+          userrequest: "$userdata.fullName",
+          nomortiket: "$nomortiket",
+          email: "$userdata.email",
+          subject: "$subject",
+          body: "$body",
+          status: "$status",
+          tipe: "$tipe",
+          datetime: "$datetime"
+
+        }
+      },
+      {
+        $project: {
+
+
+          nomortiket: "$nomortiket",
+          userrequest: "$userdata.fullName",
+          email: "$userdata.email",
+          subject: "$subject",
+          body: "$body",
+          status: "$status",
+          tipe: "$tipe",
+          datetime: "$datetime",
+          replydata: "$replydata"
+
+        }
+      }, { $match: { "tipe": tipe } },
+      { $sort: { datetime: -1 }, }
     ]);
 
 

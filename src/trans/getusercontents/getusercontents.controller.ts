@@ -43,9 +43,6 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
-
-
-
     @Post('api/getusercontents/latest')
     @UseGuards(JwtAuthGuard)
     async contentuserlatest(@Req() request: Request): Promise<any> {
@@ -78,8 +75,6 @@ export class GetusercontentsController {
 
         return { response_code: 202, data, messages };
     }
-
-
 
     @Post('api/getusercontents/popular')
     @UseGuards(JwtAuthGuard)
@@ -317,4 +312,25 @@ export class GetusercontentsController {
         return { response_code: 202, days, hours, minutes, seconds, messages };
     }
 
+    @Post('api/getusercontents/details')
+    @UseGuards(JwtAuthGuard)
+    async contentuserdetail(@Req() request: Request): Promise<any> {
+
+        var postID = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        let data = await this.getusercontentsService.findpostid(postID);
+
+        return { response_code: 202, data, messages };
+    }
 }

@@ -18,7 +18,7 @@ export class AccountbalancesService {
 
             {
                 $match: {
-                    "iduser": iduser, "type": "withdraw"
+                    "iduser": iduser
                 }
             },
 
