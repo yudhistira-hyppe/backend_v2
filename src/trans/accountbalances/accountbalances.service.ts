@@ -21,13 +21,8 @@ export class AccountbalancesService {
                     "iduser": iduser, "type": "withdraw"
                 }
             },
-            {
-                "$project": {
-                    totalsaldo: { $subtract: ["$kredit", "$debet"] },
-                    totalpenarikan: "$debet"
 
-                }
-            }
+            { $group: { _id: null, totalsaldo: { $sum: { $subtract: ["$kredit", "$debet"] } }, totalpenarikan: { $sum: "$debet" } } },
 
         ]);
         return query;
