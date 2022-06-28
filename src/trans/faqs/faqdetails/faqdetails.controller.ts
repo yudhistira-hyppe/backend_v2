@@ -76,4 +76,57 @@ export class FaqdetailsController {
 
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Put('api/faqs/detail/:id')
+    async update(@Res() res, @Param('id') id: string, @Body() createFaqdetailsDto: CreateFaqdetailsDto) {
+
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+        try {
+            let data = await this.faqdetailsService.update(id, createFaqdetailsDto);
+            res.status(HttpStatus.OK).json({
+                response_code: 202,
+                "data": data,
+                "message": messages
+            });
+        } catch (e) {
+            res.status(HttpStatus.BAD_REQUEST).json({
+
+                "message": messagesEror
+            });
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put('api/faqs/detail/delete/:id')
+    async delete(@Res() res, @Param('id') id: string) {
+
+        const messages = {
+            "info": ["The proses successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+        try {
+            let data = await this.faqdetailsService.delete(id);
+            res.status(HttpStatus.OK).json({
+                response_code: 202,
+                "message": messages
+            });
+        } catch (e) {
+            res.status(HttpStatus.BAD_REQUEST).json({
+
+                "message": messagesEror
+            });
+        }
+    }
+
 }

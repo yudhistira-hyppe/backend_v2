@@ -10,6 +10,7 @@ export class CreateFaqdetailsDto {
     body: string;
     datetime: string;
     IdUser: { oid: String; };
+    active: boolean;
 
 
 }

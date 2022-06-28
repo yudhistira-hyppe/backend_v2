@@ -15,9 +15,19 @@ export class FaqService {
   async findAll(): Promise<Faqs[]> {
     return this.faqsModel.find().exec();
   }
-  async update(IdUserticket: ObjectId, status: string): Promise<Object> {
-    let data = await this.faqsModel.updateOne({ "_id": IdUserticket },
-      { $set: { "status": status } });
+  async update(
+    id: string,
+    createFaqsDto: CreateFaqsDto,
+  ): Promise<Faqs> {
+    let data = await this.faqsModel.findByIdAndUpdate(
+      id,
+      createFaqsDto,
+      { new: true },
+    );
+
+    if (!data) {
+      throw new Error('Todo is not found!');
+    }
     return data;
   }
 
@@ -90,8 +100,11 @@ export class FaqService {
 
 
 
-
-
+  async delete(id: string): Promise<Object> {
+    let data = await this.faqsModel.updateOne({ "_id": id },
+      { $set: { "active": false } });
+    return data;
+  }
 
   async viewalldata(tipe: string): Promise<object> {
     const query = await this.faqsModel.aggregate([
@@ -128,7 +141,8 @@ export class FaqService {
           email: "$userdata.email",
           kategori: "$kategori",
           tipe: "$tipe",
-          datetime: "$datetime"
+          datetime: "$datetime",
+          active: "$active"
 
         }
       },
@@ -139,11 +153,12 @@ export class FaqService {
           kategori: "$kategori",
           datetime: "$datetime",
           tipe: "$tipe",
+          active: "$active",
           replydata: "$replydata",
 
         }
       },
-      { $match: { "tipe": tipe } },
+      { $match: { "tipe": tipe, "active": true } },
       { $sort: { datetime: -1 }, },
     ]);
 

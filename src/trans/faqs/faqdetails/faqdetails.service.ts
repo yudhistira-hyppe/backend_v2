@@ -19,4 +19,27 @@ export class FaqdetailsService {
         }
         return data;
     }
+
+    async update(
+        id: string,
+        createFaqdetailsDto: CreateFaqdetailsDto,
+    ): Promise<Faqdetails> {
+        let data = await this.faqdetailsModel.findByIdAndUpdate(
+            id,
+            createFaqdetailsDto,
+            { new: true },
+        );
+
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
+        return data;
+    }
+
+    async delete(id: string) {
+        const deletedCat = await this.faqdetailsModel
+            .findByIdAndRemove({ _id: id })
+            .exec();
+        return deletedCat;
+    }
 }

@@ -31,7 +31,7 @@ export class FaqsController {
     var dt = new Date(Date.now());
     CreateFaqsDto.IdUser = iduser;
     CreateFaqsDto.datetime = dt.toISOString();
-
+    CreateFaqsDto.active = true;
     try {
       let data = await this.faqService.create(CreateFaqsDto);
       res.status(HttpStatus.OK).json({
@@ -68,6 +68,60 @@ export class FaqsController {
 
     return { response_code: 202, data, messages };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('api/faqs/:id')
+  async update(@Res() res, @Param('id') id: string, @Body() createFaqsDto: CreateFaqsDto) {
+
+    const messages = {
+      "info": ["The update successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+
+    try {
+      let data = await this.faqService.update(id, createFaqsDto);
+      res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "data": data,
+        "message": messages
+      });
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+
+        "message": messagesEror
+      });
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('api/faqs/delete/:id')
+  async delete(@Res() res, @Param('id') id: string) {
+
+    const messages = {
+      "info": ["The proses successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+
+    try {
+      let data = await this.faqService.delete(id);
+      res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "message": messages
+      });
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+
+        "message": messagesEror
+      });
+    }
+  }
+
 
   @Post('api/faqs/allfaqs')
   @UseGuards(JwtAuthGuard)

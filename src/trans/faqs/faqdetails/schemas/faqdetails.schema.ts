@@ -21,7 +21,8 @@ export class Faqdetails {
 
     @Prop({ type: Object })
     IdUser: { oid: string; }
-
+    @Prop()
+    active: boolean;
 }
 
 export const FaqdetailsSchema = SchemaFactory.createForClass(Faqdetails);

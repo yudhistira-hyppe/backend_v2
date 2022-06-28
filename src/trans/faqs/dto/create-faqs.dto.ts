@@ -6,6 +6,7 @@ export class CreateFaqsDto {
   tipe: string;
   datetime: string;
   IdUser: { oid: String; };
+  active: boolean;
 
 
 }

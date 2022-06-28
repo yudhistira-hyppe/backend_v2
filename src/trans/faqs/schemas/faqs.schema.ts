@@ -20,6 +20,8 @@ export class Faqs {
 
   @Prop({ type: Object })
   IdUser: { oid: string; }
+  @Prop()
+  active: boolean;
 
 }
 
