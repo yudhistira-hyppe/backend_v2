@@ -28,14 +28,16 @@ export class GetcontenteventsController {
         var datagenderlaki = 0;
         var datagendermale = 0;
         var datagenderfemale = 0;
+        var datagender_female = 0;
 
-        let datagender = await this.getcontenteventsService.findgender(postID);
+        //  let datagender = await this.getcontenteventsService.findgender(postID);
 
         let dataall = await this.getcontenteventsService.findall(postID);
         let dataperempuan = await this.getcontenteventsService.findgender_perempuan(postID);
         let datalaki = await this.getcontenteventsService.findgender_laki(postID);
         let datamale = await this.getcontenteventsService.findgenderMale(postID);
         let datafemale = await this.getcontenteventsService.findgenderFeMale(postID);
+        let data_female = await this.getcontenteventsService.findgender_FeMale(postID);
         //  var lenggender = datagender.length;
         var datapost = [];
         try {
@@ -59,9 +61,14 @@ export class GetcontenteventsController {
         } catch (e) {
             datagenderfemale = 0;
         }
+        try {
+            datagender_female = data_female[0].totalpost;
+        } catch (e) {
+            datagender_female = 0;
+        }
 
         var totalmale = datagenderlaki + datagendermale;
-        var totalfemale = datagenderfemale + datagenderperempuan;
+        var totalfemale = datagenderfemale + datagenderperempuan + datagender_female;
         var totalpost = dataall.length;
 
 
