@@ -56,6 +56,10 @@ import { FaqsModule } from './trans/faqs/faqs.module';
 import { FaqdetailsModule } from './trans/faqs/faqdetails/faqdetails.module';
 import { AccountbalancesModule } from './trans/accountbalances/accountbalances.module';
 import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents/getcontentevents.module';
+import { TransactionsModule } from './trans/transactions/transactions.module';
+import { SettingsModule } from './trans/settings/settings.module';
+import { MethodepaymentsModule } from './trans/methodepayments/methodepayments.module';
+import { BanksModule } from './trans/banks/banks.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -66,6 +70,10 @@ import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents
     // UserbasicsModule,
     // UserauthsModule,
     //CommentModule,
+    // BanksModule,
+    // MethodepaymentsModule,
+    // SettingsModule,
+    TransactionsModule,
     GetcontenteventsModule,
     AccountbalancesModule,
     FaqdetailsModule,

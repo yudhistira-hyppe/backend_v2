@@ -142,9 +142,23 @@ export class AnnouncementsController {
     async retrieve(@Req() request: Request): Promise<any> {
         const mongoose = require('mongoose');
         var status = null;
+        var page = 0;
+        var limit = 0;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["status"] !== undefined) {
             status = request_json["status"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
@@ -154,9 +168,11 @@ export class AnnouncementsController {
             "info": ["The process successful"],
         };
 
-        let data = await this.announcementsService.viewabystatus(status);
 
-        return { response_code: 202, data, messages };
+
+        let data = await this.announcementsService.viewabystatus(status, page, limit);
+        var totalallrow = data.length;
+        return { response_code: 202, data, page, limit, totalallrow, messages };
     }
 
 
@@ -182,6 +198,33 @@ export class AnnouncementsController {
         let data = await this.userbasicsService.viewdatabyuser(iduser);
 
         return { response_code: 202, data, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put('api/announcements/:id')
+    async update(@Res() res, @Param('id') id: string, @Body() createAnnouncementsDto: CreateAnnouncementsDto) {
+
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+        try {
+            let data = await this.announcementsService.update(id, createAnnouncementsDto);
+            res.status(HttpStatus.OK).json({
+                response_code: 202,
+                "data": data,
+                "message": messages
+            });
+        } catch (e) {
+            res.status(HttpStatus.BAD_REQUEST).json({
+
+                "message": messagesEror
+            });
+        }
     }
 }
 

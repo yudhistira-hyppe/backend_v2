@@ -19,6 +19,11 @@ export class AnnouncementsService {
         }
         return data;
     }
+
+    async findAll(): Promise<Announcements[]> {
+        return this.announcementsDocumentModel.find().exec();
+    }
+
     async viewalldata(): Promise<object> {
         const query = await this.announcementsDocumentModel.aggregate([
             {
@@ -50,7 +55,7 @@ export class AnnouncementsService {
         return query;
     }
 
-    async viewabystatus(status: string): Promise<object> {
+    async viewabystatus(status: string, page: number, limit: number) {
         const query = await this.announcementsDocumentModel.aggregate([
             {
                 $lookup: {
@@ -79,11 +84,29 @@ export class AnnouncementsService {
                     status: status
                 }
             },
-            { $sort: { datetimeCreate: -1 }, },
+            { $sort: { datetimeCreate: -1 }, }, { $skip: page }, { $limit: limit }
         ]);
 
 
         return query;
     }
+    async findOne(id: string): Promise<Announcements> {
+        return this.announcementsDocumentModel.findOne({ _id: id }).exec();
+    }
 
+    async update(
+        id: string,
+        createAnnouncementsDto: CreateAnnouncementsDto,
+    ): Promise<Announcements> {
+        let data = await this.announcementsDocumentModel.findByIdAndUpdate(
+            id,
+            createAnnouncementsDto,
+            { new: true },
+        );
+
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
+        return data;
+    }
 }
