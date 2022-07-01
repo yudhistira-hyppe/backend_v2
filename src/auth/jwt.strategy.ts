@@ -15,14 +15,14 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     private userdevicesService: UserdevicesService,
   ) {
     super({
-      // jwtFromRequest: ExtractJwt.fromExtractors([
-      //   (Request: any) => {
-      //     if (Request.rawHeaders[0] == 'x-auth-token') {
-      //       return Request.rawHeaders[1].replace('Bearer ', '');
-      //     }
-      //   },
-      // ]),
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (Request: any) => {
+          if (Request.headers['x-auth-token'] != undefined) {
+            return Request.headers['x-auth-token'].replace('Bearer ', '');
+          }
+        },
+      ]),
+      //jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_ACCESS_TOKEN_SECRET,
     });
