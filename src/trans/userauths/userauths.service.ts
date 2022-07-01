@@ -9,7 +9,7 @@ export class UserauthsService {
   constructor(
     @InjectModel(Userauth.name, 'SERVER_TRANS')
     private readonly userauthModel: Model<UserauthDocument>,
-  ) { }
+  ) {}
 
   async create(CreateUserauthDto: CreateUserauthDto): Promise<Userauth> {
     const createUserauthDto = await this.userauthModel.create(
@@ -64,6 +64,22 @@ export class UserauthsService {
         email: email,
       },
       data,
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
+  async findOneupdatebyEmail(email: string) {
+    this.userauthModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { otpAttempt: 1 } },
       function (err, docs) {
         if (err) {
           //console.log(err);

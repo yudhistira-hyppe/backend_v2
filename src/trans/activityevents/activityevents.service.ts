@@ -216,13 +216,9 @@ export class ActivityeventsService {
 
   async update(param: Object, data: Object) {
     this.activityeventsModel.updateOne(param, data, function (err, docs) {
-<<<<<<< HEAD
       if (err) {
       } else {
       }
-=======
-      if (err) { } else { }
->>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
     });
   }
 
