@@ -6,8 +6,8 @@ export type ActivityeventsDocument = Activityevents & Document;
 
 @Schema()
 export class Activityevents {
-  //   @Prop({ type: mongoose.Schema.Types.ObjectId })
-  //   _id: { oid: String };
+  @Prop({ type: Object })
+  _id: { oid: String };
   @Prop()
   activityEventID: String;
   @Prop()
@@ -38,18 +38,29 @@ export class Activityevents {
   @Prop()
   sequenceNumber: String;
   @Prop()
+  parentActivityEventID: String;
+  @Prop()
   flowIsDone: boolean;
   @Prop([{ type: Object }])
   transitions: [
     {
       ref: String;
-      id: String;
+      id: {
+        oid: String;
+      };
       db: String;
     },
   ];
   @Prop()
-  _class: 'io.melody.hyppe.trans.domain.ActivityEvent';
+  _class: String;
+  @Prop()
+  action: String;
+  @Prop()
+  fork: String;
+  @Prop({ type: Object })
+  userbasic: {
+    oid: String;
+  };
 }
 
-export const ActivityeventsSchema =
-  SchemaFactory.createForClass(Activityevents);
+export const ActivityeventsSchema = SchemaFactory.createForClass(Activityevents);

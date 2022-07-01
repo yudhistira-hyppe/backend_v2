@@ -1,38 +1,20 @@
-export class CreateInsightsDto {
-  
+import { Int32 } from "mongodb";
 
-    readonly _id: String;
-    readonly insightID: String;
-    readonly active: boolean;
-    readonly  createdAt: String;
-    readonly  updatedAt: String;
-    readonly email: String;
-    readonly followers: {
-        numberLong:String;
-    };
-    readonly followings: {
-        numberLong:String;
-    };
-    readonly unfollows: {
-        numberLong:String;
-    };
-    readonly likes: {
-        numberLong:String;
-    };
-    readonly views: {
-        numberLong:String;
-    };
-    readonly comments: {
-        numberLong:String;
-    };
-    readonly posts: {
-        numberLong:String;
-    };
-    readonly shares: {
-        numberLong:String;
-    };
-    readonly reactions: {
-        numberLong:String;
-    };
-    readonly _class:String;
-  }
+export class CreateInsightsDto {
+  _id: String;
+  insightID: String;
+  active: boolean;
+  createdAt: String;
+  updatedAt: String;
+  email: String;
+  followers: Int32;
+  followings: Int32;
+  unfollows: Int32;
+  likes: Int32;
+  views: Int32;
+  comments: Int32;
+  posts: Int32;
+  shares: Int32;
+  reactions: Int32;
+  _class: String;
+}

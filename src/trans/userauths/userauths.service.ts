@@ -21,9 +21,24 @@ export class UserauthsService {
   async findAll(): Promise<Userauth[]> {
     return this.userauthModel.find().exec();
   }
+
+  async findOneUsername(username: string): Promise<Userauth> {
+    return this.userauthModel.findOne({ username: username }).exec();
+  }
   // async findOne(username: string): Promise<Userauth> {
   //   return this.userauthModel.findOne({ username: username }).exec();
   // }
+
+  async findOneByEmailandUsername(
+    email: string,
+    username: string,
+  ): Promise<any> {
+    return this.userauthModel
+      .findOne({
+        $or: [{ email: email }, { username: username }],
+      })
+      .exec();
+  }
 
   async findOne(email: string): Promise<Userauth> {
     return this.userauthModel.findOne({ email: email }).exec();
@@ -49,6 +64,22 @@ export class UserauthsService {
         email: email,
       },
       data,
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
+  async findOneupdatebyEmail(email: string) {
+    this.userauthModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { otpAttempt: 1 } },
       function (err, docs) {
         if (err) {
           //console.log(err);

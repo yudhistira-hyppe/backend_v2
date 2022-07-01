@@ -138,7 +138,7 @@ export class ActivityeventsService {
     return GetCount;
   }
 
-  async findParentByDevice(
+  async findParent(
     email: string,
     login_device: string,
     activityType: string,
@@ -155,9 +155,70 @@ export class ActivityeventsService {
       .exec();
   }
 
+  async findParentWitoutDevice(
+    email: string,
+    activityType: string,
+    flowIsDone_: boolean,
+  ): Promise<Object> {
+    return this.activityeventsModel
+      .find({
+        'payload.email': email,
+        activityType: activityType,
+        parentActivityEventID: { $eq: null },
+        flowIsDone: flowIsDone_,
+      })
+      .exec();
+  }
+
+  async findbyactivityEventID(
+    email: string,
+    activityEventID: string,
+    activityType: string,
+    flowIsDone_: boolean,
+  ): Promise<Object> {
+    return this.activityeventsModel
+      .find({
+        'payload.email': email,
+        activityType: activityType,
+        activityEventID: activityEventID,
+        flowIsDone: flowIsDone_,
+      })
+      .exec();
+  }
+
+  async updateFlowDone(parentActivityEventID: string) {
+    this.activityeventsModel.updateMany(
+      {
+        parentActivityEventID: parentActivityEventID,
+      },
+      {
+        flowIsDone: true,
+      }, function (err, docs) {
+      if (err) {
+      } else {
+      }
+    }
+    );
+    this.activityeventsModel.updateOne(
+      {
+        activityEventID: parentActivityEventID,
+      },
+      {
+        flowIsDone: true,
+      },
+      function (err, docs) {
+        if (err) {
+        } else {
+        }
+      },
+    );
+  }
+
   async update(param: Object, data: Object) {
     this.activityeventsModel.updateOne(param, data, function (err, docs) {
-      if (err) {} else {}
+      if (err) {
+      } else {
+      }
     });
   }
 }

@@ -23,7 +23,7 @@ export class Jwtrefreshtoken {
   };
 
   @Prop()
-  _class: 'io.melody.core.domain.JwtRefreshToken';
+  _class: String;
 }
 
 export const JwtrefreshtokenSchema = SchemaFactory.createForClass(Jwtrefreshtoken);

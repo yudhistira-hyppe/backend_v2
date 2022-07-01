@@ -1,22 +1,24 @@
+import { ObjectId } from "mongodb";
+
 export class CreateUserauthDto {
-  readonly _id: { oid: String };
-  readonly username: String;
-  readonly password: string;
-  readonly userID: String;
-  readonly email: String;
-  readonly regSrc: String;
-  readonly createdAt: String;
-  readonly updatedAt: String;
-  readonly isExpiryPass: Boolean;
-  readonly isEmailVerified: Boolean;
-  readonly otpRequestTime: { numberLong: String };
-  readonly otpAttempt: { numberLong: String };
-  readonly otpNextAttemptAllow: { numberLong: String };
-  readonly isEnabled: Boolean;
-  readonly isAccountNonExpired: Boolean;
-  readonly isAccountNonLocked: Boolean;
-  readonly isCredentialsNonExpired: Boolean;
-  readonly roles: [];
+  _id: ObjectId;
+  username: String;
+  password: string;
+  userID: String;
+  email: String;
+  regSrc: String;
+  createdAt: String;
+  updatedAt: String;
+  isExpiryPass: Boolean;
+  isEmailVerified: Boolean;
+  otpRequestTime: { numberLong: String };
+  otpAttempt: { numberLong: String };
+  otpNextAttemptAllow: { numberLong: String };
+  isEnabled: Boolean;
+  isAccountNonExpired: Boolean;
+  isAccountNonLocked: Boolean;
+  isCredentialsNonExpired: Boolean;
+  roles: [String];
   devices: [
     {
       $ref: String;
@@ -26,5 +28,6 @@ export class CreateUserauthDto {
       $db: String;
     },
   ];
-  readonly _class: String;
+  _class: String;
+  oneTimePassword: String;
 }

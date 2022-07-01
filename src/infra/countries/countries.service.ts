@@ -21,6 +21,10 @@ export class CountriesService {
     return this.countriesModel.find().exec();
   }
 
+  async findOneName(country: string): Promise<Countries> {
+    return this.countriesModel.findOne({ country: country }).exec();
+  }
+
   async findOne(id: string): Promise<Countries> {
     return this.countriesModel.findOne({ _id: id }).exec();
   }

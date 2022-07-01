@@ -1,85 +1,71 @@
-export class CreateUserbasicDto {
-  
+import { ObjectId } from "mongodb";
 
-    readonly _id: { oid:String;  };
-    readonly profileID: String;
-    readonly  email: String;
-    readonly  fullName: String;
-    readonly  dob: String;
-    readonly  gender: String;
-    readonly  mobileNumber: String;
-    readonly  status: String;
-    readonly  event: String;
-    readonly  idProofName: String;
-    readonly  idProofNumber: String;
-    readonly  idProofStatus: String;
-    readonly isComplete: boolean;
-    readonly isCelebrity: boolean;
-    readonly isIdVerified: boolean;
-    readonly isPrivate: boolean;
-    readonly isFollowPrivate: boolean;
-    readonly isPostPrivate: boolean;
-    readonly  createdAt: String;
-    readonly  updatedAt: String;
-    readonly bio:String;
-    readonly profilePict:{
-      ref:String;
-      id:String;
-      db:String;
-    };
-    readonly proofPict:{
-      ref:String;
-      id:String;
-      db:String;
-    };
-    readonly insight:{
-      ref:String;
-      id:String;
-      db:String;
-    };
-    readonly userInterests:[
-      {
-        ref:String;
-        id:{
-          oid: String;
-        };
-        db:String;
-      }
-    ];
-    readonly userAuth:{
-      ref:String;
-      id:{
-        oid:String;
-      };
-      db:String;
-    };
-    readonly cities:{
-      ref:String;
-      id:{
-        oid:String;
-      };
-      db:String;
-    };
-    readonly states:{
-      ref:String;
-      id:{
-        oid:String;
-      };
-      db:String;
-    };
-    readonly countries:{
-      ref:String;
-      id:{
-        oid:String;
-      };
-      db:String;
-    };
-    readonly languages:{
-      ref:String;
-      id:{
-        oid:String;
-      };
-      db:String;
-    };
-    readonly _class:String;
-  }
+export class CreateUserbasicDto {
+  _id: ObjectId;
+  profileID: String;
+  email: String;
+  fullName: String;
+  dob: String;
+  gender: String;
+  mobileNumber: String;
+  status: String;
+  event: String;
+  idProofName: String;
+  idProofNumber: String;
+  idProofStatus: String;
+  isComplete: boolean;
+  isCelebrity: boolean;
+  isIdVerified: boolean;
+  isPrivate: boolean;
+  isFollowPrivate: boolean;
+  isPostPrivate: boolean;
+  createdAt: String;
+  updatedAt: String;
+  bio: String;
+  profilePict: {
+    $ref: String;
+    $id: { oid: String };
+    $db: String;
+  };
+  proofPict: {
+    $ref: String;
+    $id: { oid: String };
+    $db: String;
+  };
+  insight: {
+    $ref: String;
+    $id: String;
+    $db: String;
+  };
+  userInterests: [{
+    $ref: String;
+    $id: ObjectId;
+    $db: String;
+  }];
+  userAuth: {
+    $ref: String;
+    $id: ObjectId;
+    $db: String;
+  };
+  cities: {
+    $ref: String;
+    $id: { oid: String };
+    $db: String;
+  };
+  states: {
+    $ref: String;
+    $id: { oid: String };
+    $db: String;
+  };
+  countries: {
+    $ref: String;
+    $id: { oid: String };
+    $db: String;
+  };
+  languages: {
+    $ref: String;
+    $id: { oid: String };
+    $db: String;
+  };
+  _class: String;
+}

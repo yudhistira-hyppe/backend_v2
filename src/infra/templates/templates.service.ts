@@ -22,6 +22,13 @@ export class TemplatesService {
     return this.TemplatesModel.find().exec();
   }
 
+  async findOneByTypeAndCategory(type: string, category: string): Promise<Templates> {
+    return this.TemplatesModel.findOne({
+      type: type,
+      category: category,
+    }).exec();
+  }
+
   async findOne(id: string): Promise<Templates> {
     return this.TemplatesModel.findOne({ _id: id }).exec();
   }

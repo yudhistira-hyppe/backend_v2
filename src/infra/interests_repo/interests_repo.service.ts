@@ -24,6 +24,12 @@ export class InterestsRepoService {
     return this.interestsrepoModel.find().exec();
   }
 
+  async findOneByInterestName(interestName: string): Promise<Interestsrepo> {
+    return this.interestsrepoModel
+      .findOne({ interestName: interestName })
+      .exec();
+  }
+
   async findOne(id: string): Promise<Interestsrepo> {
     return this.interestsrepoModel.findOne({ _id: id }).exec();
   }
@@ -35,9 +41,8 @@ export class InterestsRepoService {
     return deletedCat;
   }
 
-  async findinterst(){
-    const query =await this.interestsrepoModel.aggregate([
-  
+  async findinterst() {
+    const query = await this.interestsrepoModel.aggregate([
       {
         $lookup: {
           from: 'interests_repo',
@@ -45,13 +50,13 @@ export class InterestsRepoService {
           foreignField: '_id',
           as: 'roless',
         },
-      },{
-        $out:{
-          db:'hyppe_trans_db',
-          coll:'interests_repo2'
-        }
       },
-     
+      {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'interests_repo2',
+        },
+      },
     ]);
     return query;
   }

@@ -27,6 +27,10 @@ export class LanguagesService {
     return this.LanguagesModel.findOne({ _id: id }).exec();
   }
 
+  async findOneLangiso(langIso: string): Promise<Languages> {
+    return this.LanguagesModel.findOne({ langIso: langIso }).exec();
+  }
+
   async delete(id: string) {
     const deletedCat = await this.LanguagesModel.findByIdAndRemove({
       _id: id,
@@ -34,9 +38,8 @@ export class LanguagesService {
     return deletedCat;
   }
 
-  async findlanguanges(){
-    const query =await this.LanguagesModel.aggregate([
-  
+  async findlanguanges() {
+    const query = await this.LanguagesModel.aggregate([
       {
         $lookup: {
           from: 'languages',
@@ -44,13 +47,13 @@ export class LanguagesService {
           foreignField: '_id',
           as: 'roless',
         },
-      },{
-        $out:{
-          db:'hyppe_trans_db',
-          coll:'languages2'
-        }
       },
-     
+      {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'languages2',
+        },
+      },
     ]);
     return query;
   }

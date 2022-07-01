@@ -20,6 +20,22 @@ export class UserbasicsService {
     return createUserbasicDto;
   }
 
+  async updatebyEmail(email: string, data: Object) {
+    this.userbasicModel.updateOne(
+      {
+        email: email,
+      },
+      data,
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
   async update(
     id: string,
     createUserbasicDto: CreateUserbasicDto,

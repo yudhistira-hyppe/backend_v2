@@ -5,7 +5,7 @@ export type UserauthDocument = Userauth & Document ;
 
 @Schema()
 export class Userauth {
-  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  @Prop({ type: Object })
   _id: { oid: String };
   @Prop()
   username: string;
@@ -63,6 +63,9 @@ export class Userauth {
 
   @Prop()
   _class: String;
+
+  @Prop()
+  oneTimePassword: String;
 }
 
 export const UserauthSchema = SchemaFactory.createForClass(Userauth);

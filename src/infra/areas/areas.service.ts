@@ -23,6 +23,10 @@ export class AreasService {
   //  async findOne(id: string): Promise<Areas> {
   //   return this.areasModel.findOne({ _id: id }).exec();
   // }
+
+  async findOneName(stateName: string): Promise<Areas> {
+    return this.areasModel.findOne({ stateName: stateName }).exec();
+  }
   async findOne(countryID: String): Promise<Areas> {
     return this.areasModel.findOne({ countryID: countryID }).exec();
   }

@@ -5,11 +5,10 @@ export type UserbasicDocument = Userbasic & Document ;
 
 @Schema()
 export class Userbasic {
-  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  @Prop({ type: Object })
   _id: { oid: String };
   @Prop()
   profileID: string;
-
   @Prop()
   email: String;
   @Prop()
@@ -47,10 +46,8 @@ export class Userbasic {
   createdAt: String;
   @Prop()
   updatedAt: String;
-
   @Prop()
   bio: String;
-
   @Prop({ type: Object })
   profilePict: {
     ref: String;
@@ -69,8 +66,7 @@ export class Userbasic {
     id: String;
     db: String;
   };
-
-  @Prop({ type: [{}] })
+  @Prop([{ type: Object }])
   userInterests: [
     {
       ref: String;
@@ -80,7 +76,6 @@ export class Userbasic {
       db: String;
     },
   ];
-
   @Prop({ type: Object })
   userAuth: {
     ref: String;
@@ -97,7 +92,6 @@ export class Userbasic {
     };
     db: String;
   };
-
   @Prop({ type: Object })
   states: {
     ref: String;
@@ -123,7 +117,7 @@ export class Userbasic {
     db: String;
   };
   @Prop()
-  _class: 'io.melody.core.domain.UserProfile';
+  _class: String;
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);

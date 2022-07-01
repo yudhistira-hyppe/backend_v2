@@ -50,19 +50,25 @@ import { ProfileModule } from './trans/profile/profile.module';
 import { GetuserprofilesModule } from './trans/getuserprofiles/getuserprofiles.module';
 import { GetusercontentsModule } from './trans/getusercontents/getusercontents.module';
 import { CommentModule } from './trans/getusercontents/comment/comment.module';
-import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
+//import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
 @Module({
   imports: [
-    ConfigModule.forRoot(),
-    MongooseModule.forRoot(process.env.SERVER_TRANS, { connectionName: 'SERVER_TRANS' }),
-    MongooseModule.forRoot(process.env.SERVER_CONTENT, { connectionName: 'SERVER_CONTENT' }),
-    MongooseModule.forRoot(process.env.SERVER_INFRA, { connectionName: 'SERVER_INFRA' }),
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRoot(process.env.SERVER_TRANS, {
+      connectionName: 'SERVER_TRANS',
+    }),
+    MongooseModule.forRoot(process.env.SERVER_CONTENT, {
+      connectionName: 'SERVER_CONTENT',
+    }),
+    MongooseModule.forRoot(process.env.SERVER_INFRA, {
+      connectionName: 'SERVER_INFRA',
+    }),
     // UserdevicesModule,
     // UserbasicsModule,
     // UserauthsModule,
     //CommentModule,
-    UserticketdetailsModule,
-    UserticketsModule,
+    //UserticketdetailsModule,
+    //UserticketsModule,
     GetusercontentsModule,
     GetuserprofilesModule,
     ProfileModule,
@@ -106,7 +112,7 @@ import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/u
     SnapshoteventsModule,
     SagasModule,
     AdrolesModule,
-    AuthModule
+    AuthModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

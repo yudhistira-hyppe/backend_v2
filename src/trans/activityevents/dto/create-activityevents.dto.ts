@@ -1,5 +1,7 @@
+import { Int32, ObjectId } from "mongodb";
+
 export class CreateActivityeventsDto {
-  _id: { oid: String };
+  _id: ObjectId;
   activityEventID: String;
   activityType: String;
   active: boolean;
@@ -19,14 +21,18 @@ export class CreateActivityeventsDto {
   createdAt: String;
   updatedAt: String;
   parentActivityEventID: String;
-  sequenceNumber: String;
+  sequenceNumber: Int32;
   flowIsDone: boolean;
+  fork: String;
+  action: String;
   transitions: [
     {
       $ref: String;
-      $id: String;
+      $id: { oid: String };
       $db: String;
     },
   ];
   _class: String;
+  __v: String;
+  userbasic: { oid: String };
 }

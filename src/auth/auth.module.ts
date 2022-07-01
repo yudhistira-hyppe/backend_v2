@@ -17,6 +17,11 @@ import { InsightsModule } from '../content/insights/insights.module';
 import { InterestsModule } from '../infra/interests/interests.module';
 import { InterestsRepoModule } from '../infra/interests_repo/interests_repo.module';
 import { ActivityeventsModule } from '../trans/activityevents/activityevents.module';
+import { UtilsModule } from '../utils/utils.module';
+import { AreasModule } from '../infra/areas/areas.module';
+import { CitiesModule } from '../infra/cities/cities.module';
+import { ReferralModule } from '../trans/referral/referral.module';
+import { MediaModule } from '../stream/media/media.module';
 @Module({
   imports: [
     UserauthsModule,
@@ -30,6 +35,11 @@ import { ActivityeventsModule } from '../trans/activityevents/activityevents.mod
     InsightsModule,
     InterestsModule,
     InterestsRepoModule,
+    UtilsModule,
+    AreasModule,
+    CitiesModule,
+    ReferralModule,
+    MediaModule,
     ActivityeventsModule, JwtModule.register({
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },

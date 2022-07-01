@@ -28,6 +28,10 @@ export class MediaprofilepictsService {
     return this.MediaprofilepictsModel.findOne({ _id: id }).exec();
   }
 
+  async findOnemediaID(mediaID: string): Promise<Mediaprofilepicts> {
+    return this.MediaprofilepictsModel.findOne({ mediaID: mediaID }).exec();
+  }
+
   async delete(id: string) {
     const deletedCat = await this.MediaprofilepictsModel.findByIdAndRemove({
       _id: id,
