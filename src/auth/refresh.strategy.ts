@@ -15,17 +15,17 @@ export class JwtRefreshStrategy extends PassportStrategy(
 ) {
   constructor(private jwtrefreshtokenService: JwtrefreshtokenService) {
     super({
-      // jwtFromRequest: ExtractJwt.fromExtractors([
-      //   (Request: any) => {
-      //     // const decodedJwt = this.jwtService.decode(
-      //     //   Request.rawHeaders[1].replace('Bearer ', ''),
-      //     // );
-      //     if (Request.rawHeaders[0] == 'x-auth-token') {
-      //       return Request.rawHeaders[1].replace('Bearer ', '');
-      //     }
-      //   },
-      // ]),
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (Request: any) => {
+          // const decodedJwt = this.jwtService.decode(
+          //   Request.rawHeaders[1].replace('Bearer ', ''),
+          // );
+          if (Request.headers['x-auth-token'] != undefined) {
+            return Request.headers['x-auth-token'].replace('Bearer ', '');
+          }
+        },
+      ]),
+      //jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: true,
       secretOrKey: process.env.JWT_ACCESS_TOKEN_SECRET,
       passReqToCallback: true,
