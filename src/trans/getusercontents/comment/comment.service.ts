@@ -130,11 +130,13 @@ export class CommentService {
                     as: "userdatasender"
                 }
             },
+
             {
                 $project: {
 
                     user: { $arrayElemAt: ['$userbasics_data', 0] },
                     usersender: { $arrayElemAt: ['$userdatasender', 0] },
+                    profilePict_id: '$usersender.profilePict.$id',
                     disqusID: "$disqusID",
                     txtMessages: "$txtMessages",
                     sequenceNumber: "$sequenceNumber",
@@ -168,6 +170,76 @@ export class CommentService {
 
                 }
             },
+
+            {
+                $project: {
+                    // profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+                    profilePict_id: '$usersender.profilePict.$id',
+                    title: "$title",
+                    disqusID: "$disqusID",
+                    txtMessages: "$txtMessages",
+                    sequenceNumber: "$sequenceNumber",
+                    sender: "$sender",
+                    receiver: "$receiver",
+                    active: "$active",
+                    eventInsight: "$eventInsight",
+                    postType: "$postType",
+                    postID: "$postID",
+                    createdAt: "$createdAt",
+                    updatedAt: "$updatedAt",
+                    reactionUri: "$reactionUri",
+                    medias: "$medias",
+                    namesender: "$usersender.fullName",
+                    namereceiver: "$user.fullName",
+                    disqus: "$disqus",
+
+
+
+
+                }
+            },
+            {
+                $lookup: {
+                    from: 'mediaprofilepicts2',
+                    localField: 'profilePict_id',
+                    foreignField: '_id',
+                    as: 'profilePict_data',
+                },
+            },
+            {
+                $project: {
+                    profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+                    profilpic: '$profilpict.id',
+                    title: "$title",
+                    disqusID: "$disqusID",
+                    txtMessages: "$txtMessages",
+                    sequenceNumber: "$sequenceNumber",
+                    sender: "$sender",
+                    receiver: "$receiver",
+                    active: "$active",
+                    eventInsight: "$eventInsight",
+                    postType: "$postType",
+                    postID: "$postID",
+                    createdAt: "$createdAt",
+                    updatedAt: "$updatedAt",
+                    reactionUri: "$reactionUri",
+                    medias: "$medias",
+                    namesender: "$namesender",
+                    namereceiver: "$namereceiver",
+                    disqus: "$disqus",
+                    // avatar: {
+                    //     mediaBasePath: '$profilpict.mediaBasePath',
+                    //     mediaUri: '$profilpict.mediaUri',
+                    //     mediaType: '$profilpict.mediaType',
+                    //     mediaEndpoint: '$profilpict.fsTargetUri',
+                    //     medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+                    // },
+
+
+
+                }
+            },
             {
                 $project: {
 
@@ -185,10 +257,397 @@ export class CommentService {
                     updatedAt: "$updatedAt",
                     reactionUri: "$reactionUri",
                     medias: "$medias",
+                    namesender: "$namesender",
+                    namereceiver: "$namereceiver",
+                    disqus: "$disqus",
+                    avatar: {
+                        mediaBasePath: '$profilpict.mediaBasePath',
+                        mediaUri: '$profilpict.mediaUri',
+                        mediaType: '$profilpict.mediaType',
+                        mediaEndpoint: '$profilpict.fsTargetUri',
+                        medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+                    },
+
+
+
+                }
+            },
+            {
+                $addFields: {
+
+                    concat: '/profilepict',
+                    pict: { $replaceOne: { input: "$avatar.mediaUri", find: "_0001.jpeg", replacement: "" } },
+                },
+            },
+            {
+                $project: {
+                    picts: "$pict",
+                    concats: "$concat",
+                    title: "$title",
+                    disqusID: "$disqusID",
+                    txtMessages: "$txtMessages",
+                    sequenceNumber: "$sequenceNumber",
+                    sender: "$sender",
+                    receiver: "$receiver",
+                    active: "$active",
+                    eventInsight: "$eventInsight",
+                    postType: "$postType",
+                    postID: "$postID",
+                    createdAt: "$createdAt",
+                    updatedAt: "$updatedAt",
+                    reactionUri: "$reactionUri",
+                    medias: "$medias",
+                    namesender: "$namesender",
+                    namereceiver: "$namereceiver",
+                    disqus: "$disqus",
+                    avatar: {
+                        mediaBasePath: '$avatar.mediaBasePath',
+                        mediaUri: '$avatar.mediaUri',
+                        mediaType: '$avatar.mediaType',
+                        mediaEndpoint: '$avatar.fsTargetUri',
+
+
+                    },
+
+
+
+                }
+            },
+            {
+                $project: {
+
+                    title: "$title",
+                    disqusID: "$disqusID",
+                    txtMessages: "$txtMessages",
+                    sequenceNumber: "$sequenceNumber",
+                    sender: "$sender",
+                    receiver: "$receiver",
+                    active: "$active",
+                    eventInsight: "$eventInsight",
+                    postType: "$postType",
+                    postID: "$postID",
+                    createdAt: "$createdAt",
+                    updatedAt: "$updatedAt",
+                    reactionUri: "$reactionUri",
+                    medias: "$medias",
+                    namesender: "$namesender",
+                    namereceiver: "$namereceiver",
+                    disqus: "$disqus",
+                    avatar: {
+                        mediaBasePath: '$avatar.mediaBasePath',
+                        mediaUri: '$avatar.mediaUri',
+                        mediaType: '$avatar.mediaType',
+                        mediaEndpoint: { $concat: ["$concats", "/", "$picts"] },
+
+                    },
+
+
+
+                }
+            },
+            { $sort: { createdAt: -1 }, },
+            { $skip: 0 },
+            { $limit: 10 },
+
+        ]);
+        return query;
+    }
+
+    async findcomment(postID: string) {
+        const posts = await this.postsService.findpost();
+        const disqus = await this.disqusService.finddisqus();
+        const disquslogs = await this.disquslogsService.finddisquslog();
+        const query = await this.commentModel.aggregate([
+            { $match: { postID: postID } },
+
+            {
+                $addFields: {
+                    createdAt: '$createdAt',
+                    disqusID: '$disqusID',
+                    receiver: "$receiver",
+                    sender: "$sender"
+
+                },
+            },
+            {
+                $lookup: {
+                    from: 'disqus2',
+                    localField: 'disqusID',
+                    foreignField: '_id',
+                    as: 'disqus_data',
+                },
+            },
+            {
+                $lookup: {
+                    from: "posts2",
+                    localField: "postID",
+                    foreignField: "postID",
+                    as: "postdata"
+                }
+            },
+            {
+                $project: {
+                    post: { $arrayElemAt: ['$postdata', 0] },
+                    disqusdata: { $arrayElemAt: ['$disqus_data', 0] },
+                    disqusID: "$disqusID",
+                    txtMessages: "$txtMessages",
+                    sequenceNumber: "$sequenceNumber",
+                    sender: "$sender",
+                    receiver: "$receiver",
+                    active: "$active",
+                    eventInsight: "$eventInsight",
+                    postType: "$postType",
+                    postID: "$postID",
+                    createdAt: "$createdAt",
+                    updatedAt: "$updatedAt",
+                    reactionUri: "$reactionUri",
+                    medias: "$medias",
+                    email: "$disqusdata.email",
+                    title: "$post.description",
+                    disqus: {
+                        disqusID: "$disqusdata.disqusID",
+                        email: "$disqusdata.email",
+                        mate: "$disqusdata.mate",
+                        eventType: "$disqusdata.evenType",
+                        active: "$disqusdata.active",
+                        room: "$disqusdata.room",
+                        createdAt: "$disqusdata.createAt",
+                        updatedAt: "$disqusdata.updateAt",
+                        lastestMessage: "$disqusdata.lastestMessage",
+                    }
+
+
+
+                }
+            },
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    localField: 'receiver',
+                    foreignField: 'email',
+                    as: 'userbasics_data',
+                },
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "sender",
+                    foreignField: "email",
+                    as: "userdatasender"
+                }
+            },
+
+            {
+                $project: {
+
+                    user: { $arrayElemAt: ['$userbasics_data', 0] },
+                    usersender: { $arrayElemAt: ['$userdatasender', 0] },
+                    profilePict_id: '$usersender.profilePict.$id',
+                    disqusID: "$disqusID",
+                    txtMessages: "$txtMessages",
+                    sequenceNumber: "$sequenceNumber",
+                    sender: "$sender",
+                    receiver: "$receiver",
+                    active: "$active",
+                    eventInsight: "$eventInsight",
+                    postType: "$postType",
+                    postID: "$postID",
+                    createdAt: "$createdAt",
+                    updatedAt: "$updatedAt",
+                    reactionUri: "$reactionUri",
+                    medias: "$medias",
                     namesender: "$usersender.fullName",
                     namereceiver: "$user.fullName",
-                    disqus: "$disqus"
+                    title: "$post.description",
+                    disqus: {
+                        disqusID: "$disqusdata.disqusID",
+                        email: "$disqusdata.email",
+                        mate: "$disqusdata.mate",
+                        eventType: "$disqusdata.evenType",
+                        active: "$disqusdata.active",
+                        room: "$disqusdata.room",
+                        createdAt: "$disqusdata.createAt",
+                        updatedAt: "$disqusdata.updateAt",
+                        lastestMessage: "$disqusdata.lastestMessage",
+                    }
 
+
+
+
+                }
+            },
+
+            {
+                $project: {
+                    // profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+                    profilePict_id: '$usersender.profilePict.$id',
+                    title: "$title",
+                    disqusID: "$disqusID",
+                    txtMessages: "$txtMessages",
+                    sequenceNumber: "$sequenceNumber",
+                    sender: "$sender",
+                    receiver: "$receiver",
+                    active: "$active",
+                    eventInsight: "$eventInsight",
+                    postType: "$postType",
+                    postID: "$postID",
+                    createdAt: "$createdAt",
+                    updatedAt: "$updatedAt",
+                    reactionUri: "$reactionUri",
+                    medias: "$medias",
+                    namesender: "$usersender.fullName",
+                    namereceiver: "$user.fullName",
+                    disqus: "$disqus",
+
+
+
+
+                }
+            },
+            {
+                $lookup: {
+                    from: 'mediaprofilepicts2',
+                    localField: 'profilePict_id',
+                    foreignField: '_id',
+                    as: 'profilePict_data',
+                },
+            },
+            {
+                $project: {
+                    profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+                    profilpic: '$profilpict.id',
+                    title: "$title",
+                    disqusID: "$disqusID",
+                    txtMessages: "$txtMessages",
+                    sequenceNumber: "$sequenceNumber",
+                    sender: "$sender",
+                    receiver: "$receiver",
+                    active: "$active",
+                    eventInsight: "$eventInsight",
+                    postType: "$postType",
+                    postID: "$postID",
+                    createdAt: "$createdAt",
+                    updatedAt: "$updatedAt",
+                    reactionUri: "$reactionUri",
+                    medias: "$medias",
+                    namesender: "$namesender",
+                    namereceiver: "$namereceiver",
+                    disqus: "$disqus",
+                    // avatar: {
+                    //     mediaBasePath: '$profilpict.mediaBasePath',
+                    //     mediaUri: '$profilpict.mediaUri',
+                    //     mediaType: '$profilpict.mediaType',
+                    //     mediaEndpoint: '$profilpict.fsTargetUri',
+                    //     medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+                    // },
+
+
+
+                }
+            },
+            {
+                $project: {
+
+                    title: "$title",
+                    disqusID: "$disqusID",
+                    txtMessages: "$txtMessages",
+                    sequenceNumber: "$sequenceNumber",
+                    sender: "$sender",
+                    receiver: "$receiver",
+                    active: "$active",
+                    eventInsight: "$eventInsight",
+                    postType: "$postType",
+                    postID: "$postID",
+                    createdAt: "$createdAt",
+                    updatedAt: "$updatedAt",
+                    reactionUri: "$reactionUri",
+                    medias: "$medias",
+                    namesender: "$namesender",
+                    namereceiver: "$namereceiver",
+                    disqus: "$disqus",
+                    avatar: {
+                        mediaBasePath: '$profilpict.mediaBasePath',
+                        mediaUri: '$profilpict.mediaUri',
+                        mediaType: '$profilpict.mediaType',
+                        mediaEndpoint: '$profilpict.fsTargetUri',
+                        medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+                    },
+
+
+
+                }
+            },
+            {
+                $addFields: {
+
+                    concat: '/profilepict',
+                    pict: { $replaceOne: { input: "$avatar.mediaUri", find: "_0001.jpeg", replacement: "" } },
+                },
+            },
+            {
+                $project: {
+                    picts: "$pict",
+                    concats: "$concat",
+                    title: "$title",
+                    disqusID: "$disqusID",
+                    txtMessages: "$txtMessages",
+                    sequenceNumber: "$sequenceNumber",
+                    sender: "$sender",
+                    receiver: "$receiver",
+                    active: "$active",
+                    eventInsight: "$eventInsight",
+                    postType: "$postType",
+                    postID: "$postID",
+                    createdAt: "$createdAt",
+                    updatedAt: "$updatedAt",
+                    reactionUri: "$reactionUri",
+                    medias: "$medias",
+                    namesender: "$namesender",
+                    namereceiver: "$namereceiver",
+                    disqus: "$disqus",
+                    avatar: {
+                        mediaBasePath: '$avatar.mediaBasePath',
+                        mediaUri: '$avatar.mediaUri',
+                        mediaType: '$avatar.mediaType',
+                        mediaEndpoint: '$avatar.fsTargetUri',
+
+
+                    },
+
+
+
+                }
+            },
+            {
+                $project: {
+
+                    title: "$title",
+                    disqusID: "$disqusID",
+                    txtMessages: "$txtMessages",
+                    sequenceNumber: "$sequenceNumber",
+                    sender: "$sender",
+                    receiver: "$receiver",
+                    active: "$active",
+                    eventInsight: "$eventInsight",
+                    postType: "$postType",
+                    postID: "$postID",
+                    createdAt: "$createdAt",
+                    updatedAt: "$updatedAt",
+                    reactionUri: "$reactionUri",
+                    medias: "$medias",
+                    namesender: "$namesender",
+                    namereceiver: "$namereceiver",
+                    disqus: "$disqus",
+                    avatar: {
+                        mediaBasePath: '$avatar.mediaBasePath',
+                        mediaUri: '$avatar.mediaUri',
+                        mediaType: '$avatar.mediaType',
+                        mediaEndpoint: { $concat: ["$concats", "/", "$picts"] },
+
+                    },
 
 
 

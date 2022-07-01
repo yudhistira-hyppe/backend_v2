@@ -10,7 +10,7 @@ export class PostsService {
   constructor(
     @InjectModel(Posts.name, 'SERVER_CONTENT')
     private readonly PostsModel: Model<PostsDocument>,
-  ) {}
+  ) { }
 
   async create(CreatePostsDto: CreatePostsDto): Promise<Posts> {
     const createPostsDto = await this.PostsModel.create(CreatePostsDto);
@@ -21,12 +21,14 @@ export class PostsService {
     return this.PostsModel.find().exec();
   }
 
-  //    async findOne(id: string): Promise<Posts> {
-  //     return this.PostsModel.findOne({ _id: id }).exec();
-  //   }
+  async findid(id: string): Promise<Posts> {
+    return this.PostsModel.findOne({ _id: id }).exec();
+  }
   async findOne(email: string): Promise<Posts> {
     return this.PostsModel.findOne({ email: email }).exec();
   }
+
+
 
   async delete(id: string) {
     const deletedCat = await this.PostsModel.findByIdAndRemove({
@@ -131,9 +133,9 @@ export class PostsService {
     return GetCount;
   }
 
-  async findpost(){
-    const query =await this.PostsModel.aggregate([
-  
+  async findpost() {
+    const query = await this.PostsModel.aggregate([
+
       {
         $lookup: {
           from: 'posts',
@@ -141,16 +143,17 @@ export class PostsService {
           foreignField: '_id',
           as: 'roless',
         },
-      },{
-        $out:{
-          db:'hyppe_trans_db',
-          coll:'posts2'
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'posts2'
         }
       },
-     
+
     ]);
-    return query;}
-    
+    return query;
+  }
+
   async regcontenMonetize(): Promise<Object> {
     var GetCount = this.PostsModel.aggregate([
       {

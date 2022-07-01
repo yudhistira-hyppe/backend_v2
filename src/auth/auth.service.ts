@@ -44,6 +44,7 @@ export class AuthService {
     private interestsService: InterestsService,
     private interestsRepoService: InterestsRepoService,
     private activityeventsService: ActivityeventsService,
+<<<<<<< HEAD
     private areasService: AreasService,
     private utilsService: UtilsService,
     private errorHandler: ErrorHandler,
@@ -51,6 +52,9 @@ export class AuthService {
     private referralService: ReferralService,
     private mediaService: MediaService,
   ) {}
+=======
+  ) { }
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
 
   async validateUser(email: string, pass: string): Promise<any> {
     var isMatch = false;
@@ -155,6 +159,7 @@ export class AuthService {
         //ActivityEvent Parent > 0
         if (Object.keys(user_activityevents).length > 0) {
 
+<<<<<<< HEAD
           //Create ActivityEvent child
           try {
             data_CreateActivityeventsDto_child._id = id_Activityevents_child;
@@ -395,6 +400,207 @@ export class AuthService {
             info: ['Login successful'],
           };
 
+=======
+      //Ceck User Userbasics
+      const datauserbasicsService = await this.userbasicsService.findOne(
+        user_email,
+      );
+
+      //Ceck User jwtrefresh token
+      const datajwtrefreshtoken = await this.jwtrefreshtokenService.findOne(
+        user_email,
+      );
+
+      //ActivityEvent Parent > 0
+      if (Object.keys(user_activityevents).length > 0) {
+        //Create ActivityEvent child
+        try {
+          data_CreateActivityeventsDto_child.activityEventID =
+            ID_child_ActivityEvent;
+          data_CreateActivityeventsDto_child.activityType = 'DEVICE_ACTIVITY';
+          data_CreateActivityeventsDto_child.active = true;
+          data_CreateActivityeventsDto_child.status = 'INITIAL';
+          data_CreateActivityeventsDto_child.target = 'ACTIVE';
+          data_CreateActivityeventsDto_child.event = 'AWAKE';
+          data_CreateActivityeventsDto_child.payload = {
+            login_location: {
+              latitude: user_location.latitude,
+              longitude: user_location.longitude,
+            },
+            logout_date: null,
+            login_date: current_date.substring(
+              0,
+              current_date.lastIndexOf('.'),
+            ),
+            login_device: user_deviceId,
+            email: user_email,
+          };
+          data_CreateActivityeventsDto_child.createdAt = current_date.substring(
+            0,
+            current_date.lastIndexOf('.'),
+          );
+          data_CreateActivityeventsDto_child.updatedAt = current_date.substring(
+            0,
+            current_date.lastIndexOf('.'),
+          );
+          data_CreateActivityeventsDto_child.sequenceNumber = '0';
+          data_CreateActivityeventsDto_child.flowIsDone = false;
+          data_CreateActivityeventsDto_child.parentActivityEventID =
+            user_activityevents[0].activityEventID;
+
+          //Insert ActivityEvent child
+          await this.activityeventsService.create(
+            data_CreateActivityeventsDto_child,
+          );
+        } catch (err_create_activity_event_child) {
+          throw new NotAcceptableException({
+            response_code: 406,
+            messages: {
+              info: [
+                'Unabled to proceed Create Activity events Child. Error:' +
+                err_create_activity_event_child,
+              ],
+            },
+          });
+        }
+
+        //Update ActivityEvent Parent
+        try {
+          const data_transitions = user_activityevents[0].transitions;
+          data_transitions.push({
+            $ref: 'activityevents',
+            $id: new Object(ID_child_ActivityEvent),
+            $db: 'hyppe_trans_db',
+          });
+
+          //Update ActivityEvent Parent
+          const update_activityevents_parent =
+            await this.activityeventsService.update(
+              {
+                _id: user_activityevents[0]._id.toString(),
+              },
+              {
+                transitions: data_transitions,
+              },
+            );
+        } catch (err_update_activity_event_parent) {
+          throw new NotAcceptableException({
+            response_code: 406,
+            messages: {
+              info: [
+                'Unabled to proceed Update Activity events Parent. Error:' +
+                err_update_activity_event_parent,
+              ],
+            },
+          });
+        }
+      } else {
+        //Create ActivityEvent Parent
+        try {
+          data_CreateActivityeventsDto_parent.activityEventID =
+            ID_parent_ActivityEvent;
+          data_CreateActivityeventsDto_parent.activityType = 'LOGIN';
+          data_CreateActivityeventsDto_parent.active = true;
+          data_CreateActivityeventsDto_parent.status = 'INITIAL';
+          data_CreateActivityeventsDto_parent.target = 'USER_LOGOUT';
+          data_CreateActivityeventsDto_parent.event = 'LOGIN';
+          data_CreateActivityeventsDto_parent.payload = {
+            login_location: {
+              latitude: user_location.latitude,
+              longitude: user_location.longitude,
+            },
+            logout_date: null,
+            login_date: current_date.substring(
+              0,
+              current_date.lastIndexOf('.'),
+            ),
+            login_device: user_deviceId,
+            email: user_email,
+          };
+          data_CreateActivityeventsDto_parent.createdAt =
+            current_date.substring(0, current_date.lastIndexOf('.'));
+          data_CreateActivityeventsDto_parent.updatedAt =
+            current_date.substring(0, current_date.lastIndexOf('.'));
+          data_CreateActivityeventsDto_parent.sequenceNumber = '1';
+          data_CreateActivityeventsDto_parent.flowIsDone = false;
+          data_CreateActivityeventsDto_parent.transitions = [
+            {
+              $ref: 'activityevents',
+              $id: Object(ID_child_ActivityEvent),
+              $db: 'hyppe_trans_db',
+            },
+          ];
+
+          //Insert ActivityEvent Parent
+          await this.activityeventsService.create(
+            data_CreateActivityeventsDto_parent,
+          );
+        } catch (err_create_activity_event_parent) {
+          throw new NotAcceptableException({
+            response_code: 406,
+            messages: {
+              info: [
+                'Unabled to proceed Create Activity events Parent. Error: ' +
+                err_create_activity_event_parent,
+              ],
+            },
+          });
+        }
+
+        //Create ActivityEvent child
+        try {
+          var data_CreateActivityeventsDto_child =
+            new CreateActivityeventsDto();
+
+          data_CreateActivityeventsDto_child.activityEventID =
+            ID_child_ActivityEvent;
+          data_CreateActivityeventsDto_child.activityType = 'DEVICE_ACTIVITY';
+          data_CreateActivityeventsDto_child.active = true;
+          data_CreateActivityeventsDto_child.status = 'INITIAL';
+          data_CreateActivityeventsDto_child.target = 'ACTIVE';
+          data_CreateActivityeventsDto_child.event = 'AWAKE';
+          data_CreateActivityeventsDto_child.payload = {
+            login_location: {
+              latitude: user_location.latitude,
+              longitude: user_location.longitude,
+            },
+            logout_date: null,
+            login_date: current_date.substring(
+              0,
+              current_date.lastIndexOf('.'),
+            ),
+            login_device: user_deviceId,
+            email: user_email,
+          };
+          data_CreateActivityeventsDto_child.createdAt = current_date.substring(
+            0,
+            current_date.lastIndexOf('.'),
+          );
+          data_CreateActivityeventsDto_child.updatedAt = current_date.substring(
+            0,
+            current_date.lastIndexOf('.'),
+          );
+          data_CreateActivityeventsDto_child.sequenceNumber = '0';
+          data_CreateActivityeventsDto_child.flowIsDone = false;
+          data_CreateActivityeventsDto_child.parentActivityEventID =
+            ID_parent_ActivityEvent;
+
+          //Insert ActivityEvent Parent
+          const insert_activityevents_child =
+            await this.activityeventsService.create(
+              data_CreateActivityeventsDto_child,
+            );
+        } catch (err_create_activity_event_child) {
+          throw new NotAcceptableException({
+            response_code: 406,
+            messages: {
+              info: [
+                'Unabled to proceed Create Activity events Child. Error: ' +
+                err_create_activity_event_child,
+              ],
+            },
+          });
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
         }
 
         var countries_json = null;
@@ -550,6 +756,7 @@ export class AuthService {
     }
   }
 
+<<<<<<< HEAD
   async signup(req: any): Promise<any> {
     if (req.body.otp == undefined) {
       if (
@@ -561,6 +768,97 @@ export class AuthService {
           response_code: 406,
           messages: {
             info: ['Unabled to proceed'],
+=======
+      //Userdevices != null
+      if (user_userdevicesService != null) {
+        //Get Userdevices
+        try {
+          await this.userdevicesService.updatebyEmail(
+            user_email,
+            user_deviceId,
+            {
+              active: true,
+            },
+          );
+          ID_user_userdevicesService = user_userdevicesService._id;
+        } catch (err_get_userdevices) {
+          throw new NotAcceptableException({
+            response_code: 406,
+            messages: {
+              info: [
+                'Unabled to proceed Get Userdevices. Error:' +
+                err_get_userdevices,
+              ],
+            },
+          });
+        }
+      } else {
+        //Create Userdevices
+        try {
+          ID_user_userdevicesService = (await this.generateId()).toLowerCase();
+          data_CreateUserdeviceDto._id = ID_user_userdevicesService;
+          data_CreateUserdeviceDto.deviceID = user_deviceId;
+          data_CreateUserdeviceDto.email = user_email;
+          data_CreateUserdeviceDto.active = true;
+          data_CreateUserdeviceDto.createdAt = current_date.substring(
+            0,
+            current_date.lastIndexOf('.'),
+          );
+          data_CreateUserdeviceDto.updatedAt = current_date.substring(
+            0,
+            current_date.lastIndexOf('.'),
+          );
+          //Insert User Userdevices
+          await this.userdevicesService.create(data_CreateUserdeviceDto);
+        } catch (err_create_userdevices) {
+          throw new NotAcceptableException({
+            response_code: 406,
+            messages: {
+              info: [
+                'Unabled to proceed Create Userdevices. Error:' +
+                err_create_userdevices,
+              ],
+            },
+          });
+        }
+      }
+
+      //Update Devices Userauths
+      try {
+        //Get Devices Userauths
+        const datauserauthsService_devices = datauserauthsService.devices;
+
+        //Filter ID_user_userdevicesService Devices UserDevices
+        var filteredData = datauserauthsService_devices.filter(function (
+          datauserauthsService_devices,
+        ) {
+          return (
+            JSON.parse(JSON.stringify(datauserauthsService_devices)).$id ===
+            ID_user_userdevicesService
+          );
+        });
+
+        if (filteredData.length == 0) {
+          //Pust Devices Userauths
+          datauserauthsService_devices.push({
+            $ref: 'userdevices',
+            $id: ID_user_userdevicesService,
+            $db: 'hyppe_trans_db',
+          });
+
+          await this.userauthsService.updatebyEmail(user_email, {
+            devices: datauserauthsService_devices,
+          });
+        }
+      } catch (err_update_devices_userauths) {
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: [
+              'Unabled to proceed Update Devices Userauths. Error:' +
+              err_update_devices_userauths,
+            ],
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
           },
         });
       }
@@ -1849,7 +2147,13 @@ export class AuthService {
 
         //Get Id Userdevices
         const datauserauthsService_devices =
+<<<<<<< HEAD
           datauserauthsService.devices[datauserauthsService.devices.length - 1];
+=======
+          datauserauthsService.devices[
+          datauserauthsService.devices.length - 1
+          ];
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
 
         //Ceck Userdevices
         const datauserdevices = await this.userdevicesService.findOneId(
@@ -1894,7 +2198,7 @@ export class AuthService {
       var expdate = new Date();
       expdate.setDate(
         expdate.getDate() +
-          Number(process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME),
+        Number(process.env.JWT_REFRESH_TOKEN_EXPIRATION_TIME),
       );
 
       //Update Refresh Token
@@ -1986,6 +2290,7 @@ export class AuthService {
           data_CreateActivityeventsDto_child.__v = undefined;
           data_CreateActivityeventsDto_child.parentActivityEventID =
             user_activityevents[0].activityEventID;
+<<<<<<< HEAD
           data_CreateActivityeventsDto_child.userbasic = user_userbasics._id;
 
           //Insert ActivityEvent Child
@@ -1996,15 +2301,73 @@ export class AuthService {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity Event Child. Error:' + error,
           );
+=======
+          const insert_activityevents_child =
+            await this.activityeventsService.create(
+              data_CreateActivityeventsDto_child,
+            );
+        } catch (err_create_activity_events_child) {
+          throw new NotAcceptableException({
+            response_code: 406,
+            messages: {
+              info: [
+                'Unabled to proceed Create Activity Event Child. Error:' +
+                err_create_activity_events_child,
+              ],
+            },
+          });
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
         }
 
         //Update ActivityEvent Parent
         try {
           const data_transitions = user_activityevents[0].transitions;
+<<<<<<< HEAD
           data_transitions.push({
             $ref: 'activityevents',
             $id: new Object(ID_child_ActivityEvent),
             $db: 'hyppe_trans_db',
+=======
+          data_transitions.push(
+            'DBRef("activityevents", "' +
+            ID_child_ActivityEvent +
+            '","hyppe_trans_db")',
+          );
+          const update_activityevents_parent =
+            await this.activityeventsService.update(
+              {
+                _id: user_activityevents[0]._id.toString(),
+              },
+              {
+                payload: {
+                  login_location: {
+                    latitude:
+                      user_activityevents[0].payload.login_location.latitude,
+                    longitude:
+                      user_activityevents[0].payload.login_location.longitude,
+                  },
+                  logout_date: current_date.substring(
+                    0,
+                    current_date.lastIndexOf('.'),
+                  ),
+                  login_date: user_activityevents[0].payload.login_date,
+                  login_device: user_deviceId,
+                  email: user_email,
+                },
+                flowIsDone: true,
+                transitions: data_transitions,
+              },
+            );
+        } catch (err_update_activity_events_parent) {
+          throw new NotAcceptableException({
+            response_code: 406,
+            messages: {
+              info: [
+                'Unabled to proceed Update Activity Event Parent. Error:' +
+                err_update_activity_events_parent,
+              ],
+            },
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
           });
           await this.activityeventsService.update(
             {
@@ -2066,10 +2429,23 @@ export class AuthService {
               info: ['Logout successful'],
             },
           };
+<<<<<<< HEAD
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Update Userdevices. Error:' + error,
           );
+=======
+        } catch (err_update_userdevices) {
+          throw new NotAcceptableException({
+            response_code: 406,
+            messages: {
+              info: [
+                'Unabled to proceed Update Userdevices. Error:' +
+                err_update_userdevices,
+              ],
+            },
+          });
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
         }
       } else {
         await this.errorHandler.generateNotAcceptableException(
@@ -2103,10 +2479,15 @@ export class AuthService {
       );
     }
     if (
+<<<<<<< HEAD
       !(
         (user_event == 'AWAKE' && user_status == 'INITIAL') ||
         (user_event == 'SLEEP' && user_status == 'ACTIVE')
       )
+=======
+      !((user_event == 'AWAKE' && user_status == 'INITIAL') ||
+        (user_event == 'SLEEP' && user_status == 'ACTIVE'))
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
     ) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',
@@ -2162,10 +2543,23 @@ export class AuthService {
           await this.activityeventsService.create(
             data_CreateActivityeventsDto_child,
           );
+<<<<<<< HEAD
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Create Activity Event Child. Error:' + error,
           );
+=======
+        } catch (err_create_activity_events_child) {
+          throw new NotAcceptableException({
+            response_code: 406,
+            messages: {
+              info: [
+                'Unabled to proceed Create Activity Event Child. Error:' +
+                err_create_activity_events_child,
+              ],
+            },
+          });
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
         }
 
         //Update ActivityEvent Parent
@@ -2173,8 +2567,8 @@ export class AuthService {
           const data_transitions = user_activityevents[0].transitions;
           data_transitions.push(
             'DBRef("activityevents", "' +
-              ID_child_ActivityEvent +
-              '","hyppe_trans_db")',
+            ID_child_ActivityEvent +
+            '","hyppe_trans_db")',
           );
           await this.activityeventsService.update(
             {
@@ -2184,10 +2578,23 @@ export class AuthService {
               transitions: data_transitions,
             },
           );
+<<<<<<< HEAD
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed Update Activity Event Parent. Error:' + error,
           );
+=======
+        } catch (err_update_activity_events_parent) {
+          throw new NotAcceptableException({
+            response_code: 406,
+            messages: {
+              info: [
+                'Unabled to proceed Update Activity Event Parent. Error:' +
+                err_update_activity_events_parent,
+              ],
+            },
+          });
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
         }
 
         return {
@@ -2202,7 +2609,16 @@ export class AuthService {
         );
       }
     } else {
+<<<<<<< HEAD
       await this.errorHandler.generateNotAcceptableException('User not found');
+=======
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['User not found'],
+        },
+      });
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
     }
   }
 
@@ -2866,6 +3282,7 @@ export class AuthService {
     }
   }
 
+<<<<<<< HEAD
   async sendemail(email: string, OTP: string, type: string) {
     //Send Email
     try {
@@ -3486,4 +3903,7 @@ export class AuthService {
     //   );
     // }
   }
+=======
+  async changepassword(req: any): Promise<any> { }
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
 }

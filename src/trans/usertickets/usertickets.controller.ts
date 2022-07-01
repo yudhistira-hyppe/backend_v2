@@ -52,7 +52,6 @@ export class UserticketsController {
     var dt = new Date(Date.now());
     CreateUserticketsDto.IdUser = iduser;
     CreateUserticketsDto.datetime = dt.toISOString();
-    CreateUserticketsDto.status = "onprogress";
     CreateUserticketsDto.nomortiket = no;
 
     try {
@@ -92,21 +91,90 @@ export class UserticketsController {
     return { response_code: 202, data, messages };
   }
 
-  @Post('api/usertickets/allticket')
+  @Post('api/usertickets/list')
   @UseGuards(JwtAuthGuard)
-  async all(): Promise<any> {
-    const mongoose = require('mongoose');
+  async search(@Req() request: Request): Promise<any> {
+    var status = null;
+    var tipe = null;
 
+    var page = 0;
+    var limit = 0;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["status"] !== undefined) {
+      status = request_json["status"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["tipe"] !== undefined) {
+      tipe = request_json["tipe"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["page"] !== undefined) {
+      page = request_json["page"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["limit"] !== undefined) {
+      limit = request_json["limit"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
     const messages = {
       "info": ["The process successful"],
     };
 
-    let data = await this.userticketsService.viewalldata();
+    let dataall = await this.userticketsService.searchdataall(status, tipe);
+    var totalallrow = dataall.length;
+
+
+    let data = await this.userticketsService.searchdata(status, tipe, page, limit);
+    var totalrow = data.length;
+    return { response_code: 202, data, page, limit, totalrow, totalallrow, messages };
+  }
+
+  @Post('api/usertickets/allticket')
+  @UseGuards(JwtAuthGuard)
+  async alltiket(@Req() request: Request): Promise<any> {
+
+    var tipe = null;
+    var page = 0;
+    var limit = 0;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["tipe"] !== undefined) {
+      tipe = request_json["tipe"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["page"] !== undefined) {
+      page = request_json["page"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["limit"] !== undefined) {
+      limit = request_json["limit"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    let dataall = await this.userticketsService.all(tipe);
+    var totalallrow = dataall.length;
+
+
+    let data = await this.userticketsService.alldatatiket(tipe, page, limit);
     if (!data) {
       throw new Error('Todo is not found!');
     }
-
-    return { response_code: 202, data, messages };
+    var totalrow = data.length;
+    return { response_code: 202, data, page, limit, totalrow, totalallrow, messages };
   }
 
   async romawi(num: number) {

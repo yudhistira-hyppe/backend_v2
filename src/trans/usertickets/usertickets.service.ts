@@ -67,6 +67,7 @@ export class UserticketsService {
           subject: "$subject",
           body: "$body",
           status: "$status",
+          tipe: "$tipe",
           datetime: "$datetime"
 
         }
@@ -81,6 +82,7 @@ export class UserticketsService {
           subject: "$subject",
           body: "$body",
           status: "$status",
+          tipe: "$tipe",
           datetime: "$datetime",
           replydata: "$replydata"
 
@@ -92,50 +94,7 @@ export class UserticketsService {
     return query;
   }
 
-
-  async alldata(): Promise<object> {
-    const query = await this.userticketsModel.aggregate([
-      {
-        $lookup: {
-          from: "userbasics",
-          localField: "IdUser",
-          foreignField: "_id",
-          as: "field"
-        }
-      }, {
-        $project: {
-          userdata: {
-            $arrayElemAt: ['$field', 0]
-          },
-          nomortiket: "$nomortiket",
-          subject: "$subject",
-          body: "$body",
-          datetime: "$datetime",
-          status: "$status",
-          fullName: "$userdata.fullName"
-
-        }
-      },
-      {
-        $project: {
-
-          nomortiket: "$nomortiket",
-          fullName: "$userdata.fullName",
-          email: "$userdata.email",
-          subject: "$subject",
-          body: "$body",
-          status: "$status",
-          datetime: "$datetime"
-
-        }
-      }
-    ]);
-
-
-    return query;
-  }
-
-  async viewalldata(): Promise<object> {
+  async searchdata(status: string, tipe: string, page: number, limit: number) {
     const query = await this.userticketsModel.aggregate([
       {
         $lookup: {
@@ -167,29 +126,234 @@ export class UserticketsService {
           },
           replydata: "$tiketdata",
           userrequest: "$userdata.fullName",
-          email: "$userdata.email",
           nomortiket: "$nomortiket",
+          email: "$userdata.email",
           subject: "$subject",
           body: "$body",
           status: "$status",
+          tipe: "$tipe",
           datetime: "$datetime"
 
         }
       },
       {
         $project: {
+
+
           nomortiket: "$nomortiket",
           userrequest: "$userdata.fullName",
           email: "$userdata.email",
           subject: "$subject",
           body: "$body",
           status: "$status",
+          tipe: "$tipe",
           datetime: "$datetime",
-          replydata: "$replydata",
+          replydata: "$replydata"
 
         }
-      }
+      }, { $match: { "status": status, "tipe": tipe } },
+      { $sort: { datetime: -1 }, }, { $skip: page }, { $limit: limit }
     ]);
+
+
+    return query;
+  }
+  async searchdataall(status: string, tipe: string) {
+    const query = await this.userticketsModel.aggregate([
+      {
+        $lookup: {
+          from: "userbasics",
+          localField: "IdUser",
+          foreignField: "_id",
+          as: "userdata"
+        }
+      }, {
+        $lookup: {
+          from: "userticketdetails",
+          localField: "_id",
+          foreignField: "IdUserticket",
+          as: "tiketdata"
+        }
+      },
+      {
+        $lookup: {
+          from: "userbasics",
+          localField: "tiketdata.IdUser",
+          foreignField: "_id",
+          as: "field2"
+        }
+      },
+      {
+        $project: {
+          userdata: {
+            $arrayElemAt: ['$userdata', 0]
+          },
+          replydata: "$tiketdata",
+          userrequest: "$userdata.fullName",
+          nomortiket: "$nomortiket",
+          email: "$userdata.email",
+          subject: "$subject",
+          body: "$body",
+          status: "$status",
+          tipe: "$tipe",
+          datetime: "$datetime"
+
+        }
+      },
+      {
+        $project: {
+
+
+          nomortiket: "$nomortiket",
+          userrequest: "$userdata.fullName",
+          email: "$userdata.email",
+          subject: "$subject",
+          body: "$body",
+          status: "$status",
+          tipe: "$tipe",
+          datetime: "$datetime",
+          replydata: "$replydata"
+
+        }
+      }, { $match: { "status": status, "tipe": tipe } },
+      { $sort: { datetime: -1 }, }
+    ]);
+
+
+    return query;
+  }
+
+
+
+
+
+  async alldatatiket(tipe: string, page: number, limit: number) {
+    const query = await this.userticketsModel.aggregate([
+      {
+        $lookup: {
+          from: "userbasics",
+          localField: "IdUser",
+          foreignField: "_id",
+          as: "userdata"
+        }
+      }, {
+        $lookup: {
+          from: "userticketdetails",
+          localField: "_id",
+          foreignField: "IdUserticket",
+          as: "tiketdata"
+        }
+      },
+      {
+        $lookup: {
+          from: "userbasics",
+          localField: "tiketdata.IdUser",
+          foreignField: "_id",
+          as: "field2"
+        }
+      },
+      {
+        $project: {
+          userdata: {
+            $arrayElemAt: ['$userdata', 0]
+          },
+          replydata: "$tiketdata",
+          userrequest: "$userdata.fullName",
+          nomortiket: "$nomortiket",
+          email: "$userdata.email",
+          subject: "$subject",
+          body: "$body",
+          status: "$status",
+          tipe: "$tipe",
+          datetime: "$datetime"
+
+        }
+      },
+      {
+        $project: {
+
+
+          nomortiket: "$nomortiket",
+          userrequest: "$userdata.fullName",
+          email: "$userdata.email",
+          subject: "$subject",
+          body: "$body",
+          status: "$status",
+          tipe: "$tipe",
+          datetime: "$datetime",
+          replydata: "$replydata"
+
+        }
+      }, { $match: { "tipe": tipe } },
+      { $sort: { datetime: -1 }, }, { $skip: page }, { $limit: limit }
+    ]);
+
+
+
+    return query;
+  }
+
+  async all(tipe: string) {
+    const query = await this.userticketsModel.aggregate([
+      {
+        $lookup: {
+          from: "userbasics",
+          localField: "IdUser",
+          foreignField: "_id",
+          as: "userdata"
+        }
+      }, {
+        $lookup: {
+          from: "userticketdetails",
+          localField: "_id",
+          foreignField: "IdUserticket",
+          as: "tiketdata"
+        }
+      },
+      {
+        $lookup: {
+          from: "userbasics",
+          localField: "tiketdata.IdUser",
+          foreignField: "_id",
+          as: "field2"
+        }
+      },
+      {
+        $project: {
+          userdata: {
+            $arrayElemAt: ['$userdata', 0]
+          },
+          replydata: "$tiketdata",
+          userrequest: "$userdata.fullName",
+          nomortiket: "$nomortiket",
+          email: "$userdata.email",
+          subject: "$subject",
+          body: "$body",
+          status: "$status",
+          tipe: "$tipe",
+          datetime: "$datetime"
+
+        }
+      },
+      {
+        $project: {
+
+
+          nomortiket: "$nomortiket",
+          userrequest: "$userdata.fullName",
+          email: "$userdata.email",
+          subject: "$subject",
+          body: "$body",
+          status: "$status",
+          tipe: "$tipe",
+          datetime: "$datetime",
+          replydata: "$replydata"
+
+        }
+      }, { $match: { "tipe": tipe } },
+      { $sort: { datetime: -1 }, }
+    ]);
+
 
 
     return query;

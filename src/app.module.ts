@@ -50,7 +50,20 @@ import { ProfileModule } from './trans/profile/profile.module';
 import { GetuserprofilesModule } from './trans/getuserprofiles/getuserprofiles.module';
 import { GetusercontentsModule } from './trans/getusercontents/getusercontents.module';
 import { CommentModule } from './trans/getusercontents/comment/comment.module';
+<<<<<<< HEAD
 //import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
+=======
+import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
+import { AnnouncementsModule } from './trans/announcements/announcements.module';
+import { FaqsModule } from './trans/faqs/faqs.module';
+import { FaqdetailsModule } from './trans/faqs/faqdetails/faqdetails.module';
+import { AccountbalancesModule } from './trans/accountbalances/accountbalances.module';
+import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents/getcontentevents.module';
+import { TransactionsModule } from './trans/transactions/transactions.module';
+import { SettingsModule } from './trans/settings/settings.module';
+import { MethodepaymentsModule } from './trans/methodepayments/methodepayments.module';
+import { BanksModule } from './trans/banks/banks.module';
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -67,8 +80,22 @@ import { CommentModule } from './trans/getusercontents/comment/comment.module';
     // UserbasicsModule,
     // UserauthsModule,
     //CommentModule,
+<<<<<<< HEAD
     //UserticketdetailsModule,
     //UserticketsModule,
+=======
+    // BanksModule,
+    // MethodepaymentsModule,
+    // SettingsModule,
+    TransactionsModule,
+    GetcontenteventsModule,
+    AccountbalancesModule,
+    FaqdetailsModule,
+    FaqsModule,
+    AnnouncementsModule,
+    UserticketdetailsModule,
+    UserticketsModule,
+>>>>>>> ce6a6db61f9ea2ad0041214ffe202e7489c351ca
     GetusercontentsModule,
     GetuserprofilesModule,
     ProfileModule,

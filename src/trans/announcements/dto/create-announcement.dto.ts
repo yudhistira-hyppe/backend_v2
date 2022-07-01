@@ -12,7 +12,14 @@ export class CreateAnnouncementsDto {
     email: boolean;
     idusershare: { oid: String; };
     status: string;
-    detail: [{ iduser: { oid: String; }; }]
+    Detail: any[];
 
+
+}
+
+export class UserDto {
+
+
+    iduser: { oid: String; };
 
 }

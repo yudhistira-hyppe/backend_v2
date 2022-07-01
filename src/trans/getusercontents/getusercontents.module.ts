@@ -16,6 +16,9 @@ import { DisqusModule } from '../../content/disqus/disqus.module';
 import { CommentController } from './comment/comment.controller';
 import { CommentService } from './comment/comment.service';
 import { CommentModule } from './comment/comment.module';
+import { GetcontenteventsController } from './getcontentevents/getcontentevents.controller';
+import { GetcontenteventsService } from './getcontentevents/getcontentevents.service';
+
 
 
 @Module({
@@ -24,6 +27,8 @@ import { CommentModule } from './comment/comment.module';
         ConfigModule.forRoot(), UserauthsModule, MediaprofilepictsModule, InsightsModule, PostsModule, MediavideosModule, MediapictsModule, MediadiariesModule, DisquslogsModule, DisqusModule, CommentModule,
 
         MongooseModule.forFeature([{ name: Getusercontents.name, schema: GetusercontentsSchema }], 'SERVER_TRANS'),
+
+
 
 
 

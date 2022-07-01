@@ -4,14 +4,15 @@ import { Model } from 'mongoose';
 import { CreateUserbasicDto } from './dto/create-userbasic.dto';
 import { Userbasic, UserbasicDocument } from './schemas/userbasic.schema';
 import { LanguagesService } from '../../infra/languages/languages.service';
-
+import { InterestsRepoService } from '../../infra/interests_repo/interests_repo.service';
 @Injectable()
 export class UserbasicsService {
   constructor(
     @InjectModel(Userbasic.name, 'SERVER_TRANS')
     private readonly userbasicModel: Model<UserbasicDocument>,
     private readonly languagesService: LanguagesService,
-  ) {}
+    private readonly interestsRepoService: InterestsRepoService,
+  ) { }
 
   async create(CreateUserbasicDto: CreateUserbasicDto): Promise<Userbasic> {
     const createUserbasicDto = await this.userbasicModel.create(
@@ -166,7 +167,7 @@ export class UserbasicsService {
             createdAt: '$createdAt',
             YearcreatedAt: { $toInt: { $substrCP: ['$createdAt', 0, 4] } },
             year_param: { $toInt: year_param.toString() },
-            
+
           },
         },
         {
@@ -287,6 +288,74 @@ export class UserbasicsService {
       ])
       .exec();
     return GetCount;
+  }
+
+
+  async getinterest(email: string, langIso: string, pageNumber: number, pageRow: number, search: string): Promise<object> {
+    const interes = await this.interestsRepoService.findinterst();
+    const query = await this.userbasicModel.aggregate([
+      {
+        $lookup: {
+          from: "interests_repo2",
+          localField: "userInterests.$id",
+          foreignField: "_id",
+          as: "field"
+        }
+      }, {
+        "$unwind": {
+          "path": "$field",
+          "preserveNullAndEmptyArrays": false
+        }
+      }, {
+        $match: {
+          "email": email,
+          "field.interestName": search,
+          "field.langIso": langIso
+        }
+      }, {
+        "$project": {
+          "langIso": "$field.langIso",
+          "cts": "$field.createdAt",
+          "icon": "$field.icon",
+          "interestName": "$field.interestName"
+        }
+      },
+
+      { $skip: pageNumber },
+      { $limit: pageRow },
+
+    ]);
+
+    return query;
+  }
+
+
+  async viewdatabyuser(id: object): Promise<object> {
+    const query = await this.userbasicModel.aggregate([
+      {
+        $match: {
+          _id: id
+        }
+      },
+      {
+        $lookup: {
+          from: "announcements",
+          localField: "_id",
+          foreignField: "Detail.iduser",
+          as: "pengumuman"
+        }
+      },
+      {
+        $project: {
+          email: "$email",
+          fullName: "$fullName",
+          info: "$pengumuman"
+        }
+      },
+    ]);
+
+
+    return query;
   }
 }
 

@@ -1,0 +1,171 @@
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Req, BadRequestException, Request } from '@nestjs/common';
+import { GetcontenteventsService } from './getcontentevents.service';
+import { CreateGetcontenteventsDto } from './dto/create-getcontentevents.dto';
+import { Getcontentevents } from './schemas/getcontentevents.schema';
+import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
+
+@Controller()
+export class GetcontenteventsController {
+    constructor(private readonly getcontenteventsService: GetcontenteventsService) { }
+
+    @Post('api/getcontentevents')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagement(@Req() request: Request): Promise<any> {
+
+        var postID = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+        var datagenderperempuan = 0;
+        var datagenderlaki = 0;
+        var datagendermale = 0;
+        var datagenderfemale = 0;
+        var datagender_female = 0;
+
+        //  let datagender = await this.getcontenteventsService.findgender(postID);
+
+        let dataall = await this.getcontenteventsService.findall(postID);
+        let dataperempuan = await this.getcontenteventsService.findgender_perempuan(postID);
+        let datalaki = await this.getcontenteventsService.findgender_laki(postID);
+        let datamale = await this.getcontenteventsService.findgenderMale(postID);
+        let datafemale = await this.getcontenteventsService.findgenderFeMale(postID);
+        let data_female = await this.getcontenteventsService.findgender_FeMale(postID);
+        //  var lenggender = datagender.length;
+        var datapost = [];
+        try {
+            datagenderperempuan = dataperempuan[0].totalpost;
+        } catch (e) {
+            datagenderperempuan = 0;
+        }
+
+        try {
+            datagenderlaki = datalaki[0].totalpost;
+        } catch (e) {
+            datagenderlaki = 0;
+        }
+        try {
+            datagendermale = datamale[0].totalpost;
+        } catch (e) {
+            datagendermale = 0;
+        }
+        try {
+            datagenderfemale = datafemale[0].totalpost;
+        } catch (e) {
+            datagenderfemale = 0;
+        }
+        try {
+            datagender_female = data_female[0].totalpost;
+        } catch (e) {
+            datagender_female = 0;
+        }
+
+        var totalmale = datagenderlaki + datagendermale;
+        var totalfemale = datagenderfemale + datagenderperempuan + datagender_female;
+        var totalpost = dataall.length;
+
+
+        var tepostmale = totalmale * 100 / totalpost;
+        var tpostmale = tepostmale.toFixed(2);
+
+        var tepostfemale = totalfemale * 100 / totalpost;
+        var tpostfemale = tepostfemale.toFixed(2);
+        console.log(tpostfemale);
+        datapost = [{ "_id": "MALE", "totalpost": tpostmale }, { "_id": "FEMALE", "totalpost": tpostfemale }];
+
+        var totalage = 0;
+        var totalage40 = 0;
+        var totalage14 = 0;
+        var dataages = [];
+        var objage14 = {};
+
+        let dataage14 = await this.getcontenteventsService.findage14(postID);
+        var lengage14 = dataage14.length;
+        for (var x = 0; x < lengage14; x++) {
+
+            totalage14 += dataage14[x].totalpost;
+        }
+        var totalpostage14 = dataall.length;
+        var prosentage14 = totalage14 * 100 / totalpostage14;
+        var tpostage14 = prosentage14.toFixed(2);
+
+        if (parseInt(tpostage14) > 0) {
+            objage14 = { "_id": "<14", "totalpost": tpostage14 };
+            dataages.push(objage14);
+
+        } else {
+            objage14 = { "_id": "<14", "totalpost": "0" };
+            dataages.push(objage14);
+
+        }
+
+        var objage = {};
+        var objage40 = {};
+
+        let dataage = await this.getcontenteventsService.findage1440(postID);
+        var lengage = dataage.length;
+        for (var x = 0; x < lengage; x++) {
+
+            totalage += dataage[x].totalpost;
+        }
+        var totalpostage = dataall.length;
+        var prosentage1441 = totalage * 100 / totalpostage;
+        var tpostage = prosentage1441.toFixed(2);
+
+        if (parseInt(tpostage) > 0) {
+            objage = { "_id": "14-40", "totalpost": tpostage };
+            dataages.push(objage);
+        } else {
+            objage = { "_id": "14-40", "totalpost": "0" };
+            dataages.push(objage);
+        }
+
+
+
+
+        let dataage40 = await this.getcontenteventsService.findage40(postID);
+        var lengage40 = dataage40.length;
+        for (var x = 0; x < lengage40; x++) {
+
+            totalage40 += dataage40[x].totalpost;
+        }
+        var totalpostage40 = dataall.length;
+        var prosentage40 = totalage40 * 100 / totalpostage40;
+        var tpostage40 = prosentage40.toFixed(2);
+
+        if (parseInt(tpostage40) > 0) {
+
+            objage40 = { "_id": ">40", "totalpost": tpostage40 };
+            dataages.push(objage40);
+        } else {
+            objage40 = { "_id": ">40", "totalpost": "0" };
+            dataages.push(objage40);
+        }
+
+        let datalocation = await this.getcontenteventsService.findlocation(postID);
+
+
+        var lenglocation = datalocation.length;
+        var datapostloc = [];
+
+        var totalpostloc = dataall.length;
+        var objloc = {};
+        for (var x = 0; x < lenglocation; x++) {
+            var location = datalocation[x]._id;
+            var tepostloc = datalocation[x].totalpost * 100 / totalpostloc;
+            var tpostloc = tepostloc.toFixed(2);
+            objloc = { "_id": location, "totalpost": tpostloc };
+            datapostloc.push(objloc);
+        }
+
+        var data = { "gender": datapost, "age": dataages, "location": datapostloc };
+        return { response_code: 202, data, messages };
+    }
+}

@@ -2309,7 +2309,7 @@ export class GetusercontentsService {
 
     return query;
   }
-  async findmanagementcontentgroup(email: string): Promise<object> {
+  async findmanagementcontentpopular(email: string) {
     const posts = await this.postsService.findpost();
     const video = await this.mediavideosService.findvideo();
     const pict = await this.mediapictsService.findpict();
@@ -2320,7 +2320,7 @@ export class GetusercontentsService {
     const disquslogs = await this.disquslogsService.finddisquslog();
 
 
-    const popular = await this.getusercontentsModel.aggregate([
+    const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
       {
         $addFields: {
@@ -2330,76 +2330,7 @@ export class GetusercontentsService {
         },
       },
 
-      {
-        "$lookup": {
-          "from": "disqus2",
-          "let": {
-            "postIDs": "$postID",
-            "postTypes": "$postType"
-          },
-          "pipeline": [
-            {
-              "$match": {
-                "$expr": {
-                  "$eq": [
-                    "$postID",
-                    "$$postIDs"
-                  ]
-                }
-              }
-            },
-            {
-              "$lookup": {
-                "from": "disquslogs2",
-                "let": {
-                  "disqusIDs": "$disqusID"
-                },
-                "pipeline": [
-                  {
-                    "$match": {
-                      "$expr": {
-                        "$eq": [
-                          "$disqusID",
-                          "$$disqusIDs"
-                        ]
-                      }
-                    }
-                  },
 
-                  {
-                    "$lookup": {
-                      "from": "disquslogsdata",
-                      "let": {
-                        "parentIDs": "$parentID"
-                      },
-                      "pipeline": [
-                        {
-                          "$match": {
-                            "$expr": {
-                              "$eq": [
-                                "$parentID",
-                                "$$parentIDs"
-                              ]
-                            }
-                          }
-                        }
-                      ],
-                      "as": "replyLogs"
-                    },
-                  },
-                  { "$match": { "active": true } },
-                  { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
-                  { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
-
-                ],
-                "as": "disquslogs"
-              }
-            }, { "$unset": "disqusLogs" },
-
-          ],
-          "as": "disqusdata"
-        }
-      },
       {
         $lookup: {
           from: 'userbasics',
@@ -2412,8 +2343,7 @@ export class GetusercontentsService {
 
       {
         $project: {
-          // "_id" : 0, 
-          // posts : '$$ROOT',
+
 
           refs: { $arrayElemAt: ['$contentMedias', 0] },
           user: { $arrayElemAt: ['$userbasics_data', 0] },
@@ -2451,43 +2381,13 @@ export class GetusercontentsService {
           },
           allowComments: '$allowComments',
 
-          disqus: '$disqusdata'
 
         }
       },
-      {
-        $lookup: {
-          localField: 'posts.postID',
-          from: 'disqus2',
-          foreignField: 'postID',
-          as: 'disqusdata'
-        }
-      }, {
-        $unwind: {
-          path: '$disqusdata',
-          preserveNullAndEmptyArrays: false
-        }
-      },
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'disqusdata.disqusLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs"
-        }
-      },
 
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'logs.replyLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs2"
-        }
-      },
       {
         $project: {
-          // replylogs:'$logs2',
+
           refs: '$refs.$ref',
           idmedia: '$refs.$id',
           profilpictid: '$user.profilePict.$id',
@@ -2518,9 +2418,6 @@ export class GetusercontentsService {
           },
           isViewed: '$isViewed',
           allowComments: '$allowComments',
-
-          disqus: '$disqus',
-
 
           refe: '$refs.ref',
         }
@@ -2576,7 +2473,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           mediapict: { $arrayElemAt: ['$mediaPict_data', 0] },
           mediadiaries: { $arrayElemAt: ['$mediadiaries_data', 0] },
           mediavideos: { $arrayElemAt: ['$mediavideos_data', 0] },
@@ -2623,23 +2520,14 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: '$profilpict.fsTargetUri',
-            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
-          },
-          disqus: '$disqus'
         }
       },
 
       {
         $addFields: {
 
-          concats: '/profilepict',
-          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
           concatmediapict: '/pict',
           media_pict: { $replaceOne: { input: "$mediapict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
@@ -2655,7 +2543,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          //replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: {
             $switch: {
@@ -2753,25 +2641,12 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
-
-
-          },
-
-          disqus: '$disqus'
-
-
-
 
         }
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: '$mediaBasePath',
           mediaUri: '$mediaUri',
@@ -2806,10 +2681,6 @@ export class GetusercontentsService {
           allowComments: '$allowComments',
 
           insight: '$insight',
-          avatar: '$avatar',
-
-          disqus: '$disqus'
-
         }
       },
 
@@ -2818,8 +2689,20 @@ export class GetusercontentsService {
       { $limit: 1 },
 
     ]);
+    return query;
+  }
+  async findmanagementcontentlikes(email: string) {
+    const posts = await this.postsService.findpost();
+    const video = await this.mediavideosService.findvideo();
+    const pict = await this.mediapictsService.findpict();
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+    const insight = await this.insightsService.findinsight();
+    const diaries = await this.mediadiariesService.finddiaries();
+    const disqus = await this.disqusService.finddisqus();
+    const disquslogs = await this.disquslogsService.finddisquslog();
 
-    const mostlikes = await this.getusercontentsModel.aggregate([
+
+    const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
       {
         $addFields: {
@@ -2829,75 +2712,7 @@ export class GetusercontentsService {
         },
       },
 
-      {
-        "$lookup": {
-          "from": "disqus2",
-          "let": {
-            "postIDs": "$postID",
-            "postTypes": "$postType"
-          },
-          "pipeline": [
-            {
-              "$match": {
-                "$expr": {
-                  "$eq": [
-                    "$postID",
-                    "$$postIDs"
-                  ]
-                }
-              }
-            },
-            {
-              "$lookup": {
-                "from": "disquslogs2",
-                "let": {
-                  "disqusIDs": "$disqusID"
-                },
-                "pipeline": [
-                  {
-                    "$match": {
-                      "$expr": {
-                        "$eq": [
-                          "$disqusID",
-                          "$$disqusIDs"
-                        ]
-                      }
-                    }
-                  },
 
-                  {
-                    "$lookup": {
-                      "from": "disquslogsdata",
-                      "let": {
-                        "parentIDs": "$parentID"
-                      },
-                      "pipeline": [
-                        {
-                          "$match": {
-                            "$expr": {
-                              "$eq": [
-                                "$parentID",
-                                "$$parentIDs"
-                              ]
-                            }
-                          }
-                        }
-                      ],
-                      "as": "replyLogs"
-                    },
-                  },
-                  { "$match": { "active": true } },
-                  { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
-                  { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
-                ],
-                "as": "disquslogs"
-              }
-            }, { "$unset": "disqusLogs" },
-
-          ],
-          "as": "disqusdata"
-        }
-      },
       {
         $lookup: {
           from: 'userbasics',
@@ -2910,8 +2725,7 @@ export class GetusercontentsService {
 
       {
         $project: {
-          // "_id" : 0, 
-          // posts : '$$ROOT',
+
 
           refs: { $arrayElemAt: ['$contentMedias', 0] },
           user: { $arrayElemAt: ['$userbasics_data', 0] },
@@ -2949,43 +2763,13 @@ export class GetusercontentsService {
           },
           allowComments: '$allowComments',
 
-          disqus: '$disqusdata'
 
         }
       },
-      {
-        $lookup: {
-          localField: 'posts.postID',
-          from: 'disqus2',
-          foreignField: 'postID',
-          as: 'disqusdata'
-        }
-      }, {
-        $unwind: {
-          path: '$disqusdata',
-          preserveNullAndEmptyArrays: false
-        }
-      },
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'disqusdata.disqusLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs"
-        }
-      },
 
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'logs.replyLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs2"
-        }
-      },
       {
         $project: {
-          // replylogs:'$logs2',
+
           refs: '$refs.$ref',
           idmedia: '$refs.$id',
           profilpictid: '$user.profilePict.$id',
@@ -3016,9 +2800,6 @@ export class GetusercontentsService {
           },
           isViewed: '$isViewed',
           allowComments: '$allowComments',
-
-          disqus: '$disqus',
-
 
           refe: '$refs.ref',
         }
@@ -3074,7 +2855,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           mediapict: { $arrayElemAt: ['$mediaPict_data', 0] },
           mediadiaries: { $arrayElemAt: ['$mediadiaries_data', 0] },
           mediavideos: { $arrayElemAt: ['$mediavideos_data', 0] },
@@ -3121,23 +2902,14 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: '$profilpict.fsTargetUri',
-            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
-          },
-          disqus: '$disqus'
         }
       },
 
       {
         $addFields: {
 
-          concats: '/profilepict',
-          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
           concatmediapict: '/pict',
           media_pict: { $replaceOne: { input: "$mediapict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
@@ -3153,7 +2925,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          //replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: {
             $switch: {
@@ -3251,25 +3023,12 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
-
-
-          },
-
-          disqus: '$disqus'
-
-
-
 
         }
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: '$mediaBasePath',
           mediaUri: '$mediaUri',
@@ -3304,22 +3063,29 @@ export class GetusercontentsService {
           allowComments: '$allowComments',
 
           insight: '$insight',
-          avatar: '$avatar',
-
-          disqus: '$disqus'
-
-
-
-
         }
       },
+
       { $sort: { likes: -1 }, },
       { $skip: 0 },
       { $limit: 1 },
 
     ]);
+    return query;
+  }
 
-    const mostshares = await this.getusercontentsModel.aggregate([
+  async findmanagementcontentshare(email: string) {
+    const posts = await this.postsService.findpost();
+    const video = await this.mediavideosService.findvideo();
+    const pict = await this.mediapictsService.findpict();
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+    const insight = await this.insightsService.findinsight();
+    const diaries = await this.mediadiariesService.finddiaries();
+    const disqus = await this.disqusService.finddisqus();
+    const disquslogs = await this.disquslogsService.finddisquslog();
+
+
+    const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
       {
         $addFields: {
@@ -3329,76 +3095,7 @@ export class GetusercontentsService {
         },
       },
 
-      {
-        "$lookup": {
-          "from": "disqus2",
-          "let": {
-            "postIDs": "$postID",
-            "postTypes": "$postType"
-          },
-          "pipeline": [
-            {
-              "$match": {
-                "$expr": {
-                  "$eq": [
-                    "$postID",
-                    "$$postIDs"
-                  ]
-                }
-              }
-            },
-            {
-              "$lookup": {
-                "from": "disquslogs2",
-                "let": {
-                  "disqusIDs": "$disqusID"
-                },
-                "pipeline": [
-                  {
-                    "$match": {
-                      "$expr": {
-                        "$eq": [
-                          "$disqusID",
-                          "$$disqusIDs"
-                        ]
-                      }
-                    }
-                  },
 
-                  {
-                    "$lookup": {
-                      "from": "disquslogsdata",
-                      "let": {
-                        "parentIDs": "$parentID"
-                      },
-                      "pipeline": [
-                        {
-                          "$match": {
-                            "$expr": {
-                              "$eq": [
-                                "$parentID",
-                                "$$parentIDs"
-                              ]
-                            }
-                          }
-                        }
-                      ],
-                      "as": "replyLogs"
-                    },
-                  },
-                  { "$match": { "active": true } },
-                  { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
-                  { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
-
-                ],
-                "as": "disquslogs"
-              }
-            }, { "$unset": "disqusLogs" },
-
-          ],
-          "as": "disqusdata"
-        }
-      },
       {
         $lookup: {
           from: 'userbasics',
@@ -3411,8 +3108,7 @@ export class GetusercontentsService {
 
       {
         $project: {
-          // "_id" : 0, 
-          // posts : '$$ROOT',
+
 
           refs: { $arrayElemAt: ['$contentMedias', 0] },
           user: { $arrayElemAt: ['$userbasics_data', 0] },
@@ -3450,43 +3146,13 @@ export class GetusercontentsService {
           },
           allowComments: '$allowComments',
 
-          disqus: '$disqusdata'
 
         }
       },
-      {
-        $lookup: {
-          localField: 'posts.postID',
-          from: 'disqus2',
-          foreignField: 'postID',
-          as: 'disqusdata'
-        }
-      }, {
-        $unwind: {
-          path: '$disqusdata',
-          preserveNullAndEmptyArrays: false
-        }
-      },
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'disqusdata.disqusLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs"
-        }
-      },
 
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'logs.replyLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs2"
-        }
-      },
       {
         $project: {
-          // replylogs:'$logs2',
+
           refs: '$refs.$ref',
           idmedia: '$refs.$id',
           profilpictid: '$user.profilePict.$id',
@@ -3517,9 +3183,6 @@ export class GetusercontentsService {
           },
           isViewed: '$isViewed',
           allowComments: '$allowComments',
-
-          disqus: '$disqus',
-
 
           refe: '$refs.ref',
         }
@@ -3575,7 +3238,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           mediapict: { $arrayElemAt: ['$mediaPict_data', 0] },
           mediadiaries: { $arrayElemAt: ['$mediadiaries_data', 0] },
           mediavideos: { $arrayElemAt: ['$mediavideos_data', 0] },
@@ -3622,23 +3285,14 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: '$profilpict.fsTargetUri',
-            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
-          },
-          disqus: '$disqus'
         }
       },
 
       {
         $addFields: {
 
-          concats: '/profilepict',
-          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
           concatmediapict: '/pict',
           media_pict: { $replaceOne: { input: "$mediapict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
@@ -3654,7 +3308,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          //replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: {
             $switch: {
@@ -3752,25 +3406,12 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
-
-
-          },
-
-          disqus: '$disqus'
-
-
-
 
         }
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: '$mediaBasePath',
           mediaUri: '$mediaUri',
@@ -3805,10 +3446,6 @@ export class GetusercontentsService {
           allowComments: '$allowComments',
 
           insight: '$insight',
-          avatar: '$avatar',
-
-          disqus: '$disqus'
-
         }
       },
 
@@ -3817,8 +3454,20 @@ export class GetusercontentsService {
       { $limit: 1 },
 
     ]);
+    return query;
+  }
+  async findmanagementcontentlatepos(email: string) {
+    const posts = await this.postsService.findpost();
+    const video = await this.mediavideosService.findvideo();
+    const pict = await this.mediapictsService.findpict();
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+    const insight = await this.insightsService.findinsight();
+    const diaries = await this.mediadiariesService.finddiaries();
+    const disqus = await this.disqusService.finddisqus();
+    const disquslogs = await this.disquslogsService.finddisquslog();
 
-    const latestpost = await this.getusercontentsModel.aggregate([
+
+    const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
       {
         $addFields: {
@@ -3828,75 +3477,7 @@ export class GetusercontentsService {
         },
       },
 
-      {
-        "$lookup": {
-          "from": "disqus2",
-          "let": {
-            "postIDs": "$postID",
-            "postTypes": "$postType"
-          },
-          "pipeline": [
-            {
-              "$match": {
-                "$expr": {
-                  "$eq": [
-                    "$postID",
-                    "$$postIDs"
-                  ]
-                }
-              }
-            },
-            {
-              "$lookup": {
-                "from": "disquslogs2",
-                "let": {
-                  "disqusIDs": "$disqusID"
-                },
-                "pipeline": [
-                  {
-                    "$match": {
-                      "$expr": {
-                        "$eq": [
-                          "$disqusID",
-                          "$$disqusIDs"
-                        ]
-                      }
-                    }
-                  },
 
-                  {
-                    "$lookup": {
-                      "from": "disquslogsdata",
-                      "let": {
-                        "parentIDs": "$parentID"
-                      },
-                      "pipeline": [
-                        {
-                          "$match": {
-                            "$expr": {
-                              "$eq": [
-                                "$parentID",
-                                "$$parentIDs"
-                              ]
-                            }
-                          }
-                        }
-                      ],
-                      "as": "replyLogs"
-                    },
-                  },
-                  { "$match": { "active": true } },
-                  { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
-                  { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
-                ],
-                "as": "disquslogs"
-              }
-            }, { "$unset": "disqusLogs" },
-
-          ],
-          "as": "disqusdata"
-        }
-      },
       {
         $lookup: {
           from: 'userbasics',
@@ -3909,8 +3490,7 @@ export class GetusercontentsService {
 
       {
         $project: {
-          // "_id" : 0, 
-          // posts : '$$ROOT',
+
 
           refs: { $arrayElemAt: ['$contentMedias', 0] },
           user: { $arrayElemAt: ['$userbasics_data', 0] },
@@ -3948,43 +3528,13 @@ export class GetusercontentsService {
           },
           allowComments: '$allowComments',
 
-          disqus: '$disqusdata'
 
         }
       },
-      {
-        $lookup: {
-          localField: 'posts.postID',
-          from: 'disqus2',
-          foreignField: 'postID',
-          as: 'disqusdata'
-        }
-      }, {
-        $unwind: {
-          path: '$disqusdata',
-          preserveNullAndEmptyArrays: false
-        }
-      },
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'disqusdata.disqusLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs"
-        }
-      },
 
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'logs.replyLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs2"
-        }
-      },
       {
         $project: {
-          // replylogs:'$logs2',
+
           refs: '$refs.$ref',
           idmedia: '$refs.$id',
           profilpictid: '$user.profilePict.$id',
@@ -4015,9 +3565,6 @@ export class GetusercontentsService {
           },
           isViewed: '$isViewed',
           allowComments: '$allowComments',
-
-          disqus: '$disqus',
-
 
           refe: '$refs.ref',
         }
@@ -4073,7 +3620,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           mediapict: { $arrayElemAt: ['$mediaPict_data', 0] },
           mediadiaries: { $arrayElemAt: ['$mediadiaries_data', 0] },
           mediavideos: { $arrayElemAt: ['$mediavideos_data', 0] },
@@ -4120,23 +3667,14 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: '$profilpict.fsTargetUri',
-            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
-          },
-          disqus: '$disqus'
         }
       },
 
       {
         $addFields: {
 
-          concats: '/profilepict',
-          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
           concatmediapict: '/pict',
           media_pict: { $replaceOne: { input: "$mediapict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
@@ -4152,7 +3690,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          //replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: {
             $switch: {
@@ -4250,25 +3788,12 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
-
-
-          },
-
-          disqus: '$disqus'
-
-
-
 
         }
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: '$mediaBasePath',
           mediaUri: '$mediaUri',
@@ -4303,10 +3828,6 @@ export class GetusercontentsService {
           allowComments: '$allowComments',
 
           insight: '$insight',
-          avatar: '$avatar',
-
-          disqus: '$disqus'
-
         }
       },
 
@@ -4315,7 +3836,21 @@ export class GetusercontentsService {
       { $limit: 1 },
 
     ]);
-    const latestmonetize = await this.getusercontentsModel.aggregate([
+    return query;
+  }
+
+  async findmanagementcontentmonetize(email: string) {
+    const posts = await this.postsService.findpost();
+    const video = await this.mediavideosService.findvideo();
+    const pict = await this.mediapictsService.findpict();
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+    const insight = await this.insightsService.findinsight();
+    const diaries = await this.mediadiariesService.finddiaries();
+    const disqus = await this.disqusService.finddisqus();
+    const disquslogs = await this.disquslogsService.finddisquslog();
+
+
+    const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email, isCertified: true } },
       {
         $addFields: {
@@ -4325,76 +3860,7 @@ export class GetusercontentsService {
         },
       },
 
-      {
-        "$lookup": {
-          "from": "disqus2",
-          "let": {
-            "postIDs": "$postID",
-            "postTypes": "$postType"
-          },
-          "pipeline": [
-            {
-              "$match": {
-                "$expr": {
-                  "$eq": [
-                    "$postID",
-                    "$$postIDs"
-                  ]
-                }
-              }
-            },
-            {
-              "$lookup": {
-                "from": "disquslogs2",
-                "let": {
-                  "disqusIDs": "$disqusID"
-                },
-                "pipeline": [
-                  {
-                    "$match": {
-                      "$expr": {
-                        "$eq": [
-                          "$disqusID",
-                          "$$disqusIDs"
-                        ]
-                      }
-                    }
-                  },
 
-                  {
-                    "$lookup": {
-                      "from": "disquslogsdata",
-                      "let": {
-                        "parentIDs": "$parentID"
-                      },
-                      "pipeline": [
-                        {
-                          "$match": {
-                            "$expr": {
-                              "$eq": [
-                                "$parentID",
-                                "$$parentIDs"
-                              ]
-                            }
-                          }
-                        }
-                      ],
-                      "as": "replyLogs"
-                    },
-                  },
-                  { "$match": { "active": true } },
-                  { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
-                  { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
-
-                ],
-                "as": "disquslogs"
-              }
-            }, { "$unset": "disqusLogs" },
-
-          ],
-          "as": "disqusdata"
-        }
-      },
       {
         $lookup: {
           from: 'userbasics',
@@ -4407,8 +3873,7 @@ export class GetusercontentsService {
 
       {
         $project: {
-          // "_id" : 0, 
-          // posts : '$$ROOT',
+
 
           refs: { $arrayElemAt: ['$contentMedias', 0] },
           user: { $arrayElemAt: ['$userbasics_data', 0] },
@@ -4446,43 +3911,13 @@ export class GetusercontentsService {
           },
           allowComments: '$allowComments',
 
-          disqus: '$disqusdata'
 
         }
       },
-      {
-        $lookup: {
-          localField: 'posts.postID',
-          from: 'disqus2',
-          foreignField: 'postID',
-          as: 'disqusdata'
-        }
-      }, {
-        $unwind: {
-          path: '$disqusdata',
-          preserveNullAndEmptyArrays: false
-        }
-      },
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'disqusdata.disqusLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs"
-        }
-      },
 
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'logs.replyLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs2"
-        }
-      },
       {
         $project: {
-          // replylogs:'$logs2',
+
           refs: '$refs.$ref',
           idmedia: '$refs.$id',
           profilpictid: '$user.profilePict.$id',
@@ -4513,9 +3948,6 @@ export class GetusercontentsService {
           },
           isViewed: '$isViewed',
           allowComments: '$allowComments',
-
-          disqus: '$disqus',
-
 
           refe: '$refs.ref',
         }
@@ -4571,7 +4003,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           mediapict: { $arrayElemAt: ['$mediaPict_data', 0] },
           mediadiaries: { $arrayElemAt: ['$mediadiaries_data', 0] },
           mediavideos: { $arrayElemAt: ['$mediavideos_data', 0] },
@@ -4618,23 +4050,14 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: '$profilpict.fsTargetUri',
-            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
-          },
-          disqus: '$disqus'
         }
       },
 
       {
         $addFields: {
 
-          concats: '/profilepict',
-          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
           concatmediapict: '/pict',
           media_pict: { $replaceOne: { input: "$mediapict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
@@ -4650,7 +4073,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          //replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: {
             $switch: {
@@ -4748,25 +4171,12 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
-
-
-          },
-
-          disqus: '$disqus'
-
-
-
 
         }
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: '$mediaBasePath',
           mediaUri: '$mediaUri',
@@ -4801,21 +4211,28 @@ export class GetusercontentsService {
           allowComments: '$allowComments',
 
           insight: '$insight',
-          avatar: '$avatar',
-
-          disqus: '$disqus'
-
         }
       },
-
 
       { $sort: { createdAt: -1 }, },
       { $skip: 0 },
       { $limit: 1 },
 
     ]);
+    return query;
+  }
+  async findmanagementcontentowner(email: string) {
+    const posts = await this.postsService.findpost();
+    const video = await this.mediavideosService.findvideo();
+    const pict = await this.mediapictsService.findpict();
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+    const insight = await this.insightsService.findinsight();
+    const diaries = await this.mediadiariesService.finddiaries();
+    const disqus = await this.disqusService.finddisqus();
+    const disquslogs = await this.disquslogsService.finddisquslog();
 
-    const latestownership = await this.getusercontentsModel.aggregate([
+
+    const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email, isOwned: true } },
       {
         $addFields: {
@@ -4825,75 +4242,7 @@ export class GetusercontentsService {
         },
       },
 
-      {
-        "$lookup": {
-          "from": "disqus2",
-          "let": {
-            "postIDs": "$postID",
-            "postTypes": "$postType"
-          },
-          "pipeline": [
-            {
-              "$match": {
-                "$expr": {
-                  "$eq": [
-                    "$postID",
-                    "$$postIDs"
-                  ]
-                }
-              }
-            },
-            {
-              "$lookup": {
-                "from": "disquslogs2",
-                "let": {
-                  "disqusIDs": "$disqusID"
-                },
-                "pipeline": [
-                  {
-                    "$match": {
-                      "$expr": {
-                        "$eq": [
-                          "$disqusID",
-                          "$$disqusIDs"
-                        ]
-                      }
-                    }
-                  },
 
-                  {
-                    "$lookup": {
-                      "from": "disquslogsdata",
-                      "let": {
-                        "parentIDs": "$parentID"
-                      },
-                      "pipeline": [
-                        {
-                          "$match": {
-                            "$expr": {
-                              "$eq": [
-                                "$parentID",
-                                "$$parentIDs"
-                              ]
-                            }
-                          }
-                        }
-                      ],
-                      "as": "replyLogs"
-                    },
-                  },
-                  { "$match": { "active": true } },
-                  { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
-                  { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
-                ],
-                "as": "disquslogs"
-              }
-            }, { "$unset": "disqusLogs" },
-
-          ],
-          "as": "disqusdata"
-        }
-      },
       {
         $lookup: {
           from: 'userbasics',
@@ -4906,8 +4255,7 @@ export class GetusercontentsService {
 
       {
         $project: {
-          // "_id" : 0, 
-          // posts : '$$ROOT',
+
 
           refs: { $arrayElemAt: ['$contentMedias', 0] },
           user: { $arrayElemAt: ['$userbasics_data', 0] },
@@ -4945,43 +4293,13 @@ export class GetusercontentsService {
           },
           allowComments: '$allowComments',
 
-          disqus: '$disqusdata'
 
         }
       },
-      {
-        $lookup: {
-          localField: 'posts.postID',
-          from: 'disqus2',
-          foreignField: 'postID',
-          as: 'disqusdata'
-        }
-      }, {
-        $unwind: {
-          path: '$disqusdata',
-          preserveNullAndEmptyArrays: false
-        }
-      },
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'disqusdata.disqusLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs"
-        }
-      },
 
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'logs.replyLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs2"
-        }
-      },
       {
         $project: {
-          // replylogs:'$logs2',
+
           refs: '$refs.$ref',
           idmedia: '$refs.$id',
           profilpictid: '$user.profilePict.$id',
@@ -5012,9 +4330,6 @@ export class GetusercontentsService {
           },
           isViewed: '$isViewed',
           allowComments: '$allowComments',
-
-          disqus: '$disqus',
-
 
           refe: '$refs.ref',
         }
@@ -5070,7 +4385,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           mediapict: { $arrayElemAt: ['$mediaPict_data', 0] },
           mediadiaries: { $arrayElemAt: ['$mediadiaries_data', 0] },
           mediavideos: { $arrayElemAt: ['$mediavideos_data', 0] },
@@ -5117,23 +4432,14 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: '$profilpict.fsTargetUri',
-            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
-          },
-          disqus: '$disqus'
         }
       },
 
       {
         $addFields: {
 
-          concats: '/profilepict',
-          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
           concatmediapict: '/pict',
           media_pict: { $replaceOne: { input: "$mediapict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
@@ -5149,7 +4455,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          //replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: {
             $switch: {
@@ -5247,25 +4553,12 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
-
-
-          },
-
-          disqus: '$disqus'
-
-
-
 
         }
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: '$mediaBasePath',
           mediaUri: '$mediaUri',
@@ -5300,13 +4593,6 @@ export class GetusercontentsService {
           allowComments: '$allowComments',
 
           insight: '$insight',
-          avatar: '$avatar',
-
-          disqus: '$disqus'
-
-
-
-
         }
       },
 
@@ -5315,508 +4601,46 @@ export class GetusercontentsService {
       { $limit: 1 },
 
     ]);
+    return query;
+  }
+  async findmanagementcontentregion(email: string) {
+    const posts = await this.postsService.findpost();
 
-    const recentlyregion = await this.getusercontentsModel.aggregate([
-      { $match: { email: email, location: 'Indonesia' } },
+
+    const query = await this.getusercontentsModel.aggregate([
       {
-        $addFields: {
-          ubasic_id: '$userProfile.$id',
-
-          postid: '$postID'
-        },
-      },
-
-      {
-        "$lookup": {
-          "from": "disqus2",
-          "let": {
-            "postIDs": "$postID",
-            "postTypes": "$postType"
-          },
-          "pipeline": [
-            {
-              "$match": {
-                "$expr": {
-                  "$eq": [
-                    "$postID",
-                    "$$postIDs"
-                  ]
-                }
-              }
-            },
-            {
-              "$lookup": {
-                "from": "disquslogs2",
-                "let": {
-                  "disqusIDs": "$disqusID"
-                },
-                "pipeline": [
-                  {
-                    "$match": {
-                      "$expr": {
-                        "$eq": [
-                          "$disqusID",
-                          "$$disqusIDs"
-                        ]
-                      }
-                    }
-                  },
-
-                  {
-                    "$lookup": {
-                      "from": "disquslogsdata",
-                      "let": {
-                        "parentIDs": "$parentID"
-                      },
-                      "pipeline": [
-                        {
-                          "$match": {
-                            "$expr": {
-                              "$eq": [
-                                "$parentID",
-                                "$$parentIDs"
-                              ]
-                            }
-                          }
-                        }
-                      ],
-                      "as": "replyLogs"
-                    },
-                  },
-                  { "$match": { "active": true } },
-                  { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
-                  { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
-
-                ],
-                "as": "disquslogs"
-              }
-            }, { "$unset": "disqusLogs" },
-
-          ],
-          "as": "disqusdata"
+        $group: {
+          _id: "$location",
+          totalpost: {
+            $sum: 1
+          }
         }
       },
-      {
-        $lookup: {
-          from: 'userbasics',
-          localField: 'ubasic_id',
-          foreignField: '_id',
-          as: 'userbasics_data',
-        },
-      },
-
-
-      {
-        $project: {
-          // "_id" : 0, 
-          // posts : '$$ROOT',
-
-          refs: { $arrayElemAt: ['$contentMedias', 0] },
-          user: { $arrayElemAt: ['$userbasics_data', 0] },
-
-          profilpictid: '$user.profilePict.$id',
-          insight_id: '$user.insight.$id',
-          userAuth_id: '$user.userAuth.$id',
-          fullName: '$user.fullName',
-          createdAt: '$createdAt',
-          updatedAt: '$updatedAt',
-          postID: '$postID',
-          email: '$email',
-          postType: '$postType',
-          description: '$description',
-          title: '$description',
-          active: '$active',
-          metadata: '$metadata',
-          location: '$location',
-          tags: '$tags',
-          likes: '$likes',
-          shares: '$shares',
-          comments: '$comments',
-          isOwned: '$isOwned',
-          views: '$views',
-          isPostPrivate: '$user.isPostPrivate',
-
-          privacy: {
-            isPostPrivate: '$user.isPostPrivate',
-            isCelebrity: '$user.isCelebrity',
-            isPrivate: '$user.isPrivate',
-          },
-          isViewed:
-          {
-            $cond: { if: { $eq: ["$views", 0] }, then: false, else: true }
-          },
-          allowComments: '$allowComments',
-
-          disqus: '$disqusdata'
-
-        }
-      },
-      {
-        $lookup: {
-          localField: 'posts.postID',
-          from: 'disqus2',
-          foreignField: 'postID',
-          as: 'disqusdata'
-        }
-      }, {
-        $unwind: {
-          path: '$disqusdata',
-          preserveNullAndEmptyArrays: false
-        }
-      },
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'disqusdata.disqusLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs"
-        }
-      },
-
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'logs.replyLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs2"
-        }
-      },
-      {
-        $project: {
-          // replylogs:'$logs2',
-          refs: '$refs.$ref',
-          idmedia: '$refs.$id',
-          profilpictid: '$user.profilePict.$id',
-          insight_id: '$user.insight.$id',
-          userAuth_id: '$user.userAuth.$id',
-          fullName: '$user.fullName',
-          createdAt: '$createdAt',
-          updatedAt: '$updatedAt',
-          postID: '$postID',
-          email: '$email',
-          postType: '$postType',
-          description: '$description',
-          title: '$description',
-          active: '$active',
-          metadata: '$metadata',
-          location: '$location',
-          tags: '$tags',
-          likes: '$likes',
-          shares: '$shares',
-          comments: '$comments',
-          isOwned: '$isOwned',
-          views: '$views',
-          isPostPrivate: '$user.isPostPrivate',
-          privacy: {
-            isPostPrivate: '$user.isPostPrivate',
-            isCelebrity: '$user.isCelebrity',
-            isPrivate: '$user.isPrivate',
-          },
-          isViewed: '$isViewed',
-          allowComments: '$allowComments',
-
-          disqus: '$disqus',
-
-
-          refe: '$refs.ref',
-        }
-      },
-
-      {
-        $lookup: {
-          from: 'mediaprofilepicts2',
-          localField: 'profilpictid',
-          foreignField: '_id',
-          as: 'profilePict_data',
-        },
-      },
-      {
-        $lookup: {
-          from: 'insights2',
-          localField: 'insight_id',
-          foreignField: '_id',
-          as: 'insight_data',
-        },
-      },
-      {
-        $lookup: {
-          from: 'userauths',
-          localField: 'userAuth_id',
-          foreignField: '_id',
-          as: 'userAuth_data',
-        },
-      },
-      {
-        $lookup: {
-          from: 'mediapicts2',
-          localField: 'idmedia',
-          foreignField: '_id',
-          as: 'mediaPict_data',
-        },
-      },
-      {
-        $lookup: {
-          from: 'mediadiaries2',
-          localField: 'idmedia',
-          foreignField: '_id',
-          as: 'mediadiaries_data',
-        },
-      },
-      {
-        $lookup: {
-          from: 'mediavideos2',
-          localField: 'idmedia',
-          foreignField: '_id',
-          as: 'mediavideos_data',
-        },
-      },
-      {
-        $project: {
-          // replylogs:'$replylogs',
-          mediapict: { $arrayElemAt: ['$mediaPict_data', 0] },
-          mediadiaries: { $arrayElemAt: ['$mediadiaries_data', 0] },
-          mediavideos: { $arrayElemAt: ['$mediavideos_data', 0] },
-
-          profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
-          insights: { $arrayElemAt: ['$insight_data', 0] },
-          auth: { $arrayElemAt: ['$userAuth_data', 0] },
-          mediapictPath: '$mediapict.mediaBasePath',
-          mediadiariPath: '$mediadiaries.mediaBasePath',
-          mediavideoPath: '$mediavideos.mediaBasePath',
-          refs: '$refs',
-          idmedia: '$idmedia',
-          rotate: '$mediadiaries.rotate',
-          fullName: '$fullName',
-          username: '$auth.username',
-          createdAt: '$createdAt',
-          updatedAt: '$updatedAt',
-          postID: '$postID',
-          email: '$email',
-          postType: '$postType',
-          description: '$description',
-          title: '$description',
-          active: '$active',
-          metadata: '$metadata',
-          location: '$location',
-          tags: '$tags',
-          likes: '$likes',
-          shares: '$shares',
-          comments: '$comments',
-          isOwned: '$isOwned',
-          views: '$views',
-          privacy: '$privacy',
-          isViewed: '$isViewed',
-          allowComments: '$allowComments',
-
-
-          insight: {
-            shares: '$insights.shares',
-            followers: '$insights.followers',
-            comments: '$insights.comments',
-            followings: '$insights.followings',
-            reactions: '$insights.reactions',
-            posts: '$insights.posts',
-            views: '$insights.views',
-            likes: '$insights.likes'
-          },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: '$profilpict.fsTargetUri',
-            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
-
-          },
-          disqus: '$disqus'
-        }
-      },
-
-      {
-        $addFields: {
-
-          concats: '/profilepict',
-          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
-          concatmediapict: '/pict',
-          media_pict: { $replaceOne: { input: "$mediapict.mediaUri", find: "_0001.jpeg", replacement: "" } },
-
-
-          concatmediadiari: '/stream',
-          concatthumbdiari: '/thumb',
-          media_diari: '$mediadiaries.mediaUri',
-
-          concatmediavideo: '/stream',
-          concatthumbvideo: '/thumb',
-          media_video: '$mediavideos.mediaUri'
-        },
-      },
-      {
-        $project: {
-          //replylogs:'$replylogs',
-          rotate: '$mediadiaries.rotate',
-          mediaBasePath: {
-            $switch: {
-              branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediapict.mediaBasePath' },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaBasePath' },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaBasePath' }
-              ],
-              default: ''
-            }
-          },
-          mediaUri: {
-            $switch: {
-              branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediapict.mediaUri' },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaUri' },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaUri' }
-              ],
-              default: ''
-            }
-          },
-          mediaType: {
-            $switch: {
-              branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediapict.mediaType' },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaType' },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaType' }
-              ],
-              default: ''
-            }
-          },
-
-          mediaThumbEndpoint: {
-            $switch: {
-              branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediadiaries.mediaThumb' },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatthumbdiari", "/", "$media_diari"] }, },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatthumbvideo", "/", "$media_video"] }, }
-              ],
-              default: ''
-            }
-          },
-
-          mediaEndpoint: {
-            $switch: {
-              branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': { $concat: ["$concatmediapict", "/", "$media_pict"] }, },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatmediadiari", "/", "$media_diari"] }, },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatmediavideo", "/", "$media_video"] }, }
-              ],
-              default: ''
-            }
-          },
-
-          mediaThumbUri: {
-            $switch: {
-              branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediadiaries.mediaThumb' },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaThumb' },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaThumb' }
-              ],
-              default: ''
-            }
-          },
-
-          fullName: '$fullName',
-          username: '$auth.username',
-          createdAt: '$createdAt',
-          updatedAt: '$updatedAt',
-          postID: '$postID',
-          email: '$email',
-          postType: '$postType',
-          description: '$description',
-          title: '$description',
-          active: '$active',
-          metadata: '$metadata',
-          location: '$location',
-          tags: '$tags',
-          likes: '$likes',
-          shares: '$shares',
-          comments: '$comments',
-          isOwned: '$isOwned',
-          views: '$views',
-          privacy: '$privacy',
-          isViewed: '$isViewed',
-          allowComments: '$allowComments',
-
-          insight: {
-            shares: '$insights.shares',
-            followers: '$insights.followers',
-            comments: '$insights.comments',
-            followings: '$insights.followings',
-            reactions: '$insights.reactions',
-            posts: '$insights.posts',
-            views: '$insights.views',
-            likes: '$insights.likes'
-          },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
-
-
-          },
-
-          disqus: '$disqus'
-
-
-
-
-        }
-      },
-      {
-        $project: {
-          // replylogs:'$replylogs',
-          rotate: '$mediadiaries.rotate',
-          mediaBasePath: '$mediaBasePath',
-          mediaUri: '$mediaUri',
-          mediaType: '$mediaType',
-
-          mediaThumbEndpoint: '$mediaThumbEndpoint',
-
-          mediaEndpoint: '$mediaEndpoint',
-
-          mediaThumbUri: '$mediaThumbUri',
-
-          fullName: '$fullName',
-          username: '$auth.username',
-          createdAt: '$createdAt',
-          updatedAt: '$updatedAt',
-          postID: '$postID',
-          email: '$email',
-          postType: '$postType',
-          description: '$description',
-          title: '$description',
-          active: '$active',
-          metadata: '$metadata',
-          location: '$location',
-          tags: '$tags',
-          likes: '$likes',
-          shares: '$shares',
-          comments: '$comments',
-          isOwned: '$isOwned',
-          views: '$views',
-          privacy: '$privacy',
-          isViewed: '$isViewed',
-          allowComments: '$allowComments',
-
-          insight: '$insight',
-          avatar: '$avatar',
-
-          disqus: '$disqus'
-
-
-        }
-      },
-
-      { $sort: { createdAt: -1 }, },
-      { $skip: 0 },
-      { $limit: 1 },
 
     ]);
+    return query;
+  }
 
-    const traffic = await this.getusercontentsModel.aggregate([
+  async findmanagementcontentallregion(email: string) {
+    const posts = await this.postsService.findpost();
+
+
+    const query = await this.getusercontentsModel.find().exec();
+    return query;
+  }
+
+  async findmanagementcontenttrafic(email: string) {
+    const posts = await this.postsService.findpost();
+    const video = await this.mediavideosService.findvideo();
+    const pict = await this.mediapictsService.findpict();
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+    const insight = await this.insightsService.findinsight();
+    const diaries = await this.mediadiariesService.finddiaries();
+    const disqus = await this.disqusService.finddisqus();
+    const disquslogs = await this.disquslogsService.finddisquslog();
+
+
+    const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
       {
         $addFields: {
@@ -5826,76 +4650,7 @@ export class GetusercontentsService {
         },
       },
 
-      {
-        "$lookup": {
-          "from": "disqus2",
-          "let": {
-            "postIDs": "$postID",
-            "postTypes": "$postType"
-          },
-          "pipeline": [
-            {
-              "$match": {
-                "$expr": {
-                  "$eq": [
-                    "$postID",
-                    "$$postIDs"
-                  ]
-                }
-              }
-            },
-            {
-              "$lookup": {
-                "from": "disquslogs2",
-                "let": {
-                  "disqusIDs": "$disqusID"
-                },
-                "pipeline": [
-                  {
-                    "$match": {
-                      "$expr": {
-                        "$eq": [
-                          "$disqusID",
-                          "$$disqusIDs"
-                        ]
-                      }
-                    }
-                  },
 
-                  {
-                    "$lookup": {
-                      "from": "disquslogsdata",
-                      "let": {
-                        "parentIDs": "$parentID"
-                      },
-                      "pipeline": [
-                        {
-                          "$match": {
-                            "$expr": {
-                              "$eq": [
-                                "$parentID",
-                                "$$parentIDs"
-                              ]
-                            }
-                          }
-                        }
-                      ],
-                      "as": "replyLogs"
-                    },
-                  },
-                  { "$match": { "active": true } },
-                  { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
-                  { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
-
-                ],
-                "as": "disquslogs"
-              }
-            }, { "$unset": "disqusLogs" },
-
-          ],
-          "as": "disqusdata"
-        }
-      },
       {
         $lookup: {
           from: 'userbasics',
@@ -5908,8 +4663,7 @@ export class GetusercontentsService {
 
       {
         $project: {
-          // "_id" : 0, 
-          // posts : '$$ROOT',
+
 
           refs: { $arrayElemAt: ['$contentMedias', 0] },
           user: { $arrayElemAt: ['$userbasics_data', 0] },
@@ -5947,43 +4701,13 @@ export class GetusercontentsService {
           },
           allowComments: '$allowComments',
 
-          disqus: '$disqusdata'
 
         }
       },
-      {
-        $lookup: {
-          localField: 'posts.postID',
-          from: 'disqus2',
-          foreignField: 'postID',
-          as: 'disqusdata'
-        }
-      }, {
-        $unwind: {
-          path: '$disqusdata',
-          preserveNullAndEmptyArrays: false
-        }
-      },
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'disqusdata.disqusLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs"
-        }
-      },
 
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'logs.replyLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs2"
-        }
-      },
       {
         $project: {
-          // replylogs:'$logs2',
+
           refs: '$refs.$ref',
           idmedia: '$refs.$id',
           profilpictid: '$user.profilePict.$id',
@@ -6014,9 +4738,6 @@ export class GetusercontentsService {
           },
           isViewed: '$isViewed',
           allowComments: '$allowComments',
-
-          disqus: '$disqus',
-
 
           refe: '$refs.ref',
         }
@@ -6072,7 +4793,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           mediapict: { $arrayElemAt: ['$mediaPict_data', 0] },
           mediadiaries: { $arrayElemAt: ['$mediadiaries_data', 0] },
           mediavideos: { $arrayElemAt: ['$mediavideos_data', 0] },
@@ -6119,23 +4840,14 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: '$profilpict.fsTargetUri',
-            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
-          },
-          disqus: '$disqus'
         }
       },
 
       {
         $addFields: {
 
-          concats: '/profilepict',
-          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
           concatmediapict: '/pict',
           media_pict: { $replaceOne: { input: "$mediapict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
@@ -6151,7 +4863,7 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          //replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: {
             $switch: {
@@ -6249,25 +4961,12 @@ export class GetusercontentsService {
             views: '$insights.views',
             likes: '$insights.likes'
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
-
-
-          },
-
-          disqus: '$disqus'
-
-
-
 
         }
       },
       {
         $project: {
-          // replylogs:'$replylogs',
+
           rotate: '$mediadiaries.rotate',
           mediaBasePath: '$mediaBasePath',
           mediaUri: '$mediaUri',
@@ -6302,13 +5001,6 @@ export class GetusercontentsService {
           allowComments: '$allowComments',
 
           insight: '$insight',
-          avatar: '$avatar',
-
-          disqus: '$disqus'
-
-
-
-
         }
       },
 
@@ -6317,8 +5009,22 @@ export class GetusercontentsService {
       { $limit: 1 },
 
     ]);
+    return query;
+  }
 
-    const moderate = await this.getusercontentsModel.aggregate([
+
+  async findmanagementcontentmoderate(email: string) {
+    const posts = await this.postsService.findpost();
+    const video = await this.mediavideosService.findvideo();
+    const pict = await this.mediapictsService.findpict();
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+    const insight = await this.insightsService.findinsight();
+    const diaries = await this.mediadiariesService.finddiaries();
+    const disqus = await this.disqusService.finddisqus();
+    const disquslogs = await this.disquslogsService.finddisquslog();
+
+
+    const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
       {
         $addFields: {
@@ -6328,76 +5034,7 @@ export class GetusercontentsService {
         },
       },
 
-      {
-        "$lookup": {
-          "from": "disqus2",
-          "let": {
-            "postIDs": "$postID",
-            "postTypes": "$postType"
-          },
-          "pipeline": [
-            {
-              "$match": {
-                "$expr": {
-                  "$eq": [
-                    "$postID",
-                    "$$postIDs"
-                  ]
-                }
-              }
-            },
-            {
-              "$lookup": {
-                "from": "disquslogs2",
-                "let": {
-                  "disqusIDs": "$disqusID"
-                },
-                "pipeline": [
-                  {
-                    "$match": {
-                      "$expr": {
-                        "$eq": [
-                          "$disqusID",
-                          "$$disqusIDs"
-                        ]
-                      }
-                    }
-                  },
 
-                  {
-                    "$lookup": {
-                      "from": "disquslogsdata",
-                      "let": {
-                        "parentIDs": "$parentID"
-                      },
-                      "pipeline": [
-                        {
-                          "$match": {
-                            "$expr": {
-                              "$eq": [
-                                "$parentID",
-                                "$$parentIDs"
-                              ]
-                            }
-                          }
-                        }
-                      ],
-                      "as": "replyLogs"
-                    },
-                  },
-                  { "$match": { "active": true } },
-                  { "$group": { _id: "$parentID", replyLogs: { $push: "$$ROOT" } } },
-                  { "$set": { "disqusID": "$$disqusIDs", "postID": "$$postIDs", "postType": "$$postTypes" } }
-
-                ],
-                "as": "disquslogs"
-              }
-            }, { "$unset": "disqusLogs" },
-
-          ],
-          "as": "disqusdata"
-        }
-      },
       {
         $lookup: {
           from: 'userbasics',
@@ -6410,8 +5047,7 @@ export class GetusercontentsService {
 
       {
         $project: {
-          // "_id" : 0, 
-          // posts : '$$ROOT',
+
 
           refs: { $arrayElemAt: ['$contentMedias', 0] },
           user: { $arrayElemAt: ['$userbasics_data', 0] },
@@ -6449,43 +5085,13 @@ export class GetusercontentsService {
           },
           allowComments: '$allowComments',
 
-          disqus: '$disqusdata'
 
         }
       },
-      {
-        $lookup: {
-          localField: 'posts.postID',
-          from: 'disqus2',
-          foreignField: 'postID',
-          as: 'disqusdata'
-        }
-      }, {
-        $unwind: {
-          path: '$disqusdata',
-          preserveNullAndEmptyArrays: false
-        }
-      },
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'disqusdata.disqusLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs"
-        }
-      },
 
-      {
-        $lookup: {
-          from: 'disquslogs2',
-          localField: 'logs.replyLogs.$id', // or author.$id
-          foreignField: "_id",
-          as: "logs2"
-        }
-      },
       {
         $project: {
-          // replylogs:'$logs2',
+
           refs: '$refs.$ref',
           idmedia: '$refs.$id',
           profilpictid: '$user.profilePict.$id',
@@ -6517,7 +5123,403 @@ export class GetusercontentsService {
           isViewed: '$isViewed',
           allowComments: '$allowComments',
 
-          disqus: '$disqus',
+          refe: '$refs.ref',
+        }
+      },
+
+      {
+        $lookup: {
+          from: 'mediaprofilepicts2',
+          localField: 'profilpictid',
+          foreignField: '_id',
+          as: 'profilePict_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'insights2',
+          localField: 'insight_id',
+          foreignField: '_id',
+          as: 'insight_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediapicts2',
+          localField: 'idmedia',
+          foreignField: '_id',
+          as: 'mediaPict_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediadiaries2',
+          localField: 'idmedia',
+          foreignField: '_id',
+          as: 'mediadiaries_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediavideos2',
+          localField: 'idmedia',
+          foreignField: '_id',
+          as: 'mediavideos_data',
+        },
+      },
+      {
+        $project: {
+
+          mediapict: { $arrayElemAt: ['$mediaPict_data', 0] },
+          mediadiaries: { $arrayElemAt: ['$mediadiaries_data', 0] },
+          mediavideos: { $arrayElemAt: ['$mediavideos_data', 0] },
+
+          profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+          insights: { $arrayElemAt: ['$insight_data', 0] },
+          auth: { $arrayElemAt: ['$userAuth_data', 0] },
+          mediapictPath: '$mediapict.mediaBasePath',
+          mediadiariPath: '$mediadiaries.mediaBasePath',
+          mediavideoPath: '$mediavideos.mediaBasePath',
+          refs: '$refs',
+          idmedia: '$idmedia',
+          rotate: '$mediadiaries.rotate',
+          fullName: '$fullName',
+          username: '$auth.username',
+          createdAt: '$createdAt',
+          updatedAt: '$updatedAt',
+          postID: '$postID',
+          email: '$email',
+          postType: '$postType',
+          description: '$description',
+          title: '$description',
+          active: '$active',
+          metadata: '$metadata',
+          location: '$location',
+          tags: '$tags',
+          likes: '$likes',
+          shares: '$shares',
+          comments: '$comments',
+          isOwned: '$isOwned',
+          views: '$views',
+          privacy: '$privacy',
+          isViewed: '$isViewed',
+          allowComments: '$allowComments',
+
+
+          insight: {
+            shares: '$insights.shares',
+            followers: '$insights.followers',
+            comments: '$insights.comments',
+            followings: '$insights.followings',
+            reactions: '$insights.reactions',
+            posts: '$insights.posts',
+            views: '$insights.views',
+            likes: '$insights.likes'
+          },
+
+        }
+      },
+
+      {
+        $addFields: {
+
+
+          concatmediapict: '/pict',
+          media_pict: { $replaceOne: { input: "$mediapict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+
+          concatmediadiari: '/stream',
+          concatthumbdiari: '/thumb',
+          media_diari: '$mediadiaries.mediaUri',
+
+          concatmediavideo: '/stream',
+          concatthumbvideo: '/thumb',
+          media_video: '$mediavideos.mediaUri'
+        },
+      },
+      {
+        $project: {
+
+          rotate: '$mediadiaries.rotate',
+          mediaBasePath: {
+            $switch: {
+              branches: [
+                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediapict.mediaBasePath' },
+                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaBasePath' },
+                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaBasePath' }
+              ],
+              default: ''
+            }
+          },
+          mediaUri: {
+            $switch: {
+              branches: [
+                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediapict.mediaUri' },
+                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaUri' },
+                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaUri' }
+              ],
+              default: ''
+            }
+          },
+          mediaType: {
+            $switch: {
+              branches: [
+                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediapict.mediaType' },
+                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaType' },
+                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaType' }
+              ],
+              default: ''
+            }
+          },
+
+          mediaThumbEndpoint: {
+            $switch: {
+              branches: [
+                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediadiaries.mediaThumb' },
+                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatthumbdiari", "/", "$media_diari"] }, },
+                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatthumbvideo", "/", "$media_video"] }, }
+              ],
+              default: ''
+            }
+          },
+
+          mediaEndpoint: {
+            $switch: {
+              branches: [
+                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': { $concat: ["$concatmediapict", "/", "$media_pict"] }, },
+                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatmediadiari", "/", "$media_diari"] }, },
+                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatmediavideo", "/", "$media_video"] }, }
+              ],
+              default: ''
+            }
+          },
+
+          mediaThumbUri: {
+            $switch: {
+              branches: [
+                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediadiaries.mediaThumb' },
+                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaThumb' },
+                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaThumb' }
+              ],
+              default: ''
+            }
+          },
+
+          fullName: '$fullName',
+          username: '$auth.username',
+          createdAt: '$createdAt',
+          updatedAt: '$updatedAt',
+          postID: '$postID',
+          email: '$email',
+          postType: '$postType',
+          description: '$description',
+          title: '$description',
+          active: '$active',
+          metadata: '$metadata',
+          location: '$location',
+          tags: '$tags',
+          likes: '$likes',
+          shares: '$shares',
+          comments: '$comments',
+          isOwned: '$isOwned',
+          views: '$views',
+          privacy: '$privacy',
+          isViewed: '$isViewed',
+          allowComments: '$allowComments',
+
+          insight: {
+            shares: '$insights.shares',
+            followers: '$insights.followers',
+            comments: '$insights.comments',
+            followings: '$insights.followings',
+            reactions: '$insights.reactions',
+            posts: '$insights.posts',
+            views: '$insights.views',
+            likes: '$insights.likes'
+          },
+
+        }
+      },
+      {
+        $project: {
+
+          rotate: '$mediadiaries.rotate',
+          mediaBasePath: '$mediaBasePath',
+          mediaUri: '$mediaUri',
+          mediaType: '$mediaType',
+
+          mediaThumbEndpoint: '$mediaThumbEndpoint',
+
+          mediaEndpoint: '$mediaEndpoint',
+
+          mediaThumbUri: '$mediaThumbUri',
+
+          fullName: '$fullName',
+          username: '$auth.username',
+          createdAt: '$createdAt',
+          updatedAt: '$updatedAt',
+          postID: '$postID',
+          email: '$email',
+          postType: '$postType',
+          description: '$description',
+          title: '$description',
+          active: '$active',
+          metadata: '$metadata',
+          location: '$location',
+          tags: '$tags',
+          likes: '$likes',
+          shares: '$shares',
+          comments: '$comments',
+          isOwned: '$isOwned',
+          views: '$views',
+          privacy: '$privacy',
+          isViewed: '$isViewed',
+          allowComments: '$allowComments',
+
+          insight: '$insight',
+        }
+      },
+
+      { $sort: { createdAt: -1 }, },
+      { $skip: 0 },
+      { $limit: 1 },
+
+    ]);
+    return query;
+  }
+
+  async findtime(postID: string) {
+
+    const query = await this.getusercontentsModel.aggregate([
+
+      {
+        $match: {
+
+          postID: postID
+
+        }
+
+      },
+      {
+        $project: {
+
+          createdAt: "$createdAt"
+
+
+        }
+      },
+
+    ]);
+
+
+    return query;
+  }
+
+
+  async findpostid(postID: string): Promise<object> {
+    const posts = await this.postsService.findpost();
+    const video = await this.mediavideosService.findvideo();
+    const pict = await this.mediapictsService.findpict();
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+    const insight = await this.insightsService.findinsight();
+    const diaries = await this.mediadiariesService.finddiaries();
+
+    const query = await this.getusercontentsModel.aggregate([
+      { $match: { postID: postID } },
+      {
+        $addFields: {
+          ubasic_id: '$userProfile.$id',
+
+        },
+      },
+      {
+        $lookup: {
+          from: 'userbasics',
+          localField: 'ubasic_id',
+          foreignField: '_id',
+          as: 'userbasics_data',
+        },
+      },
+
+      {
+        $project: {
+          refs: { $arrayElemAt: ['$contentMedias', 0] },
+          user: { $arrayElemAt: ['$userbasics_data', 0] },
+          // refe:'$refs.ref',
+          profilpictid: '$user.profilePict.$id',
+          insight_id: '$user.insight.$id',
+          userAuth_id: '$user.userAuth.$id',
+          fullName: '$user.fullName',
+          createdAt: '$createdAt',
+          updatedAt: '$updatedAt',
+          postID: '$postID',
+          email: '$email',
+          postType: '$postType',
+          description: '$description',
+          title: '$description',
+          active: '$active',
+          metadata: '$metadata',
+          location: '$location',
+          tags: '$tags',
+          likes: '$likes',
+          shares: '$shares',
+          comments: '$comments',
+          isOwned: '$isOwned',
+          views: '$views',
+          isPostPrivate: '$user.isPostPrivate',
+          privacy: {
+            isPostPrivate: '$user.isPostPrivate',
+            isCelebrity: '$user.isCelebrity',
+            isPrivate: '$user.isPrivate',
+          },
+          isViewed:
+          {
+            $cond: { if: { $eq: ["$views", 0] }, then: false, else: true }
+          },
+          allowComments: '$allowComments',
+
+        }
+      },
+      {
+        $project: {
+          refs: '$refs.$ref',
+          idmedia: '$refs.$id',
+          profilpictid: '$user.profilePict.$id',
+          insight_id: '$user.insight.$id',
+          userAuth_id: '$user.userAuth.$id',
+          fullName: '$user.fullName',
+          createdAt: '$createdAt',
+          updatedAt: '$updatedAt',
+          postID: '$postID',
+          email: '$email',
+          postType: '$postType',
+          description: '$description',
+          title: '$description',
+          active: '$active',
+          metadata: '$metadata',
+          location: '$location',
+          tags: '$tags',
+          likes: '$likes',
+          shares: '$shares',
+          comments: '$comments',
+          isOwned: '$isOwned',
+          views: '$views',
+          isPostPrivate: '$user.isPostPrivate',
+          privacy: {
+            isPostPrivate: '$user.isPostPrivate',
+            isCelebrity: '$user.isCelebrity',
+            isPrivate: '$user.isPrivate',
+          },
+          isViewed: '$isViewed',
+          allowComments: '$allowComments',
 
 
           refe: '$refs.ref',
@@ -6574,7 +5576,6 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          // replylogs:'$replylogs',
           mediapict: { $arrayElemAt: ['$mediaPict_data', 0] },
           mediadiaries: { $arrayElemAt: ['$mediadiaries_data', 0] },
           mediavideos: { $arrayElemAt: ['$mediavideos_data', 0] },
@@ -6629,7 +5630,7 @@ export class GetusercontentsService {
             medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
           },
-          disqus: '$disqus'
+
         }
       },
 
@@ -6653,7 +5654,6 @@ export class GetusercontentsService {
       },
       {
         $project: {
-          //replylogs:'$replylogs',
           rotate: '$mediadiaries.rotate',
           mediaBasePath: {
             $switch: {
@@ -6759,72 +5759,14 @@ export class GetusercontentsService {
 
 
           },
-
-          disqus: '$disqus'
-
-
-
-
         }
       },
-      {
-        $project: {
-          // replylogs:'$replylogs',
-          rotate: '$mediadiaries.rotate',
-          mediaBasePath: '$mediaBasePath',
-          mediaUri: '$mediaUri',
-          mediaType: '$mediaType',
-
-          mediaThumbEndpoint: '$mediaThumbEndpoint',
-
-          mediaEndpoint: '$mediaEndpoint',
-
-          mediaThumbUri: '$mediaThumbUri',
-
-          fullName: '$fullName',
-          username: '$auth.username',
-          createdAt: '$createdAt',
-          updatedAt: '$updatedAt',
-          postID: '$postID',
-          email: '$email',
-          postType: '$postType',
-          description: '$description',
-          title: '$description',
-          active: '$active',
-          metadata: '$metadata',
-          location: '$location',
-          tags: '$tags',
-          likes: '$likes',
-          shares: '$shares',
-          comments: '$comments',
-          isOwned: '$isOwned',
-          views: '$views',
-          privacy: '$privacy',
-          isViewed: '$isViewed',
-          allowComments: '$allowComments',
-
-          insight: '$insight',
-          avatar: '$avatar',
-
-          disqus: '$disqus'
-
-
-
-
-        }
-      },
-
-      { $sort: { createdAt: -1 }, },
-      { $skip: 0 },
       { $limit: 1 },
 
     ]);
 
-    return { popular, mostlikes, mostshares, latestmonetize, latestownership, latestpost, traffic, recentlyregion, moderate };
+    return query;
   }
-
-
-
 
 }
 
