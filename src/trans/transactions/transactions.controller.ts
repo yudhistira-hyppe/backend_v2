@@ -8,16 +8,19 @@ import { SettingsService } from '../settings/settings.service';
 import { MethodepaymentsService } from '../methodepayments/methodepayments.service';
 import { PostsService } from '../../content/posts/posts.service';
 import { BanksService } from '../banks/banks.service';
+import { Pph21sService } from '../pph21s/pph21s.service';
+import { CreatePph21sDto } from '../pph21s/dto/create-pph21s.dto';
 @Controller('api/transactions')
 export class TransactionsController {
     constructor(private readonly transactionsService: TransactionsService, private readonly userbasicsService: UserbasicsService,
         private readonly settingsService: SettingsService,
         private readonly methodepaymentsService: MethodepaymentsService,
         private readonly banksService: BanksService,
-        private readonly postsService: PostsService) { }
+        private readonly postsService: PostsService,
+        private readonly pph21sService: Pph21sService) { }
     @UseGuards(JwtAuthGuard)
     @Post()
-    async create(@Res() res, @Headers('Authorization') auth: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Request() request) {
+    async create(@Res() res, @Headers('Authorization') auth: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Body() datadtopph: CreatePph21sDto, @Request() request) {
         const messages = {
             "info": ["The create successful"],
         };
@@ -263,6 +266,8 @@ export class TransactionsController {
             let datatr = await this.transactionsService.update(id, createTransactionsDto);
             var nominalppn = datatr.amount * valueppn / 100;
             var nominalmradmin = datatr.amount * valuemradmin / 100;
+
+
             var data = {
 
                 "noinvoice": datatr.noinvoice,
@@ -287,6 +292,34 @@ export class TransactionsController {
                 "timestamp": datatr.timestamp,
                 "_id": datatr._id
             };
+
+            var idtransaction = datatr._id;
+            var amounts = datatr.amount / 2;
+            var totalamounts = amounts;
+
+
+            // var a=60000000;
+            // var b=250000000;
+            // var c=500000000;
+            // var d=5000000000;
+
+            // if(amounts>a){
+
+            // }
+
+            // var amount1=amounts-a;
+            // var datas = {
+            //     transactionId: idtransaction,
+            //     income: amounts,
+            //     totalincome: totalamounts,
+            //     Year: 2022,
+            //     TimeStamp: Date.now().toString(),
+            //     Desc: "",
+            //     userid: datatr.idusersell
+            // }
+
+
+            // let datatrpph = await this.pph21sService.createdata(datas);
             res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": data,
@@ -334,6 +367,10 @@ export class TransactionsController {
 
         return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     };
+
+    //    async pph (params:type) {
+
+    //    }
 
 }
 
