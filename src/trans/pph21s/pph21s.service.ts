@@ -24,13 +24,15 @@ export class Pph21sService {
     }
 
     async createdata(datas: {
+        settingId: { oid: String; },
         transactionId: ObjectId,
-        income: number,
-        totalincome: number,
+        income: Number,
+        totalincome: Number,
         Year: number,
         TimeStamp: string,
         Desc: string,
-        userid: { oid: String; }
+        userid: { oid: String; },
+        PphAmount: Number
     }): Promise<Pph21s> {
 
 

@@ -27,7 +27,7 @@ import { ReferralService } from '../trans/referral/referral.service';
 import { CreateReferralDto } from '../trans/referral/dto/create-referral.dto';
 import mongoose from 'mongoose';
 import { MediaService } from '../stream/media/media.service';
-import { Readable } from 'stream';
+import { Long } from 'mongodb';
 
 @Injectable()
 export class AuthService {
@@ -609,13 +609,13 @@ export class AuthService {
       user_email = req.body.email;
       user_password = req.body.password;
       user_deviceId = req.body.deviceId;
-      if (req.body.langIso == undefined) {
-        user_interest = req.body.langIso;
+      if (req.body.langIso != undefined) {
+        user_langIso = req.body.langIso;
       }
-      if (req.body.interest == undefined) {
-        user_langIso = req.body.interest;
+      if (req.body.interest != undefined) {
+        user_interest = req.body.interest;
       }
-      if (req.body.gender == undefined) {
+      if (req.body.gender != undefined) {
         user_gender = req.body.gender;
       }
     }else{
@@ -798,19 +798,15 @@ export class AuthService {
                 user_otp == user_userAuth.oneTimePassword
               ) {
 
-                this.userauthsService.updatebyEmail(user_email, {
-                  isEmailVerified: true,
-                  password: bcrypt.hashSync(user_otp, 5),
+                await this.userauthsService.updatebyEmail(user_email, {
+                  isEmailVerified: true
                 });
 
                 const datajwtrefreshtokenService =
                   await this.jwtrefreshtokenService.findOne(user_email);
 
-                if (
-                  await this.utilsService.ceckData(datajwtrefreshtokenService)
-                ) {
-                  this.updateRefreshToken(user_email);
-                }
+                //Create Or Update refresh Token
+                await this.updateRefreshToken(user_email);
 
                 //Create ActivityEvent child
                 try {
@@ -1105,10 +1101,14 @@ export class AuthService {
           //Get Id Language
           try {
             if (user_langIso != undefined) {
-              var data_language = await this.languagesService.findOneLangiso(
-                user_langIso,
-              );
-              id_user_langIso = data_language._id;
+               if (user_langIso != null) {
+                var data_language = await this.languagesService.findOneLangiso(
+                  user_langIso,
+                );
+               }
+               if(data_language != undefined){
+                id_user_langIso = data_language._id;
+               }
             }
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
@@ -1218,12 +1218,10 @@ export class AuthService {
             data_CreateUserauthDto.updatedAt = current_date;
             data_CreateUserauthDto.isExpiryPass = false;
             data_CreateUserauthDto.isEmailVerified = false;
-            data_CreateUserauthDto.otpAttempt = { numberLong: '0' };
-            data_CreateUserauthDto.otpRequestTime = {
-              numberLong: OTP_expires.toString(),
-            };
+            data_CreateUserauthDto.otpAttempt = Long.fromString('0');
+            data_CreateUserauthDto.otpRequestTime = Long.fromString(OTP_expires.toString());
             data_CreateUserauthDto.isEnabled = true;
-            data_CreateUserauthDto.otpNextAttemptAllow = { numberLong: '0' };
+            data_CreateUserauthDto.otpNextAttemptAllow = Long.fromString('0');
             data_CreateUserauthDto.isAccountNonExpired = true;
             data_CreateUserauthDto.isAccountNonLocked = true;
             data_CreateUserauthDto.isCredentialsNonExpired = true;
@@ -1252,6 +1250,7 @@ export class AuthService {
             data_CreateUserbasicDto.profileID = ID_profile;
             data_CreateUserbasicDto.email = user_email;
             data_CreateUserbasicDto.fullName = username_;
+            data_CreateUserbasicDto.gender = user_gender;
             data_CreateUserbasicDto.status = 'NOTIFY';
             data_CreateUserbasicDto.event = 'NOTIFY_OTP';
             data_CreateUserbasicDto.isComplete = false;
@@ -1269,16 +1268,20 @@ export class AuthService {
               $db: 'hyppe_content_db',
             };
             data_CreateUserbasicDto.userInterests = Object(data_interest_id);
-            data_CreateUserbasicDto.userAuth = {
-              $ref: 'activityevents',
-              $id: new ObjectId(id_user_auth._id.toString()),
-              $db: 'hyppe_trans_db',
-            };
-            data_CreateUserbasicDto.languages = {
-              $ref: 'languages',
-              $id: id_user_langIso,
-              $db: 'hyppe_trans_db',
-            };
+            if(id_user_auth!=undefined||id_user_auth!=null){
+              data_CreateUserbasicDto.userAuth = {
+                $ref: 'activityevents',
+                $id: new ObjectId(id_user_auth._id.toString()),
+                $db: 'hyppe_trans_db',
+              };
+            }
+            if(id_user_langIso!=null){
+              data_CreateUserbasicDto.languages = {
+                $ref: 'languages',
+                $id: id_user_langIso,
+                $db: 'hyppe_trans_db',
+              };
+            }
             data_CreateUserbasicDto._class = _class_UserProfile;
 
             //Insert UserBasic
@@ -1391,7 +1394,7 @@ export class AuthService {
           };
         } else {
           await this.errorHandler.generateNotAcceptableException(
-            'Sorry! This email already registered',
+            'Sorry! You have to register first',
           );
         }
       } else {
@@ -1447,6 +1450,10 @@ export class AuthService {
         user_fullName = req.body.fullName;
       }
     }else if((event=='UPDATE_PROFILE')&&(status=='COMPLETE_BIO')){
+      if(req.body.email!=undefined){
+        user_email = req.body.email;
+      }
+
       if(req.body.country!=undefined){
         user_country = req.body.country;
       }
@@ -1479,6 +1486,15 @@ export class AuthService {
         user_langIso = req.body.langIso;
       }
     }else{
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed'],
+        },
+      });
+    }
+
+    if(user_email_header!=user_email){
       throw new NotAcceptableException({
         response_code: 406,
         messages: {
@@ -1766,23 +1782,10 @@ export class AuthService {
                     error,
                 );
               }
-
+              
               //Update ActivityEvent All Child True
               try {
-                for (
-                  var i = 0;
-                  i < user_activityevents[0].transitions.length;
-                  i++
-                ) {
-                  await this.activityeventsService.update(
-                    {
-                      activityEventID: user_activityevents[0].transitions[i].oid,
-                    },
-                    {
-                      flowIsDone: true,
-                    },
-                  );
-                }
+                await this.activityeventsService.updateFlowDone(user_activityevents[0].activityEventID.toString());
               } catch (error) {
                 await this.errorHandler.generateNotAcceptableException(
                   'Unabled to proceed Update ActivityEvent All Child True. Error:' +
@@ -2873,7 +2876,7 @@ export class AuthService {
       Templates_ = await this.utilsService.getTemplate(type, 'EMAIL');
 
       //var to = email;
-      var to = 'sukma.aspan@gmail.com';
+      var to = email;
       var from = '"no-reply" <' + Templates_.from.toString() + '>';
       var subject = Templates_.subject.toString();
       var html_body = Templates_.body_detail.replace('9021', OTP);
@@ -3413,6 +3416,154 @@ export class AuthService {
     }
   }
 
+  async resendotp(req: any): Promise<any> {
+    var user_email = null;
+    if(req.body.email!=undefined){
+      user_email = req.body.email;
+    }else{
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+
+    var current_date = await this.utilsService.getDateTimeString();
+    var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
+
+    var _class_ActivityEvent = 'io.melody.hyppe.trans.domain.ActivityEvent';
+
+    var ID_child_ActivityEvent = (
+      await this.utilsService.generateId()
+    ).toLowerCase();
+
+    //Ceck User Userbasics
+    const datauserbasicsService = await this.userbasicsService.findOne(
+      user_email,
+    );
+
+    //Ceck User Userauths
+    const datauserauthsService = await this.userauthsService.findOneByEmail(
+      user_email,
+    );
+    if((await this.utilsService.ceckData(datauserbasicsService))&&(await this.utilsService.ceckData(datauserauthsService))){
+
+      //Update User Auth
+      this.userauthsService.updatebyEmail(user_email, {
+        oneTimePassword: null,
+        otpRequestTime: 0,
+        otpAttempt: 0,
+        otpNextAttemptAllow: 0,
+      });
+
+      var OTP = await this.utilsService.generateOTP();
+      var OTP_expires = await this.utilsService.generateOTPExpires();
+
+      const user_activityevents =
+        await this.activityeventsService.findParentWitoutDevice(
+          user_email,
+          'ENROL',
+          false,
+        );
+
+      if (Object.keys(user_activityevents).length > 0) {
+
+        //Create ActivityEvent child
+        try {
+          var id_child = new mongoose.Types.ObjectId();
+          data_CreateActivityeventsDto_child._id = id_child;
+          data_CreateActivityeventsDto_child.activityEventID =
+            ID_child_ActivityEvent;
+          data_CreateActivityeventsDto_child.activityType = 'ENROL';
+          data_CreateActivityeventsDto_child.active = true;
+          data_CreateActivityeventsDto_child.status = 'NOTIFY';
+          data_CreateActivityeventsDto_child.target = 'REPLY';
+          data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
+          data_CreateActivityeventsDto_child._class = _class_ActivityEvent;
+          data_CreateActivityeventsDto_child.action = 'NotifyActivityCommand';
+          data_CreateActivityeventsDto_child.payload = {
+            login_location: {
+              latitude: undefined,
+              longitude: undefined,
+            },
+            logout_date: undefined,
+            login_date: undefined,
+            login_device: undefined,
+            email: user_email,
+          };
+          data_CreateActivityeventsDto_child.createdAt = current_date;
+          data_CreateActivityeventsDto_child.updatedAt = current_date;
+          data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
+          data_CreateActivityeventsDto_child.flowIsDone = false;
+          data_CreateActivityeventsDto_child.__v = undefined;
+          data_CreateActivityeventsDto_child.parentActivityEventID =
+            user_activityevents[0].activityEventID;
+          data_CreateActivityeventsDto_child.userbasic =
+            user_activityevents[0].userbasic;
+
+          //Insert ActivityEvent Parent
+          await this.activityeventsService.create(
+            data_CreateActivityeventsDto_child,
+          );
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Create Activity events Child. Error: ' +
+              error,
+          );
+        }
+
+        //Update ActivityEvent Parent
+        try {
+          const data_transitions = user_activityevents[0].transitions;
+          data_transitions.push({
+            $ref: 'activityevents',
+            $id: new Object(ID_child_ActivityEvent),
+            $db: 'hyppe_trans_db',
+          });
+
+          //Update ActivityEvent Parent
+          await this.activityeventsService.update(
+            {
+              _id: user_activityevents[0]._id,
+            },
+            {
+              transitions: data_transitions,
+            },
+          );
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Update Activity events Parent. Error:' +
+              error,
+          );
+        }
+        
+        await this.userauthsService.updatebyEmail(user_email, {
+          oneTimePassword: OTP,
+          otpRequestTime: OTP_expires,
+        });
+
+        await this.sendemail(
+          datauserauthsService.email.toString(),
+          OTP.toString(),
+          'ENROL',
+        );
+
+        return {
+          response_code: 202,
+          messages: {
+            info: ['Request resend OTP successful'],
+          },
+        };
+      }else{
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed',
+        );
+      }
+    }else{
+      await this.errorHandler.generateNotAcceptableException(
+        'User not found',
+      );
+    }
+  }
+
   async profilePict(id: string, token: string, email: string): Promise<any>{
     if(id!=undefined||token!=undefined||email!=undefined){
       if(await this.utilsService.validasiTokenEmailParam(token,email)){
@@ -3444,8 +3595,10 @@ export class AuthService {
         }
 
         if(mediaprofilepicts_fsSourceUri!=''){
+            //console.log(mediaprofilepicts_fsSourceUri);
             //const stream = Readable.from(await this.mediaService.find(mediaprofilepicts_fsSourceUri));
             return await this.mediaService.find(mediaprofilepicts_fsSourceUri);
+            //return await this.mediaService.find(mediaprofilepicts_fsSourceUri);
         }
       }else{
         await this.errorHandler.generateNotAcceptableException(
@@ -3457,7 +3610,6 @@ export class AuthService {
         'Unabled to proceed',
       );
     }
-      
     // if(id==undefined||token==undefined||email==undefined){
     //   await this.errorHandler.generateNotAcceptableException(
     //     'Unabled to proceed',
@@ -3486,4 +3638,5 @@ export class AuthService {
     //   );
     // }
   }
+
 }

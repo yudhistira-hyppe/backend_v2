@@ -7,17 +7,18 @@ export type Pph21sDocument = Pph21s & Document;
 export class Pph21s {
   _id: mongoose.Types.ObjectId;
 
-  // @Prop({ type: mongoose.Schema.Types.ObjectId })
-  // settingId: { oid: string }
-  // @Prop({ type: mongoose.Schema.Types.ObjectId })
-  // transactionId: { oid: string }
+  @Prop({ type: mongoose.Schema.Types.ObjectId })
+  settingId: { oid: string }
+
   @Prop()
   transactionId: mongoose.Schema.Types.ObjectId
 
   @Prop()
-  income: number
+  income: Number
   @Prop()
-  totalincome: number
+  totalincome: Number
+  @Prop()
+  PphAmount: Number
   @Prop()
   Year: number
   @Prop()

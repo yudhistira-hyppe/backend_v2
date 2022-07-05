@@ -94,6 +94,12 @@ export class AuthController {
     return await this.authService.updateprofile(request,headers);
   }
 
+  @Post('api/user/resendotp')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async resendotp(@Req() request: any) {
+    return await this.authService.resendotp(request);
+  }
+
   @Post('api/user/updatelang')
   @HttpCode(HttpStatus.ACCEPTED)
   async updatelang(@Req() request: any, @Headers() headers) {
@@ -123,11 +129,47 @@ export class AuthController {
   async profilePict(
     @Param('id') id: string,
     @Query('x-auth-token') token: string,
-    @Query('x-auth-user') email: string,
-    @Res() res: Response) {
-      const file = createReadStream(await this.authService.profilePict(id,token,email));
+    @Query('x-auth-user') email: string) {
+      //const data = await this.authService.profilePict(id,token,email)
+      //const file = createReadStream(data);
+     // console.log(file);
       //file.pipe(res);
       //fs.createReadStream().pipe(res);
-    //return;
+      var data = await this.authService.profilePict(id,token,email);
+var stream = require('stream');
+
+// Initiate the source
+var bufferStream = new stream.PassThrough();
+
+// Write your buffer
+bufferStream.end(Buffer.from(data));
+
+// Pipe it to something else  (i.e. stdout)
+// bufferStream.pipe(process.stdout)
+//       var myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
+//   frequency: 10,      // in milliseconds.
+//   chunkSize: 2048     // in bytes.
+// }); 
+// myReadableStreamBuffer.put(data);
+
+// With a buffer
+    //   const buffer = Buffer.from(data);
+    //   const file = createReadStream(buffer);
+    //   file.on('error', function (error) {
+    //     console.log(`error: ${error.message}`);
+    // })
+
+    // file.on('data', (chunk) => {
+    //     console.log(chunk);
+    // })
+    // const file = createReadStream(await this.authService.profilePict(id,token,email));
+    // file.on('error', function (error) {
+    //     console.log(`error: ${error.message}`);
+    // })
+
+    // file.on('data', (chunk) => {
+    //     console.log(chunk);
+    // })
+    //return await this.authService.profilePict(id,token,email);
   }
 }
