@@ -54,6 +54,7 @@ import { FaqsModule } from './trans/faqs/faqs.module';
 import { AnnouncementsModule } from './trans/announcements/announcements.module';
 import { TransactionsModule } from './trans/transactions/transactions.module';
 import { AccountbalancesModule } from './trans/accountbalances/accountbalances.module';
+import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents/getcontentevents.module';
 //import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { AccountbalancesModule } from './trans/accountbalances/accountbalances.m
     // UserauthsModule,
     //CommentModule,
     //UserticketdetailsModule,
+    GetcontenteventsModule,
     AccountbalancesModule,
     TransactionsModule,
     AnnouncementsModule,

@@ -43,4 +43,22 @@ export class Pph21sService {
         }
         return data;
     }
+
+
+    async finduseryear(userid: ObjectId, Year: number) {
+        var query = await this.pph21sModel.aggregate([
+            {
+                $match: {
+                    userid: userid, Year: Year
+                }
+            }, {
+                $sort: {
+                    _id: -1
+                }
+            }, {
+                $limit: 1
+            }]);
+
+        return query;
+    }
 }
