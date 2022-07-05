@@ -52,6 +52,8 @@ import { GetusercontentsModule } from './trans/getusercontents/getusercontents.m
 import { CommentModule } from './trans/getusercontents/comment/comment.module';
 import { FaqsModule } from './trans/faqs/faqs.module';
 import { AnnouncementsModule } from './trans/announcements/announcements.module';
+import { TransactionsModule } from './trans/transactions/transactions.module';
+import { AccountbalancesModule } from './trans/accountbalances/accountbalances.module';
 //import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
 @Module({
   imports: [
@@ -70,6 +72,8 @@ import { AnnouncementsModule } from './trans/announcements/announcements.module'
     // UserauthsModule,
     //CommentModule,
     //UserticketdetailsModule,
+    AccountbalancesModule,
+    TransactionsModule,
     AnnouncementsModule,
     UserticketsModule,
     FaqsModule,
@@ -119,4 +123,4 @@ import { AnnouncementsModule } from './trans/announcements/announcements.module'
     AuthModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }
