@@ -50,6 +50,7 @@ import { ProfileModule } from './trans/profile/profile.module';
 import { GetuserprofilesModule } from './trans/getuserprofiles/getuserprofiles.module';
 import { GetusercontentsModule } from './trans/getusercontents/getusercontents.module';
 import { CommentModule } from './trans/getusercontents/comment/comment.module';
+import { OyPgModule } from './paymentgateway/oypg/oypg.module';
 //import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
 @Module({
   imports: [
@@ -113,6 +114,7 @@ import { CommentModule } from './trans/getusercontents/comment/comment.module';
     SagasModule,
     AdrolesModule,
     AuthModule,
+    OyPgModule,
   ],
 })
 export class AppModule {}
