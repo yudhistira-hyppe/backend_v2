@@ -7,8 +7,8 @@ import { OyDisburseCallback } from './dto/OyDisburseCallback';
 export class OyPgController {
     constructor(private readonly oyPgService:OyPgService) { }
 
-    @Post()
-    async create(@Body() payload: OyDisburseCallback) {
+    @Post('/callback/disbursement')
+    async callbackDisbursement(@Body() payload: OyDisburseCallback) {
 
         console.log(payload);
     }
