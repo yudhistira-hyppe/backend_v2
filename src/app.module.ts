@@ -50,6 +50,8 @@ import { ProfileModule } from './trans/profile/profile.module';
 import { GetuserprofilesModule } from './trans/getuserprofiles/getuserprofiles.module';
 import { GetusercontentsModule } from './trans/getusercontents/getusercontents.module';
 import { CommentModule } from './trans/getusercontents/comment/comment.module';
+import { FaqsModule } from './trans/faqs/faqs.module';
+import { AnnouncementsModule } from './trans/announcements/announcements.module';
 //import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
 @Module({
   imports: [
@@ -68,7 +70,9 @@ import { CommentModule } from './trans/getusercontents/comment/comment.module';
     // UserauthsModule,
     //CommentModule,
     //UserticketdetailsModule,
-    //UserticketsModule,
+    AnnouncementsModule,
+    UserticketsModule,
+    FaqsModule,
     GetusercontentsModule,
     GetuserprofilesModule,
     ProfileModule,
