@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { OyPgService } from './oypg.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { OyDisburseCallback } from './dto/OyDisburseCallback';
+import { OyDisburseCallback } from './dto/OyDTO';
 
 @Controller('api/pg/oy')
 export class OyPgController {
