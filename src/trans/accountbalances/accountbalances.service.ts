@@ -125,4 +125,23 @@ export class AccountbalancesService {
         ]);
         return query;
     }
+
+    async createdata(datas: {
+        iduser: { oid: String; },
+        debet: number,
+        kredit: number,
+        type: string,
+        timestamp: string,
+        description: string
+
+    }): Promise<Accountbalances> {
+
+
+        let data = await this.accountbalancesModel.create(datas);
+
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
+        return data;
+    }
 }
