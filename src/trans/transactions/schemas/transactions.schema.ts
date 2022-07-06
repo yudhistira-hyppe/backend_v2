@@ -47,6 +47,7 @@ export class Transactions {
     @Prop()
     timestamp: string
 
+
 }
 
 export const TransactionsSchema = SchemaFactory.createForClass(Transactions);

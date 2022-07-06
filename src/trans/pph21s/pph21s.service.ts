@@ -24,13 +24,15 @@ export class Pph21sService {
     }
 
     async createdata(datas: {
+        settingId: { oid: String; },
         transactionId: ObjectId,
-        income: number,
-        totalincome: number,
+        income: Number,
+        totalincome: Number,
         Year: number,
         TimeStamp: string,
         Desc: string,
-        userid: { oid: String; }
+        userid: { oid: String; },
+        PphAmount: Number
     }): Promise<Pph21s> {
 
 
@@ -40,5 +42,23 @@ export class Pph21sService {
             throw new Error('Todo is not found!');
         }
         return data;
+    }
+
+
+    async finduseryear(userid: ObjectId, Year: number) {
+        var query = await this.pph21sModel.aggregate([
+            {
+                $match: {
+                    userid: userid, Year: Year
+                }
+            }, {
+                $sort: {
+                    _id: -1
+                }
+            }, {
+                $limit: 1
+            }]);
+
+        return query;
     }
 }

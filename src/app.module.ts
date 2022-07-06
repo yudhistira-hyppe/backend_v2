@@ -50,9 +50,13 @@ import { ProfileModule } from './trans/profile/profile.module';
 import { GetuserprofilesModule } from './trans/getuserprofiles/getuserprofiles.module';
 import { GetusercontentsModule } from './trans/getusercontents/getusercontents.module';
 import { CommentModule } from './trans/getusercontents/comment/comment.module';
+import { OyPgModule } from './paymentgateway/oypg/oypg.module';
 import { FaqsModule } from './trans/faqs/faqs.module';
 import { AnnouncementsModule } from './trans/announcements/announcements.module';
 import { UtilsModule } from './utils/utils.module'; 
+import { TransactionsModule } from './trans/transactions/transactions.module';
+import { AccountbalancesModule } from './trans/accountbalances/accountbalances.module';
+import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents/getcontentevents.module';
 //import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
 @Module({
   imports: [
@@ -72,6 +76,9 @@ import { UtilsModule } from './utils/utils.module';
     //CommentModule,
     //UserticketdetailsModule,
     UtilsModule,
+    GetcontenteventsModule,
+    AccountbalancesModule,
+    TransactionsModule,
     AnnouncementsModule,
     UserticketsModule,
     FaqsModule,
@@ -119,6 +126,7 @@ import { UtilsModule } from './utils/utils.module';
     SagasModule,
     AdrolesModule,
     AuthModule,
+    OyPgModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }
