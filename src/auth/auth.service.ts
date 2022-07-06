@@ -3675,18 +3675,24 @@ export class AuthService {
 
       var response_status = '';
       if(await this.utilsService.ceckData(datauserauthsService)){
-        console.log(datauserauthsService.upgradeRole);
         if(datauserauthsService.upgradeRole != 'FINISH'){
-          await this.userauthsService.findUpdateEmailStatusRole(email,status);
           if(status=="ON_PROGRESS"){
+            await this.userauthsService.findUpdateEmailStatusRole(email,status);
             await this.sendemailVerification(email, 'PREMIUM_VERIFIKASI');
-            response_status ="ON_PROGRESS";
+             response_status =(await this.userauthsService.findOneByEmail( email)).upgradeRole;
+          }else if(status=="CECK"){
+            if(datauserauthsService.upgradeRole == undefined){
+              response_status = null;
+            }else{
+              response_status = (await this.userauthsService.findOneByEmail( email)).upgradeRole;
+            }
           }else if(status=="FINISH"){
+            await this.userauthsService.findUpdateEmailStatusRole(email,status);
             await this.userauthsService.update(email, roles);
-            response_status ="FINISH";
+            response_status =(await this.userauthsService.findOneByEmail( email)).upgradeRole;
           }
         }else{
-          response_status ="FINISH";
+          response_status =(await this.userauthsService.findOneByEmail( email)).upgradeRole;
         }
 
         return {
