@@ -465,7 +465,7 @@ export class GetcontenteventsService {
             }, {
                 $addFields: {
 
-                    age: {
+                    /*age: {
                         $round: {
                             $divide: [{
                                 $subtract: [new Date(), {
@@ -473,7 +473,7 @@ export class GetcontenteventsService {
                                 }]
                             }, (365 * 24 * 60 * 60 * 1000)]
                         }
-                    }
+                    }*/
                 },
             }, {
                 $match: {
@@ -536,7 +536,7 @@ export class GetcontenteventsService {
             }, {
                 $addFields: {
 
-                    age: {
+                    /*age: {
                         $round: {
                             $divide: [{
                                 $subtract: [new Date(), {
@@ -544,7 +544,7 @@ export class GetcontenteventsService {
                                 }]
                             }, (365 * 24 * 60 * 60 * 1000)]
                         }
-                    }
+                    }*/
                 },
             }, {
                 $match: {
@@ -607,7 +607,7 @@ export class GetcontenteventsService {
             }, {
                 $addFields: {
 
-                    age: {
+                    /*age: {
                         $round: {
                             $divide: [{
                                 $subtract: [new Date(), {
@@ -615,7 +615,7 @@ export class GetcontenteventsService {
                                 }]
                             }, (365 * 24 * 60 * 60 * 1000)]
                         }
-                    }
+                    }*/
                 },
             }, {
                 $match: {
