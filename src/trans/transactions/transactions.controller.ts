@@ -10,6 +10,7 @@ import { PostsService } from '../../content/posts/posts.service';
 import { BanksService } from '../banks/banks.service';
 import { Pph21sService } from '../pph21s/pph21s.service';
 import { AccountbalancesService } from '../accountbalances/accountbalances.service';
+import { OyPgService } from '../../paymentgateway/oypg/oypg.service';
 
 import { Types } from 'mongoose';
 @Controller('api/transactions')
@@ -19,7 +20,9 @@ export class TransactionsController {
         private readonly methodepaymentsService: MethodepaymentsService,
         private readonly banksService: BanksService,
         private readonly postsService: PostsService,
-        private readonly pph21sService: Pph21sService, private readonly accountbalancesService: AccountbalancesService) { }
+        private readonly pph21sService: Pph21sService,
+        private readonly accountbalancesService: AccountbalancesService,
+        private readonly oyPgService: OyPgService) { }
     @UseGuards(JwtAuthGuard)
     @Post()
     async create(@Res() res, @Headers('x-auth-token') auth: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Request() request) {
@@ -197,6 +200,7 @@ export class TransactionsController {
         const messagesEror = {
             "info": ["Todo is not found!"],
         };
+
         var bankcode = null;
         var paymentmethod = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
@@ -259,6 +263,8 @@ export class TransactionsController {
         } catch (e) {
             throw new BadRequestException("Setting value not found..!");
         }
+
+
         try {
             createTransactionsDto.nova = "3838383388";
             createTransactionsDto.status = "success";

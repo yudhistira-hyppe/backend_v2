@@ -5,14 +5,15 @@ import { OyAccountInquiry, OyAccountInquiryResponse, OyDisburseCallback } from '
 
 @Controller('api/pg/oy')
 export class OyPgController {
-    constructor(private readonly oyPgService:OyPgService) { }
+    constructor(private readonly oyPgService: OyPgService) { }
 
     @Post('/callback/disbursement')
     async callbackDisbursement(@Body() payload: OyDisburseCallback) {
 
         console.log(payload);
+
     }
-    
+
 
     @Get('test')
     async test() {
@@ -20,7 +21,7 @@ export class OyPgController {
         ac.account_number = '1280259361'
         ac.bank_code = '014';
 
-        const data =  await this.oyPgService.inquiryAccount(ac);
+        const data = await this.oyPgService.inquiryAccount(ac);
         console.log(data);
 
         const bal = await this.oyPgService.myBalance();
