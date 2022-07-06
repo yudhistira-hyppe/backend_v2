@@ -6,6 +6,7 @@ import {
   UseGuards,
   Body,
   Param,
+  Put,
   Query,
   Req,
   HttpCode,
@@ -18,7 +19,7 @@ import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 import { UtilsService } from '../utils/utils.service';
 import { JwtRefreshAuthGuard } from './refresh-auth.guard';
-import fs, { createReadStream } from 'fs';
+import fs, { createReadStream, createWriteStream } from 'fs';
 
 @Controller()
 export class AuthController {
@@ -129,47 +130,21 @@ export class AuthController {
   async profilePict(
     @Param('id') id: string,
     @Query('x-auth-token') token: string,
-    @Query('x-auth-user') email: string) {
-      //const data = await this.authService.profilePict(id,token,email)
-      //const file = createReadStream(data);
-     // console.log(file);
-      //file.pipe(res);
-      //fs.createReadStream().pipe(res);
-      var data = await this.authService.profilePict(id,token,email);
-var stream = require('stream');
-
-// Initiate the source
-var bufferStream = new stream.PassThrough();
-
-// Write your buffer
-bufferStream.end(Buffer.from(data));
-
-// Pipe it to something else  (i.e. stdout)
-// bufferStream.pipe(process.stdout)
-//       var myReadableStreamBuffer = new streamBuffers.ReadableStreamBuffer({
-//   frequency: 10,      // in milliseconds.
-//   chunkSize: 2048     // in bytes.
-// }); 
-// myReadableStreamBuffer.put(data);
-
-// With a buffer
-    //   const buffer = Buffer.from(data);
-    //   const file = createReadStream(buffer);
-    //   file.on('error', function (error) {
-    //     console.log(`error: ${error.message}`);
-    // })
-
-    // file.on('data', (chunk) => {
-    //     console.log(chunk);
-    // })
-    // const file = createReadStream(await this.authService.profilePict(id,token,email));
-    // file.on('error', function (error) {
-    //     console.log(`error: ${error.message}`);
-    // })
-
-    // file.on('data', (chunk) => {
-    //     console.log(chunk);
-    // })
-    //return await this.authService.profilePict(id,token,email);
+    @Query('x-auth-user') email: string, @Res() response) {
+      // response.set("Content-Type","application/octet-stream");
+      // const file_ = createWriteStream('temp.png');
+      await this.authService.profilePict(id,token,email);
+      // await data.pipe(file_);
+      //var buf = Buffer.from(JSON.stringify(data));
+      //file_.write(buf);
+      //const file = createReadStream('file.png');
+      var path = require('path');
+      response.sendFile(path.resolve('file.png'));
+  }
+  @UseGuards(JwtAuthGuard)
+  @Put('api/userauths/:email')
+  async updateRole(
+    @Param('email') email: string,@Req() request: any, @Headers() headers) {
+    return await this.authService.updateRole(email,headers,request);
   }
 }

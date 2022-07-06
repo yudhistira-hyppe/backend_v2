@@ -90,6 +90,22 @@ export class UserauthsService {
     );
   }
 
+  async findUpdateEmailStatusRole(email: string,upgradeRole: string) {
+    this.userauthModel.updateOne(
+      {
+        email: email,
+      },
+      { upgradeRole:upgradeRole },
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
   async update(email: string, roles: string): Promise<Object> {
     let data = await this.userauthModel.updateOne({ "email": email },
       { $set: { "roles": [roles] } });

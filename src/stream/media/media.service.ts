@@ -13,18 +13,18 @@ export class MediaService {
   ) {}
 
     async find(path_:string): Promise<any>{
-        //const file = fs.createWriteStream("file.png");
-        //return http.get(BaseUrl+path_, response => {response.pipe(file);});
+        const file = fs.createWriteStream("file.png");
         return new Promise(function (resolve, reject) {
             var req = http.request(BaseUrl+path_, res => {
                 let body = "";
-                res.setEncoding('utf8');
-                res.on('data', function (chunk) {
+
+                res.on('data', function(chunk) {
                     body += chunk;
                 });
-                res.on("end", function () {
-                    return resolve(Buffer.from(body));
+                res.on('end', function() {
+                   return resolve(Buffer.from(body));
                 });
+                res.pipe(file);
             });
             req.on("error", function (err) {
                 return reject(err);

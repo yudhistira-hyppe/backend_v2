@@ -510,4 +510,57 @@ export class ContenteventsService {
     ]);
     return query;
   }
+
+  async friend(email:string,head:any) {
+    const query = await this.ContenteventsModel.aggregate([
+        { 
+            "$match" : { 
+                "$or" : [
+                    { 
+                        "eventType" : "FOLLOWER"
+                    }, 
+                    { 
+                        "eventType" : "FOLLOWING"
+                    }
+                ]
+            }
+        }, 
+        { 
+            "$redact" : { 
+                "$cond" : [
+                    { 
+                        "$eq" : [
+                            "$senderParty", 
+                            "$receiveParty"
+                        ]
+                    }, 
+                    "$$KEEP", 
+                    "$$PRUNE"
+                ]
+            }
+        }, 
+        { 
+            "$match" : { 
+                "event" : "ACCEPT"
+            }
+        }, 
+        { 
+            "$match" : { 
+                "email" : email
+            }
+        }, 
+        { 
+            "$group" : { 
+                "_id" : "$receiverParty",
+            }
+        },
+        {
+          $project: {
+            _id: 0,
+            friend: '$_id',
+          },
+        },
+    ]);
+    return query;
+  }
 }

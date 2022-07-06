@@ -52,6 +52,7 @@ import { GetusercontentsModule } from './trans/getusercontents/getusercontents.m
 import { CommentModule } from './trans/getusercontents/comment/comment.module';
 import { FaqsModule } from './trans/faqs/faqs.module';
 import { AnnouncementsModule } from './trans/announcements/announcements.module';
+import { UtilsModule } from './utils/utils.module'; 
 //import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { AnnouncementsModule } from './trans/announcements/announcements.module'
     // UserauthsModule,
     //CommentModule,
     //UserticketdetailsModule,
+    UtilsModule,
     AnnouncementsModule,
     UserticketsModule,
     FaqsModule,

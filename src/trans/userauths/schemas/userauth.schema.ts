@@ -66,6 +66,9 @@ export class Userauth {
 
   @Prop()
   oneTimePassword: String;
+
+  @Prop()
+  upgradeRole: String;
 }
 
 export const UserauthSchema = SchemaFactory.createForClass(Userauth);

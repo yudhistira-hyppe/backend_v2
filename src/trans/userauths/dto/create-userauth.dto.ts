@@ -31,4 +31,5 @@ export class CreateUserauthDto {
   ];
   _class: String;
   oneTimePassword: String;
+  upgradeRole: String;
 }

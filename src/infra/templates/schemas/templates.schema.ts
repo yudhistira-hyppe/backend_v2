@@ -28,6 +28,8 @@ export class Templates {
  langIso: String
  @Prop()
  category:String
+ @Prop()
+ action_buttons:String
 }
 
 export const TemplatesSchema = SchemaFactory.createForClass(Templates);

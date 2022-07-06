@@ -28,6 +28,7 @@ import { CreateReferralDto } from '../trans/referral/dto/create-referral.dto';
 import mongoose from 'mongoose';
 import { MediaService } from '../stream/media/media.service';
 import { Long } from 'mongodb';
+import { createReadStream } from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -563,6 +564,8 @@ export class AuthService {
             info: ['Unabled to proceed'],
           },
         });
+      }else{
+
       }
     }else{
       if (
@@ -1011,7 +1014,7 @@ export class AuthService {
                   otpNextAttemptAllow: 0,
                 });
 
-                await this.sendemail(user_email, OTP.toString(), 'ENROL');
+                await this.sendemailOTP(user_email, OTP.toString(), 'ENROL');
 
                 return {
                   response_code: 202,
@@ -1384,7 +1387,7 @@ export class AuthService {
             );
           }
 
-          await this.sendemail(user_email, OTP.toString(), 'ENROL');
+          await this.sendemailOTP(user_email, OTP.toString(), 'ENROL');
 
           return {
             response_code: 202,
@@ -2612,7 +2615,7 @@ export class AuthService {
                     otpNextAttemptAllow: 0,
                   });
 
-                  await this.sendemail(
+                  await this.sendemailOTP(
                     user_userAuth.email.toString(),
                     OTP.toString(),
                     'RECOVER_PASS',
@@ -2720,7 +2723,7 @@ export class AuthService {
               otpNextAttemptAllow: 0,
             });
 
-            await this.sendemail(
+            await this.sendemailOTP(
               user_userAuth.email.toString(),
               OTP.toString(),
               'RECOVER_PASS',
@@ -2841,7 +2844,7 @@ export class AuthService {
               otpRequestTime: OTP_expires,
             });
 
-            await this.sendemail(
+            await this.sendemailOTP(
               user_userAuth.email.toString(),
               OTP.toString(),
               'RECOVER_PASS',
@@ -2869,7 +2872,7 @@ export class AuthService {
     }
   }
 
-  async sendemail(email: string, OTP: string, type: string) {
+  async sendemailOTP(email: string, OTP: string, type: string) {
     //Send Email
     try {
       var Templates_ = new Templates();
@@ -3540,7 +3543,7 @@ export class AuthService {
           otpRequestTime: OTP_expires,
         });
 
-        await this.sendemail(
+        await this.sendemailOTP(
           datauserauthsService.email.toString(),
           OTP.toString(),
           'ENROL',
@@ -3597,8 +3600,9 @@ export class AuthService {
         if(mediaprofilepicts_fsSourceUri!=''){
             //console.log(mediaprofilepicts_fsSourceUri);
             //const stream = Readable.from(await this.mediaService.find(mediaprofilepicts_fsSourceUri));
-            return await this.mediaService.find(mediaprofilepicts_fsSourceUri);
-            //return await this.mediaService.find(mediaprofilepicts_fsSourceUri);
+          
+          return await this.mediaService.find(mediaprofilepicts_fsSourceUri);
+            //return ;
         }
       }else{
         await this.errorHandler.generateNotAcceptableException(
@@ -3639,4 +3643,102 @@ export class AuthService {
     // }
   }
 
+  async updateRole(email: string, head: any,req:any){
+    if((email==undefined)||(head['x-auth-token']==undefined)){
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    if(!(await this.utilsService.validasiTokenEmailParam(head['x-auth-token'],email))){
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email dan token not match',
+      );
+    }
+    if (req.body.roles == undefined || req.body.status == undefined ){
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    if ( req.body.roles == "" || req.body.status == "" ){
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    var roles = req.body.roles;
+    var status = req.body.status;
+
+    try {
+      //Ceck User Userauths
+      const datauserauthsService = await this.userauthsService.findOneByEmail(
+        email,
+      );
+
+      var response_status = '';
+      if(await this.utilsService.ceckData(datauserauthsService)){
+        console.log(datauserauthsService.upgradeRole);
+        if(datauserauthsService.upgradeRole != 'FINISH'){
+          await this.userauthsService.findUpdateEmailStatusRole(email,status);
+          if(status=="ON_PROGRESS"){
+            await this.sendemailVerification(email, 'PREMIUM_VERIFIKASI');
+            response_status ="ON_PROGRESS";
+          }else if(status=="FINISH"){
+            await this.userauthsService.update(email, roles);
+            response_status ="FINISH";
+          }
+        }else{
+          response_status ="FINISH";
+        }
+
+        return {
+          response_code: 202,
+          status_user:response_status,
+          messages: {
+            info: ['Request Update '+response_status],
+          },
+        };
+      }else{
+        await this.errorHandler.generateNotAcceptableException(
+          'User Not Found!',
+        );
+      }
+    } catch (e) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed ' +e,
+      );
+    }
+  }
+
+  async sendemailVerification(email: string, type: string) {
+     //Send Email
+    try {
+      var Templates_ = new Templates();
+      const cheerio = require('cheerio');
+      Templates_ = await this.utilsService.getTemplate(type, 'EMAIL');
+      var link = Templates_.action_buttons.toString();
+      var html_body = Templates_.body_detail.trim().toString();
+      const $_ = cheerio.load(html_body);
+      $_('#linkverifikasi').attr('href', link+email);
+
+      //var to = email;
+      var to = 'sukma.hyppe@gmail.com';
+      var from = '"no-reply" <' + Templates_.from.toString() + '>';
+      var subject = Templates_.subject.toString();
+      var html_body_ = $_.html().toString();
+      var send = await this.utilsService.sendEmail(
+        to,
+        from,
+        subject,
+        html_body_,
+      );
+      if (!send) {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed Send Email OTP',
+        );
+      }
+    } catch (error) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed Send Email OTP. Error:' + error,
+      );
+    }
+  }
 }
