@@ -1,7 +1,7 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { OyPgService } from './oypg.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { OyAccountInquiry, OyAccountInquiryResponse, OyDisburseCallback } from './dto/OyDTO';
+import { OyAccountInquiry, OyAccountInquiryResponse, OyDisburseCallback, OyVaCallback } from './dto/OyDTO';
 
 @Controller('api/pg/oy')
 export class OyPgController {
@@ -12,6 +12,12 @@ export class OyPgController {
 
         console.log(payload);
     }
+
+    @Post('/callback/va')
+    async callbackVa(@Body() payload: OyVaCallback) {
+
+        console.log(payload);
+    }    
     
 
     @Get('test')
