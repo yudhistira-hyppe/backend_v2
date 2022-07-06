@@ -18,6 +18,20 @@ export class Status {
     message: string;
 }
 
+export class OyVaCallback {
+  va_number: string;
+  amount: number;
+  partner_user_id: string;
+  success: boolean;
+  tx_date: string;
+  username_display: string;
+  trx_expiration_date: string;
+  partner_trx_id: string;
+  trx_id: string;
+  settlement_time: string;
+  settlement_status: string;
+}
+
 export class OyAccountInquiry {
   bank_code: string;
   account_number: string;
