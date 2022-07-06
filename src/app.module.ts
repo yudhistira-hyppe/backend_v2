@@ -51,6 +51,10 @@ import { GetuserprofilesModule } from './trans/getuserprofiles/getuserprofiles.m
 import { GetusercontentsModule } from './trans/getusercontents/getusercontents.module';
 import { CommentModule } from './trans/getusercontents/comment/comment.module';
 import { OyPgModule } from './paymentgateway/oypg/oypg.module';
+import { FaqsModule } from './trans/faqs/faqs.module';
+import { AnnouncementsModule } from './trans/announcements/announcements.module';
+import { TransactionsModule } from './trans/transactions/transactions.module';
+import { AccountbalancesModule } from './trans/accountbalances/accountbalances.module';
 //import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
 @Module({
   imports: [
@@ -69,7 +73,11 @@ import { OyPgModule } from './paymentgateway/oypg/oypg.module';
     // UserauthsModule,
     //CommentModule,
     //UserticketdetailsModule,
-    //UserticketsModule,
+    AccountbalancesModule,
+    TransactionsModule,
+    AnnouncementsModule,
+    UserticketsModule,
+    FaqsModule,
     GetusercontentsModule,
     GetuserprofilesModule,
     ProfileModule,
@@ -117,4 +125,4 @@ import { OyPgModule } from './paymentgateway/oypg/oypg.module';
     OyPgModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }

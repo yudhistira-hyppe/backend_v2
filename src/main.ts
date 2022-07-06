@@ -5,14 +5,9 @@ import { ConfigService } from '@nestjs/config';
 import * as admin from 'firebase-admin';
 import { ServiceAccount } from "firebase-admin";
 
-// const httpsOptions = {
-//   key: fs.readFileSync('/home/ubuntu/workspace/SSL/hyppe.key'),
-//   cert: fs.readFileSync('/home/ubuntu/workspace/SSL/hyppe.crt'),
-// };
-
 const httpsOptions = {
-  key: fs.readFileSync('C:/ProjectHyppe/crt/server.key'),
-  cert: fs.readFileSync('C:/ProjectHyppe/crt/server.crt'),
+  key: fs.readFileSync(process.env.PRIVATE_KEY),
+  cert: fs.readFileSync(process.env.CERTIFICATE),
 };
 
 

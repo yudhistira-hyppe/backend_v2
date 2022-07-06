@@ -12,26 +12,24 @@ export class MediaService {
   constructor(
   ) {}
 
-    async find(path:string): Promise<any>{
-        const file = fs.createWriteStream("file.docx");
-        return http.get(BaseUrl+path, response => {
-  response.pipe(file);
-})
-        // return new Promise(function (resolve, reject) {
-        //     var req = http.request(BaseUrl+path, res => {
-        //         let body = "";
-        //         res.setEncoding('utf8');
-        //         res.on('data', function (chunk) {
-        //             body += chunk;
-        //         });
-        //         res.on("end", function () {
-        //             return resolve(Buffer.from(body));
-        //         });
-        //     });
-        //     req.on("error", function (err) {
-        //         return reject(err);
-        //     });
-        //     req.end();
-        // });
+    async find(path_:string): Promise<any>{
+        //const file = fs.createWriteStream("file.png");
+        //return http.get(BaseUrl+path_, response => {response.pipe(file);});
+        return new Promise(function (resolve, reject) {
+            var req = http.request(BaseUrl+path_, res => {
+                let body = "";
+                res.setEncoding('utf8');
+                res.on('data', function (chunk) {
+                    body += chunk;
+                });
+                res.on("end", function () {
+                    return resolve(Buffer.from(body));
+                });
+            });
+            req.on("error", function (err) {
+                return reject(err);
+            });
+            req.end();
+        });
     }
 }

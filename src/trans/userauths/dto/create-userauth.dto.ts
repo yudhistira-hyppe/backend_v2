@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { Long } from "mongodb";
 
 export class CreateUserauthDto {
   _id: ObjectId;
@@ -11,9 +12,9 @@ export class CreateUserauthDto {
   updatedAt: String;
   isExpiryPass: Boolean;
   isEmailVerified: Boolean;
-  otpRequestTime: { numberLong: String };
-  otpAttempt: { numberLong: String };
-  otpNextAttemptAllow: { numberLong: String };
+  otpRequestTime: Long;
+  otpAttempt: Long;
+  otpNextAttemptAllow: Long;
   isEnabled: Boolean;
   isAccountNonExpired: Boolean;
   isAccountNonLocked: Boolean;
