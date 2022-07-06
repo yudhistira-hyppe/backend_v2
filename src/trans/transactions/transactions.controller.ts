@@ -331,7 +331,7 @@ export class TransactionsController {
                 if (ttlincomelast > 0) {
                     var idtransaction = datatr._id;
                     var amountsnew = datatr.amount / 2;
-
+                    var jumlahincome = ttlincomelast + amountsnew;
 
 
 
@@ -341,10 +341,187 @@ export class TransactionsController {
                     var c = 500000000; var persenC = 25; var idsettC = mongoose.Types.ObjectId("62bd4836ef6e0000af0068d5");
                     var d = 5000000000; var persenD = 30; var idsettD = mongoose.Types.ObjectId("62bd4900ef6e0000af0068d6");
                     var e = 5000000001; var persenE = 35; var idsettE = mongoose.Types.ObjectId("62bd4995ef6e0000af0068d7");
-                    var pengurangan = 0;
+
                     var totalpph = 0;
 
-                    if ((ttlincomelast + amountsnew) > max && max == b) {
+                    if (jumlahincome > max && max == a) {
+                        var tincomenew = max - ttlincomelast;
+                        var amounts = tincomenew;
+                        totalpph = amounts * persenA / 100;
+
+                        var datas = {
+                            settingId: settingid,
+                            transactionId: idtransaction,
+                            income: amounts,
+                            totalincome: a,
+                            Year: currentYear,
+                            TimeStamp: dt.toISOString(),
+                            Desc: "PPH " + persenA + " %",
+                            userid: datatr.idusersell,
+                            PphAmount: totalpph
+                        }
+
+
+                        await this.pph21sService.createdata(datas);
+
+                        var tincomenew = max - ttlincomelast;
+                        var amounts = amountsnew - tincomenew;
+
+                        if (amounts > b && jumlahincome > d) {
+                            totalpph = amounts * persenB / 100;
+
+                            var datas = {
+                                settingId: idsettB,
+                                transactionId: idtransaction,
+                                income: b - max,
+                                totalincome: b,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenB + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+                            await this.pph21sService.createdata(datas);
+
+                            totalpph = (c - b) * persenC / 100;
+
+                            var datas = {
+                                settingId: idsettC,
+                                transactionId: idtransaction,
+                                income: c - b,
+                                totalincome: c,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenC + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+                            await this.pph21sService.createdata(datas);
+
+
+                            totalpph = (d - c) * persenD / 100;
+
+                            var datas = {
+                                settingId: idsettD,
+                                transactionId: idtransaction,
+                                income: d - c,
+                                totalincome: d,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenD + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+                            await this.pph21sService.createdata(datas);
+
+                            totalpph = (jumlahincome - d) * persenE / 100;
+
+                            var datas = {
+                                settingId: idsettE,
+                                transactionId: idtransaction,
+                                income: jumlahincome - d,
+                                totalincome: jumlahincome,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenE + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+                            await this.pph21sService.createdata(datas);
+                        }
+                        else if (amounts > b && jumlahincome < d) {
+                            totalpph = amounts * persenB / 100;
+
+                            var datas = {
+                                settingId: idsettB,
+                                transactionId: idtransaction,
+                                income: b - max,
+                                totalincome: b,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenB + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+                            await this.pph21sService.createdata(datas);
+
+                            totalpph = (c - b) * persenC / 100;
+
+                            var datas = {
+                                settingId: idsettC,
+                                transactionId: idtransaction,
+                                income: c - b,
+                                totalincome: c,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenC + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+                            await this.pph21sService.createdata(datas);
+
+
+
+
+                            totalpph = (jumlahincome - c) * persenD / 100;
+
+                            var datas = {
+                                settingId: idsettD,
+                                transactionId: idtransaction,
+                                income: jumlahincome - c,
+                                totalincome: jumlahincome,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenD + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+                            await this.pph21sService.createdata(datas);
+                        }
+                        else {
+                            totalpph = amounts * persenA / 100;
+
+                            var datas = {
+                                settingId: idsettA,
+                                transactionId: idtransaction,
+                                income: amounts,
+                                totalincome: ttlincomelast + amountsnew,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenA + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+
+
+                            await this.pph21sService.createdata(datas);
+                        }
+
+                    }
+                    else if (jumlahincome < max && max == a) {
+                        var tincomenew = max - ttlincomelast;
+                        var amounts = tincomenew;
+
+                        totalpph = amounts * persenA / 100;
+
+                        var datas = {
+                            settingId: idsettA,
+                            transactionId: idtransaction,
+                            income: amounts,
+                            totalincome: ttlincomelast + amountsnew,
+                            Year: currentYear,
+                            TimeStamp: dt.toISOString(),
+                            Desc: "PPH " + persenA + " %",
+                            userid: datatr.idusersell,
+                            PphAmount: totalpph
+                        }
+
+
+                        await this.pph21sService.createdata(datas);
+
+
+                    }
+                    else if (jumlahincome > max && max == b) {
                         var tincomenew = max - ttlincomelast;
                         var amounts = tincomenew;
                         totalpph = amounts * persenB / 100;
@@ -366,46 +543,74 @@ export class TransactionsController {
 
                         var tincomenew = max - ttlincomelast;
                         var amounts = amountsnew - tincomenew;
-                        totalpph = amounts * persenC / 100;
 
-                        var datas = {
-                            settingId: idsettC,
-                            transactionId: idtransaction,
-                            income: amounts,
-                            totalincome: ttlincomelast + amountsnew,
-                            Year: currentYear,
-                            TimeStamp: dt.toISOString(),
-                            Desc: "PPH " + persenC + " %",
-                            userid: datatr.idusersell,
-                            PphAmount: totalpph
+                        if (amounts > c) {
+                            totalpph = amounts * persenC / 100;
+
+                            var datas = {
+                                settingId: idsettC,
+                                transactionId: idtransaction,
+                                income: c - max,
+                                totalincome: c,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenC + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+                            await this.pph21sService.createdata(datas);
+
+                            totalpph = (d - c) * persenD / 100;
+
+                            var datas = {
+                                settingId: idsettD,
+                                transactionId: idtransaction,
+                                income: d - c,
+                                totalincome: d,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenD + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+                            await this.pph21sService.createdata(datas);
+
+                            totalpph = (jumlahincome - c - d) * persenE / 100;
+
+                            var datas = {
+                                settingId: idsettE,
+                                transactionId: idtransaction,
+                                income: jumlahincome - c - d,
+                                totalincome: jumlahincome,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenE + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+                            await this.pph21sService.createdata(datas);
+                        }
+                        else {
+                            totalpph = amounts * persenC / 100;
+
+                            var datas = {
+                                settingId: idsettC,
+                                transactionId: idtransaction,
+                                income: amounts,
+                                totalincome: ttlincomelast + amountsnew,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenC + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+
+
+                            await this.pph21sService.createdata(datas);
                         }
 
-
-                        await this.pph21sService.createdata(datas);
-
                     }
-                    // else {
-                    //     var amounts = amountsnew;
-                    //     totalpph = amounts * persenB / 100;
-
-                    //     var datas = {
-                    //         settingId: idsettB,
-                    //         transactionId: idtransaction,
-                    //         income: amounts,
-                    //         totalincome: amounts + ttlincomelast,
-                    //         Year: currentYear,
-                    //         TimeStamp: dt.toISOString(),
-                    //         Desc: "PPH " + persenB + " %",
-                    //         userid: datatr.idusersell,
-                    //         PphAmount: totalpph
-                    //     }
-
-
-                    //     await this.pph21sService.createdata(datas);
-                    // }
-
-
-                    if ((ttlincomelast + amountsnew) > max && max == c) {
+                    else if (jumlahincome > max && max == c) {
                         var tincomenew = max - ttlincomelast;
                         var amounts = tincomenew;
                         totalpph = amounts * persenC / 100;
@@ -427,24 +632,58 @@ export class TransactionsController {
 
                         var tincomenew = max - ttlincomelast;
                         var amounts = amountsnew - tincomenew;
-                        totalpph = amounts * persenD / 100;
 
-                        var datas = {
-                            settingId: idsettD,
-                            transactionId: idtransaction,
-                            income: amounts,
-                            totalincome: ttlincomelast + amountsnew,
-                            Year: currentYear,
-                            TimeStamp: dt.toISOString(),
-                            Desc: "PPH " + persenD + " %",
-                            userid: datatr.idusersell,
-                            PphAmount: totalpph
+                        if (amounts > d) {
+                            totalpph = amounts * persenD / 100;
+
+                            var datas = {
+                                settingId: idsettD,
+                                transactionId: idtransaction,
+                                income: d - max,
+                                totalincome: d,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenD + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+                            await this.pph21sService.createdata(datas);
+
+                            totalpph = (jumlahincome - d) * persenE / 100;
+
+                            var datas = {
+                                settingId: idsettE,
+                                transactionId: idtransaction,
+                                income: jumlahincome - d,
+                                totalincome: jumlahincome,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenE + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+                            await this.pph21sService.createdata(datas);
+                        }
+                        else {
+                            totalpph = amounts * persenD / 100;
+
+                            var datas = {
+                                settingId: idsettD,
+                                transactionId: idtransaction,
+                                income: amounts,
+                                totalincome: ttlincomelast + amountsnew,
+                                Year: currentYear,
+                                TimeStamp: dt.toISOString(),
+                                Desc: "PPH " + persenD + " %",
+                                userid: datatr.idusersell,
+                                PphAmount: totalpph
+                            }
+                            await this.pph21sService.createdata(datas);
                         }
 
 
-                        await this.pph21sService.createdata(datas);
-
-                    } else {
+                    }
+                    else if (jumlahincome < max && max == c) {
 
                         var amounts = amountsnew;
                         totalpph = amounts * persenC / 100;
@@ -466,6 +705,92 @@ export class TransactionsController {
 
 
                     }
+                    else if (jumlahincome > max && max == d) {
+                        var tincomenew = max - ttlincomelast;
+                        var amounts = tincomenew;
+                        totalpph = amounts * persenD / 100;
+
+                        var datas = {
+                            settingId: settingid,
+                            transactionId: idtransaction,
+                            income: amounts,
+                            totalincome: d,
+                            Year: currentYear,
+                            TimeStamp: dt.toISOString(),
+                            Desc: "PPH " + persenD + " %",
+                            userid: datatr.idusersell,
+                            PphAmount: totalpph
+                        }
+
+
+                        await this.pph21sService.createdata(datas);
+
+                        var tincomenew = max - ttlincomelast;
+                        var amounts = amountsnew - tincomenew;
+                        totalpph = amounts * persenE / 100;
+
+                        var datas = {
+                            settingId: idsettE,
+                            transactionId: idtransaction,
+                            income: amounts,
+                            totalincome: ttlincomelast + amountsnew,
+                            Year: currentYear,
+                            TimeStamp: dt.toISOString(),
+                            Desc: "PPH " + persenE + " %",
+                            userid: datatr.idusersell,
+                            PphAmount: totalpph
+                        }
+
+
+                        await this.pph21sService.createdata(datas);
+
+                    }
+                    else if (jumlahincome < max && max == d) {
+
+                        var amounts = amountsnew;
+                        totalpph = amounts * persenD / 100;
+
+                        var datas = {
+                            settingId: idsettD,
+                            transactionId: idtransaction,
+                            income: amounts,
+                            totalincome: amounts + ttlincomelast,
+                            Year: currentYear,
+                            TimeStamp: dt.toISOString(),
+                            Desc: "PPH " + persenD + " %",
+                            userid: datatr.idusersell,
+                            PphAmount: totalpph
+                        }
+
+
+                        await this.pph21sService.createdata(datas);
+
+
+                    }
+                    else if (jumlahincome > max && max > e) {
+                        var tincomenew = max - ttlincomelast;
+                        var amounts = tincomenew;
+                        totalpph = amounts * persenE / 100;
+
+                        var datas = {
+                            settingId: settingid,
+                            transactionId: idtransaction,
+                            income: amounts,
+                            totalincome: e,
+                            Year: currentYear,
+                            TimeStamp: dt.toISOString(),
+                            Desc: "PPH " + persenE + " %",
+                            userid: datatr.idusersell,
+                            PphAmount: totalpph
+                        }
+
+
+                        await this.pph21sService.createdata(datas);
+
+
+
+                    }
+
 
 
 
@@ -490,6 +815,7 @@ export class TransactionsController {
                     var penguranganB = penguranganA - b;
                     var penguranganC = penguranganB - c;
                     var penguranganD = penguranganC - d;
+                    var penguranganE = penguranganD - e;
                     if (penguranganA <= 0) {
 
                         totalpph = amounts * persenA / 100;
@@ -512,7 +838,7 @@ export class TransactionsController {
 
                     }
 
-                    if (penguranganA > 0 && penguranganA <= b) {
+                    else if (penguranganA > 0 && penguranganA <= b) {
                         totalpph = a * persenA / 100;
 
                         var datas = {
@@ -550,7 +876,7 @@ export class TransactionsController {
 
                     }
 
-                    if (penguranganB > 0 && penguranganB <= c) {
+                    else if (penguranganB > 0 && penguranganB <= c) {
                         totalpph = a * persenA / 100;
 
                         var datas = {
@@ -605,7 +931,7 @@ export class TransactionsController {
 
                     }
 
-                    if (penguranganC > 0 && penguranganC <= d) {
+                    else if (penguranganC > 0 && penguranganC <= d) {
                         totalpph = a * persenA / 100;
 
                         var datas = {
@@ -657,13 +983,15 @@ export class TransactionsController {
 
                         await this.pph21sService.createdata(datas);
 
-                        totalpph = penguranganC * persenD / 100;
+
+
+                        totalpph = (d - a - b - c) * persenD / 100;
 
                         var datas = {
                             settingId: idsettD,
                             transactionId: idtransaction,
-                            income: penguranganC,
-                            totalincome: amounts,
+                            income: (d - a - b - c),
+                            totalincome: d,
                             Year: currentYear,
                             TimeStamp: dt.toISOString(),
                             Desc: "PPH 30 %",
@@ -674,85 +1002,12 @@ export class TransactionsController {
 
                         await this.pph21sService.createdata(datas);
 
-
-                    }
-
-                    if (penguranganD > 0 && penguranganD <= e) {
-                        totalpph = a * persenA / 100;
-
-                        var datas = {
-                            settingId: idsettA,
-                            transactionId: idtransaction,
-                            income: a,
-                            totalincome: a,
-                            Year: currentYear,
-                            TimeStamp: dt.toISOString(),
-                            Desc: "PPH 5 %",
-                            userid: datatr.idusersell,
-                            PphAmount: totalpph
-                        }
-
-
-                        await this.pph21sService.createdata(datas);
-
-                        totalpph = b * persenB / 100;
-
-                        var datas = {
-                            settingId: idsettB,
-                            transactionId: idtransaction,
-                            income: b,
-                            totalincome: b + a,
-                            Year: currentYear,
-                            TimeStamp: dt.toISOString(),
-                            Desc: "PPH 15 %",
-                            userid: datatr.idusersell,
-                            PphAmount: totalpph
-                        }
-
-
-                        await this.pph21sService.createdata(datas);
-
-                        totalpph = c * persenC / 100;
-
-                        var datas = {
-                            settingId: idsettC,
-                            transactionId: idtransaction,
-                            income: c,
-                            totalincome: c + b + a,
-                            Year: currentYear,
-                            TimeStamp: dt.toISOString(),
-                            Desc: "PPH 25 %",
-                            userid: datatr.idusersell,
-                            PphAmount: totalpph
-                        }
-
-
-                        await this.pph21sService.createdata(datas);
-
-                        totalpph = d * persenD / 100;
-
-                        var datas = {
-                            settingId: idsettD,
-                            transactionId: idtransaction,
-                            income: d,
-                            totalincome: d + c + b + a,
-                            Year: currentYear,
-                            TimeStamp: dt.toISOString(),
-                            Desc: "PPH 30 %",
-                            userid: datatr.idusersell,
-                            PphAmount: totalpph
-                        }
-
-
-                        await this.pph21sService.createdata(datas);
-
-
-                        totalpph = penguranganD * persenE / 100;
+                        totalpph = (amounts - d) * persenE / 100;
 
                         var datas = {
                             settingId: idsettE,
                             transactionId: idtransaction,
-                            income: penguranganD,
+                            income: amounts - d,
                             totalincome: amounts,
                             Year: currentYear,
                             TimeStamp: dt.toISOString(),
@@ -764,8 +1019,96 @@ export class TransactionsController {
 
                         await this.pph21sService.createdata(datas);
 
-
                     }
+
+                    // else if (penguranganD > 0 && penguranganD <= e) {
+                    //     totalpph = a * persenA / 100;
+
+                    //     var datas = {
+                    //         settingId: idsettA,
+                    //         transactionId: idtransaction,
+                    //         income: a,
+                    //         totalincome: a,
+                    //         Year: currentYear,
+                    //         TimeStamp: dt.toISOString(),
+                    //         Desc: "PPH 5 %",
+                    //         userid: datatr.idusersell,
+                    //         PphAmount: totalpph
+                    //     }
+
+
+                    //     await this.pph21sService.createdata(datas);
+
+                    //     totalpph = b * persenB / 100;
+
+                    //     var datas = {
+                    //         settingId: idsettB,
+                    //         transactionId: idtransaction,
+                    //         income: b,
+                    //         totalincome: b + a,
+                    //         Year: currentYear,
+                    //         TimeStamp: dt.toISOString(),
+                    //         Desc: "PPH 15 %",
+                    //         userid: datatr.idusersell,
+                    //         PphAmount: totalpph
+                    //     }
+
+
+                    //     await this.pph21sService.createdata(datas);
+
+                    //     totalpph = c * persenC / 100;
+
+                    //     var datas = {
+                    //         settingId: idsettC,
+                    //         transactionId: idtransaction,
+                    //         income: c,
+                    //         totalincome: c + b + a,
+                    //         Year: currentYear,
+                    //         TimeStamp: dt.toISOString(),
+                    //         Desc: "PPH 25 %",
+                    //         userid: datatr.idusersell,
+                    //         PphAmount: totalpph
+                    //     }
+
+
+                    //     await this.pph21sService.createdata(datas);
+
+                    //     totalpph = (d - (a + b + c)) * persenD / 100;
+
+                    //     var datas = {
+                    //         settingId: idsettD,
+                    //         transactionId: idtransaction,
+                    //         income: d - (a + b + c),
+                    //         totalincome: d,
+                    //         Year: currentYear,
+                    //         TimeStamp: dt.toISOString(),
+                    //         Desc: "PPH 30 %",
+                    //         userid: datatr.idusersell,
+                    //         PphAmount: totalpph
+                    //     }
+
+
+                    //     await this.pph21sService.createdata(datas);
+
+                    //     totalpph = (amounts - d) * persenE / 100;
+
+                    //     var datas = {
+                    //         settingId: idsettE,
+                    //         transactionId: idtransaction,
+                    //         income: (amounts - d),
+                    //         totalincome: amounts,
+                    //         Year: currentYear,
+                    //         TimeStamp: dt.toISOString(),
+                    //         Desc: "PPH 35 %",
+                    //         userid: datatr.idusersell,
+                    //         PphAmount: totalpph
+                    //     }
+
+
+                    //     await this.pph21sService.createdata(datas);
+
+
+                    // }
                 }
             }
 
