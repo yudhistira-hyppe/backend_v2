@@ -65,6 +65,7 @@ export class TransactionsController {
         var reptoken = token.replace("Bearer ", "");
         var x = await this.parseJwt(reptoken);
         var datatrpending = null;
+        var datatrdraft = null;
         var datacekpostid = null;
 
         var totalamount = 0;
@@ -117,7 +118,14 @@ export class TransactionsController {
 
         }
 
+        try {
+            datatrdraft = await this.transactionsService.findpostiddraft(postid);
 
+
+        } catch (e) {
+            datatrdraft = null;
+
+        }
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         var idppn = "62bbbe43a7520000050077a3";
@@ -161,7 +169,7 @@ export class TransactionsController {
 
 
         if (datacekpostid !== null) {
-            if (datatrpending !== null) {
+            if (datatrpending !== null && datatrdraft !== null) {
                 var datenow = new Date(Date.now());
                 // datenow.setHours(datenow.getHours() + 7); // timestamp
                 // datenow = new Date(datenow);
@@ -233,8 +241,64 @@ export class TransactionsController {
                 }
 
 
+            } else {
+                CreateTransactionsDto.iduserbuyer = iduser;
+                CreateTransactionsDto.idusersell = iduserseller;
+                CreateTransactionsDto.timestamp = dt.toISOString();
+                CreateTransactionsDto.noinvoice = no;
+                CreateTransactionsDto.status = "draft";
+                CreateTransactionsDto.bank = null;
+                CreateTransactionsDto.nova = "";
+                CreateTransactionsDto.accountbalance = null;
+                CreateTransactionsDto.paymentmethod = null;
+                CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                CreateTransactionsDto.totalamount = totalamount;
+                CreateTransactionsDto.description = "buy draft content";
+                CreateTransactionsDto.payload = null;
+                CreateTransactionsDto.expiredtimeva = null;
+                try {
+                    let datatr = await this.transactionsService.create(CreateTransactionsDto);
+
+
+                    var data = {
+
+                        "noinvoice": datatr.noinvoice,
+                        "postid": datatr.postid,
+                        "idusersell": datatr.idusersell,
+                        "iduserbuyer": datatr.iduserbuyer,
+                        "amount": datatr.amount,
+                        "paymentmethod": datatr.paymentmethod,
+                        "status": datatr.status,
+                        "description": datatr.description,
+                        "nova": datatr.nova,
+                        "salelike": datatr.saleview,
+                        "saleview": datatr.salelike,
+                        "bank": datatr.bank,
+                        "ppn": valueppn + " %",
+                        "nominalppn": nominalppn,
+                        "bankvacharge": valuevacharge,
+                        "mdradmin": valuemradmin + " %",
+                        "nominalmdradmin": nominalmradmin,
+                        "totalamount": datatr.totalamount,
+                        "accountbalance": datatr.accountbalance,
+                        "timestamp": datatr.timestamp,
+                        "_id": datatr._id
+                    };
+
+                    res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": messages
+                    });
+                } catch (e) {
+                    res.status(HttpStatus.BAD_REQUEST).json({
+
+                        "message": messagesEror
+                    });
+                }
             }
-        } else {
+        }
+        else {
             CreateTransactionsDto.iduserbuyer = iduser;
             CreateTransactionsDto.idusersell = iduserseller;
             CreateTransactionsDto.timestamp = dt.toISOString();
