@@ -189,7 +189,6 @@ export class UtilsService {
         performance.now &&
         performance.now() * 1000) ||
       0;
-      //a
     var refreshToken = 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'.replace(
       /[xy]/g,
       function (c) {
