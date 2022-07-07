@@ -1106,6 +1106,11 @@ export class AuthService {
                   await this.utilsService.generateToken(user_email, user_deviceId)
                 ).toString();
 
+                //Ceck User jwtrefresh token
+                const datajwtrefreshtoken_data = await this.jwtrefreshtokenService.findOne(
+                  user_email,
+                );
+
                 const data = {};
                 if(countries!=null){
                   data["country"]=countries.country;
@@ -1129,7 +1134,7 @@ export class AuthService {
                 data["username"]=datauserauthsService.username;
                 data["isComplete"]=datauserbasicsService.isComplete;
                 data["status"]=datauserbasicsService.status;
-                data["refreshToken"]=datajwtrefreshtoken.refresh_token_id;
+                data["refreshToken"]=datajwtrefreshtoken_data.refresh_token_id;
                 
                 return {
                   response_code: 202,
