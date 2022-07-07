@@ -21,6 +21,7 @@ export class CreateTransactionsDto {
     accountbalance: { oid: String; };
     timestamp: string;
     expiredtimeva: string;
+    payload: VaCallback;
 
 }
 

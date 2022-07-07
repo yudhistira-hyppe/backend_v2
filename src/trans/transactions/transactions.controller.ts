@@ -160,8 +160,8 @@ export class TransactionsController {
 
 
 
-        if (datacekpostid._id !== undefined) {
-            if (datatrpending._id !== undefined) {
+        if (datacekpostid !== null) {
+            if (datatrpending !== null) {
                 var datenow = new Date(Date.now());
                 // datenow.setHours(datenow.getHours() + 7); // timestamp
                 // datenow = new Date(datenow);
@@ -186,6 +186,8 @@ export class TransactionsController {
                     CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
                     CreateTransactionsDto.totalamount = totalamount;
                     CreateTransactionsDto.description = "buy draft content";
+                    CreateTransactionsDto.payload = null;
+                    CreateTransactionsDto.expiredtimeva = null;
                     try {
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
@@ -245,6 +247,8 @@ export class TransactionsController {
             CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
             CreateTransactionsDto.totalamount = totalamount;
             CreateTransactionsDto.description = "buy draft content";
+            CreateTransactionsDto.payload = null;
+            CreateTransactionsDto.expiredtimeva = null;
             try {
                 let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
