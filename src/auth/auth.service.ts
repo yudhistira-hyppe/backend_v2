@@ -1407,14 +1407,14 @@ export class AuthService {
               isEmailVerified: "false",
               idProofStatus: "INITIAL",
               insight: {
-                  shares: new Double(0),
-                  followers: new Double(0),
-                  comments: new Double(0),
-                  followings: new Double(0),
-                  reactions: new Double(0),
-                  posts: new Double(0),
-                  views: new Double(0),
-                  likes: new Double(0)
+                  shares: new Double(0.0),
+                  followers: parseFloat('0.0'),
+                  comments: parseFloat('0.0'),
+                  followings: new Double(0.0),
+                  reactions: new Double(0.0),
+                  posts: new Double(0.0),
+                  views: new Double(0.0),
+                  likes: new Double(0.0)
               },
               interest: user_interest,
               event: "NOTIFY_OTP",
