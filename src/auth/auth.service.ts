@@ -1101,9 +1101,12 @@ export class AuthService {
                   views: insights.views,
                   likes: insights.likes,
                 };
+                
+                //Ceck User Userdevices
+                const user_userdevicesService = await this.userdevicesService.findOneEmail_(user_email);
 
                 var token = (
-                  await this.utilsService.generateToken(user_email, user_deviceId)
+                  await this.utilsService.generateToken(user_email, user_userdevicesService.deviceID)
                 ).toString();
 
                 //Ceck User jwtrefresh token

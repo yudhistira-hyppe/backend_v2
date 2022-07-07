@@ -32,6 +32,12 @@ export class UserdevicesService {
       .exec();
   }
 
+  async findOneEmail_(email: string): Promise<Userdevice> {
+    return this.userdeviceModel
+      .findOne({ email: email })
+      .exec();
+  }
+
   async findOneId(Id: Object): Promise<Userdevice> {
     return this.userdeviceModel
       .findOne({ _id: Id })
