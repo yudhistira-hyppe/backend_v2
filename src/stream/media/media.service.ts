@@ -12,24 +12,23 @@ export class MediaService {
   constructor(
   ) {}
 
-    async find(path_:string): Promise<any>{
-        const file = fs.createWriteStream("file.png");
+    async getPitch(path_:string): Promise<any>{
         return new Promise(function (resolve, reject) {
             var req = http.request(BaseUrl+path_, res => {
-                let body = "";
+                let body = [];
 
                 res.on('data', function(chunk) {
-                    body += chunk;
+                   body.push(chunk)
                 });
                 res.on('end', function() {
-                   return resolve(Buffer.from(body));
+                   return resolve(Buffer.concat(body));
                 });
-                res.pipe(file);
+                //res.pipe(file);
             });
             req.on("error", function (err) {
                 return reject(err);
             });
             req.end();
         });
-    }
+    } 
 }

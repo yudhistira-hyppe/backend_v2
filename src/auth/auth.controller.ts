@@ -36,6 +36,7 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
   @Get('api/user/profile')
   getProfile(@Request() req) {
     return req.user;
@@ -131,17 +132,13 @@ export class AuthController {
     @Param('id') id: string,
     @Query('x-auth-token') token: string,
     @Query('x-auth-user') email: string, @Res() response) {
-      // response.set("Content-Type","application/octet-stream");
-      // const file_ = createWriteStream('temp.png');
-      await this.authService.profilePict(id,token,email);
-      // await data.pipe(file_);
-      //var buf = Buffer.from(JSON.stringify(data));
-      //file_.write(buf);
-      //const file = createReadStream('file.png');
-      var path = require('path');
-      response.sendFile(path.resolve('file.png'));
+      var data = await this.authService.profilePict(id,token,email);
+      response.set("Content-Type","image/jpeg");
+      response.send(data);
   }
+
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
   @Put('api/userauths/:email')
   async updateRole(
     @Param('email') email: string,@Req() request: any, @Headers() headers) {

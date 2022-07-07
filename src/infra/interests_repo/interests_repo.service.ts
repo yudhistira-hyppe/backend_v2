@@ -41,6 +41,26 @@ export class InterestsRepoService {
     return deletedCat;
   }
 
+  async findCriteria(langIso:string,pageNumber:string,pageRow:string,search:string) {
+    const query = await this.interestsrepoModel.aggregate([
+      {
+        $lookup: {
+          from: 'interests_repo',
+          localField: 'interests_repo.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      },
+      {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'interests_repo2',
+        },
+      },
+    ]);
+    return query;
+  }
+
   async findinterst() {
     const query = await this.interestsrepoModel.aggregate([
       {

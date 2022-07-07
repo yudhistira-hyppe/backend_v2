@@ -21,6 +21,8 @@ export class Userdevice {
   _class: String;
   @Prop()
   webdeviceID: String;
+  @Prop()
+  devicetype: String;
 }
 
 export const UserdeviceSchema = SchemaFactory.createForClass(Userdevice);

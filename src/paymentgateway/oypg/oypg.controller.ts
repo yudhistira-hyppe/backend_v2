@@ -14,12 +14,21 @@ export class OyPgController {
 
     }
 
+<<<<<<< HEAD
     // @Post('/callback/va')
     // async callbackVa(@Body() payload: OyVaCallback) {
 
     //     console.log(payload);
     // }
 
+=======
+    @Post('/callback/va')
+    async callbackVa(@Body() payload: OyVaCallback) {
+
+        console.log(payload);
+    }    
+    
+>>>>>>> e2128afa7190a14151c74f201939da971ca49996
 
     @Get('test')
     async test() {

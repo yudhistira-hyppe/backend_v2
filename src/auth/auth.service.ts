@@ -15,7 +15,7 @@ import { CreateUserdeviceDto } from '../trans/userdevices/dto/create-userdevice.
 import { CreateActivityeventsDto } from '../trans/activityevents/dto/create-activityevents.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { Int32, ObjectId } from 'mongodb';
+import { Double, Int32, ObjectId } from 'mongodb';
 import { UtilsService } from '../utils/utils.service';
 import { ErrorHandler } from '../utils/error.handler';
 import { Templates } from '../infra/templates/schemas/templates.schema';
@@ -80,6 +80,7 @@ export class AuthService {
     var user_email = req.body.email;
     var user_location = req.body.location;
     var user_deviceId = req.body.deviceId;
+    var user_devicetype = req.body.devicetype;
 
     var current_date = await this.utilsService.getDateTimeString();
 
@@ -321,11 +322,15 @@ export class AuthService {
           if (await this.utilsService.ceckData(user_userdevicesService)) {
             //Get Userdevices
             try {
+              if(user_devicetype){
+                
+              }
               await this.userdevicesService.updatebyEmail(
                 user_email,
                 user_deviceId,
                 {
                   active: true,
+                  devicetype:user_devicetype
                 },
               );
               ID_user_userdevicesService = user_userdevicesService._id;
@@ -349,6 +354,7 @@ export class AuthService {
               data_CreateUserdeviceDto._class = _class_UserDevices;
               data_CreateUserdeviceDto.createdAt = current_date;
               data_CreateUserdeviceDto.updatedAt = current_date;
+              data_CreateUserdeviceDto.devicetype = user_devicetype;
               //Insert User Userdevices
               await this.userdevicesService.create(data_CreateUserdeviceDto);
             } catch (error) {
@@ -1391,7 +1397,37 @@ export class AuthService {
 
           return {
             response_code: 202,
+            data:{
+              idProofNumber: "ID",
+              roles: [
+                  "ROLE_USER"
+              ],
+              fullName:username_,
+              isIdVerified:"false",
+              isEmailVerified: "false",
+              idProofStatus: "INITIAL",
+              insight: {
+                  shares: new Double(0.0),
+                  followers: parseFloat('0.0'),
+                  comments: parseFloat('0.0'),
+                  followings: new Double(0.0),
+                  reactions: new Double(0.0),
+                  posts: new Double(0.0),
+                  views: new Double(0.0),
+                  likes: new Double(0.0)
+              },
+              interest: user_interest,
+              event: "NOTIFY_OTP",
+              email: user_email,
+              username: username_,
+              isComplete: "false",
+              status: "NOTIFY"
+            },
             messages: {
+              nextFlow: [
+                  "$.event: next should VERIFY_OTP",
+                  "$.status: next should REPLY"
+              ],
               info: ['Signup successful'],
             },
           };
@@ -3583,6 +3619,16 @@ export class AuthService {
           );
         }
 
+        if(mediaprofilepicts_json!=null){
+          if(mediaprofilepicts_json.$id!=undefined){
+            if(mediaprofilepicts_json.$id!=id){
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, Post Id not match',
+              );
+            }
+          }
+        }
+
         let mediaprofilepicts = null;
         if(mediaprofilepicts_json!=null){
           mediaprofilepicts = await this.mediaprofilepictsService.findOne(
@@ -3597,12 +3643,8 @@ export class AuthService {
           }
         }
 
-        if(mediaprofilepicts_fsSourceUri!=''){
-            //console.log(mediaprofilepicts_fsSourceUri);
-            //const stream = Readable.from(await this.mediaService.find(mediaprofilepicts_fsSourceUri));
-          
-          return await this.mediaService.find(mediaprofilepicts_fsSourceUri);
-            //return ;
+        if(mediaprofilepicts_fsSourceUri!=''||mediaprofilepicts_fsSourceUri!=null){
+          return await this.mediaService.getPitch(mediaprofilepicts_fsSourceUri);
         }
       }else{
         await this.errorHandler.generateNotAcceptableException(
@@ -3679,7 +3721,7 @@ export class AuthService {
           if(status=="ON_PROGRESS"){
             await this.userauthsService.findUpdateEmailStatusRole(email,status);
             await this.sendemailVerification(email, 'PREMIUM_VERIFIKASI');
-             response_status =(await this.userauthsService.findOneByEmail( email)).upgradeRole;
+            response_status =(await this.userauthsService.findOneByEmail( email)).upgradeRole;
           }else if(status=="CECK"){
             if(datauserauthsService.upgradeRole == undefined){
               response_status = null;
@@ -3726,7 +3768,7 @@ export class AuthService {
       $_('#linkverifikasi').attr('href', link+email);
 
       //var to = email;
-      var to = 'sukma.hyppe@gmail.com';
+      var to = email;
       var from = '"no-reply" <' + Templates_.from.toString() + '>';
       var subject = Templates_.subject.toString();
       var html_body_ = $_.html().toString();
@@ -3747,4 +3789,5 @@ export class AuthService {
       );
     }
   }
+
 }

@@ -5,12 +5,15 @@ import { UserauthsModule } from '../trans/userauths/userauths.module';
 import { JwtrefreshtokenModule } from '../trans/jwtrefreshtoken/jwtrefreshtoken.module';
 import { TemplatesModule } from '../infra/templates/templates.module';
 import { JwtModule } from '@nestjs/jwt';
-import { MailerModule } from '@nestjs-modules/mailer';
+import { MailerModule } from '@nestjs-modules/mailer'; 
+import { UtilsController } from './utils.controller';
 import { ConfigService } from '@nestjs/config';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { InterestsRepoModule } from '../infra/interests_repo/interests_repo.module';
 
 @Module({
   imports: [
+    InterestsRepoModule,
     TemplatesModule,
     UserauthsModule,
     JwtrefreshtokenModule,
@@ -42,6 +45,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       inject: [ConfigService],
     }),
   ],
+  controllers: [UtilsController],
   providers: [ErrorHandler, UtilsService],
   exports: [ErrorHandler, UtilsService],
 })
