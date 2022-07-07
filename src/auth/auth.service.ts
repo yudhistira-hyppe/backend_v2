@@ -681,6 +681,11 @@ export class AuthService {
       user_email,
     );
 
+    //Ceck User jwtrefresh token
+    const datajwtrefreshtoken = await this.jwtrefreshtokenService.findOne(
+      user_email,
+    );
+
     if (
       (await this.utilsService.ceckData(datauserbasicsService)) &&
       (await this.utilsService.ceckData(datauserauthsService)) &&
@@ -898,9 +903,242 @@ export class AuthService {
                   );
                 }
 
+                var ID_parent_ActivityEvent_ = (await this.utilsService.generateId()).toLowerCase();
+                var ID_child_ActivityEvent_ = (await this.utilsService.generateId()).toLowerCase();
+                //Create ActivityEvent Parent
+                try {
+                  var data_CreateActivityeventsDto_parent_ = new CreateActivityeventsDto();
+                  data_CreateActivityeventsDto_parent_._id =  new mongoose.Types.ObjectId();
+                  data_CreateActivityeventsDto_parent_.activityEventID =
+                    ID_parent_ActivityEvent_;
+                  data_CreateActivityeventsDto_parent_.activityType = 'LOGIN';
+                  data_CreateActivityeventsDto_parent_.active = true;
+                  data_CreateActivityeventsDto_parent_.status = 'INITIAL';
+                  data_CreateActivityeventsDto_parent_.target = 'USER_LOGOUT';
+                  data_CreateActivityeventsDto_parent_.event = 'LOGIN';
+                  data_CreateActivityeventsDto_parent_._class = _class_ActivityEvent;
+                  data_CreateActivityeventsDto_parent_.payload = {
+                    login_location: {
+                      latitude: undefined,
+                      longitude: undefined,
+                    },
+                    logout_date: undefined,
+                    login_date: current_date,
+                    login_device: undefined,
+                    email: user_email,
+                  };
+                  data_CreateActivityeventsDto_parent_.createdAt = current_date;
+                  data_CreateActivityeventsDto_parent_.updatedAt = current_date;
+                  data_CreateActivityeventsDto_parent_.sequenceNumber = new Int32(0);
+                  data_CreateActivityeventsDto_parent_.flowIsDone = false;
+                  data_CreateActivityeventsDto_parent_.__v = undefined;
+                  data_CreateActivityeventsDto_parent_.transitions = [
+                    {
+                      $ref: 'activityevents',
+                      $id: Object(ID_child_ActivityEvent_),
+                      $db: 'hyppe_trans_db',
+                    },
+                  ];
+                  data_CreateActivityeventsDto_parent_.userbasic =
+                    datauserbasicsService._id;
+
+                  //Insert ActivityEvent Parent
+                  await this.activityeventsService.create(
+                    data_CreateActivityeventsDto_parent_,
+                  );
+                } catch (error) {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Create Activity events Parent. Error:' +
+                      error,
+                  );
+                }
+
+                //Create ActivityEvent child
+                try {
+                  var data_CreateActivityeventsDto_child_ = new CreateActivityeventsDto();
+                  data_CreateActivityeventsDto_child_._id = new mongoose.Types.ObjectId();
+                  data_CreateActivityeventsDto_child_.activityEventID =
+                    ID_child_ActivityEvent_;
+                  data_CreateActivityeventsDto_child_.activityType = 'DEVICE_ACTIVITY';
+                  data_CreateActivityeventsDto_child_.active = true;
+                  data_CreateActivityeventsDto_child_.status = 'INITIAL';
+                  data_CreateActivityeventsDto_child_.target = 'ACTIVE';
+                  data_CreateActivityeventsDto_child_.event = 'AWAKE';
+                  data_CreateActivityeventsDto_child_._class = _class_ActivityEvent;
+                  data_CreateActivityeventsDto_child_.payload = {
+                    login_location: {
+                      latitude: undefined,
+                      longitude: undefined,
+                    },
+                    logout_date: undefined,
+                    login_date: current_date,
+                    login_device: undefined,
+                    email: user_email,
+                  };
+                  data_CreateActivityeventsDto_child_.createdAt = current_date;
+                  data_CreateActivityeventsDto_child_.updatedAt = current_date;
+                  data_CreateActivityeventsDto_child_.sequenceNumber = new Int32(1);
+                  data_CreateActivityeventsDto_child_.flowIsDone = false;
+                  data_CreateActivityeventsDto_child_.__v = undefined;
+                  data_CreateActivityeventsDto_child_.parentActivityEventID =
+                    ID_parent_ActivityEvent;
+                  data_CreateActivityeventsDto_child_.userbasic =
+                    datauserbasicsService._id;
+
+                  //Insert ActivityEvent Parent
+                  await this.activityeventsService.create(
+                    data_CreateActivityeventsDto_child_,
+                  );
+                } catch (error) {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Create Activity events Child. Error:' + error,
+                  );
+                }
+
+                var countries_json = null;
+                if(datauserbasicsService.countries !=undefined){
+                  countries_json = JSON.parse(
+                    JSON.stringify(datauserbasicsService.countries),
+                  );
+                }
+                var languages_json = null;
+                if(datauserbasicsService.languages !=undefined){
+                  languages_json = JSON.parse(
+                    JSON.stringify(datauserbasicsService.languages),
+                  );
+                }
+                var mediaprofilepicts_json = null;
+                if(datauserbasicsService.profilePict !=undefined){
+                  mediaprofilepicts_json = JSON.parse(
+                    JSON.stringify(datauserbasicsService.profilePict),
+                  );
+                }
+                var insights_json = null;
+                if(datauserbasicsService.insight !=undefined){
+                  insights_json = JSON.parse(
+                    JSON.stringify(datauserbasicsService.insight),
+                  );
+                }
+
+                var interests_array = [];
+                if (datauserbasicsService.userInterests.length > 0) {
+                  for (let i = 0; i < datauserbasicsService.userInterests.length; i++) {
+                    var interests_json = JSON.parse(
+                      JSON.stringify(datauserbasicsService.userInterests[i]),
+                    );
+                    if (interests_json.$ref == 'interests_repo') {
+                      const interests = await this.interestsRepoService.findOne(
+                        interests_json.$id,
+                      );
+                      interests_array[i] = interests.interestName;
+                    } else {
+                      const interests = await this.interestsService.findOne(
+                        interests_json.$id,
+                      );
+                      interests_array[i] = interests.interestName;
+                    }
+                  }
+                }
+
+                let countries = null;
+                if(countries_json!=null){
+                  countries = await this.countriesService.findOne(countries_json.$id);
+                }
+
+                let languages = null;
+                if(languages_json!=null){
+                  languages = await this.languagesService.findOne(languages_json.$id);
+                }
+
+                let mediaprofilepicts = null;
+                if(mediaprofilepicts_json!=null){
+                  mediaprofilepicts = await this.mediaprofilepictsService.findOne(
+                    mediaprofilepicts_json.$id,
+                  );
+                }
+
+                let insights = null;
+                if(insights_json!=null){
+                  insights = await this.insightsService.findOne(insights_json.$id);
+                }
+
+                var mediaUri = null;
+                if(mediaprofilepicts!=null){
+                  mediaUri = mediaprofilepicts.mediaUri;
+                }
+
+                let result = null;
+                if(mediaUri!=null){
+                  result = '/profilepict/' + mediaUri.replace('_0001.jpeg', '');
+                }
+
+                var mediaprofilepicts_res = {}
+                if(mediaprofilepicts!=null){
+                  if(mediaprofilepicts.mediaBasePath!=null){
+                    mediaprofilepicts_res["mediaBasePath"]=mediaprofilepicts.mediaBasePath;
+                  }
+
+                  if(mediaprofilepicts.mediaUri!=null){
+                    mediaprofilepicts_res["mediaUri"]=mediaprofilepicts.mediaUri;
+                  }
+
+                  if (mediaprofilepicts.mediaType != null) {
+                    mediaprofilepicts_res['mediaType'] = mediaprofilepicts.mediaType;
+                  }
+                }
+
+                if(result!=null){
+                  mediaprofilepicts_res["mediaEndpoint"]=result;
+                }
+
+                var insights_res = {
+                  shares: insights.shares,
+                  followers: insights.followers,
+                  comments: insights.comments,
+                  followings: insights.followings,
+                  reactions: insights.reactions,
+                  posts: insights.posts,
+                  views: insights.views,
+                  likes: insights.likes,
+                };
+
+                var token = (
+                  await this.utilsService.generateToken(user_email, user_deviceId)
+                ).toString();
+
+                const data = {};
+                if(countries!=null){
+                  data["country"]=countries.country;
+                }
+                data["roles"]=datauserauthsService.roles;
+                data["fullName"]=datauserbasicsService.fullName;
+                if (await this.utilsService.ceckData(mediaprofilepicts_res)) {
+                  data['avatar'] = mediaprofilepicts_res;
+                }
+                data["isIdVerified"]=datauserbasicsService.isIdVerified;
+                data["isEmailVerified"]=datauserauthsService.isEmailVerified;
+                data["token"]='Bearer ' + token;
+                data["idProofStatus"]=datauserbasicsService.idProofStatus;
+                data["insight"]=insights_res;
+                if(languages!=null){
+                  data["langIso"]=languages.langIso;
+                }
+                data["interest"]=interests_array;
+                data["event"]=datauserbasicsService.event;
+                data["email"]=datauserbasicsService.email;
+                data["username"]=datauserauthsService.username;
+                data["isComplete"]=datauserbasicsService.isComplete;
+                data["status"]=datauserbasicsService.status;
+                data["refreshToken"]=datajwtrefreshtoken.refresh_token_id;
+                
                 return {
                   response_code: 202,
+                  data,
                   messages: {
+                    "nextFlow": [
+                        "$.event: next should UPDATE_BIO",
+                        "$.status: next should IN_PROGRESS"
+                    ],
                     info: ['Verify OTP successful'],
                   },
                 };
@@ -1407,14 +1645,14 @@ export class AuthService {
               isEmailVerified: "false",
               idProofStatus: "INITIAL",
               insight: {
-                  shares: new Double(0.0),
-                  followers: parseFloat('0.0'),
-                  comments: parseFloat('0.0'),
-                  followings: new Double(0.0),
-                  reactions: new Double(0.0),
-                  posts: new Double(0.0),
-                  views: new Double(0.0),
-                  likes: new Double(0.0)
+                  shares: new Double(0),
+                  followers: new Double(0),
+                  comments: new Double(0),
+                  followings: new Double(0),
+                  reactions: new Double(0),
+                  posts: new Double(0),
+                  views: new Double(0),
+                  likes: new Double(0)
               },
               interest: user_interest,
               event: "NOTIFY_OTP",
