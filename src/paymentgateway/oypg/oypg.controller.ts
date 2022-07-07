@@ -14,26 +14,17 @@ export class OyPgController {
 
     }
 
-<<<<<<< HEAD
     // @Post('/callback/va')
     // async callbackVa(@Body() payload: OyVaCallback) {
 
     //     console.log(payload);
     // }
 
-=======
-    @Post('/callback/va')
-    async callbackVa(@Body() payload: OyVaCallback) {
-
-        console.log(payload);
-    }    
-    
->>>>>>> e2128afa7190a14151c74f201939da971ca49996
 
     @Get('test')
     async test() {
         let ac = new OyAccountInquiry();
-        ac.account_number = '1280259361'
+        ac.account_number = '12802593612'
         ac.bank_code = '014';
 
         const data = await this.oyPgService.inquiryAccount(ac);
