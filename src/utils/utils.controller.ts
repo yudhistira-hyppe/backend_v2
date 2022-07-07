@@ -18,8 +18,7 @@ export class UtilsController {
     @Param('langIso') langIso: string,
     @Param('pageNumber') pageNumber: string,
     @Param('pageRow') pageRow: string,
-    @Param('search') search: string,
-    @Query('x-auth-token') token: string) {
-        return await this.interestsRepoService.findAll();
+    @Param('search') search: string) {
+        return await this.interestsRepoService.findCriteria(langIso,pageNumber,pageRow,search);
     }
 }

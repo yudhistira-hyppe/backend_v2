@@ -15,7 +15,7 @@ import { CreateUserdeviceDto } from '../trans/userdevices/dto/create-userdevice.
 import { CreateActivityeventsDto } from '../trans/activityevents/dto/create-activityevents.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { Int32, ObjectId } from 'mongodb';
+import { Double, Int32, ObjectId } from 'mongodb';
 import { UtilsService } from '../utils/utils.service';
 import { ErrorHandler } from '../utils/error.handler';
 import { Templates } from '../infra/templates/schemas/templates.schema';
@@ -1407,14 +1407,14 @@ export class AuthService {
               isEmailVerified: "false",
               idProofStatus: "INITIAL",
               insight: {
-                  shares: 0.0,
-                  followers: 0.0,
-                  comments: 0.0,
-                  followings: 0.0,
-                  reactions: 0.0,
-                  posts: 0.0,
-                  views: 0.0,
-                  likes: 0.0
+                  shares: new Double(0),
+                  followers: new Double(0),
+                  comments: new Double(0),
+                  followings: new Double(0),
+                  reactions: new Double(0),
+                  posts: new Double(0),
+                  views: new Double(0),
+                  likes: new Double(0)
               },
               interest: user_interest,
               event: "NOTIFY_OTP",

@@ -4,7 +4,7 @@ import { UserauthsService } from '../trans/userauths/userauths.service';
 import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken.service';
 import { TemplatesService } from '../infra/templates/templates.service';
 import { JwtService } from '@nestjs/jwt';
-import { MailerService } from '@nestjs-modules/mailer';
+import { MailerService } from '@nestjs-modules/mailer'; 
 import { Templates } from '../infra/templates/schemas/templates.schema';
 import * as admin from 'firebase-admin';
 import QR from 'qrcode-base64'
