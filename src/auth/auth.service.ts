@@ -3679,7 +3679,7 @@ export class AuthService {
           if(status=="ON_PROGRESS"){
             await this.userauthsService.findUpdateEmailStatusRole(email,status);
             await this.sendemailVerification(email, 'PREMIUM_VERIFIKASI');
-             response_status =(await this.userauthsService.findOneByEmail( email)).upgradeRole;
+            response_status =(await this.userauthsService.findOneByEmail( email)).upgradeRole;
           }else if(status=="CECK"){
             if(datauserauthsService.upgradeRole == undefined){
               response_status = null;
@@ -3726,7 +3726,7 @@ export class AuthService {
       $_('#linkverifikasi').attr('href', link+email);
 
       //var to = email;
-      var to = 'sukma.hyppe@gmail.com';
+      var to = email;
       var from = '"no-reply" <' + Templates_.from.toString() + '>';
       var subject = Templates_.subject.toString();
       var html_body_ = $_.html().toString();
@@ -3747,4 +3747,5 @@ export class AuthService {
       );
     }
   }
+
 }
