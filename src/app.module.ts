@@ -50,10 +50,9 @@ import { ProfileModule } from './trans/profile/profile.module';
 import { GetuserprofilesModule } from './trans/getuserprofiles/getuserprofiles.module';
 import { GetusercontentsModule } from './trans/getusercontents/getusercontents.module';
 import { CommentModule } from './trans/getusercontents/comment/comment.module';
-import { OyPgModule } from './paymentgateway/oypg/oypg.module';
 import { FaqsModule } from './trans/faqs/faqs.module';
 import { AnnouncementsModule } from './trans/announcements/announcements.module';
-import { UtilsModule } from './utils/utils.module'; 
+import { UtilsModule } from './utils/utils.module';
 import { TransactionsModule } from './trans/transactions/transactions.module';
 import { AccountbalancesModule } from './trans/accountbalances/accountbalances.module';
 import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents/getcontentevents.module';
@@ -75,6 +74,7 @@ import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents
     // UserauthsModule,
     //CommentModule,
     //UserticketdetailsModule,
+
     UtilsModule,
     GetcontenteventsModule,
     AccountbalancesModule,
@@ -126,7 +126,7 @@ import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents
     SagasModule,
     AdrolesModule,
     AuthModule,
-    OyPgModule,
+
   ],
 })
 export class AppModule { }

@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { VaCallback } from '../dto/create-transactions.dto';
 
 export type TransactionsDocument = Transactions & Document;
 
@@ -27,6 +28,8 @@ export class Transactions {
     description: string
     @Prop()
     nova: string
+    @Prop()
+    expiredtimeva: string
 
     @Prop()
     salelike: boolean
@@ -46,6 +49,8 @@ export class Transactions {
     accountbalance: { oid: string }
     @Prop()
     timestamp: string
+    @Prop()
+    payload: VaCallback
 
 
 }

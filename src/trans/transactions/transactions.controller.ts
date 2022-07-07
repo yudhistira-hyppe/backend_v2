@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, BadRequestException, HttpStatus, Put, Headers, Req } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
-import { CreateTransactionsDto } from './dto/create-transactions.dto';
+import { CreateTransactionsDto, VaCallback } from './dto/create-transactions.dto';
 import { Transactions } from './schemas/transactions.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserbasicsService } from '../userbasics/userbasics.service';
@@ -13,7 +13,7 @@ import { AccountbalancesService } from '../accountbalances/accountbalances.servi
 import { OyPgService } from '../../paymentgateway/oypg/oypg.service';
 
 import { Types } from 'mongoose';
-@Controller('api/transactions')
+@Controller()
 export class TransactionsController {
     constructor(private readonly transactionsService: TransactionsService, private readonly userbasicsService: UserbasicsService,
         private readonly settingsService: SettingsService,
@@ -24,7 +24,7 @@ export class TransactionsController {
         private readonly accountbalancesService: AccountbalancesService,
         private readonly oyPgService: OyPgService) { }
     @UseGuards(JwtAuthGuard)
-    @Post()
+    @Post('api/transactions')
     async create(@Res() res, @Headers('x-auth-token') auth: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Request() request) {
         const messages = {
             "info": ["The create successful"],
@@ -64,6 +64,8 @@ export class TransactionsController {
         var token = auth;
         var reptoken = token.replace("Bearer ", "");
         var x = await this.parseJwt(reptoken);
+        var datatrpending = null;
+        var datacekpostid = null;
 
         var totalamount = 0;
         var email = x.email;
@@ -76,8 +78,6 @@ export class TransactionsController {
 
         var substrtahun = beforedate.substring(0, 4);
         var numtahun = parseInt(substrtahun);
-
-
 
         var substrbulan = beforedate.substring(7, 5);
         var numbulan = parseInt(substrbulan);
@@ -93,6 +93,8 @@ export class TransactionsController {
 
         var iduser = ubasic._id;
         var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
 
         var datapost = null;
         try {
@@ -105,6 +107,16 @@ export class TransactionsController {
         } catch (e) {
             datapost = null;
         }
+
+        try {
+            datacekpostid = await this.transactionsService.findpostidpost(postid);
+
+
+        } catch (e) {
+            datacekpostid = null;
+
+        }
+
 
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
@@ -135,63 +147,163 @@ export class TransactionsController {
         } catch (e) {
             throw new BadRequestException("Setting value not found..!");
         }
-        CreateTransactionsDto.iduserbuyer = iduser;
-        CreateTransactionsDto.idusersell = iduserseller;
-        CreateTransactionsDto.timestamp = dt.toISOString();
-        CreateTransactionsDto.noinvoice = no;
-        CreateTransactionsDto.status = "draft";
-        CreateTransactionsDto.bank = null;
-        CreateTransactionsDto.nova = "";
-        CreateTransactionsDto.accountbalance = null;
-        CreateTransactionsDto.paymentmethod = null;
-        CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
-        CreateTransactionsDto.totalamount = totalamount;
-        CreateTransactionsDto.description = "buy draft content";
+
+
         try {
-            let datatr = await this.transactionsService.create(CreateTransactionsDto);
+            datatrpending = await this.transactionsService.findpostidpending(postid);
 
 
-            var data = {
-
-                "noinvoice": datatr.noinvoice,
-                "postid": datatr.postid,
-                "idusersell": datatr.idusersell,
-                "iduserbuyer": datatr.iduserbuyer,
-                "amount": datatr.amount,
-                "paymentmethod": datatr.paymentmethod,
-                "status": datatr.status,
-                "description": datatr.description,
-                "nova": datatr.nova,
-                "salelike": datatr.saleview,
-                "saleview": datatr.salelike,
-                "bank": datatr.bank,
-                "ppn": valueppn + " %",
-                "nominalppn": nominalppn,
-                "bankvacharge": valuevacharge,
-                "mdradmin": valuemradmin + " %",
-                "nominalmdradmin": nominalmradmin,
-                "totalamount": datatr.totalamount,
-                "accountbalance": datatr.accountbalance,
-                "timestamp": datatr.timestamp,
-                "_id": datatr._id
-            };
-
-            res.status(HttpStatus.OK).json({
-                response_code: 202,
-                "data": data,
-                "message": messages
-            });
         } catch (e) {
-            res.status(HttpStatus.BAD_REQUEST).json({
+            datatrpending = null;
 
-                "message": messagesEror
-            });
         }
+
+
+
+        if (datacekpostid._id !== undefined) {
+            if (datatrpending._id !== undefined) {
+                var datenow = new Date(Date.now());
+                // datenow.setHours(datenow.getHours() + 7); // timestamp
+                // datenow = new Date(datenow);
+
+                var expiredva = datatrpending.expiredtimeva;
+                var dateVa = new Date(expiredva);
+                dateVa.setHours(dateVa.getHours() - 7); // timestamp
+                // dateVa = new Date(dateVa);
+
+                var idtransaction = datatrpending._id;
+
+                if (datenow > dateVa) {
+                    CreateTransactionsDto.iduserbuyer = iduser;
+                    CreateTransactionsDto.idusersell = iduserseller;
+                    CreateTransactionsDto.timestamp = dt.toISOString();
+                    CreateTransactionsDto.noinvoice = no;
+                    CreateTransactionsDto.status = "draft";
+                    CreateTransactionsDto.bank = null;
+                    CreateTransactionsDto.nova = "";
+                    CreateTransactionsDto.accountbalance = null;
+                    CreateTransactionsDto.paymentmethod = null;
+                    CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                    CreateTransactionsDto.totalamount = totalamount;
+                    CreateTransactionsDto.description = "buy draft content";
+                    try {
+                        let datatr = await this.transactionsService.create(CreateTransactionsDto);
+
+                        await this.transactionsService.updatestatuscancel(idtransaction);
+                        var data = {
+
+                            "noinvoice": datatr.noinvoice,
+                            "postid": datatr.postid,
+                            "idusersell": datatr.idusersell,
+                            "iduserbuyer": datatr.iduserbuyer,
+                            "amount": datatr.amount,
+                            "paymentmethod": datatr.paymentmethod,
+                            "status": datatr.status,
+                            "description": datatr.description,
+                            "nova": datatr.nova,
+                            "salelike": datatr.saleview,
+                            "saleview": datatr.salelike,
+                            "bank": datatr.bank,
+                            "ppn": valueppn + " %",
+                            "nominalppn": nominalppn,
+                            "bankvacharge": valuevacharge,
+                            "mdradmin": valuemradmin + " %",
+                            "nominalmdradmin": nominalmradmin,
+                            "totalamount": datatr.totalamount,
+                            "accountbalance": datatr.accountbalance,
+                            "timestamp": datatr.timestamp,
+                            "_id": datatr._id
+                        };
+
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": messages
+                        });
+                    } catch (e) {
+                        res.status(HttpStatus.BAD_REQUEST).json({
+
+                            "message": messagesEror
+                        });
+                    }
+                } else {
+                    throw new BadRequestException("Transaction pending on another user");
+                }
+
+
+            }
+        } else {
+            CreateTransactionsDto.iduserbuyer = iduser;
+            CreateTransactionsDto.idusersell = iduserseller;
+            CreateTransactionsDto.timestamp = dt.toISOString();
+            CreateTransactionsDto.noinvoice = no;
+            CreateTransactionsDto.status = "draft";
+            CreateTransactionsDto.bank = null;
+            CreateTransactionsDto.nova = "";
+            CreateTransactionsDto.accountbalance = null;
+            CreateTransactionsDto.paymentmethod = null;
+            CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+            CreateTransactionsDto.totalamount = totalamount;
+            CreateTransactionsDto.description = "buy draft content";
+            try {
+                let datatr = await this.transactionsService.create(CreateTransactionsDto);
+
+
+                var data = {
+
+                    "noinvoice": datatr.noinvoice,
+                    "postid": datatr.postid,
+                    "idusersell": datatr.idusersell,
+                    "iduserbuyer": datatr.iduserbuyer,
+                    "amount": datatr.amount,
+                    "paymentmethod": datatr.paymentmethod,
+                    "status": datatr.status,
+                    "description": datatr.description,
+                    "nova": datatr.nova,
+                    "salelike": datatr.saleview,
+                    "saleview": datatr.salelike,
+                    "bank": datatr.bank,
+                    "ppn": valueppn + " %",
+                    "nominalppn": nominalppn,
+                    "bankvacharge": valuevacharge,
+                    "mdradmin": valuemradmin + " %",
+                    "nominalmdradmin": nominalmradmin,
+                    "totalamount": datatr.totalamount,
+                    "accountbalance": datatr.accountbalance,
+                    "timestamp": datatr.timestamp,
+                    "_id": datatr._id
+                };
+
+                res.status(HttpStatus.OK).json({
+                    response_code: 202,
+                    "data": data,
+                    "message": messages
+                });
+            } catch (e) {
+                res.status(HttpStatus.BAD_REQUEST).json({
+
+                    "message": messagesEror
+                });
+            }
+        }
+
+
+
     }
 
     @UseGuards(JwtAuthGuard)
-    @Put('status/:id')
-    async update(@Res() res, @Param('id') id: string, @Body() createTransactionsDto: CreateTransactionsDto, @Req() request: Request) {
+    @Put('api/transactions/status/:id')
+    async update(@Res() res, @Headers('x-auth-token') auth: string, @Param('id') id: string, @Body() createTransactionsDto: CreateTransactionsDto, @Req() request: Request) {
+
+        var token = auth;
+        var reptoken = token.replace("Bearer ", "");
+        var x = await this.parseJwt(reptoken);
+
+        var email = x.email;
+
+        var ubasic = await this.userbasicsService.findOne(email);
+        var name = ubasic.fullName;
+        var useridbuy = ubasic._id;
 
         const messages = {
             "info": ["The update successful"],
@@ -200,7 +312,7 @@ export class TransactionsController {
         const messagesEror = {
             "info": ["Todo is not found!"],
         };
-
+        var datatransaksi = null;
         var bankcode = null;
         var paymentmethod = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
@@ -222,7 +334,7 @@ export class TransactionsController {
         var idppn = "62bbbe43a7520000050077a3";
         var idmdradmin = "62bd413ff37a00001a004369";
         var idbankvacharge = "62bd40e0f37a00001a004366";
-
+        var idexpiredva = "62bbbe8ea7520000050077a4";
         var methodeid = createTransactionsDto.paymentmethod;
         var idmethode = null;
         var idbank = null;
@@ -251,79 +363,182 @@ export class TransactionsController {
         var datasettingppn = null;
         var datamradmin = null;
         var databankvacharge = null;
+        var datasettingexpiredva = null;
         try {
             datasettingppn = await this.settingsService.findOne(idppn);
             datamradmin = await this.settingsService.findOne(idmdradmin);
             databankvacharge = await this.settingsService.findOne(idbankvacharge);
-
+            datasettingexpiredva = await this.settingsService.findOne(idexpiredva);
             var valueppn = datasettingppn._doc.value;
             var valuevacharge = databankvacharge._doc.value;
             var valuemradmin = datamradmin._doc.value;
+            var valueexpiredva = datasettingexpiredva._doc.value;
 
         } catch (e) {
             throw new BadRequestException("Setting value not found..!");
         }
 
+        try {
+            datatransaksi = await this.transactionsService.findid(id);
+        } catch (e) {
+            datatransaksi = null;
+        }
+
+        var userbuy = datatransaksi._doc.iduserbuyer;
+        var totalamoun = datatransaksi._doc.totalamount;
+
+        var datava = {
+            "partner_user_id": userbuy.toString(),
+            "amount": totalamoun,
+            "bank_code": bankcode,
+            "is_open": false,
+            "is_single_use": true,
+            "is_lifetime": false,
+            "username_display": name.toString(),
+            "email": email,
+            "trx_expiration_time": valueexpiredva,
+        }
 
         try {
-            createTransactionsDto.nova = "3838383388";
-            createTransactionsDto.status = "success";
-            createTransactionsDto.description = "buy success content";
-            createTransactionsDto.bank = idbank;
-            createTransactionsDto.paymentmethod = idmethode;
-            let datatr = await this.transactionsService.update(id, createTransactionsDto);
-            var nominalppn = datatr.amount * valueppn / 100;
-            var nominalmradmin = datatr.amount * valuemradmin / 100;
+            let datareqva = await this.oyPgService.generateStaticVa(datava);
+            var statuscodeva = datareqva.status.code;
+            var nova = datareqva.va_number;
+            var expiredva = datareqva.trx_expiration_time;
+            var d1 = new Date(expiredva);
+            d1.setHours(d1.getHours() + 7); // timestamp
+            d1 = new Date(d1);
 
-            var status = datatr.status;
-            var data = {
 
-                "noinvoice": datatr.noinvoice,
-                "postid": datatr.postid,
-                "idusersell": datatr.idusersell,
-                "iduserbuyer": datatr.iduserbuyer,
-                "amount": datatr.amount,
-                "paymentmethod": namamethode,
-                "status": datatr.status,
-                "description": datatr.description,
-                "nova": datatr.nova,
-                "salelike": datatr.saleview,
-                "saleview": datatr.salelike,
-                "bank": namabank,
-                "ppn": valueppn + " %",
-                "nominalppn": nominalppn,
-                "bankvacharge": valuevacharge,
-                "mdradmin": valuemradmin + " %",
-                "nominalmdradmin": nominalmradmin,
-                "totalamount": datatr.totalamount,
-                "accountbalance": datatr.accountbalance,
-                "timestamp": datatr.timestamp,
-                "_id": datatr._id
-            };
+        } catch (e) {
+            throw new BadRequestException("Not process..!");
+
+        }
 
 
 
-            if (status == "success") {
-                var idtransaction = datatr._id;
-                var idusersell = datatr.idusersell;
-                var amount = datatr.amount;
-                var postid = datatr.postid;
-                await this.pph(idtransaction, idusersell, amount, postid);
+
+        if (statuscodeva == "000") {
+
+            try {
+                createTransactionsDto.nova = nova;
+                createTransactionsDto.status = "pending";
+                createTransactionsDto.description = "buy pending content";
+                createTransactionsDto.bank = idbank;
+                createTransactionsDto.paymentmethod = idmethode;
+                createTransactionsDto.expiredtimeva = d1.toISOString();
+                let datatr = await this.transactionsService.update(id, createTransactionsDto);
+                var nominalppn = datatr.amount * valueppn / 100;
+                var nominalmradmin = datatr.amount * valuemradmin / 100;
+                var data = {
+
+                    "noinvoice": datatr.noinvoice,
+                    "postid": datatr.postid,
+                    "idusersell": datatr.idusersell,
+                    "iduserbuyer": datatr.iduserbuyer,
+                    "amount": datatr.amount,
+                    "paymentmethod": namamethode,
+                    "status": datatr.status,
+                    "description": datatr.description,
+                    "nova": datatr.nova,
+                    "expiredtimeva": datatr.expiredtimeva,
+                    "salelike": datatr.saleview,
+                    "saleview": datatr.salelike,
+                    "bank": namabank,
+                    "ppn": valueppn + " %",
+                    "nominalppn": nominalppn,
+                    "bankvacharge": valuevacharge,
+                    "mdradmin": valuemradmin + " %",
+                    "nominalmdradmin": nominalmradmin,
+                    "totalamount": datatr.totalamount,
+                    "accountbalance": datatr.accountbalance,
+                    "timestamp": datatr.timestamp,
+                    "_id": datatr._id
+                };
+
+
+
+                // if (status == "success") {
+                //     var idtransaction = datatr._id;
+                //     var idusersell = datatr.idusersell;
+                //     var amount = datatr.amount;
+                //     var postid = datatr.postid;
+                //     await this.pph(idtransaction, idusersell, amount, postid);
+                // }
+
+
+
+                res.status(HttpStatus.OK).json({
+                    response_code: 202,
+                    "data": data,
+                    "message": messages
+                });
+            } catch (e) {
+                res.status(HttpStatus.BAD_REQUEST).json({
+
+                    "message": messagesEror
+                });
+            }
+        } else {
+            throw new BadRequestException("Given amount are greater than allowed value for static va value not found..!");
+
+        }
+
+    }
+
+    @Post('api/pg/oy/callback/va')
+    async callbackVa(@Res() res, @Body() payload: VaCallback) {
+
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesnull = {
+            "info": ["This process is success but cannot update"],
+        };
+
+        var nova = payload.va_number;
+        var statussucces = payload.success;
+        var datatransaksi = null;
+        if (statussucces == true) {
+
+            try {
+
+                datatransaksi = await this.transactionsService.findva(nova);
+                var idtransaction = datatransaksi._id;
+                var postid = datatransaksi.postid;
+                var idusersell = datatransaksi.idusersell;
+                var amount = datatransaksi.amount;
+                var status = datatransaksi.status;
+
+                if (status == "pending") {
+                    await this.accontbalance(postid, idusersell, amount);
+                    let databalance = await this.accountbalancesService.findOne(idusersell);
+
+                    var idbalance = databalance._id;
+
+                    await this.pph(idtransaction, idusersell, amount, postid);
+
+
+                    await this.transactionsService.updateone(idtransaction, idbalance, payload);
+
+                    res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "message": messages
+                    });
+                } else {
+                    res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "message": messagesnull
+                    });
+                }
+
+            } catch (e) {
+                throw new BadRequestException("Unabled to proceed");
             }
 
-
-
-            res.status(HttpStatus.OK).json({
-                response_code: 202,
-                "data": data,
-                "message": messages
-            });
-        } catch (e) {
-            res.status(HttpStatus.BAD_REQUEST).json({
-
-                "message": messagesEror
-            });
         }
+
+
     }
 
     async romawi(num: number) {
@@ -1132,29 +1347,7 @@ export class TransactionsController {
             var idtransaction = idtransaction;
             var amounts = amount / 2;
             var totalamounts = amounts;
-            var datapost = null;
-            var desccontent = "";
-            try {
-                datapost = await this.postsService.findid(postid);
 
-                desccontent = datapost._doc.description;
-
-
-            } catch (e) {
-                datapost = null;
-                desccontent = "";
-            }
-            var dataacountbalance = {
-                iduser: idusersell,
-                debet: 0,
-                kredit: amount,
-                type: "sell",
-                timestamp: dt.toISOString(),
-                description: "sell content " + desccontent,
-
-            };
-
-            await this.accountbalancesService.createdata(dataacountbalance);
 
             var dt = new Date(Date.now());
             var a = 60000000; var persenA = 5; var idsettA = mongoose.Types.ObjectId("62bd4449ef6e0000af0068d3");
@@ -1502,6 +1695,31 @@ export class TransactionsController {
         }
 
     }
+    async accontbalance(postid: string, idusersell: { oid: string }, amount: number) {
+        var dt = new Date(Date.now());
+        var datapost = null;
+        var desccontent = "";
+        try {
+            datapost = await this.postsService.findid(postid);
 
+            desccontent = datapost._doc.description;
+
+
+        } catch (e) {
+            datapost = null;
+            desccontent = "";
+        }
+        var dataacountbalance = {
+            iduser: idusersell,
+            debet: 0,
+            kredit: amount,
+            type: "sell",
+            timestamp: dt.toISOString(),
+            description: "sell content " + desccontent,
+
+        };
+
+        await this.accountbalancesService.createdata(dataacountbalance);
+    }
 }
 
