@@ -1,18 +1,28 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { OyPgService } from './oypg.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { OyAccountInquiry, OyAccountInquiryResponse, OyDisburseCallback } from './dto/OyDTO';
+import { OyAccountInquiry, OyAccountInquiryResponse, OyDisburseCallback, OyVaCallback } from './dto/OyDTO';
 
 @Controller('api/pg/oy')
 export class OyPgController {
-    constructor(private readonly oyPgService:OyPgService) { }
+    constructor(private readonly oyPgService: OyPgService) { }
 
     @Post('/callback/disbursement')
     async callbackDisbursement(@Body() payload: OyDisburseCallback) {
 
         console.log(payload);
+
     }
+
+<<<<<<< HEAD
+=======
+    @Post('/callback/va')
+    async callbackVa(@Body() payload: OyVaCallback) {
+
+        console.log(payload);
+    }    
     
+>>>>>>> c191f8f4ef8169a3aa3fec6796aee39e7aa6d2b6
 
     @Get('test')
     async test() {
@@ -20,7 +30,7 @@ export class OyPgController {
         ac.account_number = '1280259361'
         ac.bank_code = '014';
 
-        const data =  await this.oyPgService.inquiryAccount(ac);
+        const data = await this.oyPgService.inquiryAccount(ac);
         console.log(data);
 
         const bal = await this.oyPgService.myBalance();

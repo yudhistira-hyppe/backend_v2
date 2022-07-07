@@ -80,15 +80,15 @@ export class GetuserprofilesService {
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
             email: '$email',
-            /*age: {
-              $round: {
+            age: {
+              $round: [{
                 $divide: [{
                   $subtract: [new Date(), {
                     $toDate: '$dob'
                   }]
                 }, (365 * 24 * 60 * 60 * 1000)]
-              }
-            }*/
+              }]
+            }
           },
         },
 
@@ -350,15 +350,15 @@ export class GetuserprofilesService {
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
             email: '$email',
-            /*age: {
-              $round: {
+            age: {
+              $round: [{
                 $divide: [{
                   $subtract: [new Date(), {
                     $toDate: '$dob'
                   }]
                 }, (365 * 24 * 60 * 60 * 1000)]
-              }
-            }*/
+              }]
+            }
           },
         },
 
@@ -621,15 +621,15 @@ export class GetuserprofilesService {
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
             email: '$email',
-            /*age: {
-              $round: {
+            age: {
+              $round: [{
                 $divide: [{
                   $subtract: [new Date(), {
                     $toDate: '$dob'
                   }]
                 }, (365 * 24 * 60 * 60 * 1000)]
-              }
-            }*/
+              }]
+            }
           },
         },
 
@@ -891,15 +891,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           { $match: { age: { $gt: 0, $lt: 15 } } },
@@ -1161,15 +1161,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           { $match: { age: { $gt: 14, $lt: 26 } } },
@@ -1431,15 +1431,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           { $match: { age: { $gt: 25, $lt: 36 } } },
@@ -1700,15 +1700,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           { $match: { age: { $gt: 35, $lt: 51 } } },
@@ -1969,15 +1969,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           { $match: { age: { $gt: 50, } } },
@@ -2240,15 +2240,15 @@ export class GetuserprofilesService {
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
             email: '$email',
-            /*age: {
-              $round: {
+            age: {
+              $round: [{
                 $divide: [{
                   $subtract: [new Date(), {
                     $toDate: '$dob'
                   }]
                 }, (365 * 24 * 60 * 60 * 1000)]
-              }
-            }*/
+              }]
+            }
           },
         },
 
@@ -2510,15 +2510,15 @@ export class GetuserprofilesService {
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
             email: '$email',
-            /*age: {
-              $round: {
+            age: {
+              $round: [{
                 $divide: [{
                   $subtract: [new Date(), {
                     $toDate: '$dob'
                   }]
                 }, (365 * 24 * 60 * 60 * 1000)]
-              }
-            }*/
+              }]
+            }
           },
         },
 
@@ -2779,15 +2779,15 @@ export class GetuserprofilesService {
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
             email: '$email',
-            /*age: {
-              $round: {
+            age: {
+              $round: [{
                 $divide: [{
                   $subtract: [new Date(), {
                     $toDate: '$dob'
                   }]
                 }, (365 * 24 * 60 * 60 * 1000)]
-              }
-            }*/
+              }]
+            }
           },
         },
 
@@ -3049,15 +3049,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
 
@@ -3319,15 +3319,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           { $match: { fullName: { $regex: fullName }, age: { $gt: 14, $lt: 26 } } },
@@ -3588,15 +3588,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           { $match: { fullName: { $regex: fullName }, age: { $gt: 25, $lt: 36 } } },
@@ -3857,15 +3857,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           { $match: { fullName: { $regex: fullName }, age: { $gt: 35, $lt: 51 } } },
@@ -4126,15 +4126,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           { $match: { fullName: { $regex: fullName }, age: { $gt: 50 } } },
@@ -4396,15 +4396,15 @@ export class GetuserprofilesService {
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
             email: '$email',
-            /*age: {
-              $round: {
+            age: {
+              $round: [{
                 $divide: [{
                   $subtract: [new Date(), {
                     $toDate: '$dob'
                   }]
                 }, (365 * 24 * 60 * 60 * 1000)]
-              }
-            }*/
+              }]
+            }
           },
         },
         {
@@ -4665,15 +4665,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
 
@@ -4935,15 +4935,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           { $match: { gender: gender, age: { $gt: 14, $lt: 26 } } },
@@ -5204,15 +5204,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           { $match: { gender: gender, age: { $gt: 25, $lt: 36 } } },
@@ -5473,15 +5473,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           { $match: { gender: gender, age: { $gt: 35, $lt: 51 } } },
@@ -5742,15 +5742,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           { $match: { gender: gender, age: { $gt: 50 } } },
@@ -6013,15 +6013,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
 
@@ -6282,15 +6282,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -6551,15 +6551,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -6820,15 +6820,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -7089,15 +7089,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -7360,15 +7360,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
 
@@ -7630,15 +7630,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -7899,15 +7899,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -8168,15 +8168,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -8437,15 +8437,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -8707,15 +8707,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -8976,15 +8976,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
 
@@ -9246,15 +9246,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
 
@@ -9516,15 +9516,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -9785,15 +9785,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -10057,15 +10057,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -10325,15 +10325,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
 
@@ -10595,15 +10595,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
 
@@ -10865,15 +10865,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -11133,15 +11133,15 @@ export class GetuserprofilesService {
               interest_id: '$userInterests.$id',
               concat: '/profilepict',
               email: '$email',
-              /*age: {
-                $round: {
+              age: {
+                $round: [{
                   $divide: [{
                     $subtract: [new Date(), {
                       $toDate: '$dob'
                     }]
                   }, (365 * 24 * 60 * 60 * 1000)]
-                }
-              }*/
+                }]
+              }
             },
           },
           {
@@ -11403,15 +11403,15 @@ export class GetuserprofilesService {
             interest_id: '$userInterests.$id',
             concat: '/profilepict',
             email: '$email',
-            /*age: {
-              $round: {
+            age: {
+              $round: [{
                 $divide: [{
                   $subtract: [new Date(), {
                     $toDate: '$dob'
                   }]
                 }, (365 * 24 * 60 * 60 * 1000)]
-              }
-            }*/
+              }]
+            }
           },
         },
         {
