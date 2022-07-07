@@ -132,21 +132,9 @@ export class AuthController {
     @Param('id') id: string,
     @Query('x-auth-token') token: string,
     @Query('x-auth-user') email: string, @Res() response) {
-      // response.set("Content-Type","application/octet-stream");
-      // const file_ = createWriteStream('temp.png');
       var data = await this.authService.profilePict(id,token,email);
-      // await data.pipe(file_);
-      //var buf = Buffer.from(JSON.stringify(data));
-      //file_.write(buf);
-      //const file = createReadStream('file.png');
-      var path = require('path');
-      //var buffer = Buffer.from(data, 'base64');
-      //response.sendFile(path.resolve('file.png'));
-      // await fs.writeFile(`./${newFileName}`, buffer, 'utf-8').then( () => {
-      //   response.status(200).sendFile(`${cwd}/${newFileName}`);
-      // });
-      //response.send(Buffer.from(data));
-      response.sendFile(path.resolve('file.png'));
+      response.set("Content-Type","image/jpeg");
+      response.send(data);
   }
 
   @UseGuards(JwtAuthGuard)

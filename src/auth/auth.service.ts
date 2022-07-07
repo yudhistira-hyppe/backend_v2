@@ -80,6 +80,7 @@ export class AuthService {
     var user_email = req.body.email;
     var user_location = req.body.location;
     var user_deviceId = req.body.deviceId;
+    var user_devicetype = req.body.devicetype;
 
     var current_date = await this.utilsService.getDateTimeString();
 
@@ -321,11 +322,15 @@ export class AuthService {
           if (await this.utilsService.ceckData(user_userdevicesService)) {
             //Get Userdevices
             try {
+              if(user_devicetype){
+                
+              }
               await this.userdevicesService.updatebyEmail(
                 user_email,
                 user_deviceId,
                 {
                   active: true,
+                  devicetype:user_devicetype
                 },
               );
               ID_user_userdevicesService = user_userdevicesService._id;
@@ -349,6 +354,7 @@ export class AuthService {
               data_CreateUserdeviceDto._class = _class_UserDevices;
               data_CreateUserdeviceDto.createdAt = current_date;
               data_CreateUserdeviceDto.updatedAt = current_date;
+              data_CreateUserdeviceDto.devicetype = user_devicetype;
               //Insert User Userdevices
               await this.userdevicesService.create(data_CreateUserdeviceDto);
             } catch (error) {
@@ -1391,7 +1397,37 @@ export class AuthService {
 
           return {
             response_code: 202,
+            data:{
+              idProofNumber: "ID",
+              roles: [
+                  "ROLE_USER"
+              ],
+              fullName:username_,
+              isIdVerified:"false",
+              isEmailVerified: "false",
+              idProofStatus: "INITIAL",
+              insight: {
+                  shares: 0.0,
+                  followers: 0.0,
+                  comments: 0.0,
+                  followings: 0.0,
+                  reactions: 0.0,
+                  posts: 0.0,
+                  views: 0.0,
+                  likes: 0.0
+              },
+              interest: user_interest,
+              event: "NOTIFY_OTP",
+              email: user_email,
+              username: username_,
+              isComplete: "false",
+              status: "NOTIFY"
+            },
             messages: {
+              nextFlow: [
+                  "$.event: next should VERIFY_OTP",
+                  "$.status: next should REPLY"
+              ],
               info: ['Signup successful'],
             },
           };
@@ -3583,6 +3619,16 @@ export class AuthService {
           );
         }
 
+        if(mediaprofilepicts_json!=null){
+          if(mediaprofilepicts_json.$id!=undefined){
+            if(mediaprofilepicts_json.$id!=id){
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, Post Id not match',
+              );
+            }
+          }
+        }
+
         let mediaprofilepicts = null;
         if(mediaprofilepicts_json!=null){
           mediaprofilepicts = await this.mediaprofilepictsService.findOne(
@@ -3597,12 +3643,8 @@ export class AuthService {
           }
         }
 
-        if(mediaprofilepicts_fsSourceUri!=''){
-            //console.log(mediaprofilepicts_fsSourceUri);
-            //const stream = Readable.from(await this.mediaService.find(mediaprofilepicts_fsSourceUri));
-          
-          return await this.mediaService.find(mediaprofilepicts_fsSourceUri);
-            //return ;
+        if(mediaprofilepicts_fsSourceUri!=''||mediaprofilepicts_fsSourceUri!=null){
+          return await this.mediaService.getPitch(mediaprofilepicts_fsSourceUri);
         }
       }else{
         await this.errorHandler.generateNotAcceptableException(

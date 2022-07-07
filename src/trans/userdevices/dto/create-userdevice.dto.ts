@@ -8,4 +8,5 @@ export class CreateUserdeviceDto {
       createdAt: String;
       updatedAt: String;
      _class:String;
+     devicetype:String;
   }
