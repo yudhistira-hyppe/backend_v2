@@ -11,18 +11,21 @@ import { BanksService } from '../banks/banks.service';
 import { Pph21sService } from '../pph21s/pph21s.service';
 import { AccountbalancesService } from '../accountbalances/accountbalances.service';
 import { OyPgService } from '../../paymentgateway/oypg/oypg.service';
+import { InsightsService } from '../../content/insights/insights.service';
 
 import { Types } from 'mongoose';
 @Controller()
 export class TransactionsController {
-    constructor(private readonly transactionsService: TransactionsService, private readonly userbasicsService: UserbasicsService,
+    constructor(private readonly transactionsService: TransactionsService,
+        private readonly userbasicsService: UserbasicsService,
         private readonly settingsService: SettingsService,
         private readonly methodepaymentsService: MethodepaymentsService,
         private readonly banksService: BanksService,
         private readonly postsService: PostsService,
         private readonly pph21sService: Pph21sService,
         private readonly accountbalancesService: AccountbalancesService,
-        private readonly oyPgService: OyPgService) { }
+        private readonly oyPgService: OyPgService,
+        private readonly insightsService: InsightsService) { }
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions')
     async create(@Res() res, @Headers('x-auth-token') auth: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Request() request) {
@@ -37,6 +40,8 @@ export class TransactionsController {
         var amount = 0;
         var salelike = null;
         var saleview = null;
+        var bankcode = null;
+        var paymentmethod = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["postid"] !== undefined) {
             postid = request_json["postid"];
@@ -61,12 +66,23 @@ export class TransactionsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+
+        if (request_json["paymentmethod"] !== undefined) {
+            paymentmethod = request_json["paymentmethod"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["bankcode"] !== undefined) {
+            bankcode = request_json["bankcode"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
         var token = auth;
         var reptoken = token.replace("Bearer ", "");
         var x = await this.parseJwt(reptoken);
         var datatrpending = null;
-        var datatrdraft = null;
-        var datacekpostid = null;
+
 
         var totalamount = 0;
         var email = x.email;
@@ -93,6 +109,7 @@ export class TransactionsController {
         var ubasic = await this.userbasicsService.findOne(email);
 
         var iduser = ubasic._id;
+        var namapembeli = ubasic.fullName;
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
@@ -104,34 +121,19 @@ export class TransactionsController {
             var emailseller = datapost._doc.email;
             var ubasicseller = await this.userbasicsService.findOne(emailseller);
             var iduserseller = ubasicseller._id;
+            var namapenjual = ubasicseller.fullName;
 
         } catch (e) {
             datapost = null;
         }
 
-        try {
-            datacekpostid = await this.transactionsService.findpostidpost(postid);
 
-
-        } catch (e) {
-            datacekpostid = null;
-
-        }
-
-        try {
-            datatrdraft = await this.transactionsService.findpostiddraft(postid);
-
-
-        } catch (e) {
-            datatrdraft = null;
-
-        }
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         var idppn = "62bbbe43a7520000050077a3";
         var idmdradmin = "62bd413ff37a00001a004369";
         var idbankvacharge = "62bd40e0f37a00001a004366";
-
+        var idexpiredva = "62bbbe8ea7520000050077a4";
         var datasettingppn = null;
         var datamradmin = null;
         var databankvacharge = null;
@@ -167,53 +169,127 @@ export class TransactionsController {
         }
 
 
+        var idmethode = null;
+        var idbank = null;
+        var datamethode = null;
+        var namamethode = "";
+        try {
+            datamethode = await this.methodepaymentsService.findmethodename(paymentmethod);
+            namamethode = datamethode._doc.methodename;
+            idmethode = datamethode._doc._id;
 
-        if (datacekpostid !== null) {
-            if (datatrpending !== null && datatrdraft !== null) {
-                var datenow = new Date(Date.now());
-                // datenow.setHours(datenow.getHours() + 7); // timestamp
-                // datenow = new Date(datenow);
+        } catch (e) {
+            throw new BadRequestException("Methode payment not found...!");
+        }
 
-                var expiredva = datatrpending.expiredtimeva;
-                var dateVa = new Date(expiredva);
-                dateVa.setHours(dateVa.getHours() - 7); // timestamp
-                // dateVa = new Date(dateVa);
+        var databank = null;
+        var namabank = "";
+        try {
+            databank = await this.banksService.findbankcode(bankcode);
+            namabank = databank._doc.bankname;
+            idbank = databank._doc._id;
 
-                var idtransaction = datatrpending._id;
+        } catch (e) {
+            throw new BadRequestException("Banks not found...!");
+        }
 
-                if (datenow > dateVa) {
+        var datasettingppn = null;
+        var datamradmin = null;
+        var databankvacharge = null;
+        var datasettingexpiredva = null;
+        try {
+            datasettingppn = await this.settingsService.findOne(idppn);
+            datamradmin = await this.settingsService.findOne(idmdradmin);
+            databankvacharge = await this.settingsService.findOne(idbankvacharge);
+            datasettingexpiredva = await this.settingsService.findOne(idexpiredva);
+            var valueppn = datasettingppn._doc.value;
+            var valuevacharge = databankvacharge._doc.value;
+            var valuemradmin = datamradmin._doc.value;
+            var valueexpiredva = datasettingexpiredva._doc.value;
+
+        } catch (e) {
+            throw new BadRequestException("Setting value not found..!");
+        }
+
+
+
+        var userbuy = iduser;
+        var name = ubasic.fullName;
+
+
+        if (datatrpending !== null) {
+
+            var datenow = new Date(Date.now());
+            var expiredvas = datatrpending.expiredtimeva;
+            var dateVa = new Date(expiredvas);
+            dateVa.setHours(dateVa.getHours() - 7); // timestamp
+
+
+            var idtransaction = datatrpending._id;
+
+            if (datenow > dateVa) {
+                var datava = {
+                    "partner_user_id": userbuy.toString(),
+                    "amount": totalamount,
+                    "bank_code": bankcode,
+                    "is_open": false,
+                    "is_single_use": true,
+                    "is_lifetime": false,
+                    "username_display": name.toString(),
+                    "email": email,
+                    "trx_expiration_time": valueexpiredva,
+                }
+
+                try {
+                    let datareqva = await this.oyPgService.generateStaticVa(datava);
+                    var statuscodeva = datareqva.status.code;
+                    var nova = datareqva.va_number;
+                    var expiredva = datareqva.trx_expiration_time;
+                    var d1 = new Date(expiredva);
+                    d1.setHours(d1.getHours() + 7); // timestamp
+                    d1 = new Date(d1);
+
+
+                } catch (e) {
+                    throw new BadRequestException("Not process..!");
+
+                }
+
+                if (statuscodeva == "000") {
                     CreateTransactionsDto.iduserbuyer = iduser;
                     CreateTransactionsDto.idusersell = iduserseller;
                     CreateTransactionsDto.timestamp = dt.toISOString();
                     CreateTransactionsDto.noinvoice = no;
-                    CreateTransactionsDto.status = "draft";
-                    CreateTransactionsDto.bank = null;
-                    CreateTransactionsDto.nova = "";
+                    CreateTransactionsDto.status = "pending";
+                    CreateTransactionsDto.bank = idbank;
+                    CreateTransactionsDto.nova = nova;
                     CreateTransactionsDto.accountbalance = null;
-                    CreateTransactionsDto.paymentmethod = null;
+                    CreateTransactionsDto.paymentmethod = idmethode;
                     CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
                     CreateTransactionsDto.totalamount = totalamount;
-                    CreateTransactionsDto.description = "buy draft content";
+                    CreateTransactionsDto.description = "buy pending content";
                     CreateTransactionsDto.payload = null;
-                    CreateTransactionsDto.expiredtimeva = null;
+                    CreateTransactionsDto.expiredtimeva = d1.toISOString();
                     try {
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
                         await this.transactionsService.updatestatuscancel(idtransaction);
                         var data = {
-
                             "noinvoice": datatr.noinvoice,
                             "postid": datatr.postid,
                             "idusersell": datatr.idusersell,
+                            "NamaPenjual": namapenjual,
                             "iduserbuyer": datatr.iduserbuyer,
+                            "NamaPembeli": namapembeli,
                             "amount": datatr.amount,
-                            "paymentmethod": datatr.paymentmethod,
+                            "paymentmethod": namamethode,
                             "status": datatr.status,
                             "description": datatr.description,
                             "nova": datatr.nova,
+                            "expiredtimeva": datatr.expiredtimeva,
                             "salelike": datatr.saleview,
                             "saleview": datatr.salelike,
-                            "bank": datatr.bank,
+                            "bank": namabank,
                             "ppn": valueppn + " %",
                             "nominalppn": nominalppn,
                             "bankvacharge": valuevacharge,
@@ -236,26 +312,63 @@ export class TransactionsController {
                             "message": messagesEror
                         });
                     }
-                } else {
-                    throw new BadRequestException("Transaction pending on another user");
                 }
-
-
+                else if (statuscodeva == "217") {
+                    throw new BadRequestException("VA Number is still active for this partner user id !");
+                }
+                else {
+                    throw new BadRequestException("Given amount are greater than allowed value for static va value not found..!");
+                }
             } else {
+                throw new BadRequestException("Transaction pending on another user");
+            }
+
+
+        }
+        else {
+
+            var datava = {
+                "partner_user_id": userbuy.toString(),
+                "amount": totalamount,
+                "bank_code": bankcode,
+                "is_open": false,
+                "is_single_use": true,
+                "is_lifetime": false,
+                "username_display": name.toString(),
+                "email": email,
+                "trx_expiration_time": valueexpiredva,
+            }
+
+            try {
+                let datareqva = await this.oyPgService.generateStaticVa(datava);
+                var statuscodeva = datareqva.status.code;
+                var nova = datareqva.va_number;
+                var expiredva = datareqva.trx_expiration_time;
+                var d1 = new Date(expiredva);
+                d1.setHours(d1.getHours() + 7); // timestamp
+                d1 = new Date(d1);
+
+
+            } catch (e) {
+                throw new BadRequestException("Not process..!");
+
+            }
+
+            if (statuscodeva == "000") {
                 CreateTransactionsDto.iduserbuyer = iduser;
                 CreateTransactionsDto.idusersell = iduserseller;
                 CreateTransactionsDto.timestamp = dt.toISOString();
                 CreateTransactionsDto.noinvoice = no;
-                CreateTransactionsDto.status = "draft";
-                CreateTransactionsDto.bank = null;
-                CreateTransactionsDto.nova = "";
+                CreateTransactionsDto.status = "pending";
+                CreateTransactionsDto.bank = idbank;
+                CreateTransactionsDto.nova = nova;
                 CreateTransactionsDto.accountbalance = null;
-                CreateTransactionsDto.paymentmethod = null;
+                CreateTransactionsDto.paymentmethod = idmethode;
                 CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
                 CreateTransactionsDto.totalamount = totalamount;
-                CreateTransactionsDto.description = "buy draft content";
+                CreateTransactionsDto.description = "buy pending content";
                 CreateTransactionsDto.payload = null;
-                CreateTransactionsDto.expiredtimeva = null;
+                CreateTransactionsDto.expiredtimeva = d1.toISOString();
                 try {
                     let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
@@ -265,15 +378,18 @@ export class TransactionsController {
                         "noinvoice": datatr.noinvoice,
                         "postid": datatr.postid,
                         "idusersell": datatr.idusersell,
+                        "NamaPenjual": namapenjual,
                         "iduserbuyer": datatr.iduserbuyer,
+                        "NamaPembeli": namapembeli,
                         "amount": datatr.amount,
-                        "paymentmethod": datatr.paymentmethod,
+                        "paymentmethod": namamethode,
                         "status": datatr.status,
                         "description": datatr.description,
                         "nova": datatr.nova,
+                        "expiredtimeva": datatr.expiredtimeva,
                         "salelike": datatr.saleview,
                         "saleview": datatr.salelike,
-                        "bank": datatr.bank,
+                        "bank": namabank,
                         "ppn": valueppn + " %",
                         "nominalppn": nominalppn,
                         "bankvacharge": valuevacharge,
@@ -296,64 +412,14 @@ export class TransactionsController {
                         "message": messagesEror
                     });
                 }
+            } else if (statuscodeva == "217") {
+                throw new BadRequestException("VA Number is still active for this partner user id !");
+            }
+            else {
+                throw new BadRequestException("Given amount are greater than allowed value for static va value not found..!");
             }
         }
-        else {
-            CreateTransactionsDto.iduserbuyer = iduser;
-            CreateTransactionsDto.idusersell = iduserseller;
-            CreateTransactionsDto.timestamp = dt.toISOString();
-            CreateTransactionsDto.noinvoice = no;
-            CreateTransactionsDto.status = "draft";
-            CreateTransactionsDto.bank = null;
-            CreateTransactionsDto.nova = "";
-            CreateTransactionsDto.accountbalance = null;
-            CreateTransactionsDto.paymentmethod = null;
-            CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
-            CreateTransactionsDto.totalamount = totalamount;
-            CreateTransactionsDto.description = "buy draft content";
-            CreateTransactionsDto.payload = null;
-            CreateTransactionsDto.expiredtimeva = null;
-            try {
-                let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
-
-                var data = {
-
-                    "noinvoice": datatr.noinvoice,
-                    "postid": datatr.postid,
-                    "idusersell": datatr.idusersell,
-                    "iduserbuyer": datatr.iduserbuyer,
-                    "amount": datatr.amount,
-                    "paymentmethod": datatr.paymentmethod,
-                    "status": datatr.status,
-                    "description": datatr.description,
-                    "nova": datatr.nova,
-                    "salelike": datatr.saleview,
-                    "saleview": datatr.salelike,
-                    "bank": datatr.bank,
-                    "ppn": valueppn + " %",
-                    "nominalppn": nominalppn,
-                    "bankvacharge": valuevacharge,
-                    "mdradmin": valuemradmin + " %",
-                    "nominalmdradmin": nominalmradmin,
-                    "totalamount": datatr.totalamount,
-                    "accountbalance": datatr.accountbalance,
-                    "timestamp": datatr.timestamp,
-                    "_id": datatr._id
-                };
-
-                res.status(HttpStatus.OK).json({
-                    response_code: 202,
-                    "data": data,
-                    "message": messages
-                });
-            } catch (e) {
-                res.status(HttpStatus.BAD_REQUEST).json({
-
-                    "message": messagesEror
-                });
-            }
-        }
 
 
 
@@ -523,18 +589,6 @@ export class TransactionsController {
                     "_id": datatr._id
                 };
 
-
-
-                // if (status == "success") {
-                //     var idtransaction = datatr._id;
-                //     var idusersell = datatr.idusersell;
-                //     var amount = datatr.amount;
-                //     var postid = datatr.postid;
-                //     await this.pph(idtransaction, idusersell, amount, postid);
-                // }
-
-
-
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "data": data,
@@ -567,6 +621,8 @@ export class TransactionsController {
         var nova = payload.va_number;
         var statussucces = payload.success;
         var datatransaksi = null;
+        var datapost = null;
+        var datainsight = null;
         if (statussucces == true) {
 
             try {
@@ -575,19 +631,51 @@ export class TransactionsController {
                 var idtransaction = datatransaksi._id;
                 var postid = datatransaksi.postid;
                 var idusersell = datatransaksi.idusersell;
+                var iduserbuy = datatransaksi.iduserbuyer;
                 var amount = datatransaksi.amount;
                 var status = datatransaksi.status;
+                var salelike = datatransaksi.salelike;
+                var saleview = datatransaksi.saleview;
 
                 if (status == "pending") {
-                    await this.accontbalance(postid, idusersell, amount);
+                    var ubasic = await this.userbasicsService.findid(iduserbuy);
+                    var emailbuyer = ubasic.email;
+                    var createbalance = await this.accontbalance(postid, idusersell, amount);
                     let databalance = await this.accountbalancesService.findOne(idusersell);
 
                     var idbalance = databalance._id;
+                    datainsight = await this.insightsService.findemail(emailbuyer.toString());
+                    var idinsight = datainsight._id;
+                    var likeinsig = datainsight.likes;
+                    var viewinsigh = datainsight.views;
+                    datapost = await this.postsService.findid(postid);
+                    var like = datapost.likes;
+                    var view = datapost.views;
 
-                    await this.pph(idtransaction, idusersell, amount, postid);
+                    var datapph = await this.pph(idtransaction, idusersell, amount, postid);
 
 
                     await this.transactionsService.updateone(idtransaction, idbalance, payload);
+
+
+
+                    await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy);
+                    if (salelike == false) {
+                        await this.postsService.updatesalelike(postid);
+
+                    } else {
+                        var totallike = like + likeinsig;
+                        await this.insightsService.updatesalelike(idinsight, totallike);
+
+
+                    }
+
+                    if (saleview == false) {
+                        await this.postsService.updatesaleview(postid);
+                    } else {
+                        var totalview = view + viewinsigh;
+                        await this.insightsService.updatesaleview(idinsight, totalview);
+                    }
 
                     res.status(HttpStatus.OK).json({
                         response_code: 202,
@@ -694,17 +782,7 @@ export class TransactionsController {
                 datapost = null;
                 desccontent = "";
             }
-            var dataacountbalance = {
-                iduser: idusersell,
-                debet: 0,
-                kredit: amount,
-                type: "sell",
-                timestamp: dt.toISOString(),
-                description: "sell content " + desccontent,
 
-            };
-
-            await this.accountbalancesService.createdata(dataacountbalance);
             var jumlahincome = ttlincomelast + amountsnew;
 
             var a = 60000000; var persenA = 5; var idsettA = mongoose.Types.ObjectId("62bd4449ef6e0000af0068d3");
@@ -967,7 +1045,7 @@ export class TransactionsController {
 
             }
             else if (jumlahincome < max && max == a) {
-                var tincomenew = max - ttlincomelast;
+                var tincomenew = jumlahincome - ttlincomelast;
                 var amounts = tincomenew;
 
                 totalpph = amounts * persenA / 100;

@@ -23,9 +23,29 @@ export class InsightsService {
     return this.InsightsModel.find().exec();
   }
 
-  //    async findOne(id: string): Promise<Insights> {
-  //     return this.InsightsModel.findOne({ _id: id }).exec();
-  //   }
+  async findemail(email: string): Promise<Insights> {
+    return this.InsightsModel.findOne({ email: email }).exec();
+  }
+
+  async updatesalelike(id: string, like: number): Promise<Object> {
+    let data = await this.InsightsModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "likes": like
+        }
+      });
+    return data;
+  }
+
+  async updatesaleview(id: string, view: number): Promise<Object> {
+    let data = await this.InsightsModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "views": view
+        }
+      });
+    return data;
+  }
   async findOne(_id: string): Promise<Insights> {
     return this.InsightsModel.findOne({ _id: _id }).exec();
   }
