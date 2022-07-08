@@ -11,6 +11,8 @@ export class AnnouncementsController {
     @UseGuards(JwtAuthGuard)
     @Post('api/announcements/createall')
     async create(@Res() res, @Body() CreateAnnouncementsDto: CreateAnnouncementsDto, @Request() req) {
+        var datesend = null;
+        var request_json = JSON.parse(JSON.stringify(req.body));
         const messages = {
             "info": ["The create successful"],
         };
@@ -18,6 +20,12 @@ export class AnnouncementsController {
         const messagesEror = {
             "info": ["Todo is not found!"],
         };
+
+        if (request_json["datesend"] !== undefined) {
+            datesend = request_json["datesend"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
         var reqdata = req.user;
         var email = reqdata.email;
         var arruser = [];
@@ -38,9 +46,14 @@ export class AnnouncementsController {
 
         var iduser = ubasic._id;
         var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var dtsend = new Date(datesend);
+        dtsend.setHours(dtsend.getHours() + 7); // timestamp
+        dtsend = new Date(dtsend);
         CreateAnnouncementsDto.idusershare = iduser;
         CreateAnnouncementsDto.datetimeCreate = dt.toISOString();
-        CreateAnnouncementsDto.datetimeSend = dt.toISOString();
+        CreateAnnouncementsDto.datetimeSend = dtsend.toISOString();
         CreateAnnouncementsDto.Detail = arruser;
         try {
             let data = await this.announcementsService.create(CreateAnnouncementsDto);
@@ -69,9 +82,16 @@ export class AnnouncementsController {
         };
 
         var Detail = null;
+        var datesend = null;
         var request_json = JSON.parse(JSON.stringify(req.body));
         if (request_json["Detail"] !== undefined) {
             Detail = request_json["Detail"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["datesend"] !== undefined) {
+            datesend = request_json["datesend"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
@@ -96,14 +116,16 @@ export class AnnouncementsController {
 
         }
 
-
-
-        console.log(arruser);
         var iduser = ubasic._id;
         var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var dtsend = new Date(datesend);
+        dtsend.setHours(dtsend.getHours() + 7); // timestamp
+        dtsend = new Date(dtsend);
         CreateAnnouncementsDto.idusershare = iduser;
         CreateAnnouncementsDto.datetimeCreate = dt.toISOString();
-        CreateAnnouncementsDto.datetimeSend = dt.toISOString();
+        CreateAnnouncementsDto.datetimeSend = dtsend.toISOString();
         CreateAnnouncementsDto.Detail = arruser;
         try {
             let data = await this.announcementsService.create(CreateAnnouncementsDto);
@@ -225,6 +247,11 @@ export class AnnouncementsController {
                 "message": messagesEror
             });
         }
+    }
+
+    @Delete('api/announcements/:id')
+    async delete(@Param('id') id: string) {
+        return this.announcementsService.delete(id);
     }
 }
 

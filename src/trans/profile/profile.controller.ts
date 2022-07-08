@@ -36,6 +36,18 @@ export class ProfileController {
 
     var emails = null;
     var interest = [];
+    var countries = null;
+    var countries_json = null;
+    var countri = null;
+    var cities_json = null;
+    var cities = null;
+    var citi = null;
+    var mediaprofilepicts_json = null;
+    var mediaprofilepicts = null;
+    var mediaprofilepicts_res = null;
+    var areas = null;
+    var insights_json = null;
+    var insights_res = null;
 
     if (request_json["email"] !== undefined) {
       emails = request_json["email"];
@@ -46,38 +58,82 @@ export class ProfileController {
 
     const datauserauthsService = await this.userauthsService.findOne(emails);
     const datauserbasicsService = await this.userbasicsService.findOne(emails);
-    var countries_json = JSON.parse(JSON.stringify(datauserbasicsService.countries));
-    var cities_json = JSON.parse(JSON.stringify(datauserbasicsService.cities));
+
+
     var languages_json = JSON.parse(JSON.stringify(datauserbasicsService.languages));
-    var mediaprofilepicts_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
-    var insights_json = JSON.parse(JSON.stringify(datauserbasicsService.insight));
+
     var interest_json = JSON.parse(JSON.stringify(datauserbasicsService.userInterests));
-    const countries = await this.countriesService.findOne(countries_json.$id);
-    const cities = await this.citiesService.findOne(cities_json.$id);
-    const mediaprofilepicts = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
-    const areas = await this.areasService.findOne(countries.countryID);
-    const insights = await this.insightsService.findOne(insights_json.$id);
+    try {
+      insights_json = JSON.parse(JSON.stringify(datauserbasicsService.insight));
+      var insights = await this.insightsService.findOne(insights_json.$id);
+      insights_res = {
+        shares: insights.shares,
+        followers: insights.followers,
+        comments: insights.comments,
+        followings: insights.followings,
+        reactions: insights.reactions,
+        posts: insights.posts,
+        views: insights.views,
+        likes: insights.likes
+      };
+    } catch (e) {
+      insights_res = {
+        shares: 0,
+        followers: 0,
+        comments: 0,
+        followings: 0,
+        reactions: 0,
+        posts: 0,
+        views: 0,
+        likes: 0
+      };
+    }
+    try {
+      countries_json = JSON.parse(JSON.stringify(datauserbasicsService.countries));
+      countries = await this.countriesService.findOne(countries_json.$id);
+      areas = await this.areasService.findOne(countries.countryID);
+      countri = countries.country;
+    } catch (e) {
+      countri = "";
+      areas = "";
+    }
+
+    try {
+      cities_json = JSON.parse(JSON.stringify(datauserbasicsService.cities));
+      cities = await this.citiesService.findOne(cities_json.$id);
+      citi = cities.cityName;
+    } catch (e) {
+      citi = "";
+    }
+
+
+
+
     const languages = await this.languagesService.findOne(languages_json.$id);
     const interests = await this.interestsService.findOne(interest_json.$id);
-    var mediaUri = mediaprofilepicts.mediaUri;
 
-    let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
-    var mediaprofilepicts_res = {
-      mediaBasePath: mediaprofilepicts.mediaBasePath,
-      mediaUri: mediaprofilepicts.mediaUri,
-      mediaType: mediaprofilepicts.mediaType,
-      mediaEndpoint: result
-    };
-    var insights_res = {
-      shares: insights.shares,
-      followers: insights.followers,
-      comments: insights.comments,
-      followings: insights.followings,
-      reactions: insights.reactions,
-      posts: insights.posts,
-      views: insights.views,
-      likes: insights.likes
-    };
+
+
+    try {
+
+      mediaprofilepicts_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
+      mediaprofilepicts = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
+      var mediaUri = mediaprofilepicts.mediaUri;
+      let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+      mediaprofilepicts_res = {
+        mediaBasePath: mediaprofilepicts.mediaBasePath,
+        mediaUri: mediaprofilepicts.mediaUri,
+        mediaType: mediaprofilepicts.mediaType,
+        mediaEndpoint: result
+      };
+    } catch (e) {
+      mediaprofilepicts_res = {
+        mediaBasePath: "",
+        mediaUri: "",
+        mediaType: "",
+        mediaEndpoint: ""
+      };
+    }
 
     try {
       interest = [{
@@ -96,11 +152,11 @@ export class ProfileController {
 
     const data = [{
       "createdAt": datauserbasicsService.createdAt,
-      "areas": areas.stateName,
-      "country": countries.country,
+      "areas": areas,
+      "country": countri,
       "gender": datauserbasicsService.gender,
       "idProofNumber": datauserbasicsService.idProofNumber,
-      "city": cities.cityName,
+      "city": citi,
       "mobileNumber": datauserbasicsService.mobileNumber,
       "roles": datauserauthsService.roles,
       "fullName": datauserbasicsService.fullName,
