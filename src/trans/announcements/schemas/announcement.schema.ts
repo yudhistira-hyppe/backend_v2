@@ -29,7 +29,8 @@ export class Announcements {
 
     @Prop()
     status: string
-
+    @Prop()
+    tipe: string
     @Prop({ type: [] })
     Detail: []
 

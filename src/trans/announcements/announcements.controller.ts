@@ -54,6 +54,7 @@ export class AnnouncementsController {
         CreateAnnouncementsDto.idusershare = iduser;
         CreateAnnouncementsDto.datetimeCreate = dt.toISOString();
         CreateAnnouncementsDto.datetimeSend = dtsend.toISOString();
+        CreateAnnouncementsDto.tipe = "all";
         CreateAnnouncementsDto.Detail = arruser;
         try {
             let data = await this.announcementsService.create(CreateAnnouncementsDto);
@@ -126,6 +127,7 @@ export class AnnouncementsController {
         CreateAnnouncementsDto.idusershare = iduser;
         CreateAnnouncementsDto.datetimeCreate = dt.toISOString();
         CreateAnnouncementsDto.datetimeSend = dtsend.toISOString();
+        CreateAnnouncementsDto.tipe = "choice";
         CreateAnnouncementsDto.Detail = arruser;
         try {
             let data = await this.announcementsService.create(CreateAnnouncementsDto);
@@ -224,8 +226,8 @@ export class AnnouncementsController {
 
     @UseGuards(JwtAuthGuard)
     @Put('api/announcements/:id')
-    async update(@Res() res, @Param('id') id: string, @Body() createAnnouncementsDto: CreateAnnouncementsDto) {
-
+    async update(@Res() res, @Param('id') id: string, @Body() createAnnouncementsDto: CreateAnnouncementsDto, @Request() req) {
+        var request_json = JSON.parse(JSON.stringify(req.body));
         const messages = {
             "info": ["The update successful"],
         };
@@ -234,7 +236,45 @@ export class AnnouncementsController {
             "info": ["Todo is not found!"],
         };
 
+
+        var tipe = null;
+        var datesend = null;
+        var request_json = JSON.parse(JSON.stringify(req.body));
+
+        if (request_json["tipe"] !== undefined) {
+            tipe = request_json["tipe"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        var arruser = [];
+        var userid = null;
+        var objuser = {};
+        var Detail = null;
+
         try {
+            Detail = createAnnouncementsDto.Detail;
+        } catch (e) {
+            Detail = null;
+        }
+        var lengdetail = Detail.length;
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var idus = null;
+
+
+        for (var x = 0; x < lengdetail; x++) {
+            userid = Detail[x].iduser;
+            idus = mongoose.Types.ObjectId(userid);
+            objuser = { "iduser": idus };
+            arruser.push(objuser);
+
+        }
+        try {
+
+            createAnnouncementsDto.Detail = arruser;
             let data = await this.announcementsService.update(id, createAnnouncementsDto);
             res.status(HttpStatus.OK).json({
                 response_code: 202,
