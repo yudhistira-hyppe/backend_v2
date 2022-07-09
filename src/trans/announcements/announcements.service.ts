@@ -45,6 +45,7 @@ export class AnnouncementsService {
                     "appInfo": "$appInfo",
                     "email": "$email",
                     "status": "$status",
+                    "tipe": "$tipe",
                     "Detail": "$field",
 
                 }
@@ -77,6 +78,7 @@ export class AnnouncementsService {
                     "appInfo": "$appInfo",
                     "email": "$email",
                     "status": "$status",
+                    "tipe": "$tipe",
                     "Detail": "$field",
 
                 }
