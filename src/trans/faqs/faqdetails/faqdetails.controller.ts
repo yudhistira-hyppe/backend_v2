@@ -32,8 +32,9 @@ export class FaqdetailsController {
         var ubasic = await this.userbasicsService.findOne(email);
 
         var iduser = ubasic._id;
-        var dt = new Date();
-
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         user: mongoose.Types.ObjectId(request_json["Idfaqs"])

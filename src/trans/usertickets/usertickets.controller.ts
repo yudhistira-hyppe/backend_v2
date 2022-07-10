@@ -50,6 +50,8 @@ export class UserticketsController {
 
     var iduser = ubasic._id;
     var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
     CreateUserticketsDto.IdUser = iduser;
     CreateUserticketsDto.datetime = dt.toISOString();
     CreateUserticketsDto.nomortiket = no;
