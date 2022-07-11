@@ -292,7 +292,6 @@ export class UserbasicsService {
     return GetCount;
   }
 
-
   async getinterest(email: string, langIso: string, pageNumber: number, pageRow: number, search: string): Promise<object> {
     const interes = await this.interestsRepoService.findinterst();
     const query = await this.userbasicModel.aggregate([
@@ -330,8 +329,7 @@ export class UserbasicsService {
 
     return query;
   }
-
-
+  
   async viewdatabyuser(id: object): Promise<object> {
     const query = await this.userbasicModel.aggregate([
       {
