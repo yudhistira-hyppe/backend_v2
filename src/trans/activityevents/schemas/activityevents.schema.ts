@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 import { type } from 'os';
+import { Int32 } from "mongodb";
 
 export type ActivityeventsDocument = Activityevents & Document;
 
@@ -36,7 +37,7 @@ export class Activityevents {
   @Prop()
   updatedAt: String;
   @Prop()
-  sequenceNumber: String;
+  sequenceNumber: Int32;
   @Prop()
   parentActivityEventID: String;
   @Prop()

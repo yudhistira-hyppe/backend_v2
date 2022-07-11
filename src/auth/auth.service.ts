@@ -383,9 +383,9 @@ export class AuthService {
             if (filteredData.length == 0) {
               //Pust Devices Userauths
               datauserauthsService_devices.push({
-                $ref: 'userdevices',
-                $id: ID_user_userdevicesService,
-                $db: 'hyppe_trans_db',
+                ref: 'userdevices',
+                id: ID_user_userdevicesService,
+                db: 'hyppe_trans_db',
               });
 
               await this.userauthsService.updatebyEmail(user_email, {
@@ -558,45 +558,33 @@ export class AuthService {
   }
 
   async signup(req: any): Promise<any> {
-    if (req.body.otp == undefined) {
-      if (
-        req.body.email == undefined ||
-        req.body.deviceId == undefined ||
-        req.body.password == undefined
-      ) {
-        throw new NotAcceptableException({
-          response_code: 406,
-          messages: {
-            info: ['Unabled to proceed'],
-          },
-        });
-      }else{
-
-      }
-    }else{
-      if (
-        req.body.email == undefined ||
-        req.body.status == undefined ||
-        req.body.event == undefined
-      ) {
-        throw new NotAcceptableException({
-          response_code: 406,
-          messages: {
-            info: ['Unabled to proceed'],
-          },
-        });
-      }
-    }
-
-    if (!(await this.utilsService.validasiEmail(req.body.email))) {
-      throw new NotAcceptableException({
-        response_code: 406,
-        messages: {
-          info: ['Unabled to proceed'],
-        },
-      });
-    }
-
+    // if (req.body.otp == undefined) {
+    //   if (
+    //     req.body.email == undefined ||
+    //     req.body.deviceId == undefined ||
+    //     req.body.password == undefined
+    //   ) {
+    //     throw new NotAcceptableException({
+    //       response_code: 406,
+    //       messages: {
+    //         info: ['Unabled to proceed'],
+    //       },
+    //     });
+    //   }
+    // }else{
+    //   if (
+    //     req.body.email == undefined ||
+    //     req.body.status == undefined ||
+    //     req.body.event == undefined
+    //   ) {
+    //     throw new NotAcceptableException({
+    //       response_code: 406,
+    //       messages: {
+    //         info: ['Unabled to proceed'],
+    //       },
+    //     });
+    //   }
+    // }
     var user_email = null;
     var user_password = null;
     var user_deviceId = null;
@@ -614,7 +602,57 @@ export class AuthService {
 
     var current_date = await this.utilsService.getDateTimeString();
 
+    if(req.body.email==undefined){
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed, Email parameter required'],
+        },
+      });
+    }
+
+    if (!(await this.utilsService.validasiEmail(req.body.email))) {
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed, Invalid email format'],
+        },
+      });
+    }
+
     if (req.body.otp == undefined) {
+      if(req.body.password==undefined){
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed, Password parameter required '],
+          },
+        });
+      }
+      if(req.body.password==''){
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed, Password parameter required '],
+          },
+        });
+      }
+      if(req.body.deviceId==undefined){
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed, Device Id parameter required '],
+          },
+        });
+      }
+      if(req.body.deviceId==''){
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed, Device Id parameter required '],
+          },
+        });
+      }
       user_email = req.body.email;
       user_password = req.body.password;
       user_deviceId = req.body.deviceId;
@@ -628,38 +666,86 @@ export class AuthService {
         user_gender = req.body.gender;
       }
     }else{
+      if(req.body.otp==undefined){
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed, OTP parameter required '],
+          },
+        });
+      }
+      if(req.body.otp==''){
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed, OTP parameter required '],
+          },
+        });
+      }
+      if(req.body.status==undefined){
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed, Status parameter required '],
+          },
+        });
+      }
+      if(req.body.status==''){
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed, Status parameter required '],
+          },
+        });
+      }
+      if(req.body.event==undefined){
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed, Event parameter required '],
+          },
+        });
+      }
+      if(req.body.event==''){
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed, Event parameter required '],
+          },
+        });
+      }
       user_email = req.body.email;
       user_otp = req.body.otp;
       user_status = req.body.status;
       user_event = req.body.event;
     }
 
-    var data_CreateActivityeventsDto_parent = new CreateActivityeventsDto();
-    var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
+    // var data_CreateActivityeventsDto_parent = new CreateActivityeventsDto();
+    // var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
 
-    var data_CreateInsightsDto = new CreateInsightsDto();
-    var data_CreateUserbasicDto = new CreateUserbasicDto();
-    var data_CreateUserauthDto = new CreateUserauthDto();
-    var data_CreateUserdeviceDto = new CreateUserdeviceDto();
+    // var data_CreateInsightsDto = new CreateInsightsDto();
+    // var data_CreateUserbasicDto = new CreateUserbasicDto();
+    // var data_CreateUserauthDto = new CreateUserauthDto();
+    // var data_CreateUserdeviceDto = new CreateUserdeviceDto();
 
-    var ID_insights = (await this.utilsService.generateId()).toLowerCase();
-    var ID_user = (await this.utilsService.generateId()).toLowerCase();
-    var ID_profile = (await this.utilsService.generateId()).toLowerCase();
-    var ID_device = null;
-    var id_Activityevents_parent = new mongoose.Types.ObjectId();
-    var id_Activityevents_child = new mongoose.Types.ObjectId();
+    // var ID_insights = (await this.utilsService.generateId()).toLowerCase();
+    // var ID_user = (await this.utilsService.generateId()).toLowerCase();
+    // var ID_profile = (await this.utilsService.generateId()).toLowerCase();
+    // var ID_device = null;
+    // var id_Activityevents_parent = new mongoose.Types.ObjectId();
+    // var id_Activityevents_child = new mongoose.Types.ObjectId();
 
     var _class_ActivityEvent = 'io.melody.hyppe.trans.domain.ActivityEvent';
     var _class_UserDevices = 'io.melody.core.domain.UserDevices';
     var _class_UserAuths = 'io.melody.core.domain.UserAuth';
     var _class_UserProfile = 'io.melody.core.domain.UserProfile';
 
-    var ID_parent_ActivityEvent = (
-      await this.utilsService.generateId()
-    ).toLowerCase();
-    var ID_child_ActivityEvent = (
-      await this.utilsService.generateId()
-    ).toLowerCase();
+    // var ID_parent_ActivityEvent = (
+    //   await this.utilsService.generateId()
+    // ).toLowerCase();
+    // var ID_child_ActivityEvent = (
+    //   await this.utilsService.generateId()
+    // ).toLowerCase();
 
     if (req.body.otp == undefined) {
       CurrentStatus = 'INITIAL';
@@ -681,37 +767,32 @@ export class AuthService {
       user_email,
     );
 
-    //Ceck User jwtrefresh token
-    const datajwtrefreshtoken = await this.jwtrefreshtokenService.findOne(
-      user_email,
-    );
+    //Ceck User Userdevices
+    const datauserdevicesService =  await this.userdevicesService.findOneEmail(user_email, user_deviceId);
 
     if (
       (await this.utilsService.ceckData(datauserbasicsService)) &&
       (await this.utilsService.ceckData(datauserauthsService)) &&
       isNotInitial
     ) {
-      const user_activityevents =
+      const dataactivityevents =
         await this.activityeventsService.findParentWitoutDevice(
           user_email,
           'ENROL',
           false,
         );
 
-      if (Object.keys(user_activityevents).length > 0) {
-        //Ceck User Auth
-        const user_userAuth = await this.userauthsService.findOne(user_email);
-
+      if (Object.keys(dataactivityevents).length > 0) {
         let last;
-        if (user_activityevents[0].transitions.length > 0) {
+        if (dataactivityevents[0].transitions.length > 0) {
           last = await this.activityeventsService.findbyactivityEventID(
             user_email,
-            user_activityevents[0].transitions[0].oid,
+            dataactivityevents[0].transitions[0].oid,
             'ENROL',
             false,
           );
         } else {
-          last = user_activityevents;
+          last = dataactivityevents;
         }
 
         let StatusNext;
@@ -724,92 +805,22 @@ export class AuthService {
 
         if (StatusNext == CurrentStatus && EventNext == CurrentEvent) {
           if (
-            user_userAuth.oneTimePassword != undefined &&
+            datauserauthsService.oneTimePassword != undefined &&
             CurrentEvent == 'VERIFY_OTP' &&
             CurrentStatus == 'REPLY'
           ) {
-
-            //Create ActivityEvent child
-            try {
-              var id_child = new mongoose.Types.ObjectId();
-              data_CreateActivityeventsDto_child._id = id_child;
-              data_CreateActivityeventsDto_child.activityEventID =
-                ID_child_ActivityEvent;
-              data_CreateActivityeventsDto_child.activityType = 'ENROL';
-              data_CreateActivityeventsDto_child.active = true;
-              data_CreateActivityeventsDto_child.status = 'NOTIFY';
-              data_CreateActivityeventsDto_child.target = 'REPLY';
-              data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
-              data_CreateActivityeventsDto_child._class = _class_ActivityEvent;
-              data_CreateActivityeventsDto_child.action = 'NotifyActivityCommand';
-              data_CreateActivityeventsDto_child.payload = {
-                login_location: {
-                  latitude: undefined,
-                  longitude: undefined,
-                },
-                logout_date: undefined,
-                login_date: undefined,
-                login_device: undefined,
-                email: user_email,
-              };
-              data_CreateActivityeventsDto_child.createdAt = current_date;
-              data_CreateActivityeventsDto_child.updatedAt = current_date;
-              data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
-              data_CreateActivityeventsDto_child.flowIsDone = false;
-              data_CreateActivityeventsDto_child.__v = undefined;
-              data_CreateActivityeventsDto_child.parentActivityEventID =
-                user_activityevents[0].activityEventID;
-              data_CreateActivityeventsDto_child.userbasic =
-                user_activityevents[0].userbasic;
-
-              //Insert ActivityEvent Parent
-              await this.activityeventsService.create(
-                data_CreateActivityeventsDto_child,
-              );
-            } catch (error) {
-              await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Create Activity events Child. Error: ' +
-                  error,
-              );
-            }
-
-            //Update ActivityEvent Parent
-            try {
-              const data_transitions = user_activityevents[0].transitions;
-              data_transitions.push({
-                $ref: 'activityevents',
-                $id: new Object(ID_child_ActivityEvent),
-                $db: 'hyppe_trans_db',
-              });
-
-              //Update ActivityEvent Parent
-              await this.activityeventsService.update(
-                {
-                  _id: user_activityevents[0]._id,
-                },
-                {
-                  transitions: data_transitions,
-                },
-              );
-            } catch (error) {
-              await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Update Activity events Parent. Error:' +
-                  error,
-              );
-            }
-
             if (
               await this.utilsService.compareOTPAttemp(
-                Number(user_userAuth.otpAttempt),
+                Number(datauserauthsService.otpAttempt),
               )
             ) {
               if (
-                (user_userAuth.oneTimePassword != undefined
+                (datauserauthsService.oneTimePassword != undefined
                   ? await this.utilsService.OTPExpires(
-                      Number(await user_userAuth.otpRequestTime),
+                      Number(await datauserauthsService.otpRequestTime),
                     )
                   : false) == false &&
-                user_otp == user_userAuth.oneTimePassword
+                user_otp == datauserauthsService.oneTimePassword
               ) {
 
                 await this.userauthsService.updatebyEmail(user_email, {
@@ -822,12 +833,14 @@ export class AuthService {
                 //Create Or Update refresh Token
                 await this.updateRefreshToken(user_email);
 
-                //Create ActivityEvent child
+                //Create ActivityEvent child VERIFY_OTP
+                var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
+                var mongoose_gen_id_Activityevents_child = new mongoose.Types.ObjectId();
+                var gen_ID_child_ActivityEvent = (await this.utilsService.generateId()).toLowerCase();
                 try {
-                  var id_child = new mongoose.Types.ObjectId();
-                  data_CreateActivityeventsDto_child._id = id_child;
+                  data_CreateActivityeventsDto_child._id = mongoose_gen_id_Activityevents_child;
                   data_CreateActivityeventsDto_child.activityEventID =
-                    ID_child_ActivityEvent;
+                    gen_ID_child_ActivityEvent;
                   data_CreateActivityeventsDto_child.activityType = 'ENROL';
                   data_CreateActivityeventsDto_child.active = true;
                   data_CreateActivityeventsDto_child.status = 'REPLY';
@@ -844,17 +857,17 @@ export class AuthService {
                     },
                     logout_date: undefined,
                     login_date: undefined,
-                    login_device: undefined,
+                    login_device: dataactivityevents[0].payload.login_device,
                     email: user_email,
                   };
                   data_CreateActivityeventsDto_child.createdAt = current_date;
                   data_CreateActivityeventsDto_child.updatedAt = current_date;
                   data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
-                    4,
+                    2,
                   );
                   data_CreateActivityeventsDto_child.flowIsDone = false;
                   data_CreateActivityeventsDto_child.parentActivityEventID =
-                    user_activityevents[0].activityEventID;
+                    dataactivityevents[0].activityEventID;
                   data_CreateActivityeventsDto_child.userbasic =
                     datauserbasicsService._id;
 
@@ -871,27 +884,17 @@ export class AuthService {
 
                 //Update ActivityEvent Parent
                 try {
-                  const data_transitions = user_activityevents[0].transitions;
+                  const data_transitions = dataactivityevents[0].transitions;
                   data_transitions.push({
                     $ref: 'activityevents',
-                    $id: new Object(ID_child_ActivityEvent),
+                    $id: new Object(gen_ID_child_ActivityEvent),
                     $db: 'hyppe_trans_db',
                   });
                   await this.activityeventsService.update(
                     {
-                      _id: user_activityevents[0]._id,
+                      _id: dataactivityevents[0]._id,
                     },
                     {
-                      payload: {
-                        login_location: {
-                          latitude: undefined,
-                          longitude: undefined,
-                        },
-                        logout_date: current_date,
-                        login_date: user_activityevents[0].payload.login_date,
-                        login_device: undefined,
-                        email: user_email,
-                      },
                       flowIsDone: false,
                       transitions: data_transitions,
                     },
@@ -902,98 +905,9 @@ export class AuthService {
                       error,
                   );
                 }
-
-                var ID_parent_ActivityEvent_ = (await this.utilsService.generateId()).toLowerCase();
-                var ID_child_ActivityEvent_ = (await this.utilsService.generateId()).toLowerCase();
-                //Create ActivityEvent Parent
-                try {
-                  var data_CreateActivityeventsDto_parent_ = new CreateActivityeventsDto();
-                  data_CreateActivityeventsDto_parent_._id =  new mongoose.Types.ObjectId();
-                  data_CreateActivityeventsDto_parent_.activityEventID =
-                    ID_parent_ActivityEvent_;
-                  data_CreateActivityeventsDto_parent_.activityType = 'LOGIN';
-                  data_CreateActivityeventsDto_parent_.active = true;
-                  data_CreateActivityeventsDto_parent_.status = 'INITIAL';
-                  data_CreateActivityeventsDto_parent_.target = 'USER_LOGOUT';
-                  data_CreateActivityeventsDto_parent_.event = 'LOGIN';
-                  data_CreateActivityeventsDto_parent_._class = _class_ActivityEvent;
-                  data_CreateActivityeventsDto_parent_.payload = {
-                    login_location: {
-                      latitude: undefined,
-                      longitude: undefined,
-                    },
-                    logout_date: undefined,
-                    login_date: current_date,
-                    login_device: undefined,
-                    email: user_email,
-                  };
-                  data_CreateActivityeventsDto_parent_.createdAt = current_date;
-                  data_CreateActivityeventsDto_parent_.updatedAt = current_date;
-                  data_CreateActivityeventsDto_parent_.sequenceNumber = new Int32(0);
-                  data_CreateActivityeventsDto_parent_.flowIsDone = false;
-                  data_CreateActivityeventsDto_parent_.__v = undefined;
-                  data_CreateActivityeventsDto_parent_.transitions = [
-                    {
-                      $ref: 'activityevents',
-                      $id: Object(ID_child_ActivityEvent_),
-                      $db: 'hyppe_trans_db',
-                    },
-                  ];
-                  data_CreateActivityeventsDto_parent_.userbasic =
-                    datauserbasicsService._id;
-
-                  //Insert ActivityEvent Parent
-                  await this.activityeventsService.create(
-                    data_CreateActivityeventsDto_parent_,
-                  );
-                } catch (error) {
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Create Activity events Parent. Error:' +
-                      error,
-                  );
-                }
-
-                //Create ActivityEvent child
-                try {
-                  var data_CreateActivityeventsDto_child_ = new CreateActivityeventsDto();
-                  data_CreateActivityeventsDto_child_._id = new mongoose.Types.ObjectId();
-                  data_CreateActivityeventsDto_child_.activityEventID =
-                    ID_child_ActivityEvent_;
-                  data_CreateActivityeventsDto_child_.activityType = 'DEVICE_ACTIVITY';
-                  data_CreateActivityeventsDto_child_.active = true;
-                  data_CreateActivityeventsDto_child_.status = 'INITIAL';
-                  data_CreateActivityeventsDto_child_.target = 'ACTIVE';
-                  data_CreateActivityeventsDto_child_.event = 'AWAKE';
-                  data_CreateActivityeventsDto_child_._class = _class_ActivityEvent;
-                  data_CreateActivityeventsDto_child_.payload = {
-                    login_location: {
-                      latitude: undefined,
-                      longitude: undefined,
-                    },
-                    logout_date: undefined,
-                    login_date: current_date,
-                    login_device: undefined,
-                    email: user_email,
-                  };
-                  data_CreateActivityeventsDto_child_.createdAt = current_date;
-                  data_CreateActivityeventsDto_child_.updatedAt = current_date;
-                  data_CreateActivityeventsDto_child_.sequenceNumber = new Int32(1);
-                  data_CreateActivityeventsDto_child_.flowIsDone = false;
-                  data_CreateActivityeventsDto_child_.__v = undefined;
-                  data_CreateActivityeventsDto_child_.parentActivityEventID =
-                    ID_parent_ActivityEvent;
-                  data_CreateActivityeventsDto_child_.userbasic =
-                    datauserbasicsService._id;
-
-                  //Insert ActivityEvent Parent
-                  await this.activityeventsService.create(
-                    data_CreateActivityeventsDto_child_,
-                  );
-                } catch (error) {
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Create Activity events Child. Error:' + error,
-                  );
-                }
+                
+                //Ceck User Userdevices
+                const user_userdevicesService = await this.userdevicesService.findOneEmail_(user_email);
 
                 var countries_json = null;
                 if(datauserbasicsService.countries !=undefined){
@@ -1101,9 +1015,6 @@ export class AuthService {
                   views: insights.views,
                   likes: insights.likes,
                 };
-                
-                //Ceck User Userdevices
-                const user_userdevicesService = await this.userdevicesService.findOneEmail_(user_email);
 
                 var token = (
                   await this.utilsService.generateToken(user_email, user_userdevicesService.deviceID)
@@ -1113,6 +1024,131 @@ export class AuthService {
                 const datajwtrefreshtoken_data = await this.jwtrefreshtokenService.findOne(
                   user_email,
                 );
+
+                this.userbasicsService.updatebyEmail(user_email, {
+                  status: 'IN_PROGRESS',
+                  event: 'UPDATE_BIO',
+                });
+
+                this.userauthsService.updatebyEmail(user_email, {
+                  oneTimePassword: null,
+                  otpRequestTime: new Long(0),
+                  otpAttempt: new Long(0),
+                  otpNextAttemptAllow:  new Long(0),
+                });
+
+                //Create ActivityEvent child UPDATE_BIO
+                var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
+                var mongoose_gen_id_Activityevents_child = new mongoose.Types.ObjectId();
+                var gen_ID_child_ActivityEvent = (await this.utilsService.generateId()).toLowerCase();
+                try {
+                  data_CreateActivityeventsDto_child._id = mongoose_gen_id_Activityevents_child;
+                  data_CreateActivityeventsDto_child.activityEventID =
+                    gen_ID_child_ActivityEvent;
+                  data_CreateActivityeventsDto_child.activityType = 'ENROL';
+                  data_CreateActivityeventsDto_child.active = true;
+                  data_CreateActivityeventsDto_child.status = 'IN_PROGRESS';
+                  data_CreateActivityeventsDto_child.target = 'COMPLETE_BIO';
+                  data_CreateActivityeventsDto_child.event = 'UPDATE_BIO';
+                  data_CreateActivityeventsDto_child.payload = {
+                    login_location: {
+                      latitude: undefined,
+                      longitude: undefined,
+                    },
+                    logout_date: undefined,
+                    login_date: undefined,
+                    login_device: dataactivityevents[0].payload.login_device,
+                    email: user_email,
+                  };
+                  data_CreateActivityeventsDto_child.createdAt = current_date;
+                  data_CreateActivityeventsDto_child.updatedAt = current_date;
+                  data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
+                    3,
+                  );
+                  data_CreateActivityeventsDto_child.flowIsDone = false;
+                  data_CreateActivityeventsDto_child.parentActivityEventID =
+                    dataactivityevents[0].activityEventID;
+                  data_CreateActivityeventsDto_child.userbasic =
+                    datauserbasicsService._id;
+                  data_CreateActivityeventsDto_child._class = _class_ActivityEvent;
+
+                  //Insert ActivityEvent child
+                  await this.activityeventsService.create(
+                    data_CreateActivityeventsDto_child,
+                  );
+                } catch (error) {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Create Activity events Child. Error:' +
+                      error,
+                  );
+                }
+
+                //Update ActivityEvent Parent
+                try {
+                  const data_transitions = dataactivityevents[0].transitions;
+                  data_transitions.push({
+                    $ref: 'activityevents',
+                    $id: new Object(gen_ID_child_ActivityEvent),
+                    $db: 'hyppe_trans_db',
+                  });
+                  await this.activityeventsService.update(
+                    {
+                      _id: dataactivityevents[0]._id,
+                    },
+                    {
+                      flowIsDone: false,
+                      transitions: data_transitions,
+                    },
+                  );
+                } catch (error) {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Update Activity Event Parent. Error:' +
+                      error,
+                  );
+                }
+
+                //Create ActivityEvent Parent LOGIN
+                var data_CreateActivityeventsDto_parent = new CreateActivityeventsDto();
+                var mongoose_gen_id_Activityevents_parent = new mongoose.Types.ObjectId();
+                var gen_ID_parent_ActivityEvent = (await this.utilsService.generateId()).toLowerCase();
+                try {
+                  data_CreateActivityeventsDto_parent._id =  mongoose_gen_id_Activityevents_parent;
+                  data_CreateActivityeventsDto_parent.activityEventID =
+                    gen_ID_parent_ActivityEvent;
+                  data_CreateActivityeventsDto_parent.activityType = 'LOGIN';
+                  data_CreateActivityeventsDto_parent.active = true;
+                  data_CreateActivityeventsDto_parent.status = 'INITIAL';
+                  data_CreateActivityeventsDto_parent.target = 'USER_LOGOUT';
+                  data_CreateActivityeventsDto_parent.event = 'LOGIN';
+                  data_CreateActivityeventsDto_parent._class = _class_ActivityEvent;
+                  data_CreateActivityeventsDto_parent.payload = {
+                    login_location: {
+                      latitude: undefined,
+                      longitude: undefined,
+                    },
+                    logout_date: undefined,
+                    login_date: current_date,
+                    login_device: user_userdevicesService.deviceID,
+                    email: user_email,
+                  };
+                  data_CreateActivityeventsDto_parent.createdAt = current_date;
+                  data_CreateActivityeventsDto_parent.updatedAt = current_date;
+                  data_CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
+                  data_CreateActivityeventsDto_parent.flowIsDone = false;
+                  data_CreateActivityeventsDto_parent.__v = undefined;
+                  data_CreateActivityeventsDto_parent.userbasic =
+                    datauserbasicsService._id;
+
+                  //Insert ActivityEvent Parent
+                  await this.activityeventsService.create(
+                    data_CreateActivityeventsDto_parent,
+                  );
+                } catch (error) {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Create Activity events Parent. Error:' +
+                      error,
+                  );
+                }
 
                 const data = {};
                 if(countries!=null){
@@ -1174,21 +1210,23 @@ export class AuthService {
               }
             } else {
               if (
-                Number(user_userAuth.otpNextAttemptAllow) > 0
+                Number(datauserauthsService.otpNextAttemptAllow) > 0
                   ? await this.utilsService.OTPNextAttempExpires(
-                      Number(user_userAuth.otpNextAttemptAllow),
+                      Number(datauserauthsService.otpNextAttemptAllow),
                     )
-                  : user_userAuth.oneTimePassword != undefined &&
+                  : datauserauthsService.oneTimePassword != undefined &&
                     !(await this.utilsService.compareOTPAttemp(
-                      Number(user_userAuth.otpAttempt),
+                      Number(datauserauthsService.otpAttempt),
                     ))
               ) {
-                //Create ActivityEvent child
+                //Create ActivityEvent child NOTIFY_OTP
+                var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
+                var mongoose_gen_id_Activityevents_child = new mongoose.Types.ObjectId();
+                var gen_ID_child_ActivityEvent = (await this.utilsService.generateId()).toLowerCase();
                 try {
-                  var id_child = new mongoose.Types.ObjectId();
-                  data_CreateActivityeventsDto_child._id = id_child;
+                  data_CreateActivityeventsDto_child._id = mongoose_gen_id_Activityevents_child;
                   data_CreateActivityeventsDto_child.activityEventID =
-                    ID_child_ActivityEvent;
+                    gen_ID_child_ActivityEvent;
                   data_CreateActivityeventsDto_child.activityType = 'ENROL';
                   data_CreateActivityeventsDto_child.active = true;
                   data_CreateActivityeventsDto_child.status = 'NOTIFY';
@@ -1210,12 +1248,12 @@ export class AuthService {
                   data_CreateActivityeventsDto_child.createdAt = current_date;
                   data_CreateActivityeventsDto_child.updatedAt = current_date;
                   data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
-                    2,
+                    1,
                   );
                   data_CreateActivityeventsDto_child.flowIsDone = false;
                   data_CreateActivityeventsDto_child.__v = undefined;
                   data_CreateActivityeventsDto_child.parentActivityEventID =
-                    ID_parent_ActivityEvent;
+                    dataactivityevents[0].activityEventID;
                   data_CreateActivityeventsDto_child.userbasic =
                     datauserbasicsService._id;
 
@@ -1232,17 +1270,17 @@ export class AuthService {
 
                 //Update ActivityEvent Parent
                 try {
-                  const data_transitions = user_activityevents[0].transitions;
+                  const data_transitions = dataactivityevents[0].transitions;
                   data_transitions.push({
                     $ref: 'activityevents',
-                    $id: new Object(ID_child_ActivityEvent),
+                    $id: new Object(gen_ID_child_ActivityEvent),
                     $db: 'hyppe_trans_db',
                   });
 
                   //Update ActivityEvent Parent
                   await this.activityeventsService.update(
                     {
-                      _id: user_activityevents[0]._id,
+                      _id: dataactivityevents[0]._id,
                     },
                     {
                       transitions: data_transitions,
@@ -1262,8 +1300,8 @@ export class AuthService {
                 this.userauthsService.updatebyEmail(user_email, {
                   oneTimePassword: OTP,
                   otpRequestTime: OTP_expires,
-                  otpAttempt: 0,
-                  otpNextAttemptAllow: 0,
+                  otpAttempt:  new Long(0),
+                  otpNextAttemptAllow:  new Long(0),
                 });
 
                 await this.sendemailOTP(user_email, OTP.toString(), 'ENROL');
@@ -1294,7 +1332,7 @@ export class AuthService {
         }
       } else {
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed',
+          'Unabled to proceed, Log activity events signup not axist',
         );
       }
     } else {
@@ -1310,21 +1348,9 @@ export class AuthService {
 
       user_exist = !(await this.utilsService.ceckData(datauserauthsService_));
       if (user_exist) {
-        //Ceck User Userdevices
-        const user_userdevicesService =  await this.userdevicesService.findOneEmail(user_email, user_deviceId);
-
-        //Ceck User Userauths
-        const datauserauthsService = await this.userauthsService.findOneByEmail(
-          user_email,
-        );
-
-        //Ceck User Userbasics
-        const datauserbasicsService = await this.userbasicsService.findOne(
-          user_email,
-        );
 
         //Ceck User ActivityEvent Parent
-        const user_activityevents =
+        const dataactivityevents =
           await this.activityeventsService.findParentWitoutDevice(
             user_email,
             type,
@@ -1334,7 +1360,7 @@ export class AuthService {
         if (
           (await this.utilsService.ceckData(datauserauthsService)) &&
           (await this.utilsService.ceckData(datauserbasicsService)) &&
-          (await this.utilsService.ceckData(user_activityevents))
+          (await this.utilsService.ceckData(dataactivityevents))
         ) {
           user_exist = false;
         }
@@ -1344,14 +1370,15 @@ export class AuthService {
           CurrentStatus == 'INITIAL' &&
           CurrentEvent == 'SIGN_UP'
         ) {
+          var ID_device = null;
           var data_interest_id = [];
           var OTP = await this.utilsService.generateOTP();
           var OTP_expires = await this.utilsService.generateOTPExpires();
           var username_ = await this.utilsService.generateUsername(user_email);
           var id_user_langIso = null;
 
-          var id_user_auth = new mongoose.Types.ObjectId();
-          var id_user_basic = new mongoose.Types.ObjectId();
+          var mongoose_gen_id_user_auth = new mongoose.Types.ObjectId();
+          var mongoose_gen_id_user_basic = new mongoose.Types.ObjectId();
 
           //Get Id Language
           try {
@@ -1398,21 +1425,23 @@ export class AuthService {
 
           //Create Insights
           try {
+            var data_CreateInsightsDto = new CreateInsightsDto();
+            var ID_insights = (await this.utilsService.generateId()).toLowerCase();
             data_CreateInsightsDto._id = ID_insights;
             data_CreateInsightsDto.insightID = ID_insights;
             data_CreateInsightsDto.active = true;
             data_CreateInsightsDto.createdAt = current_date;
             data_CreateInsightsDto.updatedAt = current_date;
             data_CreateInsightsDto.email = user_email;
-            data_CreateInsightsDto.followers = new Int32(0);
-            data_CreateInsightsDto.followings = new Int32(0);
-            data_CreateInsightsDto.unfollows = new Int32(0);
-            data_CreateInsightsDto.likes = new Int32(0);
-            data_CreateInsightsDto.views = new Int32(0);
-            data_CreateInsightsDto.comments = new Int32(0);
-            data_CreateInsightsDto.posts = new Int32(0);
-            data_CreateInsightsDto.shares = new Int32(0);
-            data_CreateInsightsDto.reactions = new Int32(0);
+            data_CreateInsightsDto.followers = Long.fromString('0');
+            data_CreateInsightsDto.followings = Long.fromString('0');
+            data_CreateInsightsDto.unfollows = Long.fromString('0');
+            data_CreateInsightsDto.likes = Long.fromString('0');
+            data_CreateInsightsDto.views = Long.fromString('0');
+            data_CreateInsightsDto.comments = Long.fromString('0');
+            data_CreateInsightsDto.posts = Long.fromString('0');
+            data_CreateInsightsDto.shares = Long.fromString('0');
+            data_CreateInsightsDto.reactions = Long.fromString('0');
             data_CreateInsightsDto._class =
               'io.melody.hyppe.content.domain.Insight';
 
@@ -1420,12 +1449,12 @@ export class AuthService {
             await this.insightsService.create(data_CreateInsightsDto);
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
-              'Unabled to proceed Create UserAuth. Error: ' + error,
+              'Unabled to proceed Create Insights. Error: ' + error,
             );
           }
 
           //Userdevices != null
-          if (await this.utilsService.ceckData(user_userdevicesService)) {
+          if (await this.utilsService.ceckData(datauserdevicesService)) {
             //Get Userdevices
             try {
               await this.userdevicesService.updatebyEmail(
@@ -1435,7 +1464,7 @@ export class AuthService {
                   active: true,
                 },
               );
-              ID_device = user_userdevicesService._id;
+              ID_device = datauserdevicesService._id;
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Get Userdevices. Error:' + error,
@@ -1444,6 +1473,7 @@ export class AuthService {
           } else {
             //Create Userdevices
             try {
+              var data_CreateUserdeviceDto = new CreateUserdeviceDto();
               ID_device = (await this.utilsService.generateId()).toLowerCase();
               data_CreateUserdeviceDto._id = ID_device;
               data_CreateUserdeviceDto.deviceID = user_deviceId;
@@ -1464,13 +1494,16 @@ export class AuthService {
           //Create UserAuth
           var pass_gen = await this.utilsService.generatePassword(user_password);
           try {
-            data_CreateUserauthDto._id = id_user_auth;
+            var data_CreateUserauthDto = new CreateUserauthDto();
+            var ID_user = (await this.utilsService.generateId()).toLowerCase();
+            data_CreateUserauthDto._id = mongoose_gen_id_user_auth;
             data_CreateUserauthDto.username = username_;
             data_CreateUserauthDto.password = pass_gen;
             data_CreateUserauthDto.userID = ID_user;
             data_CreateUserauthDto.email = user_email;
             data_CreateUserauthDto.createdAt = current_date;
             data_CreateUserauthDto.updatedAt = current_date;
+            data_CreateUserauthDto.regSrc = 'iOS';
             data_CreateUserauthDto.isExpiryPass = false;
             data_CreateUserauthDto.isEmailVerified = false;
             data_CreateUserauthDto.otpAttempt = Long.fromString('0');
@@ -1501,8 +1534,10 @@ export class AuthService {
 
           //Create UserBasic
           try {
-            data_CreateUserbasicDto._id = id_user_basic;
-            data_CreateUserbasicDto.profileID = ID_profile;
+            var data_CreateUserbasicDto = new CreateUserbasicDto();
+            var gen_profileID = (await this.utilsService.generateId()).toLowerCase();
+            data_CreateUserbasicDto._id = mongoose_gen_id_user_basic;
+            data_CreateUserbasicDto.profileID = gen_profileID;
             data_CreateUserbasicDto.email = user_email;
             data_CreateUserbasicDto.fullName = username_;
             data_CreateUserbasicDto.gender = user_gender;
@@ -1523,10 +1558,10 @@ export class AuthService {
               $db: 'hyppe_content_db',
             };
             data_CreateUserbasicDto.userInterests = Object(data_interest_id);
-            if(id_user_auth!=undefined||id_user_auth!=null){
+            if(mongoose_gen_id_user_auth!=undefined||mongoose_gen_id_user_auth!=null){
               data_CreateUserbasicDto.userAuth = {
-                $ref: 'activityevents',
-                $id: new ObjectId(id_user_auth._id.toString()),
+                $ref: 'userauths',
+                $id: new ObjectId(mongoose_gen_id_user_auth._id.toString()),
                 $db: 'hyppe_trans_db',
               };
             }
@@ -1534,7 +1569,7 @@ export class AuthService {
               data_CreateUserbasicDto.languages = {
                 $ref: 'languages',
                 $id: id_user_langIso,
-                $db: 'hyppe_trans_db',
+                $db: 'hyppe_infra_db',
               };
             }
             data_CreateUserbasicDto._class = _class_UserProfile;
@@ -1547,11 +1582,16 @@ export class AuthService {
             );
           }
 
-          //Create ActivityEvent Parent
+          //Create ActivityEvent Parent SIGN_UP
+          var mongoose_gen_id_Activityevents_parent = new mongoose.Types.ObjectId();
+          var mongoose_gen_id_Activityevents_child = new mongoose.Types.ObjectId();
+          var gen_ID_parent_ActivityEvent = (await this.utilsService.generateId()).toLowerCase();
+          var gen_ID_child_ActivityEvent = (await this.utilsService.generateId()).toLowerCase();
           try {
-            data_CreateActivityeventsDto_parent._id = id_Activityevents_parent;
+            var data_CreateActivityeventsDto_parent = new CreateActivityeventsDto();
+            data_CreateActivityeventsDto_parent._id = mongoose_gen_id_Activityevents_parent;
             data_CreateActivityeventsDto_parent.activityEventID =
-              ID_parent_ActivityEvent;
+              gen_ID_parent_ActivityEvent;
             data_CreateActivityeventsDto_parent.activityType = type;
             data_CreateActivityeventsDto_parent.active = true;
             data_CreateActivityeventsDto_parent.status = CurrentStatus;
@@ -1567,7 +1607,7 @@ export class AuthService {
               },
               logout_date: undefined,
               login_date: undefined,
-              login_device: undefined,
+              login_device: user_deviceId,
               email: user_email,
             };
             data_CreateActivityeventsDto_parent.createdAt = current_date;
@@ -1578,12 +1618,12 @@ export class AuthService {
             data_CreateActivityeventsDto_parent.transitions = [
               {
                 $ref: 'activityevents',
-                $id: Object(ID_child_ActivityEvent),
+                $id: Object(gen_ID_child_ActivityEvent),
                 $db: 'hyppe_trans_db',
               },
             ];
             data_CreateActivityeventsDto_parent.userbasic =
-              Object(id_user_basic);
+              Object(mongoose_gen_id_user_basic);
 
             //Insert ActivityEvent Parent
             await this.activityeventsService.create(
@@ -1596,18 +1636,19 @@ export class AuthService {
             );
           }
 
-          //Create ActivityEvent child
+          //Create ActivityEvent child NOTIFY_OTP
           try {
-            data_CreateActivityeventsDto_child._id = id_Activityevents_child;
+            var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
+            data_CreateActivityeventsDto_child._id = mongoose_gen_id_Activityevents_child;
             data_CreateActivityeventsDto_child.activityEventID =
-              ID_child_ActivityEvent;
+              gen_ID_child_ActivityEvent;
             data_CreateActivityeventsDto_child.activityType = type;
             data_CreateActivityeventsDto_child.active = true;
             data_CreateActivityeventsDto_child.status = 'NOTIFY';
             data_CreateActivityeventsDto_child.target = 'REPLY';
             data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
             data_CreateActivityeventsDto_child._class = _class_ActivityEvent;
-            data_CreateActivityeventsDto_child.action = undefined;
+            data_CreateActivityeventsDto_child.action = 'NotifyActivityCommand';
             data_CreateActivityeventsDto_child.payload = {
               login_location: {
                 latitude: undefined,
@@ -1615,7 +1656,7 @@ export class AuthService {
               },
               logout_date: undefined,
               login_date: undefined,
-              login_device: undefined,
+              login_device: user_deviceId,
               email: user_email,
             };
             data_CreateActivityeventsDto_child.createdAt = current_date;
@@ -1624,9 +1665,9 @@ export class AuthService {
             data_CreateActivityeventsDto_child.flowIsDone = false;
             data_CreateActivityeventsDto_child.__v = undefined;
             data_CreateActivityeventsDto_child.parentActivityEventID =
-              ID_parent_ActivityEvent;
+              gen_ID_parent_ActivityEvent;
             data_CreateActivityeventsDto_child.userbasic =
-              Object(id_user_basic);
+              Object(mongoose_gen_id_user_basic);
 
             //Insert ActivityEvent Parent
             await this.activityeventsService.create(
@@ -2138,11 +2179,6 @@ export class AuthService {
         //Get Id Userdevices
         const datauserauthsService_devices =
           datauserauthsService.devices[datauserauthsService.devices.length - 1];
-
-        //Ceck Userdevices
-        const datauserdevices = await this.userdevicesService.findOneId(
-          Object(datauserauthsService_devices.oid),
-        );
 
         //Generate Token
         var Token =
@@ -2893,8 +2929,8 @@ export class AuthService {
                   this.userauthsService.updatebyEmail(user_email, {
                     oneTimePassword: OTP,
                     otpRequestTime: OTP_expires,
-                    otpAttempt: 0,
-                    otpNextAttemptAllow: 0,
+                    otpAttempt:  new Long(0),
+                    otpNextAttemptAllow:  new Long(0),
                   });
 
                   await this.sendemailOTP(
@@ -3001,8 +3037,8 @@ export class AuthService {
             this.userauthsService.updatebyEmail(user_email, {
               oneTimePassword: OTP,
               otpRequestTime: OTP_expires,
-              otpAttempt: 0,
-              otpNextAttemptAllow: 0,
+              otpAttempt:  new Long(0),
+              otpNextAttemptAllow:  new Long(0),
             });
 
             await this.sendemailOTP(
@@ -3734,9 +3770,9 @@ export class AuthService {
       //Update User Auth
       this.userauthsService.updatebyEmail(user_email, {
         oneTimePassword: null,
-        otpRequestTime: 0,
-        otpAttempt: 0,
-        otpNextAttemptAllow: 0,
+        otpRequestTime: new Long(0),
+        otpAttempt: new Long(0),
+        otpNextAttemptAllow: new Long(0),
       });
 
       var OTP = await this.utilsService.generateOTP();
@@ -3967,20 +4003,20 @@ export class AuthService {
           if(status=="ON_PROGRESS"){
             await this.userauthsService.findUpdateEmailStatusRole(email,status);
             await this.sendemailVerification(email, 'PREMIUM_VERIFIKASI');
-            response_status =(await this.userauthsService.findOneByEmail( email)).upgradeRole;
+            response_status =(await this.userauthsService.findOneByEmail( email)).upgradeRole.toString();
           }else if(status=="CECK"){
             if(datauserauthsService.upgradeRole == undefined){
               response_status = null;
             }else{
-              response_status = (await this.userauthsService.findOneByEmail( email)).upgradeRole;
+              response_status = (await this.userauthsService.findOneByEmail( email)).upgradeRole.toString();
             }
           }else if(status=="FINISH"){
             await this.userauthsService.findUpdateEmailStatusRole(email,status);
             await this.userauthsService.update(email, roles);
-            response_status =(await this.userauthsService.findOneByEmail( email)).upgradeRole;
+            response_status =(await this.userauthsService.findOneByEmail( email)).upgradeRole.toString();
           }
         }else{
-          response_status =(await this.userauthsService.findOneByEmail( email)).upgradeRole;
+          response_status =(await this.userauthsService.findOneByEmail( email)).upgradeRole.toString();
         }
 
         return {

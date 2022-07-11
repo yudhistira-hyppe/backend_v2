@@ -44,7 +44,7 @@ export class UserauthsService {
     return this.userauthModel.findOne({ email: email }).exec();
   }
 
-  async findOneByEmail(email: string): Promise<any> {
+  async findOneByEmail(email: string): Promise<Userauth> {
     return this.userauthModel.findOne({ email: email }).exec();
   }
   // async findOneId(id: string): Promise<Userauth> {
