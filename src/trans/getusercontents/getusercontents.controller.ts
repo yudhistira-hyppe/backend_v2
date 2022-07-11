@@ -2,12 +2,14 @@ import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, BadRequestE
 import { GetusercontentsService } from './getusercontents.service';
 import { CreateGetusercontentsDto } from './dto/create-getusercontents.dto';
 import { Getusercontents } from './schemas/getusercontents.schema';
+import { UserbasicsService } from '../userbasics/userbasics.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Res, HttpStatus, Response, Req } from '@nestjs/common';
 import { Request } from 'express';
 @Controller()
 export class GetusercontentsController {
-    constructor(private readonly getusercontentsService: GetusercontentsService) { }
+    constructor(private readonly getusercontentsService: GetusercontentsService,
+        private readonly userbasicsService: UserbasicsService) { }
 
     @Post('api/getusercontents/all')
     @UseGuards(JwtAuthGuard)
@@ -330,6 +332,257 @@ export class GetusercontentsController {
         };
 
         let data = await this.getusercontentsService.findpostid(postID);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('api/getusercontents/management/konten/all')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagementkonten(@Req() request: Request): Promise<any> {
+
+        var email = null;
+        var skip = 0;
+        var limit = 0;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        let data = await this.getusercontentsService.findalldatakonten(email, skip, limit);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('api/getusercontents/management/konten/owned')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagementkontenowned(@Req() request: Request): Promise<any> {
+
+        var email = null;
+        var skip = 0;
+        var limit = 0;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        let data = await this.getusercontentsService.findalldatakontenowned(email, skip, limit);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('api/getusercontents/management/konten/monetize')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagementkontenmonetize(@Req() request: Request): Promise<any> {
+
+        var email = null;
+        var skip = 0;
+        var limit = 0;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        let data = await this.getusercontentsService.findalldatakontenmonetize(email, skip, limit);
+
+        return { response_code: 202, data, messages };
+    }
+
+
+    @Post('api/getusercontents/management/konten/posttype')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagementkontenpostype(@Req() request: Request): Promise<any> {
+
+        var email = null;
+        var skip = 0;
+        var limit = 0;
+        var postType = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["postType"] !== undefined) {
+            postType = request_json["postType"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        let data = await this.getusercontentsService.findalldatakontenpostype(email, postType, skip, limit);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('api/getusercontents/management/konten/daterange')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagementkontenrange(@Req() request: Request): Promise<any> {
+
+        var email = null;
+        var skip = 0;
+        var limit = 0;
+        var startdate = null;
+        var enddate = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["startdate"] !== undefined) {
+            startdate = request_json["startdate"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["enddate"] !== undefined) {
+            enddate = request_json["enddate"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        let data = await this.getusercontentsService.findalldatakontendaterange(email, startdate, enddate, skip, limit);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('api/getusercontents/management/konten/buy')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagementkontenbuy(@Req() request: Request): Promise<any> {
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+        var email = null;
+        var skip = 0;
+        var limit = 0;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var ubasic = await this.userbasicsService.findOne(email);
+        var iduser = ubasic._id;
+        var userid = mongoose.Types.ObjectId(iduser);
+
+        console.log(userid);
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        let data = await this.getusercontentsService.findalldatakontenbuy(userid, skip, limit);
 
         return { response_code: 202, data, messages };
     }
