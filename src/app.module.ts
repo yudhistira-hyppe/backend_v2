@@ -56,7 +56,8 @@ import { UtilsModule } from './utils/utils.module';
 import { TransactionsModule } from './trans/transactions/transactions.module';
 import { AccountbalancesModule } from './trans/accountbalances/accountbalances.module';
 import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents/getcontentevents.module';
-//import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
+import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
+import { FaqdetailsModule } from './trans/faqs/faqdetails/faqdetails.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -73,8 +74,8 @@ import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents
     // UserbasicsModule,
     // UserauthsModule,
     //CommentModule,
-    //UserticketdetailsModule,
-
+    FaqdetailsModule,
+    UserticketdetailsModule,
     UtilsModule,
     GetcontenteventsModule,
     AccountbalancesModule,

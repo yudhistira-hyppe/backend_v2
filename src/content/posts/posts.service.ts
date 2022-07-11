@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreatePostsDto } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 
@@ -27,7 +27,42 @@ export class PostsService {
   async findOne(email: string): Promise<Posts> {
     return this.PostsModel.findOne({ email: email }).exec();
   }
+  async updateemail(id: string, email: string, iduser: {
+    "$oid": string
+  }): Promise<Object> {
+    let data = await this.PostsModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "email": email, "userProfile": {
+            "$ref": "userbasics",
+            "$id": iduser,
+            "$db": "hyppe_trans_db"
+          },
+          "metadata.email": email
+        }
+      });
+    return data;
+  }
 
+  async updatesalelike(id: string): Promise<Object> {
+    let data = await this.PostsModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "salelike": 0
+        }
+      });
+    return data;
+  }
+
+  async updatesaleview(id: string): Promise<Object> {
+    let data = await this.PostsModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "saleview": 0
+        }
+      });
+    return data;
+  }
 
 
   async delete(id: string) {

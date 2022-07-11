@@ -56,7 +56,9 @@ export class UserbasicsService {
   async findAll(): Promise<Userbasic[]> {
     return this.userbasicModel.find().exec();
   }
-
+  async findid(id: string): Promise<Userbasic> {
+    return this.userbasicModel.findOne({ _id: id }).exec();
+  }
   async findOne(email: string): Promise<Userbasic> {
     return this.userbasicModel.findOne({ email: email }).exec();
   }

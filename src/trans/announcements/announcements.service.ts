@@ -43,7 +43,9 @@ export class AnnouncementsService {
                     "pushMessage": "$pushMessage",
                     "appMessage": "$appMessage",
                     "appInfo": "$appInfo",
+                    "email": "$email",
                     "status": "$status",
+                    "tipe": "$tipe",
                     "Detail": "$field",
 
                 }
@@ -74,7 +76,9 @@ export class AnnouncementsService {
                     "pushMessage": "$pushMessage",
                     "appMessage": "$appMessage",
                     "appInfo": "$appInfo",
+                    "email": "$email",
                     "status": "$status",
+                    "tipe": "$tipe",
                     "Detail": "$field",
 
                 }
@@ -108,5 +112,12 @@ export class AnnouncementsService {
             throw new Error('Todo is not found!');
         }
         return data;
+    }
+
+    async delete(id: string) {
+        const deletedCat = await this.announcementsDocumentModel
+            .findByIdAndRemove({ _id: id })
+            .exec();
+        return deletedCat;
     }
 }

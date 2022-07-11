@@ -42,7 +42,11 @@ export class InsightlogsController {
     } else {
       throw new BadRequestException("Unabled to proceed");
     }
+    const messages = {
+      "info": ["The process successful"],
+    };
 
+    var datanull = null;
     var like = 0;
     var totallike = 0;
     var totalfolowwers = 0;
@@ -52,62 +56,83 @@ export class InsightlogsController {
     var statusfollower = "";
     var statusfollowing = "";
     var data = null;
-    var datalike = await this.InsightlogsService.getlike(email);
-    var datafollower = await this.InsightlogsService.getfollowers(email);
-    var datafollowing = await this.InsightlogsService.getfollowing(email);
-    var datainsight = await this.insightsService.getinsight(email);
 
-    var like1 = datalike[0].like;
-    var like2 = datalike[1].like;
-    var followers1 = datafollower[0].followers;
-    var followers2 = datafollower[1].followers;
-    var following1 = datafollowing[0].followings;
-    var following2 = datafollowing[1].followings;
-    totallike = datainsight[0].likes;
-    totalfolowwers = datainsight[0].followers;
-    totalfolowwings = datainsight[0].followings;
+    try {
+      var datalike = await this.InsightlogsService.getlike(email);
+      var datafollower = await this.InsightlogsService.getfollowers(email);
+      var datafollowing = await this.InsightlogsService.getfollowing(email);
+      var datainsight = await this.insightsService.getinsight(email);
 
-    if (like1 > like2) {
-      status = "up";
-    } else {
-      status = "down";
+      var like1 = datalike[0].like;
+      var like2 = datalike[1].like;
+      var followers1 = datafollower[0].followers;
+      var followers2 = datafollower[1].followers;
+      var following1 = datafollowing[0].followings;
+      var following2 = datafollowing[1].followings;
+      totallike = datainsight[0].likes;
+      totalfolowwers = datainsight[0].followers;
+      totalfolowwings = datainsight[0].followings;
+
+      if (like1 > like2) {
+        status = "up";
+      } else {
+        status = "down";
+      }
+
+      if (followers1 > followers2) {
+        statusfollower = "up";
+      } else {
+        statusfollower = "down";
+      }
+
+      if (following1 > following2) {
+        statusfollowing = "up";
+      } else {
+        statusfollowing = "down";
+      }
+
+      data = [
+        {
+          "Likes": {
+            "like": like1,
+            "status": status,
+            "totalsekarang": totallike
+          },
+          "Follower": {
+            "followers": followers1,
+            "status": statusfollower,
+            "totalsekarang": totalfolowwers
+          },
+          "Following": {
+            "followings": following1,
+            "status": statusfollowing,
+            "totalsekarang": totalfolowwings
+          }
+        }];
+
+
+
     }
-
-    if (followers1 > followers2) {
-      statusfollower = "up";
-    } else {
-      statusfollower = "down";
+    catch (e) {
+      data = [
+        {
+          "Likes": {
+            "like": 0,
+            "status": "",
+            "totalsekarang": 0
+          },
+          "Follower": {
+            "followers": 0,
+            "status": "",
+            "totalsekarang": 0
+          },
+          "Following": {
+            "followings": 0,
+            "status": "",
+            "totalsekarang": 0
+          }
+        }];
     }
-
-    if (following1 > following2) {
-      statusfollowing = "up";
-    } else {
-      statusfollowing = "down";
-    }
-    const messages = {
-      "info": ["The process successful"],
-    };
-
-    data = [
-      {
-        "Likes": {
-          "like": like1,
-          "status": status,
-          "totalsekarang": totallike
-        },
-        "Follower": {
-          "followers": followers1,
-          "status": statusfollower,
-          "totalsekarang": totalfolowwers
-        },
-        "Following": {
-          "followings": following1,
-          "status": statusfollowing,
-          "totalsekarang": totalfolowwings
-        }
-      }];
-
-
     return { response_code: 202, data, messages };
   }
 

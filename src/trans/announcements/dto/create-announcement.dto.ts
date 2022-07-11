@@ -12,6 +12,7 @@ export class CreateAnnouncementsDto {
     email: boolean;
     idusershare: { oid: String; };
     status: string;
+    tipe: string;
     Detail: any[];
 
 
