@@ -184,8 +184,8 @@ export class UserticketsService {
           $project: {
             profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
             nomortiket: "$nomortiket",
-            userrequest: "$userdata.fullName",
-            email: "$userdata.email",
+            userrequest: "$userrequest",
+            email: "$email",
             subject: "$subject",
             body: "$body",
             status: "$status",
@@ -215,8 +215,8 @@ export class UserticketsService {
         {
           $project: {
             nomortiket: "$nomortiket",
-            userrequest: "$userdata.fullName",
-            email: "$userdata.email",
+            userrequest: "$userrequest",
+            email: "$email",
             subject: "$subject",
             body: "$body",
             status: "$status",
@@ -235,6 +235,7 @@ export class UserticketsService {
           }
         },
 
+
       ]);
       return query;
 
@@ -242,7 +243,7 @@ export class UserticketsService {
       const query = await this.userticketsModel.aggregate([
 
         { "$match": { "status": status, "tipe": tipe, "active": true } },
-        { "$sort": { "datetime": -1 }, }, { "$skip": page }, { "$limit": limit },
+        { "$sort": { "datetime": -1 }, }, { "$skip": 0 }, { "$limit": 10 },
         {
           $lookup: {
             from: "userbasics",
@@ -313,8 +314,8 @@ export class UserticketsService {
           $project: {
             profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
             nomortiket: "$nomortiket",
-            userrequest: "$userdata.fullName",
-            email: "$userdata.email",
+            userrequest: "$userrequest",
+            email: "$email",
             subject: "$subject",
             body: "$body",
             status: "$status",
@@ -344,8 +345,8 @@ export class UserticketsService {
         {
           $project: {
             nomortiket: "$nomortiket",
-            userrequest: "$userdata.fullName",
-            email: "$userdata.email",
+            userrequest: "$userrequest",
+            email: "$email",
             subject: "$subject",
             body: "$body",
             status: "$status",
@@ -466,6 +467,7 @@ export class UserticketsService {
             as: "tiketdata"
           }
         },
+
         {
           $lookup: {
             from: "userbasics",
@@ -520,8 +522,8 @@ export class UserticketsService {
           $project: {
             profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
             nomortiket: "$nomortiket",
-            userrequest: "$userdata.fullName",
-            email: "$userdata.email",
+            userrequest: "$userrequest",
+            email: "$email",
             subject: "$subject",
             body: "$body",
             status: "$status",
@@ -551,8 +553,8 @@ export class UserticketsService {
         {
           $project: {
             nomortiket: "$nomortiket",
-            userrequest: "$userdata.fullName",
-            email: "$userdata.email",
+            userrequest: "$userrequest",
+            email: "$email",
             subject: "$subject",
             body: "$body",
             status: "$status",
@@ -570,6 +572,8 @@ export class UserticketsService {
 
           }
         },
+
+
 
       ]);
       return query;
@@ -648,8 +652,8 @@ export class UserticketsService {
           $project: {
             profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
             nomortiket: "$nomortiket",
-            userrequest: "$userdata.fullName",
-            email: "$userdata.email",
+            userrequest: "$userrequest",
+            email: "$email",
             subject: "$subject",
             body: "$body",
             status: "$status",
@@ -679,8 +683,8 @@ export class UserticketsService {
         {
           $project: {
             nomortiket: "$nomortiket",
-            userrequest: "$userdata.fullName",
-            email: "$userdata.email",
+            userrequest: "$userrequest",
+            email: "$email",
             subject: "$subject",
             body: "$body",
             status: "$status",
@@ -698,6 +702,8 @@ export class UserticketsService {
 
           }
         },
+
+
 
       ]);
       return query;
