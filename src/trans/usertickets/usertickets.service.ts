@@ -54,6 +54,7 @@ export class UserticketsService {
           as: "tiketdata"
         }
       },
+
       {
         $lookup: {
           from: "userbasics",
@@ -67,6 +68,7 @@ export class UserticketsService {
           userdata: {
             $arrayElemAt: ['$userdata', 0]
           },
+          profilpictid: '$userdata.profilePict.$id',
           replydata: "$tiketdata",
           userrequest: "$userdata.fullName",
           nomortiket: "$nomortiket",
@@ -82,7 +84,7 @@ export class UserticketsService {
       {
         $project: {
 
-
+          profilpictid: '$userdata.profilePict.$id',
           nomortiket: "$nomortiket",
           userrequest: "$userdata.fullName",
           email: "$userdata.email",
@@ -94,7 +96,70 @@ export class UserticketsService {
           replydata: "$replydata"
 
         }
-      }, { $match: { "_id": id } }
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts2',
+          localField: 'profilpictid',
+          foreignField: '_id',
+          as: 'profilePict_data',
+        },
+      },
+      {
+        $project: {
+          profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+          nomortiket: "$nomortiket",
+          userrequest: "$userrequest",
+          email: "$email",
+          subject: "$subject",
+          body: "$body",
+          status: "$status",
+          tipe: "$tipe",
+          datetime: "$datetime",
+          replydata: "$replydata",
+          avatar: {
+            mediaBasePath: '$profilpict.mediaBasePath',
+            mediaUri: '$profilpict.mediaUri',
+            mediaType: '$profilpict.mediaType',
+            mediaEndpoint: '$profilpict.fsTargetUri',
+            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+          },
+
+        }
+      },
+      {
+        $addFields: {
+
+          concats: '/profilepict',
+          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+        },
+      },
+
+      {
+        $project: {
+          nomortiket: "$nomortiket",
+          userrequest: "$userrequest",
+          email: "$email",
+          subject: "$subject",
+          body: "$body",
+          status: "$status",
+          tipe: "$tipe",
+          datetime: "$datetime",
+          replydata: "$replydata",
+          avatar: {
+            mediaBasePath: '$profilpict.mediaBasePath',
+            mediaUri: '$profilpict.mediaUri',
+            mediaType: '$profilpict.mediaType',
+            mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+          },
+
+        }
+      },
+      { $match: { "_id": id } }
     ]);
 
 
