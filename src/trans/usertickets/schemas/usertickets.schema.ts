@@ -7,6 +7,7 @@ export type UserticketsDocument = Usertickets & Document;
 export class Usertickets {
   //  @Prop({type: mongoose.Schema.Types.ObjectId})
   // _id: { oid:string  }
+  _id: mongoose.Types.ObjectId;
   @Prop()
   nomortiket: string;
 
@@ -27,6 +28,8 @@ export class Usertickets {
 
   @Prop()
   tipe: string
+  @Prop()
+  active: boolean
 
 }
 

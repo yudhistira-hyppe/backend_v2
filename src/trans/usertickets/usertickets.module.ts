@@ -8,11 +8,12 @@ import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { UserticketdetailsController } from './userticketdetails/userticketdetails.controller';
 import { UserticketdetailsService } from './userticketdetails/userticketdetails.service';
 import { UserticketdetailsModule } from './userticketdetails/userticketdetails.module';
+import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediaprofilepicts.module';
 
 @Module({
     imports: [
 
-        ConfigModule.forRoot(), UserbasicsModule,
+        ConfigModule.forRoot(), UserbasicsModule, MediaprofilepictsModule,
         MongooseModule.forFeature([{ name: Usertickets.name, schema: UserticketsSchema }], 'SERVER_TRANS')
     ],
     controllers: [UserticketsController],
