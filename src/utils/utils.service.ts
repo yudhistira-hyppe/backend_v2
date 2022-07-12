@@ -298,11 +298,10 @@ export class UtilsService {
         html: string_html,
         quality:80
       });
-      console.log('#done');
       return images;
     }catch(e){
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed failed generate Image QR',
+          'Unabled to proceed failed generate Image QR '+e,
         );
     }
   }
