@@ -58,7 +58,6 @@ export class AuthService {
     try {
       const user_userbasics = await this.userbasicsService.findOne(email);
       const user_auths = await this.userauthsService.findOne(email);
-
       if ((await this.utilsService.ceckData(user_auths))&&(await this.utilsService.ceckData(user_userbasics))) {
         const passuser = user_auths.password;
         isMatch = await this.utilsService.comparePassword(pass, passuser);
@@ -133,21 +132,16 @@ export class AuthService {
     const datajwtrefreshtoken = await this.jwtrefreshtokenService.findOne(
       user_email,
     );
-
     if (
       (await this.utilsService.ceckData(datauserbasicsService)) &&
       (await this.utilsService.ceckData(datajwtrefreshtoken))
     ) {
 
-      if(datauserbasicsService.status==undefined && datauserbasicsService.event==undefined){
-
-      }
-
       if(await this.utilsService.ceckData(datauserauthsService)){
         _isEmailVerified = datauserauthsService.isEmailVerified;
       }else{
         await this.errorHandler.generateNotAcceptableException(
-          'User not found',
+          'Email Verified is false',
         );
       }
 
@@ -322,17 +316,24 @@ export class AuthService {
           if (await this.utilsService.ceckData(user_userdevicesService)) {
             //Get Userdevices
             try {
-              if(user_devicetype){
-                
+              if(user_devicetype!=undefined){
+                await this.userdevicesService.updatebyEmail(
+                  user_email,
+                  user_deviceId,
+                  {
+                    active: true,
+                    devicetype:user_devicetype
+                  },
+                );
+              }else{
+                await this.userdevicesService.updatebyEmail(
+                  user_email,
+                  user_deviceId,
+                  {
+                    active: true
+                  },
+                );
               }
-              await this.userdevicesService.updatebyEmail(
-                user_email,
-                user_deviceId,
-                {
-                  active: true,
-                  devicetype:user_devicetype
-                },
-              );
               ID_user_userdevicesService = user_userdevicesService._id;
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
@@ -558,33 +559,6 @@ export class AuthService {
   }
 
   async signup(req: any): Promise<any> {
-    // if (req.body.otp == undefined) {
-    //   if (
-    //     req.body.email == undefined ||
-    //     req.body.deviceId == undefined ||
-    //     req.body.password == undefined
-    //   ) {
-    //     throw new NotAcceptableException({
-    //       response_code: 406,
-    //       messages: {
-    //         info: ['Unabled to proceed'],
-    //       },
-    //     });
-    //   }
-    // }else{
-    //   if (
-    //     req.body.email == undefined ||
-    //     req.body.status == undefined ||
-    //     req.body.event == undefined
-    //   ) {
-    //     throw new NotAcceptableException({
-    //       response_code: 406,
-    //       messages: {
-    //         info: ['Unabled to proceed'],
-    //       },
-    //     });
-    //   }
-    // }
     var user_email = null;
     var user_password = null;
     var user_deviceId = null;
@@ -620,6 +594,7 @@ export class AuthService {
       });
     }
 
+    //CECk signup/verify
     if (req.body.otp == undefined) {
       if(req.body.password==undefined){
         throw new NotAcceptableException({
@@ -720,33 +695,12 @@ export class AuthService {
       user_event = req.body.event;
     }
 
-    // var data_CreateActivityeventsDto_parent = new CreateActivityeventsDto();
-    // var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
-
-    // var data_CreateInsightsDto = new CreateInsightsDto();
-    // var data_CreateUserbasicDto = new CreateUserbasicDto();
-    // var data_CreateUserauthDto = new CreateUserauthDto();
-    // var data_CreateUserdeviceDto = new CreateUserdeviceDto();
-
-    // var ID_insights = (await this.utilsService.generateId()).toLowerCase();
-    // var ID_user = (await this.utilsService.generateId()).toLowerCase();
-    // var ID_profile = (await this.utilsService.generateId()).toLowerCase();
-    // var ID_device = null;
-    // var id_Activityevents_parent = new mongoose.Types.ObjectId();
-    // var id_Activityevents_child = new mongoose.Types.ObjectId();
-
     var _class_ActivityEvent = 'io.melody.hyppe.trans.domain.ActivityEvent';
     var _class_UserDevices = 'io.melody.core.domain.UserDevices';
     var _class_UserAuths = 'io.melody.core.domain.UserAuth';
     var _class_UserProfile = 'io.melody.core.domain.UserProfile';
 
-    // var ID_parent_ActivityEvent = (
-    //   await this.utilsService.generateId()
-    // ).toLowerCase();
-    // var ID_child_ActivityEvent = (
-    //   await this.utilsService.generateId()
-    // ).toLowerCase();
-
+    //Set Status dan Event
     if (req.body.otp == undefined) {
       CurrentStatus = 'INITIAL';
       CurrentEvent = 'SIGN_UP';
@@ -755,6 +709,7 @@ export class AuthService {
       CurrentEvent = user_event;
     }
 
+     //CECk INITIAL
     const isNotInitial = !((CurrentEvent=='SIGN_UP') && (CurrentStatus=='INITIAL'));
 
     //Ceck User Userbasics
@@ -822,10 +777,18 @@ export class AuthService {
                   : false) == false &&
                 user_otp == datauserauthsService.oneTimePassword
               ) {
-
-                await this.userauthsService.updatebyEmail(user_email, {
-                  isEmailVerified: true
-                });
+                
+                //Update Userauths by email 
+                try{
+                  await this.userauthsService.updatebyEmail(user_email, {
+                    isEmailVerified: true
+                  });
+                } catch (error) {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed update userauths Email Verified. Error:' +
+                      error,
+                  );
+                }
 
                 const datajwtrefreshtokenService =
                   await this.jwtrefreshtokenService.findOne(user_email);
@@ -1168,11 +1131,11 @@ export class AuthService {
                   data["langIso"]=languages.langIso;
                 }
                 data["interest"]=interests_array;
-                data["event"]=datauserbasicsService.event;
+                data["event"]='UPDATE_BIO';
                 data["email"]=datauserbasicsService.email;
                 data["username"]=datauserauthsService.username;
                 data["isComplete"]=datauserbasicsService.isComplete;
-                data["status"]=datauserbasicsService.status;
+                data["status"]='IN_PROGRESS';
                 data["refreshToken"]=datajwtrefreshtoken_data.refresh_token_id;
                 
                 return {
@@ -1193,18 +1156,21 @@ export class AuthService {
                 );
                 if (await this.utilsService.ceckData(user_userAuth)) {
                   if (Number(user_userAuth.otpAttempt) >= 3) {
-                    var OTP_expires =
-                      await this.utilsService.generateOTPExpiresNextAttemptAllow();
-                    this.userauthsService.updatebyEmail(user_email, {
-                      otpNextAttemptAllow: OTP_expires,
-                    });
+                    try{
+                      var OTP_expires = await this.utilsService.generateOTPExpiresNextAttemptAllow();
+                      this.userauthsService.updatebyEmail(user_email, { otpNextAttemptAllow: OTP_expires, });
+                    }catch(e){
+                      await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed, Failed Update Userauths. Error : '+e,
+                      );
+                    }
                   }
                   await this.errorHandler.generateNotAcceptableException(
                     'Unexpected problem, please check your email and re-verify the OTP',
                   );
                 } else {
                   await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed',
+                    'Unexpected problem, data userauths not axist',
                   );
                 }
               }
@@ -1219,6 +1185,7 @@ export class AuthService {
                       Number(datauserauthsService.otpAttempt),
                     ))
               ) {
+
                 //Create ActivityEvent child NOTIFY_OTP
                 var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
                 var mongoose_gen_id_Activityevents_child = new mongoose.Types.ObjectId();
@@ -1297,14 +1264,28 @@ export class AuthService {
                 var OTP_expires = await this.utilsService.generateOTPExpires();
 
                 //Update User Auth
-                this.userauthsService.updatebyEmail(user_email, {
-                  oneTimePassword: OTP,
-                  otpRequestTime: OTP_expires,
-                  otpAttempt:  new Long(0),
-                  otpNextAttemptAllow:  new Long(0),
-                });
+                try{
+                  this.userauthsService.updatebyEmail(user_email, {
+                    oneTimePassword: OTP,
+                    otpRequestTime: OTP_expires,
+                    otpAttempt:  new Long(0),
+                    otpNextAttemptAllow:  new Long(0),
+                  });
+                } catch (error) {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Failed Update Userauths. Error:' +
+                      error,
+                  );
+                }
 
-                await this.sendemailOTP(user_email, OTP.toString(), 'ENROL');
+                try {
+                  await this.sendemailOTP(user_email, OTP.toString(), 'ENROL');
+                } catch (error) {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Failed Send Email. Error:' +
+                      error,
+                  );
+                }
 
                 return {
                   response_code: 202,
@@ -1332,7 +1313,7 @@ export class AuthService {
         }
       } else {
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, Log activity events signup not axist',
+          'Unabled to proceed, Log activity events parent signup not axist',
         );
       }
     } else {
@@ -1356,7 +1337,6 @@ export class AuthService {
             type,
             false,
           );
-
         if (
           (await this.utilsService.ceckData(datauserauthsService)) &&
           (await this.utilsService.ceckData(datauserbasicsService)) &&
@@ -1387,9 +1367,9 @@ export class AuthService {
                 var data_language = await this.languagesService.findOneLangiso(
                   user_langIso,
                 );
-               }
-               if(data_language != undefined){
-                id_user_langIso = data_language._id;
+                if(await this.utilsService.ceckData(data_language)){
+                  id_user_langIso = data_language._id;
+                }
                }
             }
           } catch (error) {
@@ -1680,7 +1660,14 @@ export class AuthService {
             );
           }
 
-          await this.sendemailOTP(user_email, OTP.toString(), 'ENROL');
+          try{
+            await this.sendemailOTP(user_email, OTP.toString(), 'ENROL');
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Failed Send Email. Error:' +
+                error,
+            );
+          }
 
           return {
             response_code: 202,
@@ -1720,7 +1707,7 @@ export class AuthService {
           };
         } else {
           await this.errorHandler.generateNotAcceptableException(
-            'Sorry! You have to register first',
+            'Sorry! This email already registered',
           );
         }
       } else {
@@ -2437,6 +2424,13 @@ export class AuthService {
       );
     }
 
+    var target_ = null;
+    if(user_event=='AWAKE'){
+      target_ = 'ACTIVE';
+    }else if(user_event=='SLEEP'){
+      target_ = 'INACTIVE';
+    }
+
     //Ceck User basics
     const user_userbasics = await this.userbasicsService.findOne(user_email);
 
@@ -2450,6 +2444,17 @@ export class AuthService {
       );
 
       if (Object.keys(user_activityevents).length > 0) {
+        var latitude_ = undefined;
+        var longitude_ = undefined;
+        console.log(user_activityevents[0].payload.login_location);
+        if(user_activityevents[0].payload.login_location!=undefined){
+          if(user_activityevents[0].payload.login_location.latitude!=undefined){
+            latitude_ = user_activityevents[0].payload.login_location.latitude;
+          }
+          if(user_activityevents[0].payload.login_location.longitude!=undefined){
+            longitude_ = user_activityevents[0].payload.login_location.longitude;
+          }
+        }
         //Create ActivityEvent Child
         try {
           data_CreateActivityeventsDto_child._id = id_Activityevents_child;
@@ -2458,15 +2463,14 @@ export class AuthService {
           data_CreateActivityeventsDto_child.activityType = 'DEVICE_ACTIVITY';
           data_CreateActivityeventsDto_child.active = true;
           data_CreateActivityeventsDto_child.status = user_status;
-          data_CreateActivityeventsDto_child.target = 'ACTIVE';
+          data_CreateActivityeventsDto_child.target = target_;
           data_CreateActivityeventsDto_child.event = user_event;
           data_CreateActivityeventsDto_child._class =
             'io.melody.hyppe.trans.domain.ActivityEvent';
           data_CreateActivityeventsDto_child.payload = {
             login_location: {
-              latitude: user_activityevents[0].payload.login_location.latitude,
-              longitude:
-                user_activityevents[0].payload.login_location.longitude,
+              latitude: latitude_,
+              longitude:longitude_,
             },
             logout_date: current_date,
             login_date: user_activityevents[0].payload.login_date,
@@ -2476,7 +2480,7 @@ export class AuthService {
           data_CreateActivityeventsDto_child.createdAt = current_date;
           data_CreateActivityeventsDto_child.updatedAt = current_date;
           data_CreateActivityeventsDto_child.sequenceNumber = new Int32(1);
-          data_CreateActivityeventsDto_child.flowIsDone = true;
+          data_CreateActivityeventsDto_child.flowIsDone = false;
           data_CreateActivityeventsDto_child.__v = undefined;
           data_CreateActivityeventsDto_child.parentActivityEventID =
             user_activityevents[0].activityEventID;
@@ -2495,22 +2499,24 @@ export class AuthService {
         //Update ActivityEvent Parent
         try {
           const data_transitions = user_activityevents[0].transitions;
-          data_transitions.push(
-            'DBRef("activityevents", "' +
-            ID_child_ActivityEvent +
-            '","hyppe_trans_db")',
-          );
+          data_transitions.push({
+            $ref: 'activityevents',
+            $id: new Object(ID_child_ActivityEvent),
+            $db: 'hyppe_trans_db',
+          });
           await this.activityeventsService.update(
             {
               _id: user_activityevents[0]._id,
             },
             {
+              flowIsDone: false,
               transitions: data_transitions,
             },
           );
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed Update Activity Event Parent. Error:' + error,
+            'Unabled to proceed Update Activity Event Parent. Error:' +
+              error,
           );
         }
 
@@ -2807,6 +2813,13 @@ export class AuthService {
                         error,
                     );
                   }
+
+                  this.userauthsService.updatebyEmail(user_email, {
+                    oneTimePassword: null,
+                    otpRequestTime: new Long(0),
+                    otpAttempt: new Long(0),
+                    otpNextAttemptAllow:  new Long(0),
+                  });
 
                   return {
                     response_code: 202,
@@ -3241,8 +3254,8 @@ export class AuthService {
     var user_email = req.body.email;
     var user_oldPass = req.body.oldPass;
     var user_newPass = req.body.newPass;
-    var current_date = new Date().toISOString().replace('T', ' ');
     var isMatch = false;
+    var current_date = await this.utilsService.getDateTimeString();
 
     var data_CreateActivityeventsDto_parent = new CreateActivityeventsDto();
     var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
@@ -3795,105 +3808,111 @@ export class AuthService {
       var OTP = await this.utilsService.generateOTP();
       var OTP_expires = await this.utilsService.generateOTPExpires();
 
-      const user_activityevents =
-        await this.activityeventsService.findParentWitoutDevice(
-          user_email,
-          'ENROL',
-          false,
-        );
-
-      if (Object.keys(user_activityevents).length > 0) {
-
-        //Create ActivityEvent child
-        try {
-          var id_child = new mongoose.Types.ObjectId();
-          data_CreateActivityeventsDto_child._id = id_child;
-          data_CreateActivityeventsDto_child.activityEventID =
-            ID_child_ActivityEvent;
-          data_CreateActivityeventsDto_child.activityType = 'ENROL';
-          data_CreateActivityeventsDto_child.active = true;
-          data_CreateActivityeventsDto_child.status = 'NOTIFY';
-          data_CreateActivityeventsDto_child.target = 'REPLY';
-          data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
-          data_CreateActivityeventsDto_child._class = _class_ActivityEvent;
-          data_CreateActivityeventsDto_child.action = 'NotifyActivityCommand';
-          data_CreateActivityeventsDto_child.payload = {
-            login_location: {
-              latitude: undefined,
-              longitude: undefined,
-            },
-            logout_date: undefined,
-            login_date: undefined,
-            login_device: undefined,
-            email: user_email,
-          };
-          data_CreateActivityeventsDto_child.createdAt = current_date;
-          data_CreateActivityeventsDto_child.updatedAt = current_date;
-          data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
-          data_CreateActivityeventsDto_child.flowIsDone = false;
-          data_CreateActivityeventsDto_child.__v = undefined;
-          data_CreateActivityeventsDto_child.parentActivityEventID =
-            user_activityevents[0].activityEventID;
-          data_CreateActivityeventsDto_child.userbasic =
-            user_activityevents[0].userbasic;
-
-          //Insert ActivityEvent Parent
-          await this.activityeventsService.create(
-            data_CreateActivityeventsDto_child,
+      if(Number(datauserauthsService.otpRequestTime)>0){
+        const user_activityevents =
+          await this.activityeventsService.findParentWitoutDevice(
+            user_email,
+            'ENROL',
+            false,
           );
-        } catch (error) {
-          await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed Create Activity events Child. Error: ' +
-              error,
-          );
-        }
 
-        //Update ActivityEvent Parent
-        try {
-          const data_transitions = user_activityevents[0].transitions;
-          data_transitions.push({
-            $ref: 'activityevents',
-            $id: new Object(ID_child_ActivityEvent),
-            $db: 'hyppe_trans_db',
-          });
+        if (Object.keys(user_activityevents).length > 0) {
+
+          //Create ActivityEvent child
+          try {
+            var id_child = new mongoose.Types.ObjectId();
+            data_CreateActivityeventsDto_child._id = id_child;
+            data_CreateActivityeventsDto_child.activityEventID =
+              ID_child_ActivityEvent;
+            data_CreateActivityeventsDto_child.activityType = 'ENROL';
+            data_CreateActivityeventsDto_child.active = true;
+            data_CreateActivityeventsDto_child.status = 'NOTIFY';
+            data_CreateActivityeventsDto_child.target = 'REPLY';
+            data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
+            data_CreateActivityeventsDto_child._class = _class_ActivityEvent;
+            data_CreateActivityeventsDto_child.action = 'NotifyActivityCommand';
+            data_CreateActivityeventsDto_child.payload = {
+              login_location: {
+                latitude: undefined,
+                longitude: undefined,
+              },
+              logout_date: undefined,
+              login_date: undefined,
+              login_device: undefined,
+              email: user_email,
+            };
+            data_CreateActivityeventsDto_child.createdAt = current_date;
+            data_CreateActivityeventsDto_child.updatedAt = current_date;
+            data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
+            data_CreateActivityeventsDto_child.flowIsDone = false;
+            data_CreateActivityeventsDto_child.__v = undefined;
+            data_CreateActivityeventsDto_child.parentActivityEventID =
+              user_activityevents[0].activityEventID;
+            data_CreateActivityeventsDto_child.userbasic =
+              user_activityevents[0].userbasic;
+
+            //Insert ActivityEvent Parent
+            await this.activityeventsService.create(
+              data_CreateActivityeventsDto_child,
+            );
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Create Activity events Child. Error: ' +
+                error,
+            );
+          }
 
           //Update ActivityEvent Parent
-          await this.activityeventsService.update(
-            {
-              _id: user_activityevents[0]._id,
-            },
-            {
-              transitions: data_transitions,
-            },
+          try {
+            const data_transitions = user_activityevents[0].transitions;
+            data_transitions.push({
+              $ref: 'activityevents',
+              $id: new Object(ID_child_ActivityEvent),
+              $db: 'hyppe_trans_db',
+            });
+
+            //Update ActivityEvent Parent
+            await this.activityeventsService.update(
+              {
+                _id: user_activityevents[0]._id,
+              },
+              {
+                transitions: data_transitions,
+              },
+            );
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Update Activity events Parent. Error:' +
+                error,
+            );
+          }
+          
+          await this.userauthsService.updatebyEmail(user_email, {
+            oneTimePassword: OTP,
+            otpRequestTime: OTP_expires,
+          });
+
+          await this.sendemailOTP(
+            datauserauthsService.email.toString(),
+            OTP.toString(),
+            'ENROL',
           );
-        } catch (error) {
+
+          return {
+            response_code: 202,
+            messages: {
+              info: ['Request resend OTP successful'],
+            },
+          };
+        }else{
           await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed Update Activity events Parent. Error:' +
-              error,
+            'Unabled to proceed',
           );
         }
-        
-        await this.userauthsService.updatebyEmail(user_email, {
-          oneTimePassword: OTP,
-          otpRequestTime: OTP_expires,
-        });
-
-        await this.sendemailOTP(
-          datauserauthsService.email.toString(),
-          OTP.toString(),
-          'ENROL',
-        );
-
-        return {
-          response_code: 202,
-          messages: {
-            info: ['Request resend OTP successful'],
-          },
-        };
       }else{
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed',
-        );
+        ); 
       }
     }else{
       await this.errorHandler.generateNotAcceptableException(

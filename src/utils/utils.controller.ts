@@ -1,4 +1,4 @@
-import { HttpCode, Controller, HttpStatus, Get, Req, Query,UseGuards,Headers } from '@nestjs/common';
+import { HttpCode, Controller, HttpStatus, Get, Req, Query,UseGuards,Headers,Post } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UtilsService } from './utils.service';
 import { InterestsRepoService } from '../infra/interests_repo/interests_repo.service';
@@ -14,6 +14,10 @@ import { DocumentsService } from '../infra/documents/documents.service';
 import { ReportsService } from '../infra/reports/reports.service';
 import { CorevaluesService } from '../infra/corevalues/corevalues.service';
 import { ErrorHandler } from './error.handler';
+import { DevicelogService } from '../infra/devicelog/devicelog.service';
+import { CreateDevicelogDto } from '../infra/devicelog/dto/create-devicelog.dto';
+import mongoose from 'mongoose';
+import { Posts } from 'src/content/posts/schemas/posts.schema';
 
 
 @Controller('api/utils/')
@@ -33,6 +37,8 @@ export class UtilsController {
         private readonly reportsService: ReportsService,
         private readonly corevaluesService: CorevaluesService,
         private readonly errorHandler: ErrorHandler,
+        private readonly devicelogService: DevicelogService,
+        private readonly utilsService: UtilsService,
         ) {}
     
     @UseGuards(JwtAuthGuard)
@@ -450,14 +456,45 @@ export class UtilsController {
     }
     
     @UseGuards(JwtAuthGuard)
-    @Get('logdevice')
+    @Post('logdevice')
     @HttpCode(HttpStatus.ACCEPTED)
     async logdevice(@Req() request: any, @Headers() header,) {
-        if(request.Body.imei==undefined || request.Body.log!=undefined || request.Body.type!=undefined){
+        if((request.body.imei==undefined) || (request.body.log==undefined) || (request.body.type==undefined) || (header['x-auth-user']==undefined)){
+            if(!(await this.utilsService.validasiTokenEmail(header))){
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed',
+                );
+            }else{
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed',
+                );
+            }
+        }
+        try{
+            var current_date = await this.utilsService.getDateTimeString();
+            var CreateDevicelogDto_ = new CreateDevicelogDto();
+            CreateDevicelogDto_._id = new mongoose.Types.ObjectId();
+            CreateDevicelogDto_.email = header['x-auth-user'];
+            CreateDevicelogDto_.imei = request.body.imei;
+            CreateDevicelogDto_.log = request.body.log;
+            CreateDevicelogDto_.type = request.body.type;
+            CreateDevicelogDto_.createdAt = current_date;
+            CreateDevicelogDto_.updatedAt = current_date;
+            CreateDevicelogDto_._class ='io.melody.hyppe.infra.domain.DeviceLog';
+            await this.devicelogService.create(CreateDevicelogDto_);
+            var Response = {
+                response_code: 202,
+                messages: {
+                    info: [
+                        "Succesfull"
+                    ]
+                }
+            }
+            return Response;
+        }catch(e){
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed',
             );
         }
-        return await this.corevaluesService.findcore_type('martialstatus');
     }
 }

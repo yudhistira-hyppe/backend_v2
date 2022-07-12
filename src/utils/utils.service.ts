@@ -39,11 +39,11 @@ export class UtilsService {
       })
       .then((success) => {
         sendEmail_ = true;
-        console.log(success);
+        //console.log(success);
       })
       .catch((err) => {
         sendEmail_ = false;
-        console.log(err);
+        //console.log(err);
       });
     return sendEmail_;
   }
