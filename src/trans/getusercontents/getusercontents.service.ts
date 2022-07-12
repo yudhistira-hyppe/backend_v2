@@ -18444,6 +18444,7 @@ export class GetusercontentsService {
       {
         $addFields: {
           ubasic_id: '$userProfile.$id',
+          profilevisit: { $cmp: ["$profilevisit", 0] }
 
         },
       },
@@ -18481,6 +18482,9 @@ export class GetusercontentsService {
           comments: '$comments',
           isOwned: '$isOwned',
           views: '$views',
+          visit: {
+            $cond: { if: { $eq: ["$profilevisit", -1] }, then: 0, else: 1 }
+          },
           isPostPrivate: '$user.isPostPrivate',
           privacy: {
             isPostPrivate: '$user.isPostPrivate',
@@ -18519,6 +18523,7 @@ export class GetusercontentsService {
           comments: '$comments',
           isOwned: '$isOwned',
           views: '$views',
+          visit: '$visit',
           isPostPrivate: '$user.isPostPrivate',
           privacy: {
             isPostPrivate: '$user.isPostPrivate',
@@ -18614,6 +18619,7 @@ export class GetusercontentsService {
           comments: '$comments',
           isOwned: '$isOwned',
           views: '$views',
+          visit: '$visit',
           privacy: '$privacy',
           isViewed: '$isViewed',
           allowComments: '$allowComments',
@@ -18627,7 +18633,8 @@ export class GetusercontentsService {
             reactions: '$insights.reactions',
             posts: '$insights.posts',
             views: '$insights.views',
-            likes: '$insights.likes'
+            likes: '$insights.likes',
+
           },
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
@@ -18744,6 +18751,7 @@ export class GetusercontentsService {
           comments: '$comments',
           isOwned: '$isOwned',
           views: '$views',
+          visit: '$visit',
           privacy: '$privacy',
           isViewed: '$isViewed',
           allowComments: '$allowComments',
@@ -18756,7 +18764,8 @@ export class GetusercontentsService {
             reactions: '$insights.reactions',
             posts: '$insights.posts',
             views: '$insights.views',
-            likes: '$insights.likes'
+            likes: '$insights.likes',
+
           },
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
@@ -18766,9 +18775,6 @@ export class GetusercontentsService {
 
 
           },
-
-
-
 
         }
       },
