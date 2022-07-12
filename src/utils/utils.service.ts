@@ -8,6 +8,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Templates } from '../infra/templates/schemas/templates.schema';
 import * as admin from 'firebase-admin';
 import { MediaService } from '../stream/media/media.service';
+import { ErrorHandler } from './error.handler';
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -21,6 +22,7 @@ export class UtilsService {
     private mailerService: MailerService,
     private templatesService: TemplatesService,
     private mediaService: MediaService,
+    private errorHandler: ErrorHandler,
   ) {}
 
   async sendEmail(
@@ -39,11 +41,11 @@ export class UtilsService {
       })
       .then((success) => {
         sendEmail_ = true;
-        console.log(success);
+        //console.log(success);
       })
       .catch((err) => {
         sendEmail_ = false;
-        console.log(err);
+        //console.log(err);
       });
     return sendEmail_;
   }
@@ -280,21 +282,28 @@ export class UtilsService {
   }
 
   async generateReferralImage(data: any): Promise<any> {
-    var Templates_ = new Templates();
-    Templates_ = await this.getTemplate('REFERRAL', 'REFERRAL');
-    var html_body = Templates_.body_detail.trim().toString();
-    const $_ = cheerio.load(html_body);
-    var dataimage =  await this.mediaService.getPitch(data.image_profile);
-    var data_string = 'data:image/png;base64,'+dataimage.toString('base64');
-    $_('#profile').attr('src',data_string);
-    $_('#fullname').text(data.fullName);
-    $_('#username').text(data.username);
-    $_('#qrcode').attr('src', await this.generateQRCode(data.refCode));
-    const images = await nodeHtmlToImage({
-      html: $_.html().toString(),
-      quality:80
-    });
-    return images;
+    try{
+      var Templates_ = new Templates();
+      Templates_ = await this.getTemplate('REFERRAL', 'REFERRAL');
+      var html_body = Templates_.body_detail.trim().toString();
+      const $_ = cheerio.load(html_body);
+      var dataimage =  await this.mediaService.getPitch(data.image_profile);
+      var data_string = 'data:image/png;base64,'+dataimage.toString('base64');
+      $_('#profile').attr('src',data_string);
+      $_('#fullname').text(data.fullName);
+      $_('#username').text(data.username);
+      $_('#qrcode').attr('src', await this.generateQRCode(data.refCode));
+      const images = await nodeHtmlToImage({
+        html: $_.html().toString(),
+        quality:80
+      });
+      console.log('#done');
+      return images;
+    }catch(e){
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed failed generate Image QR',
+        );
+    }
   }
 
   async generateQRCode(Url: string): Promise<any> {

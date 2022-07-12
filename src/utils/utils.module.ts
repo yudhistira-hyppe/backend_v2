@@ -15,16 +15,18 @@ import { AreasModule } from '../infra/areas/areas.module';
 import { CitiesModule } from '../infra/cities/cities.module';
 import { CountriesModule } from '../infra/countries/countries.module';
 import { EulasModule } from '../infra/eulas/eulas.module';
-import { WelcomenotesModule } from 'src/infra/welcomenotes/welcomenotes.module';
-import { LanguagesModule } from 'src/infra/languages/languages.module';
-import { ReactionsRepoModule } from 'src/infra/reactions_repo/reactions_repo.module';
-import { ReactionsModule } from 'src/infra/reactions/reactions.module';
-import { DocumentsModule } from 'src/infra/documents/documents.module';
-import { ReportsModule } from 'src/infra/reports/reports.module';
-import { CorevaluesModule } from 'src/infra/corevalues/corevalues.module';
+import { WelcomenotesModule } from '../infra/welcomenotes/welcomenotes.module';
+import { LanguagesModule } from '../infra/languages/languages.module';
+import { ReactionsRepoModule } from '../infra/reactions_repo/reactions_repo.module';
+import { ReactionsModule } from '../infra/reactions/reactions.module';
+import { DocumentsModule } from '../infra/documents/documents.module';
+import { ReportsModule } from '../infra/reports/reports.module';
+import { CorevaluesModule } from '../infra/corevalues/corevalues.module';
+import { DevicelogModule } from '../infra/devicelog/devicelog.module';
 
 @Module({
   imports: [
+    DevicelogModule,
     CorevaluesModule,
     ReportsModule,
     DocumentsModule,
