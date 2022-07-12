@@ -62,6 +62,9 @@ export class UserbasicsService {
   async findOne(email: string): Promise<Userbasic> {
     return this.userbasicModel.findOne({ email: email }).exec();
   }
+  async findOneUsername(username: string): Promise<Userbasic> {
+    return this.userbasicModel.findOne({ username: username }).exec();
+  }
 
   async delete(id: string) {
     const deletedCat = await this.userbasicModel

@@ -17,6 +17,17 @@ export class CountriesService {
     return createCountriesDto;
   }
 
+  async findCriteria(pageNumber:number,pageRow:number,search:string) {
+    var perPage = pageRow
+  , page = Math.max(0, pageNumber);
+    var where = {};
+    if(search!=undefined){
+      where['country'] = {$regex: search,  $options: "i"};
+    }
+    const query = await this.countriesModel.find(where).limit(perPage).skip(perPage * page).sort({ country: 'asc' });
+    return query;
+  }
+
   async findAll(): Promise<Countries[]> {
     return this.countriesModel.find().exec();
   }

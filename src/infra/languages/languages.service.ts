@@ -23,6 +23,18 @@ export class LanguagesService {
     return this.LanguagesModel.find().exec();
   }
 
+  async findCriteria(langIso:string,search:string) {
+    var where = {};
+    if(langIso!=undefined){
+      where['langIso'] = langIso;
+    }
+    if(search!=undefined){
+      where['country'] = {$regex: search,  $options: "i"};
+    }
+    const query = await this.LanguagesModel.find(where).sort({ langIso: 'asc' });
+    return query;
+  }
+
   async findOne(id: string): Promise<Languages> {
     return this.LanguagesModel.findOne({ _id: id }).exec();
   }

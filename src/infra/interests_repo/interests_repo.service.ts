@@ -42,7 +42,7 @@ export class InterestsRepoService {
   }
 
   async findCriteria(langIso:string,pageNumber:number,pageRow:number,search:string) {
-    var perPage = 10
+    var perPage = pageRow
   , page = Math.max(0, pageNumber);
     var where = {};
     if(langIso!=undefined){
@@ -51,7 +51,7 @@ export class InterestsRepoService {
     if(search!=undefined){
       where['interestName'] = {$regex: search,  $options: "i"};
     }
-    const query = await this.interestsrepoModel.find(where).limit(perPage).skip(perPage * page).sort({ interestName: 'asc' });
+    const query = await this.interestsrepoModel.find(where).select({  "createdAt": 1,"icon": 1,"langIso": 1,"interestName": 1, "_id": 0}).limit(perPage).skip(perPage * page).sort({ interestName: 'asc' });
     return query;
   }
 

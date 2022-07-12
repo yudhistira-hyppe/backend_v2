@@ -7,7 +7,10 @@ import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer'; 
 import { Templates } from '../infra/templates/schemas/templates.schema';
 import * as admin from 'firebase-admin';
-import QR from 'qrcode-base64'
+import { MediaService } from '../stream/media/media.service';
+const cheerio = require('cheerio');
+const QRCode = require('qrcode');
+const nodeHtmlToImage = require('node-html-to-image');
 
 @Injectable()
 export class UtilsService {
@@ -17,6 +20,7 @@ export class UtilsService {
     private jwtService: JwtService,
     private mailerService: MailerService,
     private templatesService: TemplatesService,
+    private mediaService: MediaService,
   ) {}
 
   async sendEmail(
@@ -278,20 +282,23 @@ export class UtilsService {
   async generateReferralImage(data: any): Promise<any> {
     var Templates_ = new Templates();
     Templates_ = await this.getTemplate('REFERRAL', 'REFERRAL');
-    var html_body = Templates_.body_detail.toString();
-    var doc = new DOMParser().parseFromString(html_body, "text/xml");
-
-    var qrcode_ = QR.drawImg(data.refCode, {
-      typeNumber: 4,
-      errorCorrectLevel: 'M',
-      size: 256
+    var html_body = Templates_.body_detail.trim().toString();
+    const $_ = cheerio.load(html_body);
+    var dataimage =  await this.mediaService.getPitch(data.image_profile);
+    var data_string = 'data:image/png;base64,'+dataimage.toString('base64');
+    $_('#profile').attr('src',data_string);
+    $_('#fullname').text(data.fullName);
+    $_('#username').text(data.username);
+    $_('#qrcode').attr('src', await this.generateQRCode(data.refCode));
+    const images = await nodeHtmlToImage({
+      html: $_.html().toString(),
+      quality:80
     });
+    return images;
+  }
 
-    var fullname = doc.getElementById('#fullname').innerHTML =data.fullname;
-    var username = doc.getElementById('#username').innerHTML =data.username;
-    var qrcode = doc.getElementById('#qrcode').setAttribute("src", qrcode_);
-
-    console.log();
-    return '';
+  async generateQRCode(Url: string): Promise<any> {
+    const generateQR =  await QRCode.toDataURL(Url, { errorCorrectionLevel: 'M' })
+    return generateQR;
   }
 }

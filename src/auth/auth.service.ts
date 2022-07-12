@@ -3591,57 +3591,89 @@ export class AuthService {
   }
 
   async referral(req: any, head: any): Promise<any> {
+    var user_email_parent = null;
+    var user_email_children = null;
+    var user_username_childen = null;
+    var email_ceck = false;
+
     if( head['x-auth-user']==undefined){
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed',
         );
+    }else{
+      user_email_parent = head['x-auth-user'];
     }
-    var user_email_parent = head['x-auth-user'];
-    var user_email_children = req.body.email;
+    if(req.body.email==undefined){
+        email_ceck = true;
+        user_email_children = req.body.email;
+    }else{
+        email_ceck = false;
+        user_username_childen = req.body.username;
+    }
     var current_date = await this.utilsService.getDateTimeString();
 
-    //Ceck User Userbasics parent
-    const datauserbasicsService_parent = await this.userbasicsService.findOne(
-      user_email_parent,
-    );
+    let datauserbasicsService_parent = null;
+    let datauserbasicsService_children = null;
 
-    //Ceck User Userbasics children
-    const datauserbasicsService_children = await this.userbasicsService.findOne(
-      user_email_children,
-    );
+    if(email_ceck){
+      //Ceck User Userbasics parent
+      datauserbasicsService_parent = await this.userbasicsService.findOne(
+        user_email_parent,
+      );
 
-    if((await this.utilsService.ceckData(datauserbasicsService_parent))&&(await this.utilsService.ceckData(datauserbasicsService_children))){
-      try{
-
-        //Ceck User Referral parent children
-        const data_referral_parent_children = await this.referralService.findAllByParentChildren(
-          user_email_parent,user_email_children,
-        );
-
-        if(!(await this.utilsService.ceckData(data_referral_parent_children))){
-          var CreateReferralDto_ = new CreateReferralDto();
-
-          CreateReferralDto_._id = await this.utilsService.generateId();
-          CreateReferralDto_.parent = user_email_parent;
-          CreateReferralDto_.children = user_email_children;
-          CreateReferralDto_.active = true;
-          CreateReferralDto_.verified = true;
-          CreateReferralDto_.createdAt = current_date;
-          CreateReferralDto_.updatedAt = current_date;
-          CreateReferralDto_._class = 'io.melody.core.domain.Referral';
-          if(req.body.imei!=undefined){
-           CreateReferralDto_.imei = req.body.imei;
+      //Ceck User Userbasics children
+      datauserbasicsService_children = await this.userbasicsService.findOne(
+        user_email_children,
+      );
+      
+    }else{
+      //Ceck User Userbasics children
+      datauserbasicsService_children = await this.userbasicsService.findOneUsername(
+        user_username_childen,
+      );
+    }
+    if(datauserbasicsService_parent!=null&&datauserbasicsService_children!=null){
+      if((await this.utilsService.ceckData(datauserbasicsService_parent))&&(await this.utilsService.ceckData(datauserbasicsService_children))){
+        try{
+          if(email_ceck){
+            user_email_children = user_email_children;
+          }else{
+            user_email_children = datauserbasicsService_children.email;
           }
-          //Create User Referral
-          await this.referralService.create(CreateReferralDto_);
-        }
-        return {
-          response_code: 202,
-          messages: {
-              info: ['The process successful'],
+          //Ceck User Referral parent children
+          const data_referral_parent_children = await this.referralService.findAllByParentChildren(
+            user_email_parent,user_email_children,
+          );
+
+          if(!(await this.utilsService.ceckData(data_referral_parent_children))){
+            var CreateReferralDto_ = new CreateReferralDto();
+
+            CreateReferralDto_._id = await this.utilsService.generateId();
+            CreateReferralDto_.parent = user_email_parent;
+            CreateReferralDto_.children = user_email_children;
+            CreateReferralDto_.active = true;
+            CreateReferralDto_.verified = true;
+            CreateReferralDto_.createdAt = current_date;
+            CreateReferralDto_.updatedAt = current_date;
+            CreateReferralDto_._class = 'io.melody.core.domain.Referral';
+            if(req.body.imei!=undefined){
+            CreateReferralDto_.imei = req.body.imei;
+            }
+            //Create User Referral
+            await this.referralService.create(CreateReferralDto_);
           }
+          return {
+            response_code: 202,
+            messages: {
+                info: ['The process successful'],
+            }
+          }
+        }catch(error){
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed',
+          );
         }
-      }catch(error){
+      }else{
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed',
         );
@@ -3693,38 +3725,23 @@ export class AuthService {
         );
       }
 
-      var mediaUri = null;
+      var mediaprofilepicts_fsSourceUri = ''
       if(mediaprofilepicts!=null){
-        mediaUri = mediaprofilepicts.mediaUri;
-      }
-
-      let result = null;
-      if(mediaUri!=null){
-        result = '/profilepict/' + mediaUri.replace('_0001.jpeg', '');
-      }
-
-      var link_profile= '/localrepo/';
-       if(mediaprofilepicts!=null){
-        if(mediaprofilepicts.mediaBasePath!=null){
-            link_profile+=mediaprofilepicts.mediaBasePath;
-        }
-        if(mediaprofilepicts.mediaUri!=null){
-            link_profile+=mediaprofilepicts.mediaUri;
+        if(mediaprofilepicts.fsSourceUri!=null){
+          mediaprofilepicts_fsSourceUri=mediaprofilepicts.fsSourceUri;
         }
       }
-
-      var data = {
-        refCode: user_email_refCode,
-        email: user_email,
-        fullName: datauserbasicsService.fullName,
-        username: datauserauthsService.username,
-        image_profile: link_profile,
-      }
-
-      //this.utilsService.generateReferralImage(data);
 
       if((await this.utilsService.ceckData(datauserbasicsService))){
-
+        var data = {
+          refCode: user_email_refCode,
+          email: user_email,
+          fullName: datauserbasicsService.fullName,
+          username: datauserauthsService.username,
+          image_profile: mediaprofilepicts_fsSourceUri,
+        }
+        var html_data = await this.utilsService.generateReferralImage(data);
+        return html_data;
       }else{
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed',
@@ -3938,33 +3955,6 @@ export class AuthService {
         'Unabled to proceed',
       );
     }
-    // if(id==undefined||token==undefined||email==undefined){
-    //   await this.errorHandler.generateNotAcceptableException(
-    //     'Unabled to proceed',
-    //   );
-    // }
-    // if(await this.utilsService.validasiTokenEmailParam(token,email)){
-    //   var user_email = email;
-
-    //   //Ceck User Userbasics
-    //   const datauserbasicsService = await this.userbasicsService.findOne(
-    //     user_email,
-    //   );
-
-    //   if((await this.utilsService.ceckData(datauserbasicsService))){
-    //     var mediaID = id;
-    //     var databpict = await this.mediaprofilepictsService.findOnemediaID(mediaID);
-    //     await this.mediaService.testFS(mediaID);
-    //   }else{
-    //     await this.errorHandler.generateNotAcceptableException(
-    //       'Unabled to proceed',
-    //     );
-    //   }
-    // }else{
-    //   await this.errorHandler.generateNotAcceptableException(
-    //     'Unabled to proceed',
-    //   );
-    // }
   }
 
   async updateRole(email: string, head: any,req:any){

@@ -6,5 +6,7 @@ export class CreateCorevaluesDto {
     readonly json_schema: String;
     readonly  category: String;
     readonly  activityType: String;
+    readonly  core_type: String;
+    readonly  payload: Array<Object>;
     
   }

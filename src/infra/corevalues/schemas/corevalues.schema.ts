@@ -18,6 +18,12 @@ export class Corevalues {
 
   @Prop()
   activityType: String
+
+  @Prop()
+  core_type: String
+
+  @Prop()
+  payload: Array<Object>
  
 }
 
