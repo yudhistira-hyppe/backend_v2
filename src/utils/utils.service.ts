@@ -293,8 +293,9 @@ export class UtilsService {
       $_('#fullname').text(data.fullName);
       $_('#username').text(data.username);
       $_('#qrcode').attr('src', await this.generateQRCode(data.refCode));
+      var string_html = $_.html().toString();
       const images = await nodeHtmlToImage({
-        html: $_.html().toString(),
+        html: string_html,
         quality:80
       });
       console.log('#done');
