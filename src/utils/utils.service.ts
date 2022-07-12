@@ -286,17 +286,24 @@ export class UtilsService {
       var Templates_ = new Templates();
       Templates_ = await this.getTemplate('REFERRAL', 'REFERRAL');
       var html_body = Templates_.body_detail.trim().toString();
+      console.log('html_body '+html_body);
       const $_ = cheerio.load(html_body);
+      console.log('$_ '+$_);
       var dataimage =  await this.mediaService.getPitch(data.image_profile);
+      console.log('#dataimage '+dataimage);
       var data_string = 'data:image/png;base64,'+dataimage.toString('base64');
       $_('#profile').attr('src',data_string);
+      console.log('#profile '+data_string);
       $_('#fullname').text(data.fullName);
       $_('#username').text(data.username);
+      console.log('#username');
       $_('#qrcode').attr('src', await this.generateQRCode(data.refCode));
+      console.log('#qrcode');
       const images = await nodeHtmlToImage({
         html: $_.html().toString(),
         quality:80
       });
+      console.log('#done');
       return images;
     }catch(e){
         await this.errorHandler.generateNotAcceptableException(
