@@ -18,6 +18,10 @@ export class CorevaluesService {
     return createCorevaluesDto;
   }
 
+  async findcore_type(core_type: string): Promise<Corevalues> {
+    return this.corevaluesModel.findOne({ core_type: core_type }).exec();
+  }
+
   async findAll(): Promise<Corevalues[]> {
     return this.corevaluesModel.find().exec();
   }

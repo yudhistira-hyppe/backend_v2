@@ -16,6 +16,26 @@ export class ReportsService {
     return createReportsDto;
   }
 
+  async findCriteria(langIso:string,reportType:string,action:string,pageNumber:number,pageRow:number,search:string) {
+    var perPage = pageRow
+  , page = Math.max(0, pageNumber);
+    var where = {};
+    if(langIso!=undefined){
+      where['langIso'] = langIso;
+    }
+    if(reportType!=undefined){
+      where['reportType'] = reportType;
+    }
+    if(action!=undefined){
+      where['action'] = action;
+    }
+    if(search!=undefined){
+      where['remark'] = {$regex: search,  $options: "i"};
+    }
+    const query = await this.ReportsModel.find(where).limit(perPage).skip(perPage * page).sort({ _id: 'asc' });
+    return query;
+  }
+
   async findAll(): Promise<Reports[]> {
     return this.ReportsModel.find().exec();
   }

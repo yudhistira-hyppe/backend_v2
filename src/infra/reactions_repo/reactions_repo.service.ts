@@ -20,6 +20,17 @@ export class ReactionsRepoService {
     return createReactionsrepoDto;
   }
 
+  async findCriteria(pageNumber:number,pageRow:number,search:string) {
+    var perPage = pageRow
+  , page = Math.max(0, pageNumber);
+    var where = {};
+    if(search!=undefined){
+      where['iconName'] = {$regex: search,  $options: "i"};
+    }
+    const query = await this.ReactionsrepoModel.find(where).limit(perPage).skip(perPage * page).sort({ iconName: 'asc' });
+    return query;
+  }
+
   async findAll(): Promise<Reactionsrepo[]> {
     return this.ReactionsrepoModel.find().exec();
   }

@@ -15,6 +15,17 @@ export class EulasService {
     return createEulasDto;
   }
 
+  async findCriteria(pageNumber:number,pageRow:number,langIso:string) {
+    var perPage = pageRow
+  , page = Math.max(0, pageNumber);
+    var where = {};
+    if(langIso!=undefined){
+      where['langIso'] = langIso;
+    }
+    const query = await this.eulasModel.find(where).limit(perPage).skip(perPage * page).sort({ _id: 'asc' });
+    return query;
+  }
+
   async findAll(): Promise<Eulas[]> {
     return this.eulasModel.find().exec();
   }

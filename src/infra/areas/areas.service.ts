@@ -24,6 +24,20 @@ export class AreasService {
   //   return this.areasModel.findOne({ _id: id }).exec();
   // }
 
+  async findCriteria(countryID:string,pageNumber:number,pageRow:number,search:string) {
+    var perPage = pageRow
+  , page = Math.max(0, pageNumber);
+    var where = {};
+    if(countryID!=undefined){
+      where['countryID'] = countryID;
+    }
+    if(search!=undefined){
+      where['stateName'] = {$regex: search,  $options: "i"};
+    }
+    const query = await this.areasModel.find(where).limit(perPage).skip(perPage * page).sort({ stateName: 'asc' });
+    return query;
+  }
+
   async findOneName(stateName: string): Promise<Areas> {
     return this.areasModel.findOne({ stateName: stateName }).exec();
   }

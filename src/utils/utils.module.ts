@@ -10,9 +10,33 @@ import { UtilsController } from './utils.controller';
 import { ConfigService } from '@nestjs/config';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { InterestsRepoModule } from '../infra/interests_repo/interests_repo.module';
+import { MediaModule } from '../stream/media/media.module';
+import { AreasModule } from '../infra/areas/areas.module';
+import { CitiesModule } from '../infra/cities/cities.module';
+import { CountriesModule } from '../infra/countries/countries.module';
+import { EulasModule } from '../infra/eulas/eulas.module';
+import { WelcomenotesModule } from 'src/infra/welcomenotes/welcomenotes.module';
+import { LanguagesModule } from 'src/infra/languages/languages.module';
+import { ReactionsRepoModule } from 'src/infra/reactions_repo/reactions_repo.module';
+import { ReactionsModule } from 'src/infra/reactions/reactions.module';
+import { DocumentsModule } from 'src/infra/documents/documents.module';
+import { ReportsModule } from 'src/infra/reports/reports.module';
+import { CorevaluesModule } from 'src/infra/corevalues/corevalues.module';
 
 @Module({
   imports: [
+    CorevaluesModule,
+    ReportsModule,
+    DocumentsModule,
+    ReactionsModule,
+    ReactionsRepoModule,
+    LanguagesModule,
+    WelcomenotesModule,
+    EulasModule,
+    CountriesModule,
+    CitiesModule,
+    AreasModule,
+    MediaModule,
     InterestsRepoModule,
     TemplatesModule,
     UserauthsModule,

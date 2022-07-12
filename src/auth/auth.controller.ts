@@ -122,8 +122,10 @@ export class AuthController {
 
   @Post('api/user/referral-qrcode')
   @HttpCode(HttpStatus.ACCEPTED)
-  async referral_qrcode(@Req() request: any, @Headers() headers) {
-    return await this.authService.referralqrcode(request,headers);
+  async referral_qrcode(@Req() request: any, @Headers() headers, @Res() response) {
+    var data = await this.authService.referralqrcode(request,headers);
+    response.set("Content-Type","image/jpeg");
+    response.send(data);
   }
 
   @Get('profilePict/:id')
