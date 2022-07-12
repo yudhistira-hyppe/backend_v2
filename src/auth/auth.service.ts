@@ -3702,12 +3702,12 @@ export class AuthService {
     if(await this.utilsService.validasiTokenEmail(head)){
       if( head['x-auth-user']==undefined){
           await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed',
+            'Unabled to proceed auth-user undefined',
           );
       }
       if( req.body.refCode==undefined){
           await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed',
+            'Unabled to proceed refCode undefined',
           );
       }
       var user_email = head['x-auth-user'];
@@ -3757,12 +3757,12 @@ export class AuthService {
         return html_data;
       }else{
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed',
+          'Unabled to proceed user not found',
         );
       }
     }else{
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
+        'Unabled to proceed email not match',
       );
     }
   }
