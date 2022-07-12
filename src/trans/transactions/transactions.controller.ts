@@ -320,7 +320,7 @@ export class TransactionsController {
                     throw new BadRequestException("Given amount are greater than allowed value for static va value not found..!");
                 }
             } else {
-                throw new BadRequestException("Transaction pending on another user");
+                throw new BadRequestException("This content is already in the process of being purchased");
             }
 
 
@@ -413,10 +413,10 @@ export class TransactionsController {
                     });
                 }
             } else if (statuscodeva == "217") {
-                throw new BadRequestException("VA Number is still active for this partner user id !");
+                throw new BadRequestException("This content is already in the process of being purchased!");
             }
             else {
-                throw new BadRequestException("Given amount are greater than allowed value for static va value not found..!");
+                throw new BadRequestException("This content is already in the process of being purchased");
             }
         }
 

@@ -4,11 +4,12 @@ import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { CreateUserticketsDto } from './dto/create-usertickets.dto';
 import { Usertickets, UserticketsDocument } from './schemas/usertickets.schema';
+import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 @Injectable()
 export class UserticketsService {
   constructor(
     @InjectModel(Usertickets.name, 'SERVER_TRANS')
-    private readonly userticketsModel: Model<UserticketsDocument>,
+    private readonly userticketsModel: Model<UserticketsDocument>, private readonly mediaprofilepictsService: MediaprofilepictsService,
 
   ) { }
 
@@ -18,6 +19,12 @@ export class UserticketsService {
   async update(IdUserticket: ObjectId, status: string): Promise<Object> {
     let data = await this.userticketsModel.updateOne({ "_id": IdUserticket },
       { $set: { "status": status } });
+    return data;
+  }
+
+  async delete(IdUserticket: ObjectId): Promise<Object> {
+    let data = await this.userticketsModel.updateOne({ "_id": IdUserticket },
+      { $set: { "active": false } });
     return data;
   }
 
@@ -52,7 +59,7 @@ export class UserticketsService {
           from: "userbasics",
           localField: "tiketdata.IdUser",
           foreignField: "_id",
-          as: "field2"
+          as: "userbasics_data"
         }
       },
       {
@@ -94,72 +101,279 @@ export class UserticketsService {
     return query;
   }
 
-  async searchdata(status: string, tipe: string, page: number, limit: number) {
-    const query = await this.userticketsModel.aggregate([
-      {
-        $lookup: {
-          from: "userbasics",
-          localField: "IdUser",
-          foreignField: "_id",
-          as: "userdata"
-        }
-      }, {
-        $lookup: {
-          from: "userticketdetails",
-          localField: "_id",
-          foreignField: "IdUserticket",
-          as: "tiketdata"
-        }
-      },
-      {
-        $lookup: {
-          from: "userbasics",
-          localField: "tiketdata.IdUser",
-          foreignField: "_id",
-          as: "field2"
-        }
-      },
-      {
-        $project: {
-          userdata: {
-            $arrayElemAt: ['$userdata', 0]
+  async searchdata(status: string, tipe: string, startdate: string, enddate: string, page: number, limit: number) {
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate()));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+    if (startdate !== undefined && enddate !== undefined) {
+      const query = await this.userticketsModel.aggregate([
+        { "$match": { "status": status, "tipe": tipe, "active": true, "datetime": { $gte: startdate, $lte: dateend } } },
+        { "$sort": { "datetime": -1 }, }, { "$skip": page }, { "$limit": limit },
+        {
+          $lookup: {
+            from: "userbasics",
+            localField: "IdUser",
+            foreignField: "_id",
+            as: "userdata"
+          }
+        }, {
+          $lookup: {
+            from: "userticketdetails",
+            localField: "_id",
+            foreignField: "IdUserticket",
+            as: "tiketdata"
+          }
+        },
+
+        {
+          $lookup: {
+            from: "userbasics",
+            localField: "tiketdata.IdUser",
+            foreignField: "_id",
+            as: "userbasics_data"
+          }
+        },
+        {
+          $project: {
+            userdata: {
+              $arrayElemAt: ['$userdata', 0]
+            },
+            profilpictid: '$userdata.profilePict.$id',
+            replydata: "$tiketdata",
+            userrequest: "$userdata.fullName",
+            nomortiket: "$nomortiket",
+            email: "$userdata.email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime"
+
+          }
+        },
+        {
+          $project: {
+
+            profilpictid: '$userdata.profilePict.$id',
+            nomortiket: "$nomortiket",
+            userrequest: "$userdata.fullName",
+            email: "$userdata.email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime",
+            replydata: "$replydata"
+
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
           },
-          replydata: "$tiketdata",
-          userrequest: "$userdata.fullName",
-          nomortiket: "$nomortiket",
-          email: "$userdata.email",
-          subject: "$subject",
-          body: "$body",
-          status: "$status",
-          tipe: "$tipe",
-          datetime: "$datetime"
+        },
+        {
+          $project: {
+            profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+            nomortiket: "$nomortiket",
+            userrequest: "$userrequest",
+            email: "$email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime",
+            replydata: "$replydata",
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
-        }
-      },
-      {
-        $project: {
+            },
+
+          }
+        },
+        {
+          $addFields: {
+
+            concats: '/profilepict',
+            pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+          },
+        },
+
+        {
+          $project: {
+            nomortiket: "$nomortiket",
+            userrequest: "$userrequest",
+            email: "$email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime",
+            replydata: "$replydata",
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
 
 
-          nomortiket: "$nomortiket",
-          userrequest: "$userdata.fullName",
-          email: "$userdata.email",
-          subject: "$subject",
-          body: "$body",
-          status: "$status",
-          tipe: "$tipe",
-          datetime: "$datetime",
-          replydata: "$replydata"
+            },
 
-        }
-      }, { $match: { "status": status, "tipe": tipe } },
-      { $sort: { datetime: -1 }, }, { $skip: page }, { $limit: limit }
-    ]);
+          }
+        },
 
 
-    return query;
+      ]);
+      return query;
+
+    } else {
+      const query = await this.userticketsModel.aggregate([
+
+        { "$match": { "status": status, "tipe": tipe, "active": true } },
+        { "$sort": { "datetime": -1 }, }, { "$skip": 0 }, { "$limit": 10 },
+        {
+          $lookup: {
+            from: "userbasics",
+            localField: "IdUser",
+            foreignField: "_id",
+            as: "userdata"
+          }
+        }, {
+          $lookup: {
+            from: "userticketdetails",
+            localField: "_id",
+            foreignField: "IdUserticket",
+            as: "tiketdata"
+          }
+        },
+
+        {
+          $lookup: {
+            from: "userbasics",
+            localField: "tiketdata.IdUser",
+            foreignField: "_id",
+            as: "userbasics_data"
+          }
+        },
+        {
+          $project: {
+            userdata: {
+              $arrayElemAt: ['$userdata', 0]
+            },
+            profilpictid: '$userdata.profilePict.$id',
+            replydata: "$tiketdata",
+            userrequest: "$userdata.fullName",
+            nomortiket: "$nomortiket",
+            email: "$userdata.email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime"
+
+          }
+        },
+        {
+          $project: {
+
+            profilpictid: '$userdata.profilePict.$id',
+            nomortiket: "$nomortiket",
+            userrequest: "$userdata.fullName",
+            email: "$userdata.email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime",
+            replydata: "$replydata"
+
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+          },
+        },
+        {
+          $project: {
+            profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+            nomortiket: "$nomortiket",
+            userrequest: "$userrequest",
+            email: "$email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime",
+            replydata: "$replydata",
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+            },
+
+          }
+        },
+        {
+          $addFields: {
+
+            concats: '/profilepict',
+            pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+          },
+        },
+
+        {
+          $project: {
+            nomortiket: "$nomortiket",
+            userrequest: "$userrequest",
+            email: "$email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime",
+            replydata: "$replydata",
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
+          }
+        },
+
+      ]);
+      return query;
+    }
+
   }
   async searchdataall(status: string, tipe: string) {
     const query = await this.userticketsModel.aggregate([
+      { "$match": { "status": status, "tipe": tipe, "active": true } },
+      { "$sort": { "datetime": -1 }, },
       {
         $lookup: {
           from: "userbasics",
@@ -175,12 +389,13 @@ export class UserticketsService {
           as: "tiketdata"
         }
       },
+
       {
         $lookup: {
           from: "userbasics",
           localField: "tiketdata.IdUser",
           foreignField: "_id",
-          as: "field2"
+          as: "userbasics_data"
         }
       },
       {
@@ -215,8 +430,8 @@ export class UserticketsService {
           replydata: "$replydata"
 
         }
-      }, { $match: { "status": status, "tipe": tipe } },
-      { $sort: { datetime: -1 }, }
+      },
+
     ]);
 
 
@@ -224,77 +439,281 @@ export class UserticketsService {
   }
 
 
+  async alldatatiket(tipe: string, startdate: string, enddate: string, page: number, limit: number) {
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate()));
 
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+    if (startdate !== undefined && enddate !== undefined) {
+      const query = await this.userticketsModel.aggregate([
+        { "$match": { "tipe": tipe, "active": true, "datetime": { $gte: startdate, $lte: dateend } } },
+        { "$sort": { "datetime": -1 }, }, { "$skip": page }, { "$limit": limit },
+        {
+          $lookup: {
+            from: "userbasics",
+            localField: "IdUser",
+            foreignField: "_id",
+            as: "userdata"
+          }
+        }, {
+          $lookup: {
+            from: "userticketdetails",
+            localField: "_id",
+            foreignField: "IdUserticket",
+            as: "tiketdata"
+          }
+        },
 
+        {
+          $lookup: {
+            from: "userbasics",
+            localField: "tiketdata.IdUser",
+            foreignField: "_id",
+            as: "userbasics_data"
+          }
+        },
+        {
+          $project: {
+            userdata: {
+              $arrayElemAt: ['$userdata', 0]
+            },
+            profilpictid: '$userdata.profilePict.$id',
+            replydata: "$tiketdata",
+            userrequest: "$userdata.fullName",
+            nomortiket: "$nomortiket",
+            email: "$userdata.email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime"
 
-  async alldatatiket(tipe: string, page: number, limit: number) {
-    const query = await this.userticketsModel.aggregate([
-      {
-        $lookup: {
-          from: "userbasics",
-          localField: "IdUser",
-          foreignField: "_id",
-          as: "userdata"
-        }
-      }, {
-        $lookup: {
-          from: "userticketdetails",
-          localField: "_id",
-          foreignField: "IdUserticket",
-          as: "tiketdata"
-        }
-      },
-      {
-        $lookup: {
-          from: "userbasics",
-          localField: "tiketdata.IdUser",
-          foreignField: "_id",
-          as: "field2"
-        }
-      },
-      {
-        $project: {
-          userdata: {
-            $arrayElemAt: ['$userdata', 0]
+          }
+        },
+        {
+          $project: {
+
+            profilpictid: '$userdata.profilePict.$id',
+            nomortiket: "$nomortiket",
+            userrequest: "$userdata.fullName",
+            email: "$userdata.email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime",
+            replydata: "$replydata"
+
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
           },
-          replydata: "$tiketdata",
-          userrequest: "$userdata.fullName",
-          nomortiket: "$nomortiket",
-          email: "$userdata.email",
-          subject: "$subject",
-          body: "$body",
-          status: "$status",
-          tipe: "$tipe",
-          datetime: "$datetime"
+        },
+        {
+          $project: {
+            profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+            nomortiket: "$nomortiket",
+            userrequest: "$userrequest",
+            email: "$email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime",
+            replydata: "$replydata",
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
-        }
-      },
-      {
-        $project: {
+            },
+
+          }
+        },
+        {
+          $addFields: {
+
+            concats: '/profilepict',
+            pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+          },
+        },
+
+        {
+          $project: {
+            nomortiket: "$nomortiket",
+            userrequest: "$userrequest",
+            email: "$email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime",
+            replydata: "$replydata",
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
 
 
-          nomortiket: "$nomortiket",
-          userrequest: "$userdata.fullName",
-          email: "$userdata.email",
-          subject: "$subject",
-          body: "$body",
-          status: "$status",
-          tipe: "$tipe",
-          datetime: "$datetime",
-          replydata: "$replydata"
+            },
 
-        }
-      }, { $match: { "tipe": tipe } },
-      { $sort: { datetime: -1 }, }, { $skip: page }, { $limit: limit }
-    ]);
+          }
+        },
 
 
 
-    return query;
+      ]);
+      return query;
+
+    } else {
+      const query = await this.userticketsModel.aggregate([
+        { "$match": { "tipe": tipe, "active": true } },
+        { "$sort": { "datetime": -1 }, }, { "$skip": page }, { "$limit": limit },
+        {
+          $lookup: {
+            from: "userbasics",
+            localField: "IdUser",
+            foreignField: "_id",
+            as: "userdata"
+          }
+        }, {
+          $lookup: {
+            from: "userticketdetails",
+            localField: "_id",
+            foreignField: "IdUserticket",
+            as: "tiketdata"
+          }
+        },
+
+        {
+          $lookup: {
+            from: "userbasics",
+            localField: "tiketdata.IdUser",
+            foreignField: "_id",
+            as: "userbasics_data"
+          }
+        },
+        {
+          $project: {
+            userdata: {
+              $arrayElemAt: ['$userdata', 0]
+            },
+            profilpictid: '$userdata.profilePict.$id',
+            replydata: "$tiketdata",
+            userrequest: "$userdata.fullName",
+            nomortiket: "$nomortiket",
+            email: "$userdata.email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime"
+
+          }
+        },
+        {
+          $project: {
+
+            profilpictid: '$userdata.profilePict.$id',
+            nomortiket: "$nomortiket",
+            userrequest: "$userdata.fullName",
+            email: "$userdata.email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime",
+            replydata: "$replydata"
+
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+          },
+        },
+        {
+          $project: {
+            profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+            nomortiket: "$nomortiket",
+            userrequest: "$userrequest",
+            email: "$email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime",
+            replydata: "$replydata",
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+            },
+
+          }
+        },
+        {
+          $addFields: {
+
+            concats: '/profilepict',
+            pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+          },
+        },
+
+        {
+          $project: {
+            nomortiket: "$nomortiket",
+            userrequest: "$userrequest",
+            email: "$email",
+            subject: "$subject",
+            body: "$body",
+            status: "$status",
+            tipe: "$tipe",
+            datetime: "$datetime",
+            replydata: "$replydata",
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
+          }
+        },
+
+
+
+      ]);
+      return query;
+    }
   }
 
   async all(tipe: string) {
     const query = await this.userticketsModel.aggregate([
+      { $match: { "tipe": tipe, "active": true } },
+      { $sort: { datetime: -1 }, },
       {
         $lookup: {
           from: "userbasics",
@@ -315,7 +734,7 @@ export class UserticketsService {
           from: "userbasics",
           localField: "tiketdata.IdUser",
           foreignField: "_id",
-          as: "field2"
+          as: "userbasics_data"
         }
       },
       {
@@ -350,8 +769,8 @@ export class UserticketsService {
           replydata: "$replydata"
 
         }
-      }, { $match: { "tipe": tipe } },
-      { $sort: { datetime: -1 }, }
+      },
+
     ]);
 
 

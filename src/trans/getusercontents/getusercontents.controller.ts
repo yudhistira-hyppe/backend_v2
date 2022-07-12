@@ -586,4 +586,76 @@ export class GetusercontentsController {
 
         return { response_code: 202, data, messages };
     }
+
+    @Post('api/getusercontents/management/konten/group')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagementkontenfilterss(@Req() request: Request): Promise<any> {
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+        var email = null;
+        var skip = 0;
+        var limit = 0;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        var ownership = request_json["ownership"];
+        var monetesisasi = request_json["monetesisasi"];
+        var archived = request_json["archived"];
+        var buy = request_json["buy"];
+        var postType = request_json["postType"];
+        var startdate = request_json["startdate"];
+        var enddate = request_json["enddate"];
+
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var ubasic = await this.userbasicsService.findOne(email);
+        var iduser = ubasic._id;
+        var userid = mongoose.Types.ObjectId(iduser);
+
+        console.log(userid);
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        let data = await this.getusercontentsService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, postType, startdate, enddate, skip, limit);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('api/getusercontents/management/analitic')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagementkontenanalitic(@Req() request: Request): Promise<any> {
+
+        var email = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        let data = await this.getusercontentsService.findpopularanalitic(email);
+
+        return { response_code: 202, data, messages };
+    }
 }

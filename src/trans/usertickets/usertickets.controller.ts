@@ -55,6 +55,7 @@ export class UserticketsController {
     CreateUserticketsDto.IdUser = iduser;
     CreateUserticketsDto.datetime = dt.toISOString();
     CreateUserticketsDto.nomortiket = no;
+    CreateUserticketsDto.active = true;
 
     try {
       let data = await this.userticketsService.create(CreateUserticketsDto);
@@ -98,6 +99,8 @@ export class UserticketsController {
   async search(@Req() request: Request): Promise<any> {
     var status = null;
     var tipe = null;
+    var startdate = null;
+    var enddate = null;
 
     var page = 0;
     var limit = 0;
@@ -125,6 +128,9 @@ export class UserticketsController {
     } else {
       throw new BadRequestException("Unabled to proceed");
     }
+
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
     const messages = {
       "info": ["The process successful"],
     };
@@ -133,7 +139,7 @@ export class UserticketsController {
     var totalallrow = dataall.length;
 
 
-    let data = await this.userticketsService.searchdata(status, tipe, page, limit);
+    let data = await this.userticketsService.searchdata(status, tipe, startdate, enddate, page, limit);
     var totalrow = data.length;
     return { response_code: 202, data, page, limit, totalrow, totalallrow, messages };
   }
@@ -141,7 +147,8 @@ export class UserticketsController {
   @Post('api/usertickets/allticket')
   @UseGuards(JwtAuthGuard)
   async alltiket(@Req() request: Request): Promise<any> {
-
+    var startdate = null;
+    var enddate = null;
     var tipe = null;
     var page = 0;
     var limit = 0;
@@ -167,17 +174,47 @@ export class UserticketsController {
       "info": ["The process successful"],
     };
 
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
     let dataall = await this.userticketsService.all(tipe);
     var totalallrow = dataall.length;
 
 
-    let data = await this.userticketsService.alldatatiket(tipe, page, limit);
+    let data = await this.userticketsService.alldatatiket(tipe, startdate, enddate, page, limit);
     if (!data) {
       throw new Error('Todo is not found!');
     }
     var totalrow = data.length;
     return { response_code: 202, data, page, limit, totalrow, totalallrow, messages };
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('api/usertickets/:id')
+  async update(@Res() res, @Param('id') id: string, @Body() createUserticketsDto: CreateUserticketsDto) {
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+    const messages = {
+      "info": ["The update successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+    var idobj = mongoose.Types.ObjectId(id);
+    try {
+      let data = await this.userticketsService.delete(idobj);
+      res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "message": messages
+      });
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+
+        "message": messagesEror
+      });
+    }
+  }
+
 
   async romawi(num: number) {
     if (typeof num !== 'number')

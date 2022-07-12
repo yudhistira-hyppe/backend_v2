@@ -56,7 +56,7 @@ export class UserticketdetailsController {
         }
 
         else {
-            // status = request_json["status"];
+            status = request_json["status"];
             IdUserticket = request_json["IdUserticket"];
             var idusertiket = mongoose.Types.ObjectId(request_json["IdUserticket"]);
             CreateUserticketdetailsDto.IdUser = iduser;
@@ -64,7 +64,10 @@ export class UserticketdetailsController {
             CreateUserticketdetailsDto.IdUserticket = idusertiket;
             try {
                 let data = await this.userticketdetailsService.create(CreateUserticketdetailsDto);
-                // await this.userticketsService.update(idusertiket, status);
+
+                if (status == "close") {
+                    await this.userticketsService.update(idusertiket, status);
+                }
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "data": data,

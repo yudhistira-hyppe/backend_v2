@@ -1,7 +1,7 @@
 export class CreateUserticketsDto {
 
 
-  // readonly _id: { oid:string;  };
+  readonly _id: { oid: string; };
   nomortiket: string;
   subject: string;
   body: string;
@@ -9,6 +9,8 @@ export class CreateUserticketsDto {
   IdUser: { oid: String; };
   status: string;
   tipe: string;
+  active: boolean;
+
 
 
 }
