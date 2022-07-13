@@ -724,4 +724,62 @@ export class GetcontenteventsService {
 
         return query;
     }
+
+    async findfollowing(email: string, startdate: string, enddate: string) {
+        const posts = await this.contenteventsService.findcontent();
+
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate()));
+
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+        const query = await this.getcontenteventsModel.aggregate([
+
+
+            {
+                $match: {
+                    email: email, eventType: "FOLLOWING", event: "ACCEPT", createdAt: { $gte: startdate, $lte: dateend }
+                }
+            }, {
+                $group: {
+                    _id: "$email",
+                    totalfollowing: {
+                        $sum: 1
+                    }
+                }
+            }
+        ]);
+
+
+
+        return query;
+    }
+
+    async findfollowingall(email: string) {
+        const posts = await this.contenteventsService.findcontent();
+
+
+        const query = await this.getcontenteventsModel.aggregate([
+
+
+            {
+                $match: {
+                    email: email, eventType: "FOLLOWING", event: "ACCEPT"
+                }
+            }, {
+                $group: {
+                    _id: "$email",
+                    totalfollowingall: {
+                        $sum: 1
+                    }
+                }
+            }
+        ]);
+
+
+
+        return query;
+    }
 }

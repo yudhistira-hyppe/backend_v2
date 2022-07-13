@@ -77,7 +77,7 @@ import { FaqdetailsModule } from './trans/faqs/faqdetails/faqdetails.module';
     FaqdetailsModule,
     UserticketdetailsModule,
     UtilsModule,
-    GetcontenteventsModule,
+    // GetcontenteventsModule,
     AccountbalancesModule,
     TransactionsModule,
     AnnouncementsModule,

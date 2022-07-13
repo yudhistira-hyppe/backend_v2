@@ -3,13 +3,15 @@ import { GetusercontentsService } from './getusercontents.service';
 import { CreateGetusercontentsDto } from './dto/create-getusercontents.dto';
 import { Getusercontents } from './schemas/getusercontents.schema';
 import { UserbasicsService } from '../userbasics/userbasics.service';
+import { GetcontenteventsService } from '../getusercontents/getcontentevents/getcontentevents.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Res, HttpStatus, Response, Req } from '@nestjs/common';
 import { Request } from 'express';
 @Controller()
 export class GetusercontentsController {
     constructor(private readonly getusercontentsService: GetusercontentsService,
-        private readonly userbasicsService: UserbasicsService) { }
+        private readonly userbasicsService: UserbasicsService,
+        private readonly getcontenteventsService: GetcontenteventsService) { }
 
     @Post('api/getusercontents/all')
     @UseGuards(JwtAuthGuard)
@@ -704,6 +706,52 @@ export class GetusercontentsController {
         };
 
         data = await this.getusercontentsService.findalldatakontenmonetesbuy(userid, email, buy, monetize, postType, lastmonetize, skip, limit);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('api/getusercontents/management/analitic/followings')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagementkontenfolowwing(@Req() request: Request): Promise<any> {
+
+        var email = null;
+        var startdate = null;
+        var enddate = null;
+        var datafollowing = null;
+        var dataallfollowing = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["startdate"] !== undefined) {
+            startdate = request_json["startdate"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["enddate"] !== undefined) {
+            enddate = request_json["enddate"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        datafollowing = await this.getcontenteventsService.findfollowing(email, startdate, enddate);
+        dataallfollowing = await this.getcontenteventsService.findfollowingall(email);
+
+        var data = [{
+            "startdate": startdate,
+            "enddate": enddate,
+            "following": datafollowing[0].totalfollowing,
+            "totalallfollowing": dataallfollowing[0].totalfollowingall
+        }];
 
         return { response_code: 202, data, messages };
     }
