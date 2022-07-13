@@ -710,7 +710,7 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
-    @Post('api/getusercontents/management/analitic/followings')
+    @Post('api/getusercontents/management/analitic/follower')
     @UseGuards(JwtAuthGuard)
     async contentuserallmanagementkontenfolowwing(@Req() request: Request): Promise<any> {
 
@@ -743,14 +743,14 @@ export class GetusercontentsController {
             "info": ["The process successful"],
         };
 
-        datafollowing = await this.getcontenteventsService.findfollowing(email, startdate, enddate);
-        dataallfollowing = await this.getcontenteventsService.findfollowingall(email);
+        datafollowing = await this.getcontenteventsService.findfollower(email, startdate, enddate);
+        dataallfollowing = await this.getcontenteventsService.findfollowerall(email);
 
         var data = [{
             "startdate": startdate,
             "enddate": enddate,
-            "following": datafollowing[0].totalfollowing,
-            "totalallfollowing": dataallfollowing[0].totalfollowingall
+            "follower": datafollowing[0].totalfollower,
+            "totalallfollower": dataallfollowing[0].totalfollowerall
         }];
 
         return { response_code: 202, data, messages };

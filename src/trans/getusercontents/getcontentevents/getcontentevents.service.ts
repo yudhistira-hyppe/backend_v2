@@ -725,7 +725,7 @@ export class GetcontenteventsService {
         return query;
     }
 
-    async findfollowing(email: string, startdate: string, enddate: string) {
+    async findfollower(email: string, startdate: string, enddate: string) {
         const posts = await this.contenteventsService.findcontent();
 
         try {
@@ -740,12 +740,12 @@ export class GetcontenteventsService {
 
             {
                 $match: {
-                    email: email, eventType: "FOLLOWING", event: "ACCEPT", createdAt: { $gte: startdate, $lte: dateend }
+                    email: email, eventType: "FOLLOWER", event: "ACCEPT", createdAt: { $gte: startdate, $lte: dateend }
                 }
             }, {
                 $group: {
                     _id: "$email",
-                    totalfollowing: {
+                    totalfollower: {
                         $sum: 1
                     }
                 }
@@ -757,7 +757,7 @@ export class GetcontenteventsService {
         return query;
     }
 
-    async findfollowingall(email: string) {
+    async findfollowerall(email: string) {
         const posts = await this.contenteventsService.findcontent();
 
 
@@ -766,12 +766,12 @@ export class GetcontenteventsService {
 
             {
                 $match: {
-                    email: email, eventType: "FOLLOWING", event: "ACCEPT"
+                    email: email, eventType: "FOLLOWER", event: "ACCEPT"
                 }
             }, {
                 $group: {
                     _id: "$email",
-                    totalfollowingall: {
+                    totalfollowerall: {
                         $sum: 1
                     }
                 }
