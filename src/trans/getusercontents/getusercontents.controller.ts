@@ -658,4 +658,53 @@ export class GetusercontentsController {
 
         return { response_code: 202, data, messages };
     }
+    @Post('api/getusercontents/management/monetize')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagementkontenmonetis(@Req() request: Request): Promise<any> {
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var data = null;
+        var buy = null;
+        var postType = null;
+        var monetize = null;
+        var email = null;
+        var lastmonetize = null;
+        var skip = 0;
+        var limit = 0;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        buy = request_json["buy"];
+        monetize = request_json["monetize"];
+        postType = request_json["postType"];
+        lastmonetize = request_json["lastmonetize"];
+        var ubasic = await this.userbasicsService.findOne(email);
+        var iduser = ubasic._id;
+        var userid = mongoose.Types.ObjectId(iduser);
+
+        console.log(userid);
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        data = await this.getusercontentsService.findalldatakontenmonetesbuy(userid, email, buy, monetize, postType, lastmonetize, skip, limit);
+
+        return { response_code: 202, data, messages };
+    }
 }
