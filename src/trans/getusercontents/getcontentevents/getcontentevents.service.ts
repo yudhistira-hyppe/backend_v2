@@ -725,31 +725,59 @@ export class GetcontenteventsService {
         return query;
     }
 
-    async findfollower(email: string, startdate: string, enddate: string) {
+    async findfollower(email: string, year: string) {
         const posts = await this.contenteventsService.findcontent();
 
-        try {
-            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate()));
-
-            var dateend = currentdate.toISOString();
-        } catch (e) {
-            dateend = "";
-        }
         const query = await this.getcontenteventsModel.aggregate([
 
 
             {
                 $match: {
-                    email: email, eventType: "FOLLOWER", event: "ACCEPT", createdAt: { $gte: startdate, $lte: dateend }
+                    email: email,
+                    eventType: "FOLLOWER",
+                    event: "ACCEPT"
                 }
-            }, {
+            },
+            {
+                $project: {
+
+                    month_repo: {
+                        $toInt: {
+                            $substrCP: ['$createdAt', 5, 2]
+                        }
+                    },
+                    YearcreatedAt_repo: {
+                        $toInt: {
+                            $substrCP: ['$createdAt', 0, 4]
+                        }
+                    },
+                    year_param_repo: {
+                        $toInt: year
+                    },
+
+                },
+
+            },
+            {
                 $group: {
-                    _id: "$email",
-                    totalfollower: {
-                        $sum: 1
-                    }
-                }
-            }
+                    _id: {
+                        month_group: '$month_repo',
+
+                    },
+                    activityType_Count: { $sum: 1 },
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    month: '$_id.month_group',
+
+                    count: { $sum: '$activityType_Count' },
+                },
+            },
+            {
+                $sort: { month: 1 },
+            },
         ]);
 
 

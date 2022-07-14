@@ -697,6 +697,40 @@ export class TransactionsController {
 
     }
 
+    @Post('api/transactions/withdraw')
+    async createwithdraw(@Res() res, @Headers('x-auth-token') auth: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Request() request) {
+        const messages = {
+            "info": ["The create successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+        var bank_code = null;
+        var account_number = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["bank_code"] !== undefined) {
+            bank_code = request_json["bank_code"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["account_number"] !== undefined) {
+            account_number = request_json["account_number"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+
+
+
+
+
+
+    }
+
     async romawi(num: number) {
         if (typeof num !== 'number')
             return false;

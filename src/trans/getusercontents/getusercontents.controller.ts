@@ -715,10 +715,9 @@ export class GetusercontentsController {
     async contentuserallmanagementkontenfolowwing(@Req() request: Request): Promise<any> {
 
         var email = null;
-        var startdate = null;
-        var enddate = null;
-        var datafollowing = null;
-        var dataallfollowing = null;
+        var year = null;
+        var datafollower = null;
+        var dataallfollower = null;
 
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
@@ -727,14 +726,10 @@ export class GetusercontentsController {
             throw new BadRequestException("Unabled to proceed");
         }
 
-        if (request_json["startdate"] !== undefined) {
-            startdate = request_json["startdate"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
 
-        if (request_json["enddate"] !== undefined) {
-            enddate = request_json["enddate"];
+
+        if (request_json["year"] !== undefined) {
+            year = request_json["year"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
@@ -743,16 +738,11 @@ export class GetusercontentsController {
             "info": ["The process successful"],
         };
 
-        datafollowing = await this.getcontenteventsService.findfollower(email, startdate, enddate);
-        dataallfollowing = await this.getcontenteventsService.findfollowerall(email);
+        datafollower = await this.getcontenteventsService.findfollower(email, year);
+        dataallfollower = await this.getcontenteventsService.findfollowerall(email);
+        var totalallfollower = dataallfollower[0].totalfollowerall;
 
-        var data = [{
-            "startdate": startdate,
-            "enddate": enddate,
-            "follower": datafollowing[0].totalfollower,
-            "totalallfollower": dataallfollowing[0].totalfollowerall
-        }];
 
-        return { response_code: 202, data, messages };
+        return { response_code: 202, datafollower, totalallfollower, messages };
     }
 }

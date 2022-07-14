@@ -44,6 +44,7 @@ export class UserticketsController {
     var rotahun = this.romawi(numtahun);
     var robulan = this.romawi(numbulan);
     var rotanggal = this.romawi(numtanggal);
+    var angka = await this.generateNumber();
     var no = "HYPPE/" + (await rotahun).toString() + "/" + (await robulan).toString() + "/" + (await rotanggal).toString() + "/" + leng;
 
     var ubasic = await this.userbasicsService.findOne(email);
@@ -246,4 +247,13 @@ export class UserticketsController {
     return str;
   }
 
+  async generateNumber() {
+    const getRandomId = (min = 0, max = 500000) => {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      const num = Math.floor(Math.random() * (max - min + 1)) + min;
+      return num.toString().padStart(6, "0")
+    };
+    return getRandomId();
+  }
 }
