@@ -725,7 +725,7 @@ export class GetcontenteventsService {
         return query;
     }
 
-    async findfollower(email: string, year: string) {
+    async findfollower(email: string, year: number) {
         const posts = await this.contenteventsService.findcontent();
 
         const query = await this.getcontenteventsModel.aggregate([
@@ -735,7 +735,8 @@ export class GetcontenteventsService {
                 $match: {
                     email: email,
                     eventType: "FOLLOWER",
-                    event: "ACCEPT"
+                    event: "ACCEPT",
+                    $expr: { $eq: [year, { $year: new Date() }] }
                 }
             },
             {
