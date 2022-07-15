@@ -13,7 +13,7 @@ import { AccountbalancesService } from '../accountbalances/accountbalances.servi
 import { UserbankaccountsService } from '../userbankaccounts/userbankaccounts.service';
 import { OyPgService } from '../../paymentgateway/oypg/oypg.service';
 import { InsightsService } from '../../content/insights/insights.service';
-import { WithdrawsService } from '../Withdraws/withdraws.service';
+import { WithdrawsService } from '../withdraws/withdraws.service';
 import { Types } from 'mongoose';
 @Controller()
 export class TransactionsController {
@@ -28,7 +28,9 @@ export class TransactionsController {
         private readonly oyPgService: OyPgService,
         private readonly insightsService: InsightsService,
         private readonly userbankaccountsService: UserbankaccountsService,
-        private readonly withdrawsService: WithdrawsService) { }
+        private readonly withdrawsService: WithdrawsService
+
+    ) { }
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions')
     async create(@Res() res, @Headers('x-auth-token') auth: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Request() request) {
@@ -700,167 +702,167 @@ export class TransactionsController {
 
     }
 
-    // @Post('api/transactions/withdraw')
-    // async createwithdraw(@Res() res, @Headers('x-auth-token') auth: string, @Body() OyDisbursements: OyDisbursements, @Request() request) {
-    //     const messages = {
-    //         "info": ["The create successful"],
-    //     };
+    @Post('api/transactions/withdraw')
+    async createwithdraw(@Res() res, @Headers('x-auth-token') auth: string, @Body() OyDisbursements: OyDisbursements, @Request() request) {
+        const messages = {
+            "info": ["The create successful"],
+        };
 
-    //     const messagesEror = {
-    //         "info": ["Todo is not found!"],
-    //     };
-    //     const mongoose = require('mongoose');
-    //     var ObjectId = require('mongodb').ObjectId;
-    //     var email = null;
-    //     var recipient_bank = null;
-    //     var recipient_account = null;
-    //     var request_json = JSON.parse(JSON.stringify(request.body));
-    //     if (request_json["recipient_bank"] !== undefined) {
-    //         recipient_bank = request_json["recipient_bank"];
-    //     } else {
-    //         throw new BadRequestException("Unabled to proceed");
-    //     }
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var email = null;
+        var recipient_bank = null;
+        var recipient_account = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["recipient_bank"] !== undefined) {
+            recipient_bank = request_json["recipient_bank"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
-    //     if (request_json["recipient_account"] !== undefined) {
-    //         recipient_account = request_json["recipient_account"];
-    //     } else {
-    //         throw new BadRequestException("Unabled to proceed");
-    //     }
-    //     if (request_json["email"] !== undefined) {
-    //         email = request_json["email"];
-    //     } else {
-    //         throw new BadRequestException("Unabled to proceed");
-    //     }
-    //     var ubasic = await this.userbasicsService.findOne(email);
+        if (request_json["recipient_account"] !== undefined) {
+            recipient_account = request_json["recipient_account"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var ubasic = await this.userbasicsService.findOne(email);
 
-    //     var iduser = ubasic._id;
-    //     var amounreq = OyDisbursements.amount;
-    //     var totalsaldo = 0;
-    //     var databalance = null;
-    //     var datarek = null;
-    //     var databank = null;
-    //     var namabank = "";
-    //     var idbank = null;
-    //     var statusInquiry = null;
-    //     var datasettingbankvercharge = null;
-    //     var datasettingdisbvercharge = null;
-    //     var valuebankcharge = 0;
-    //     var valuedisbcharge = 0;
-    //     var namarek = null;
-    //     var nama = null;
-    //     var kodebank = null;
-    //     var norekdb = null;
+        var iduser = ubasic._id;
+        var amounreq = OyDisbursements.amount;
+        var totalsaldo = 0;
+        var databalance = null;
+        var datarek = null;
+        var databank = null;
+        var namabank = "";
+        var idbank = null;
+        var statusInquiry = null;
+        var datasettingbankvercharge = null;
+        var datasettingdisbvercharge = null;
+        var valuebankcharge = 0;
+        var valuedisbcharge = 0;
+        var namarek = null;
+        var nama = null;
+        var kodebank = null;
+        var norekdb = null;
 
-    //     var idbankverificationcharge = "62bd4104f37a00001a004367";
-    //     var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
+        var idbankverificationcharge = "62bd4104f37a00001a004367";
+        var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
 
-    //     try {
-    //         databalance = await this.accountbalancesService.findwallettotalsaldo(iduser);
-    //         totalsaldo = databalance[0].totalsaldo;
+        try {
+            databalance = await this.accountbalancesService.findwallettotalsaldo(iduser);
+            totalsaldo = databalance[0].totalsaldo;
 
-    //     } catch (e) {
-    //         databalance = null;
-    //         totalsaldo = 0;
-    //     }
+        } catch (e) {
+            databalance = null;
+            totalsaldo = 0;
+        }
 
-    //     try {
-    //         datasettingbankvercharge = await this.settingsService.findOne(idbankverificationcharge);
-    //         valuebankcharge = datasettingbankvercharge._doc.value;
-    //         datasettingdisbvercharge = await this.settingsService.findOne(idBankDisbursmentCharge);
-    //         valuedisbcharge = datasettingdisbvercharge._doc.value;
+        try {
+            datasettingbankvercharge = await this.settingsService.findOne(idbankverificationcharge);
+            valuebankcharge = datasettingbankvercharge._doc.value;
+            datasettingdisbvercharge = await this.settingsService.findOne(idBankDisbursmentCharge);
+            valuedisbcharge = datasettingdisbvercharge._doc.value;
 
-    //     } catch (e) {
-    //         throw new BadRequestException("Setting value not found..!");
-    //     }
+        } catch (e) {
+            throw new BadRequestException("Setting value not found..!");
+        }
 
-    //     try {
-    //         databank = await this.banksService.findbankcode(recipient_bank);
-    //         idbank = databank._doc._id;
+        try {
+            databank = await this.banksService.findbankcode(recipient_bank);
+            idbank = databank._doc._id;
 
-    //     } catch (e) {
-    //         throw new BadRequestException("Banks not found...!");
-    //     }
+        } catch (e) {
+            throw new BadRequestException("Banks not found...!");
+        }
 
-    //     try {
-    //         datarek = await this.userbankaccountsService.findnorek(recipient_account, idbank);
-    //         var idbankaccount = datarek._doc._id;
-    //         norekdb = datarek._doc.noRek;
-    //         namarek = datarek._doc.nama;
-    //         statusInquiry = datarek._doc.statusInquiry;
+        try {
+            datarek = await this.userbankaccountsService.findnorek(recipient_account, idbank);
+            var idbankaccount = datarek._doc._id;
+            norekdb = datarek._doc.noRek;
+            namarek = datarek._doc.nama;
+            statusInquiry = datarek._doc.statusInquiry;
 
-    //     } catch (e) {
-    //         norekdb = null;
-    //     }
-    //     if (amounreq > totalsaldo) {
-    //         throw new BadRequestException("The balance is not sufficient...!");
-    //     } else {
-    //         if (norekdb !== null) {
+        } catch (e) {
+            norekdb = null;
+        }
+        if (amounreq > totalsaldo) {
+            throw new BadRequestException("The balance is not sufficient...!");
+        } else {
+            if (norekdb !== null) {
 
-    //             let datareqinquiry = new OyAccountInquirys();
-    //             datareqinquiry.bank_code = recipient_bank;
-    //             datareqinquiry.account_number = recipient_account;
-    //             nama = namarek.toLowerCase();
-    //             let datareqinq = await this.oyPgService.inquiryAccount(datareqinquiry);
-    //             var statuscode = datareqinq.status.code;
-    //             var account_name = datareqinq.account_name;
-    //             var namaakun = account_name.toLowerCase();
-
-
-    //             if (statuscode === "000") {
-
-    //                 if (nama === namaakun) {
-    //                     await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
-    //                     await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
-    //                     let datadisbursemen = await this.oyPgService.disbursement(OyDisbursements);
-    //                     var statusdisb = datadisbursemen.status.code;
-    //                     var dtburs = new Date(datadisbursemen.timestamp);
-    //                     dtburs.setHours(dtburs.getHours() + 7); // timestamp
-    //                     dtburs = new Date(dtburs);
-    //                     if (statusdisb === "101") {
-    //                         await this.accontbalanceWithdraw(iduser, valuedisbcharge, "withdraw");
-    //                         let datawithdraw = new CreateWithdraws();
-    //                         datawithdraw.amount = datadisbursemen.amount;
-    //                         datawithdraw.bankVerificationCharge = mongoose.Types.ObjectId(idbankverificationcharge);
-    //                         datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
-    //                         datawithdraw.description = OyDisbursements.note;
-    //                         datawithdraw.idUser = iduser;
-    //                         datawithdraw.status = datadisbursemen.status.message;
-    //                         datawithdraw.timestamp = dtburs.toISOString();
-    //                         datawithdraw.verified = false;
-    //                         datawithdraw.statusOtp = null;
-    //                         var data = await this.withdrawsService.create(datawithdraw);
-    //                         await this.accontbalanceWithdraw(iduser, datadisbursemen.amount, "withdraw");
-
-    //                         res.status(HttpStatus.OK).json({
-    //                             response_code: 202,
-    //                             "data": data,
-    //                             "message": messages
-    //                         });
-    //                     }
+                let datareqinquiry = new OyAccountInquirys();
+                datareqinquiry.bank_code = recipient_bank;
+                datareqinquiry.account_number = recipient_account;
+                nama = namarek.toLowerCase();
+                let datareqinq = await this.oyPgService.inquiryAccount(datareqinquiry);
+                var statuscode = datareqinq.status.code;
+                var account_name = datareqinq.account_name;
+                var namaakun = account_name.toLowerCase();
 
 
-    //                 } else {
-    //                     await this.userbankaccountsService.updateone(idbankaccount, "failed inquiry");
-    //                     await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
-    //                     res.status(HttpStatus.OK).json({
-    //                         response_code: 202,
-    //                         "message": "failed inquiry"
-    //                     });
+                if (statuscode === "000") {
 
-    //                 }
-    //             }
-    //             else {
-    //                 throw new BadRequestException("data not found");
-    //             }
+                    if (nama === namaakun) {
+                        await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
+                        await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                        let datadisbursemen = await this.oyPgService.disbursement(OyDisbursements);
+                        var statusdisb = datadisbursemen.status.code;
+                        var dtburs = new Date(datadisbursemen.timestamp);
+                        dtburs.setHours(dtburs.getHours() + 7); // timestamp
+                        dtburs = new Date(dtburs);
+                        if (statusdisb === "101") {
+                            await this.accontbalanceWithdraw(iduser, valuedisbcharge, "withdraw");
+                            let datawithdraw = new CreateWithdraws();
+                            datawithdraw.amount = datadisbursemen.amount;
+                            datawithdraw.bankVerificationCharge = mongoose.Types.ObjectId(idbankverificationcharge);
+                            datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
+                            datawithdraw.description = OyDisbursements.note;
+                            datawithdraw.idUser = iduser;
+                            datawithdraw.status = datadisbursemen.status.message;
+                            datawithdraw.timestamp = dtburs.toISOString();
+                            datawithdraw.verified = false;
+                            datawithdraw.statusOtp = null;
+                            var data = await this.withdrawsService.create(datawithdraw);
+                            await this.accontbalanceWithdraw(iduser, datadisbursemen.amount, "withdraw");
 
-    //         }
-    //         else {
-    //             throw new BadRequestException("Data not found...!");
-    //         }
-    //     }
+                            res.status(HttpStatus.OK).json({
+                                response_code: 202,
+                                "data": data,
+                                "message": messages
+                            });
+                        }
 
 
-    // }
+                    } else {
+                        await this.userbankaccountsService.updateone(idbankaccount, "failed inquiry");
+                        await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "message": "failed inquiry"
+                        });
+
+                    }
+                }
+                else {
+                    throw new BadRequestException("data not found");
+                }
+
+            }
+            else {
+                throw new BadRequestException("Data not found...!");
+            }
+        }
+
+
+    }
 
     @Post('api/callback/disbursement')
     async callbackDisbursement(@Body() payload: OyDisburseCallbacks) {
