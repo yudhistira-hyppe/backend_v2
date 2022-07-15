@@ -19,6 +19,9 @@ export class UserbankaccountsService {
         return this.userbankaccountsModel.findOne({ _id: id }).exec();
     }
 
+    async findnorekkembar(noRek: string): Promise<Userbankaccounts> {
+        return this.userbankaccountsModel.findOne({ noRek: noRek }).exec();
+    }
     async findnorek(noRek: string, idBank: string): Promise<Userbankaccounts> {
         return this.userbankaccountsModel.findOne({ noRek: noRek, idBank: idBank }).exec();
     }
@@ -38,6 +41,23 @@ export class UserbankaccountsService {
     async updateone(id: Types.ObjectId, description: string): Promise<Object> {
         let data = await this.userbankaccountsModel.updateOne({ "_id": id },
             { $set: { "statusInquiry": true, "description": description } });
+        return data;
+    }
+
+
+    async update(
+        id: string,
+        createUserbankaccountsDto: CreateUserbankaccountsDto,
+    ): Promise<Userbankaccounts> {
+        let data = await this.userbankaccountsModel.findByIdAndUpdate(
+            id,
+            createUserbankaccountsDto,
+            { new: true },
+        );
+
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
         return data;
     }
 
