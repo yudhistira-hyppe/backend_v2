@@ -835,7 +835,7 @@ export class TransactionsController {
                             dtburs.setHours(dtburs.getHours() + 14); // timestamp
                             dtburs = new Date(dtburs);
                             var dtb = dtburs.toISOString();
-                            await this.accontbalanceinquiry(iduser, valuedisbcharge, "withdraw");
+                            await this.accontbalanceWithdraw(iduser, valuedisbcharge, "disbursement");
                             let datawithdraw = new CreateWithdraws();
                             datawithdraw.amount = datadisbursemen.amount;
                             datawithdraw.bankVerificationCharge = mongoose.Types.ObjectId(idbankverificationcharge);
@@ -860,7 +860,7 @@ export class TransactionsController {
 
                     } else {
                         await this.userbankaccountsService.updateone(idbankaccount, "failed inquiry");
-                        await this.accontbalanceinquiry(iduser, valuedisbcharge, "withdraw");
+                        await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
                         res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": "failed inquiry"
@@ -2116,6 +2116,15 @@ export class TransactionsController {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
+        var desccontent = "";
+
+        if (tipe === "inquiry") {
+            desccontent = "inquiry";
+        } else if (tipe === "disbursement") {
+            desccontent = "disbursement";
+        } else {
+            desccontent = "withdraw";
+        }
 
         var dataacountbalance = {
             iduser: iduser,
@@ -2123,25 +2132,7 @@ export class TransactionsController {
             kredit: 0,
             type: tipe,
             timestamp: dt.toISOString(),
-            description: "withdraw",
-
-        };
-
-        await this.accountbalancesService.createdata(dataacountbalance);
-    }
-
-    async accontbalanceinquiry(iduser: { oid: String }, amount: number, tipe: string) {
-        var dt = new Date(Date.now());
-        dt.setHours(dt.getHours() + 7); // timestamp
-        dt = new Date(dt);
-
-        var dataacountbalance = {
-            iduser: iduser,
-            debet: amount,
-            kredit: 0,
-            type: tipe,
-            timestamp: dt.toISOString(),
-            description: "inquiry",
+            description: desccontent,
 
         };
 
