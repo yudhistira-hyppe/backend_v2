@@ -811,11 +811,26 @@ export class TransactionsController {
                 if (statuscode === "000") {
 
                     if (nama === namaakun) {
+                        var stringId = (await this.generateNumber()).toString();
+                        var partnertrxid = "OYO" + stringId;
                         await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
                         await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                        OyDisbursements.partner_trx_id = partnertrxid;
                         let datadisbursemen = await this.oyPgService.disbursement(OyDisbursements);
                         var statusdisb = datadisbursemen.status.code;
-                        var dtburs = new Date(datadisbursemen.timestamp);
+                        var timeoy = datadisbursemen.timestamp;
+                        var splittimeoy = timeoy.split(" ");
+
+                        var substrtahun = splittimeoy[0].substring(10, 6);
+                        var numtahun = parseInt(substrtahun);
+
+                        var substrbulan = splittimeoy[0].substring(5, 3);
+                        var numbulan = parseInt(substrbulan);
+                        var substrtanggal = splittimeoy[0].substring(0, 2);
+                        var numtanggal = parseInt(substrtanggal);
+
+
+                        var dtburs = new Date();
                         dtburs.setHours(dtburs.getHours() + 7); // timestamp
                         dtburs = new Date(dtburs);
                         if (statusdisb === "101") {
