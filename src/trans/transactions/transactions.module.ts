@@ -13,11 +13,13 @@ import { Pph21sModule } from '../pph21s/pph21s.module';
 import { AccountbalancesModule } from '../accountbalances/accountbalances.module';
 import { OyPgModule } from '../../paymentgateway/oypg/oypg.module';
 import { InsightsModule } from '../../content/insights/insights.module';
+import { UserbankaccountsModule } from '../userbankaccounts/userbankaccounts.module';
+import { WithdrawsModule } from '../withdraws/withdraws.module';
 @Module({
 
     imports: [
 
-        ConfigModule.forRoot(), UserbasicsModule, SettingsModule, MethodepaymentsModule, BanksModule, PostsModule, Pph21sModule, AccountbalancesModule, OyPgModule, InsightsModule,
+        ConfigModule.forRoot(), UserbasicsModule, SettingsModule, MethodepaymentsModule, BanksModule, PostsModule, Pph21sModule, AccountbalancesModule, OyPgModule, InsightsModule, UserbankaccountsModule, WithdrawsModule,
         MongooseModule.forFeature([{ name: Transactions.name, schema: TransactionsSchema }], 'SERVER_TRANS')
     ],
     controllers: [TransactionsController],

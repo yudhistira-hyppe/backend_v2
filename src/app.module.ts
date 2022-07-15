@@ -75,7 +75,7 @@ import { UserbankaccountsModule } from './trans/userbankaccounts/userbankaccount
     // UserbasicsModule,
     // UserauthsModule,
     //CommentModule,
-    UserbankaccountsModule,
+    // UserbankaccountsModule,
     FaqdetailsModule,
     UserticketdetailsModule,
     UtilsModule,

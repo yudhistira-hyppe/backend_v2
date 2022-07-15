@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserbankaccountsDto } from './dto/create-userbankaccounts.dto';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { Userbankaccounts, UserbankaccountsDocument } from './schemas/userbankaccounts.schema';
 
 @Injectable()
@@ -18,12 +18,22 @@ export class UserbankaccountsService {
     async findOne(id: string): Promise<Userbankaccounts> {
         return this.userbankaccountsModel.findOne({ _id: id }).exec();
     }
+
+    async findnorek(noRek: string, idBank: string): Promise<Userbankaccounts> {
+        return this.userbankaccountsModel.findOne({ noRek: noRek, idBank: idBank }).exec();
+    }
     async create(CreateUserbankaccountsDto: CreateUserbankaccountsDto): Promise<Userbankaccounts> {
         let data = await this.userbankaccountsModel.create(CreateUserbankaccountsDto);
 
         if (!data) {
             throw new Error('Todo is not found!');
         }
+        return data;
+    }
+
+    async updateone(id: Types.ObjectId, description: string): Promise<Object> {
+        let data = await this.userbankaccountsModel.updateOne({ "_id": id },
+            { $set: { "statusInquiry": true, "description": description } });
         return data;
     }
 

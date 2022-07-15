@@ -38,3 +38,51 @@ export class VaCallback {
     settlement_time: string;
     settlement_status: string;
 }
+
+export class OyAccountInquirys {
+    bank_code: string;
+    account_number: string;
+}
+
+export class OyDisbursements {
+    recipient_bank: string;
+    recipient_account: string;
+    amount: number;
+    note: string;
+    partner_trx_id: string;
+    email: string;
+}
+
+export class CreateWithdraws {
+    readonly _id: { oid: string; };
+    idUser: { oid: String; };
+    amount: number;
+    status: string;
+    bankVerificationCharge: { oid: String; };
+    bankDisbursmentCharge: { oid: String; };
+    accountBalanceid: { oid: String; };
+    timestamp: string;
+    verified: boolean;
+    expired: string;
+    description: string;
+    statusOtp: string;
+}
+export class OyDisburseCallbacks {
+
+    status: StatusCallback;
+    tx_status_description: string;
+    amount: number;
+    recipient_name: string;
+    recipient_bank: string;
+    recipient_account: string;
+    trx_id: string;
+    partner_trx_id: string;
+    timestamp: string;
+    created_date: string;
+    last_updated_date: string;
+}
+
+export class StatusCallback {
+    code: string;
+    message: string;
+}

@@ -45,7 +45,58 @@ export class GetuserprofilesService {
     return query;
   }
 
+  async findUser(username: string, skip: number, limit: number) {
+    const query = await this.getuserprofilesModel.aggregate([
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth.$id',
+          foreignField: '_id',
+          as: 'userAuth_data',
 
+        },
+
+      },
+      {
+        "$unwind": {
+          "path": "$userAuth_data",
+          "preserveNullAndEmptyArrays": false
+        }
+      },
+
+      {
+        "$match": {
+          "userAuth_data.username": {
+            $regex: username
+          }
+        }
+      },
+
+      {
+        "$project": {
+          "idUserAuth": "$userAuth_data._id",
+          "username": "$userAuth_data.username",
+          "fullName": "$fullName"
+
+        }
+
+      },
+      {
+        "$sort": {
+          "createdAt": - 1
+        },
+
+      },
+      {
+        "$skip": skip
+      },
+      {
+        "$limit": limit
+      }
+    ]);
+
+    return query;
+  }
 
   async findata(fullName: string, gender: string, roles: string, age: string, page: number) {
 
