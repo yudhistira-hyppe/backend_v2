@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { OyDisburseCallbackWithdraw } from '../dto/create-withdraws.dto';
 
 export type WithdrawsDocument = Withdraws & Document;
 
@@ -25,11 +26,14 @@ export class Withdraws {
     @Prop()
     verified: boolean
     @Prop()
-    expired: string
-    @Prop()
     description: string
     @Prop()
+    partnerTrxid: string
+    @Prop()
     statusOtp: string
+    @Prop()
+    payload: OyDisburseCallbackWithdraw
+
 
 }
 

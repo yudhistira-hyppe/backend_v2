@@ -701,7 +701,7 @@ export class TransactionsController {
 
 
     }
-
+    @UseGuards(JwtAuthGuard)
     @Post('api/transactions/withdraw')
     async createwithdraw(@Res() res, @Headers('x-auth-token') auth: string, @Body() OyDisbursements: OyDisbursements, @Request() request) {
         const messages = {
@@ -822,18 +822,19 @@ export class TransactionsController {
                         var splittimeoy = timeoy.split(" ");
 
                         var substrtahun = splittimeoy[0].substring(10, 6);
-                        var numtahun = parseInt(substrtahun);
 
                         var substrbulan = splittimeoy[0].substring(5, 3);
-                        var numbulan = parseInt(substrbulan);
+
                         var substrtanggal = splittimeoy[0].substring(0, 2);
-                        var numtanggal = parseInt(substrtanggal);
+
+                        var strdate = substrtahun + "-" + substrbulan + "-" + substrtanggal + " " + splittimeoy[1];
 
 
-                        var dtburs = new Date();
-                        dtburs.setHours(dtburs.getHours() + 7); // timestamp
-                        dtburs = new Date(dtburs);
                         if (statusdisb === "101") {
+                            var dtburs = new Date(strdate);
+                            dtburs.setHours(dtburs.getHours() + 14); // timestamp
+                            dtburs = new Date(dtburs);
+                            var dtb = dtburs.toISOString();
                             await this.accontbalanceWithdraw(iduser, valuedisbcharge, "withdraw");
                             let datawithdraw = new CreateWithdraws();
                             datawithdraw.amount = datadisbursemen.amount;
@@ -842,8 +843,9 @@ export class TransactionsController {
                             datawithdraw.description = OyDisbursements.note;
                             datawithdraw.idUser = iduser;
                             datawithdraw.status = datadisbursemen.status.message;
-                            datawithdraw.timestamp = dtburs.toISOString();
+                            datawithdraw.timestamp = dtb;
                             datawithdraw.verified = false;
+                            datawithdraw.partnerTrxid = partnertrxid;
                             datawithdraw.statusOtp = null;
                             var data = await this.withdrawsService.create(datawithdraw);
                             await this.accontbalanceWithdraw(iduser, datadisbursemen.amount, "withdraw");
@@ -879,10 +881,58 @@ export class TransactionsController {
 
     }
 
-    @Post('api/callback/disbursement')
-    async callbackDisbursement(@Body() payload: OyDisburseCallbacks) {
+    @Post('api/pg/oy/callback/disbursement')
+    async callbackDisbursement(@Res() res, @Body() payload: OyDisburseCallbacks) {
 
         console.log(payload);
+
+        const messages = {
+            "info": ["The update successful"],
+        };
+        var datarek = null;
+        var databank = null;
+        var idbank = null;
+        var recipient_name = payload.recipient_name;
+        var recipient_bank = payload.recipient_bank;
+        var recipient_account = payload.recipient_account;
+        var partner_trx_id = payload.partner_trx_id;
+        var statusCallback = payload.status.code;
+        try {
+            databank = await this.banksService.findbankcode(recipient_bank);
+            idbank = databank._doc._id;
+
+        } catch (e) {
+            throw new BadRequestException("Banks not found...!");
+        }
+
+        try {
+            datarek = await this.userbankaccountsService.findnorekWithdraw(recipient_account, idbank, recipient_name);
+
+
+        } catch (e) {
+            datarek = null;
+        }
+
+        if (datarek !== null) {
+
+            if (statusCallback === "000") {
+
+                await this.withdrawsService.updateone(partner_trx_id, payload);
+
+                res.status(HttpStatus.OK).json({
+                    response_code: 202,
+                    "message": messages
+                });
+
+            } else {
+                throw new BadRequestException("Failed disbursement...!");
+            }
+
+        } else {
+            throw new BadRequestException("recipient_account not found...!");
+        }
+
+
 
     }
 

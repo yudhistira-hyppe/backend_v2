@@ -63,8 +63,8 @@ export class CreateWithdraws {
     accountBalanceid: { oid: String; };
     timestamp: string;
     verified: boolean;
-    expired: string;
     description: string;
+    partnerTrxid: string;
     statusOtp: string;
 }
 export class OyDisburseCallbacks {

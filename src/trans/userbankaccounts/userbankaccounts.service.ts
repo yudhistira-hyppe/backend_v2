@@ -22,6 +22,10 @@ export class UserbankaccountsService {
     async findnorek(noRek: string, idBank: string): Promise<Userbankaccounts> {
         return this.userbankaccountsModel.findOne({ noRek: noRek, idBank: idBank }).exec();
     }
+
+    async findnorekWithdraw(noRek: string, idBank: string, nama: string): Promise<Userbankaccounts> {
+        return this.userbankaccountsModel.findOne({ noRek: noRek, idBank: idBank, nama: nama }).exec();
+    }
     async create(CreateUserbankaccountsDto: CreateUserbankaccountsDto): Promise<Userbankaccounts> {
         let data = await this.userbankaccountsModel.create(CreateUserbankaccountsDto);
 
