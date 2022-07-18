@@ -7,7 +7,8 @@ import {
   Post,
   UseGuards,
   Req,
-  BadRequestException,
+  Request,
+  BadRequestException, HttpStatus, Put, Res
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostsDto } from './dto/create-posts.dto';
@@ -16,7 +17,7 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/posts')
 export class PostsController {
-  constructor(private readonly PostsService: PostsService) {}
+  constructor(private readonly PostsService: PostsService) { }
 
   @Post()
   async create(@Body() CreatePostsDto: CreatePostsDto) {
@@ -47,7 +48,7 @@ export class PostsController {
     var email = req.body.email;
     var type = req.body.type;
     var type_ = "all";
-    if (email==undefined) {
+    if (email == undefined) {
       throw new BadRequestException('Unabled to proceed');
     }
     if (type != undefined) {
@@ -75,5 +76,37 @@ export class PostsController {
   @Post('monetizebyyear')
   async countPost(@Body('year') year: number): Promise<Object> {
     return this.PostsService.MonetizeByYear(year);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('update/:id')
+  async update(@Res() res, @Param('id') id: string, @Req() request: Request) {
+    var saleAmount = 0;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["saleAmount"] !== undefined) {
+      saleAmount = request_json["saleAmount"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    const messages = {
+      "info": ["The update successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+    try {
+      let data = await this.PostsService.updateprice(id, saleAmount);
+      res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "message": messages
+      });
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+
+        "message": messagesEror
+      });
+    }
   }
 }
