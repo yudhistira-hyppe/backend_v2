@@ -20,12 +20,13 @@ import { GetcontenteventsController } from './getcontentevents/getcontentevents.
 import { GetcontenteventsModule } from './getcontentevents/getcontentevents.module';
 import { UserbasicsModule } from '../userbasics/userbasics.module';
 
-
+import { SettingsModule } from '../settings/settings.module';
 
 @Module({
 
     imports: [
-        ConfigModule.forRoot(), UserauthsModule, MediaprofilepictsModule, InsightsModule, PostsModule, MediavideosModule, MediapictsModule, MediadiariesModule, DisquslogsModule, DisqusModule, CommentModule, UserbasicsModule, GetcontenteventsModule,
+        ConfigModule.forRoot(), UserauthsModule, MediaprofilepictsModule, InsightsModule, PostsModule, MediavideosModule, MediapictsModule, MediadiariesModule, DisquslogsModule, DisqusModule, CommentModule, UserbasicsModule,
+        GetcontenteventsModule, SettingsModule,
 
         MongooseModule.forFeature([{ name: Getusercontents.name, schema: GetusercontentsSchema }], 'SERVER_TRANS'),
 

@@ -136,26 +136,26 @@ export class TransactionsController {
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         var idppn = "62bbbe43a7520000050077a3";
-        var idmdradmin = "62bd413ff37a00001a004369";
+        // var idmdradmin = "62bd413ff37a00001a004369";
         var idbankvacharge = "62bd40e0f37a00001a004366";
         var idexpiredva = "62bbbe8ea7520000050077a4";
-        var datasettingppn = null;
+        // var datasettingppn = null;
         var datamradmin = null;
         var databankvacharge = null;
         try {
-            datasettingppn = await this.settingsService.findOne(idppn);
-            datamradmin = await this.settingsService.findOne(idmdradmin);
+            //  datasettingppn = await this.settingsService.findOne(idppn);
+            // datamradmin = await this.settingsService.findOne(idmdradmin);
             databankvacharge = await this.settingsService.findOne(idbankvacharge);
 
-            var valueppn = datasettingppn._doc.value;
-            var nominalppn = amount * valueppn / 100;
+            //var valueppn = datasettingppn._doc.value;
+            // var nominalppn = amount * valueppn / 100;
             var valuevacharge = databankvacharge._doc.value;
-            var valuemradmin = datamradmin._doc.value;
-            var nominalmradmin = amount * valuemradmin / 100;
+            // var valuemradmin = datamradmin._doc.value;
+            // var nominalmradmin = amount * valuemradmin / 100;
 
-            var prosentase = valueppn + valuemradmin;
-            var calculate = amount * prosentase / 100;
-            totalamount = amount + calculate + valuevacharge;
+            //var prosentase = valueppn + valuemradmin;
+            // var calculate = amount * prosentase / 100;
+            totalamount = amount + valuevacharge;
 
 
 
@@ -203,13 +203,13 @@ export class TransactionsController {
         var databankvacharge = null;
         var datasettingexpiredva = null;
         try {
-            datasettingppn = await this.settingsService.findOne(idppn);
-            datamradmin = await this.settingsService.findOne(idmdradmin);
+            // datasettingppn = await this.settingsService.findOne(idppn);
+            // datamradmin = await this.settingsService.findOne(idmdradmin);
             databankvacharge = await this.settingsService.findOne(idbankvacharge);
             datasettingexpiredva = await this.settingsService.findOne(idexpiredva);
-            var valueppn = datasettingppn._doc.value;
+            // var valueppn = datasettingppn._doc.value;
             var valuevacharge = databankvacharge._doc.value;
-            var valuemradmin = datamradmin._doc.value;
+            // var valuemradmin = datamradmin._doc.value;
             var valueexpiredva = datasettingexpiredva._doc.value;
 
         } catch (e) {
@@ -220,7 +220,7 @@ export class TransactionsController {
 
         var userbuy = iduser;
         var name = ubasic.fullName;
-
+        var stringId = (await this.generateNumber()).toString();
 
         if (datatrpending !== null) {
 
@@ -233,8 +233,9 @@ export class TransactionsController {
             var idtransaction = datatrpending._id;
 
             if (datenow > dateVa) {
+
                 var datava = {
-                    "partner_user_id": userbuy.toString(),
+                    "partner_user_id": userbuy.toString() + stringId,
                     "amount": totalamount,
                     "bank_code": bankcode,
                     "is_open": false,
@@ -295,11 +296,11 @@ export class TransactionsController {
                             "salelike": datatr.saleview,
                             "saleview": datatr.salelike,
                             "bank": namabank,
-                            "ppn": valueppn + " %",
-                            "nominalppn": nominalppn,
+                            // "ppn": valueppn + " %",
+                            // "nominalppn": nominalppn,
                             "bankvacharge": valuevacharge,
-                            "mdradmin": valuemradmin + " %",
-                            "nominalmdradmin": nominalmradmin,
+                            // "mdradmin": valuemradmin + " %",
+                            // "nominalmdradmin": nominalmradmin,
                             "totalamount": datatr.totalamount,
                             "accountbalance": datatr.accountbalance,
                             "timestamp": datatr.timestamp,
@@ -333,7 +334,7 @@ export class TransactionsController {
         else {
 
             var datava = {
-                "partner_user_id": userbuy.toString(),
+                "partner_user_id": userbuy.toString() + stringId,
                 "amount": totalamount,
                 "bank_code": bankcode,
                 "is_open": false,
@@ -395,11 +396,11 @@ export class TransactionsController {
                         "salelike": datatr.saleview,
                         "saleview": datatr.salelike,
                         "bank": namabank,
-                        "ppn": valueppn + " %",
-                        "nominalppn": nominalppn,
+                        // "ppn": valueppn + " %",
+                        // "nominalppn": nominalppn,
                         "bankvacharge": valuevacharge,
-                        "mdradmin": valuemradmin + " %",
-                        "nominalmdradmin": nominalmradmin,
+                        // "mdradmin": valuemradmin + " %",
+                        // "nominalmdradmin": nominalmradmin,
                         "totalamount": datatr.totalamount,
                         "accountbalance": datatr.accountbalance,
                         "timestamp": datatr.timestamp,
@@ -499,18 +500,18 @@ export class TransactionsController {
             throw new BadRequestException("Banks not found...!");
         }
 
-        var datasettingppn = null;
+        // var datasettingppn = null;
         var datamradmin = null;
         var databankvacharge = null;
         var datasettingexpiredva = null;
         try {
-            datasettingppn = await this.settingsService.findOne(idppn);
-            datamradmin = await this.settingsService.findOne(idmdradmin);
+            //   datasettingppn = await this.settingsService.findOne(idppn);
+            // datamradmin = await this.settingsService.findOne(idmdradmin);
             databankvacharge = await this.settingsService.findOne(idbankvacharge);
             datasettingexpiredva = await this.settingsService.findOne(idexpiredva);
-            var valueppn = datasettingppn._doc.value;
+            //  var valueppn = datasettingppn._doc.value;
             var valuevacharge = databankvacharge._doc.value;
-            var valuemradmin = datamradmin._doc.value;
+            // var valuemradmin = datamradmin._doc.value;
             var valueexpiredva = datasettingexpiredva._doc.value;
 
         } catch (e) {
@@ -566,8 +567,8 @@ export class TransactionsController {
                 createTransactionsDto.paymentmethod = idmethode;
                 createTransactionsDto.expiredtimeva = d1.toISOString();
                 let datatr = await this.transactionsService.update(id, createTransactionsDto);
-                var nominalppn = datatr.amount * valueppn / 100;
-                var nominalmradmin = datatr.amount * valuemradmin / 100;
+                // var nominalppn = datatr.amount * valueppn / 100;
+                // var nominalmradmin = datatr.amount * valuemradmin / 100;
                 var data = {
 
                     "noinvoice": datatr.noinvoice,
@@ -583,11 +584,11 @@ export class TransactionsController {
                     "salelike": datatr.saleview,
                     "saleview": datatr.salelike,
                     "bank": namabank,
-                    "ppn": valueppn + " %",
-                    "nominalppn": nominalppn,
+                    // "ppn": valueppn + " %",
+                    // "nominalppn": nominalppn,
                     "bankvacharge": valuevacharge,
-                    "mdradmin": valuemradmin + " %",
-                    "nominalmdradmin": nominalmradmin,
+                    // "mdradmin": valuemradmin + " %",
+                    // "nominalmdradmin": nominalmradmin,
                     "totalamount": datatr.totalamount,
                     "accountbalance": datatr.accountbalance,
                     "timestamp": datatr.timestamp,
@@ -657,7 +658,7 @@ export class TransactionsController {
                     var like = datapost.likes;
                     var view = datapost.views;
 
-                    var datapph = await this.pph(idtransaction, idusersell, amount, postid);
+                    // var datapph = await this.pph(idtransaction, idusersell, amount, postid);
 
 
                     await this.transactionsService.updateone(idtransaction, idbalance, payload);
