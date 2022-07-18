@@ -702,13 +702,15 @@ export class GetusercontentsController {
         var ubasic = await this.userbasicsService.findOne(email);
         var iduser = ubasic._id;
         var userid = mongoose.Types.ObjectId(iduser);
+        var startdate = request_json["startdate"];
+        var enddate = request_json["enddate"];
 
         console.log(userid);
         const messages = {
             "info": ["The process successful"],
         };
 
-        data = await this.getusercontentsService.findalldatakontenmonetesbuy(userid, email, buy, monetize, postType, lastmonetize, skip, limit);
+        data = await this.getusercontentsService.findalldatakontenmonetesbuy(userid, email, buy, monetize, postType, lastmonetize, startdate, enddate, skip, limit);
 
         return { response_code: 202, data, messages };
     }
