@@ -819,6 +819,7 @@ export class GetusercontentsController {
                 "saleLike": databuy[0].saleLike,
                 "saleView": databuy[0].saleView,
                 "adminFee": nominalmradmin,
+                "prosentaseAdminFee": valuemradmin + " %",
                 "price": databuy[0].saleAmount,
                 "totalAmount": totalamount,
                 "monetize": databuy[0].monetize

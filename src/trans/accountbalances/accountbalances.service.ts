@@ -105,10 +105,7 @@ export class AccountbalancesService {
             {
                 $project: {
                     iduser: "$iduser",
-                    type:
-                    {
-                        $cond: { if: { $eq: ["$type", "withdraw"] }, then: "Buy", else: "Rewards" }
-                    },
+                    type: "$type",
                     timestamp: "$timestamp",
                     description: "$description",
                     amount:
