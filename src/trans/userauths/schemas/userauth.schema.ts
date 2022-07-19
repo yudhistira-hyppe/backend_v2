@@ -53,11 +53,11 @@ export class Userauth {
   @Prop([{ type: Object }])
   devices: [
     {
-      ref: String;
-      id: {
+      $ref: String;
+      $id: {
         oid: String;
       };
-      db: String;
+      $db: String;
     },
   ];
 
@@ -68,7 +68,10 @@ export class Userauth {
   oneTimePassword: String;
 
   @Prop()
-  upgradeRole: String;
+  upgradeRole: String; 
+
+  @Prop()
+  otpToken: String;
 }
 
 export const UserauthSchema = SchemaFactory.createForClass(Userauth);

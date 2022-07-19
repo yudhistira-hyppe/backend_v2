@@ -8,7 +8,7 @@ export type ActivityeventsDocument = Activityevents & Document;
 @Schema()
 export class Activityevents {
   @Prop({ type: Object })
-  _id: { oid: String };
+  _id: mongoose.Types.ObjectId;
   @Prop()
   activityEventID: String;
   @Prop()
@@ -45,11 +45,11 @@ export class Activityevents {
   @Prop([{ type: Object }])
   transitions: [
     {
-      ref: String;
-      id: {
+      $ref: String;
+      $id: {
         oid: String;
       };
-      db: String;
+      $db: String;
     },
   ];
   @Prop()

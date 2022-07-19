@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { UserbasicsService } from '../trans/userbasics/userbasics.service';
 import { UserauthsService } from '../trans/userauths/userauths.service';
 import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken.service';
 import { TemplatesService } from '../infra/templates/templates.service';
@@ -9,6 +10,19 @@ import { Templates } from '../infra/templates/schemas/templates.schema';
 import * as admin from 'firebase-admin';
 import { MediaService } from '../stream/media/media.service';
 import { ErrorHandler } from './error.handler';
+import { AvatarDTO, ProfileDTO } from './data/Profile';
+import { LanguagesService } from '../infra/languages/languages.service';
+import { InsightsService } from '../content/insights/insights.service';
+import { CitiesService } from '../infra/cities/cities.service';
+import { CountriesService } from '../infra/countries/countries.service';
+import { AreasService } from '../infra/areas/areas.service'; 
+import { InterestsRepoService } from '../infra/interests_repo/interests_repo.service';
+import { InterestsService } from '../infra/interests/interests.service';
+import { EulasService } from '../infra/eulas/eulas.service';
+import { MediaprofilepictsService } from '../content/mediaprofilepicts/mediaprofilepicts.service';
+import { CreateInsightsDto } from '../content/insights/dto/create-insights.dto';
+import { SettingsService } from '../trans/settings/settings.service';
+import * as fs from 'fs';
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -22,7 +36,18 @@ export class UtilsService {
     private mailerService: MailerService,
     private templatesService: TemplatesService,
     private mediaService: MediaService,
-    private errorHandler: ErrorHandler,
+    private errorHandler: ErrorHandler, 
+    private userbasicsService: UserbasicsService, 
+    private languagesService: LanguagesService, 
+    private insightsService: InsightsService,
+    private citiesService: CitiesService,
+    private countriesService: CountriesService,
+    private areasService: AreasService, 
+    private interestsRepoService: InterestsRepoService, 
+    private interestsService: InterestsService,
+    private eulasService: EulasService, 
+    private mediaprofilepictsService: MediaprofilepictsService,
+    private settingsService: SettingsService, 
   ) {}
 
   async sendEmail(
@@ -94,7 +119,7 @@ export class UtilsService {
 
   async compareOTPAttemp(otpattemp: number): Promise<boolean> {
     var isTrue = false;
-    if (otpattemp < Number(process.env.OTP_ATTEMP_MAX)) {
+    if (otpattemp <= Number(process.env.OTP_ATTEMP_MAX)) {
       isTrue = true;
     }
     return isTrue;
@@ -287,7 +312,12 @@ export class UtilsService {
       Templates_ = await this.getTemplate('REFERRAL', 'REFERRAL');
       var html_body = Templates_.body_detail.trim().toString();
       const $_ = cheerio.load(html_body);
-      var dataimage =  await this.mediaService.getPitch(data.image_profile);
+      var dataimage = await this.mediaService.getPitch(data.image_profile);
+      if (data.image_profile!=''){
+        dataimage = await this.mediaService.getPitch(data.image_profile);
+      }else{
+        dataimage = fs.readFileSync('./profile-default.jpg');
+      }
       var data_string = 'data:image/png;base64,'+dataimage.toString('base64');
       $_('#profile').attr('src',data_string);
       $_('#fullname').text(data.fullName);
@@ -307,7 +337,169 @@ export class UtilsService {
   }
 
   async generateQRCode(Url: string): Promise<any> {
-    const generateQR =  await QRCode.toDataURL(Url, { errorCorrectionLevel: 'M' })
+    const generateQR = await QRCode.toDataURL(Url, {
+      errorCorrectionLevel: 'H',
+      type: 'image/jpeg',
+      quality: 0.3,
+      margin: 0,
+       })
     return generateQR;
+  }
+
+  async getversion(): Promise<string>{
+    var get_version = await this.settingsService.findOneByJenis('AppsVersion');
+    var version_number = '';
+    if (await this.ceckData(get_version)) {
+      if (get_version.value != undefined) { version_number = get_version.value.toString(); }
+    }
+    return version_number;
+  }
+
+  async generateProfile(email: string,datafor:string): Promise<ProfileDTO> {
+    var get_userbasic = await this.userbasicsService.findOne(email);
+    var get_userauth = await this.userauthsService.findOne(email);
+
+    var get_languages = null;
+    var get_insight = null;
+    var get_cities = null;
+    var get_countries = null;
+    var get_states = null;
+    var get_profilePict = null;
+
+    if (await this.ceckData(get_userbasic)) {
+
+      if (get_userbasic.languages != undefined) {
+        var languages_json = JSON.parse(JSON.stringify(get_userbasic.languages));
+        get_languages = await this.languagesService.findOne(languages_json.$id);
+      } 
+      
+      if (get_userbasic.insight != undefined) {
+        var insight_json = JSON.parse(JSON.stringify(get_userbasic.insight));
+        get_insight = await this.insightsService.findOne(insight_json.$id);
+      }
+
+      if (get_userbasic.countries != undefined) {
+        var countries_json = JSON.parse(JSON.stringify(get_userbasic.countries));
+        get_countries = await this.countriesService.findOne(countries_json.$id);
+      }
+
+      if (get_userbasic.cities != undefined) {
+        var cities_json = JSON.parse(JSON.stringify(get_userbasic.cities));
+        get_cities = await this.citiesService.findOne(cities_json.$id);
+      }
+
+      if (get_userbasic.states != undefined) {
+        var states_json = JSON.parse(JSON.stringify(get_userbasic.states));
+        get_states = await this.areasService.findOneid(states_json.$id);
+      }
+
+      if (get_userbasic.profilePict != null) {
+        var mediaprofilepicts_json = JSON.parse(JSON.stringify(get_userbasic.profilePict));
+        get_profilePict = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
+      }
+    }
+
+    var AvatarDTO_ = new AvatarDTO();
+
+    if (await this.ceckData(get_profilePict)) {
+      AvatarDTO_.mediaBasePath = get_profilePict.mediaBasePath;
+      AvatarDTO_.mediaUri = get_profilePict.mediaUri;
+      AvatarDTO_.mediaType = get_profilePict.mediaType;
+      AvatarDTO_.mediaEndpoint = '/profilepict/' + get_profilePict.mediaUri.replace('_0001.jpeg', '');
+    }
+
+    var CreateInsightsDto_ = new CreateInsightsDto();
+    if (await this.ceckData(get_insight)) {
+      if (get_insight.shares != undefined) { CreateInsightsDto_.shares = get_insight.shares; }
+      if (get_insight.followers != undefined) { CreateInsightsDto_.followers = get_insight.followers; }
+      if (get_insight.shares != undefined) { CreateInsightsDto_.shares = get_insight.shares; }
+      if (get_insight.followings != undefined) { CreateInsightsDto_.followings = get_insight.followings; }
+      if (get_insight.reactions != undefined) { CreateInsightsDto_.reactions = get_insight.reactions; }
+      if (get_insight.posts != undefined) { CreateInsightsDto_.followers = get_insight.posts; }
+      if (get_insight.views != undefined) { CreateInsightsDto_.views = get_insight.views; }
+      if (get_insight.likes != undefined) { CreateInsightsDto_.likes = get_insight.likes; }
+    }
+
+    var interests_array = [];
+    if (get_userbasic.userInterests.length > 0) {
+      for (let i = 0; i < get_userbasic.userInterests.length; i++) {
+        if (get_userbasic.userInterests[i] != null) {
+          var interests_json = JSON.parse(
+            JSON.stringify(get_userbasic.userInterests[i]),
+          );
+          if (interests_json.ref == 'interests_repo') {
+            const interests = await this.interestsRepoService.findOne(
+              interests_json.$id,
+            );
+            interests_array[i] = interests.interestName;
+          } else {
+            const interests = await this.interestsService.findOne(
+              interests_json.$id,
+            );
+            interests_array[i] = interests.interestName;
+          }
+        }
+      }
+    }
+
+    var ProfileDTO_ = new ProfileDTO();
+    if (datafor == 'FULL') {
+      if (get_userbasic.profileID != undefined) { ProfileDTO_.profileID = get_userbasic.profileID; }
+      if (get_userauth.regSrc != undefined) { ProfileDTO_.regSrc = get_userauth.regSrc; }
+      if (get_userbasic.bio != undefined) { ProfileDTO_.bio = get_userbasic.bio; } 
+      if (get_userbasic.dob != undefined) { ProfileDTO_.dob = get_userbasic.dob; }
+      if (get_userbasic.gender != undefined) { ProfileDTO_.gender = get_userbasic.gender; }
+      if (get_userbasic.idProofNumber != undefined) { ProfileDTO_.idProofNumber = get_userbasic.idProofNumber; }
+
+      if (get_cities != null) { ProfileDTO_.city = get_cities.cityName; }
+      if (get_states != null) { ProfileDTO_.area = get_states.stateName; }
+      ProfileDTO_.mobileNumber = get_userbasic.mobileNumber;
+      if (get_languages != null) {
+        var eula = await this.eulasService.findOnelangiso(get_languages.langIso);
+        if (await this.ceckData(eula)) {
+          ProfileDTO_.eulaID = eula.eulaID;
+        }
+      }
+
+      ProfileDTO_.isCelebrity = get_userbasic.isCelebrity.toString();
+      ProfileDTO_.isPrivate = get_userbasic.isPrivate.toString();
+      ProfileDTO_.isFollowPrivate = get_userbasic.isFollowPrivate.toString();
+      ProfileDTO_.isPostPrivate = get_userbasic.isPostPrivate.toString();
+      ProfileDTO_.otp = get_userauth.oneTimePassword;
+      ProfileDTO_.otpToken = get_userauth.otpToken;
+      ProfileDTO_.otpToken = get_userauth.otpToken;
+      ProfileDTO_.authEmail = get_userauth.email;
+      //ProfileDTO_.token =
+      //ProfileDTO_.refreshToken =
+      //ProfileDTO_.userProfile =
+      //ProfileDTO_.socmedSource =
+      //ProfileDTO_.referral =
+      //ProfileDTO_.imei = 
+      //ProfileDTO_.referralCount =
+      //ProfileDTO_.children = 
+    }
+
+    if (datafor == 'LOGIN' || datafor == 'FULL') {
+      if (get_countries != null) { ProfileDTO_.country = get_countries.country; }
+      if (get_userbasic.idProofNumber != undefined) { ProfileDTO_.idProofNumber = get_userbasic.idProofNumber; }
+      ProfileDTO_.roles = get_userauth.roles;
+      if (get_userbasic.fullName != undefined) { ProfileDTO_.fullName = get_userbasic.fullName; }
+      if (await this.ceckData(get_profilePict)) {
+        ProfileDTO_.avatar = AvatarDTO_;
+      }
+      ProfileDTO_.isIdVerified = get_userbasic.isIdVerified.toString();
+      ProfileDTO_.isEmailVerified = get_userauth.isEmailVerified.toString();
+      if (get_userbasic.idProofStatus != undefined) { ProfileDTO_.idProofStatus = get_userbasic.idProofStatus; }
+      ProfileDTO_.insight = CreateInsightsDto_;
+      if (get_languages != null) { ProfileDTO_.langIso = get_languages.langIso; }
+      ProfileDTO_.interest = interests_array;
+      ProfileDTO_.event = get_userbasic.event;
+      if (get_userbasic.email != undefined) { ProfileDTO_.email = get_userbasic.email; }
+      if (get_userauth.username != undefined) { ProfileDTO_.username = get_userauth.username; }
+      ProfileDTO_.isComplete = get_userbasic.isComplete.toString();
+      ProfileDTO_.status = get_userbasic.status;
+    } 
+
+    return ProfileDTO_;
   }
 }

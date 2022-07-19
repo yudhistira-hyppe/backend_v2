@@ -18,4 +18,8 @@ export class SettingsService {
     async findOne(id: string): Promise<Settings> {
         return this.settingsModel.findOne({ _id: id }).exec();
     }
+
+    async findOneByJenis(jenis: string): Promise<Settings> {
+        return this.settingsModel.findOne({ jenis: jenis }).exec();
+    }
 }

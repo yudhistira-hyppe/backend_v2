@@ -28,7 +28,7 @@ import { CreateReferralDto } from '../trans/referral/dto/create-referral.dto';
 import mongoose from 'mongoose';
 import { MediaService } from '../stream/media/media.service';
 import { Long } from 'mongodb';
-import { createReadStream } from 'fs';
+import * as fs from 'fs';
 
 @Injectable()
 export class AuthService {
@@ -141,7 +141,7 @@ export class AuthService {
         _isEmailVerified = datauserauthsService.isEmailVerified;
       }else{
         await this.errorHandler.generateNotAcceptableException(
-          'Email Verified is false',
+          'User auths not found',
         );
       }
 
@@ -205,7 +205,7 @@ export class AuthService {
             const update_activityevents_parent =
               await this.activityeventsService.update(
                 {
-                  _id: user_activityevents[0]._id.toString(),
+                  _id: user_activityevents[0]._id,
                 },
                 {
                   transitions: data_transitions,
@@ -316,7 +316,7 @@ export class AuthService {
           if (await this.utilsService.ceckData(user_userdevicesService)) {
             //Get Userdevices
             try {
-              if(user_devicetype!=undefined){
+              if(user_devicetype!=null){
                 await this.userdevicesService.updatebyEmail(
                   user_email,
                   user_deviceId,
@@ -384,9 +384,9 @@ export class AuthService {
             if (filteredData.length == 0) {
               //Pust Devices Userauths
               datauserauthsService_devices.push({
-                ref: 'userdevices',
-                id: ID_user_userdevicesService,
-                db: 'hyppe_trans_db',
+                $ref: 'userdevices',
+                $id: Object(ID_user_userdevicesService),
+                $db: 'hyppe_trans_db',
               });
 
               await this.userauthsService.updatebyEmail(user_email, {
@@ -436,7 +436,7 @@ export class AuthService {
             var interests_json = JSON.parse(
               JSON.stringify(datauserbasicsService.userInterests[i]),
             );
-            if (interests_json.$ref == 'interests_repo') {
+            if (interests_json.ref == 'interests_repo') {
               const interests = await this.interestsRepoService.findOne(
                 interests_json.$id,
               );
@@ -553,7 +553,7 @@ export class AuthService {
       }
     }else{
       await this.errorHandler.generateNotAcceptableException(
-        'User not found',
+        'User basics and jwt not found',
       );
     }
   }
@@ -736,13 +736,14 @@ export class AuthService {
           'ENROL',
           false,
         );
-
+      
       if (Object.keys(dataactivityevents).length > 0) {
         let last;
         if (dataactivityevents[0].transitions.length > 0) {
+          const json_transition = JSON.parse(JSON.stringify(dataactivityevents[0].transitions[0]));
           last = await this.activityeventsService.findbyactivityEventID(
             user_email,
-            dataactivityevents[0].transitions[0].oid,
+            json_transition.$id,
             'ENROL',
             false,
           );
@@ -1176,12 +1177,12 @@ export class AuthService {
               }
             } else {
               if (
-                Number(datauserauthsService.otpNextAttemptAllow) > 0
+                (Number(datauserauthsService.otpNextAttemptAllow) > 0
                   ? await this.utilsService.OTPNextAttempExpires(
                       Number(datauserauthsService.otpNextAttemptAllow),
                     )
-                  : datauserauthsService.oneTimePassword != undefined &&
-                    !(await this.utilsService.compareOTPAttemp(
+                  : datauserauthsService.oneTimePassword != undefined) &&
+                    (await this.utilsService.compareOTPAttemp(
                       Number(datauserauthsService.otpAttempt),
                     ))
               ) {
@@ -1531,10 +1532,9 @@ export class AuthService {
             data_CreateUserbasicDto.isPostPrivate = false;
             data_CreateUserbasicDto.createdAt = current_date;
             data_CreateUserbasicDto.updatedAt = current_date;
-            data_CreateUserbasicDto.gender = user_gender;
             data_CreateUserbasicDto.insight = {
               $ref: 'insights',
-              $id: ID_insights,
+              $id: Object(ID_insights),
               $db: 'hyppe_content_db',
             };
             data_CreateUserbasicDto.userInterests = Object(data_interest_id);
@@ -1783,8 +1783,8 @@ export class AuthService {
         user_mobileNumber = req.body.mobileNumber;
       }
 
-      if(req.body.idProofNumber!=undefined){
-        user_idProofNumber = req.body.idProofNumber;
+      if(req.body.$idProofNumber!=undefined){
+        user_idProofNumber = req.body.$idProofNumber;
       }
       
       if(req.body.gender!=undefined){
@@ -1939,7 +1939,7 @@ export class AuthService {
                 //Update ActivityEvent Parent 1
                 await this.activityeventsService.update(
                     {
-                      _id: user_activityevents[0]._id.toString(),
+                      _id: user_activityevents[0]._id,
                     },
                     {
                       transitions: data_transitions,
@@ -1974,9 +1974,9 @@ export class AuthService {
                   if((await this.utilsService.ceckData(countries))){
                     var countries_id = (await countries)._id;
                     data_update_userbasict['countries']={
-                      $ref: 'countries',
-                      $id: countries_id,
-                      $db: 'hyppe_infra_db',
+                      ref: 'countries',
+                      id: countries_id,
+                      db: 'hyppe_infra_db',
                     };
                   }
                 }
@@ -1985,9 +1985,9 @@ export class AuthService {
                   if((await this.utilsService.ceckData(areas))){
                     var areas_id = (await areas)._id;
                     data_update_userbasict['areas']={
-                      $ref: 'states',
-                      $id: areas_id,
-                      $db: 'hyppe_infra_db',
+                      ref: 'states',
+                      id: areas_id,
+                      db: 'hyppe_infra_db',
                     };
                   }
                 }
@@ -1996,9 +1996,9 @@ export class AuthService {
                   if((await this.utilsService.ceckData(cities))){
                     var cities_id = (await cities)._id;
                     data_update_userbasict['cities']={
-                      $ref: 'cities',
-                      $id: cities_id,
-                      $db: 'hyppe_infra_db',
+                      ref: 'cities',
+                      id: cities_id,
+                      db: 'hyppe_infra_db',
                     };
                   }
                 }
@@ -2007,9 +2007,9 @@ export class AuthService {
                   if((await this.utilsService.ceckData(languages))){
                     var languages_id = (await languages)._id;
                     data_update_userbasict['languages']={
-                      $ref: 'languages',
-                      $id: languages_id,
-                      $db: 'hyppe_infra_db',
+                      ref: 'languages',
+                      id: languages_id,
+                      db: 'hyppe_infra_db',
                     };
                   }
                 }
@@ -2083,7 +2083,7 @@ export class AuthService {
                 //Update ActivityEvent Parent
                 await this.activityeventsService.update(
                     {
-                      _id: user_activityevents[0]._id.toString(),
+                      _id: user_activityevents[0]._id,
                     },
                     {
                       transitions: data_transitions,
@@ -2446,7 +2446,6 @@ export class AuthService {
       if (Object.keys(user_activityevents).length > 0) {
         var latitude_ = undefined;
         var longitude_ = undefined;
-        console.log(user_activityevents[0].payload.login_location);
         if(user_activityevents[0].payload.login_location!=undefined){
           if(user_activityevents[0].payload.login_location.latitude!=undefined){
             latitude_ = user_activityevents[0].payload.login_location.latitude;
@@ -3358,7 +3357,7 @@ export class AuthService {
             const update_activityevents_parent =
               await this.activityeventsService.update(
                 {
-                  _id: user_activityevents[0]._id.toString(),
+                  _id: user_activityevents[0]._id,
                 },
                 {
                   transitions: data_transitions,
@@ -3537,9 +3536,9 @@ export class AuthService {
         if((await this.utilsService.ceckData(languages))){
           var languages_id = (await languages)._id;
           data_update_userbasict['languages']={
-            $ref: 'languages',
-            $id: languages_id,
-            $db: 'hyppe_infra_db',
+            ref: 'languages',
+            id: languages_id,
+            db: 'hyppe_infra_db',
           };
         }
 
@@ -3617,35 +3616,34 @@ export class AuthService {
       user_email_parent = head['x-auth-user'];
     }
     if(req.body.email==undefined){
-        email_ceck = true;
-        user_email_children = req.body.email;
+      email_ceck = true;
+      user_username_childen = req.body.username;
     }else{
-        email_ceck = false;
-        user_username_childen = req.body.username;
+      email_ceck = false;
+      user_email_children = req.body.email;
     }
     var current_date = await this.utilsService.getDateTimeString();
 
-    let datauserbasicsService_parent = null;
-    let datauserbasicsService_children = null;
+    var datauserbasicsService_parent = null;
+    var datauserbasicsService_children = null;
 
-    if(email_ceck){
-      //Ceck User Userbasics parent
-      datauserbasicsService_parent = await this.userbasicsService.findOne(
-        user_email_parent,
-      );
+    //Ceck User Userbasics parent
+    datauserbasicsService_parent = await this.userbasicsService.findOne(
+      user_email_parent,
+    );
 
-      //Ceck User Userbasics children
-      datauserbasicsService_children = await this.userbasicsService.findOne(
-        user_email_children,
-      );
-      
-    }else{
+    if (email_ceck) {
       //Ceck User Userbasics children
       datauserbasicsService_children = await this.userbasicsService.findOneUsername(
         user_username_childen,
       );
+    } else {
+      //Ceck User Userbasics children
+      datauserbasicsService_children = await this.userbasicsService.findOne(
+        user_email_children,
+      );
     }
-    if(datauserbasicsService_parent!=null&&datauserbasicsService_children!=null){
+    if (await datauserbasicsService_parent != null && await datauserbasicsService_children !=null){
       if((await this.utilsService.ceckData(datauserbasicsService_parent))&&(await this.utilsService.ceckData(datauserbasicsService_children))){
         try{
           if(email_ceck){
@@ -3683,7 +3681,7 @@ export class AuthService {
           }
         }catch(error){
           await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed',
+            'Unabled to proceed ' + error,
           );
         }
       }else{
@@ -3838,7 +3836,7 @@ export class AuthService {
               },
               logout_date: undefined,
               login_date: undefined,
-              login_device: undefined,
+              login_device: (user_activityevents[0].payload.login_device != undefined) ? user_activityevents[0].payload.login_device : undefined,
               email: user_email,
             };
             data_CreateActivityeventsDto_child.createdAt = current_date;
@@ -3961,8 +3959,10 @@ export class AuthService {
           }
         }
 
-        if(mediaprofilepicts_fsSourceUri!=''||mediaprofilepicts_fsSourceUri!=null){
+        if (mediaprofilepicts_fsSourceUri != '' ) {
           return await this.mediaService.getPitch(mediaprofilepicts_fsSourceUri);
+        }else{
+          return fs.readFileSync('./profile-default.jpg');
         }
       }else{
         await this.errorHandler.generateNotAcceptableException(
@@ -4081,4 +4081,892 @@ export class AuthService {
     }
   }
 
+  async signupsosmed(req: any) {
+    var user_email = null;
+    var user_socmedSource = null;
+    var user_deviceId = null;
+    var user_langIso = null;
+    var user_referral = null;
+    var user_devicetype = null;
+    var user_imei = null;
+    
+    if(req.body.email==undefined){
+      await this.errorHandler.generateNotAcceptableException(
+        'Email is mandatory',
+      );
+    }else{
+      if(req.body.email==''){
+        await this.errorHandler.generateNotAcceptableException(
+          'Email is mandatory',
+        );
+      }else{
+        user_email = req.body.email;
+      }
+    }
+    
+    if(req.body.socmedSource==undefined){
+      await this.errorHandler.generateNotAcceptableException(
+        'Socmed is mandatory',
+      );
+    }else{
+      if(req.body.socmedSource==''){
+        await this.errorHandler.generateNotAcceptableException(
+          'Socmed is mandatory',
+        );
+      }else{
+        user_socmedSource = req.body.socmedSource;
+      }
+    }
+    
+    if(req.body.deviceId!=undefined){
+      user_deviceId = req.body.deviceId;
+    }
+    
+    if(req.body.langIso!=undefined){
+      user_langIso = req.body.langIso;
+    }
+    
+    if(req.body.referral!=undefined){
+      user_referral = req.body.referral;
+    }
+    
+    if(req.body.devicetype!=undefined){
+      user_devicetype = req.body.devicetype;
+    }
+    
+    if(req.body.imei!=undefined){
+      user_imei = req.body.imei;
+    }
+
+    if (!(await this.utilsService.validasiEmail(user_email.trim()))) {
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed, Invalid email format'],
+        },
+      });
+    }
+    
+    var current_date = await this.utilsService.getDateTimeString();
+
+    var _class_ActivityEvent = 'io.melody.hyppe.trans.domain.ActivityEvent';
+    var _class_UserDevices = 'io.melody.core.domain.UserDevices';
+    var _class_UserAuths = 'io.melody.core.domain.UserAuth';
+    var _class_UserProfile = 'io.melody.core.domain.UserProfile';
+    var _class_Referral = 'io.melody.core.domain.Referral';
+
+    var type = '';
+    var CurrentStatus =  '';
+    var CurrentEvent = '';
+    var CurrentTarget = '';
+
+    //Ceck User Userbasics
+    const datauserbasicsService = await this.userbasicsService.findOne(
+      user_email,
+    );
+
+    //Ceck User Userauths
+    const datauserauthsService = await this.userauthsService.findOneByEmail(
+      user_email,
+    );
+
+    //Ceck User Userdevices
+    const datauserdevicesService =  await this.userdevicesService.findOneEmail(user_email, user_deviceId);
+
+    if ((await this.utilsService.ceckData(datauserbasicsService)) && (await this.utilsService.ceckData(datauserauthsService))) {
+      type= 'LOGIN';
+
+      //Ceck User Userdevices
+      const user_userdevicesService = await this.userdevicesService.findOneEmail(user_email, user_deviceId);
+
+      //Ceck User ActivityEvent Parent
+      var user_activityevents = null;
+      if(user_deviceId!=null){
+        user_activityevents =
+        await this.activityeventsService.findParent(
+          user_email,
+          user_deviceId,
+          type,
+          false,
+        );
+      }else{
+        user_activityevents =
+        await this.activityeventsService.findParentWitoutDevice(
+          user_email,
+          type,
+          false,
+        );
+      }
+
+      //Ceck User jwtrefresh token
+      const datajwtrefreshtoken = await this.jwtrefreshtokenService.findOne(
+        user_email,
+      );
+
+      if ((await this.utilsService.ceckData(datauserbasicsService)) && (await this.utilsService.ceckData(datajwtrefreshtoken))) {
+
+        var ID_user_userdevicesService = null;
+        var id_Activityevents_parent = new mongoose.Types.ObjectId();
+        var id_Activityevents_child = new mongoose.Types.ObjectId();
+
+        var ID_parent_ActivityEvent = (
+          await this.utilsService.generateId()
+        ).toLowerCase();
+        var ID_child_ActivityEvent = (
+          await this.utilsService.generateId()
+        ).toLowerCase();
+
+        if (Object.keys(user_activityevents).length > 0) {
+          //Create ActivityEvent child
+          try {
+            var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
+            data_CreateActivityeventsDto_child._id = id_Activityevents_child;
+            data_CreateActivityeventsDto_child.activityEventID =
+              ID_child_ActivityEvent;
+            data_CreateActivityeventsDto_child.activityType = 'DEVICE_ACTIVITY';
+            data_CreateActivityeventsDto_child.active = true;
+            data_CreateActivityeventsDto_child.status = 'INITIAL';
+            data_CreateActivityeventsDto_child.target = 'ACTIVE';
+            data_CreateActivityeventsDto_child.event = 'AWAKE';
+            data_CreateActivityeventsDto_child._class = _class_ActivityEvent;
+            data_CreateActivityeventsDto_child.payload = {
+              login_location: {
+                latitude: undefined,
+                longitude: undefined,
+              },
+              logout_date: undefined,
+              login_date: current_date,
+              login_device: user_deviceId,
+              email: user_email,
+            };
+            data_CreateActivityeventsDto_child.createdAt = current_date;
+            data_CreateActivityeventsDto_child.updatedAt = current_date;
+            data_CreateActivityeventsDto_child.sequenceNumber = new Int32(1);
+            data_CreateActivityeventsDto_child.flowIsDone = false;
+            data_CreateActivityeventsDto_child.parentActivityEventID =
+              user_activityevents[0].activityEventID;
+            data_CreateActivityeventsDto_child.userbasic =
+              datauserbasicsService._id;
+
+            //Insert ActivityEvent child
+            await this.activityeventsService.create(
+              data_CreateActivityeventsDto_child,
+            );
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Create Activity events Child. Error:' + error,
+            );
+          }
+
+          //Update ActivityEvent Parent
+          try {
+            const data_transitions = user_activityevents[0].transitions;
+            data_transitions.push({
+              $ref: 'activityevents',
+              $id: new Object(ID_child_ActivityEvent),
+              $db: 'hyppe_trans_db',
+            });
+
+            //Update ActivityEvent Parent
+            const update_activityevents_parent =
+              await this.activityeventsService.update(
+                {
+                  _id: user_activityevents[0]._id,
+                },
+                {
+                  transitions: data_transitions,
+                },
+              );
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Update Activity events Parent. Error:' +
+                error,
+            );
+          }
+        }else{
+          //Create ActivityEvent Parent
+          try {
+            var data_CreateActivityeventsDto_parent = new CreateActivityeventsDto();
+            data_CreateActivityeventsDto_parent._id = id_Activityevents_parent;
+            data_CreateActivityeventsDto_parent.activityEventID =
+              ID_parent_ActivityEvent;
+            data_CreateActivityeventsDto_parent.activityType = 'LOGIN';
+            data_CreateActivityeventsDto_parent.active = true;
+            data_CreateActivityeventsDto_parent.status = 'INITIAL';
+            data_CreateActivityeventsDto_parent.target = 'USER_LOGOUT';
+            data_CreateActivityeventsDto_parent.event = 'LOGIN';
+            data_CreateActivityeventsDto_parent._class = _class_ActivityEvent;
+            data_CreateActivityeventsDto_parent.payload = {
+              login_location: {
+                latitude: undefined,
+                longitude: undefined,
+              },
+              logout_date: undefined,
+              login_date: current_date,
+              login_device: user_deviceId,
+              email: user_email,
+            };
+            data_CreateActivityeventsDto_parent.createdAt = current_date;
+            data_CreateActivityeventsDto_parent.updatedAt = current_date;
+            data_CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
+            data_CreateActivityeventsDto_parent.flowIsDone = false;
+            data_CreateActivityeventsDto_parent.__v = undefined;
+            data_CreateActivityeventsDto_parent.transitions = [
+              {
+                $ref: 'activityevents',
+                $id: Object(ID_child_ActivityEvent),
+                $db: 'hyppe_trans_db',
+              },
+            ];
+            data_CreateActivityeventsDto_parent.userbasic =
+              datauserbasicsService._id;
+
+            //Insert ActivityEvent Parent
+            await this.activityeventsService.create(
+              data_CreateActivityeventsDto_parent,
+            );
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Create Activity events Parent. Error:' +
+                error,
+            );
+          }
+
+          //Create ActivityEvent child
+          try {
+            var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
+            data_CreateActivityeventsDto_child._id = id_Activityevents_child;
+            data_CreateActivityeventsDto_child.activityEventID =
+              ID_child_ActivityEvent;
+            data_CreateActivityeventsDto_child.activityType = 'DEVICE_ACTIVITY';
+            data_CreateActivityeventsDto_child.active = true;
+            data_CreateActivityeventsDto_child.status = 'INITIAL';
+            data_CreateActivityeventsDto_child.target = 'ACTIVE';
+            data_CreateActivityeventsDto_child.event = 'AWAKE';
+            data_CreateActivityeventsDto_child._class = _class_ActivityEvent;
+            data_CreateActivityeventsDto_child.payload = {
+              login_location: {
+                latitude: undefined,
+                longitude: undefined,
+              },
+              logout_date: undefined,
+              login_date: current_date,
+              login_device: user_deviceId,
+              email: user_email,
+            };
+            data_CreateActivityeventsDto_child.createdAt = current_date;
+            data_CreateActivityeventsDto_child.updatedAt = current_date;
+            data_CreateActivityeventsDto_child.sequenceNumber = new Int32(1);
+            data_CreateActivityeventsDto_child.flowIsDone = false;
+            data_CreateActivityeventsDto_parent.__v = undefined;
+            data_CreateActivityeventsDto_child.parentActivityEventID =
+              ID_parent_ActivityEvent;
+            data_CreateActivityeventsDto_child.userbasic =
+              datauserbasicsService._id;
+
+            //Insert ActivityEvent Parent
+            await this.activityeventsService.create(
+              data_CreateActivityeventsDto_child,
+            );
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Create Activity events Child. Error:' + error,
+            );
+          }
+        
+          //Userdevices != null
+          if(req.body.deviceId!=undefined){
+            if (await this.utilsService.ceckData(datauserdevicesService)) {
+              //Get Userdevices
+              try {
+                await this.userdevicesService.updatebyEmail(
+                  user_email,
+                  user_deviceId,
+                  {
+                    active: true,
+                  },
+                );
+                ID_device = datauserdevicesService._id;
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Get Userdevices. Error:' + error,
+                );
+              }
+            } else {
+              //Create Userdevices
+              try {
+                var data_CreateUserdeviceDto = new CreateUserdeviceDto();
+                ID_device = (await this.utilsService.generateId()).toLowerCase();
+                data_CreateUserdeviceDto._id = ID_device;
+                data_CreateUserdeviceDto.deviceID = user_deviceId;
+                data_CreateUserdeviceDto.email = user_email;
+                data_CreateUserdeviceDto.active = true;
+                data_CreateUserdeviceDto._class = _class_UserDevices;
+                data_CreateUserdeviceDto.createdAt = current_date;
+                data_CreateUserdeviceDto.updatedAt = current_date;
+                //Insert User Userdevices
+                await this.userdevicesService.create(data_CreateUserdeviceDto);
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Create Userdevices. Error:' + error,
+                );
+              }
+            }
+          }
+
+          //Update Devices Userauths
+          try {
+            //Get Devices Userauths
+            const datauserauthsService_devices = datauserauthsService.devices;
+
+            //Filter ID_user_userdevicesService Devices UserDevices
+            var filteredData = datauserauthsService_devices.filter(function (
+              datauserauthsService_devices,
+            ) {
+              return (
+                JSON.parse(JSON.stringify(datauserauthsService_devices)).$id ===
+                ID_user_userdevicesService
+              );
+            });
+
+            if (filteredData.length == 0) {
+              //Pust Devices Userauths
+              datauserauthsService_devices.push({
+                $ref: 'userdevices',
+                $id: Object(ID_user_userdevicesService),
+                $db: 'hyppe_trans_db',
+              });
+
+              await this.userauthsService.updatebyEmail(user_email, {
+                devices: datauserauthsService_devices,
+              });
+            }
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Update Devices Userauths. Error:' + error,
+            );
+          }
+        }
+
+        var token = (
+          await this.utilsService.generateToken(user_email, user_deviceId)
+        ).toString();
+
+        //Ceck User jwtrefresh token
+        const datajwtrefreshtoken_data = await this.jwtrefreshtokenService.findOne(
+          user_email,
+        );
+        
+        return {
+          response_code: 202,
+          data:{
+            idProofNumber: "ID",
+            roles: [
+                "ROLE_USER"
+            ],
+            fullName:username_,
+            isIdVerified:"false",
+            isEmailVerified: "true",
+            token: token,
+            idProofStatus: "IN_PROGRESS",
+            insight: {
+                shares: new Double(0),
+                followers: new Double(0),
+                comments: new Double(0),
+                followings: new Double(0),
+                reactions: new Double(0),
+                posts: new Double(0),
+                views: new Double(0),
+                likes: new Double(0)
+            },
+            interest: user_interest,
+            event: "UPDATE_BIO",
+            email: user_email,
+            username: username_,
+            isComplete: "false",
+            status: "INITIAL",
+            refreshToken: datajwtrefreshtoken_data.refresh_token_id
+          },
+          messages: {
+            nextFlow: [
+              "$.event: next should UPDATE_BIO",
+              "$.status: next should IN_PROGRESS"
+            ],
+            info: ['Login successful'],
+          },
+        };
+      }else{
+        await this.errorHandler.generateNotAcceptableException(
+          'User not found',
+        );
+      }
+    }else{ 
+      type= 'ENROL';
+      CurrentStatus = 'INITIAL';
+      CurrentEvent = 'SIGN_UP';
+      CurrentTarget = 'IN_PROGRESS'; 
+
+      //Ceck User ActivityEvent Parent
+      var dataactivityevents = null;
+      if(user_deviceId!=null){
+        dataactivityevents =
+        await this.activityeventsService.findParent(
+          user_email,
+          user_deviceId,
+          type,
+          false,
+        );
+      }else{
+        dataactivityevents =
+        await this.activityeventsService.findParentWitoutDevice(
+          user_email,
+          type,
+          false,
+        );
+      }
+
+      if(!(await this.utilsService.ceckData(dataactivityevents))){
+        var user_interest = [];
+        var ID_device = null;
+        var ID_insights = null;
+        var username_ = await this.utilsService.generateUsername(user_email);
+        var id_user_langIso = null;
+
+        var mongoose_gen_id_user_auth = new mongoose.Types.ObjectId();
+        var mongoose_gen_id_user_basic = new mongoose.Types.ObjectId();
+
+        //Get Id Language
+        if(req.body.langIso!=undefined){
+          try {
+            if (user_langIso != undefined) {
+                if (user_langIso != null) {
+                var data_language = await this.languagesService.findOneLangiso(
+                  user_langIso,
+                );
+                if(await this.utilsService.ceckData(data_language)){
+                  id_user_langIso = data_language._id;
+                }
+                }
+            }
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed Get Id Language. Error: ' + error,
+            );
+          }
+        }
+
+        //Create Insights
+        try {
+          var data_CreateInsightsDto = new CreateInsightsDto();
+          ID_insights = (await this.utilsService.generateId()).toLowerCase();
+          data_CreateInsightsDto._id = ID_insights;
+          data_CreateInsightsDto.insightID = ID_insights;
+          data_CreateInsightsDto.active = true;
+          data_CreateInsightsDto.createdAt = current_date;
+          data_CreateInsightsDto.updatedAt = current_date;
+          data_CreateInsightsDto.email = user_email;
+          data_CreateInsightsDto.followers = Long.fromString('0');
+          data_CreateInsightsDto.followings = Long.fromString('0');
+          data_CreateInsightsDto.unfollows = Long.fromString('0');
+          data_CreateInsightsDto.likes = Long.fromString('0');
+          data_CreateInsightsDto.views = Long.fromString('0');
+          data_CreateInsightsDto.comments = Long.fromString('0');
+          data_CreateInsightsDto.posts = Long.fromString('0');
+          data_CreateInsightsDto.shares = Long.fromString('0');
+          data_CreateInsightsDto.reactions = Long.fromString('0');
+          data_CreateInsightsDto._class =
+            'io.melody.hyppe.content.domain.Insight';
+
+          //Insert Insights
+          await this.insightsService.create(data_CreateInsightsDto);
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Create Insights. Error: ' + error,
+          );
+        }
+        
+        //Userdevices != null
+        if(req.body.deviceId!=undefined){
+          if (await this.utilsService.ceckData(datauserdevicesService)) {
+            //Get Userdevices
+            try {
+              await this.userdevicesService.updatebyEmail(
+                user_email,
+                user_deviceId,
+                {
+                  active: true,
+                },
+              );
+              ID_device = datauserdevicesService._id;
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Get Userdevices. Error:' + error,
+              );
+            }
+          } else {
+            //Create Userdevices
+            try {
+              var data_CreateUserdeviceDto = new CreateUserdeviceDto();
+              ID_device = (await this.utilsService.generateId()).toLowerCase();
+              data_CreateUserdeviceDto._id = ID_device;
+              data_CreateUserdeviceDto.deviceID = user_deviceId;
+              data_CreateUserdeviceDto.email = user_email;
+              data_CreateUserdeviceDto.active = true;
+              data_CreateUserdeviceDto._class = _class_UserDevices;
+              data_CreateUserdeviceDto.createdAt = current_date;
+              data_CreateUserdeviceDto.updatedAt = current_date;
+              //Insert User Userdevices
+              await this.userdevicesService.create(data_CreateUserdeviceDto);
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create Userdevices. Error:' + error,
+              );
+            }
+          }
+        }
+
+        //Create UserAuth
+        var pass_gen = await this.utilsService.generatePassword('HyppeNew');
+        try {
+          var data_CreateUserauthDto = new CreateUserauthDto();
+          var ID_user = (await this.utilsService.generateId()).toLowerCase();
+          data_CreateUserauthDto._id = mongoose_gen_id_user_auth;
+          data_CreateUserauthDto.username = username_;
+          data_CreateUserauthDto.password = pass_gen;
+          data_CreateUserauthDto.userID = ID_user;
+          data_CreateUserauthDto.email = user_email;
+          data_CreateUserauthDto.createdAt = current_date;
+          data_CreateUserauthDto.updatedAt = current_date;
+          data_CreateUserauthDto.regSrc = 'iOS';
+          data_CreateUserauthDto.isExpiryPass = false;
+          data_CreateUserauthDto.isEmailVerified = true;
+          data_CreateUserauthDto.isEnabled = true;
+          data_CreateUserauthDto.isAccountNonExpired = true;
+          data_CreateUserauthDto.isAccountNonLocked = true;
+          data_CreateUserauthDto.isCredentialsNonExpired = true;
+          data_CreateUserauthDto.roles = ['ROLE_USER'];
+          data_CreateUserauthDto._class = _class_UserAuths;
+          data_CreateUserauthDto.devices = [
+            {
+              $ref: 'userdevices',
+              $id: ID_device,
+              $db: 'hyppe_trans_db',
+            },
+          ];
+
+          //Insert UserAuth
+          await this.userauthsService.create(data_CreateUserauthDto);
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Create UserAuth. Error: ' + error,
+          );
+        }
+
+        //Create UserBasic
+        try {
+          var data_CreateUserbasicDto = new CreateUserbasicDto();
+          var gen_profileID = (await this.utilsService.generateId()).toLowerCase();
+          data_CreateUserbasicDto._id = mongoose_gen_id_user_basic;
+          data_CreateUserbasicDto.profileID = gen_profileID;
+          data_CreateUserbasicDto.email = user_email;
+          data_CreateUserbasicDto.fullName = username_;
+          data_CreateUserbasicDto.status = CurrentStatus;
+          data_CreateUserbasicDto.event = CurrentEvent;
+          data_CreateUserbasicDto.isComplete = false;
+          data_CreateUserbasicDto.isCelebrity = false;
+          data_CreateUserbasicDto.isIdVerified = false;
+          data_CreateUserbasicDto.isPrivate = false;
+          data_CreateUserbasicDto.isFollowPrivate = false;
+          data_CreateUserbasicDto.isPostPrivate = false;
+          data_CreateUserbasicDto.createdAt = current_date;
+          data_CreateUserbasicDto.updatedAt = current_date;
+          data_CreateUserbasicDto.insight = {
+            $ref: 'insights',
+            $id: ID_insights,
+            $db: 'hyppe_content_db',
+          };
+          if(mongoose_gen_id_user_auth!=undefined||mongoose_gen_id_user_auth!=null){
+            data_CreateUserbasicDto.userAuth = {
+              $ref: 'userauths',
+              $id: new ObjectId(mongoose_gen_id_user_auth._id.toString()),
+              $db: 'hyppe_trans_db',
+            };
+          }
+          if(id_user_langIso!=null){
+            data_CreateUserbasicDto.languages = {
+              $ref: 'languages',
+              $id: id_user_langIso,
+              $db: 'hyppe_infra_db',
+            };
+          }
+          data_CreateUserbasicDto._class = _class_UserProfile;
+
+          //Insert UserBasic
+          await this.userbasicsService.create(data_CreateUserbasicDto);
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Create UserBasic. Error: ' + error,
+          );
+        }
+
+        //Create ActivityEvent Parent SIGN_UP
+        var mongoose_gen_id_Activityevents_parent = new mongoose.Types.ObjectId();
+        var mongoose_gen_id_Activityevents_child = new mongoose.Types.ObjectId();
+        var gen_ID_parent_ActivityEvent = (await this.utilsService.generateId()).toLowerCase();
+        var gen_ID_child_ActivityEvent = (await this.utilsService.generateId()).toLowerCase();
+        try {
+          var data_CreateActivityeventsDto_parent = new CreateActivityeventsDto();
+          data_CreateActivityeventsDto_parent._id = mongoose_gen_id_Activityevents_parent;
+          data_CreateActivityeventsDto_parent.activityEventID =
+            gen_ID_parent_ActivityEvent;
+          data_CreateActivityeventsDto_parent.activityType = type;
+          data_CreateActivityeventsDto_parent.active = true;
+          data_CreateActivityeventsDto_parent.status = CurrentStatus;
+          data_CreateActivityeventsDto_parent.target = CurrentTarget;
+          data_CreateActivityeventsDto_parent.event = CurrentEvent;
+          data_CreateActivityeventsDto_parent.fork = undefined;
+          data_CreateActivityeventsDto_parent.action = undefined;
+          data_CreateActivityeventsDto_parent._class = _class_ActivityEvent;
+          data_CreateActivityeventsDto_parent.payload = {
+            login_location: {
+              latitude: undefined,
+              longitude: undefined,
+            },
+            logout_date: undefined,
+            login_date: undefined,
+            login_device: user_deviceId,
+            email: user_email,
+          };
+          data_CreateActivityeventsDto_parent.createdAt = current_date;
+          data_CreateActivityeventsDto_parent.updatedAt = current_date;
+          data_CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
+          data_CreateActivityeventsDto_parent.__v = undefined;
+          data_CreateActivityeventsDto_parent.flowIsDone = false;
+          data_CreateActivityeventsDto_parent.transitions = [
+            {
+              $ref: 'activityevents',
+              $id: Object(gen_ID_child_ActivityEvent),
+              $db: 'hyppe_trans_db',
+            },
+          ];
+          data_CreateActivityeventsDto_parent.userbasic =
+            Object(mongoose_gen_id_user_basic);
+
+          //Insert ActivityEvent Parent
+          await this.activityeventsService.create(
+            data_CreateActivityeventsDto_parent,
+          );
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Create Activity events Parent. Error: ' +
+              error,
+          );
+        }
+
+        //Referral
+        if(user_referral!=null && user_referral.length>0){
+          //Ceck User Userbasics Parent
+          const datauserbasicsService_parent = await this.userbasicsService.findOne(
+            user_referral,
+          );
+          if(await this.utilsService.ceckData(datauserbasicsService_parent)){
+
+            //Ceck User Referral parent children
+            const data_referral_parent_children = await this.referralService.findAllByParentChildren(
+              user_referral,user_email,
+            );
+            if(!(await this.utilsService.ceckData(data_referral_parent_children))){
+              //Insert Referral
+              try{
+                var CreateReferralDto_ = new CreateReferralDto();
+                CreateReferralDto_._id = (await this.utilsService.generateId()).toLowerCase();
+                CreateReferralDto_.parent = user_referral;
+                CreateReferralDto_.children = user_email;
+                if(user_imei!=null){
+                  CreateReferralDto_.imei = user_imei;
+                }
+                CreateReferralDto_.active = true;
+                CreateReferralDto_.verified = true;
+                CreateReferralDto_.createdAt = current_date;
+                CreateReferralDto_.updatedAt = current_date;
+                CreateReferralDto_._class = _class_Referral;
+
+                this.referralService.create(CreateReferralDto_);
+              }catch(error){
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Create Refferal. Error:' +
+                    error,
+                );
+              }
+            }
+          }
+        }
+
+        //Create Or Update refresh Token
+        await this.updateRefreshToken(user_email);
+
+        //Ceck User Userdevices
+        const user_userdevicesService = await this.userdevicesService.findOneEmail_(user_email);
+
+        var token = (
+          await this.utilsService.generateToken(user_email, user_userdevicesService.deviceID)
+        ).toString();
+
+        //Ceck User jwtrefresh token
+        const datajwtrefreshtoken_data = await this.jwtrefreshtokenService.findOne(
+          user_email,
+        );
+
+        this.userbasicsService.updatebyEmail(user_email, {
+          status: 'IN_PROGRESS',
+          event: 'UPDATE_BIO',
+        });
+
+        //Create ActivityEvent child IN_PROGRESS
+        try {
+          var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();
+          data_CreateActivityeventsDto_child._id = mongoose_gen_id_Activityevents_child;
+          data_CreateActivityeventsDto_child.activityEventID =
+            gen_ID_child_ActivityEvent;
+          data_CreateActivityeventsDto_child.activityType = type;
+          data_CreateActivityeventsDto_child.active = true;
+          data_CreateActivityeventsDto_child.status = 'IN_PROGRESS';
+          data_CreateActivityeventsDto_child.target = 'COMPLETE_BIO';
+          data_CreateActivityeventsDto_child.event = 'UPDATE_BIO';
+          data_CreateActivityeventsDto_child._class = _class_ActivityEvent;
+          data_CreateActivityeventsDto_child.payload = {
+            login_location: {
+              latitude: undefined,
+              longitude: undefined,
+            },
+            logout_date: undefined,
+            login_date: undefined,
+            login_device: user_deviceId,
+            email: user_email,
+          };
+          data_CreateActivityeventsDto_child.createdAt = current_date;
+          data_CreateActivityeventsDto_child.updatedAt = current_date;
+          data_CreateActivityeventsDto_child.sequenceNumber = new Int32(1);
+          data_CreateActivityeventsDto_child.flowIsDone = false;
+          data_CreateActivityeventsDto_child.__v = undefined;
+          data_CreateActivityeventsDto_child.parentActivityEventID =
+            gen_ID_parent_ActivityEvent;
+          data_CreateActivityeventsDto_child.userbasic =
+            Object(mongoose_gen_id_user_basic);
+
+          //Insert ActivityEvent Parent
+          await this.activityeventsService.create(
+            data_CreateActivityeventsDto_child,
+          );
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Create Activity events Child. Error: ' +
+              error,
+          );
+        }
+
+        //Create ActivityEvent Parent LOGIN
+        var data_CreateActivityeventsDto_parent = new CreateActivityeventsDto();
+        var mongoose_gen_id_Activityevents_parent = new mongoose.Types.ObjectId();
+        var gen_ID_parent_ActivityEvent = (await this.utilsService.generateId()).toLowerCase();
+        try {
+          data_CreateActivityeventsDto_parent._id =  mongoose_gen_id_Activityevents_parent;
+          data_CreateActivityeventsDto_parent.activityEventID =
+            gen_ID_parent_ActivityEvent;
+          data_CreateActivityeventsDto_parent.activityType = 'LOGIN';
+          data_CreateActivityeventsDto_parent.active = true;
+          data_CreateActivityeventsDto_parent.status = 'INITIAL';
+          data_CreateActivityeventsDto_parent.target = 'USER_LOGOUT';
+          data_CreateActivityeventsDto_parent.event = 'LOGIN';
+          data_CreateActivityeventsDto_parent._class = _class_ActivityEvent;
+          data_CreateActivityeventsDto_parent.payload = {
+            login_location: {
+              latitude: undefined,
+              longitude: undefined,
+            },
+            logout_date: undefined,
+            login_date: current_date,
+            login_device: user_userdevicesService.deviceID,
+            email: user_email,
+          };
+          data_CreateActivityeventsDto_parent.createdAt = current_date;
+          data_CreateActivityeventsDto_parent.updatedAt = current_date;
+          data_CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
+          data_CreateActivityeventsDto_parent.flowIsDone = false;
+          data_CreateActivityeventsDto_parent.__v = undefined;
+          data_CreateActivityeventsDto_parent.userbasic = 
+            Object(mongoose_gen_id_user_basic);
+
+          //Insert ActivityEvent Parent
+          await this.activityeventsService.create(
+            data_CreateActivityeventsDto_parent,
+          );
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed Create Activity events Parent. Error:' +
+              error,
+          );
+        }
+        
+        return {
+          response_code: 202,
+          data:{
+            idProofNumber: "ID",
+            roles: [
+                "ROLE_USER"
+            ],
+            fullName:username_,
+            isIdVerified:"false",
+            isEmailVerified: "false",
+            token: token,
+            idProofStatus: "IN_PROGRESS",
+            insight: {
+                shares: new Double(0),
+                followers: new Double(0),
+                comments: new Double(0),
+                followings: new Double(0),
+                reactions: new Double(0),
+                posts: new Double(0),
+                views: new Double(0),
+                likes: new Double(0)
+            },
+            interest: user_interest,
+            event: "UPDATE_BIO",
+            email: user_email,
+            username: username_,
+            isComplete: "false",
+            status: "INITIAL",
+            refreshToken: datajwtrefreshtoken_data.refresh_token_id
+          },
+          messages: {
+            nextFlow: [
+              "$.event: next should UPDATE_BIO",
+              "$.status: next should IN_PROGRESS"
+            ],
+            info: ['Signup successful'],
+          },
+        };
+      }else{
+          await this.errorHandler.generateNotAcceptableException(
+            'Sorry! This email already registered',
+          );
+      }
+    }
+  }
+
+  async getuserprofile(req: any, head: any) {
+    if (head['x-auth-user'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed x-auth-user undefined',
+      );
+    }
+    if (await this.utilsService.validasiTokenEmail(head)) {
+      var user_email = head['x-auth-user'];
+      
+    } else {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email dan token not match',
+      );
+    }
+  }
 }

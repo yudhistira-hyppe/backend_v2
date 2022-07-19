@@ -44,6 +44,9 @@ export class AreasService {
   async findOne(countryID: String): Promise<Areas> {
     return this.areasModel.findOne({ countryID: countryID }).exec();
   }
+  async findOneid(_id: object): Promise<Areas> {
+    return this.areasModel.findOne({ _id: _id }).exec();
+  }
   async delete(id: string) {
     const deletedCat = await this.areasModel
       .findByIdAndRemove({ _id: id })

@@ -497,4 +497,10 @@ export class UtilsController {
             );
         }
     }
+
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Post('generateProfile')
+    async generateProfile(@Req() request: any) {
+        return await this.utilsService.generateProfile(request.body.email,'LOGIN');
+    }
 }

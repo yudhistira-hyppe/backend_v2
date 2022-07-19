@@ -22,16 +22,16 @@ export class UserauthsService {
     return this.userauthModel.find().exec();
   }
 
-  async findOneUsername(username: string): Promise<Userauth> {
+  async findOneUsername(username: String): Promise<Userauth> {
     return this.userauthModel.findOne({ username: username }).exec();
   }
-  // async findOne(username: string): Promise<Userauth> {
+  // async findOne(username: String): Promise<Userauth> {
   //   return this.userauthModel.findOne({ username: username }).exec();
   // }
 
   async findOneByEmailandUsername(
-    email: string,
-    username: string,
+    email: String,
+    username: String,
   ): Promise<any> {
     return this.userauthModel
       .findOne({
@@ -40,25 +40,25 @@ export class UserauthsService {
       .exec();
   }
 
-  async findOne(email: string): Promise<Userauth> {
+  async findOne(email: String): Promise<Userauth> {
     return this.userauthModel.findOne({ email: email }).exec();
   }
 
-  async findOneByEmail(email: string): Promise<Userauth> {
+  async findOneByEmail(email: String): Promise<Userauth> {
     return this.userauthModel.findOne({ email: email }).exec();
   }
-  // async findOneId(id: string): Promise<Userauth> {
+  // async findOneId(id: String): Promise<Userauth> {
   //   return this.userauthModel.findOne({ _id: id }).exec();
   // }
 
-  async delete(id: string) {
+  async delete(id: String) {
     const deletedCat = await this.userauthModel
       .findByIdAndRemove({ _id: id })
       .exec();
     return deletedCat;
   }
 
-  async updatebyEmail(email: string, data: Object) {
+  async updatebyEmail(email: String, data: Object) {
     this.userauthModel.updateOne(
       {
         email: email,
@@ -74,7 +74,7 @@ export class UserauthsService {
     );
   }
 
-  async findOneupdatebyEmail(email: string) {
+  async findOneupdatebyEmail(email: String) {
     this.userauthModel.updateOne(
       {
         email: email,
@@ -90,7 +90,7 @@ export class UserauthsService {
     );
   }
 
-  async findUpdateEmailStatusRole(email: string,upgradeRole: string) {
+  async findUpdateEmailStatusRole(email: String,upgradeRole: String) {
     this.userauthModel.updateOne(
       {
         email: email,
@@ -106,7 +106,7 @@ export class UserauthsService {
     );
   }
 
-  async update(email: string, roles: string): Promise<Object> {
+  async update(email: String, roles: String): Promise<Object> {
     let data = await this.userauthModel.updateOne({ "email": email },
       { $set: { "roles": [roles] } });
     return data;

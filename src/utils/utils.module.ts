@@ -14,7 +14,6 @@ import { MediaModule } from '../stream/media/media.module';
 import { AreasModule } from '../infra/areas/areas.module';
 import { CitiesModule } from '../infra/cities/cities.module';
 import { CountriesModule } from '../infra/countries/countries.module';
-import { EulasModule } from '../infra/eulas/eulas.module';
 import { WelcomenotesModule } from '../infra/welcomenotes/welcomenotes.module';
 import { LanguagesModule } from '../infra/languages/languages.module';
 import { ReactionsRepoModule } from '../infra/reactions_repo/reactions_repo.module';
@@ -23,9 +22,21 @@ import { DocumentsModule } from '../infra/documents/documents.module';
 import { ReportsModule } from '../infra/reports/reports.module';
 import { CorevaluesModule } from '../infra/corevalues/corevalues.module';
 import { DevicelogModule } from '../infra/devicelog/devicelog.module';
+import { UserbasicsModule } from '../trans/userbasics/userbasics.module';
+import { InsightsModule } from '../content/insights/insights.module';
+import { InterestsModule } from '../infra/interests/interests.module';
+import { EulasModule } from '../infra/eulas/eulas.module';
+import { MediaprofilepictsModule } from '../content/mediaprofilepicts/mediaprofilepicts.module'; 
+import { SettingsModule } from '../trans/settings/settings.module';
 
 @Module({
   imports: [
+    SettingsModule,
+    MediaprofilepictsModule,
+    EulasModule,
+    InterestsModule,
+    InsightsModule,
+    UserbasicsModule,
     DevicelogModule,
     CorevaluesModule,
     ReportsModule,

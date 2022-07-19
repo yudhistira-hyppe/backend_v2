@@ -1,25 +1,23 @@
 import {
-  BadRequestException,
   Injectable,
-  UnauthorizedException,
-  NotAcceptableException,
 } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken.service';
+import { ErrorHandler } from '../utils/error.handler';
 
 @Injectable()
 export class JwtRefreshStrategy extends PassportStrategy(
   Strategy,
   'jwt-refresh-token',
 ) {
-  constructor(private jwtrefreshtokenService: JwtrefreshtokenService) {
+  constructor(
+    private errorHandler: ErrorHandler, 
+    private jwtrefreshtokenService: JwtrefreshtokenService
+    ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (Request: any) => {
-          // const decodedJwt = this.jwtService.decode(
-          //   Request.rawHeaders[1].replace('Bearer ', ''),
-          // );
           if (Request.headers['x-auth-token'] != undefined) {
             return Request.headers['x-auth-token'].replace('Bearer ', '');
           }
@@ -33,54 +31,36 @@ export class JwtRefreshStrategy extends PassportStrategy(
 
   async validate(req, payload: any) {
     if (req.body.email == undefined) {
-      throw new NotAcceptableException({
-        response_code: 406,
-        messages: {
-          info: ['Unabled to proceed'],
-        },
-      });
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, Param email is mandatory',
+      );
     }
     if (req.body.refreshToken == undefined) {
-      throw new NotAcceptableException({
-        response_code: 406,
-        messages: {
-          info: ['Unabled to proceed'],
-        },
-      });
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, Param refreshToken is mandatory',
+      );
     }
     try {
       var user = await this.jwtrefreshtokenService.findOne(req.body.email);
       if (!user) {
-        throw new NotAcceptableException({
-          response_code: 406,
-          messages: {
-            info: ['Unabled to proceed'],
-          },
-        });
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, Data user not found',
+        );
       }
       if (req.body.refreshToken != (await user.refresh_token_id)) {
-        throw new NotAcceptableException({
-          response_code: 406,
-          messages: {
-            info: ['Invalid refesh token'],
-          },
-        });
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, Data refreshToken not found',
+        );
       }
       if (new Date().getTime() > Number(await user.exp)) {
-        throw new NotAcceptableException({
-          response_code: 406,
-          messages: {
-            info: ['Unabled to proceed'],
-          },
-        });
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, Data refreshToken expired',
+        );
       }
     } catch (err) {
-      throw new NotAcceptableException({
-        response_code: 406,
-        messages: {
-          info: ['Unabled to proceed'],
-        },
-      });
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, ' + err,
+      );
     }
     return { userID: payload.sub, email: payload.email };
   }

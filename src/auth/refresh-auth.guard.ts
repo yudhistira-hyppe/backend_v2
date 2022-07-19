@@ -13,7 +13,12 @@ export class JwtRefreshAuthGuard extends AuthGuard('jwt-refresh-token') {
       });
     }
     if (err != null) {
-      throw new NotAcceptableException(err.response);
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed, ' + err.response],
+        },
+      });
     }
     return user;
   }

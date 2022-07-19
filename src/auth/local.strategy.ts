@@ -19,6 +19,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     password: string,
   ): Promise<any> {
     var request_json = JSON.parse(JSON.stringify(request.body));
+
     var deviceId = null;
     var longitude = null;
     var latitude = null;
@@ -27,9 +28,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       deviceId = request_json.deviceId;
     } else {
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
+        'Unabled to proceed, Param deviceId is mandatory',
       );
     }
+
     if (request_json['location'] != undefined) {
       if (request_json.location['latitude'] != undefined) {
         longitude = request_json.location.latitude;
@@ -38,15 +40,16 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         latitude = request_json.location.latitude;
       }
     }
+    
     const user = await this.authService.validateUser(email, password);
     
     if (user == 'INVALIDCREDENTIALSLID') {
       await this.errorHandler.generateNotAcceptableException(
-        'Invalid credentials',
+        'Unabled to proceed, Invalid credentials',
       );
     }
     if (user == 'NOTFOUND') {
-      await this.errorHandler.generateNotAcceptableException('User not found');
+      await this.errorHandler.generateNotAcceptableException('Unabled to proceed, User not found');
     }
     if (user == 'UNABLEDTOPROCEED') {
       await this.errorHandler.generateNotAcceptableException(

@@ -17,7 +17,7 @@ export class MediaService {
             var req = http.request(BaseUrl+path_, res => {
                 let body = [];
 
-                res.on('data', function(chunk) {
+                res.on('data', function (chunk) {
                    body.push(chunk)
                 });
                 res.on('end', function() {

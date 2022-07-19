@@ -34,6 +34,10 @@ export class EulasService {
     return this.eulasModel.findOne({ _id: id }).exec();
   }
 
+  async findOnelangiso(langIso: string): Promise<Eulas> {
+    return this.eulasModel.findOne({ langIso: langIso }).exec();
+  }
+
   async delete(id: string) {
     const deletedCat = await this.eulasModel
       .findByIdAndRemove({ _id: id })

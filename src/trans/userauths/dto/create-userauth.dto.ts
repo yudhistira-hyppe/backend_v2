@@ -4,7 +4,7 @@ import { Long } from "mongodb";
 export class CreateUserauthDto {
   _id: ObjectId;
   username: String;
-  password: string;
+  password: String;
   userID: String;
   email: String;
   regSrc: String;
@@ -19,17 +19,18 @@ export class CreateUserauthDto {
   isAccountNonExpired: Boolean;
   isAccountNonLocked: Boolean;
   isCredentialsNonExpired: Boolean;
-  roles: [String];
+  roles: Array<String>;
   devices: [
     {
       $ref: String;
       $id: {
-        $oid: String;
+        oid: String;
       };
       $db: String;
     },
   ];
   _class: String;
   oneTimePassword: String;
-  upgradeRole: String;
+  upgradeRole: String; 
+  otpToken: String;
 }

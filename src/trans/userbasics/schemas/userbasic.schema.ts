@@ -63,7 +63,9 @@ export class Userbasic {
   @Prop({ type: Object })
   insight: {
     ref: String;
-    id: String;
+    id: {
+        oid: String;
+      };
     db: String;
   };
   @Prop([{ type: Object }])
