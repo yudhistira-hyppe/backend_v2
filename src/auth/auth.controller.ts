@@ -13,6 +13,8 @@ import {
   HttpStatus,
   Res,
   Headers,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -33,6 +35,7 @@ import { Int32 } from 'mongodb';
 import { ProfileDTO } from '../utils/data/Profile';
 import { GlobalResponse } from '../utils/data/globalResponse';
 import { GlobalMessages } from '../utils/data/globalMessage';
+import { FileInterceptor } from '@nestjs/platform-express/multer';
 
 @Controller()
 export class AuthController {
@@ -435,7 +438,7 @@ export class AuthController {
   async logout(@Body() LogoutRequest_: LogoutRequest, @Headers() headers) {
     if (!(await this.utilsService.validasiTokenEmail(headers))) {
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
+        'Unabled to proceed, email is required',
       );
     }
     var user_email_header = headers['x-auth-user'];
@@ -450,7 +453,7 @@ export class AuthController {
 
     if (user_email_header != user_email) {
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
+        'Unabled to proceed, email not match',
       );
     }
 
@@ -477,6 +480,16 @@ export class AuthController {
       if (Object.keys(user_activityevents).length > 0) {
         //Create ActivityEvent Child
         try {
+          var latitude_ = undefined;
+          var longitude_ = undefined;
+          if (user_activityevents[0].payload.login_location != undefined) {
+            if (user_activityevents[0].payload.login_location.latitude != undefined) {
+              latitude_ = user_activityevents[0].payload.login_location.latitude;
+            }
+            if (user_activityevents[0].payload.login_location.longitude != undefined) {
+              longitude_ = user_activityevents[0].payload.login_location.longitude;
+            }
+          }
           data_CreateActivityeventsDto_child._id = id_Activityevents_child;
           data_CreateActivityeventsDto_child.activityEventID =
             ID_child_ActivityEvent;
@@ -489,9 +502,8 @@ export class AuthController {
             'io.melody.hyppe.trans.domain.ActivityEvent';
           data_CreateActivityeventsDto_child.payload = {
             login_location: {
-              latitude: user_activityevents[0].payload.login_location.latitude,
-              longitude:
-                user_activityevents[0].payload.login_location.longitude,
+              latitude: latitude_,
+              longitude: longitude_,
             },
             logout_date: current_date,
             login_date: user_activityevents[0].payload.login_date,
@@ -519,6 +531,16 @@ export class AuthController {
 
         //Update ActivityEvent Parent
         try {
+          var latitude_ = undefined;
+          var longitude_ = undefined;
+          if (user_activityevents[0].payload.login_location != undefined) {
+            if (user_activityevents[0].payload.login_location.latitude != undefined) {
+              latitude_ = user_activityevents[0].payload.login_location.latitude;
+            }
+            if (user_activityevents[0].payload.login_location.longitude != undefined) {
+              longitude_ = user_activityevents[0].payload.login_location.longitude;
+            }
+          }
           const data_transitions = user_activityevents[0].transitions;
           data_transitions.push({
             $ref: 'activityevents',
@@ -532,10 +554,8 @@ export class AuthController {
             {
               payload: {
                 login_location: {
-                  latitude:
-                    user_activityevents[0].payload.login_location.latitude,
-                  longitude:
-                    user_activityevents[0].payload.login_location.longitude,
+                  latitude: latitude_,
+                  longitude: longitude_,
                 },
                 logout_date: current_date.substring(
                   0,
@@ -592,11 +612,11 @@ export class AuthController {
         }
       } else {
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed',
+          'Unabled to proceed, device id not login',
         );
       }
     } else {
-      await this.errorHandler.generateNotAcceptableException('User not found');
+      await this.errorHandler.generateNotAcceptableException('Unabled to proceed, User not found');
     }
   }
 
