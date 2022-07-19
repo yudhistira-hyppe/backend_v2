@@ -2114,18 +2114,125 @@ export class AuthService {
             }
           };
         }else{
-          throw new NotAcceptableException({
-            response_code: 406,
-            messages: {
-              info: ['Unabled to proceed'],
-            },
-          });
+           if ((event == 'UPDATE_BIO') && (status == 'IN_PROGRESS')) {
+             //Update Profile Bio
+             try {
+               if (user_username != null) {
+                 if (await this.utilsService.validateUsername(user_username)) {
+                   await this.userauthsService.updatebyEmail(user_email, {
+                     username: user_username
+                   });
+                 }
+               }
+
+               var data_update_userbasict = {};
+               if (user_bio != null) {
+                 data_update_userbasict['bio'] = user_bio;
+               }
+               if (user_fullName != null) {
+                 data_update_userbasict['fullName'] = user_fullName;
+               }
+               if (user_dob != null) {
+                 data_update_userbasict['dob'] = user_dob;
+               }
+               //data_update_userbasict['status'] = status;
+               //data_update_userbasict['event'] = event;
+
+               if (user_bio != null || user_fullName != null || user_dob != null || user_gender != null || user_mobileNumber != null) {
+                 await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
+               }
+             } catch (error) {
+               await this.errorHandler.generateNotAcceptableException(
+                 'Unabled to proceed update profile bio. Error:' + error,
+               );
+             }
+           } else if ((event == 'UPDATE_PROFILE') && (status == 'COMPLETE_BIO')) {
+             //Update Profile Detail
+             try {
+               var data_update_userbasict = {};
+               if (user_mobileNumber != null) {
+                 data_update_userbasict['mobileNumber'] = user_bio;
+               }
+               if (user_idProofNumber != null) {
+                 data_update_userbasict['idProofNumber'] = user_idProofNumber;
+               }
+               if (user_gender != null) {
+                 data_update_userbasict['gender'] = user_gender;
+               }
+               if (user_dob != null) {
+                 data_update_userbasict['dob'] = user_dob;
+               }
+
+               if (user_country != null) {
+                 var countries = this.countriesService.findOneName(user_country);
+                 if ((await this.utilsService.ceckData(countries))) {
+                   var countries_id = (await countries)._id;
+                   data_update_userbasict['countries'] = {
+                     ref: 'countries',
+                     id: countries_id,
+                     db: 'hyppe_infra_db',
+                   };
+                 }
+               }
+               if (user_area != null) {
+                 var areas = this.areasService.findOneName(user_area);
+                 if ((await this.utilsService.ceckData(areas))) {
+                   var areas_id = (await areas)._id;
+                   data_update_userbasict['areas'] = {
+                     ref: 'states',
+                     id: areas_id,
+                     db: 'hyppe_infra_db',
+                   };
+                 }
+               }
+               if (user_city != null) {
+                 var cities = this.citiesService.findOneName(user_city);
+                 if ((await this.utilsService.ceckData(cities))) {
+                   var cities_id = (await cities)._id;
+                   data_update_userbasict['cities'] = {
+                     ref: 'cities',
+                     id: cities_id,
+                     db: 'hyppe_infra_db',
+                   };
+                 }
+               }
+               if (user_langIso != null) {
+                 var languages = this.languagesService.findOneLangiso(user_langIso);
+                 if ((await this.utilsService.ceckData(languages))) {
+                   var languages_id = (await languages)._id;
+                   data_update_userbasict['languages'] = {
+                     ref: 'languages',
+                     id: languages_id,
+                     db: 'hyppe_infra_db',
+                   };
+                 }
+               }
+               //data_update_userbasict['isComplete'] = true;
+               //data_update_userbasict['status'] = status;
+               //data_update_userbasict['event'] = event;
+
+               if (user_bio != null || user_fullName != null || user_dob != null || user_gender != null || user_mobileNumber != null) {
+                 await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
+               }
+             } catch (error) {
+               await this.errorHandler.generateNotAcceptableException(
+                 'Unabled to proceed update profile detail. Error:' + error,
+               );
+             }
+           }
+
+           return {
+             response_code: 202,
+             messages: {
+               info: ['Update profile successful'],
+             }
+           };
         }
       }else{
         throw new NotAcceptableException({
           response_code: 406,
           messages: {
-            info: ['Unabled to proceed'],
+            info: ['Unabled to proceed, User not verified'],
           },
         });
       }
@@ -2133,7 +2240,7 @@ export class AuthService {
       throw new NotAcceptableException({
         response_code: 406,
         messages: {
-          info: ['Unabled to proceed'],
+          info: ['Unabled to proceed, User not found'],
         },
       });
     }
@@ -3903,18 +4010,32 @@ export class AuthService {
             },
           };
         }else{
-          await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed',
+          await this.userauthsService.updatebyEmail(user_email, {
+            oneTimePassword: OTP,
+            otpRequestTime: OTP_expires,
+          });
+
+          await this.sendemailOTP(
+            datauserauthsService.email.toString(),
+            OTP.toString(),
+            'ENROL',
           );
+
+          return {
+            response_code: 202,
+            messages: {
+              info: ['Request resend OTP successful'],
+            },
+          };
         }
       }else{
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed',
+          'Unabled to proceed, OTP not active',
         ); 
       }
     }else{
       await this.errorHandler.generateNotAcceptableException(
-        'User not found',
+        'Unabled to proceed, User not found',
       );
     }
   }

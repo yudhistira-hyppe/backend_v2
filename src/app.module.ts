@@ -59,6 +59,7 @@ import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents
 import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
 import { FaqdetailsModule } from './trans/faqs/faqdetails/faqdetails.module';
 import { UserbankaccountsModule } from './trans/userbankaccounts/userbankaccounts.module';
+import { AwsModule } from './stream/aws/aws.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -71,6 +72,7 @@ import { UserbankaccountsModule } from './trans/userbankaccounts/userbankaccount
     MongooseModule.forRoot(process.env.SERVER_INFRA, {
       connectionName: 'SERVER_INFRA',
     }),
+    AwsModule,
     // UserdevicesModule,
     // UserbasicsModule,
     // UserauthsModule,
