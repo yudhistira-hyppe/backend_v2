@@ -7,12 +7,12 @@ import { OyAccountInquiry, OyAccountInquiryResponse, OyDisburseCallback, OyVaCal
 export class OyPgController {
     constructor(private readonly oyPgService: OyPgService) { }
 
-    @Post('/callback/disbursement')
-    async callbackDisbursement(@Body() payload: OyDisburseCallback) {
+    // @Post('/callback/disbursement')
+    // async callbackDisbursement(@Body() payload: OyDisburseCallback) {
 
-        console.log(payload);
+    //     console.log(payload);
 
-    }
+    // }
 
     // @Post('/callback/va')
     // async callbackVa(@Body() payload: OyVaCallback) {

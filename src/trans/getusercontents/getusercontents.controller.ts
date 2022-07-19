@@ -3,13 +3,18 @@ import { GetusercontentsService } from './getusercontents.service';
 import { CreateGetusercontentsDto } from './dto/create-getusercontents.dto';
 import { Getusercontents } from './schemas/getusercontents.schema';
 import { UserbasicsService } from '../userbasics/userbasics.service';
+import { SettingsService } from '../settings/settings.service';
+import { GetcontenteventsService } from '../getusercontents/getcontentevents/getcontentevents.service';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Res, HttpStatus, Response, Req } from '@nestjs/common';
 import { Request } from 'express';
 @Controller()
 export class GetusercontentsController {
     constructor(private readonly getusercontentsService: GetusercontentsService,
-        private readonly userbasicsService: UserbasicsService) { }
+        private readonly userbasicsService: UserbasicsService,
+        private readonly getcontenteventsService: GetcontenteventsService,
+        private readonly settingsService: SettingsService
+    ) { }
 
     @Post('api/getusercontents/all')
     @UseGuards(JwtAuthGuard)
@@ -655,6 +660,175 @@ export class GetusercontentsController {
         };
 
         let data = await this.getusercontentsService.findpopularanalitic(email);
+
+        return { response_code: 202, data, messages };
+    }
+    @Post('api/getusercontents/management/monetize')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagementkontenmonetis(@Req() request: Request): Promise<any> {
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var data = null;
+        var buy = null;
+        var postType = null;
+        var monetize = null;
+        var email = null;
+        var lastmonetize = null;
+        var skip = 0;
+        var limit = 0;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        buy = request_json["buy"];
+        monetize = request_json["monetize"];
+        postType = request_json["postType"];
+        lastmonetize = request_json["lastmonetize"];
+        var ubasic = await this.userbasicsService.findOne(email);
+        var iduser = ubasic._id;
+        var userid = mongoose.Types.ObjectId(iduser);
+        var startdate = request_json["startdate"];
+        var enddate = request_json["enddate"];
+
+        console.log(userid);
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        data = await this.getusercontentsService.findalldatakontenmonetesbuy(userid, email, buy, monetize, postType, lastmonetize, startdate, enddate, skip, limit);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('api/getusercontents/management/analitic/follower')
+    @UseGuards(JwtAuthGuard)
+    async contentuserallmanagementkontenfolowwing(@Req() request: Request): Promise<any> {
+
+        var email = null;
+        var year = null;
+        var datafollower = null;
+        var dataallfollower = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+
+        if (request_json["year"] !== undefined) {
+            year = request_json["year"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        datafollower = await this.getcontenteventsService.findfollower(email, year);
+        dataallfollower = await this.getcontenteventsService.findfollowerall(email);
+        var totalallfollower = dataallfollower[0].totalfollowerall;
+
+
+        return { response_code: 202, datafollower, totalallfollower, messages };
+    }
+
+    @Post('api/getusercontents/buy/details')
+    @UseGuards(JwtAuthGuard)
+    async contentuserdetailbuy(@Req() request: Request): Promise<any> {
+        var data = null;
+        var postID = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var idmdradmin = "62bd413ff37a00001a004369";
+        var datamradmin = null;
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+
+
+        let databuy = await this.getusercontentsService.findcontenbuy(postID);
+
+        var saleAmount = databuy[0].saleAmount;
+        var totalamount = 0;
+        try {
+
+            datamradmin = await this.settingsService.findOne(idmdradmin);
+            var valuemradmin = datamradmin._doc.value;
+            var nominalmradmin = saleAmount * valuemradmin / 100;
+
+            totalamount = saleAmount + nominalmradmin;
+
+
+
+        } catch (e) {
+            totalamount = saleAmount + 0;
+        }
+
+        if (saleAmount > 0) {
+            data = {
+
+                "_id": databuy[0]._id,
+                "mediaBasePath": databuy[0].mediaBasePath,
+                "mediaUri": databuy[0].mediaUri,
+                "mediaType": "image",
+                "mediaEndpoint": databuy[0].mediaEndpoint,
+                "createdAt": databuy[0].createdAt,
+                "updatedAt": databuy[0].updatedAt,
+                "postID": databuy[0].postID,
+                "postType": databuy[0].postType,
+                "description": databuy[0].description,
+                "title": databuy[0].title,
+                "active": databuy[0].active,
+                "location": databuy[0].location,
+                "tags": databuy[0].tags,
+                "likes": databuy[0].likes,
+                "shares": databuy[0].shares,
+                "comments": databuy[0].comments,
+                "isOwned": databuy[0].isOwned,
+                "views": databuy[0].views,
+                "privacy": databuy[0].privacy,
+                "isViewed": databuy[0].isViewed,
+                "allowComments": databuy[0].allowComments,
+                "isCertified": databuy[0].isCertified,
+                "saleLike": databuy[0].saleLike,
+                "saleView": databuy[0].saleView,
+                "adminFee": nominalmradmin,
+                "price": databuy[0].saleAmount,
+                "totalAmount": totalamount,
+                "monetize": databuy[0].monetize
+
+            };
+        } else {
+            throw new BadRequestException("Content not for sell..!");
+        }
+
+
 
         return { response_code: 202, data, messages };
     }

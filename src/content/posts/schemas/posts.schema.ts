@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 
-export type PostsDocument = Posts & Document ;
+export type PostsDocument = Posts & Document;
 
 @Schema()
 export class Posts {
- @Prop()
- _id:String;
+  @Prop()
+  _id: String;
   @Prop()
   postID: String
   @Prop()
@@ -18,11 +18,11 @@ export class Posts {
   @Prop()
   active: boolean
 
- @Prop()
- updatedAt: String
-  @Prop({type:Object})
+  @Prop()
+  updatedAt: String
+  @Prop({ type: Object })
   expiration: {
-    numberLong:String
+    numberLong: String
   }
   @Prop()
   visibility: String
@@ -36,8 +36,10 @@ export class Posts {
   isSafe: boolean
   @Prop()
   isOwned: boolean
+  @Prop()
+  saleAmount: number
 
-  @Prop({type:Object})
+  @Prop({ type: Object })
   metadata: {
     duration: Number
     postRoll: Number
@@ -47,41 +49,41 @@ export class Posts {
     postID: String
     email: String
   }
-  
-  @Prop({type:Object})
+
+  @Prop({ type: Object })
   likes: {
-    numberLong:String
+    numberLong: String
   }
-  @Prop({type:Object})
+  @Prop({ type: Object })
   views: {
-    numberLong:String
+    numberLong: String
   }
-  @Prop({type:Object})
+  @Prop({ type: Object })
   shares: {
-    numberLong:String
+    numberLong: String
   }
-  @Prop({type:Object})
+  @Prop({ type: Object })
   comments: {
-    numberLong:String
+    numberLong: String
   }
 
-  @Prop({type:Object})
+  @Prop({ type: Object })
   userProfile: {
     ref: String
     id: {
       oid: String
     };
-    db:String
+    db: String
   }
- 
-  @Prop([{type:Object}])
-  contentMedias:[{
-        ref: String
-        id:String
-        db:String
+
+  @Prop([{ type: Object }])
+  contentMedias: [{
+    ref: String
+    id: String
+    db: String
   }]
- @Prop()
- _class:String
+  @Prop()
+  _class: String
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

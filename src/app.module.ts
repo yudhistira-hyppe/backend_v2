@@ -58,6 +58,7 @@ import { AccountbalancesModule } from './trans/accountbalances/accountbalances.m
 import { GetcontenteventsModule } from './trans/getusercontents/getcontentevents/getcontentevents.module';
 import { UserticketdetailsModule } from './trans/usertickets/userticketdetails/userticketdetails.module';
 import { FaqdetailsModule } from './trans/faqs/faqdetails/faqdetails.module';
+import { UserbankaccountsModule } from './trans/userbankaccounts/userbankaccounts.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -74,10 +75,11 @@ import { FaqdetailsModule } from './trans/faqs/faqdetails/faqdetails.module';
     // UserbasicsModule,
     // UserauthsModule,
     //CommentModule,
+    // UserbankaccountsModule,
     FaqdetailsModule,
     UserticketdetailsModule,
     UtilsModule,
-    GetcontenteventsModule,
+    // GetcontenteventsModule,
     AccountbalancesModule,
     TransactionsModule,
     AnnouncementsModule,

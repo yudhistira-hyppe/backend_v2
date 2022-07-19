@@ -64,6 +64,15 @@ export class PostsService {
     return data;
   }
 
+  async updateprice(id: string, saleAmount: number): Promise<Object> {
+    let data = await this.PostsModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "saleAmount": saleAmount
+        }
+      });
+    return data;
+  }
 
   async delete(id: string) {
     const deletedCat = await this.PostsModel.findByIdAndRemove({

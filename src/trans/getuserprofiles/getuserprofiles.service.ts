@@ -45,7 +45,97 @@ export class GetuserprofilesService {
     return query;
   }
 
+  async findUser(username: string, skip: number, limit: number) {
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
 
+    const query = await this.getuserprofilesModel.aggregate([
+      {
+        $addFields: {
+          userAuth_id: '$userAuth.$id',
+          profilePict_id: '$profilePict.$id',
+          concat: '/profilepict',
+          email: '$email',
+
+        },
+      },
+
+      {
+        $lookup: {
+          from: 'mediaprofilepicts2',
+          localField: 'profilePict_id',
+          foreignField: '_id',
+          as: 'profilePict_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+      {
+        "$unwind": {
+          "path": "$userAuth_data",
+          "preserveNullAndEmptyArrays": false
+        }
+      },
+
+      {
+        "$match": {
+          "userAuth_data.username": {
+            $regex: username
+          }
+        }
+      },
+      {
+        $project: {
+
+          profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+          idUserAuth: "$userAuth_data._id",
+          fullName: '$fullName',
+          username: '$userAuth_data.username',
+
+          avatar: {
+            mediaBasePath: '$profilpict.mediaBasePath',
+            mediaUri: '$profilpict.mediaUri',
+            mediaType: '$profilpict.mediaType',
+            mediaEndpoint: '$profilpict.fsTargetUri',
+            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+          },
+        },
+      },
+      {
+        $addFields: {
+
+          concat: '/profilepict',
+          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+        },
+      },
+      {
+        $project: {
+          idUserAuth: '$idUserAuth',
+          username: '$username',
+          fullName: '$fullName',
+
+          avatar: {
+            mediaBasePath: '$profilpict.mediaBasePath',
+            mediaUri: '$profilpict.mediaUri',
+            mediaType: '$profilpict.mediaType',
+            mediaEndpoint: { $concat: ["$concat", "/", "$pict"] },
+
+          },
+        },
+      },
+
+      { $sort: { createdAt: -1 }, },
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+    return query;
+  }
 
   async findata(fullName: string, gender: string, roles: string, age: string, page: number) {
 
@@ -246,7 +336,8 @@ export class GetuserprofilesService {
               posts: '$insights.posts',
               views: '$insights.views',
               likes: '$insights.likes'
-            }, avatar: {
+            },
+            avatar: {
               mediaBasePath: '$profilpict.mediaBasePath',
               mediaUri: '$profilpict.mediaUri',
               mediaType: '$profilpict.mediaType',

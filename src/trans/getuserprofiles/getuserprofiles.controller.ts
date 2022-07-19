@@ -90,5 +90,39 @@ export class GetuserprofilesController {
     return { response_code: 202, data, page, totalrow, totalallrow, messages };
   }
 
+  @Post('api/getuserprofiles/search')
+  //@FormDataRequest()
+  @UseGuards(JwtAuthGuard)
+  async finduser(@Req() request: Request): Promise<any> {
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var username = null;
+    var skip = 0;
+    var limit = 0;
+    var data = null;
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+    if (request_json["username"] !== undefined) {
+      username = request_json["username"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+    if (request_json["skip"] !== undefined) {
+      skip = request_json["skip"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["limit"] !== undefined) {
+      limit = request_json["limit"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+    data = await this.getuserprofilesService.findUser(username, skip, limit);
+    return { response_code: 202, data, skip, limit, messages };
+  }
+
 
 }

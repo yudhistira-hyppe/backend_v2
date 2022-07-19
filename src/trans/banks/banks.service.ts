@@ -24,4 +24,5 @@ export class BanksService {
         return this.settingsModel.findOne({ bankcode: bankcode }).exec();
     }
 
+
 }
