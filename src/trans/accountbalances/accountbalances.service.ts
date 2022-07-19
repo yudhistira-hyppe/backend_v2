@@ -114,7 +114,7 @@ export class AccountbalancesService {
                     },
                     status:
                     {
-                        $cond: { if: { $eq: ["$type", "withdraw"] }, then: "SENT", else: "RECEIVE" }
+                        $cond: { if: { $or: [{ $eq: ["$type", "withdraw"] }, { $eq: ["$type", "inquiry"] }, { $eq: ["$type", "disbursement"] }, { $eq: ["$type", "PPH"] }] }, then: "SENT", else: "RECEIVE" }
                     },
 
 
