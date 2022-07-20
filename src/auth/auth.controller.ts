@@ -15,6 +15,7 @@ import {
   Headers,
   UseInterceptors,
   UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -48,12 +49,12 @@ export class AuthController {
     private userdevicesService: UserdevicesService,
     private jwtrefreshtokenService: JwtrefreshtokenService,
     private userauthsService: UserauthsService,
-  ) {}
+  ) { }
 
   @UseGuards(LocalAuthGuard)
   @Post('api/user/login')
   @HttpCode(HttpStatus.ACCEPTED)
-  async login(@Body() LoginRequest_:LoginRequest) {
+  async login(@Body() LoginRequest_: LoginRequest) {
     var current_date = await this.utilsService.getDateTimeString();
 
     var _class_ActivityEvent = 'io.melody.hyppe.trans.domain.ActivityEvent';
@@ -293,7 +294,7 @@ export class AuthController {
                   active: true
                 };
               }
-              await this.userdevicesService.updatebyEmail(LoginRequest_.email,LoginRequest_.deviceId,data_update);
+              await this.userdevicesService.updatebyEmail(LoginRequest_.email, LoginRequest_.deviceId, data_update);
               Id_user_userdevices = data_userdevices._id;
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
@@ -355,8 +356,8 @@ export class AuthController {
         }
 
         var ProfileDTO_ = new ProfileDTO();
-        ProfileDTO_ = await this.utilsService.generateProfile(LoginRequest_.email,'LOGIN');
-        ProfileDTO_.token = 'Bearer '+(await this.utilsService.generateToken(LoginRequest_.email, LoginRequest_.deviceId)).toString();
+        ProfileDTO_ = await this.utilsService.generateProfile(LoginRequest_.email, 'LOGIN');
+        ProfileDTO_.token = 'Bearer ' + (await this.utilsService.generateToken(LoginRequest_.email, LoginRequest_.deviceId)).toString();
         ProfileDTO_.refreshToken = data_jwtrefreshtoken.refresh_token_id;
 
         var GlobalResponse_ = new GlobalResponse();
@@ -383,7 +384,7 @@ export class AuthController {
   @UseGuards(JwtRefreshAuthGuard)
   @Post('api/user/refreshtoken')
   @HttpCode(HttpStatus.ACCEPTED)
-  async refreshToken(@Body() RefreshTokenRequest_ : RefreshTokenRequest) {
+  async refreshToken(@Body() RefreshTokenRequest_: RefreshTokenRequest) {
     //Ceck User Jwtrefreshtoken
     const data_jwtrefreshtokenService =
       await this.jwtrefreshtokenService.findByEmailRefreshToken(RefreshTokenRequest_.email, RefreshTokenRequest_.refreshToken);
@@ -406,7 +407,7 @@ export class AuthController {
         const datauserauthsService_devices = datauserauthsService.devices[datauserauthsService.devices.length - 1];
 
         //Generate Token
-        var Token = 'Bearer ' + (await this.utilsService.generateToken(data_userbasicsService.email.toString(),data_userbasicsService._id.toString()));
+        var Token = 'Bearer ' + (await this.utilsService.generateToken(data_userbasicsService.email.toString(), data_userbasicsService._id.toString()));
 
         //Generate Refresh Token
         var RefreshToken = await this.authService.updateRefreshToken(data_userbasicsService.email.toString());
@@ -414,7 +415,7 @@ export class AuthController {
         var GlobalResponse_ = new GlobalResponse();
         var GlobalMessages_ = new GlobalMessages();
         var ProfileDTO_ = new ProfileDTO();
-        
+
         ProfileDTO_.token = Token;
         ProfileDTO_.refreshToken = RefreshToken;
 
@@ -800,7 +801,7 @@ export class AuthController {
   @Post('api/user/updateprofile')
   @HttpCode(HttpStatus.ACCEPTED)
   async updateprofile(@Req() request: any, @Headers() headers) {
-    return await this.authService.updateprofile(request,headers);
+    return await this.authService.updateprofile(request, headers);
   }
 
   @Post('api/user/resendotp')
@@ -812,26 +813,26 @@ export class AuthController {
   @Post('api/user/updatelang')
   @HttpCode(HttpStatus.ACCEPTED)
   async updatelang(@Req() request: any, @Headers() headers) {
-    return await this.authService.updatelang(request,headers);
+    return await this.authService.updatelang(request, headers);
   }
 
   @Post('api/user/referral-count')
   @HttpCode(HttpStatus.ACCEPTED)
   async referral_count(@Req() request: any, @Headers() headers) {
-    return await this.authService.referralcount(request,headers);
+    return await this.authService.referralcount(request, headers);
   }
 
   @Post('api/user/referral')
   @HttpCode(HttpStatus.ACCEPTED)
   async referral(@Req() request: any, @Headers() headers) {
-    return await this.authService.referral(request,headers);
+    return await this.authService.referral(request, headers);
   }
 
   @Post('api/user/referral-qrcode')
   @HttpCode(HttpStatus.ACCEPTED)
   async referral_qrcode(@Req() request: any, @Headers() headers, @Res() response) {
-    var data = await this.authService.referralqrcode(request,headers);
-    response.set("Content-Type","image/jpeg");
+    var data = await this.authService.referralqrcode(request, headers);
+    response.set("Content-Type", "image/jpeg");
     response.send(data);
   }
 
@@ -842,22 +843,55 @@ export class AuthController {
     @Query('x-auth-token') token: string,
     @Query('x-auth-user') email: string, @Res() response) {
     var data = await this.authService.profilePict(id, token, email);
-      response.set("Content-Type","image/jpeg");
-      response.send(data);
+    response.set("Content-Type", "image/jpeg");
+    response.send(data);
   }
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Put('api/userauths/:email')
   async updateRole(
-    @Param('email') email: string,@Req() request: any, @Headers() headers) {
-    return await this.authService.updateRole(email,headers,request);
+    @Param('email') email: string, @Req() request: any, @Headers() headers) {
+    return await this.authService.updateRole(email, headers, request);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/signup/socmed')
   async signupsosmed(@Req() request: any) {
     return await this.authService.signupsosmed(request);
+  }
+
+
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/sign/socmed')
+  async signsosmed(@Req() request: any) {
+    var deviceId = null;
+    var socmedSource = null;
+    var devicetype = null;
+    var email = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["socmedSource"] !== undefined) {
+      socmedSource = request_json["socmedSource"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["deviceId"] !== undefined) {
+      deviceId = request_json["deviceId"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+    if (request_json["devicetype"] !== undefined) {
+      devicetype = request_json["devicetype"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+    if (request_json["email"] !== undefined) {
+      email = request_json["email"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+    return await this.authService.signsosmed(request);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)

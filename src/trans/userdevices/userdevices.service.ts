@@ -9,7 +9,7 @@ export class UserdevicesService {
   constructor(
     @InjectModel(Userdevice.name, 'SERVER_TRANS')
     private readonly userdeviceModel: Model<UserdeviceDocument>,
-  ) {}
+  ) { }
 
   async create(CreateUserdeviceDto: CreateUserdeviceDto): Promise<Userdevice> {
     const createUserdeviceDto = await this.userdeviceModel.create(
@@ -60,6 +60,7 @@ export class UserdevicesService {
       },
     );
   }
+
 
   async findOneEmail(email: string, deviceID: string): Promise<Userdevice> {
     return this.userdeviceModel
