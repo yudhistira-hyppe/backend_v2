@@ -22,10 +22,10 @@ const storage = multer.diskStorage({
 });
 @Controller()
 export class AwsController {
-    constructor(private readonly awsService: AwsService) {}
+    constructor(private readonly awsService: AwsService) { }
 
     @Post('api/aws/comparing')
-    async comparing(AwsRequest_: AwsRequest)  {
+    async comparing(AwsRequest_: AwsRequest) {
         const data = await this.awsService.comparing(AwsRequest_);
         console.log(data);
     }

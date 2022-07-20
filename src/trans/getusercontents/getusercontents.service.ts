@@ -1447,10 +1447,12 @@ export class GetusercontentsService {
     const diaries = await this.mediadiariesService.finddiaries();
 
     const query = await this.getusercontentsModel.aggregate([
-      { $match: { email: email, isCertified: true } },
+
       {
         $addFields: {
           ubasic_id: '$userProfile.$id',
+          salePrice: { $cmp: ["$saleAmount", 0] }
+
 
         },
       },
@@ -1500,6 +1502,14 @@ export class GetusercontentsService {
             $cond: { if: { $eq: ["$views", 0] }, then: false, else: true }
           },
           allowComments: '$allowComments',
+          saleAmount: {
+            $cond: { if: { $eq: ["$salePrice", -1] }, then: 0, else: "$saleAmount" }
+          },
+          saleLike: '$saleLike',
+          saleView: '$saleView',
+          monetize: {
+            $cond: { if: { $eq: ["$salePrice", -1] }, then: false, else: true }
+          },
 
         }
       },
@@ -1536,7 +1546,10 @@ export class GetusercontentsService {
           },
           isViewed: '$isViewed',
           allowComments: '$allowComments',
-
+          saleAmount: '$saleAmount',
+          saleLike: '$saleLike',
+          saleView: '$saleView',
+          monetize: '$monetize',
 
           refe: '$refs.ref',
         }
@@ -1627,7 +1640,10 @@ export class GetusercontentsService {
           privacy: '$privacy',
           isViewed: '$isViewed',
           allowComments: '$allowComments',
-
+          saleAmount: '$saleAmount',
+          saleLike: '$saleLike',
+          saleView: '$saleView',
+          monetize: '$monetize',
 
           insight: {
             shares: '$insights.shares',
@@ -1758,7 +1774,10 @@ export class GetusercontentsService {
           privacy: '$privacy',
           isViewed: '$isViewed',
           allowComments: '$allowComments',
-
+          saleAmount: '$saleAmount',
+          saleLike: '$saleLike',
+          saleView: '$saleView',
+          monetize: '$monetize',
           insight: {
             shares: '$insights.shares',
             followers: '$insights.followers',
@@ -1783,7 +1802,7 @@ export class GetusercontentsService {
 
         }
       },
-
+      { $match: { email: email, monetize: true } },
       { $sort: { createdAt: -1 }, },
       { $skip: skip },
       { $limit: limit },
@@ -4613,13 +4632,18 @@ export class GetusercontentsService {
 
     const query = await this.getusercontentsModel.aggregate([
       {
+        $match: {
+          email: email
+        }
+      },
+      {
         $group: {
           _id: "$location",
           totalpost: {
             $sum: 1
           }
         }
-      },
+      }
 
     ]);
     return query;
@@ -4629,7 +4653,7 @@ export class GetusercontentsService {
     const posts = await this.postsService.findpost();
 
 
-    const query = await this.getusercontentsModel.find().exec();
+    const query = await this.getusercontentsModel.find({ "email": email }).exec();
     return query;
   }
 
