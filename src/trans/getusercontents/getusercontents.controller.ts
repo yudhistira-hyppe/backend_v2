@@ -8,12 +8,14 @@ import { GetcontenteventsService } from '../getusercontents/getcontentevents/get
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { Res, HttpStatus, Response, Req } from '@nestjs/common';
 import { Request } from 'express';
+import { CountriesService } from '../../infra/countries/countries.service';
 @Controller()
 export class GetusercontentsController {
     constructor(private readonly getusercontentsService: GetusercontentsService,
         private readonly userbasicsService: UserbasicsService,
         private readonly getcontenteventsService: GetcontenteventsService,
-        private readonly settingsService: SettingsService
+        private readonly settingsService: SettingsService,
+        private readonly countriesService: CountriesService,
     ) { }
 
     @Post('api/getusercontents/all')
@@ -228,7 +230,7 @@ export class GetusercontentsController {
         const messages = {
             "info": ["The process successful"],
         };
-
+        var dataregion = null;
         var datapopular = await this.getusercontentsService.findmanagementcontentpopular(email);
         var popular = datapopular[0];
         var datalike = await this.getusercontentsService.findmanagementcontentlikes(email);
@@ -241,22 +243,32 @@ export class GetusercontentsController {
         var latestmonetize = datamonetize[0];
         var dataoener = await this.getusercontentsService.findmanagementcontentowner(email);
         var latestownership = dataoener[0];
-        var dataregion = await this.getusercontentsService.findmanagementcontentregion(email);
-        var recentlyregion = dataregion;
-        var lengregion = dataregion.length;
 
+        var datacountri = await this.countriesService.findAll();
+
+        var lengcountri = datacountri.length;
         var dataregionall = await this.getusercontentsService.findmanagementcontentallregion(email);
         var totalpost = dataregionall.length;
         var datapost = [];
+        for (var i = 0; i < lengcountri; i++) {
+            var countri = datacountri[i].country;
+            dataregion = await this.getusercontentsService.findmanagementcontentregion(email, countri);
+            var recentlyregion = dataregion;
+            var lengregion = dataregion.length;
 
-        var obj = {};
-        for (var x = 0; x < lengregion; x++) {
-            var loc = dataregion[x]._id;
-            var tepost = dataregion[x].totalpost * 100 / totalpost;
-            var tpost = tepost.toFixed(2);
-            obj = { "_id": loc, "totalpost": tpost };
-            datapost.push(obj);
+
+            var obj = {};
+
+            for (var x = 0; x < lengregion; x++) {
+                var tepost = dataregion[x].totalpost * 100 / totalpost;
+                var tpost = tepost.toFixed(2);
+                obj = { "_id": countri, "totalpost": tepost };
+                datapost.push(obj);
+            }
+
+
         }
+
 
 
 
@@ -637,9 +649,13 @@ export class GetusercontentsController {
             "info": ["The process successful"],
         };
 
+        var datatotal = await this.getusercontentsService.findcountfilter(email);
+        var totalAll = datatotal[0].totalpost;
+        let dataFilter = await this.getusercontentsService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, postType, startdate, enddate, 0, totalAll);
         let data = await this.getusercontentsService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, postType, startdate, enddate, skip, limit);
+        var totalFilter = dataFilter.length;
 
-        return { response_code: 202, data, messages };
+        return { response_code: 202, data, skip, limit, totalFilter, totalAll, messages };
     }
 
     @Post('api/getusercontents/management/analitic')
@@ -710,9 +726,12 @@ export class GetusercontentsController {
             "info": ["The process successful"],
         };
 
+        var datatotal = await this.getusercontentsService.findcountfilter(email);
+        var totalAll = datatotal[0].totalpost;
+        let dataFilter = await this.getusercontentsService.findalldatakontenmonetesbuy(userid, email, buy, monetize, postType, lastmonetize, startdate, enddate, 0, totalAll);
         data = await this.getusercontentsService.findalldatakontenmonetesbuy(userid, email, buy, monetize, postType, lastmonetize, startdate, enddate, skip, limit);
-
-        return { response_code: 202, data, messages };
+        var totalFilter = dataFilter.length;
+        return { response_code: 202, data, skip, limit, totalFilter, totalAll, messages };
     }
 
     @Post('api/getusercontents/management/analitic/follower')

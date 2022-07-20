@@ -19,14 +19,14 @@ import { CommentModule } from './comment/comment.module';
 import { GetcontenteventsController } from './getcontentevents/getcontentevents.controller';
 import { GetcontenteventsModule } from './getcontentevents/getcontentevents.module';
 import { UserbasicsModule } from '../userbasics/userbasics.module';
-
+import { CountriesModule } from '../../infra/countries/countries.module';
 import { SettingsModule } from '../settings/settings.module';
 
 @Module({
 
     imports: [
         ConfigModule.forRoot(), UserauthsModule, MediaprofilepictsModule, InsightsModule, PostsModule, MediavideosModule, MediapictsModule, MediadiariesModule, DisquslogsModule, DisqusModule, CommentModule, UserbasicsModule,
-        GetcontenteventsModule, SettingsModule,
+        GetcontenteventsModule, SettingsModule, CountriesModule,
 
         MongooseModule.forFeature([{ name: Getusercontents.name, schema: GetusercontentsSchema }], 'SERVER_TRANS'),
 
