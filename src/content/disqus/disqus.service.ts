@@ -33,7 +33,6 @@ export class DisqusService {
   }
 
   async deletedicuss(request: any): Promise<any> {
-    var update = false;
     const data_discus = await this.DisqusModel.findOne({ _id: request._id }).exec();
     let param_update = null;
     let data_update = null;
@@ -42,8 +41,7 @@ export class DisqusService {
         if (data_discus.email == request.email) {
           param_update = {
             _id: request._id,
-            email: request.email,
-            type_commant: 'DIRECT_MSG'
+            email: request.email
           }
           data_update = { $set: { "emailActive": false } }
         }
@@ -52,8 +50,7 @@ export class DisqusService {
         if (data_discus.mate == request.email) {
           param_update = {
             _id: request._id,
-            mate: request.email,
-            type_commant: 'DIRECT_MSG'
+            mate: request.email
           }
           data_update = { $set: { "mateActive": false } }
         }
@@ -72,7 +69,7 @@ export class DisqusService {
       return {
           response_code: 202,
           messages: {
-            info: ['Update Disqus successful'],
+            info: ['Delete Disqus successful'],
         }
       }
     }else{

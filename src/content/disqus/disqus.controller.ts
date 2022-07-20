@@ -1,14 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, BadRequestException, Res, HttpStatus, Query, Request, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Headers, BadRequestException, Res, HttpStatus, Query, Request, Req } from '@nestjs/common';
 import { DisqusService } from './disqus.service';
 import { CreateDisqusDto, QueryDiscusDto } from './dto/create-disqus.dto';
 import { Disqus } from './schemas/disqus.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { FormDataRequest } from 'nestjs-form-data';
+import { UtilsService } from '../../utils/utils.service';
+import { ErrorHandler } from '../../utils/error.handler';
 import { request } from 'https';
 @Controller('api/')
 export class DisqusController {
 
-  constructor(private readonly DisqusService: DisqusService) { }
+  constructor(private readonly DisqusService: DisqusService,
+    private readonly utilsService: UtilsService,
+    private readonly errorHandler: ErrorHandler) { }
 
   @Post('disqus')
   async create(@Body() CreateDisqusDto: CreateDisqusDto) {
@@ -32,42 +36,26 @@ export class DisqusController {
   }
 
   @Post('posts/disqus/deletedicuss')
+  @UseGuards(JwtAuthGuard)
   async deletedicuss(
-    @Query('x-auth-token') token: string,
-    @Query('x-auth-user') email_header: string,
-    @Body() request :string) {
+    @Headers() headers,
+    @Body() request: any) {
+    console.log(headers);
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    if (request._id == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    if (request.email == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
     return this.DisqusService.deletedicuss(request);
   }
-
-  @Post('posts/disqus')
-  @FormDataRequest()
-  async querydisqus(@Body() QueryDiscusDto_: QueryDiscusDto) {
-    console.log(QueryDiscusDto_.isQuery);
-    var data = {};
-    if (!QueryDiscusDto_.isQuery){
-      if (QueryDiscusDto_.eventType =="DIRECT_MSG") {
-
-      } else if (QueryDiscusDto_.eventType == "COMMENT") {
-
-      }
-    }else{
-      if (QueryDiscusDto_.eventType == "DIRECT_MSG") {
-        if (QueryDiscusDto_.receiverParty==undefined){
-          data = {
-            email: QueryDiscusDto_.email,
-          }
-        }else{
-          data = {
-            email: QueryDiscusDto_.email,
-            mate: QueryDiscusDto_.receiverParty,
-          }
-        }
-      } else if (QueryDiscusDto_.eventType == "COMMENT") {
-
-      }
-    }
-    //return this.DisqusService.deletedicuss(_id, email);
-  }
-
-
 }
