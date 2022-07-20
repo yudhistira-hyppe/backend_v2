@@ -1,8 +1,21 @@
+import { ByteBuffer } from "aws-sdk/clients/cloudtrail";
 import { double } from "aws-sdk/clients/lightsail";
 export class AwsRequest {
-    SourceImage: { Bytes: string };
-    TargetImage: { Bytes: string };
+    SourceImage: {
+        Bytes: string;
+    };
+    TargetImage: {
+        Bytes: string;
+    };
     SimilarityThreshold: number;
+}
+
+export class ImageDataRequest {
+    Bytes: string;
+    S3Object: {
+        Bucket: string,
+        Name: string
+    };
 }
 
 export class AwsResponse {

@@ -4,10 +4,14 @@ import { DisqusService } from './disqus.service';
 import { DisqusController } from './disqus.controller';
 import { ConfigModule } from '@nestjs/config';
 import { Disqus, DisqusSchema } from './schemas/disqus.schema';
+import { UtilsModule } from '../../utils/utils.module';
+import { NestjsFormDataModule } from 'nestjs-form-data';
 
 @Module({
 
     imports: [
+        NestjsFormDataModule,
+        UtilsModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Disqus.name, schema: DisqusSchema }],'SERVER_CONTENT')
     ],
