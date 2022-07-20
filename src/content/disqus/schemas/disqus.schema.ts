@@ -25,7 +25,11 @@ export class Disqus {
  @Prop()
  updatedAt: String
  @Prop()
- lastestMessage:String
+lastestMessage: String
+@Prop()
+    emailActive: boolean
+    @Prop()
+    mateActive: boolean
  @Prop([{type:Object}])
  disqusLogs: [{
     ref:String
@@ -34,6 +38,6 @@ export class Disqus {
 }]
  @Prop()
  _class:String
-}
+} 
 
 export const DisqusSchema = SchemaFactory.createForClass(Disqus);

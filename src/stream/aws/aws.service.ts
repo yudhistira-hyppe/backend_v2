@@ -16,7 +16,8 @@ export class AwsService {
     async comparing(AwsRequest_: AwsRequest): Promise<AwsResponse> {
         const client = new AWS.Rekognition();
         var AwsResponse_ = new AwsResponse();
-        client.compareFaces(AwsRequest_, function (err, response) {
+        console.log(AwsRequest_);
+        await client.compareFaces(AwsRequest_, function (err, response) {
             if (err) {
                 console.log(err, err.stack); // an error occurred
             } else {

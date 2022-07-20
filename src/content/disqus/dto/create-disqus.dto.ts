@@ -1,20 +1,34 @@
 export class CreateDisqusDto {
   
 
-    readonly _id: String;
-    readonly disqusID: String;
-    readonly email: String;
-    readonly mate: String;
-    readonly eventType: String;
-    readonly active: boolean;
-    readonly room: String;
-    readonly  createdAt: String;
-    readonly  updatedAt: String;
-    readonly  lastestMessage: String;
-    readonly  disqusLogs: [{
+     _id: String;
+     disqusID: String;
+     email: String;
+     mate: String;
+     eventType: String;
+     active: boolean;
+     room: String;
+      createdAt: String;
+      updatedAt: String;
+      lastestMessage: String;
+    emailActive: boolean; 
+    mateActive: boolean;
+      disqusLogs: [{
         ref:String;
         id:String;
         db:String;
     }];
-    readonly _class:String;
+     _class:String;
   }
+
+export class QueryDiscusDto{
+  isQuery: boolean;
+  eventType: String;
+  email: String;
+  receiverParty: String;
+  withDetail: boolean;
+  detailOnly: boolean;
+  pageRow: String;
+  pageNumber: String;
+  postID: String;
+}

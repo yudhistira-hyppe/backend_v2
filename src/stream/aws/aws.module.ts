@@ -6,11 +6,7 @@ import { HttpModule } from '@nestjs/axios';
 import { MulterModule } from '@nestjs/platform-express';
 @Module({
 
-    imports: [HttpModule, ConfigService, ConfigModule.forRoot(), MulterModule.registerAsync({
-        useFactory: () => ({
-            dest: './upload'
-        }),
-    })],
+    imports: [HttpModule, ConfigService, ConfigModule.forRoot()],
     controllers: [AwsController],
     providers: [AwsService],
     exports: [AwsService],

@@ -1,14 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateDisqusDto } from './dto/create-disqus.dto';
 import { Disqus, DisqusDocument } from './schemas/disqus.schema';
+import { UtilsService } from '../../utils/utils.service'; 
 
 @Injectable()
 export class DisqusService {
   constructor(
     @InjectModel(Disqus.name, 'SERVER_CONTENT')
-    private readonly DisqusModel: Model<DisqusDocument>,
+    private readonly DisqusModel: Model<DisqusDocument>, 
+    private utilsService: UtilsService,
   ) { }
 
   async create(CreateDisqusDto: CreateDisqusDto): Promise<Disqus> {
@@ -19,10 +21,7 @@ export class DisqusService {
   async findAll(): Promise<Disqus[]> {
     return this.DisqusModel.find().exec();
   }
-
-  //    async findOne(id: string): Promise<Disqus> {
-  //     return this.DisqusModel.findOne({ _id: id }).exec();
-  //   }
+  
   async findOne(email: string): Promise<Disqus> {
     return this.DisqusModel.findOne({ email: email }).exec();
   }
@@ -33,7 +32,58 @@ export class DisqusService {
     return deletedCat;
   }
 
+  async deletedicuss(request: any): Promise<any> {
+    var update = false;
+    const data_discus = await this.DisqusModel.findOne({ _id: request._id }).exec();
+    let param_update = null;
+    let data_update = null;
+    if (await this.utilsService.ceckData(data_discus)) {
+      if (data_discus.email != undefined) {
+        if (data_discus.email == request.email) {
+          param_update = {
+            _id: request._id,
+            email: request.email,
+            type_commant: 'DIRECT_MSG'
+          }
+          data_update = { $set: { "emailActive": false } }
+        }
+      } 
+      if (data_discus.mate != undefined) {
+        if (data_discus.mate == request.email) {
+          param_update = {
+            _id: request._id,
+            mate: request.email,
+            type_commant: 'DIRECT_MSG'
+          }
+          data_update = { $set: { "mateActive": false } }
+        }
+      }
+      this.DisqusModel.updateOne(
+        param_update,
+        data_update,
+        function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      });
 
+      return {
+          response_code: 202,
+          messages: {
+            info: ['Update Disqus successful'],
+        }
+      }
+    }else{
+      throw new NotAcceptableException({
+        response_code: 406,
+        messages: {
+          info: ['Unabled to proceed, Disqus not found'],
+        },
+      });
+    }
+  }
 
   async finddisqus() {
     const query = await this.DisqusModel.aggregate([
