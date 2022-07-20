@@ -69,7 +69,7 @@ export class DisqusService {
       return {
           response_code: 202,
           messages: {
-            info: ['Update Disqus successful'],
+            info: ['Delete Disqus successful'],
         }
       }
     }else{

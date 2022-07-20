@@ -282,12 +282,16 @@ export class UtilsService {
 
   async validasiTokenEmail(head: any): Promise<boolean> {
     var isTrue = false;
-    var email = head['x-auth-user'];
-    var token = ((head['x-auth-token']).split(" "))[1];
-    var data = await this.jwtService.decode(token);
-    if(data!=undefined){
-      if(data['email']==email){
-        isTrue = true;
+    if (head != undefined) {
+      if (head['x-auth-token']!=undefined){
+        var email = head['x-auth-user'];
+        var token = ((head['x-auth-token']).split(" "))[1];
+        var data = await this.jwtService.decode(token);
+        if (data != undefined) {
+          if (data['email'] == email) {
+            isTrue = true;
+          }
+        }
       }
     }
     return isTrue;
