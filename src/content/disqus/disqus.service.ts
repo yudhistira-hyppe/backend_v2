@@ -47,7 +47,7 @@ export class DisqusService {
             _id: request._id,
             email: request.email
           }
-          data_update = { $set: { "emailActive": false } }
+          data_update = { $set: { "mateActive": false } }
         }
       } 
       if (data_discus.mate != undefined) {
@@ -57,7 +57,7 @@ export class DisqusService {
             _id: request._id,
             mate: request.email
           }
-          data_update = { $set: { "mateActive": false } }
+          data_update = { $set: { "emailActive": false } }
         }
       }
       this.DisqusModel.updateOne(

@@ -110,9 +110,9 @@ export class DisquslogsService {
     if (disqusID != undefined) {
       let data_update = null;
       if (type == 1) {
-        data_update = { $set: { "emailActive": false } }
-      } else if (type == 2) {
         data_update = { $set: { "mateActive": false } }
+      } else if (type == 2) {
+        data_update = { $set: { "emailActive": false } }
       }
       console.log(data_update);
       this.DisquslogsModel.updateMany(
