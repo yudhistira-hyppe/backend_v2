@@ -31,9 +31,9 @@ export class Disquslogs {
  @Prop()
     reactionUri: String
     @Prop()
-    emailActive: boolean
+    receiverActive: boolean
     @Prop()
-    mateActive: boolean
+    senderActive: boolean
 
 
  @Prop([{type:Object}])

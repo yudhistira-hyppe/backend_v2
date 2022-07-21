@@ -14,19 +14,19 @@ import { RekognitionClient, CompareFacesCommand } from "@aws-sdk/client-rekognit
 export class AwsService {
     constructor(private readonly httpService: HttpService, private readonly configService: ConfigService) { }
 
-    // async comparing(bitmap1: string, bitmap1: string): Promise<AwsResponse> {
-    //     var AwsResponse_ = new AwsResponse();
-    //     const client = new RekognitionClient({ region: process.env.AWS_REGION });
-    //     const params = {
-    //         SourceImage: {
-    //             Bytes: bitmap1
-    //         },
-    //         TargetImage: {
-    //             Bytes: bitmap2
-    //         },
-    //         "SimilarityThreshold": 70
-    //     };
-    //     const command = new CompareFacesCommand(params);
+    async comparing(bitmap1: string, bitmap2: string): Promise<AwsResponse> {
+        var AwsResponse_ = new AwsResponse();
+        // const client = new RekognitionClient({ region: process.env.AWS_REGION });
+        // const params = {
+        //     SourceImage: {
+        //         Bytes: bitmap1
+        //     },
+        //     TargetImage: {
+        //         Bytes: bitmap2
+        //     },
+        //     SimilarityThreshold: 70
+        // };
+        // const command = new CompareFacesCommand(params);// 
         // const client = new AWS.Rekognition();
         // var AwsResponse_ = new AwsResponse();
         // console.log(client);
@@ -42,6 +42,6 @@ export class AwsService {
         //         }) // for response.faceDetails
         //     } // if
         // });
-    //     return AwsResponse_;
-    // }
+        return AwsResponse_;
+    }
 }

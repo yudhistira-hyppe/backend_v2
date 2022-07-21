@@ -104,24 +104,28 @@ export class DisquslogsService {
     }
   }
 
-  async updateBydiscusid(disqusID: string, type: number) {
-    console.log(disqusID);
-    console.log(type);
+  async updateBydiscusid(disqusID: string, email: string) {
     if (disqusID != undefined) {
-      let data_update = null;
-      if (type == 1) {
-        data_update = { $set: { "mateActive": false } }
-      } else if (type == 2) {
-        data_update = { $set: { "emailActive": false } }
-      }
-      console.log(data_update);
       this.DisquslogsModel.updateMany(
         {
-        disqusID: disqusID
+        disqusID: disqusID,
+          sender: email
       }, 
-      data_update, function (err, docs) {
+        { senderActive: false }, function (err, docs) {
+        if (err) {
+          console.log('err'+err);
+        } else {
+          console.log('docs' + docs);
+        }
+      });
+      this.DisquslogsModel.updateMany(
+        {
+          disqusID: disqusID,
+          receiver: email
+        },
+        { receiverActive: false } , function (err, docs) {
           if (err) {
-            console.log('err'+err);
+            console.log('err' + err);
           } else {
             console.log('docs' + docs);
           }

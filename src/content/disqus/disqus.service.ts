@@ -36,13 +36,11 @@ export class DisqusService {
 
   async deletedicuss(request: any): Promise<any> {
     const data_discus = await this.DisqusModel.findOne({ _id: request._id }).exec();
-    let param_int = 0;
     let param_update = null;
     let data_update = null;
     if (await this.utilsService.ceckData(data_discus)) {
       if (data_discus.email != undefined) {
         if (data_discus.email == request.email) {
-          param_int = 1;
           param_update = {
             _id: request._id,
             email: request.email
@@ -52,7 +50,6 @@ export class DisqusService {
       } 
       if (data_discus.mate != undefined) {
         if (data_discus.mate == request.email) {
-          param_int = 2;
           param_update = {
             _id: request._id,
             mate: request.email
@@ -70,7 +67,7 @@ export class DisqusService {
           //console.log(docs);
         }
       });
-      this.disquslogsService.updateBydiscusid(request._id, param_int);
+      this.disquslogsService.updateBydiscusid(request._id, request.email);
 
       return {
           response_code: 202,

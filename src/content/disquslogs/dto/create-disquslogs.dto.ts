@@ -27,6 +27,6 @@ export class CreateDisquslogsDto {
     }];
     readonly replyLogs: [];
     readonly _class: String;
-    emailActive: boolean;
-    mateActive: boolean;
+    receiverActive: boolean;
+    senderActive: boolean;
   }
