@@ -29,7 +29,11 @@ export class Disquslogs {
  @Prop()
  updatedAt: String
  @Prop()
- reactionUri:String
+    reactionUri: String
+    @Prop()
+    emailActive: boolean
+    @Prop()
+    mateActive: boolean
 
 
  @Prop([{type:Object}])

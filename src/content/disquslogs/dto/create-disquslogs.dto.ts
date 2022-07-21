@@ -26,5 +26,7 @@ export class CreateDisquslogsDto {
         mediaEndpoint: String;
     }];
     readonly replyLogs: [];
-    readonly _class:String;
+    readonly _class: String;
+    emailActive: boolean;
+    mateActive: boolean;
   }

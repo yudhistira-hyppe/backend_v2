@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { CreateDisqusDto } from './dto/create-disqus.dto';
 import { Disqus, DisqusDocument } from './schemas/disqus.schema';
 import { UtilsService } from '../../utils/utils.service'; 
+import { DisquslogsService } from '../disquslogs/disquslogs.service';
 
 @Injectable()
 export class DisqusService {
@@ -11,6 +12,7 @@ export class DisqusService {
     @InjectModel(Disqus.name, 'SERVER_CONTENT')
     private readonly DisqusModel: Model<DisqusDocument>, 
     private utilsService: UtilsService,
+    private disquslogsService: DisquslogsService,
   ) { }
 
   async create(CreateDisqusDto: CreateDisqusDto): Promise<Disqus> {
@@ -34,11 +36,13 @@ export class DisqusService {
 
   async deletedicuss(request: any): Promise<any> {
     const data_discus = await this.DisqusModel.findOne({ _id: request._id }).exec();
+    let param_int = 0;
     let param_update = null;
     let data_update = null;
     if (await this.utilsService.ceckData(data_discus)) {
       if (data_discus.email != undefined) {
         if (data_discus.email == request.email) {
+          param_int = 1;
           param_update = {
             _id: request._id,
             email: request.email
@@ -48,6 +52,7 @@ export class DisqusService {
       } 
       if (data_discus.mate != undefined) {
         if (data_discus.mate == request.email) {
+          param_int = 2;
           param_update = {
             _id: request._id,
             mate: request.email
@@ -65,6 +70,7 @@ export class DisqusService {
           //console.log(docs);
         }
       });
+      this.disquslogsService.updateBydiscusid(request._id, param_int);
 
       return {
           response_code: 202,
