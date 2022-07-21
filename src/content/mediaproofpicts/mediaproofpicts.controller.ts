@@ -35,81 +35,82 @@ export class MediaproofpictsController {
     return this.MediaproofpictsService.delete(id);
   }
 
-  // @Post()
-  // @UseGuards(JwtAuthGuard)
-  // @FormDataRequest()
-  // async upload(@Res() res, @Headers('x-auth-token') auth: string, @Request() request) {
-  //   var request_json = JSON.parse(JSON.stringify(request.body));
-  //   var files = null;
-  //   if (request_json["files"] !== undefined) {
-  //     files = request_json["files"];
-  //   } else {
-  //     throw new BadRequestException("Unabled to proceed");
-  //   }
-  //   var filename = files.originalName;
-  //   var weedClient = require("node-seaweedfs");
-
-  //   var seaweedfs = new weedClient({
-  //     server: "172.16.0.4",
-  //     port: 9555,
-
-  //   });
-  //   seaweedfs.write("./" + filename, { replication: '000' }).then(function (fileInfo) {
-  //     console.log(fileInfo);
-  //   }).catch(function (err) {
-  //     throw new BadRequestException(err);
-  //   });
-  //   // seaweedfs.write("./" + filename).then(function (fileInfo) {
-  //   //   return seaweedfs.read(fileInfo.fid);
-  //   // }).then(function (Buffer) {
-  //   //   throw new BadRequestException(Buffer);
-  //   // }).catch(function (err) {
-  //   //   throw new BadRequestException(err);
-  //   // });
-  // }
-
-
   //   @Post()
-  //   @UseInterceptors(FileInterceptor('file', {
-  //     storage: diskStorage({
-  //       destination: './upload'
-  //     }),
+  //   @UseGuards(JwtAuthGuard)
+  //   @FormDataRequest()
+  //   async upload(@Res() res, @Headers('x-auth-token') auth: string, @Request() request) {
+  //     var request_json = JSON.parse(JSON.stringify(request.body));
+  //     var files = null;
+  //     if (request_json["files"] !== undefined) {
+  //       files = request_json["files"];
+  //     } else {
+  //       throw new BadRequestException("Unabled to proceed");
+  //     }
+  //     var filename = files.originalName;
+  //     var weedClient = require("node-seaweedfs");
 
-  //   }))
-  //   uploadFile(@UploadedFile() file) {
+  //     var seaweedfs = new weedClient({
+  //       server: "172.16.0.4",
+  //       port: 9555,
 
-  //     var filename = file.originalname;
-  //    // var weedClient = require("node-seaweedfs");
-
-  //     // var seaweedfs = new weedClient({
-  //     //   server: "172.16.0.4",
-  //     //   port: 9555,
-
-  //     // });
-  //     // seaweedfs.write("./upload/" + filename, { replication: '000' }).then(function (fileInfo) {
-  //     //   console.log(fileInfo);
-  //     // }).catch(function (err) {
-  //     //   throw new BadRequestException(err);
-  //     // });
-
-  //     // seaweedfs.write("./upload/" + filename).then(function (fileInfo) {
+  //     });
+  //     seaweedfs.write("./" + filename, { replication: '000' }).then(function (fileInfo) {
+  //       console.log(fileInfo);
+  //     }).catch(function (err) {
+  //       throw new BadRequestException(err);
+  //     });
+  //     // seaweedfs.write("./" + filename).then(function (fileInfo) {
   //     //   return seaweedfs.read(fileInfo.fid);
   //     // }).then(function (Buffer) {
   //     //   throw new BadRequestException(Buffer);
   //     // }).catch(function (err) {
   //     //   throw new BadRequestException(err);
   //     // });
-  //     var fs = require("fs");
-  // var weedfs = require("../../index.js");
-  // var expect = require('chai').expect;
-
-  // var config={ server: "172.16.0.4",
-  // port: 9555};
-  // var client = new weedfs(config);
+  //   }
 
 
+  //     @Post()
+  //     @UseInterceptors(FileInterceptor('file', {
+  //       storage: diskStorage({
+  //         destination: './upload'
+  //       }),
 
-  //        client.write("./test/tests/test.jpg").then(function(fileInfo) {
+  //     }))
+  //     uploadFile(@UploadedFile() file) {
+
+  //       var filename = file.originalname;
+  //      // var weedClient = require("node-seaweedfs");
+
+  //       // var seaweedfs = new weedClient({
+  //       //   server: "172.16.0.4",
+  //       //   port: 9555,
+
+  //       // });
+  //       // seaweedfs.write("./upload/" + filename, { replication: '000' }).then(function (fileInfo) {
+  //       //   console.log(fileInfo);
+  //       // }).catch(function (err) {
+  //       //   throw new BadRequestException(err);
+  //       // });
+
+  //       // seaweedfs.write("./upload/" + filename).then(function (fileInfo) {
+  //       //   return seaweedfs.read(fileInfo.fid);
+  //       // }).then(function (Buffer) {
+  //       //   throw new BadRequestException(Buffer);
+  //       // }).catch(function (err) {
+  //       //   throw new BadRequestException(err);
+  //       // });
+  //       var fs = require("fs");
+  //   var weedfs = require("../../index.js");
+  //   var expect = require('chai').expect;
+
+  //   var config={ server: "172.16.0.4",
+  //   port: 9555};
+  //   var client = new weedfs(config);
+
+
+
+  //   it("should write a single file from a path", function(done) {
+  //     client.write("./upload/profile.jpg").then(function(fileInfo) {
   //         expect(fileInfo).to.be.an("object");
 
   //         return client.remove(fileInfo.fid);
@@ -120,5 +121,7 @@ export class MediaproofpictsController {
   //     }).catch(function(err) {
   //         console.log(err);
   //     });
-  //   }
+
+  // });
+  //     }
 }
