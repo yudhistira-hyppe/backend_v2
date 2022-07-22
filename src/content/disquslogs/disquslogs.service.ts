@@ -111,7 +111,7 @@ export class DisquslogsService {
         disqusID: disqusID,
           sender: email
       }, 
-        { senderActive: false }, function (err, docs) {
+        { receiverActive: false }, function (err, docs) {
         if (err) {
           console.log('err'+err);
         } else {
@@ -123,7 +123,7 @@ export class DisquslogsService {
           disqusID: disqusID,
           receiver: email
         },
-        { receiverActive: false } , function (err, docs) {
+        { senderActive: false }, function (err, docs) {
           if (err) {
             console.log('err' + err);
           } else {
