@@ -83,15 +83,16 @@ export class AwsController {
         // Image_2.Bytes = bitmap2;
 
         AwsRequest_.SimilarityThreshold = 70;
-        // AwsRequest_.SourceImage = { Bytes: bitmap1 };
-        // AwsRequest_.TargetImage = { Bytes: bitmap2 };
-        const data = await this.awsService.comparing(bitmap1, bitmap2);
+        AwsRequest_.SourceImage = { Bytes: bitmap1 };
+        AwsRequest_.TargetImage = { Bytes: bitmap1 };
+        console.log(AwsRequest_);
+        const data = await this.awsService.comparing(AwsRequest_);
         return {
             "SourceImage": {
                 "Bytes": bitmap1
             },
             "TargetImage": {
-                "Bytes": bitmap2
+                "Bytes": bitmap1
             },
             "SimilarityThreshold": 70
         };
