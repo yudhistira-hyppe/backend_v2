@@ -9,7 +9,7 @@ export class MediaproofpictsService {
   constructor(
     @InjectModel(Mediaproofpicts.name, 'SERVER_CONTENT')
     private readonly MediaproofpictsModel: Model<MediaproofpictsDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateMediaproofpictsDto: CreateMediaproofpictsDto,
