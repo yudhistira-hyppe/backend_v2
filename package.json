@@ -32,7 +32,7 @@
     "@nestjs/passport": "^8.2.2",
     "@nestjs/platform-express": "^7.5.5",
     "@types/express-session": "^1.17.4",
-    "aws-sdk": "^2.1177.0",
+    "aws-sdk": "^2.1179.0",
     "bcrypt": "^5.0.1",
     "cheerio": "^1.0.0-rc.12",
     "class-transformer": "^0.5.1",

@@ -1,5 +1,5 @@
-import { ByteBuffer } from "aws-sdk/clients/cloudtrail";
-import { double } from "aws-sdk/clients/lightsail";
+import { Double } from "mongodb";
+
 export class AwsRequest {
     SourceImage: {
         Bytes: string;
@@ -32,39 +32,39 @@ export class FaceMatches {
 
 export class Face {
     BoundingBox: BoundingBox;
-    Confidence: double;
+    Confidence: Double;
     Pose: Pose;
     Quality: Quality;
     Landmarks: Array<Landmarks>;
 }
 
 export class BoundingBox {
-    Width: double;
-    Top: double;
-    Left: double;
-    Height: double;
+    Width: Double;
+    Top: Double;
+    Left: Double;
+    Height: Double;
 }
 
 export class Pose {
-    Yaw: double;
-    Roll: double;
-    Pitch: double;
+    Yaw: Double;
+    Roll: Double;
+    Pitch: Double;
 } 
 
 export class Quality {
-    Sharpness: double;
-    Brightness: double;
+    Sharpness: Double;
+    Brightness: Double;
 }
 
 export class Landmarks {
-    X: double;
-    Y: double;
+    X: Double;
+    Y: Double;
     Type: string;
 }
 
 export class UnmatchedFaces {
     BoundingBox: BoundingBox;
-    Confidence: double;
+    Confidence: Double;
     Pose: Pose;
     Quality: Quality;
     Landmarks: Array<Landmarks>;
@@ -72,7 +72,7 @@ export class UnmatchedFaces {
 
 export class SourceImageFace {
     BoundingBox: BoundingBox;
-    Confidence: double;
+    Confidence: Double;
     Pose: Pose;
     Quality: Quality;
     Landmarks: Array<Landmarks>;

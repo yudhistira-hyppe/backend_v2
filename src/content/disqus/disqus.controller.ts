@@ -36,26 +36,25 @@ export class DisqusController {
   }
 
   @Post('posts/disqus/deletedicuss')
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   async deletedicuss(
     @Headers() headers,
     @Body() request: any) {
-    console.log(headers);
-    if (!(await this.utilsService.validasiTokenEmail(headers))) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
-      );
-    }
-    if (request._id == undefined) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
-      );
-    }
-    if (request.email == undefined) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
-      );
-    }
+    // if (!(await this.utilsService.validasiTokenEmail(headers))) {
+    //   await this.errorHandler.generateNotAcceptableException(
+    //     'Unabled to proceed',
+    //   );
+    // }
+    // if (request._id == undefined) {
+    //   await this.errorHandler.generateNotAcceptableException(
+    //     'Unabled to proceed',
+    //   );
+    // }
+    // if (request.email == undefined) {
+    //   await this.errorHandler.generateNotAcceptableException(
+    //     'Unabled to proceed',
+    //   );
+    // }
     return this.DisqusService.deletedicuss(request);
   }
 }

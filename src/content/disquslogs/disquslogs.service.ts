@@ -103,4 +103,33 @@ export class DisquslogsService {
       });
     }
   }
+
+  async updateBydiscusid(disqusID: string, email: string) {
+    if (disqusID != undefined) {
+      this.DisquslogsModel.updateMany(
+        {
+        disqusID: disqusID,
+          sender: email
+      }, 
+        { receiverActive: false }, function (err, docs) {
+        if (err) {
+          console.log('err'+err);
+        } else {
+          console.log('docs' + docs);
+        }
+      });
+      this.DisquslogsModel.updateMany(
+        {
+          disqusID: disqusID,
+          receiver: email
+        },
+        { senderActive: false }, function (err, docs) {
+          if (err) {
+            console.log('err' + err);
+          } else {
+            console.log('docs' + docs);
+          }
+        });
+    }
+  }
 }

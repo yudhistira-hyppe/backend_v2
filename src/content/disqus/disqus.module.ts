@@ -6,10 +6,12 @@ import { ConfigModule } from '@nestjs/config';
 import { Disqus, DisqusSchema } from './schemas/disqus.schema';
 import { UtilsModule } from '../../utils/utils.module';
 import { NestjsFormDataModule } from 'nestjs-form-data';
+import { DisquslogsModule } from '../disquslogs/disquslogs.module';
 
 @Module({
 
     imports: [
+        DisquslogsModule,
         NestjsFormDataModule,
         UtilsModule,
         ConfigModule.forRoot(),

@@ -1,23 +1,21 @@
 import { HttpService } from "@nestjs/axios";
 import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { AwsRequest, AwsResponse } from "./dto/aws.dto";
-const AWS = require('aws-sdk');
-const config = new AWS.Config({
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    region: process.env.AWS_REGION
-});
+import AWS from 'aws-sdk';
 
 @Injectable()
 export class AwsService {
-    constructor(private readonly httpService: HttpService, private readonly configService: ConfigService) { }
+    constructor() { }
 
-    async comparing(AwsRequest_: AwsRequest): Promise<AwsResponse> {
-        const client = new AWS.Rekognition();
-        var AwsResponse_ = new AwsResponse();
-        console.log(AwsRequest_);
-        await client.compareFaces(AwsRequest_, function (err, response) {
+    async comparing(AwsRequest_: AwsRequest): Promise<any> {
+        var config = new AWS.Config({
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+            region: process.env.AWS_REGION
+        });
+        const client = new AWS.Rekognition(config);
+        var AwsResponse_ = null;
+        client.compareFaces(AwsRequest_, function (err, response) {
             if (err) {
                 console.log(err, err.stack); // an error occurred
             } else {
@@ -29,6 +27,7 @@ export class AwsService {
                 }) // for response.faceDetails
             } // if
         });
+        console.log(AwsResponse_);
         return AwsResponse_;
     }
 }

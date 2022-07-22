@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { CreateDisqusDto } from './dto/create-disqus.dto';
 import { Disqus, DisqusDocument } from './schemas/disqus.schema';
 import { UtilsService } from '../../utils/utils.service'; 
+import { DisquslogsService } from '../disquslogs/disquslogs.service';
 
 @Injectable()
 export class DisqusService {
@@ -11,6 +12,7 @@ export class DisqusService {
     @InjectModel(Disqus.name, 'SERVER_CONTENT')
     private readonly DisqusModel: Model<DisqusDocument>, 
     private utilsService: UtilsService,
+    private disquslogsService: DisquslogsService,
   ) { }
 
   async create(CreateDisqusDto: CreateDisqusDto): Promise<Disqus> {
@@ -43,7 +45,7 @@ export class DisqusService {
             _id: request._id,
             email: request.email
           }
-          data_update = { $set: { "emailActive": false } }
+          data_update = { $set: { "mateActive": false } }
         }
       } 
       if (data_discus.mate != undefined) {
@@ -52,7 +54,7 @@ export class DisqusService {
             _id: request._id,
             mate: request.email
           }
-          data_update = { $set: { "mateActive": false } }
+          data_update = { $set: { "emailActive": false } }
         }
       }
       this.DisqusModel.updateOne(
@@ -65,6 +67,7 @@ export class DisqusService {
           //console.log(docs);
         }
       });
+      this.disquslogsService.updateBydiscusid(request._id, request.email);
 
       return {
           response_code: 202,
