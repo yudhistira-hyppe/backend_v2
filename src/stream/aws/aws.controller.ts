@@ -59,11 +59,7 @@ export class AwsController {
     }
 
     @Post('api/aws/comparing/upload') 
-    @UseInterceptors(FileFieldsInterceptor(
-        [
-            { name: 'avatar', maxCount: 1 },
-            { name: 'background', maxCount: 1, }
-        ], { storage: storage }))
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 },{ name: 'background', maxCount: 1, }], { storage: storage }))
     async uploadcomparing(@UploadedFiles() files: { avatar?: Express.Multer.File[], background?: Express.Multer.File[] }, @Res() response) {
         const bitmap1 = fs.readFileSync('./upload/' + files.avatar[0].filename, 'base64');
         const bitmap2 = fs.readFileSync('./upload/' + files.background[0].filename, 'base64');
