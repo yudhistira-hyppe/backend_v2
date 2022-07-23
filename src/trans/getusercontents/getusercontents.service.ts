@@ -22926,10 +22926,10 @@ export class GetusercontentsService {
           allowComments: '$allowComments',
           isCertified: '$isCertified',
           saleLike: {
-            $cond: { if: { $eq: ["$saleLike", -1] }, then: false, else: true }
+            $cond: { if: { $eq: ["$saleLike", -1] }, then: false, else: "$saleLike" }
           },
           saleView: {
-            $cond: { if: { $eq: ["$saleView", -1] }, then: false, else: true }
+            $cond: { if: { $eq: ["$saleView", -1] }, then: false, else: "$saleView" }
           },
           saleAmount: {
             $cond: { if: { $eq: ["$salePrice", -1] }, then: 0, else: "$saleAmount" }
