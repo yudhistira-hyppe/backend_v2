@@ -22864,7 +22864,12 @@ export class GetusercontentsService {
   }
 
   async findcontenbuy(postID: string) {
-
+    const posts = await this.postsService.findpost();
+    const video = await this.mediavideosService.findvideo();
+    const pict = await this.mediapictsService.findpict();
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+    const insight = await this.insightsService.findinsight();
+    const diaries = await this.mediadiariesService.finddiaries();
     const query = await this.getusercontentsModel.aggregate([
       { $match: { postID: postID } },
       {

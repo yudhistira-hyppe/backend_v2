@@ -11,9 +11,7 @@ import { v4 as uuidv4 } from 'uuid';
 
     imports: [
         ConfigModule.forRoot(), NestjsFormDataModule,
-        MulterModule.register({
-            dest: './upload'
-        }),
+
         MongooseModule.forFeature([{ name: Mediaproofpicts.name, schema: MediaproofpictsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [MediaproofpictsController],

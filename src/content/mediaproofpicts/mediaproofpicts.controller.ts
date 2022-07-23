@@ -5,11 +5,26 @@ import { Mediaproofpicts } from './schemas/mediaproofpicts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { FormDataRequest } from 'nestjs-form-data';
 import { FileInterceptor, FilesInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express';
-import multer, { diskStorage } from 'multer';
 import * as http from 'http';
 import * as fs from 'fs';
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
+const multer = require('multer');
+
+var weedClient = require("node-seaweedfs");
+
+var server = process.env.SEAWEEDFS_HOST;
+var port = process.env.SEAWEEDFS_PORT;
+var BaseUrl = 'http://' + server + ':' + port;
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './upload');
+  },
+  filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(' ').join('-');
+    cb(null, fileName)
+  }
+});
 
 
 
@@ -48,19 +63,11 @@ export class MediaproofpictsController {
     },
     { name: 'file2', maxCount: 1 }
 
-  ]),
+  ], { storage: storage }),
 
   )
 
   uploadFile(@UploadedFiles() files: { file?: Express.Multer.File[], file2?: Express.Multer.File[] }) {
-
-    var fs = require('fs');
-    var newfilepath = '';
-
-    fs.rename('sample.txt', 'sample_old.txt', function (err) {
-      if (err) throw err;
-      console.log('File Renamed.');
-    });
 
   }
 
