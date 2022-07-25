@@ -11,7 +11,7 @@ const baseURL = 'http://' + process.env.SEAWEEDFS_HOST + ':' + process.env.SEAWE
 export class SeaweedfsService {
     constructor() { }
 
-    async _assign(path:string): Promise<any> {
+    async _assign(path: string): Promise<any> {
         return new Promise(function (resolve, reject) {
             var req = http.request(url.parse(baseURL + "localrepo?" + path), function (res) {
                 let body = "";
@@ -49,7 +49,7 @@ export class SeaweedfsService {
             }
             file = [file];
         }
-        
+
         let assignOpts = Object.assign({}, opts);
         delete assignOpts.headers;
         return self._assign(assignOpts).then(function (finfo) {
@@ -63,8 +63,8 @@ export class SeaweedfsService {
                     var form = new FormData();
                     var stream = typeof file[i] === "string" ? fs.createReadStream(file[i]) : null;
                     form.append("file", stream ? stream : file[i]);
-                    
-                    var urlParts = url.parse(baseURL+ "localrepo/" + (opts.count == 1 ? "" : "_" + i));
+
+                    var urlParts = url.parse(baseURL + "localrepo/" + (opts.count == 1 ? "" : "_" + i));
                     var options = Object.assign({}, urlParts);
                     if (opts.headers) {
                         options = opts.headers;
@@ -102,7 +102,7 @@ export class SeaweedfsService {
         });
     }
 
-    async find(path: string, opts:any): Promise<any> {
+    async find(path: string, opts: any): Promise<any> {
         return new Promise(function (resolve, reject) {
             let options = Object.assign({}, url.parse(baseURL + "localrepo/" + path));
             if (opts && opts.collection) {
@@ -135,7 +135,7 @@ export class SeaweedfsService {
         });
     }
 
-    async read(fid: string, stream:any, opts: any): Promise<any> {
+    async read(fid: string, stream: any, opts: any): Promise<any> {
         return await this.find(fid, opts).then(function (res) {
             return new Promise(function (resolve, reject) {
                 if (res.length) {
@@ -231,7 +231,7 @@ export class SeaweedfsService {
         });
     }
 
-    async SeaweedFSError(message){
+    async SeaweedFSError(message) {
         var SeaweedFSError_ = new SeaweedFSError();
         SeaweedFSError_.name = 'SeaweedFSError';
         SeaweedFSError_.message = message || 'Communication with SeaweedFS failed';
