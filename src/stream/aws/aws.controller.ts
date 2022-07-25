@@ -6,8 +6,6 @@ import * as http from 'http';
 import * as fs from 'fs';
 const multer = require('multer');
 
-var weedClient = require("node-seaweedfs");
-
 var server = process.env.SEAWEEDFS_HOST;
 var port = process.env.SEAWEEDFS_PORT;
 var BaseUrl = 'http://' + server + ':' + port;
@@ -20,9 +18,16 @@ const storage = multer.diskStorage({
         cb(null, fileName)
     }
 });
+
 @Controller()
 export class AwsController {
     constructor(private readonly awsService: AwsService) { }
+
+    @Get('api/aws/test')
+    async test(AwsRequest_: AwsRequest) {
+        return await this.awsService.test();
+        // console.log(data);
+    }
 
     @Post('api/aws/comparing')
     async comparing(AwsRequest_: AwsRequest) {
@@ -60,14 +65,15 @@ export class AwsController {
 
     @Post('api/aws/comparing/upload') 
     @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 },{ name: 'background', maxCount: 1, }], { storage: storage }))
-    async uploadcomparing(@UploadedFiles() files: { avatar?: Express.Multer.File[], background?: Express.Multer.File[] }, @Res() response) {
+    async uploadcomparing(@UploadedFiles() files: { avatar?: Express.Multer.File[], background?: Express.Multer.File[] }) {
         const bitmap1 = fs.readFileSync('./upload/' + files.avatar[0].filename, 'base64');
         const bitmap2 = fs.readFileSync('./upload/' + files.background[0].filename, 'base64');
-        // const buffer1 = Buffer.from(bitmap1, 'base64');
-        // const buffer2 = Buffer.from(bitmap2, 'base64');
 
-        // const deserialized1 = Buffer.from(bitmap1, "binary")
-        // const deserialized2 = Buffer.from(bitmap2, "binary")
+        const buffer1 = Buffer.from(bitmap1, 'base64');
+        const buffer2 = Buffer.from(bitmap2, 'base64');
+
+        const deserialized1 = Buffer.from(bitmap1);
+        const deserialized2 = Buffer.from(bitmap2);
         //console.log(bitmap1);
         // console.log(bitmap1.length);
         // console.log(bitmap2.length);
@@ -75,22 +81,25 @@ export class AwsController {
         var Image_1 = new ImageDataRequest();
         var Image_2 = new ImageDataRequest();
 
+        const bitmap = await fs.readFileSync('./upload/' + files.avatar[0].filename);
+        const buffer = Buffer.from(bitmap1, 'base64');
+
         // Image_1.Bytes = bitmap1;
         // Image_2.Bytes = bitmap2;
 
         AwsRequest_.SimilarityThreshold = 70;
         AwsRequest_.SourceImage = { Bytes: bitmap1 };
         AwsRequest_.TargetImage = { Bytes: bitmap1 };
-        console.log(AwsRequest_);
-        const data = await this.awsService.comparing(AwsRequest_);
-        return {
+        //console.log(AwsRequest_);
+        const data = await this.awsService.comparing({
+            "SimilarityThreshold": 70,
             "SourceImage": {
-                "Bytes": bitmap1
+                "Bytes": buffer1
             },
             "TargetImage": {
-                "Bytes": bitmap1
-            },
-            "SimilarityThreshold": 70
-        };
+                "Bytes": buffer2
+            }
+        });
+        return data;
     }
 }
