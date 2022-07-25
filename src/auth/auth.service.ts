@@ -2260,7 +2260,7 @@ export class AuthService {
     if (await this.utilsService.ceckData(datajwtrefreshtokenService)) {
       var date_exp = await datajwtrefreshtokenService.exp;
       //Ceck Time Refresh Token Expired
-      if (new Date().getTime() < Number(await date_exp)) {
+      if (new Date().getTime() > Number(await date_exp)) {
         await this.errorHandler.generateNotAcceptableException(
           'Refesh token still valid',
         );
