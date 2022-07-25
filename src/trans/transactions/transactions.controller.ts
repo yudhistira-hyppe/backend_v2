@@ -643,6 +643,8 @@ export class TransactionsController {
                 var salelike = datatransaksi.salelike;
                 var saleview = datatransaksi.saleview;
 
+
+
                 if (status == "pending") {
                     var ubasic = await this.userbasicsService.findid(iduserbuy);
                     var emailbuyer = ubasic.email;
@@ -2107,6 +2109,35 @@ export class TransactionsController {
             type: "sell",
             timestamp: dt.toISOString(),
             description: "sell content " + desccontent,
+
+        };
+
+        await this.accountbalancesService.createdata(dataacountbalance);
+    }
+
+    async accontbalanceAdmin(postid: string, type: string, iduseradmin: { oid: string }, amount: number) {
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var datapost = null;
+        var desccontent = "";
+        try {
+            datapost = await this.postsService.findid(postid);
+
+            desccontent = datapost._doc.description;
+
+
+        } catch (e) {
+            datapost = null;
+            desccontent = "";
+        }
+        var dataacountbalance = {
+            iduser: iduseradmin,
+            debet: 0,
+            kredit: amount,
+            type: type,
+            timestamp: dt.toISOString(),
+            description: type + "Charge",
 
         };
 
