@@ -13,7 +13,7 @@ var port = process.env.SEAWEEDFS_PORT;
 var BaseUrl = 'http://' + server + ':' + port;
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, './upload');
+        cb(null, './testing');
     },
     filename: (req, file, cb) => {
         const fileName = file.originalname.toLowerCase().split(' ').join('-');
@@ -58,10 +58,22 @@ export class MediaController {
         //         },
         //     });
         // }
-        const bitmap1 = fs.readFileSync('./upload/' + files.profilePict[0].filename);
-        const bitmap2 = fs.readFileSync('./upload/' + files.proofPict[0].filename);
-        var data_upload = [bitmap1, bitmap2];
-        await this.seaweedfsService.write(data_upload);
+        // const bitmap1 = fs.readFileSync('./upload/' + files.profilePict[0].filename);
+        // const bitmap2 = fs.readFileSync('./upload/' + files.proofPict[0].filename);
+
+        var data_upload = ['./testing/' + files.profilePict[0].filename, './testing/' + files.proofPict[0].filename];
+        await this.seaweedfsService.write(data_upload).then(function (fileInfo) {
+            // The fid's will be the same, to access each variaton just
+            // add _ARRAYINDEX to the end of the fid. In this case fileB
+            // would be: fid + "_1"
+
+            var fidA = fileInfo;
+            var fidB = fileInfo + "_1";
+
+            console.log(fileInfo);
+        }).catch(function (err) {
+            console.log(err);
+        });
         console.log(request.email);
         return {
             "response_code": 202,
