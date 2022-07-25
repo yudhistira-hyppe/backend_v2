@@ -30,6 +30,8 @@ import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken
 import { UserauthsService } from '../trans/userauths/userauths.service';
 import { UserbasicsService } from '../trans/userbasics/userbasics.service';
 import { UserdevicesService } from '../trans/userdevices/userdevices.service';
+import { InterestsRepoService } from '../infra/interests_repo/interests_repo.service'; 
+import { LanguagesService } from '../infra/languages/languages.service';
 import { ErrorHandler } from '../utils/error.handler';
 import mongoose from 'mongoose';
 import { Int32 } from 'mongodb';
@@ -37,6 +39,8 @@ import { ProfileDTO } from '../utils/data/Profile';
 import { GlobalResponse } from '../utils/data/globalResponse';
 import { GlobalMessages } from '../utils/data/globalMessage';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
+import { FormDataRequest } from 'nestjs-form-data';
+import { CreateUserbasicDto, SearchUserbasicDto } from 'src/trans/userbasics/dto/create-userbasic.dto';
 
 @Controller()
 export class AuthController {
@@ -48,7 +52,9 @@ export class AuthController {
     private userbasicsService: UserbasicsService,
     private userdevicesService: UserdevicesService,
     private jwtrefreshtokenService: JwtrefreshtokenService,
-    private userauthsService: UserauthsService,
+    private userauthsService: UserauthsService, 
+    private interestsRepoService: InterestsRepoService, 
+    private languagesService: LanguagesService,
   ) { }
 
   @UseGuards(LocalAuthGuard)
@@ -895,11 +901,144 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
-  @Post('api/getuserprofile')
-  async getuserprofile(@Req() request: any, @Headers() headers,
-    @Query('search') pageNumber: number,
-    @Query('pageRow') pageRow: number,
-    @Query('pageNumber') search: string) {
-    return await this.authService.getuserprofile(request, headers);
+  @Post('api/user/getuserprofile') 
+  @FormDataRequest()
+  async getuserprofile(@Body() SearchUserbasicDto_: SearchUserbasicDto, @Headers() headers) {
+    if (headers['x-auth-user'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+    if (SearchUserbasicDto_.search == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    if (await this.utilsService.validasiEmail(SearchUserbasicDto_.search.toString())){
+      //Ceck User Userbasics
+      const data_userbasics = await this.userbasicsService.findOne(SearchUserbasicDto_.search.toString());
+      if (await this.utilsService.ceckData(data_userbasics)) {
+        var Data = await this.utilsService.generateProfile(SearchUserbasicDto_.search.toString(), 'PROFILE');
+        return {
+          "response_code": 202,
+          "data": [Data],
+          "messages": {
+            "info": [
+              "The process successful"
+            ]
+          }
+        };
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed user not found',
+        );
+      }
+    } else {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed wrong format email',
+      );
+    }
+  }
+
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/profileinterest')
+  async profileinterest(@Req() request: any, @Headers() headers) {
+    var user_email = null;
+    var user_interest = null;
+    var user_langIso = null;
+    var data_interest_id = [];
+    var get_languages = null;
+    
+    if (headers['x-auth-user'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed Unauthorized email header dan token not match',
+      );
+    } 
+    if (request.body.email == undefined || request.body.interest == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }else{
+      user_email = request.body.email;
+      user_interest = request.body.interest;
+    }
+
+    //Ceck User Userbasics
+    const datauserbasicsService = await this.userbasicsService.findOne(
+      user_email,
+    );
+
+    if (await this.utilsService.ceckData(datauserbasicsService)) {
+
+      //Get Id Language
+      try {
+        if (datauserbasicsService.languages != undefined) {
+          var languages_json = JSON.parse(JSON.stringify(datauserbasicsService.languages));
+          get_languages = await this.languagesService.findOne(languages_json.$id);
+        } 
+      } catch (error) {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed Get Id Language. Error: ' + error,
+        );
+      }
+
+      if (get_languages != null) {
+        user_langIso = get_languages.langIso;
+      }
+
+      //Get Id Interest
+      try {
+        if (user_interest != undefined) {
+          if (user_interest.length > 0) {
+            for (var i = 0; i < user_interest.length; i++) {
+              var id_interest =
+                await this.interestsRepoService.findOneByInterestNameLangIso(
+                  user_interest[i], user_langIso
+                );
+              if (id_interest != undefined) {
+                data_interest_id.push({
+                  $ref: 'interests_repo',
+                  $id: Object(id_interest._id),
+                  $db: 'hyppe_infra_db',
+                });
+              }
+            }
+          }
+        }
+      } catch (error) {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed Get Id Interest. Error: ' + error,
+        );
+      }
+
+      var data_update = {
+        userInterests: data_interest_id
+      }
+      if (data_interest_id.length>0) {
+        await this.userbasicsService.updatebyEmail(user_email, data_update);
+      }
+      return {
+        "response_code": 202,
+        "messages": {
+          "info": [
+            "Update Profile interest successful"
+          ]
+        }
+      };
+    } else {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed User nor found',
+      );
+    }
   }
 }

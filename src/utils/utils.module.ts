@@ -10,7 +10,6 @@ import { UtilsController } from './utils.controller';
 import { ConfigService } from '@nestjs/config';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { InterestsRepoModule } from '../infra/interests_repo/interests_repo.module';
-import { MediaModule } from '../stream/media/media.module';
 import { AreasModule } from '../infra/areas/areas.module';
 import { CitiesModule } from '../infra/cities/cities.module';
 import { CountriesModule } from '../infra/countries/countries.module';
@@ -28,9 +27,11 @@ import { InterestsModule } from '../infra/interests/interests.module';
 import { EulasModule } from '../infra/eulas/eulas.module';
 import { MediaprofilepictsModule } from '../content/mediaprofilepicts/mediaprofilepicts.module'; 
 import { SettingsModule } from '../trans/settings/settings.module';
+import { SeaweedfsModule } from '../stream/seaweedfs/seaweedfs.module'; 
 
 @Module({
   imports: [
+    SeaweedfsModule,
     SettingsModule,
     MediaprofilepictsModule,
     EulasModule,
@@ -49,7 +50,6 @@ import { SettingsModule } from '../trans/settings/settings.module';
     CountriesModule,
     CitiesModule,
     AreasModule,
-    MediaModule,
     InterestsRepoModule,
     TemplatesModule,
     UserauthsModule,

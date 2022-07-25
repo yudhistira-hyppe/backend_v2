@@ -26,7 +26,7 @@ import { CitiesService } from '../infra/cities/cities.service';
 import { ReferralService } from '../trans/referral/referral.service';
 import { CreateReferralDto } from '../trans/referral/dto/create-referral.dto';
 import mongoose from 'mongoose';
-import { MediaService } from '../stream/media/media.service';
+import { SeaweedfsService } from 'src/stream/seaweedfs/seaweedfs.service'; 
 import { Long } from 'mongodb';
 import * as fs from 'fs';
 
@@ -50,7 +50,7 @@ export class AuthService {
     private errorHandler: ErrorHandler,
     private citiesService: CitiesService,
     private referralService: ReferralService,
-    private mediaService: MediaService,
+    private seaweedfsService: SeaweedfsService,
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -1385,8 +1385,8 @@ export class AuthService {
               if (user_interest.length > 0) {
                 for (var i = 0; i < user_interest.length; i++) {
                   var id_interest =
-                    await this.interestsRepoService.findOneByInterestName(
-                      user_interest[i],
+                    await this.interestsRepoService.findOneByInterestNameLangIso(
+                      user_interest[i], id_user_langIso
                     );
                   if (id_interest != undefined) {
                     data_interest_id.push({
@@ -4081,7 +4081,12 @@ export class AuthService {
         }
 
         if (mediaprofilepicts_fsSourceUri != '') {
-          return await this.mediaService.getPitch(mediaprofilepicts_fsSourceUri);
+          var data = await this.seaweedfsService.read(mediaprofilepicts_fsSourceUri);
+          if (data != null) {
+            return data;
+          }else{
+            return fs.readFileSync('./profile-default.jpg');
+          }
         } else {
           return fs.readFileSync('./profile-default.jpg');
         }
@@ -5076,21 +5081,8 @@ export class AuthService {
   }
 
   async getuserprofile(req: any, head: any) {
-    if (head['x-auth-user'] == undefined) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed x-auth-user undefined',
-      );
-    }
-    if (await this.utilsService.validasiTokenEmail(head)) {
-      var user_email = head['x-auth-user'];
-
-    } else {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed email dan token not match',
-      );
-    }
+    
   }
-
 
   async signsosmed(req: any) {
     var user_email = req.body.email;

@@ -5,7 +5,7 @@ import path from "path";
 import * as fs from 'fs';
 import FormData from "form-data";
 import { SeaweedFSError } from "./dto/seaweedfs.dto";
-const baseURL = 'http://' + process.env.SEAWEEDFS_HOST + ':' + process.env.SEAWEEDFS_PORT + '/';
+const baseURL = 'http://' + process.env.SEAWEEDFS_HOST + ':' + process.env.SEAWEEDFS_PORT;
 
 @Injectable()
 export class SeaweedfsService {
@@ -13,15 +13,22 @@ export class SeaweedfsService {
 
     async _assign(path:string): Promise<any> {
         return new Promise(function (resolve, reject) {
-            var req = http.request(url.parse(baseURL + "localrepo?" + path), function (res) {
-                let body = "";
+            var req = http.get(baseURL + path, res => {
+                let body = [];
+                let err;
                 res.setEncoding('utf8');
-                res.on("data", function (chunk) {
-                    body += chunk;
+                res.on('data', function (chunk) {
+                    body.push(chunk)
                 });
-                res.on("end", function () {
+                res.on('end', function () {
                     var json = JSON.parse(JSON.stringify(body));
-                    return resolve(json);
+                    if (json.error) {
+                        var err = this.SeaweedFSError(json.error);
+                        err.volumeId = json.volumeId;
+                        return reject(err);
+                    } else {
+                        return resolve(json);
+                    }
                 });
             });
             req.on("error", function (err) {
@@ -102,22 +109,16 @@ export class SeaweedfsService {
         });
     }
 
-    async find(path: string, opts:any): Promise<any> {
+    async find(path: string): Promise<any> {
         return new Promise(function (resolve, reject) {
-            let options = Object.assign({}, url.parse(baseURL + "localrepo/" + path));
-            if (opts && opts.collection) {
-                options.path += `&collection=${opts.collection}`
-            }
-            let req = http.request(options, function (res) {
-                let body = "";
+            var req = http.get(baseURL + path, res => {
+                let body = [];
                 let err;
-
                 res.setEncoding('utf8');
-                res.on('data', (chunk) => {
-                    body += chunk;
+                res.on('data', function (chunk) {
+                    body.push(chunk)
                 });
-
-                res.on("end", function () {
+                res.on('end', function () {
                     var json = JSON.parse(JSON.stringify(body));
                     if (json.error) {
                         var err = this.SeaweedFSError(json.error);
@@ -129,66 +130,38 @@ export class SeaweedfsService {
                 });
             });
             req.on("error", function (err) {
-                reject(err);
+                return reject(err);
             });
             req.end();
         });
     }
 
-    async read(fid: string, stream:any, opts: any): Promise<any> {
-        return await this.find(fid, opts).then(function (res) {
+    async read(path: string): Promise<any> {
+        var data_find = await this.find(path);
+        if (data_find.length > 0) {
             return new Promise(function (resolve, reject) {
-                if (res.length) {
-                    let options = Object.assign({}, url.parse(baseURL + "/" + path));
-                    if (opts && opts.headers) {
-                        //options.headers = opts.headers;
-                    }
-                    let req = http.request(options, function (res) {
-                        if (res.statusCode === 404) {
-                            var err = this.SeaweedFSError("file '" + path + "' not found");
-                            if (stream) {
-                                stream.emit("error", err);
-                            }
-                            return reject(err);
-                        }
-                        if (stream) {
-                            if (typeof stream.writeHead === 'function') {
-                                stream.writeHead(res.statusCode, res.headers)
-                            }
-                            res.pipe(stream);
-                            resolve(stream);
-                        } else {
-                            var tmp = [];
-                            res.on("data", function (chunk) {
-                                tmp.push(chunk);
-                            });
-                            res.on("end", function () {
-                                var buffer = Buffer.concat(tmp);
-                                resolve(buffer);
-                            });
-                        }
-                    });
-                    req.on("error", function (err) {
-                        if (stream) {
-                            stream.emit("error", err);
-                        }
-                        reject(err);
-                    });
-                    req.end();
-                } else {
-                    var err = this.SeaweedFSError("No volume servers found for volume " + fid.split(",")[0]);
-                    if (stream) {
-                        stream.emit("error", err);
-                    }
-                    reject(err);
+                var req = http.request(baseURL + path, res => {
+                    let body = [];
 
-                }
+                    res.on('data', function (chunk) {
+                        body.push(chunk)
+                    });
+                    res.on('end', function () {
+                        return resolve(Buffer.concat(body));
+                    });
+                });
+                req.on("error", function (err) {
+                    return reject(err);
+                });
+                req.end();
             });
-        });
+        } else {
+            return null;
+        }
     }
 
     async remove(fid: string, opts: any): Promise<any> {
-        return await this.find(fid, opts).then(function (result) {
+        return await this.find(fid).then(function (result) {
             return new Promise(function (resolve, reject) {
                 var proms = [];
                 for (var i = 0, len = result.locations.length; i < len; i++) {

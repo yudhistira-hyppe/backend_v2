@@ -30,6 +30,12 @@ export class InterestsRepoService {
       .exec();
   }
 
+  async findOneByInterestNameLangIso(interestName: string, langIso: string): Promise<Interestsrepo> {
+    return this.interestsrepoModel
+      .findOne({ interestName: interestName, langIso: langIso })
+      .exec();
+  }
+
   async findOne(id: string): Promise<Interestsrepo> {
     return this.interestsrepoModel.findOne({ _id: id }).exec();
   }
