@@ -896,11 +896,20 @@ export class GetusercontentsController {
         datavids = await this.getusercontentsService.findcontentfilter(keys, "vid", skip, limit);
         datadiary = await this.getusercontentsService.findcontentfilter(keys, "diary", skip, limit);
         datapict = await this.getusercontentsService.findcontentfilter(keys, "pict", skip, limit);
-        datatag = await this.getusercontentsService.findcontentfilterTags(keys, skip, limit);
-        datauser = await this.getuserprofilesService.findUser(keys, skip, limit);
 
-        var totalFilterPostTag = await this.getusercontentsService.findcountfilteTag(keys);
-        var totalFilter = totalFilterPostTag[0].totalpost;
+        datauser = await this.getuserprofilesService.findUser(keys, skip, limit);
+        var totalFilterPostTag = null;
+        var totalFilter = null;
+        if (keys !== "") {
+            datatag = await this.getusercontentsService.findcontentfilterTags(keys, skip, limit);
+            totalFilterPostTag = await this.getusercontentsService.findcountfilteTag(keys);
+            totalFilter = totalFilterPostTag[0].totalpost;
+        } else {
+            datatag = await this.getusercontentsService.findcontentAllTags(skip, limit);
+            totalFilterPostTag = await this.getusercontentsService.findcountfilteTagAll();
+            totalFilter = totalFilterPostTag[0].totalpost;
+        }
+
         var totalFilterPostVid = await this.getusercontentsService.findcountfilterall(keys, "vid");
         var totalFilterVid = totalFilterPostVid[0].totalpost;
         var totalFilterPostDiary = await this.getusercontentsService.findcountfilterall(keys, "diary");

@@ -104,6 +104,20 @@ export class GetusercontentsService {
     return query;
   }
 
+  async findcountfilteTagAll() {
+    const query = await this.getusercontentsModel.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalpost: {
+            $sum: 1
+          }
+        }
+      }
+    ]);
+    return query;
+  }
+
   async findalldata(email: string, skip: number, limit: number): Promise<object> {
     const posts = await this.postsService.findpost();
     const video = await this.mediavideosService.findvideo();
@@ -23649,6 +23663,31 @@ export class GetusercontentsService {
           }
         }
       }
+    ]);
+    return query;
+  }
+
+  async findcontentAllTags(skip: number, limit: number) {
+    const posts = await this.postsService.findpost();
+    // const video = await this.mediavideosService.findvideo();
+    // const pict = await this.mediapictsService.findpict();
+    // const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+    // const insight = await this.insightsService.findinsight();
+    // const diaries = await this.mediadiariesService.finddiaries();
+    const query = await this.getusercontentsModel.aggregate([
+
+
+      {
+        $group: {
+          _id: '$tags',
+          total: {
+            $sum: 1
+          }
+        }
+      },
+      { $sort: { tags: 1 }, },
+      { $skip: skip },
+      { $limit: limit },
     ]);
     return query;
   }
