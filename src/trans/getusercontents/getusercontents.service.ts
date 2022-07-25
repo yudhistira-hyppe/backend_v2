@@ -23636,28 +23636,19 @@ export class GetusercontentsService {
             $regex: keys
           }
 
-
-        }
-      },
-      {
-        $addFields: {
-
-          taging: { $cmp: ["$tags", 0] }
-
-        },
-      },
-      {
-        $project: {
-
-          tags: {
-            $cond: { if: { $eq: ["$taging", -1] }, then: "", else: "$tags" }
-          },
-
         }
       },
       { $sort: { tags: 1 }, },
       { $skip: skip },
       { $limit: limit },
+      {
+        $group: {
+          _id: '$tags',
+          total: {
+            $sum: 1
+          }
+        }
+      }
     ]);
     return query;
   }
