@@ -13,6 +13,9 @@ export class Banks {
     @Prop()
     bankname: string
 
+    @Prop()
+    bankIcon: string
+
 
 
 }
