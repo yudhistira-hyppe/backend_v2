@@ -40,7 +40,7 @@ import { GlobalResponse } from '../utils/data/globalResponse';
 import { GlobalMessages } from '../utils/data/globalMessage';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { FormDataRequest } from 'nestjs-form-data';
-import { CreateUserbasicDto, SearchUserbasicDto } from 'src/trans/userbasics/dto/create-userbasic.dto';
+import { CreateUserbasicDto, SearchUserbasicDto } from '../trans/userbasics/dto/create-userbasic.dto';
 
 @Controller()
 export class AuthController {

@@ -5,6 +5,7 @@ import { request } from "http";
 import { FormDataRequest } from "nestjs-form-data";
 import { MediaService } from "./media.service";
 import { ErrorHandler } from "../../utils/error.handler";
+import { SeaweedfsService } from "../seaweedfs/seaweedfs.service";
 const multer = require('multer');
 
 var server = process.env.SEAWEEDFS_HOST;
@@ -24,7 +25,8 @@ const storage = multer.diskStorage({
 export class MediaController {
     constructor(
         private readonly mediaService: MediaService,
-        private readonly errorHandler: ErrorHandler) {}
+        private readonly errorHandler: ErrorHandler,
+        private readonly seaweedfsService: SeaweedfsService) {}
 
     @Post('api/posts/profilepicture')
     @UseInterceptors(FileFieldsInterceptor([{ name: 'profilePict', maxCount: 1 }, { name: 'proofPict', maxCount: 1, }], { storage: storage }))
@@ -36,16 +38,18 @@ export class MediaController {
         @Body() request,
         @Headers() headers) {
         if (headers['x-auth-user'] == undefined) {
+
             await this.errorHandler.generateNotAcceptableException(
                 'Unauthorized',
             );
-            throw new NotAcceptableException({
-                response_code: 406,
-                messages: {
-                    info: ['Unabled to proceed'],
-                },
-            });
+            // throw new NotAcceptableException({
+            //     response_code: 406,
+            //     messages: {
+            //         info: ['Unabled to proceed'],
+            //     },
+            // });
         }
+
         // if (!(await this.utilsService.validasiTokenEmail(headers))) {
         //     throw new NotAcceptableException({
         //         response_code: 406,
@@ -54,8 +58,10 @@ export class MediaController {
         //         },
         //     });
         // }
-        //const bitmap1 = fs.readFileSync('./upload/' + files.profilePict[0].filename, 'base64');
-        //const bitmap2 = fs.readFileSync('./upload/' + files.proofPict[0].filename, 'base64');
+        const bitmap1 = fs.readFileSync('./upload/' + files.profilePict[0].filename);
+        const bitmap2 = fs.readFileSync('./upload/' + files.proofPict[0].filename);
+        var data_upload = [bitmap1, bitmap2];
+        await this.seaweedfsService.write(data_upload);
         console.log(request.email);
         return {
             "response_code": 202,

@@ -26,7 +26,7 @@ import { CitiesService } from '../infra/cities/cities.service';
 import { ReferralService } from '../trans/referral/referral.service';
 import { CreateReferralDto } from '../trans/referral/dto/create-referral.dto';
 import mongoose from 'mongoose';
-import { SeaweedfsService } from 'src/stream/seaweedfs/seaweedfs.service'; 
+import { SeaweedfsService } from '../stream/seaweedfs/seaweedfs.service'; 
 import { Long } from 'mongodb';
 import * as fs from 'fs';
 
