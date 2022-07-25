@@ -6,6 +6,8 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { FormDataRequest } from 'nestjs-form-data';
 import { FileInterceptor, FilesInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express';
 import * as http from 'http';
+var FormData = require('form-data');
+var url = require("url");
 import * as fs from 'fs';
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
@@ -21,7 +23,9 @@ const storage = multer.diskStorage({
     cb(null, './upload');
   },
   filename: (req, file, cb) => {
-    const fileName = file.originalname.toLowerCase().split(' ').join('-');
+    var name = file.originalname;
+    var splitname = name.split('.');
+    const fileName = uuidv4() + '.' + splitname[1];
     cb(null, fileName)
   }
 });
@@ -54,40 +58,113 @@ export class MediaproofpictsController {
   }
 
 
-  @Post()
-  @UseInterceptors(FileFieldsInterceptor([
-    {
-      name: 'file',
-      maxCount: 1,
+  // @Post()
+  // @UseInterceptors(FileFieldsInterceptor([
+  //   {
+  //     name: 'ktp',
+  //     maxCount: 1,
 
-    },
-    { name: 'file2', maxCount: 1 }
+  //   },
+  //   { name: 'selfie', maxCount: 1 }
 
-  ], { storage: storage }),
+  // ], { storage: storage }),
 
-  )
+  // )
 
-  uploadFile(@UploadedFiles() files: { file?: Express.Multer.File[], file2?: Express.Multer.File[] }) {
+  // uploadFile(@UploadedFiles() files: { ktp?: Express.Multer.File[], selfie?: Express.Multer.File[] }) {
+  //   console.log(files);
+  //   const file = fs.readFileSync('./upload/' + files.ktp[0].filename);
 
-  }
+  //   return this.findseaweedfs(files.ktp[0], files.ktp[0].filename).then(function (finfo) {
 
-  async fileUpload(fileName: string) {
-    var weedClient = require("node-seaweedfs");
+  //     var proms = [];
+  //     for (var i = 0; i < 1; i++) {
+  //       proms.push(new Promise(function (resolve, reject) {
+  //         var form = new FormData();
+  //         var stream = typeof file === "string" ? fs.createReadStream(file) : null;
+  //         form.append("file", stream ? stream : file);
+  //         // var urlParts = url.parse("" + (self.usePublicUrl ? finfo.publicUrl : finfo.url) + "/" + finfo.fid + (opts.count == 1 ? "" : "_" + i));
+  //         var urlParts = url.parse("http://172.16.0.4:9555/localrepo/testing/" + files.ktp[0].filename);
+  //         var options = Object.assign({}, urlParts);
 
-    var seaweedfs = new weedClient({
-      server: "172.16.0.4",
-      port: 9555
+  //         console.log(options)
+  //         // if (opts.headers) {
+  //         //     options.headers = opts.headers;
+  //         // }
 
-    });
+  //         var req = form.submit(options, function (err, res) {
+  //           if (err) {
+  //             return reject(err);
+  //           }
+  //           resolve(res);
+  //         });
 
-    seaweedfs.write("./upload/" + fileName).then(function (fileInfo) {
-      console.log(fileInfo.fileUrl);
-      return seaweedfs.read(fileInfo.fid);
-    }).then(function (Buffer) {
-      throw new BadRequestException(Buffer);
-    }).catch(function (err) {
-      throw new BadRequestException(err);
-    });
-  }
+  //         //we only check for self created streams, stream errors from outside streams should be handled outside
+  //         if (stream) {
+  //           stream.on("error", function (err) {
+  //             reject(err);
+  //           });
+  //         }
+
+  //         req.on("error", function (err) {
+  //           reject(err);
+  //         });
+
+  //         req.on("socket", function (socket) {
+  //           socket.on("error", function (err) {
+  //             reject(err);
+  //           });
+  //         })
+  //       }));
+  //     }
+  //     return Promise.all(proms).then(function () {
+  //       return Promise.resolve(finfo);
+  //     });
+
+  //   });
+  // }
+
+  // async fileUpload(fileName: string) {
+  //   // var weedClient = require('node-seaweedfs');
+
+  //   // var seaweedfs = new weedClient({
+  //   //   server: server,
+  //   //   port: port
+
+  //   // });
+
+  //   // seaweedfs.write("./upload/" + fileName).then(function (fileInfo) {
+
+  //   //   return seaweedfs.read(fileInfo.fid);
+  //   // }).then(function (Buffer) {
+  //   //   throw new BadRequestException(Buffer);
+  //   // }).catch(function (err) {
+  //   //   throw new BadRequestException(err);
+  //   // });
+
+  // }
+
+  // async findseaweedfs(fileName: {}, name: string) {
+  //   var self = this;
+  //   return new Promise(function (resolve, reject) {
+  //     var req = http.request(url.parse("http://172.16.0.4:9555/localrepo/testing/" + name), function (res) {
+
+  //       let body = "";
+
+  //       res.setEncoding('utf8');
+  //       res.on("data", function (chunk) {
+  //         body += chunk;
+  //       });
+  //       res.on("end", function () {
+  //         var json = JSON.parse(JSON.stringify(body));
+  //         return resolve(json);
+  //       });
+  //     });
+  //     req.on("error", function (err) {
+  //       return reject(err);
+  //     });
+  //     req.end();
+
+  //   });
+  // }
 }
-
