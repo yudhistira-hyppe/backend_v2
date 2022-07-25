@@ -401,11 +401,11 @@ export class AuthController {
     if (await this.utilsService.ceckData(data_jwtrefreshtokenService)) {
       var date_exp = await data_jwtrefreshtokenService.exp;
       //Ceck Time Refresh Token Expired
-      if (new Date().getTime() < Number(await date_exp)) {
-        await this.errorHandler.generateNotAcceptableException(
-          'Refesh token still valid',
-        );
-      } else {
+      // if (new Date().getTime() < Number(await date_exp)) {
+      //   await this.errorHandler.generateNotAcceptableException(
+      //     'Refesh token still valid',
+      //   );
+      // } else {
         //Ceck User Userauths
         const datauserauthsService = await this.userauthsService.findOneByEmail(RefreshTokenRequest_.email);
 
@@ -431,7 +431,7 @@ export class AuthController {
         GlobalResponse_.data = ProfileDTO_;
         GlobalResponse_.messages = GlobalMessages_;
         return GlobalResponse_;
-      }
+      //}
     } else {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',
