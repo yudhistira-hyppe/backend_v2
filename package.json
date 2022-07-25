@@ -34,6 +34,7 @@
     "@types/express-session": "^1.17.4",
     "aws-sdk": "^2.1179.0",
     "bcrypt": "^5.0.1",
+    "browserify": "^17.0.0",
     "cheerio": "^1.0.0-rc.12",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",

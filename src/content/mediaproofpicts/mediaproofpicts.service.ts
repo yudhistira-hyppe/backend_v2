@@ -34,4 +34,6 @@ export class MediaproofpictsService {
     }).exec();
     return deletedCat;
   }
+
+
 }

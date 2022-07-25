@@ -96,7 +96,7 @@ export class GetuserprofilesService {
           idUserAuth: "$userAuth_data._id",
           fullName: '$fullName',
           username: '$userAuth_data.username',
-
+          email: '$email',
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
@@ -119,7 +119,7 @@ export class GetuserprofilesService {
           idUserAuth: '$idUserAuth',
           username: '$username',
           fullName: '$fullName',
-
+          email: '$email',
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
@@ -130,7 +130,7 @@ export class GetuserprofilesService {
         },
       },
 
-      { $sort: { createdAt: -1 }, },
+      { $sort: { fullName: 1 }, },
       { $skip: skip },
       { $limit: limit },
     ]);
@@ -11766,6 +11766,7 @@ export class GetuserprofilesService {
     }]);
     return query;
   }
+
 
   async delete(id: string) {
     const deletedCat = await this.getuserprofilesModel

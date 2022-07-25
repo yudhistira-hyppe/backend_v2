@@ -9,7 +9,7 @@ export class UserauthsService {
   constructor(
     @InjectModel(Userauth.name, 'SERVER_TRANS')
     private readonly userauthModel: Model<UserauthDocument>,
-  ) {}
+  ) { }
 
   async create(CreateUserauthDto: CreateUserauthDto): Promise<Userauth> {
     const createUserauthDto = await this.userauthModel.create(
@@ -90,12 +90,12 @@ export class UserauthsService {
     );
   }
 
-  async findUpdateEmailStatusRole(email: String,upgradeRole: String) {
+  async findUpdateEmailStatusRole(email: String, upgradeRole: String) {
     this.userauthModel.updateOne(
       {
         email: email,
       },
-      { upgradeRole:upgradeRole },
+      { upgradeRole: upgradeRole },
       function (err, docs) {
         if (err) {
           //console.log(err);
@@ -110,5 +110,26 @@ export class UserauthsService {
     let data = await this.userauthModel.updateOne({ "email": email },
       { $set: { "roles": [roles] } });
     return data;
+  }
+
+  async coutRow(keys: string) {
+    const query = await this.userauthModel.aggregate([
+      {
+        "$match": {
+          username: {
+            $regex: keys
+          }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalpost: {
+            $sum: 1
+          }
+        }
+      }
+    ]);
+    return query;
   }
 }
