@@ -22,9 +22,26 @@ export class UserbasicsService {
   }
 
   async updatebyEmail(email: string, data: Object) {
+    console.log(email);
     this.userbasicModel.updateOne(
       {
         email: email,
+      },
+      data,
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updatebyId(id: string, data: Object) {
+    this.userbasicModel.updateOne(
+      {
+        _id: id,
       },
       data,
       function (err, docs) {

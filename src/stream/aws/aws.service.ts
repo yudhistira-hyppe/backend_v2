@@ -56,6 +56,6 @@ export class AwsService {
     }
 
     async test(): Promise<any>{
-        return await this.seaweedfsService.read('61e6436e548ae516042f1b8e/pict/00eeed53-5c72-4736-af39-131357cdccc4/885fbead-5f80-49cf-bf8b-60401a204468_0001.jpeg', false,{});
+        return await this.seaweedfsService.read('61e6436e548ae516042f1b8e/pict/00eeed53-5c72-4736-af39-131357cdccc4/885fbead-5f80-49cf-bf8b-60401a204468_0001.jpeg');
     }
 }

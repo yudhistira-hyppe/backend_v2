@@ -1,3 +1,4 @@
+import { IsNotEmpty, IsString } from "class-validator";
 import { ObjectId } from "mongodb";
 
 export class CreateUserbasicDto {
@@ -68,4 +69,12 @@ export class CreateUserbasicDto {
     $db: String;
   };
   _class: String;
+}
+
+export class SearchUserbasicDto {
+  @IsString()
+  @IsNotEmpty()
+  search: String;
+  pageRow: number;
+  pageNumber: number;
 }

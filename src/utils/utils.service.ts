@@ -8,7 +8,6 @@ import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer'; 
 import { Templates } from '../infra/templates/schemas/templates.schema';
 import * as admin from 'firebase-admin';
-import { MediaService } from '../stream/media/media.service';
 import { ErrorHandler } from './error.handler';
 import { AvatarDTO, ProfileDTO } from './data/Profile';
 import { LanguagesService } from '../infra/languages/languages.service';
@@ -22,6 +21,7 @@ import { EulasService } from '../infra/eulas/eulas.service';
 import { MediaprofilepictsService } from '../content/mediaprofilepicts/mediaprofilepicts.service';
 import { CreateInsightsDto } from '../content/insights/dto/create-insights.dto';
 import { SettingsService } from '../trans/settings/settings.service';
+import { SeaweedfsService } from '../stream/seaweedfs/seaweedfs.service';
 import * as fs from 'fs';
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -35,7 +35,6 @@ export class UtilsService {
     private jwtService: JwtService,
     private mailerService: MailerService,
     private templatesService: TemplatesService,
-    private mediaService: MediaService,
     private errorHandler: ErrorHandler, 
     private userbasicsService: UserbasicsService, 
     private languagesService: LanguagesService, 
@@ -48,6 +47,7 @@ export class UtilsService {
     private eulasService: EulasService, 
     private mediaprofilepictsService: MediaprofilepictsService,
     private settingsService: SettingsService, 
+    private seaweedfsService: SeaweedfsService, 
   ) {}
 
   async sendEmail(
@@ -316,9 +316,9 @@ export class UtilsService {
       Templates_ = await this.getTemplate('REFERRAL', 'REFERRAL');
       var html_body = Templates_.body_detail.trim().toString();
       const $_ = cheerio.load(html_body);
-      var dataimage = await this.mediaService.getPitch(data.image_profile);
+      var dataimage = await this.seaweedfsService.read(data.image_profile);
       if (data.image_profile!=''){
-        dataimage = await this.mediaService.getPitch(data.image_profile);
+        dataimage = await this.seaweedfsService.read(data.image_profile);
       }else{
         dataimage = fs.readFileSync('./profile-default.jpg');
       }
@@ -483,7 +483,7 @@ export class UtilsService {
       //ProfileDTO_.children = 
     }
 
-    if (datafor == 'LOGIN' || datafor == 'FULL') {
+    if (datafor == 'LOGIN' || datafor == 'FULL' || datafor == 'PROFILE') {
       if (get_countries != null) { ProfileDTO_.country = get_countries.country; }
       if (get_userbasic.idProofNumber != undefined) { ProfileDTO_.idProofNumber = get_userbasic.idProofNumber; }
       ProfileDTO_.roles = get_userauth.roles;

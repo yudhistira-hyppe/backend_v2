@@ -21,9 +21,11 @@ import { UtilsModule } from '../utils/utils.module';
 import { AreasModule } from '../infra/areas/areas.module';
 import { CitiesModule } from '../infra/cities/cities.module';
 import { ReferralModule } from '../trans/referral/referral.module';
-import { MediaModule } from '../stream/media/media.module';
+import { NestjsFormDataModule } from 'nestjs-form-data';
+import { SeaweedfsModule } from 'src/stream/seaweedfs/seaweedfs.module';
 @Module({
   imports: [
+    NestjsFormDataModule,
     UserauthsModule,
     UserbasicsModule,
     UserdevicesModule,
@@ -36,10 +38,10 @@ import { MediaModule } from '../stream/media/media.module';
     InterestsModule,
     InterestsRepoModule,
     UtilsModule,
+    SeaweedfsModule,
     AreasModule,
     CitiesModule,
     ReferralModule,
-    MediaModule,
     ActivityeventsModule, JwtModule.register({
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },
