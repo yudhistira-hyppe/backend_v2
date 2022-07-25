@@ -22,7 +22,7 @@ import { AreasModule } from '../infra/areas/areas.module';
 import { CitiesModule } from '../infra/cities/cities.module';
 import { ReferralModule } from '../trans/referral/referral.module';
 import { NestjsFormDataModule } from 'nestjs-form-data';
-import { SeaweedfsModule } from 'src/stream/seaweedfs/seaweedfs.module';
+import { SeaweedfsModule } from '../stream/seaweedfs/seaweedfs.module';
 @Module({
   imports: [
     NestjsFormDataModule,

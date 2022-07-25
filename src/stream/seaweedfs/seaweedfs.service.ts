@@ -5,15 +5,16 @@ import path from "path";
 import * as fs from 'fs';
 import FormData from "form-data";
 import { SeaweedFSError } from "./dto/seaweedfs.dto";
+const qs = require('querystring');
 const baseURL = 'http://' + process.env.SEAWEEDFS_HOST + ':' + process.env.SEAWEEDFS_PORT;
 
 @Injectable()
 export class SeaweedfsService {
     constructor() { }
 
-    async _assign(path: string): Promise<any> {
+    async _assign(opts: any): Promise<any> {
         return new Promise(function (resolve, reject) {
-            var req = http.get(baseURL + path, res => {
+            var req = http.get(baseURL +  "localrepo?" + qs.stringify(opts), res => {
                 let body = [];
                 let err;
                 res.setEncoding('utf8');
@@ -43,7 +44,6 @@ export class SeaweedfsService {
         var self = this;
         if (file instanceof Array) {
             opts.count = file.length;
-
             for (var i = 0; i < opts.count; i++) {
                 if (typeof file[i] === "string") {
                     file[i] = path.resolve(process.cwd(), file[i]);
