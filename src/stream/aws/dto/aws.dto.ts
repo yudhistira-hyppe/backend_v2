@@ -19,10 +19,16 @@ export class ImageDataRequest {
 }
 
 export class AwsResponse {
+    SourceImageFace: ComparedSourceImageFace;
     FaceMatches: Array<FaceMatches>;
+    UnmatchedFaces: Array<Face>;
     SourceImageOrientationCorrection: string;
     TargetImageOrientationCorrection: string;
-    UnmatchedFaces: number;
+}
+
+export interface ComparedSourceImageFace {
+    BoundingBox: BoundingBox;
+    Confidence: number;
 }
 
 export class FaceMatches {
