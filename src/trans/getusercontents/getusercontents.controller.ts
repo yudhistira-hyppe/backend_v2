@@ -899,21 +899,65 @@ export class GetusercontentsController {
             "info": ["The process successful"],
         };
 
-        datavids = await this.getusercontentsService.findcontentfilter(keys, "vid", skip, limit);
-        datadiary = await this.getusercontentsService.findcontentfilter(keys, "diary", skip, limit);
-        datapict = await this.getusercontentsService.findcontentfilter(keys, "pict", skip, limit);
 
-        datauser = await this.getuserprofilesService.findUser(keys, skip, limit);
+
+
+
+        try {
+            datauser = await this.getuserprofilesService.findUser(keys, skip, limit);
+        } catch (e) {
+            datauser = null;
+        }
+
+        try {
+            datavids = await this.getusercontentsService.findcontentfilter(keys, "vid", skip, limit);
+        } catch (e) {
+            datavids = null;
+        }
+
+        try {
+            datadiary = await this.getusercontentsService.findcontentfilter(keys, "diary", skip, limit);
+        } catch (e) {
+            datadiary = null;
+        }
+
+        try {
+            datapict = await this.getusercontentsService.findcontentfilter(keys, "pict", skip, limit);
+        } catch (e) {
+            datapict = null;
+        }
+
         var totalFilterPostTag = null;
         var totalFilter = null;
         if (keys !== "") {
-            datatag = await this.getusercontentsService.findcontentfilterTags(keys, skip, limit);
-            totalFilterPostTag = await this.getusercontentsService.findcountfilteTag(keys);
-            totalFilter = totalFilterPostTag[0].totalpost;
+            try {
+                datatag = await this.getusercontentsService.findcontentfilterTags(keys, skip, limit);
+            } catch (e) {
+                datatag = null;
+            }
+
+            try {
+                totalFilterPostTag = await this.getusercontentsService.findcountfilteTag(keys);
+                totalFilter = totalFilterPostTag[0].totalpost;
+            } catch (e) {
+                totalFilter = 0;
+            }
+
         } else {
-            datatag = await this.getusercontentsService.findcontentAllTags(skip, limit);
-            totalFilterPostTag = await this.getusercontentsService.findcountfilteTagAll();
-            totalFilter = totalFilterPostTag[0].totalpost;
+
+            try {
+                datatag = await this.getusercontentsService.findcontentAllTags(skip, limit);
+            } catch (e) {
+                datatag = null;
+            }
+
+            try {
+                totalFilterPostTag = await this.getusercontentsService.findcountfilteTagAll();
+                totalFilter = totalFilterPostTag[0].totalpost;
+            } catch (e) {
+                totalFilter = 0;
+            }
+
         }
 
         try {
@@ -999,11 +1043,33 @@ export class GetusercontentsController {
             "info": ["The process successful"],
         };
 
-        datavids = await this.getusercontentsService.findcontentfilterbyuser(keys, "vid", skip, limit);
-        datadiary = await this.getusercontentsService.findcontentfilterbyuser(keys, "diary", skip, limit);
-        datapict = await this.getusercontentsService.findcontentfilterbyuser(keys, "pict", skip, limit);
 
-        datauser = await this.getuserprofilesService.findUserDetail(keys, skip, limit);
+
+
+        try {
+            datauser = await this.getuserprofilesService.findUserDetail(keys, skip, limit);
+
+        } catch (e) {
+            datauser = null;
+        }
+
+        try {
+            datavids = await this.getusercontentsService.findcontentfilter(keys, "vid", skip, limit);
+        } catch (e) {
+            datavids = null;
+        }
+
+        try {
+            datadiary = await this.getusercontentsService.findcontentfilterbyuser(keys, "diary", skip, limit);
+        } catch (e) {
+            datadiary = null;
+        }
+
+        try {
+            datavids = await this.getusercontentsService.findcontentfilterbyuser(keys, "vid", skip, limit);
+        } catch (e) {
+            datapict = null;
+        }
 
 
         try {
