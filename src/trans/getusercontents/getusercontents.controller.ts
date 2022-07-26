@@ -870,6 +870,14 @@ export class GetusercontentsController {
         var postType = null;
         var skip = 0;
         var limit = 0;
+        var totalFilterPostVid = null;
+        var totalFilterVid = null;
+        var totalFilterPostDiary = null;
+        var totalFilterDiary = null;
+        var totalFilterPostPic = null;
+        var totalFilterPict = null;
+        var totalFilterPostUser = null;
+        var totalFilterUser = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
@@ -910,14 +918,35 @@ export class GetusercontentsController {
             totalFilter = totalFilterPostTag[0].totalpost;
         }
 
-        var totalFilterPostVid = await this.getusercontentsService.findcountfilterall(keys, "vid");
-        var totalFilterVid = totalFilterPostVid[0].totalpost;
-        var totalFilterPostDiary = await this.getusercontentsService.findcountfilterall(keys, "diary");
-        var totalFilterDiary = totalFilterPostDiary[0].totalpost;
-        var totalFilterPostPic = await this.getusercontentsService.findcountfilterall(keys, "pict");
-        var totalFilterPict = totalFilterPostPic[0].totalpost;
-        var totalFilterPostUser = await this.userauthsService.coutRow(keys);
-        var totalFilterUser = totalFilterPostUser[0].totalpost;
+        try {
+            totalFilterPostVid = await this.getusercontentsService.findcountfilterall(keys, "vid");
+            totalFilterVid = totalFilterPostVid[0].totalpost;
+        } catch (e) {
+            totalFilterVid = 0;
+        }
+
+        try {
+            totalFilterPostDiary = await this.getusercontentsService.findcountfilterall(keys, "diary");
+            totalFilterDiary = totalFilterPostDiary[0].totalpost;
+        } catch (e) {
+            totalFilterDiary = 0;
+        }
+
+        try {
+            totalFilterPostPic = await this.getusercontentsService.findcountfilterall(keys, "pict");
+            totalFilterPict = totalFilterPostPic[0].totalpost;
+        } catch (e) {
+            totalFilterPict = 0;
+        }
+
+        try {
+            totalFilterPostUser = await this.userauthsService.coutRow(keys);
+            totalFilterUser = totalFilterPostUser[0].totalpost;
+        } catch (e) {
+            totalFilterUser = 0;
+        }
+
+
         let data = {
             "users": { "data": datauser, "totalFilter": totalFilterUser, "skip": skip, "limit": limit },
             "tags": { "data": datatag, "totalFilter": totalFilter, "skip": skip, "limit": limit },
