@@ -2260,11 +2260,11 @@ export class AuthService {
     if (await this.utilsService.ceckData(datajwtrefreshtokenService)) {
       var date_exp = await datajwtrefreshtokenService.exp;
       //Ceck Time Refresh Token Expired
-      if (new Date().getTime() < Number(await date_exp)) {
-        await this.errorHandler.generateNotAcceptableException(
-          'Refesh token still valid',
-        );
-      } else {
+      // if (new Date().getTime() > Number(await date_exp)) {
+      //   await this.errorHandler.generateNotAcceptableException(
+      //     'Refesh token still valid',
+      //   );
+      // } else {
         //Ceck User Userauths
         const datauserauthsService = await this.userauthsService.findOneByEmail(
           email,
@@ -2297,7 +2297,7 @@ export class AuthService {
             info: ['Refresh Token successful'],
           },
         };
-      }
+      //}
     } else {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',

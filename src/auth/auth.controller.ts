@@ -390,7 +390,7 @@ export class AuthController {
   @UseGuards(JwtRefreshAuthGuard)
   @Post('api/user/refreshtoken')
   @HttpCode(HttpStatus.ACCEPTED)
-  async refreshToken(@Body() RefreshTokenRequest_: RefreshTokenRequest) {
+  async refreshToken(@Body() RefreshTokenRequest_: RefreshTokenRequest, @Headers() headers) {
     //Ceck User Jwtrefreshtoken
     const data_jwtrefreshtokenService =
       await this.jwtrefreshtokenService.findByEmailRefreshToken(RefreshTokenRequest_.email, RefreshTokenRequest_.refreshToken);
@@ -401,19 +401,22 @@ export class AuthController {
     if (await this.utilsService.ceckData(data_jwtrefreshtokenService)) {
       var date_exp = await data_jwtrefreshtokenService.exp;
       //Ceck Time Refresh Token Expired
-      if (new Date().getTime() < Number(await date_exp)) {
-        await this.errorHandler.generateNotAcceptableException(
-          'Refesh token still valid',
-        );
-      } else {
+      // if (new Date().getTime() < Number(await date_exp)) {
+      //   await this.errorHandler.generateNotAcceptableException(
+      //     'Refesh token still valid',
+      //   );
+      // } else {
         //Ceck User Userauths
         const datauserauthsService = await this.userauthsService.findOneByEmail(RefreshTokenRequest_.email);
 
         //Get Id Userdevices
         const datauserauthsService_devices = datauserauthsService.devices[datauserauthsService.devices.length - 1];
 
+        //Descrip Token
+        var data_token = await this.utilsService.descripToken(headers);
+
         //Generate Token
-        var Token = 'Bearer ' + (await this.utilsService.generateToken(data_userbasicsService.email.toString(), data_userbasicsService._id.toString()));
+        var Token = 'Bearer ' + (await this.utilsService.generateToken(data_userbasicsService.email.toString(), data_token.deviceId));
 
         //Generate Refresh Token
         var RefreshToken = await this.authService.updateRefreshToken(data_userbasicsService.email.toString());
@@ -431,7 +434,7 @@ export class AuthController {
         GlobalResponse_.data = ProfileDTO_;
         GlobalResponse_.messages = GlobalMessages_;
         return GlobalResponse_;
-      }
+      //}
     } else {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',
