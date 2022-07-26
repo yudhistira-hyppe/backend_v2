@@ -23307,11 +23307,11 @@ export class GetusercontentsService {
           $or: [{
             description: {
               $regex: keys
-            }
+            }, postType: postType
           }, {
             tags: {
               $regex: keys
-            }
+            }, postType: postType
           }]
         }
       },
@@ -23691,6 +23691,9 @@ export class GetusercontentsService {
     ]);
     return query;
   }
+
+
+
 }
 
 

@@ -929,4 +929,64 @@ export class GetusercontentsController {
     }
 
 
+    @Post('api/getusercontents/searchdatabyuser')
+    @UseGuards(JwtAuthGuard)
+    async contentfilterByuser(@Req() request: Request): Promise<any> {
+        var datavids = null;
+        var datadiary = null;
+        var datapict = null;
+        var keys = null;
+        var datatag = null;
+        var datauser = null;
+        var postType = null;
+        var skip = 0;
+        var limit = 0;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["keys"] !== undefined) {
+            keys = request_json["keys"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        datavids = await this.getusercontentsService.findcontentfilter(keys, "vid", skip, limit);
+        datadiary = await this.getusercontentsService.findcontentfilter(keys, "diary", skip, limit);
+        datapict = await this.getusercontentsService.findcontentfilter(keys, "pict", skip, limit);
+
+        datauser = await this.getuserprofilesService.findUser(keys, skip, limit);
+
+
+        var totalFilterPostVid = await this.getusercontentsService.findcountfilterall(keys, "vid");
+        var totalFilterVid = totalFilterPostVid[0].totalpost;
+        var totalFilterPostDiary = await this.getusercontentsService.findcountfilterall(keys, "diary");
+        var totalFilterDiary = totalFilterPostDiary[0].totalpost;
+        var totalFilterPostPic = await this.getusercontentsService.findcountfilterall(keys, "pict");
+        var totalFilterPict = totalFilterPostPic[0].totalpost;
+        var totalFilterPostUser = await this.userauthsService.coutRow(keys);
+        var totalFilterUser = totalFilterPostUser[0].totalpost;
+        let data = {
+            "users": { "data": datauser, "totalFilter": totalFilterUser, "skip": skip, "limit": limit },
+            "vid": { "data": datavids, "totalFilter": totalFilterVid, "skip": skip, "limit": limit },
+            "diary": { "data": datadiary, "totalFilter": totalFilterDiary, "skip": skip, "limit": limit },
+            "pict": { "data": datapict, "totalFilter": totalFilterPict, "skip": skip, "limit": limit },
+        };
+        return { response_code: 202, data, messages };
+    }
+
+
 }
