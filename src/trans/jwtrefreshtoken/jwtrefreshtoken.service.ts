@@ -74,6 +74,7 @@ export class JwtrefreshtokenService {
       await this.jwtrefreshtokenModel.updateOne(
         { email: email },
         {
+          refresh_token_id: refresh_token_id,
           exp: exp,
           iat: iat,
         },

@@ -297,6 +297,17 @@ export class UtilsService {
     return isTrue;
   }
 
+  async descripToken(head: any): Promise<any> {
+    if (head != undefined) {
+      if (head['x-auth-token'] != undefined) {
+        var token = ((head['x-auth-token']).split(" "))[1];
+        var data = await this.jwtService.decode(token);
+        return data;
+      }
+    }
+    return null;
+  }
+
   async validasiTokenEmailParam(bearer_token: string,email: string): Promise<boolean> {
     var isTrue = false;
     var email = email;

@@ -390,7 +390,7 @@ export class AuthController {
   @UseGuards(JwtRefreshAuthGuard)
   @Post('api/user/refreshtoken')
   @HttpCode(HttpStatus.ACCEPTED)
-  async refreshToken(@Body() RefreshTokenRequest_: RefreshTokenRequest) {
+  async refreshToken(@Body() RefreshTokenRequest_: RefreshTokenRequest, @Headers() headers) {
     //Ceck User Jwtrefreshtoken
     const data_jwtrefreshtokenService =
       await this.jwtrefreshtokenService.findByEmailRefreshToken(RefreshTokenRequest_.email, RefreshTokenRequest_.refreshToken);
@@ -412,8 +412,11 @@ export class AuthController {
         //Get Id Userdevices
         const datauserauthsService_devices = datauserauthsService.devices[datauserauthsService.devices.length - 1];
 
+        //Descrip Token
+        var data_token = await this.utilsService.descripToken(headers);
+
         //Generate Token
-        var Token = 'Bearer ' + (await this.utilsService.generateToken(data_userbasicsService.email.toString(), data_userbasicsService._id.toString()));
+        var Token = 'Bearer ' + (await this.utilsService.generateToken(data_userbasicsService.email.toString(), data_token.deviceId));
 
         //Generate Refresh Token
         var RefreshToken = await this.authService.updateRefreshToken(data_userbasicsService.email.toString());
