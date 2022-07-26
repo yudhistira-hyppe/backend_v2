@@ -793,8 +793,6 @@ export class GetusercontentsController {
             "info": ["The process successful"],
         };
 
-
-
         let databuy = await this.getusercontentsService.findcontenbuy(postID);
 
         var saleAmount = databuy[0].saleAmount;
@@ -960,7 +958,7 @@ export class GetusercontentsController {
 
     @Post('api/getusercontents/searchdatabyuser')
     @UseGuards(JwtAuthGuard)
-    async contentfilterByuser(@Req() request: Request): Promise<any> {
+    async contentfilterbyuser(@Req() request: Request): Promise<any> {
         var datavids = null;
         var datadiary = null;
         var datapict = null;
@@ -970,6 +968,14 @@ export class GetusercontentsController {
         var postType = null;
         var skip = 0;
         var limit = 0;
+        var totalFilterPostVid = null;
+        var totalFilterVid = null;
+        var totalFilterPostDiary = null;
+        var totalFilterDiary = null;
+        var totalFilterPostPic = null;
+        var totalFilterPict = null;
+        var totalFilterPostUser = null;
+        var totalFilterUser = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
@@ -993,21 +999,42 @@ export class GetusercontentsController {
             "info": ["The process successful"],
         };
 
-        datavids = await this.getusercontentsService.findcontentfilter(keys, "vid", skip, limit);
-        datadiary = await this.getusercontentsService.findcontentfilter(keys, "diary", skip, limit);
-        datapict = await this.getusercontentsService.findcontentfilter(keys, "pict", skip, limit);
+        datavids = await this.getusercontentsService.findcontentfilterbyuser(keys, "vid", skip, limit);
+        datadiary = await this.getusercontentsService.findcontentfilterbyuser(keys, "diary", skip, limit);
+        datapict = await this.getusercontentsService.findcontentfilterbyuser(keys, "pict", skip, limit);
 
-        datauser = await this.getuserprofilesService.findUser(keys, skip, limit);
+        datauser = await this.getuserprofilesService.findUserDetail(keys, skip, limit);
 
 
-        var totalFilterPostVid = await this.getusercontentsService.findcountfilterall(keys, "vid");
-        var totalFilterVid = totalFilterPostVid[0].totalpost;
-        var totalFilterPostDiary = await this.getusercontentsService.findcountfilterall(keys, "diary");
-        var totalFilterDiary = totalFilterPostDiary[0].totalpost;
-        var totalFilterPostPic = await this.getusercontentsService.findcountfilterall(keys, "pict");
-        var totalFilterPict = totalFilterPostPic[0].totalpost;
-        var totalFilterPostUser = await this.userauthsService.coutRow(keys);
-        var totalFilterUser = totalFilterPostUser[0].totalpost;
+        try {
+            totalFilterPostVid = await this.getusercontentsService.findcontentfilterbyuserCount(keys, "vid");
+            totalFilterVid = totalFilterPostVid.length;
+        } catch (e) {
+            totalFilterVid = 0;
+        }
+
+        try {
+            totalFilterPostDiary = await this.getusercontentsService.findcontentfilterbyuserCount(keys, "diary");
+            totalFilterDiary = totalFilterPostDiary.length;
+        } catch (e) {
+            totalFilterDiary = 0;
+        }
+
+        try {
+            totalFilterPostPic = await this.getusercontentsService.findcontentfilterbyuserCount(keys, "pict");
+            totalFilterPict = totalFilterPostPic.length;
+        } catch (e) {
+            totalFilterPict = 0;
+        }
+
+        try {
+            totalFilterPostUser = await this.getuserprofilesService.findUserDetailCount(keys);
+            totalFilterUser = totalFilterPostUser.length;
+        } catch (e) {
+            totalFilterUser = 0;
+        }
+
+
         let data = {
             "users": { "data": datauser, "totalFilter": totalFilterUser, "skip": skip, "limit": limit },
             "vid": { "data": datavids, "totalFilter": totalFilterVid, "skip": skip, "limit": limit },
@@ -1016,6 +1043,9 @@ export class GetusercontentsController {
         };
         return { response_code: 202, data, messages };
     }
+
+
+
 
 
 }
