@@ -38,8 +38,23 @@ export class NotificationsController {
   @Post('api/notifications/latest')
   @UseGuards(JwtAuthGuard)
   async contentuserall(@Req() request: Request): Promise<any> {
-
+    var skip = 0;
+    var limit = 0;
     var email = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+    if (request_json["skip"] !== undefined) {
+      skip = request_json["skip"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["limit"] !== undefined) {
+      limit = request_json["limit"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
     var request_json = JSON.parse(JSON.stringify(request.body));
     if (request_json["email"] !== undefined) {
       email = request_json["email"];
@@ -47,14 +62,17 @@ export class NotificationsController {
       throw new BadRequestException("Unabled to proceed");
     }
 
-
     const messages = {
       "info": ["The process successful"],
     };
 
-    let data = await this.NotificationsService.findlatest(email);
+    let dataall = await this.NotificationsService.findAll();
+    var totalAllrows = dataall.length;
 
-    return { response_code: 202, data, messages };
+
+    let data = await this.NotificationsService.findlatest(email, skip, limit);
+
+    return { response_code: 202, data, totalAllrows, messages };
   }
 
 
