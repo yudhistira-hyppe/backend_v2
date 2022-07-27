@@ -109,4 +109,36 @@ export class PostsController {
       });
     }
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('update/:id/:email')
+  async updateTag(@Res() res, @Param('id') id: string, @Param('email') email: string, @Req() request: Request) {
+    var tags = null;
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["tags"] !== undefined) {
+      tags = request_json["tags"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    const messages = {
+      "info": ["The update successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+    try {
+      let data = await this.PostsService.updateTag(id, tags, email);
+      res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "message": messages
+      });
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+
+        "message": messagesEror
+      });
+    }
+  }
 }

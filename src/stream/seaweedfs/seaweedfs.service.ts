@@ -14,7 +14,7 @@ export class SeaweedfsService {
 
     async _assign(opts: any): Promise<any> {
         return new Promise(function (resolve, reject) {
-            var req = http.get(baseURL +  "localrepo?" + qs.stringify(opts), res => {
+            var req = http.get(baseURL + "/localrepo?" + qs.stringify(opts), res => {
                 let body = [];
                 let err;
                 res.setEncoding('utf8');
@@ -71,7 +71,7 @@ export class SeaweedfsService {
                     var stream = typeof file[i] === "string" ? fs.createReadStream(file[i]) : null;
                     form.append("file", stream ? stream : file[i]);
 
-                    var urlParts = url.parse(baseURL + "localrepo/" + (opts.count == 1 ? "" : "_" + i));
+                    var urlParts = url.parse(baseURL + "/localrepo?" + (opts.count == 1 ? "" : "_" + i));
                     var options = Object.assign({}, urlParts);
                     if (opts.headers) {
                         options = opts.headers;
