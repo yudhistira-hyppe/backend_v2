@@ -74,13 +74,21 @@ export class PostsService {
     return data;
   }
 
-  async updateTag(id: string, tag: [], email: string): Promise<Object> {
-    let data = await this.PostsModel.updateOne({ "_id": id, "email": email },
+  async updateTag(id: string, tagPeople: []): Promise<Object> {
+    let data = await this.PostsModel.updateOne({ "_id": id },
       {
         $set: {
-          "tags": tag
+          "tagPeople": tagPeople
         }
       });
+
+    return data;
+  }
+
+  async updateTags(id: string) {
+
+
+    let data = await this.PostsModel.updateOne({ "_id": id }, { $pull: { "tagPeople": null } });
     return data;
   }
 

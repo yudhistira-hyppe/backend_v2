@@ -84,6 +84,8 @@ export class Posts {
   }]
   @Prop()
   _class: String
+  @Prop([])
+  tagPeople: any[]
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

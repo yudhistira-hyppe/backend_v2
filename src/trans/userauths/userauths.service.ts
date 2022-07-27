@@ -25,6 +25,10 @@ export class UserauthsService {
   async findOneUsername(username: String): Promise<Userauth> {
     return this.userauthModel.findOne({ username: username }).exec();
   }
+
+  async findOneemail(email: String): Promise<Userauth> {
+    return this.userauthModel.findOne({ email: email }).exec();
+  }
   // async findOne(username: String): Promise<Userauth> {
   //   return this.userauthModel.findOne({ username: username }).exec();
   // }
