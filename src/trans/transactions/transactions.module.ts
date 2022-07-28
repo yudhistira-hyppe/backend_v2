@@ -15,11 +15,12 @@ import { OyPgModule } from '../../paymentgateway/oypg/oypg.module';
 import { InsightsModule } from '../../content/insights/insights.module';
 import { UserbankaccountsModule } from '../userbankaccounts/userbankaccounts.module';
 import { WithdrawsModule } from '../withdraws/withdraws.module';
+import { GetusercontentsModule } from '../getusercontents/getusercontents.module';
 @Module({
 
     imports: [
 
-        ConfigModule.forRoot(), UserbasicsModule, SettingsModule, MethodepaymentsModule, BanksModule, PostsModule, Pph21sModule, AccountbalancesModule, OyPgModule, InsightsModule, UserbankaccountsModule, WithdrawsModule,
+        ConfigModule.forRoot(), GetusercontentsModule, UserbasicsModule, SettingsModule, MethodepaymentsModule, BanksModule, PostsModule, Pph21sModule, AccountbalancesModule, OyPgModule, InsightsModule, UserbankaccountsModule, WithdrawsModule,
         MongooseModule.forFeature([{ name: Transactions.name, schema: TransactionsSchema }], 'SERVER_TRANS')
     ],
     controllers: [TransactionsController],

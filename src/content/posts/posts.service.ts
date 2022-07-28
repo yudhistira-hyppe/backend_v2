@@ -74,6 +74,24 @@ export class PostsService {
     return data;
   }
 
+  async updateTag(id: string, tagPeople: []): Promise<Object> {
+    let data = await this.PostsModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "tagPeople": tagPeople
+        }
+      });
+
+    return data;
+  }
+
+  async updateTags(id: string) {
+
+
+    let data = await this.PostsModel.updateOne({ "_id": id }, { $pull: { "tagPeople": null } });
+    return data;
+  }
+
   async delete(id: string) {
     const deletedCat = await this.PostsModel.findByIdAndRemove({
       _id: id,

@@ -15,6 +15,7 @@ import { OyPgService } from '../../paymentgateway/oypg/oypg.service';
 import { InsightsService } from '../../content/insights/insights.service';
 import { WithdrawsService } from '../withdraws/withdraws.service';
 import { Types } from 'mongoose';
+import { GetusercontentsService } from '../getusercontents/getusercontents.service';
 @Controller()
 export class TransactionsController {
     constructor(private readonly transactionsService: TransactionsService,
@@ -28,7 +29,8 @@ export class TransactionsController {
         private readonly oyPgService: OyPgService,
         private readonly insightsService: InsightsService,
         private readonly userbankaccountsService: UserbankaccountsService,
-        private readonly withdrawsService: WithdrawsService
+        private readonly withdrawsService: WithdrawsService,
+        private readonly getusercontentsService: GetusercontentsService
 
     ) { }
     @UseGuards(JwtAuthGuard)
@@ -136,7 +138,7 @@ export class TransactionsController {
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         var idppn = "62bbbe43a7520000050077a3";
-        // var idmdradmin = "62bd413ff37a00001a004369";
+        //  var idmdradmin = "62bd413ff37a00001a004369";
         var idbankvacharge = "62bd40e0f37a00001a004366";
         var idexpiredva = "62bbbe8ea7520000050077a4";
         // var datasettingppn = null;
@@ -144,7 +146,7 @@ export class TransactionsController {
         var databankvacharge = null;
         try {
             //  datasettingppn = await this.settingsService.findOne(idppn);
-            // datamradmin = await this.settingsService.findOne(idmdradmin);
+            //  datamradmin = await this.settingsService.findOne(idmdradmin);
             databankvacharge = await this.settingsService.findOne(idbankvacharge);
 
             //var valueppn = datasettingppn._doc.value;
@@ -629,26 +631,42 @@ export class TransactionsController {
         var datatransaksi = null;
         var datapost = null;
         var datainsight = null;
+
+        var iduseradmin = "61d9c847548ae516042f0b13";
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var idadmin = mongoose.Types.ObjectId(iduseradmin);
         if (statussucces == true) {
 
             try {
 
                 datatransaksi = await this.transactionsService.findva(nova);
+
+
                 var idtransaction = datatransaksi._id;
                 var postid = datatransaksi.postid;
                 var idusersell = datatransaksi.idusersell;
                 var iduserbuy = datatransaksi.iduserbuyer;
                 var amount = datatransaksi.amount;
+                var tamount = datatransaksi.totalamount;
                 var status = datatransaksi.status;
                 var salelike = datatransaksi.salelike;
                 var saleview = datatransaksi.saleview;
 
+                let databuy = await this.getusercontentsService.findcontenbuy(postid);
 
+                var saleAmount = databuy[0].saleAmount;
+                var amounAdmin = amount - saleAmount;
+                var amontVA = tamount - amount;
 
                 if (status == "pending") {
                     var ubasic = await this.userbasicsService.findid(iduserbuy);
                     var emailbuyer = ubasic.email;
-                    var createbalance = await this.accontbalance(postid, idusersell, amount);
+
+
+                    var createbalance = await this.accontbalance(postid, idusersell, saleAmount);
+                    var createbalanceadmin = await this.accontbalanceAdmin("Admin", idadmin, idusersell, amounAdmin);
+                    var createbalanceadminVa = await this.accontbalanceAdmin("Bank VA", idadmin, idusersell, amontVA);
                     let databalance = await this.accountbalancesService.findOne(idusersell);
 
                     var idbalance = databalance._id;
@@ -758,7 +776,8 @@ export class TransactionsController {
 
         var idbankverificationcharge = "62bd4104f37a00001a004367";
         var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
-
+        var iduseradmin = "61d9c847548ae516042f0b13";
+        var idadmin = mongoose.Types.ObjectId(iduseradmin);
         try {
             databalance = await this.accountbalancesService.findwallettotalsaldo(iduser);
             totalsaldo = databalance[0].totalsaldo;
@@ -796,6 +815,7 @@ export class TransactionsController {
         } catch (e) {
             norekdb = null;
         }
+
         if (amounreq > totalsaldo) {
             throw new BadRequestException("The balance is not sufficient...!");
         } else {
@@ -818,6 +838,7 @@ export class TransactionsController {
                         var partnertrxid = "OYO" + stringId;
                         await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
                         await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                        await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, valuebankcharge);
                         OyDisbursements.partner_trx_id = partnertrxid;
                         let datadisbursemen = await this.oyPgService.disbursement(OyDisbursements);
                         var statusdisb = datadisbursemen.status.code;
@@ -839,6 +860,7 @@ export class TransactionsController {
                             dtburs = new Date(dtburs);
                             var dtb = dtburs.toISOString();
                             await this.accontbalanceWithdraw(iduser, valuedisbcharge, "disbursement");
+                            await this.accontbalanceAdminWitdraw("disbursement", idadmin, iduser, valuedisbcharge);
                             let datawithdraw = new CreateWithdraws();
                             datawithdraw.amount = datadisbursemen.amount;
                             datawithdraw.bankVerificationCharge = mongoose.Types.ObjectId(idbankverificationcharge);
@@ -864,6 +886,7 @@ export class TransactionsController {
                     } else {
                         await this.userbankaccountsService.updateone(idbankaccount, "failed inquiry");
                         await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                        await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, valuebankcharge);
                         res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": "failed inquiry"
@@ -2115,29 +2138,37 @@ export class TransactionsController {
         await this.accountbalancesService.createdata(dataacountbalance);
     }
 
-    async accontbalanceAdmin(postid: string, type: string, iduseradmin: { oid: string }, amount: number) {
+    async accontbalanceAdmin(type: string, iduseradmin: { oid: string }, idusersell: { oid: string }, amount: number) {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
-        var datapost = null;
-        var desccontent = "";
-        try {
-            datapost = await this.postsService.findid(postid);
-
-            desccontent = datapost._doc.description;
 
 
-        } catch (e) {
-            datapost = null;
-            desccontent = "";
-        }
         var dataacountbalance = {
             iduser: iduseradmin,
             debet: 0,
             kredit: amount,
             type: type,
             timestamp: dt.toISOString(),
-            description: type + "Charge",
+            description: type + " Charge dari user " + idusersell,
+
+        };
+
+        await this.accountbalancesService.createdata(dataacountbalance);
+    }
+
+    async accontbalanceAdminWitdraw(type: string, iduseradmin: { oid: string }, idusersell: { oid: String }, amount: number) {
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+
+        var dataacountbalance = {
+            iduser: iduseradmin,
+            debet: 0,
+            kredit: amount,
+            type: type,
+            timestamp: dt.toISOString(),
+            description: type + " Charge dari user " + idusersell,
 
         };
 

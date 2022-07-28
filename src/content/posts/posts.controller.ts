@@ -14,10 +14,12 @@ import { PostsService } from './posts.service';
 import { CreatePostsDto } from './dto/create-posts.dto';
 import { Posts } from './schemas/posts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { UserauthsService } from '../../trans/userauths/userauths.service';
 
 @Controller('api/posts')
 export class PostsController {
-  constructor(private readonly PostsService: PostsService) { }
+  constructor(private readonly PostsService: PostsService,
+    private readonly userauthsService: UserauthsService) { }
 
   @Post()
   async create(@Body() CreatePostsDto: CreatePostsDto) {
@@ -109,4 +111,88 @@ export class PostsController {
       });
     }
   }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/deletetag')
+  async deleteTag(@Req() request) {
+    var email = null;
+    var postID = null;
+    var data = null;
+    var dataauth = null;
+    var tagPeople = [];
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["email"] !== undefined) {
+      email = request_json["email"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["postID"] !== undefined) {
+      postID = request_json["postID"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    const messages = {
+      "info": ["The update successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+
+    try {
+      dataauth = await this.userauthsService.findOneByEmail(email);
+      var id = dataauth._id.toString();
+      var ido = dataauth._id;
+      console.log(id);
+    } catch (e) {
+      throw new BadRequestException("Unabled to proceed");
+    }
+    try {
+      data = await this.PostsService.findid(postID);
+      var tagPeapel = data._doc.tagPeople;
+      console.log(data);
+    } catch (e) {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    var leng = tagPeapel.length;
+    var j = 0;
+    for (var x = 0; x < leng; x++) {
+      var dttag = tagPeapel[x].oid;
+      var stringid = dttag.toString();
+
+
+      if (stringid === id) {
+        j = x;
+
+
+      }
+      tagPeapel.find(function (value, index) {
+        if (index === j) {
+
+          delete tagPeapel[j];
+
+
+        }
+      });
+      console.log(tagPeapel);
+      try {
+        var datax = this.PostsService.updateTag(postID, tagPeapel);
+        this.PostsService.updateTags(postID);
+        return { response_code: 202, messages };
+      } catch (e) {
+        return { response_code: 500, messagesEror };
+      }
+
+
+    }
+
+
+
+
+  }
+
 }
