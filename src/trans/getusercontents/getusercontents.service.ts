@@ -23355,9 +23355,11 @@ export class GetusercontentsService {
           tags: '$tags',
           likes: '$likes',
           shares: '$shares',
+          reaction: '$reaction',
           comments: '$comments',
           isOwned: '$isOwned',
           views: '$views',
+          visibility: '$visibility',
           isPostPrivate: '$user.isPostPrivate',
           privacy: {
             isPostPrivate: '$user.isPostPrivate',
@@ -23382,6 +23384,8 @@ export class GetusercontentsService {
           monetize: {
             $cond: { if: { $eq: ["$salePrice", -1] }, then: false, else: true }
           },
+
+
         }
       },
       {
@@ -23403,11 +23407,8 @@ export class GetusercontentsService {
           metadata: '$metadata',
           location: '$location',
           tags: '$tags',
-          likes: '$likes',
-          shares: '$shares',
-          comments: '$comments',
           isOwned: '$isOwned',
-          views: '$views',
+          visibility: '$visibility',
           isPostPrivate: '$user.isPostPrivate',
           privacy: {
             isPostPrivate: '$user.isPostPrivate',
@@ -23422,6 +23423,13 @@ export class GetusercontentsService {
           saleAmount: '$saleAmount',
           monetize: '$monetize',
           refe: '$refs.ref',
+          insight: {
+            shares: '$shares',
+            comments: '$comments',
+            reaction: '$reaction',
+            views: '$views',
+            likes: '$likes',
+          },
         }
       },
 
@@ -23493,11 +23501,8 @@ export class GetusercontentsService {
           metadata: '$metadata',
           location: '$location',
           tags: '$tags',
-          likes: '$likes',
-          shares: '$shares',
-          comments: '$comments',
           isOwned: '$isOwned',
-          views: '$views',
+          visibility: '$visibility',
           privacy: '$privacy',
           isViewed: '$isViewed',
           allowComments: '$allowComments',
@@ -23506,6 +23511,8 @@ export class GetusercontentsService {
           saleView: '$saleView',
           saleAmount: '$saleAmount',
           monetize: '$monetize',
+          insight: '$insight',
+
 
 
         }
@@ -23567,8 +23574,8 @@ export class GetusercontentsService {
             $switch: {
               branches: [
                 { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediadiaries.mediaThumb' },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatthumbdiari", "/", "$media_diari"] }, },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatthumbvideo", "/", "$media_video"] }, }
+                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatthumbdiari", "/", "$postID"] }, },
+                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatthumbvideo", "/", "$postID"] }, }
               ],
               default: ''
             }
@@ -23577,9 +23584,9 @@ export class GetusercontentsService {
           mediaEndpoint: {
             $switch: {
               branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': { $concat: ["$concatmediapict", "/", "$media_pict"] }, },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatmediadiari", "/", "$media_diari"] }, },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatmediavideo", "/", "$media_video"] }, }
+                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': { $concat: ["$concatmediapict", "/", "$postID"] }, },
+                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatmediadiari", "/", "$postID"] }, },
+                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatmediavideo", "/", "$postID"] }, }
               ],
               default: ''
             }
@@ -23609,11 +23616,8 @@ export class GetusercontentsService {
           metadata: '$metadata',
           location: '$location',
           tags: '$tags',
-          likes: '$likes',
-          shares: '$shares',
-          comments: '$comments',
           isOwned: '$isOwned',
-          views: '$views',
+          visibility: '$visibility',
           privacy: '$privacy',
           isViewed: '$isViewed',
           allowComments: '$allowComments',
@@ -23622,6 +23626,7 @@ export class GetusercontentsService {
           saleView: '$saleView',
           saleAmount: '$saleAmount',
           monetize: '$monetize',
+          insight: '$insight',
 
         }
       },
@@ -23744,6 +23749,7 @@ export class GetusercontentsService {
           comments: '$comments',
           isOwned: '$isOwned',
           views: '$views',
+          visibility: '$visibility',
           isPostPrivate: '$user.isPostPrivate',
           privacy: {
             isPostPrivate: '$user.isPostPrivate',
@@ -23794,6 +23800,7 @@ export class GetusercontentsService {
           comments: '$comments',
           isOwned: '$isOwned',
           views: '$views',
+          visibility: '$visibility',
           isPostPrivate: '$user.isPostPrivate',
           privacy: {
             isPostPrivate: '$user.isPostPrivate',
@@ -23837,10 +23844,8 @@ export class GetusercontentsService {
 
       {
         "$match": {
-          "userAuth_data.username": {
-            $regex: username
-          },
-          postType: postType
+          "userAuth_data.username": username,
+          "postType": postType
         }
       },
 
@@ -23901,6 +23906,7 @@ export class GetusercontentsService {
           comments: '$comments',
           isOwned: '$isOwned',
           views: '$views',
+          visibility: '$visibility',
           privacy: '$privacy',
           isViewed: '$isViewed',
           allowComments: '$allowComments',
@@ -23970,8 +23976,8 @@ export class GetusercontentsService {
             $switch: {
               branches: [
                 { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediadiaries.mediaThumb' },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatthumbdiari", "/", "$media_diari"] }, },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatthumbvideo", "/", "$media_video"] }, }
+                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatthumbdiari", "/", "$postID"] }, },
+                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatthumbvideo", "/", "$postID"] }, }
               ],
               default: ''
             }
@@ -23980,9 +23986,9 @@ export class GetusercontentsService {
           mediaEndpoint: {
             $switch: {
               branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': { $concat: ["$concatmediapict", "/", "$media_pict"] }, },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatmediadiari", "/", "$media_diari"] }, },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatmediavideo", "/", "$media_video"] }, }
+                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': { $concat: ["$concatmediapict", "/", "$postID"] }, },
+                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatmediadiari", "/", "$postID"] }, },
+                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatmediavideo", "/", "$postID"] }, }
               ],
               default: ''
             }
@@ -24019,6 +24025,7 @@ export class GetusercontentsService {
           views: '$views',
           privacy: '$privacy',
           isViewed: '$isViewed',
+          visibility: '$visibility',
           allowComments: '$allowComments',
           isCertified: '$isCertified',
           saleLike: '$saleLike',
@@ -24180,10 +24187,8 @@ export class GetusercontentsService {
 
       {
         "$match": {
-          "userAuth_data.username": {
-            $regex: username
-          },
-          postType: postType
+          "userAuth_data.username": username,
+          "postType": postType
         }
       },
 

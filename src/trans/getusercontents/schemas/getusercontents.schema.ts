@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Collection, Document } from 'mongoose';
 
-export type GetusercontentsDocument = Getusercontents & Document ;
+export type GetusercontentsDocument = Getusercontents & Document;
 
-@Schema({collection:'posts2'})
+@Schema({ collection: 'posts2' })
 export class Getusercontents {
- @Prop()
- _id:String;
+  @Prop()
+  _id: String;
   @Prop()
   postID: String
   @Prop()
@@ -18,11 +18,11 @@ export class Getusercontents {
   @Prop()
   active: boolean
 
- @Prop()
- updatedAt: String
-  @Prop({type:Object})
+  @Prop()
+  updatedAt: String
+  @Prop({ type: Object })
   expiration: {
-    numberLong:String
+    numberLong: String
   }
   @Prop()
   visibility: String
@@ -37,7 +37,7 @@ export class Getusercontents {
   @Prop()
   isOwned: boolean
 
-  @Prop({type:Object})
+  @Prop({ type: Object })
   metadata: {
     duration: Number
     postRoll: Number
@@ -47,41 +47,51 @@ export class Getusercontents {
     postID: String
     email: String
   }
-  
-  @Prop({type:Object})
-  likes: {
-    numberLong:String
-  }
-  @Prop({type:Object})
-  views: {
-    numberLong:String
-  }
-  @Prop({type:Object})
-  shares: {
-    numberLong:String
-  }
-  @Prop({type:Object})
-  comments: {
-    numberLong:String
-  }
 
-  @Prop({type:Object})
+  @Prop({ type: Object })
+  likes: {
+    numberLong: String
+  }
+  @Prop({ type: Object })
+  views: {
+    numberLong: String
+  }
+  @Prop({ type: Object })
+  shares: {
+    numberLong: String
+  }
+  @Prop({ type: Object })
+  comments: {
+    numberLong: String
+  }
+  @Prop({ type: Object })
+  reaction: {
+    numberLong: String
+  }
+  @Prop({ type: Object })
   userProfile: {
     ref: String
     id: {
       oid: String
     };
-    db:String
+    db: String
   }
- 
-  @Prop([{type:Object}])
-  contentMedias:[{
-        ref: String
-        id:String
-        db:String
+
+  @Prop([{ type: Object }])
+  contentMedias: [{
+    ref: String
+    id: String
+    db: String
   }]
- @Prop()
- _class:String
+  @Prop()
+  _class: String
+
+  @Prop([{ type: Object }])
+  tagPeople: [{
+    ref: String
+    id: String
+    db: String
+  }]
 }
 
 export const GetusercontentsSchema = SchemaFactory.createForClass(Getusercontents);
