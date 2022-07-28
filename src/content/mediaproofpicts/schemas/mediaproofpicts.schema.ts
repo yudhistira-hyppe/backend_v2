@@ -61,6 +61,8 @@ export class Mediaproofpicts {
   @Prop() FileSuportmediaMime: String;
   @Prop() status: String;
   @Prop() description: String;
+  @Prop() 
+  idcardnumber: String;
  @Prop()
  _class:String
 }

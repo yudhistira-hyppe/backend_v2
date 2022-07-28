@@ -15,4 +15,6 @@ export class CreateGetcontenteventsDto {
     flowIsDone: boolean;
     _class: String;
     receiverParty: String;
+    skip: number;
+    limit: number;
 }

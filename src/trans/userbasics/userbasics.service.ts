@@ -30,18 +30,19 @@ export class UserbasicsService {
       data,
       function (err, docs) {
         if (err) {
-          //console.log(err);
+          console.log(err);
         } else {
-          //console.log(docs);
+          console.log(docs);
         }
       },
     );
   }
 
   async updatebyId(id: string, data: Object) {
+    console.log(id);
     this.userbasicModel.updateOne(
       {
-        _id: id,
+        _id: Object(id),
       },
       data,
       function (err, docs) {

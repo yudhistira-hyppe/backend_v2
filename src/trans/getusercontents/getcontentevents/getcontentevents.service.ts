@@ -888,6 +888,9 @@ export class GetcontenteventsService {
                     }
                 },
             },
+            { $sort: { fullName:1} },
+            { $skip: CreateGetcontenteventsDto_.skip },
+            { $limit: CreateGetcontenteventsDto_.limit },
         ]);
 
 
