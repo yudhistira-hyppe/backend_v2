@@ -1054,7 +1054,7 @@ export class GetusercontentsController {
         }
 
         try {
-            datavids = await this.getusercontentsService.findcontentfilter(keys, "vid", skip, limit);
+            datavids = await this.getusercontentsService.findcontentfilterbyuser(keys, "vid", skip, limit);
         } catch (e) {
             datavids = null;
         }
