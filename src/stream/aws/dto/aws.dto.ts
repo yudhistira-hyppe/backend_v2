@@ -1,85 +1,180 @@
 import { Double } from "mongodb";
 
-export class AwsRequest {
-    SourceImage: {
-        Bytes: string;
-    };
-    TargetImage: {
-        Bytes: string;
-    };
-    SimilarityThreshold: number;
+export class AwsCompareFacesRequest {
+    SourceImage: Image;
+    TargetImage: Image;
+    SimilarityThreshold?: Percent;
+    QualityFilter?: QualityFilter;
 }
 
-export class ImageDataRequest {
-    Bytes: string;
-    S3Object: {
-        Bucket: string,
-        Name: string
-    };
+export class AwsDetectFacesRequest {
+    Image: Image;
+    Attributes?: Attributes;
 }
 
-export class AwsResponse {
-    SourceImageFace: ComparedSourceImageFace;
-    FaceMatches: Array<FaceMatches>;
-    UnmatchedFaces: Array<Face>;
-    SourceImageOrientationCorrection: string;
-    TargetImageOrientationCorrection: string;
+export interface Image {
+    Bytes?: ImageBlob;
+    S3Object?: S3Object;
+}
+
+export interface S3Object {
+    Bucket?: S3Bucket;
+    Name?: S3ObjectName;
+    Version?: S3ObjectVersion;
+}
+
+export type Attribute = "DEFAULT" | "ALL" | string;
+export type Attributes = Attribute[];
+export type QualityFilter = "NONE" | "AUTO" | "LOW" | "MEDIUM" | "HIGH" | string;
+export type Percent = number;
+export type ImageBlob = Buffer | Uint8Array | Blob | string;
+export type S3Bucket = string; 
+export type S3ObjectName = string;
+export type S3ObjectVersion = string;
+
+export class AwsCompareFacesResponse {
+    SourceImageFace?: ComparedSourceImageFace;
+    FaceMatches?: CompareFacesMatchList;
+    UnmatchedFaces?: CompareFacesUnmatchList;
+    SourceImageOrientationCorrection?: OrientationCorrection;
+    TargetImageOrientationCorrection?: OrientationCorrection;
 }
 
 export interface ComparedSourceImageFace {
-    BoundingBox: BoundingBox;
-    Confidence: number;
+    BoundingBox?: BoundingBox;
+    Confidence?: Percent;
+}
+export interface BoundingBox {
+    Width?: Float;
+    Height?: Float;
+    Left?: Float;
+    Top?: Float;
 }
 
-export class FaceMatches {
-    Face: Face;
-    Similarity: number;
+export type Float = number;
+export type CompareFacesMatchList = CompareFacesMatch[];
+export type CompareFacesUnmatchList = ComparedFace[];
+
+export interface CompareFacesMatch {
+    Similarity?: Percent;
+    Face?: ComparedFace;
 }
 
-export class Face {
-    BoundingBox: BoundingBox;
-    Confidence: Double;
-    Pose: Pose;
-    Quality: Quality;
-    Landmarks: Array<Landmarks>;
+export interface ComparedFace {
+    BoundingBox?: BoundingBox;
+    Confidence?: Percent;
+    Landmarks?: Landmarks;
+    Pose?: Pose;
+    Quality?: ImageQuality;
+    Emotions?: Emotions;
+    Smile?: Smile;
 }
 
-export class BoundingBox {
-    Width: Double;
-    Top: Double;
-    Left: Double;
-    Height: Double;
+export type Landmarks = Landmark[];
+
+
+export interface Landmark {
+    Type?: LandmarkType;
+    X?: Float;
+    Y?: Float;
 }
 
-export class Pose {
-    Yaw: Double;
-    Roll: Double;
-    Pitch: Double;
-} 
+export type LandmarkType = "eyeLeft" | "eyeRight" | "nose" | "mouthLeft" | "mouthRight" | "leftEyeBrowLeft" | "leftEyeBrowRight" | "leftEyeBrowUp" | "rightEyeBrowLeft" | "rightEyeBrowRight" | "rightEyeBrowUp" | "leftEyeLeft" | "leftEyeRight" | "leftEyeUp" | "leftEyeDown" | "rightEyeLeft" | "rightEyeRight" | "rightEyeUp" | "rightEyeDown" | "noseLeft" | "noseRight" | "mouthUp" | "mouthDown" | "leftPupil" | "rightPupil" | "upperJawlineLeft" | "midJawlineLeft" | "chinBottom" | "midJawlineRight" | "upperJawlineRight" | string;
 
-export class Quality {
-    Sharpness: Double;
-    Brightness: Double;
+export interface Pose {
+    Roll?: Degree;
+    Yaw?: Degree;
+    Pitch?: Degree;
 }
 
-export class Landmarks {
-    X: Double;
-    Y: Double;
-    Type: string;
+export type Degree = number;
+
+export interface ImageQuality {
+    Brightness?: Float;
+    Sharpness?: Float;
 }
 
-export class UnmatchedFaces {
-    BoundingBox: BoundingBox;
-    Confidence: Double;
-    Pose: Pose;
-    Quality: Quality;
-    Landmarks: Array<Landmarks>;
+export type Emotions = Emotion[];
+
+export interface Emotion {
+    Type?: EmotionName;
+    Confidence?: Percent;
 }
 
-export class SourceImageFace {
-    BoundingBox: BoundingBox;
-    Confidence: Double;
-    Pose: Pose;
-    Quality: Quality;
-    Landmarks: Array<Landmarks>;
+export type EmotionName = "HAPPY" | "SAD" | "ANGRY" | "CONFUSED" | "DISGUSTED" | "SURPRISED" | "CALM" | "UNKNOWN" | "FEAR" | string;
+
+export interface Smile {
+    Value?: Boolean;
+    Confidence?: Percent;
+}
+
+export type OrientationCorrection = "ROTATE_0" | "ROTATE_90" | "ROTATE_180" | "ROTATE_270" | string;
+
+export class AwsDetectFacesResponse {
+    FaceDetails?: FaceDetailList;
+    OrientationCorrection?: OrientationCorrection;
+}
+
+export type FaceDetailList = FaceDetail[];
+
+export interface FaceDetail {
+    BoundingBox?: BoundingBox;
+    AgeRange?: AgeRange;
+    Smile?: Smile;
+    Eyeglasses?: Eyeglasses;
+    Sunglasses?: Sunglasses;
+    Gender?: Gender;
+    Beard?: Beard;
+    Mustache?: Mustache;
+    EyesOpen?: EyeOpen;
+    MouthOpen?: MouthOpen;
+    Emotions?: Emotions;
+    Landmarks?: Landmarks;
+    Pose?: Pose;
+    Quality?: ImageQuality;
+    Confidence?: Percent;
+}
+
+export interface AgeRange {
+    Low?: UInteger;
+    High?: UInteger;
+}
+
+export type UInteger = number;
+
+export interface Eyeglasses {
+    Value?: Boolean;
+    Confidence?: Percent;
+}
+
+export interface Gender {
+    Value?: GenderType;
+    Confidence?: Percent;
+}
+
+export interface Sunglasses {
+    Value?: Boolean;
+    Confidence?: Percent;
+}
+
+export type GenderType = "Male" | "Female" | string;
+
+export interface Beard {
+    Value?: Boolean;
+    Confidence?: Percent;
+}
+
+export interface Mustache {
+    Value?: Boolean;
+    Confidence?: Percent;
+}
+
+export interface EyeOpen {
+    Value?: Boolean;
+    Confidence?: Percent;
+}
+
+export interface MouthOpen {
+    Value?: Boolean;
+    Confidence?: Percent;
 }

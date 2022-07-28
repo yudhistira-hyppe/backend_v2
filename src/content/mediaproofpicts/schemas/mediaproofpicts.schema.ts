@@ -35,6 +35,32 @@ export class Mediaproofpicts {
   fsTargetUri: String
   @Prop()
   mediaMime: String
+@Prop() nama: String
+@Prop() tempatLahir: String
+@Prop() jenisKelamin: String
+@Prop() alamat: String
+@Prop() agama: String
+@Prop() statusPerkawinan: String
+@Prop() pekerjaan: String
+@Prop() kewarganegaraan: String
+@Prop() mediaSelfieType: String
+@Prop() mediaSelfieBasePath: String
+@Prop() mediaSelfieUri: String
+@Prop() SelfieOriginalName: String
+@Prop() SelfiefsSourceUri: String
+@Prop() SelfiefsSourceName: String
+@Prop() SelfiefsTargetUri: String
+@Prop() SelfiemediaMime: String;
+  @Prop() mediaFileSuportType: String;
+  @Prop() mediaFileSuportBasePath: String;
+  @Prop() mediaFileSuportUri: String;
+  @Prop() FileSuportOriginalName: String;
+  @Prop() FileSuportfsSourceUri: String;
+  @Prop() FileSuportfsSourceName: String;
+  @Prop() FileSuportfsTargetUri: String;
+  @Prop() FileSuportmediaMime: String;
+  @Prop() status: String;
+  @Prop() description: String;
  @Prop()
  _class:String
 }

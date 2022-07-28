@@ -56,7 +56,7 @@ export class SeaweedfsController {
         //     throw new BadRequestException(err);
         // });
         const file = fs.readFileSync('./upload/' + files.ktp[0].filename);
-        this.seaweedfsService.write(file);
+        //this.seaweedfsService.write(file);
 
     }
 }

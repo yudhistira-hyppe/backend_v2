@@ -5,13 +5,15 @@ import { CreateGetcontenteventsDto } from './dto/create-getcontentevents.dto';
 import { ContenteventsService } from '../../../content/contentevents/contentevents.service';
 import { CountriesService } from '../../../infra/countries/countries.service';
 import { Getcontentevents, GetcontenteventsDocument } from './schemas/getcontentevents.schema';
+import { MediaprofilepictsService } from '../../../content/mediaprofilepicts/mediaprofilepicts.service';
 
 @Injectable()
 export class GetcontenteventsService {
     constructor(
         @InjectModel(Getcontentevents.name, 'SERVER_TRANS')
         private readonly getcontenteventsModel: Model<GetcontenteventsDocument>,
-        private readonly contenteventsService: ContenteventsService,
+        private readonly contenteventsService: ContenteventsService, 
+        private readonly mediaprofilepictsService: MediaprofilepictsService,
         private readonly countriesService: CountriesService,
     ) { }
 
@@ -810,5 +812,87 @@ export class GetcontenteventsService {
 
 
         return query;
+    }
+
+
+    async findAllviewlike(CreateGetcontenteventsDto_: CreateGetcontenteventsDto): Promise<Getcontentevents[]> {
+        await this.contenteventsService.findcontent();
+        await this.mediaprofilepictsService.findmediaprofil();
+        var receiverParty = CreateGetcontenteventsDto_.receiverParty;
+        const query = await this.getcontenteventsModel.aggregate([
+            {
+                $match: {
+                    postID: CreateGetcontenteventsDto_.postID,
+                    eventType: CreateGetcontenteventsDto_.eventType,
+                    receiverParty: CreateGetcontenteventsDto_.receiverParty,
+                }
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "email",
+                    foreignField: "email",
+                    as: "userbasics"
+                }
+            },
+            {
+                $lookup: {
+                    from: "userauths",
+                    localField: "email",
+                    foreignField: "email",
+                    as: "userauths"
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    userbasics: { $arrayElemAt: ['$userbasics', 0] },
+                    userauths: { $arrayElemAt: ['$userauths', 0] },
+                },
+            },
+            {
+                $addFields: {
+                    profilePict_id: '$userbasics.profilePict.$id',
+                },
+
+            },
+            {
+                $lookup: {
+                    from: 'mediaprofilepicts2',
+                    localField: 'profilePict_id',
+                    foreignField: '_id',
+                    as: 'profilePict_data',
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    profilePict: { $arrayElemAt: ['$profilePict_data', 0] },
+                    userbasics: '$userbasics',
+                    userauths: '$userauths',
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    fullName: '$userbasics.fullName',
+                    email: '$userbasics.email',
+                    username: '$userauths.username',
+                    avatar: {
+                        profilePict_id:'$profilePict._id',
+                        mediaBasePath: '$profilePict.mediaBasePath',
+                        mediaUri: '$profilePict.mediaUri',
+                        mediaType: '$profilePict.mediaType',
+                        mediaEndpoint: '$profilePict.fsTargetUri',
+                        medreplace: { $replaceOne: { input: "$profilePict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+                    }
+                },
+            },
+        ]);
+
+
+        return query;
+        //return this.getcontenteventsModel.find(CreateGetcontenteventsDto_).exec();
     }
 }

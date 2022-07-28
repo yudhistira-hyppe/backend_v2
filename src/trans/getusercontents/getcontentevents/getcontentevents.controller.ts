@@ -1,12 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Req, BadRequestException, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Headers, Param, Post, UseGuards, Req, BadRequestException, Request } from '@nestjs/common';
 import { GetcontenteventsService } from './getcontentevents.service';
 import { CreateGetcontenteventsDto } from './dto/create-getcontentevents.dto';
 import { Getcontentevents } from './schemas/getcontentevents.schema';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
+import { UtilsService } from "../../../utils/utils.service";
+import { ErrorHandler } from "../../../utils/error.handler";
+import { PostsService } from "../../../content/posts/posts.service";
 
 @Controller()
 export class GetcontenteventsController {
-    constructor(private readonly getcontenteventsService: GetcontenteventsService) { }
+    constructor(private readonly getcontenteventsService: GetcontenteventsService,
+        private readonly errorHandler: ErrorHandler,
+        private readonly utilsService: UtilsService,
+        private readonly postsService: PostsService) { }
 
     @Post('api/getcontentevents')
     @UseGuards(JwtAuthGuard)
@@ -167,5 +173,43 @@ export class GetcontenteventsController {
 
         var data = { "gender": datapost, "age": dataages, "location": datapostloc };
         return { response_code: 202, data, messages };
+    }
+
+    @Post('api/post/viewlike')
+    @UseGuards(JwtAuthGuard)
+    async getViewLike(
+        @Body() CreateGetcontenteventsDto_: CreateGetcontenteventsDto,
+        @Headers() headers
+    ): Promise<Getcontentevents[]> {
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed token and email not match',
+            );
+        }
+
+        if (CreateGetcontenteventsDto_.postID == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed postID is required',
+            );
+        }
+
+        if (CreateGetcontenteventsDto_.eventType == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed eventType is required',
+            );
+        }
+
+        //Ceck POST ID
+        const datapostsService = await this.postsService.findid(
+            CreateGetcontenteventsDto_.postID.toString(),
+        );
+        if (await this.utilsService.ceckData(datapostsService)) {
+            CreateGetcontenteventsDto_.receiverParty = datapostsService.email;
+            return await this.getcontenteventsService.findAllviewlike(CreateGetcontenteventsDto_);
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed postID not found',
+            );
+        }
     }
 }

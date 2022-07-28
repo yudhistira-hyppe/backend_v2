@@ -26,6 +26,7 @@ import * as fs from 'fs';
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
 const nodeHtmlToImage = require('node-html-to-image');
+var path = require("path");
 
 @Injectable()
 export class UtilsService {
@@ -321,15 +322,30 @@ export class UtilsService {
     return isTrue;
   }
 
+  async createFolder(current_path: string, new_folder: string): Promise<boolean> {
+    var isTrue = false;
+    if (await fs.existsSync(path.resolve(current_path + new_folder))) {
+      isTrue = true;
+    } else {
+      try {
+        await fs.mkdirSync(path.resolve(current_path + new_folder));
+        isTrue = true;
+      } catch (err) {
+        isTrue = false;
+      }
+    }
+    return isTrue;
+  }
+
   async generateReferralImage(data: any): Promise<any> {
     try{
       var Templates_ = new Templates();
       Templates_ = await this.getTemplate('REFERRAL', 'REFERRAL');
       var html_body = Templates_.body_detail.trim().toString();
       const $_ = cheerio.load(html_body);
-      var dataimage = await this.seaweedfsService.read(data.image_profile);
-      if (data.image_profile!=''){
-        dataimage = await this.seaweedfsService.read(data.image_profile);
+      var dataimage = null;
+      if (data.image_profile != '') {
+        dataimage = await this.seaweedfsService.read(data.image_profile.replace('/localrepo', ''));
       }else{
         dataimage = fs.readFileSync('./profile-default.jpg');
       }

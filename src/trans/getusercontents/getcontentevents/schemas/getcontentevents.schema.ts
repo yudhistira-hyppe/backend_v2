@@ -28,6 +28,12 @@ export class Getcontentevents {
     flowIsDone: boolean
     @Prop()
     _class: String
+    @Prop()
+    postID: String;
+    @Prop()
+    senderParty: String;
+    @Prop()
+    receiverParty: String;
 }
 
 export const GetcontenteventsSchema = SchemaFactory.createForClass(Getcontentevents);
