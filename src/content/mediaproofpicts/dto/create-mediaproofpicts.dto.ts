@@ -1,20 +1,51 @@
 export class CreateMediaproofpictsDto {
-  
 
-    readonly _id: String;
-    readonly mediaID: String;
-    readonly active: boolean;
-    readonly valid: boolean;
-    readonly createdAt: String;
-    readonly updatedAt: String;
-    readonly postType: String;
-    readonly mediaType: String;
-    readonly mediaBasePath: String;
-    readonly mediaUri: String;
-    readonly originalName: String;
-    readonly fsSourceUri: String;
-    readonly fsSourceName: String;
-    readonly fsTargetUri: String;
-    readonly mediaMime: String;
-    readonly _class:String;
-  }
+
+  _id: String;
+  mediaID: String;
+  active: boolean;
+  valid: boolean;
+  createdAt: String;
+  updatedAt: String;
+  postType: String;
+  mediaType: String;
+  mediaBasePath: String;
+  mediaUri: String;
+  originalName: String;
+  fsSourceUri: String;
+  fsSourceName: String;
+  fsTargetUri: String;
+  mediaMime: String;
+
+
+  idcardnumber: String;
+  nama: String;
+  tempatLahir: String;
+  jenisKelamin: String;
+  alamat: String;
+  agama: String;
+  statusPerkawinan: String;
+  pekerjaan: String;
+  kewarganegaraan: String;
+  mediaSelfieType: String;
+  mediaSelfieBasePath: String;
+  mediaSelfieUri: String;
+  SelfieOriginalName: String;
+  SelfiefsSourceUri: String;
+  SelfiefsSourceName: String;
+  SelfiefsTargetUri: String;
+  SelfiemediaMime: String;
+  email: String;
+  mediaFileSuportType: String;
+  mediaFileSuportBasePath: String;
+  mediaFileSuportUri: String;
+  FileSuportOriginalName: String;
+  FileSuportfsSourceUri: String;
+  FileSuportfsSourceName: String;
+  FileSuportfsTargetUri: String;
+  FileSuportmediaMime: String;
+  status: String;
+  description: String;
+
+  _class: String;
+}

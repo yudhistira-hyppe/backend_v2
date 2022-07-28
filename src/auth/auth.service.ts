@@ -4081,7 +4081,7 @@ export class AuthService {
         }
 
         if (mediaprofilepicts_fsSourceUri != '') {
-          var data = await this.seaweedfsService.read(mediaprofilepicts_fsSourceUri);
+          var data = await this.seaweedfsService.read(mediaprofilepicts_fsSourceUri.replace('/localrepo',''));
           if (data != null) {
             return data;
           }else{

@@ -35,5 +35,21 @@ export class MediaproofpictsService {
     return deletedCat;
   }
 
+  async updatebyId(id: string, Mediaproofpicts_: Mediaproofpicts) {
+    this.MediaproofpictsModel.updateOne(
+      {
+        _id: id,
+      },
+      Mediaproofpicts_,
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
 
 }

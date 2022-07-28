@@ -1,17 +1,24 @@
 import { Controller, Get, Post, Res, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { FileInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import { AwsService } from './aws.service';
-import { AwsRequest, ImageDataRequest } from "./dto/aws.dto";
 import * as http from 'http';
 import * as fs from 'fs';
+import { Config, Rekognition } from "aws-sdk";
+import { AwsCompareFacesRequest, AwsDetectFacesRequest } from "./dto/aws.dto";
 const multer = require('multer');
+
+var config = new Config({
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION
+});
 
 var server = process.env.SEAWEEDFS_HOST;
 var port = process.env.SEAWEEDFS_PORT;
 var BaseUrl = 'http://' + server + ':' + port;
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, './upload');
+        cb(null, './testing');
     },
     filename: (req, file, cb) => {
         const fileName = file.originalname.toLowerCase().split(' ').join('-');
@@ -23,17 +30,17 @@ const storage = multer.diskStorage({
 export class AwsController {
     constructor(private readonly awsService: AwsService) { }
 
-    @Get('api/aws/test')
-    async test(AwsRequest_: AwsRequest) {
-        return await this.awsService.test();
-        // console.log(data);
-    }
+    // @Get('api/aws/test')
+    // async test(AwsRequest_: AwsRequest) {
+    //     return await this.awsService.test();
+    //     // console.log(data);
+    // }
 
-    @Post('api/aws/comparing')
-    async comparing(AwsRequest_: AwsRequest) {
-        // const data = await this.awsService.comparing(AwsRequest_);
-        // console.log(data);
-    }
+    // @Post('api/aws/comparing')
+    // async comparing(AwsRequest_: AwsRequest) {
+    //     // const data = await this.awsService.comparing(AwsRequest_);
+    //     // console.log(data);
+    // }
 
     @Get('api/aws/seaweedfs')
     async findseaweedfs() {
@@ -66,40 +73,40 @@ export class AwsController {
     @Post('api/aws/comparing/upload') 
     @UseInterceptors(FileFieldsInterceptor([{ name: 'avatar', maxCount: 1 },{ name: 'background', maxCount: 1, }], { storage: storage }))
     async uploadcomparing(@UploadedFiles() files: { avatar?: Express.Multer.File[], background?: Express.Multer.File[] }) {
-        const bitmap1 = fs.readFileSync('./upload/' + files.avatar[0].filename, 'base64');
-        const bitmap2 = fs.readFileSync('./upload/' + files.background[0].filename, 'base64');
+        let bitmap1 = null;
+        let bitmap2 = null;
+        if (files.avatar != undefined) {
+            bitmap1 = fs.readFileSync('./testing/' + files.avatar[0].filename, 'base64');
+
+        }
+        if (files.background != undefined) {
+            bitmap1 = fs.readFileSync('./testing/' + files.avatar[0].filename, 'base64');
+            bitmap2 = fs.readFileSync('./testing/' + files.background[0].filename, 'base64');
+        }
 
         const buffer1 = Buffer.from(bitmap1, 'base64');
-        const buffer2 = Buffer.from(bitmap2, 'base64');
+        //const buffer2 = Buffer.from(bitmap2, 'base64');
 
-        const deserialized1 = Buffer.from(bitmap1);
-        const deserialized2 = Buffer.from(bitmap2);
-        //console.log(bitmap1);
-        // console.log(bitmap1.length);
-        // console.log(bitmap2.length);
-        var AwsRequest_ = new AwsRequest(); 
-        var Image_1 = new ImageDataRequest();
-        var Image_2 = new ImageDataRequest();
+        var AwsCompareFacesRequest_ = new AwsCompareFacesRequest();
+        var AwsDetectFacesRequest_1 = new AwsDetectFacesRequest();
+        var AwsDetectFacesRequest_2 = new AwsDetectFacesRequest();
 
-        const bitmap = await fs.readFileSync('./upload/' + files.avatar[0].filename);
-        const buffer = Buffer.from(bitmap1, 'base64');
+        // AwsDetectFacesRequest_1.Image.Bytes = buffer1;
+        AwsDetectFacesRequest_1.Attributes = ["DEFAULT"];
 
-        // Image_1.Bytes = bitmap1;
-        // Image_2.Bytes = bitmap2;
+        //AwsDetectFacesRequest_2.Image.Bytes = buffer2;
+        AwsDetectFacesRequest_2.Attributes = ["DEFAULT"];
 
-        AwsRequest_.SimilarityThreshold = 70;
-        AwsRequest_.SourceImage = { Bytes: bitmap1 };
-        AwsRequest_.TargetImage = { Bytes: bitmap1 };
-        //console.log(AwsRequest_);
-        const data = await this.awsService.comparing({
-            "SimilarityThreshold": 70,
-            "SourceImage": {
-                "Bytes": buffer1
-            },
-            "TargetImage": {
-                "Bytes": buffer2
-            }
-        });
-        return data;
+        // AwsCompareFacesRequest_.SourceImage.Bytes = buffer1;
+        // AwsCompareFacesRequest_.SourceImage.Bytes = buffer1;
+        AwsCompareFacesRequest_.SimilarityThreshold = 70;
+        AwsCompareFacesRequest_.QualityFilter = "HIGHT";
+
+        const image_1 = await this.awsService.detect(AwsDetectFacesRequest_1);
+        //const image_2 = await this.awsService.detect(AwsDetectFacesRequest_2);
+
+        //const data = await this.awsService.comparing(AwsCompareFacesRequest_);
+        //console.log(data);
+        return image_1;
     }
 }
