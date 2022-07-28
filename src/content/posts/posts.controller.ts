@@ -144,54 +144,18 @@ export class PostsController {
 
     try {
       dataauth = await this.userauthsService.findOneByEmail(email);
-      var id = dataauth._id.toString();
       var ido = dataauth._id;
-      console.log(id);
     } catch (e) {
       throw new BadRequestException("Unabled to proceed");
     }
+
     try {
-      data = await this.PostsService.findid(postID);
-      var tagPeapel = data._doc.tagPeople;
-      console.log(data);
+
+      this.PostsService.updateTags(postID, ido);
+      return { response_code: 202, messages };
     } catch (e) {
-      throw new BadRequestException("Unabled to proceed");
+      return { response_code: 500, messagesEror };
     }
-
-    var leng = tagPeapel.length;
-    var j = 0;
-    for (var x = 0; x < leng; x++) {
-      var dttag = tagPeapel[x].oid;
-      var stringid = dttag.toString();
-
-
-      if (stringid === id) {
-        j = x;
-
-
-      }
-      tagPeapel.find(function (value, index) {
-        if (index === j) {
-
-          delete tagPeapel[j];
-
-
-        }
-      });
-      console.log(tagPeapel);
-      try {
-        var datax = this.PostsService.updateTag(postID, tagPeapel);
-        this.PostsService.updateTags(postID);
-        return { response_code: 202, messages };
-      } catch (e) {
-        return { response_code: 500, messagesEror };
-      }
-
-
-    }
-
-
-
 
   }
 

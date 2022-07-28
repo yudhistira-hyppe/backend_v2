@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
 import { CreatePostsDto } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
@@ -85,10 +86,16 @@ export class PostsService {
     return data;
   }
 
-  async updateTags(id: string) {
+
+  async updateTags(id: string, idauth: Types.ObjectId) {
 
 
-    let data = await this.PostsModel.updateOne({ "_id": id }, { $pull: { "tagPeople": null } });
+
+    let data = await this.PostsModel.updateOne({ "_id": id }, {
+      $pull: {
+        "tagPeople": { "$in": [{ "$ref": "userauths", "$id": idauth, "$db": "hyppe_trans_db" }] }
+      }
+    });
     return data;
   }
 
