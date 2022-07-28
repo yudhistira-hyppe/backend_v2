@@ -883,8 +883,7 @@ export class GetcontenteventsService {
                         mediaBasePath: '$profilePict.mediaBasePath',
                         mediaUri: '$profilePict.mediaUri',
                         mediaType: '$profilePict.mediaType',
-                        mediaEndpoint: '$profilePict.fsTargetUri',
-                        medreplace: { $replaceOne: { input: "$profilePict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+                        mediaEndpoint: { $concat: ['/profilepict/', '$profilePict._id'] },
 
                     }
                 },
