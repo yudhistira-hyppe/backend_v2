@@ -148,7 +148,7 @@ export class PostsController {
     } catch (e) {
       throw new BadRequestException("Unabled to proceed");
     }
-
+    //deletetagpeople
     try {
 
       this.PostsService.updateTags(postID, ido);
