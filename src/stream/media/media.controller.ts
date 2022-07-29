@@ -494,17 +494,17 @@ export class MediaController {
                             }
                         };
                     } else {
-                        var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
-                        _CreateMediaproofpictsDto.status = 'IN_PROGGRESS';
-                        _CreateMediaproofpictsDto.valid = false;
-                        await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
+                        // var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                        // _CreateMediaproofpictsDto.status = 'IN_PROGGRESS';
+                        // _CreateMediaproofpictsDto.valid = false;
+                        // await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                         return {
                             "response_code": 202,
-                            "data": {
-                                "id_mediaproofpicts": id_mediaproofpicts_,
-                                "status": "IN_PROGGRESS",
-                                "valid": false
-                            },
+                            // "data": {
+                            //     "id_mediaproofpicts": id_mediaproofpicts_,
+                            //     "status": "IN_PROGGRESS",
+                            //     "valid": false
+                            // },
                             "messages": {
                                 "info": [
                                     "Face not match"
