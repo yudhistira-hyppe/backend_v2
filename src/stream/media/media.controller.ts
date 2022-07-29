@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UploadedFiles, Headers, UseInterceptors, Req, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode } from "@nestjs/common";
 import { FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import * as fse from 'fs-extra';
-import * as fs from 'fs'; 
+import * as fs from 'fs';
 import { request } from "http";
 import { FormDataRequest } from "nestjs-form-data";
 import { MediaService } from "./media.service";
@@ -14,7 +14,7 @@ import { diskStorage, Multer } from "multer";
 import { AwsCompareFacesRequest, AwsDetectFacesRequest } from "../aws/dto/aws.dto";
 import { AwsService } from "../aws/aws.service";
 import { UserbasicsService } from "../../trans/userbasics/userbasics.service";
-import { MediaproofpictsService } from "../../content/mediaproofpicts/mediaproofpicts.service"; 
+import { MediaproofpictsService } from "../../content/mediaproofpicts/mediaproofpicts.service";
 import mongoose from "mongoose";
 //import FormData from "form-data";
 const multer = require('multer');
@@ -55,20 +55,20 @@ export const multerOptions = {
 export class MediaController {
     constructor(
         private readonly mediaService: MediaService,
-        private readonly errorHandler: ErrorHandler, 
+        private readonly errorHandler: ErrorHandler,
         private readonly awsService: AwsService,
-        private readonly utilsService: UtilsService, 
-        private readonly mediaproofpictsService: MediaproofpictsService, 
+        private readonly utilsService: UtilsService,
+        private readonly mediaproofpictsService: MediaproofpictsService,
         private readonly userbasicsService: UserbasicsService,
-        private readonly seaweedfsService: SeaweedfsService) {}
+        private readonly seaweedfsService: SeaweedfsService) { }
 
     @Post('api/posts/profilepicture')
     @UseInterceptors(FileFieldsInterceptor([{ name: 'profilePict', maxCount: 1 }, { name: 'proofPict', maxCount: 1, }], multerOptions))
     async uploadcomparing(
-        @UploadedFiles() files: { 
-            profilePict?: Express.Multer.File[], 
-            proofPict?: Express.Multer.File[] 
-        }, 
+        @UploadedFiles() files: {
+            profilePict?: Express.Multer.File[],
+            proofPict?: Express.Multer.File[]
+        },
         @Body() request,
         @Headers() headers) {
         var profilePict_data = null;
@@ -158,12 +158,12 @@ export class MediaController {
                 'Unabled to proceed token and email not match',
             );
         }
-        if (CreateMediaproofpictsDto_.idcardnumber==undefined){
+        if (CreateMediaproofpictsDto_.idcardnumber == undefined) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed idcardnumber is required',
             );
-        }else{
-            if (CreateMediaproofpictsDto_.idcardnumber.length<16) {
+        } else {
+            if (CreateMediaproofpictsDto_.idcardnumber.length < 16) {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed idcardnumber must length 16 digit',
                 );
@@ -208,7 +208,7 @@ export class MediaController {
         let face_detect_selfiepict = null;
 
         let id_mediaproofpicts_ = null;
-
+        let iduserbasic = null;
         //Var current date
         var current_date = await this.utilsService.getDateTimeString();
 
@@ -221,8 +221,8 @@ export class MediaController {
         const datauserbasicsService = await this.userbasicsService.findOne(
             headers['x-auth-user'],
         );
-
         if (await this.utilsService.ceckData(datauserbasicsService)) {
+
             //Ceck cardPict
             if (files.cardPict != undefined) {
                 var FormData_ = new FormData();
@@ -230,7 +230,7 @@ export class MediaController {
                 cardPict_mimetype = files.cardPict[0].mimetype;
                 cardPict_filename = files.cardPict[0].filename;
                 cardPict_etx = cardPict_filename.substring(cardPict_filename.lastIndexOf('.') + 1, cardPict_filename.length);
-                cardPict_name = cardPict_filename.substring(0, cardPict_filename.lastIndexOf('.')); 
+                cardPict_name = cardPict_filename.substring(0, cardPict_filename.lastIndexOf('.'));
 
                 //New Name file cardPict
                 cardPict_filename_new = IdMediaproofpictsDto + '_0001.' + cardPict_etx;
@@ -312,7 +312,7 @@ export class MediaController {
                 selfiepict_local_path = './temp/' + mongoose_gen_meida._id.toString() + '/selfiepict/' + selfiepict_filename_new;
                 //SeaweedFs path
                 selfiepict_seaweedfs_path = '/' + mongoose_gen_meida._id.toString() + '/selfiepict/';
-                
+
                 //Create Folder Id
                 if (await this.utilsService.createFolder('./temp/', mongoose_gen_meida._id.toString())) {
                     //Create folder selfiepict
@@ -331,7 +331,7 @@ export class MediaController {
                 }
 
                 //AWS face detect selfiepict
-                try{
+                try {
                     //Create bitmap from local
                     bitmap_selfiepict = await fs.readFileSync('./temp/' + mongoose_gen_meida._id.toString() + '/selfiepict/' + selfiepict_filename_new, 'base64');
                     buffer_selfiepict = Buffer.from(bitmap_selfiepict, 'base64');
@@ -344,7 +344,7 @@ export class MediaController {
                     };
                     //AWS face detect 
                     face_detect_selfiepict = await this.awsService.detect(data_selfiepict);
-                }catch (err) {
+                } catch (err) {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed face detect selfiepict ' + err,
                     );
@@ -366,7 +366,7 @@ export class MediaController {
             }
 
             //Ceck Data user proofPict
-            if (datauserbasicsService.proofPict!=undefined){
+            if (datauserbasicsService.proofPict != undefined) {
                 //Update proofPict
                 try {
                     var proofPict_json = JSON.parse(JSON.stringify(datauserbasicsService.proofPict));
@@ -395,7 +395,7 @@ export class MediaController {
                     CreateMediaproofpictsDto_.SelfiefsSourceName = cardPict_filename_new.replace(cardPict_etx, 'jpg').replace('_0001', '');
                     CreateMediaproofpictsDto_.SelfiefsTargetUri = '/localrepo/' + mongoose_gen_meida + '/proofpict/' + cardPict_filename_new;
                     CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype;
-                    await this.mediaproofpictsService.updatebyId(data_mediaproofpicts._id.toString(),CreateMediaproofpictsDto_); 
+                    await this.mediaproofpictsService.updatebyId(data_mediaproofpicts._id.toString(), CreateMediaproofpictsDto_);
                 } catch (err) {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed failed update Mediaproofpicts ' + err,
@@ -431,7 +431,7 @@ export class MediaController {
                     await this.mediaproofpictsService.create(CreateMediaproofpictsDto_);
                     await this.userbasicsService.updatebyEmail(datauserbasicsService.email.toString(), {
                         idProofName: CreateMediaproofpictsDto_.nama,
-                        idProofNumber: CreateMediaproofpictsDto_.idcardnumber, 
+                        idProofNumber: CreateMediaproofpictsDto_.idcardnumber,
                         idProofStatus: 'COMPLETE',
                         proofPict: {
                             $ref: 'mediaproofpicts',
@@ -453,7 +453,7 @@ export class MediaController {
                     throw err;
                 }
 
-                console.log(`${'./temp/' + mongoose_gen_meida._id.toString() } is deleted!`);
+                console.log(`${'./temp/' + mongoose_gen_meida._id.toString()} is deleted!`);
             });
 
             //Ceck face detect true
@@ -472,13 +472,17 @@ export class MediaController {
                     //Face comparing
                     face_detect_selfiepict = await this.awsService.comparing(data_comparing);
                     if (face_detect_selfiepict.FaceMatches.length > 0) {
+                        iduserbasic = datauserbasicsService._id;
                         var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                         _CreateMediaproofpictsDto.status = 'FINISH';
                         _CreateMediaproofpictsDto.valid = true;
                         await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
+                        iduserbasic = datauserbasicsService._id;
+                        await this.userbasicsService.updateIdVerified(iduserbasic);
+
                         return {
                             "response_code": 202,
-                            "data":{
+                            "data": {
                                 "id_mediaproofpicts": id_mediaproofpicts_,
                                 "status": "FINISH",
                                 "valid": true
@@ -514,7 +518,7 @@ export class MediaController {
                     );
                 }
                 return face_detect_selfiepict;
-            }else{
+            } else {
                 if (face_detect_selfiepict.FaceDetails.length == 0) {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed selfiepict not face detect',

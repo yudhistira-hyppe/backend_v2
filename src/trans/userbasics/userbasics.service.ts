@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { CreateUserbasicDto } from './dto/create-userbasic.dto';
 import { Userbasic, UserbasicDocument } from './schemas/userbasic.schema';
 import { LanguagesService } from '../../infra/languages/languages.service';
@@ -89,6 +89,17 @@ export class UserbasicsService {
       .findByIdAndRemove({ _id: id })
       .exec();
     return deletedCat;
+  }
+
+  async updateIdVerified(id: ObjectId): Promise<Object> {
+    let data = await this.userbasicModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "isIdVerified": true
+        }
+      });
+
+    return data;
   }
 
   async UserAge(): Promise<Object> {
@@ -350,7 +361,7 @@ export class UserbasicsService {
 
     return query;
   }
-  
+
   async viewdatabyuser(id: object): Promise<object> {
     const query = await this.userbasicModel.aggregate([
       {
