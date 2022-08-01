@@ -35,15 +35,24 @@ export class CreateMediaproofpictsDto {
   SelfiefsSourceName: String;
   SelfiefsTargetUri: String;
   SelfiemediaMime: String;
+
+  mediaSupportType: String;
+  mediaSupportBasePath: String;
+  mediaSupportUri: String;
+  SupportOriginalName: String;
+  SupportfsSourceUri: String;
+  SupportfsSourceName: String;
+  SupportfsTargetUri: String;
+  SupportmediaMime: String;
   email: String;
-  mediaFileSuportType: String;
-  mediaFileSuportBasePath: String;
-  mediaFileSuportUri: String;
-  FileSuportOriginalName: String;
-  FileSuportfsSourceUri: String;
-  FileSuportfsSourceName: String;
-  FileSuportfsTargetUri: String;
-  FileSuportmediaMime: String;
+  // mediaFileSuportType: String;
+  // mediaFileSuportBasePath: String;
+  // mediaFileSuportUri: String;
+  // FileSuportOriginalName: String;
+  // FileSuportfsSourceUri: String;
+  // FileSuportfsSourceName: String;
+  // FileSuportfsTargetUri: String;
+  // FileSuportmediaMime: String;
   status: String;
   description: String;
 
