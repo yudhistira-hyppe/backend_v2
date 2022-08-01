@@ -16,6 +16,7 @@ import { AwsService } from "../aws/aws.service";
 import { UserbasicsService } from "../../trans/userbasics/userbasics.service";
 import { MediaproofpictsService } from "../../content/mediaproofpicts/mediaproofpicts.service"; 
 import mongoose from "mongoose";
+import { SettingsService } from "../../trans/settings/settings.service";
 //import FormData from "form-data";
 const multer = require('multer');
 var FormData = require('form-data');
@@ -58,6 +59,7 @@ export class MediaController {
         private readonly errorHandler: ErrorHandler, 
         private readonly awsService: AwsService,
         private readonly utilsService: UtilsService, 
+        private readonly settingsService: SettingsService, 
         private readonly mediaproofpictsService: MediaproofpictsService, 
         private readonly userbasicsService: UserbasicsService,
         private readonly seaweedfsService: SeaweedfsService) {}
@@ -71,6 +73,7 @@ export class MediaController {
         }, 
         @Body() request,
         @Headers() headers) {
+
         var profilePict_data = null;
         var profilePict_filename = '';
         var profilePict_etx = '';
@@ -216,6 +219,9 @@ export class MediaController {
         var IdMediaproofpictsDto = await this.utilsService.generateId();
         //Var generate id mongoose
         var mongoose_gen_meida = new mongoose.Types.ObjectId();
+
+        //Get Setting Similarity
+        var Similarity = await (await this.settingsService.findOneByJenis('Similarity')).value;
 
         //Ceck User Userbasics
         const datauserbasicsService = await this.userbasicsService.findOne(
@@ -460,7 +466,7 @@ export class MediaController {
             if (face_detect_selfiepict.FaceDetails.length > 0 && face_detect_cardPict.FaceDetails.length > 0) {
                 try {
                     var data_comparing = {
-                        "SimilarityThreshold": 70,
+                        "SimilarityThreshold": Similarity,
                         "SourceImage": {
                             "Bytes": buffer_cardPict
                         },

@@ -8,10 +8,12 @@ import { SeaweedfsModule } from '../seaweedfs/seaweedfs.module';
 import { AwsModule } from '../aws/aws.module';
 import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
 import { MediaproofpictsModule } from '../../content/mediaproofpicts/mediaproofpicts.module';
+import { SettingsModule } from '../../trans/settings/settings.module';
 
 
 @Module({
   imports: [
+    SettingsModule,
     MediaproofpictsModule,
     UserbasicsModule,
     AwsModule,
