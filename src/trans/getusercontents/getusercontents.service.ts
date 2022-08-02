@@ -23307,11 +23307,11 @@ export class GetusercontentsService {
           $or: [{
             description: {
               $regex: keys
-            }, postType: postType
+            }, postType: postType, visibility: "PUBLIC",
           }, {
             tags: {
               $regex: keys
-            }, postType: postType
+            }, postType: postType, visibility: "PUBLIC",
           }]
         }
       },

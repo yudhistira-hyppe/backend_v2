@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateWithdrawsDto, OyDisburseCallbackWithdraw } from './dto/create-withdraws.dto';
 import { Model, Types } from 'mongoose';
 import { Withdraws, WithdrawsDocument } from './schemas/withdraws.schema';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class WithdrawsService {
@@ -36,5 +37,125 @@ export class WithdrawsService {
         let data = await this.withdrawsModel.updateOne({ "partnerTrxid": partnerTrxid },
             { $set: { "status": "success", "description": "Withdraw success", verified: true, payload: payload } });
         return data;
+    }
+
+    async findhistoryWithdraw(iduser: ObjectId, skip: number, limit: number) {
+        const query = await this.withdrawsModel.aggregate([
+            {
+                $match: {
+                    status: "success",
+                    idUser: iduser
+                }
+            },
+
+            {
+                $addFields: {
+                    type: 'Withdrawal',
+
+                },
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "idUser",
+                    foreignField: "_id",
+                    as: "userbasics_data"
+                }
+            }, {
+                $project: {
+                    iduser: "$idUser",
+                    type: "$type",
+                    timestamp: "$timestamp",
+                    partnerTrxid: "$partnerTrxid",
+                    totalamount: "$amount",
+                    user: {
+                        $arrayElemAt: [
+                            "$userbasics_data",
+                            0
+                        ]
+                    },
+
+                }
+            }, {
+                $project: {
+                    iduser: "$iduser",
+                    fullName: "$user.fullName",
+                    email: "$user.email",
+                    type: "$type",
+                    timestamp: "$timestamp",
+                    partnerTrxid: "$partnerTrxid",
+                    totalamount: "$totalamount",
+                }
+            },
+
+            {
+                $skip: skip
+            },
+            {
+                $limit: limit
+            }
+        ]);
+        return query;
+    }
+
+
+    async findhistoryWithdrawdetail(id: ObjectId, iduser: ObjectId) {
+        const query = await this.withdrawsModel.aggregate([
+            {
+                $match: {
+                    _id: id,
+                    status: "success",
+
+                    idUser: iduser
+                }
+            },
+
+            {
+                $addFields: {
+                    type: 'Withdrawal',
+
+                },
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "idUser",
+                    foreignField: "_id",
+                    as: "userbasics_data"
+                }
+            }, {
+                $project: {
+                    iduser: "$idUser",
+                    type: "$type",
+                    timestamp: "$timestamp",
+                    partnerTrxid: "$partnerTrxid",
+                    totalamount: "$amount",
+                    description: "$description",
+                    status: "$status",
+                    user: {
+                        $arrayElemAt: [
+                            "$userbasics_data",
+                            0
+                        ]
+                    },
+
+                }
+            }, {
+                $project: {
+                    iduser: "$iduser",
+                    fullName: "$user.fullName",
+                    email: "$user.email",
+                    type: "$type",
+                    timestamp: "$timestamp",
+                    partnerTrxid: "$partnerTrxid",
+                    totalamount: "$totalamount",
+                    description: "$description",
+                    status: "$status",
+                }
+            },
+
+
+        ]);
+        return query;
     }
 }

@@ -2202,6 +2202,378 @@ export class TransactionsController {
         await this.accountbalancesService.createdata(dataacountbalance);
     }
 
+
+    @Post('api/transactions/historys')
+    @UseGuards(JwtAuthGuard)
+    async searchhistorytransaksi(@Req() request: Request): Promise<any> {
+        var startdate = null;
+        var enddate = null;
+        var iduser = null;
+        var email = null;
+        var datasell = null;
+        var skip = null;
+        var limit = null;
+        var databuy = null;
+        var datawithdraw = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+            var ubasic = await this.userbasicsService.findOne(email);
+
+            iduser = ubasic._id;
+
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        // if (request_json["startdate"] !== undefined) {
+        //     startdate = request_json["startdate"];
+        // } else {
+        //     throw new BadRequestException("Unabled to proceed");
+        // }
+
+        // if (request_json["enddate"] !== undefined) {
+        //     enddate = request_json["enddate"];
+        // } else {
+        //     throw new BadRequestException("Unabled to proceed");
+        // }
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        const messages = {
+            "info": ["The process successful"],
+        };
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var idadmin = mongoose.Types.ObjectId(iduser);
+
+        datasell = await this.transactionsService.findhistorySell(idadmin, skip, limit);
+        databuy = await this.transactionsService.findhistoryBuy(idadmin, skip, limit);
+        datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, skip, limit);
+        console.log(datawithdraw)
+        var data = datasell.concat(databuy, datawithdraw);
+
+        return { response_code: 202, data, skip, limit, messages };
+    }
+
+    @Post('api/transactions/historys/details')
+    @UseGuards(JwtAuthGuard)
+    async trdetailbuysell(@Req() request: Request): Promise<any> {
+        var data = null;
+        var id = null;
+        var type = null;
+        var email = null;
+        var iduser = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["id"] !== undefined) {
+            id = request_json["id"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+            var ubasic = await this.userbasicsService.findOne(email);
+
+            iduser = ubasic._id;
+
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var idmdradmin = "62bd413ff37a00001a004369";
+        var idbankvacharge = "62bd40e0f37a00001a004366";
+
+        var databankvacharge = null;
+        var datamradmin = null;
+        var amount = 0;
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var idtr = mongoose.Types.ObjectId(id);
+        var databuy = null;
+        var amount = 0;
+        var valuevacharge = 0;
+        var valuemradmin = 0;
+        var nominalmradmin = 0;
+        var noinvoice = "";
+        var mediaThumbEndpoint = "";
+        var mediaThumbUri = "";
+        var idbank = null;
+        var datamethode = null;
+        var namamethode = "";
+        var paymentmethod = null;
+        var databank = null;
+        var namabank = "";
+        var amounts = 0;
+        var dataconten = null;
+        var saleAmount = 0;
+        var dataWitdraw = null;
+        var dataakunbank = null;
+        try {
+
+            if (type === "Buy") {
+                databuy = await this.transactionsService.findhistorydetailbuy(idtr, type, iduser);
+                var postid = databuy[0].postID;
+
+
+                paymentmethod = databuy[0].paymentmethod;
+
+                idbank = databuy[0].bank.toString();
+                amounts = databuy[0].amount;
+
+                noinvoice = databuy[0].noinvoice;
+                mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
+                mediaThumbUri = databuy[0].mediaThumbUri;
+                try {
+                    dataconten = await this.getusercontentsService.findcontenbuy(postid);
+                    saleAmount = dataconten[0].saleAmount;
+                } catch (e) {
+                    dataconten = null;
+                    saleAmount = 0;
+                }
+
+                try {
+                    datamethode = await this.methodepaymentsService.findOne(paymentmethod);
+                    namamethode = datamethode._doc.methodename;
+
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+                try {
+
+                    datamradmin = await this.settingsService.findOne(idmdradmin);
+                    databankvacharge = await this.settingsService.findOne(idbankvacharge);
+                    valuevacharge = databankvacharge._doc.value;
+                    valuemradmin = datamradmin._doc.value;
+                    nominalmradmin = saleAmount * valuemradmin / 100;
+
+
+
+
+                } catch (e) {
+                    datamradmin = null;
+                    databankvacharge = null;
+                    valuevacharge = 0;
+                    valuemradmin = 0;
+                    nominalmradmin = 0;
+                }
+
+                try {
+                    databank = await this.banksService.findOne(idbank);
+                    namabank = databank._doc.bankname;
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+
+                amount = saleAmount;
+                var selluser = databuy[0].idusersell;
+
+
+
+                try {
+                    var ubasic = await this.userbasicsService.findid(selluser);
+                    var namapenjual = ubasic.fullName;
+                    var emailpenjual = ubasic.email;
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+
+
+                data = {
+
+                    "_id": idtr,
+                    "type": databuy[0].type,
+                    "time": databuy[0].timestamp,
+                    "description": databuy[0].description,
+                    "noinvoice": noinvoice,
+                    "nova": databuy[0].nova,
+                    "expiredtimeva": databuy[0].expiredtimeva,
+                    "like": databuy[0].salelike,
+                    "view": databuy[0].saleview,
+                    "bank": namabank,
+                    "paymentmethode": namamethode,
+                    "amount": amount,
+                    "totalamount": databuy[0].totalamount,
+                    "adminFee": nominalmradmin,
+                    "serviceFee": valuevacharge,
+                    "status": databuy[0].status,
+                    "fullName": databuy[0].fullName,
+                    "email": databuy[0].email,
+                    "namapenjual": namapenjual,
+                    "emailpenjual": emailpenjual,
+                    "postID": databuy[0].postID,
+                    "postType": databuy[0].postType,
+                    "descriptionContent": databuy[0].descriptionContent,
+                    "title": databuy[0].title,
+                    "mediaBasePath": databuy[0].mediaBasePath,
+                    "mediaUri": databuy[0].mediaUri,
+                    "mediaType": databuy[0].mediaType,
+                    "mediaEndpoint": databuy[0].mediaEndpoint,
+                    "mediaThumbEndpoint": mediaThumbEndpoint,
+                    "mediaThumbUri": mediaThumbUri,
+
+                };
+            } else if (type === "Sell") {
+                databuy = await this.transactionsService.findhistorydetailsell(idtr, type, iduser);
+                var postid = databuy[0].postID;
+
+
+                paymentmethod = databuy[0].paymentmethod;
+
+                idbank = databuy[0].bank.toString();
+                amounts = databuy[0].amount;
+
+                noinvoice = databuy[0].noinvoice;
+                mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
+                mediaThumbUri = databuy[0].mediaThumbUri;
+                try {
+                    dataconten = await this.getusercontentsService.findcontenbuy(postid);
+                    saleAmount = dataconten[0].saleAmount;
+                } catch (e) {
+                    dataconten = null;
+                    saleAmount = 0;
+                }
+
+                try {
+                    datamethode = await this.methodepaymentsService.findOne(paymentmethod);
+                    namamethode = datamethode._doc.methodename;
+
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+                try {
+
+                    datamradmin = await this.settingsService.findOne(idmdradmin);
+                    databankvacharge = await this.settingsService.findOne(idbankvacharge);
+                    valuevacharge = databankvacharge._doc.value;
+                    valuemradmin = datamradmin._doc.value;
+                    nominalmradmin = saleAmount * valuemradmin / 100;
+
+
+
+
+                } catch (e) {
+                    datamradmin = null;
+                    databankvacharge = null;
+                    valuevacharge = 0;
+                    valuemradmin = 0;
+                    nominalmradmin = 0;
+                }
+
+                try {
+                    databank = await this.banksService.findOne(idbank);
+                    namabank = databank._doc.bankname;
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+
+                amount = saleAmount;
+                var buyuser = databuy[0].iduserbuyer;
+
+                try {
+                    var ubasic = await this.userbasicsService.findid(buyuser);
+                    var namapembeli = ubasic.fullName;
+                    var emailpembeli = ubasic.email;
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+
+                data = {
+
+                    "_id": idtr,
+                    "type": databuy[0].type,
+                    "time": databuy[0].timestamp,
+                    "description": databuy[0].description,
+                    "like": databuy[0].salelike,
+                    "view": databuy[0].saleview,
+                    "bank": namabank,
+                    "paymentmethode": namamethode,
+                    "amount": amount,
+                    "totalamount": databuy[0].totalamount,
+                    "status": databuy[0].status,
+                    "fullName": databuy[0].fullName,
+                    "email": databuy[0].email,
+                    "namapembeli": namapembeli,
+                    "emailpembeli": emailpembeli,
+                    "postID": databuy[0].postID,
+                    "postType": databuy[0].postType,
+                    "descriptionContent": databuy[0].descriptionContent,
+                    "title": databuy[0].title,
+                    "mediaBasePath": databuy[0].mediaBasePath,
+                    "mediaUri": databuy[0].mediaUri,
+                    "mediaType": databuy[0].mediaType,
+                    "mediaEndpoint": databuy[0].mediaEndpoint,
+                    "mediaThumbEndpoint": mediaThumbEndpoint,
+                    "mediaThumbUri": mediaThumbUri,
+
+                };
+            } else if (type === "Withdrawal") {
+
+                try {
+                    dataWitdraw = await this.withdrawsService.findhistoryWithdrawdetail(idtr, iduser);
+
+                    dataakunbank = await this.userbankaccountsService.findOneUser(iduser);
+                    var idBnk = dataakunbank._doc.idBank;
+                    var databank = null;
+                    var namabank = "";
+                    try {
+                        databank = await this.banksService.findOne(idBnk);
+                        namabank = databank._doc.bankname;
+
+
+                    } catch (e) {
+                        throw new BadRequestException("Data not found...!");
+                    }
+
+                    data = {
+
+                        "_id": idtr,
+                        "iduser": dataWitdraw[0].iduser,
+                        "fullName": dataWitdraw[0].fullName,
+                        "email": dataWitdraw[0].email,
+                        "type": dataWitdraw[0].type,
+                        "timestamp": dataWitdraw[0].timestamp,
+                        "totalamount": dataWitdraw[0].totalamount,
+                        "description": dataWitdraw[0].description,
+                        "status": dataWitdraw[0].status,
+                        "noRek": dataakunbank._doc.noRek,
+                        "namaRek": dataakunbank._doc.nama,
+                        "namaBank": namabank
+                    };
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+            } else {
+                throw new BadRequestException("Data not found...!");
+            }
+
+
+        } catch (e) {
+            throw new BadRequestException("Data not found...!");
+        }
+        return { response_code: 202, data, messages };
+    }
+
     async generateNumber() {
         const getRandomId = (min = 0, max = 500000) => {
             min = Math.ceil(min);

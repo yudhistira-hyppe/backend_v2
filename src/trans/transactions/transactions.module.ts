@@ -16,11 +16,16 @@ import { InsightsModule } from '../../content/insights/insights.module';
 import { UserbankaccountsModule } from '../userbankaccounts/userbankaccounts.module';
 import { WithdrawsModule } from '../withdraws/withdraws.module';
 import { GetusercontentsModule } from '../getusercontents/getusercontents.module';
+
+import { MediavideosModule } from '../../content/mediavideos/mediavideos.module';
+import { MediapictsModule } from '../../content/mediapicts/mediapicts.module';
+import { MediadiariesModule } from '../../content/mediadiaries/mediadiaries.module';
 @Module({
 
     imports: [
 
-        ConfigModule.forRoot(), GetusercontentsModule, UserbasicsModule, SettingsModule, MethodepaymentsModule, BanksModule, PostsModule, Pph21sModule, AccountbalancesModule, OyPgModule, InsightsModule, UserbankaccountsModule, WithdrawsModule,
+        ConfigModule.forRoot(), GetusercontentsModule, UserbasicsModule, SettingsModule, MethodepaymentsModule, BanksModule, PostsModule, Pph21sModule, AccountbalancesModule, OyPgModule,
+        InsightsModule, UserbankaccountsModule, WithdrawsModule, MediavideosModule, MediapictsModule, MediadiariesModule,
         MongooseModule.forFeature([{ name: Transactions.name, schema: TransactionsSchema }], 'SERVER_TRANS')
     ],
     controllers: [TransactionsController],
