@@ -9,10 +9,12 @@ import { AwsModule } from '../aws/aws.module';
 import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
 import { MediaproofpictsModule } from '../../content/mediaproofpicts/mediaproofpicts.module';
 import { SettingsModule } from '../../trans/settings/settings.module';
+import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediaprofilepicts.module';
 
 
 @Module({
   imports: [
+    MediaprofilepictsModule,
     SettingsModule,
     MediaproofpictsModule,
     UserbasicsModule,
