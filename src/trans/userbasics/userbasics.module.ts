@@ -20,4 +20,4 @@ import { InterestsRepoModule } from '../../infra/interests_repo/interests_repo.m
     exports: [UserbasicsService],
     providers: [UserbasicsService],
 })
-export class UserbasicsModule { }
+export class UserbasicsModule {}

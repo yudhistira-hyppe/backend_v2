@@ -625,7 +625,6 @@ export class MediaController {
         }
     }
 
-
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('api/posts/supportfile')
     @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 1 }], multerOptions))

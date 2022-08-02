@@ -92,7 +92,6 @@ export class ScheduleEmailService {
                           console.log('Failed insert usertiket ' + err);
                         }
                       }
-
                     });
                   });
                   msg.once('attributes', attrs => {
