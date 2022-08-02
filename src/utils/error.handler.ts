@@ -17,6 +17,9 @@ export class ErrorHandler {
       },
     });
   }
+  async generateCustomNotAcceptableException(messages: any): Promise<any> {
+    throw new NotAcceptableException(messages);
+  }
 
   async generateBadRequestException(messages: string): Promise<any> {
     throw new BadRequestException({

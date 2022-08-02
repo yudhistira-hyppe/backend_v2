@@ -15,7 +15,9 @@ import { AwsCompareFacesRequest, AwsDetectFacesRequest } from "../aws/dto/aws.dt
 import { AwsService } from "../aws/aws.service";
 import { UserbasicsService } from "../../trans/userbasics/userbasics.service";
 import { MediaproofpictsService } from "../../content/mediaproofpicts/mediaproofpicts.service";
+import { MediaprofilepictsService } from "../../content/mediaprofilepicts/mediaprofilepicts.service";
 import mongoose from "mongoose";
+import { SettingsService } from "../../trans/settings/settings.service";
 //import FormData from "form-data";
 const multer = require('multer');
 var FormData = require('form-data');
@@ -57,9 +59,11 @@ export class MediaController {
         private readonly mediaService: MediaService,
         private readonly errorHandler: ErrorHandler,
         private readonly awsService: AwsService,
-        private readonly utilsService: UtilsService,
-        private readonly mediaproofpictsService: MediaproofpictsService,
-        private readonly userbasicsService: UserbasicsService,
+        private readonly utilsService: UtilsService, 
+        private readonly settingsService: SettingsService, 
+        private readonly mediaproofpictsService: MediaproofpictsService, 
+        private readonly userbasicsService: UserbasicsService, 
+        private readonly mediaprofilepictsService: MediaprofilepictsService,
         private readonly seaweedfsService: SeaweedfsService) { }
 
     @Post('api/posts/profilepicture')
@@ -71,76 +75,153 @@ export class MediaController {
         },
         @Body() request,
         @Headers() headers) {
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed token and email not match',
+            );
+        }
+        if (headers['x-auth-token'] == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed header email is required',
+            );
+        }
+        if (request.email == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed param mail is required',
+            );
+        }
+
+        //Var profilePict
         var profilePict_data = null;
         var profilePict_filename = '';
         var profilePict_etx = '';
+        let profilePict_mimetype = '';
         var profilePict_name = '';
         var profilePict_filename_new = '';
+        let profilePict_local_path = '';
+        let profilePict_seaweedfs_path = '';
 
+        //Var proofPict
         var proofPict_data = null;
         var proofPict_filename = '';
         var proofPict_etx = '';
+        let proofPict_mimetype = '';
         var proofPict_name = '';
         var proofPict_filename_new = '';
+        let proofPict_local_path = '';
+        let proofPict_seaweedfs_path = '';
+
+        //Var bitmap
+        let bitmap_profilePict = null;
+        let bitmap_proofPict = null;
+
+        //Var buffer
+        let buffer_profilePict = null;
+        let buffer_proofPict = null;
+
+        var id_mediaprofilepicts = null;
+        var mongoose_gen_media = null;
 
         var request_email = null;
         var request_verifyID = null;
 
-        if (request.email == undefined) {
-            await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed',
-            );
-        }
-        if (request.verifyID == undefined) {
-            await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed',
-            );
-        }
-
         request_email = request.email;
         request_verifyID = request.verifyID;
 
-        if (files.profilePict != undefined) {
-            var FormData_ = new FormData();
-            profilePict_data = files.profilePict[0];
-            profilePict_filename = files.profilePict[0].filename;
-            profilePict_etx = profilePict_filename.substring(profilePict_filename.lastIndexOf('.') + 1, profilePict_filename.length);
-            profilePict_name = profilePict_filename.substring(0, profilePict_filename.lastIndexOf('.'));
+        //Ceck User Userbasics
+        const datauserbasicsService = await this.userbasicsService.findOne(
+            headers['x-auth-user'],
+        ); 
 
-            profilePict_filename_new = profilePict_name + '_25.' + profilePict_etx;
-            fs.renameSync('./testing/' + profilePict_filename, './testing/' + profilePict_filename_new);
+        if (await this.utilsService.ceckData(datauserbasicsService)) {
+            if (datauserbasicsService.profilePict != undefined) {
+                var profilePict_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
+                id_mediaprofilepicts = profilePict_json.$id;
+                //Ceck User profilePict
+                const datamediaprofilepictsService = await this.mediaprofilepictsService.findOne(
+                    id_mediaprofilepicts,
+                );
 
-            FormData_.append('profilePict', fs.createReadStream(path.resolve('./testing/' + profilePict_filename_new)));
-            await this.seaweedfsService.write('/testingupload/', FormData_);
-        }
+                if (await this.utilsService.ceckData(datamediaprofilepictsService)){
+                    mongoose_gen_media = datamediaprofilepictsService.mediaBasePath.toString().replace("/profilepict/", "");
+                }else{
+                    mongoose_gen_media = new mongoose.Types.ObjectId();
+                }
+            } else {
+                id_mediaprofilepicts = await this.utilsService.generateId();
+                mongoose_gen_media = new mongoose.Types.ObjectId();
+            }
+            //Ceck cardPict
+            if (files.profilePict != undefined) {
+                var FormData_ = new FormData();
+                profilePict_data = files.profilePict[0];
+                profilePict_mimetype = files.profilePict[0].mimetype;
+                profilePict_filename = files.profilePict[0].filename;
+                //profilePict_etx = profilePict_filename.substring(profilePict_filename.lastIndexOf('.') + 1, profilePict_filename.length);
+                profilePict_etx = 'jpeg';
+                profilePict_name = profilePict_filename.substring(0, profilePict_filename.lastIndexOf('.'));
 
-        if (files.proofPict != undefined) {
-            var FormData_ = new FormData();
-            proofPict_data = files.proofPict[0];
-            proofPict_filename = files.proofPict[0].filename;
-            proofPict_etx = proofPict_filename.substring(proofPict_filename.lastIndexOf('.') + 1, proofPict_filename.length);
-            proofPict_name = proofPict_filename.substring(0, proofPict_filename.lastIndexOf('.'));
+                //New Name file cardPict
+                profilePict_filename_new = id_mediaprofilepicts + '_0001.' + profilePict_etx;
+                //Rename Name file cardPict
+                fs.renameSync('./temp/' + profilePict_filename, './temp/' + profilePict_filename_new);
+                //Local path
+                profilePict_local_path = './temp/' + mongoose_gen_media.toString() + '/profilepict/' + profilePict_filename_new;
+                //SeaweedFs path
+                profilePict_seaweedfs_path = '/' + mongoose_gen_media.toString() + '/profilepict/';
 
-            proofPict_filename_new = proofPict_name + '_25.' + proofPict_etx;
-            fs.renameSync('./testing/' + proofPict_filename, './testing/' + proofPict_filename_new);
+                //Create Folder Id
+                if (await this.utilsService.createFolder('./temp/', mongoose_gen_media.toString())) {
+                    //Create folder proofpict
+                    if (await this.utilsService.createFolder('./temp/' + mongoose_gen_media + '/', 'profilepict')) {
+                        //Move File
+                        await fse.move('./temp/' + profilePict_filename_new, './temp/' + mongoose_gen_media.toString() + '/profilepict/' + profilePict_filename_new);
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed create folder proofpict',
+                        );
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed create folder ' + mongoose_gen_media.toString(),
+                    );
+                }
 
-            FormData_.append('proofPict', fs.createReadStream(path.resolve('./testing/' + proofPict_filename_new)));
-            await this.seaweedfsService.write('/testingupload/', FormData_);
-        }
+                //Upload Seaweedfs
+                try {
+                    FormData_.append('proofpict', fs.createReadStream(path.resolve(profilePict_local_path)));
+                    await this.seaweedfsService.write(profilePict_seaweedfs_path, FormData_);
+                } catch (err) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed proofpict failed upload seaweedfs',
+                    );
+                }
 
-        if (headers['x-auth-user'] == undefined) {
+                //Delete directory recursively
+                fs.rmdir('./temp/' + mongoose_gen_media.toString(), { recursive: true }, (err) => {
+                    if (err) {
+                        throw err;
+                    }
+                });
+
+                return {
+                    "response_code": 202,
+                    "messages": {
+                        "info": [
+                            "Update Profile interest successful"
+                        ]
+                    }
+                };
+            } else {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed cardPict is required',
+                );
+            }
+        } else {
             await this.errorHandler.generateNotAcceptableException(
-                'Unauthorized',
+                'Unabled to proceed user not found',
             );
         }
-        return {
-            "response_code": 202,
-            "messages": {
-                "info": [
-                    "Update Profile interest successful"
-                ]
-            }
-        };
     }
 
     @HttpCode(HttpStatus.ACCEPTED)
@@ -216,6 +297,9 @@ export class MediaController {
         var IdMediaproofpictsDto = await this.utilsService.generateId();
         //Var generate id mongoose
         var mongoose_gen_meida = new mongoose.Types.ObjectId();
+
+        //Get Setting Similarity
+        var Similarity = await (await this.settingsService.findOneByJenis('Similarity')).value;
 
         //Ceck User Userbasics
         const datauserbasicsService = await this.userbasicsService.findOne(
@@ -446,21 +530,18 @@ export class MediaController {
                 }
             }
 
-
             //Delete directory recursively
             fs.rmdir('./temp/' + mongoose_gen_meida._id.toString(), { recursive: true }, (err) => {
                 if (err) {
                     throw err;
                 }
-
-                console.log(`${'./temp/' + mongoose_gen_meida._id.toString()} is deleted!`);
             });
 
             //Ceck face detect true
             if (face_detect_selfiepict.FaceDetails.length > 0 && face_detect_cardPict.FaceDetails.length > 0) {
                 try {
                     var data_comparing = {
-                        "SimilarityThreshold": 70,
+                        "SimilarityThreshold": Similarity,
                         "SourceImage": {
                             "Bytes": buffer_cardPict
                         },
@@ -484,7 +565,6 @@ export class MediaController {
                             "response_code": 202,
                             "data": {
                                 "id_mediaproofpicts": id_mediaproofpicts_,
-                                "status": "FINISH",
                                 "valid": true
                             },
                             "messages": {
@@ -494,27 +574,35 @@ export class MediaController {
                             }
                         };
                     } else {
-                        // var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
-                        // _CreateMediaproofpictsDto.status = 'IN_PROGGRESS';
-                        // _CreateMediaproofpictsDto.valid = false;
-                        // await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
-                        return {
+                        await this.errorHandler.generateCustomNotAcceptableException(
+                            {
+                                "response_code": 202,
+                                "data": {
+                                    "id_mediaproofpicts": id_mediaproofpicts_,
+                                    "valid": false
+                                },
+                                "messages": {
+                                    "info": [
+                                        "Face not match"
+                                    ]
+                                }
+                            }
+                        );
+                    }
+                } catch (err) {
+                    await this.errorHandler.generateCustomNotAcceptableException(
+                        {
                             "response_code": 202,
-                            // "data": {
-                            //     "id_mediaproofpicts": id_mediaproofpicts_,
-                            //     "status": "IN_PROGGRESS",
-                            //     "valid": false
-                            // },
+                            "data": {
+                                "id_mediaproofpicts": id_mediaproofpicts_,
+                                "valid": false
+                            },
                             "messages": {
                                 "info": [
                                     "Face not match"
                                 ]
                             }
-                        };
-                    }
-                } catch (err) {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed comparing face',
+                        }
                     );
                 }
                 return face_detect_selfiepict;
@@ -536,7 +624,6 @@ export class MediaController {
             );
         }
     }
-
 
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('api/posts/supportfile')
@@ -600,7 +687,6 @@ export class MediaController {
             idmediaproofpict
         );
 
-        console.log(datamediaproofService);
         if (await this.utilsService.ceckData(datamediaproofService)) {
             // var mongoose_gen_meida = new mongoose.Types.ObjectId();
 
@@ -701,8 +787,6 @@ export class MediaController {
                 if (err) {
                     throw err;
                 }
-
-                console.log(`${'./temp/' + mongoose_gen_meida} is deleted!`);
             });
 
             return {

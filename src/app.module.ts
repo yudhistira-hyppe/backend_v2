@@ -62,6 +62,7 @@ import { UserbankaccountsModule } from './trans/userbankaccounts/userbankaccount
 import { AwsModule } from './stream/aws/aws.module';
 import { SeaweedfsModule } from './stream/seaweedfs/seaweedfs.module';
 import { MediaModule } from './stream/media/media.module';
+import { ScheduleEmailModule } from './schedule/scheduleemail/scheduleemail.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -74,6 +75,7 @@ import { MediaModule } from './stream/media/media.module';
     MongooseModule.forRoot(process.env.SERVER_INFRA, {
       connectionName: 'SERVER_INFRA',
     }), 
+    ScheduleEmailModule,
     MediaModule,
     SeaweedfsModule,
     AwsModule,
