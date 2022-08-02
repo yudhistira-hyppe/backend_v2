@@ -32,14 +32,15 @@ export class ScheduleEmailService {
     name: 'email',
     timeZone: process.env.TIMEZONE,
   })
-  EmailRead() {
+  async EmailRead() {
+    var filter = await this.utilsService.getSetting('EmailFilter');
     try {
       var date_param = new Date();
       date_param.setMonth(date_param.getMonth() - 3);
       const imap = new Imap(imapConfig);
       imap.once('ready', () => {
         imap.openBox('INBOX', false, () => {
-          imap.search(['UNSEEN', ['HEADER', 'SUBJECT', process.env.KEY_SEARCH], ['SINCE', date_param]], (err, results) => {
+          imap.search(['UNSEEN', ['HEADER', 'SUBJECT', filter], ['SINCE', date_param]], (err, results) => {
             //Ceck Email Leght
             if (results.length>0){
               const f = imap.fetch(results, { bodies: '' });

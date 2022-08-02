@@ -80,6 +80,10 @@ export class UtilsService {
     await admin.messaging().sendToDevice(fcmtoken, payload);
   }
 
+  async getSetting(jenis:string){
+    return (await this.settingsService.findOneByJenis(jenis)).value;
+  }
+
   async getTemplate(type: string, category: string): Promise<Templates> {
     return await this.templatesService.findOneByTypeAndCategory(type, category);
   }
