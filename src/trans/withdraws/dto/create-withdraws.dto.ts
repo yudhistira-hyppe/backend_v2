@@ -11,6 +11,7 @@ export class CreateWithdrawsDto {
     description: string;
     partnerTrxid: string;
     statusOtp: string;
+    totalamount: number;
 }
 
 export class OyDisburseCallbackWithdraw {

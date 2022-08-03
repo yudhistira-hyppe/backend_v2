@@ -785,8 +785,6 @@ export class GetusercontentsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-        var idmdradmin = "62bd413ff37a00001a004369";
-        var datamradmin = null;
 
 
         const messages = {
@@ -797,6 +795,9 @@ export class GetusercontentsController {
 
         var saleAmount = databuy[0].saleAmount;
         var totalamount = 0;
+        var idmdradmin = "62bd413ff37a00001a004369";
+        var datamradmin = null;
+
         try {
 
             datamradmin = await this.settingsService.findOne(idmdradmin);

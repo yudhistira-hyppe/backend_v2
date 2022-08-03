@@ -22,6 +22,7 @@ export class CreateTransactionsDto {
     timestamp: string;
     expiredtimeva: string;
     payload: VaCallback;
+    idva: string;
 
 }
 
@@ -52,7 +53,9 @@ export class OyDisbursements {
     partner_trx_id: string;
     email: string;
 }
-
+export class OyDisbursementStatus2 {
+    partner_trx_id: string;
+}
 export class CreateWithdraws {
     readonly _id: { oid: string; };
     idUser: { oid: String; };
@@ -66,6 +69,7 @@ export class CreateWithdraws {
     description: string;
     partnerTrxid: string;
     statusOtp: string;
+    totalamount: number;
 }
 export class OyDisburseCallbacks {
 

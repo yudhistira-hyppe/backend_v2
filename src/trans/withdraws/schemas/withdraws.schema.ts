@@ -33,6 +33,8 @@ export class Withdraws {
     statusOtp: string
     @Prop()
     payload: OyDisburseCallbackWithdraw
+    @Prop()
+    totalamount: number
 
 
 }
