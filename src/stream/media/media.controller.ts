@@ -1,23 +1,21 @@
-import { Body, Controller, Post, UploadedFiles, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request } from "@nestjs/common";
+import { Body, Controller, Post, UploadedFiles, Get, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards } from "@nestjs/common";
 import { FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
-import { request } from "http";
-import { FormDataRequest } from "nestjs-form-data";
 import { MediaService } from "./media.service";
 import { ErrorHandler } from "../../utils/error.handler";
 import { SeaweedfsService } from "../seaweedfs/seaweedfs.service";
-import { CreateMediaproofpictsDto } from "src/content/mediaproofpicts/dto/create-mediaproofpicts.dto";
+import { CreateMediaproofpictsDto } from "../../content/mediaproofpicts/dto/create-mediaproofpicts.dto";
 import { UtilsService } from "../../utils/utils.service";
 import { extname } from "path";
-import { diskStorage, Multer } from "multer";
-import { AwsCompareFacesRequest, AwsDetectFacesRequest } from "../aws/dto/aws.dto";
+import { diskStorage } from "multer";
 import { AwsService } from "../aws/aws.service";
 import { UserbasicsService } from "../../trans/userbasics/userbasics.service";
 import { MediaproofpictsService } from "../../content/mediaproofpicts/mediaproofpicts.service";
 import { MediaprofilepictsService } from "../../content/mediaprofilepicts/mediaprofilepicts.service";
 import mongoose from "mongoose";
 import { SettingsService } from "../../trans/settings/settings.service";
+import { JwtAuthGuard } from "../../auth/jwt-auth.guard";
 //import FormData from "form-data";
 const multer = require('multer');
 var FormData = require('form-data');
@@ -66,6 +64,7 @@ export class MediaController {
         private readonly mediaprofilepictsService: MediaprofilepictsService,
         private readonly seaweedfsService: SeaweedfsService) { }
 
+    @UseGuards(JwtAuthGuard)
     @Post('api/posts/profilepicture')
     @UseInterceptors(FileFieldsInterceptor([{ name: 'profilePict', maxCount: 1 }, { name: 'proofPict', maxCount: 1, }], multerOptions))
     async uploadcomparing(
@@ -224,6 +223,7 @@ export class MediaController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('api/posts/verificationid')
     @UseInterceptors(FileFieldsInterceptor([{ name: 'cardPict', maxCount: 1 }, { name: 'selfiepict', maxCount: 1, }], multerOptions))
@@ -625,6 +625,7 @@ export class MediaController {
         }
     }
 
+    @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('api/posts/supportfile')
     @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 1 }], multerOptions))
@@ -728,8 +729,6 @@ export class MediaController {
                     );
                 }
 
-
-
                 //Upload Seaweedfs
                 try {
                     FormData_.append('proofpict', fs.createReadStream(path.resolve(supportFile_local_path)));
@@ -778,6 +777,9 @@ export class MediaController {
                 }
             }
             else {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed supportFile is required',
+                );
 
             }
 
@@ -801,8 +803,7 @@ export class MediaController {
                     ]
                 }
             };
-        }
-        else {
+        }else {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed user not found',
             );
