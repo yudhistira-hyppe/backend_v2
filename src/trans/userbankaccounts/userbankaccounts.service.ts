@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserbankaccountsDto } from './dto/create-userbankaccounts.dto';
 import { Model, Types } from 'mongoose';
 import { Userbankaccounts, UserbankaccountsDocument } from './schemas/userbankaccounts.schema';
+import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class UserbankaccountsService {
@@ -15,6 +16,9 @@ export class UserbankaccountsService {
         return this.userbankaccountsModel.find().exec();
     }
 
+    async findOneUser(iduser: ObjectId): Promise<Userbankaccounts> {
+        return this.userbankaccountsModel.findOne({ userId: iduser }).exec();
+    }
     async findOne(id: string): Promise<Userbankaccounts> {
         return this.userbankaccountsModel.findOne({ _id: id }).exec();
     }

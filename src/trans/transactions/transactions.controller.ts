@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, BadRequestException, HttpStatus, Put, Headers, Req } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
-import { CreateTransactionsDto, CreateWithdraws, OyAccountInquirys, OyDisburseCallbacks, OyDisbursements, VaCallback } from './dto/create-transactions.dto';
+import { CreateTransactionsDto, CreateWithdraws, OyAccountInquirys, OyDisburseCallbacks, OyDisbursements, OyDisbursementStatus2, VaCallback } from './dto/create-transactions.dto';
 import { Transactions } from './schemas/transactions.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserbasicsService } from '../userbasics/userbasics.service';
@@ -117,6 +117,8 @@ export class TransactionsController {
 
         var iduser = ubasic._id;
         var namapembeli = ubasic.fullName;
+        var dataconten = null;
+        var saleAmount = 0;
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
@@ -133,7 +135,13 @@ export class TransactionsController {
         } catch (e) {
             datapost = null;
         }
-
+        try {
+            dataconten = await this.getusercontentsService.findcontenbuy(postid);
+            saleAmount = dataconten[0].saleAmount;
+        } catch (e) {
+            dataconten = null;
+            saleAmount = 0;
+        }
 
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
@@ -218,23 +226,33 @@ export class TransactionsController {
             throw new BadRequestException("Setting value not found..!");
         }
 
-
-
         var userbuy = iduser;
         var name = ubasic.fullName;
         var stringId = (await this.generateNumber()).toString();
 
         if (datatrpending !== null) {
 
-            var datenow = new Date(Date.now());
-            var expiredvas = datatrpending.expiredtimeva;
-            var dateVa = new Date(expiredvas);
-            dateVa.setHours(dateVa.getHours() - 7); // timestamp
+            let cekstatusva = await this.oyPgService.staticVaInfo(datatrpending.idva);
+            var expiredva = cekstatusva.trx_expiration_time;
+            var dex = new Date(expiredva);
+            dex.setHours(dex.getHours() + 7); // timestamp
+            dex = new Date(dex);
+
+            if (cekstatusva.va_status === "WAITING_PAYMENT") {
+                throw new BadRequestException("This content is already in the process of being purchased");
+            }
+            else if (cekstatusva.va_status === "STATIC_TRX_EXPIRED") {
 
 
-            var idtransaction = datatrpending._id;
+                // var datenow = new Date(Date.now());
+                // var expiredvas = dex;
+                // var dateVa = new Date(expiredvas);
+                // dateVa.setHours(dateVa.getHours() - 7); // timestamp
 
-            if (datenow > dateVa) {
+
+                var idtransaction = datatrpending._id;
+
+                // if (datenow > dateVa) {
 
                 var datava = {
                     "partner_user_id": userbuy.toString() + stringId,
@@ -250,7 +268,9 @@ export class TransactionsController {
 
                 try {
                     let datareqva = await this.oyPgService.generateStaticVa(datava);
+                    var idva = datareqva.id;
                     var statuscodeva = datareqva.status.code;
+                    var statusmessage = datareqva.status.message;
                     var nova = datareqva.va_number;
                     var expiredva = datareqva.trx_expiration_time;
                     var d1 = new Date(expiredva);
@@ -264,16 +284,22 @@ export class TransactionsController {
                 }
 
                 if (statuscodeva == "000") {
+
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
                     CreateTransactionsDto.iduserbuyer = iduser;
                     CreateTransactionsDto.idusersell = iduserseller;
                     CreateTransactionsDto.timestamp = dt.toISOString();
                     CreateTransactionsDto.noinvoice = no;
-                    CreateTransactionsDto.status = "pending";
+                    CreateTransactionsDto.amount = saleAmount;
+                    CreateTransactionsDto.status = cekstatusva.va_status;
                     CreateTransactionsDto.bank = idbank;
+                    CreateTransactionsDto.idva = idva;
                     CreateTransactionsDto.nova = nova;
                     CreateTransactionsDto.accountbalance = null;
                     CreateTransactionsDto.paymentmethod = idmethode;
-                    CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                    // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                    CreateTransactionsDto.ppn = null;
                     CreateTransactionsDto.totalamount = totalamount;
                     CreateTransactionsDto.description = "buy pending content";
                     CreateTransactionsDto.payload = null;
@@ -293,6 +319,7 @@ export class TransactionsController {
                             "paymentmethod": namamethode,
                             "status": datatr.status,
                             "description": datatr.description,
+                            "idva": datatr.idva,
                             "nova": datatr.nova,
                             "expiredtimeva": datatr.expiredtimeva,
                             "salelike": datatr.saleview,
@@ -327,9 +354,11 @@ export class TransactionsController {
                 else {
                     throw new BadRequestException("Given amount are greater than allowed value for static va value not found..!");
                 }
-            } else {
-                throw new BadRequestException("This content is already in the process of being purchased");
+                // } else {
+                //     throw new BadRequestException("This content is already in the process of being purchased");
+                // }
             }
+
 
 
         }
@@ -349,7 +378,9 @@ export class TransactionsController {
 
             try {
                 let datareqva = await this.oyPgService.generateStaticVa(datava);
+                var idva = datareqva.id;
                 var statuscodeva = datareqva.status.code;
+                var statusmessage = datareqva.status.message;
                 var nova = datareqva.va_number;
                 var expiredva = datareqva.trx_expiration_time;
                 var d1 = new Date(expiredva);
@@ -363,16 +394,21 @@ export class TransactionsController {
             }
 
             if (statuscodeva == "000") {
+                let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
                 CreateTransactionsDto.iduserbuyer = iduser;
                 CreateTransactionsDto.idusersell = iduserseller;
                 CreateTransactionsDto.timestamp = dt.toISOString();
                 CreateTransactionsDto.noinvoice = no;
-                CreateTransactionsDto.status = "pending";
+                CreateTransactionsDto.amount = saleAmount;
+                CreateTransactionsDto.status = cekstatusva.va_status;
                 CreateTransactionsDto.bank = idbank;
+                CreateTransactionsDto.idva = idva;
                 CreateTransactionsDto.nova = nova;
                 CreateTransactionsDto.accountbalance = null;
                 CreateTransactionsDto.paymentmethod = idmethode;
-                CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                CreateTransactionsDto.ppn = null;
                 CreateTransactionsDto.totalamount = totalamount;
                 CreateTransactionsDto.description = "buy pending content";
                 CreateTransactionsDto.payload = null;
@@ -380,9 +416,7 @@ export class TransactionsController {
                 try {
                     let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
-
                     var data = {
-
                         "noinvoice": datatr.noinvoice,
                         "postid": datatr.postid,
                         "idusersell": datatr.idusersell,
@@ -393,6 +427,7 @@ export class TransactionsController {
                         "paymentmethod": namamethode,
                         "status": datatr.status,
                         "description": datatr.description,
+                        "idva": datatr.idva,
                         "nova": datatr.nova,
                         "expiredtimeva": datatr.expiredtimeva,
                         "salelike": datatr.saleview,
@@ -636,6 +671,11 @@ export class TransactionsController {
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         var idadmin = mongoose.Types.ObjectId(iduseradmin);
+
+        var idmdradmin = "62bd413ff37a00001a004369";
+        var datamradmin = null;
+        var nominalmradmin = 0;
+
         if (statussucces == true) {
 
             try {
@@ -656,16 +696,24 @@ export class TransactionsController {
                 let databuy = await this.getusercontentsService.findcontenbuy(postid);
 
                 var saleAmount = databuy[0].saleAmount;
-                var amounAdmin = amount - saleAmount;
-                var amontVA = tamount - amount;
+                try {
 
-                if (status == "pending") {
+                    datamradmin = await this.settingsService.findOne(idmdradmin);
+                    var valuemradmin = datamradmin._doc.value;
+                    nominalmradmin = saleAmount * valuemradmin / 100;
+
+                } catch (e) {
+                    nominalmradmin = 0;
+                }
+                var amontVA = tamount - (amount + nominalmradmin);
+
+                if (status == "WAITING_PAYMENT") {
                     var ubasic = await this.userbasicsService.findid(iduserbuy);
                     var emailbuyer = ubasic.email;
 
 
                     var createbalance = await this.accontbalance(postid, idusersell, saleAmount);
-                    var createbalanceadmin = await this.accontbalanceAdmin("Admin", idadmin, idusersell, amounAdmin);
+                    var createbalanceadmin = await this.accontbalanceAdmin("Admin", idadmin, idusersell, nominalmradmin);
                     var createbalanceadminVa = await this.accontbalanceAdmin("Bank VA", idadmin, idusersell, amontVA);
                     let databalance = await this.accountbalancesService.findOne(idusersell);
 
@@ -816,6 +864,7 @@ export class TransactionsController {
             norekdb = null;
         }
 
+        var totalamount = amounreq - valuedisbcharge - valuebankcharge;
         if (amounreq > totalsaldo) {
             throw new BadRequestException("The balance is not sufficient...!");
         } else {
@@ -840,7 +889,11 @@ export class TransactionsController {
                         await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
                         await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, valuebankcharge);
                         OyDisbursements.partner_trx_id = partnertrxid;
+                        OyDisbursements.amount = totalamount;
                         let datadisbursemen = await this.oyPgService.disbursement(OyDisbursements);
+
+
+
                         var statusdisb = datadisbursemen.status.code;
                         var timeoy = datadisbursemen.timestamp;
                         var splittimeoy = timeoy.split(" ");
@@ -855,31 +908,73 @@ export class TransactionsController {
 
 
                         if (statusdisb === "101") {
-                            var dtburs = new Date(strdate);
-                            dtburs.setHours(dtburs.getHours() + 14); // timestamp
-                            dtburs = new Date(dtburs);
-                            var dtb = dtburs.toISOString();
-                            await this.accontbalanceWithdraw(iduser, valuedisbcharge, "disbursement");
-                            await this.accontbalanceAdminWitdraw("disbursement", idadmin, iduser, valuedisbcharge);
-                            let datawithdraw = new CreateWithdraws();
-                            datawithdraw.amount = datadisbursemen.amount;
-                            datawithdraw.bankVerificationCharge = mongoose.Types.ObjectId(idbankverificationcharge);
-                            datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
-                            datawithdraw.description = OyDisbursements.note;
-                            datawithdraw.idUser = iduser;
-                            datawithdraw.status = datadisbursemen.status.message;
-                            datawithdraw.timestamp = dtb;
-                            datawithdraw.verified = false;
-                            datawithdraw.partnerTrxid = partnertrxid;
-                            datawithdraw.statusOtp = null;
-                            var data = await this.withdrawsService.create(datawithdraw);
-                            await this.accontbalanceWithdraw(iduser, datadisbursemen.amount, "withdraw");
 
-                            res.status(HttpStatus.OK).json({
-                                response_code: 202,
-                                "data": data,
-                                "message": messages
-                            });
+                            var partnerTrxid = datadisbursemen.partner_trx_id;
+
+                            let reqinfo = new OyDisbursementStatus2();
+                            reqinfo.partner_trx_id = partnerTrxid;
+                            let infodisbursemen = await this.oyPgService.disbursementStatus(reqinfo);
+                            var statuscode = infodisbursemen.status.code;
+                            var statusmessage = infodisbursemen.status.message;
+
+                            if (statuscode === "000") {
+                                var dtburs = new Date(strdate);
+                                dtburs.setHours(dtburs.getHours() + 14); // timestamp
+                                dtburs = new Date(dtburs);
+                                var dtb = dtburs.toISOString();
+                                await this.accontbalanceWithdraw(iduser, valuedisbcharge, "disbursement");
+                                await this.accontbalanceAdminWitdraw("disbursement", idadmin, iduser, valuedisbcharge);
+                                let datawithdraw = new CreateWithdraws();
+                                datawithdraw.amount = amounreq;
+                                datawithdraw.bankVerificationCharge = mongoose.Types.ObjectId(idbankverificationcharge);
+                                datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
+                                datawithdraw.description = OyDisbursements.note;
+                                datawithdraw.idUser = iduser;
+                                datawithdraw.status = statusmessage;
+                                datawithdraw.timestamp = dtb;
+                                datawithdraw.verified = false;
+                                datawithdraw.partnerTrxid = partnertrxid;
+                                datawithdraw.statusOtp = null;
+                                datawithdraw.totalamount = totalamount;
+                                var datatr = await this.withdrawsService.create(datawithdraw);
+                                await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
+
+                                try {
+
+                                    var data = {
+                                        "idUser": datatr.idUser,
+                                        "amount": datatr.amount,
+                                        "status": datatr.status,
+                                        "bankVerificationCharge": valuebankcharge,
+                                        "bankDisbursmentCharge": valuedisbcharge,
+                                        "timestamp": datatr.timestamp,
+                                        "verified": datatr.verified,
+                                        "description": datatr.description,
+                                        "partnerTrxid": datatr.partnerTrxid,
+                                        "statusOtp": datatr.statusOtp,
+                                        "totalamount": totalamount,
+                                        "_id": datatr._id
+                                    };
+
+                                    res.status(HttpStatus.OK).json({
+                                        response_code: 202,
+                                        "data": data,
+                                        "message": messages
+                                    });
+                                } catch (e) {
+                                    res.status(HttpStatus.BAD_REQUEST).json({
+
+                                        "message": messagesEror
+                                    });
+                                }
+
+
+                            } else {
+                                throw new BadRequestException(statusmessage);
+                            }
+
+                        } else {
+                            throw new BadRequestException("Failed disburstment");
                         }
 
 
@@ -2200,6 +2295,378 @@ export class TransactionsController {
         };
 
         await this.accountbalancesService.createdata(dataacountbalance);
+    }
+
+
+    @Post('api/transactions/historys')
+    @UseGuards(JwtAuthGuard)
+    async searchhistorytransaksi(@Req() request: Request): Promise<any> {
+        var startdate = null;
+        var enddate = null;
+        var iduser = null;
+        var email = null;
+        var datasell = null;
+        var skip = null;
+        var limit = null;
+        var databuy = null;
+        var datawithdraw = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+            var ubasic = await this.userbasicsService.findOne(email);
+
+            iduser = ubasic._id;
+
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        // if (request_json["startdate"] !== undefined) {
+        //     startdate = request_json["startdate"];
+        // } else {
+        //     throw new BadRequestException("Unabled to proceed");
+        // }
+
+        // if (request_json["enddate"] !== undefined) {
+        //     enddate = request_json["enddate"];
+        // } else {
+        //     throw new BadRequestException("Unabled to proceed");
+        // }
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        const messages = {
+            "info": ["The process successful"],
+        };
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var idadmin = mongoose.Types.ObjectId(iduser);
+
+        datasell = await this.transactionsService.findhistorySell(idadmin, skip, limit);
+        databuy = await this.transactionsService.findhistoryBuy(idadmin, skip, limit);
+        datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, skip, limit);
+        console.log(datawithdraw)
+        var data = datasell.concat(databuy, datawithdraw);
+
+        return { response_code: 202, data, skip, limit, messages };
+    }
+
+    @Post('api/transactions/historys/details')
+    @UseGuards(JwtAuthGuard)
+    async trdetailbuysell(@Req() request: Request): Promise<any> {
+        var data = null;
+        var id = null;
+        var type = null;
+        var email = null;
+        var iduser = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["id"] !== undefined) {
+            id = request_json["id"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+            var ubasic = await this.userbasicsService.findOne(email);
+
+            iduser = ubasic._id;
+
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var idmdradmin = "62bd413ff37a00001a004369";
+        var idbankvacharge = "62bd40e0f37a00001a004366";
+
+        var databankvacharge = null;
+        var datamradmin = null;
+        var amount = 0;
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var idtr = mongoose.Types.ObjectId(id);
+        var databuy = null;
+        var amount = 0;
+        var valuevacharge = 0;
+        var valuemradmin = 0;
+        var nominalmradmin = 0;
+        var noinvoice = "";
+        var mediaThumbEndpoint = "";
+        var mediaThumbUri = "";
+        var idbank = null;
+        var datamethode = null;
+        var namamethode = "";
+        var paymentmethod = null;
+        var databank = null;
+        var namabank = "";
+        var amounts = 0;
+        var dataconten = null;
+        var saleAmount = 0;
+        var dataWitdraw = null;
+        var dataakunbank = null;
+        try {
+
+            if (type === "Buy") {
+                databuy = await this.transactionsService.findhistorydetailbuy(idtr, type, iduser);
+                var postid = databuy[0].postID;
+
+
+                paymentmethod = databuy[0].paymentmethod;
+
+                idbank = databuy[0].bank.toString();
+                amounts = databuy[0].amount;
+
+                noinvoice = databuy[0].noinvoice;
+                mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
+                mediaThumbUri = databuy[0].mediaThumbUri;
+                try {
+                    dataconten = await this.getusercontentsService.findcontenbuy(postid);
+                    saleAmount = dataconten[0].saleAmount;
+                } catch (e) {
+                    dataconten = null;
+                    saleAmount = 0;
+                }
+
+                try {
+                    datamethode = await this.methodepaymentsService.findOne(paymentmethod);
+                    namamethode = datamethode._doc.methodename;
+
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+                try {
+
+                    datamradmin = await this.settingsService.findOne(idmdradmin);
+                    databankvacharge = await this.settingsService.findOne(idbankvacharge);
+                    valuevacharge = databankvacharge._doc.value;
+                    valuemradmin = datamradmin._doc.value;
+                    nominalmradmin = saleAmount * valuemradmin / 100;
+
+
+
+
+                } catch (e) {
+                    datamradmin = null;
+                    databankvacharge = null;
+                    valuevacharge = 0;
+                    valuemradmin = 0;
+                    nominalmradmin = 0;
+                }
+
+                try {
+                    databank = await this.banksService.findOne(idbank);
+                    namabank = databank._doc.bankname;
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+
+                amount = saleAmount;
+                var selluser = databuy[0].idusersell;
+
+
+
+                try {
+                    var ubasic = await this.userbasicsService.findid(selluser);
+                    var namapenjual = ubasic.fullName;
+                    var emailpenjual = ubasic.email;
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+
+
+                data = {
+
+                    "_id": idtr,
+                    "type": databuy[0].type,
+                    "time": databuy[0].timestamp,
+                    "description": databuy[0].description,
+                    "noinvoice": noinvoice,
+                    "nova": databuy[0].nova,
+                    "expiredtimeva": databuy[0].expiredtimeva,
+                    "like": databuy[0].salelike,
+                    "view": databuy[0].saleview,
+                    "bank": namabank,
+                    "paymentmethode": namamethode,
+                    "amount": amount,
+                    "totalamount": databuy[0].totalamount,
+                    "adminFee": nominalmradmin,
+                    "serviceFee": valuevacharge,
+                    "status": databuy[0].status,
+                    "fullName": databuy[0].fullName,
+                    "email": databuy[0].email,
+                    "namapenjual": namapenjual,
+                    "emailpenjual": emailpenjual,
+                    "postID": databuy[0].postID,
+                    "postType": databuy[0].postType,
+                    "descriptionContent": databuy[0].descriptionContent,
+                    "title": databuy[0].title,
+                    "mediaBasePath": databuy[0].mediaBasePath,
+                    "mediaUri": databuy[0].mediaUri,
+                    "mediaType": databuy[0].mediaType,
+                    "mediaEndpoint": databuy[0].mediaEndpoint,
+                    "mediaThumbEndpoint": mediaThumbEndpoint,
+                    "mediaThumbUri": mediaThumbUri,
+
+                };
+            } else if (type === "Sell") {
+                databuy = await this.transactionsService.findhistorydetailsell(idtr, type, iduser);
+                var postid = databuy[0].postID;
+
+
+                paymentmethod = databuy[0].paymentmethod;
+
+                idbank = databuy[0].bank.toString();
+                amounts = databuy[0].amount;
+
+                noinvoice = databuy[0].noinvoice;
+                mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
+                mediaThumbUri = databuy[0].mediaThumbUri;
+                try {
+                    dataconten = await this.getusercontentsService.findcontenbuy(postid);
+                    saleAmount = dataconten[0].saleAmount;
+                } catch (e) {
+                    dataconten = null;
+                    saleAmount = 0;
+                }
+
+                try {
+                    datamethode = await this.methodepaymentsService.findOne(paymentmethod);
+                    namamethode = datamethode._doc.methodename;
+
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+                try {
+
+                    datamradmin = await this.settingsService.findOne(idmdradmin);
+                    databankvacharge = await this.settingsService.findOne(idbankvacharge);
+                    valuevacharge = databankvacharge._doc.value;
+                    valuemradmin = datamradmin._doc.value;
+                    nominalmradmin = saleAmount * valuemradmin / 100;
+
+
+
+
+                } catch (e) {
+                    datamradmin = null;
+                    databankvacharge = null;
+                    valuevacharge = 0;
+                    valuemradmin = 0;
+                    nominalmradmin = 0;
+                }
+
+                try {
+                    databank = await this.banksService.findOne(idbank);
+                    namabank = databank._doc.bankname;
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+
+                amount = saleAmount;
+                var buyuser = databuy[0].iduserbuyer;
+
+                try {
+                    var ubasic = await this.userbasicsService.findid(buyuser);
+                    var namapembeli = ubasic.fullName;
+                    var emailpembeli = ubasic.email;
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+
+                data = {
+
+                    "_id": idtr,
+                    "type": databuy[0].type,
+                    "time": databuy[0].timestamp,
+                    "description": databuy[0].description,
+                    "like": databuy[0].salelike,
+                    "view": databuy[0].saleview,
+                    "bank": namabank,
+                    "paymentmethode": namamethode,
+                    "amount": amount,
+                    "totalamount": databuy[0].totalamount,
+                    "status": databuy[0].status,
+                    "fullName": databuy[0].fullName,
+                    "email": databuy[0].email,
+                    "namapembeli": namapembeli,
+                    "emailpembeli": emailpembeli,
+                    "postID": databuy[0].postID,
+                    "postType": databuy[0].postType,
+                    "descriptionContent": databuy[0].descriptionContent,
+                    "title": databuy[0].title,
+                    "mediaBasePath": databuy[0].mediaBasePath,
+                    "mediaUri": databuy[0].mediaUri,
+                    "mediaType": databuy[0].mediaType,
+                    "mediaEndpoint": databuy[0].mediaEndpoint,
+                    "mediaThumbEndpoint": mediaThumbEndpoint,
+                    "mediaThumbUri": mediaThumbUri,
+
+                };
+            } else if (type === "Withdrawal") {
+
+                try {
+                    dataWitdraw = await this.withdrawsService.findhistoryWithdrawdetail(idtr, iduser);
+
+                    dataakunbank = await this.userbankaccountsService.findOneUser(iduser);
+                    var idBnk = dataakunbank._doc.idBank;
+                    var databank = null;
+                    var namabank = "";
+                    try {
+                        databank = await this.banksService.findOne(idBnk);
+                        namabank = databank._doc.bankname;
+
+
+                    } catch (e) {
+                        throw new BadRequestException("Data not found...!");
+                    }
+
+                    data = {
+
+                        "_id": idtr,
+                        "iduser": dataWitdraw[0].iduser,
+                        "fullName": dataWitdraw[0].fullName,
+                        "email": dataWitdraw[0].email,
+                        "type": dataWitdraw[0].type,
+                        "timestamp": dataWitdraw[0].timestamp,
+                        "totalamount": dataWitdraw[0].totalamount,
+                        "description": dataWitdraw[0].description,
+                        "status": dataWitdraw[0].status,
+                        "noRek": dataakunbank._doc.noRek,
+                        "namaRek": dataakunbank._doc.nama,
+                        "namaBank": namabank
+                    };
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+            } else {
+                throw new BadRequestException("Data not found...!");
+            }
+
+
+        } catch (e) {
+            throw new BadRequestException("Data not found...!");
+        }
+        return { response_code: 202, data, messages };
     }
 
     async generateNumber() {
