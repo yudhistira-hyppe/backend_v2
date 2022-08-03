@@ -7,8 +7,9 @@ import {
   Post,
   UseGuards,
   Req,
+  Headers,
   Request,
-  BadRequestException, HttpStatus, Put, Res
+  BadRequestException, HttpStatus, Put, Res, HttpCode, Query
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostsDto } from './dto/create-posts.dto';
@@ -16,7 +17,7 @@ import { Posts } from './schemas/posts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
 
-@Controller('api/posts')
+@Controller()
 export class PostsController {
   constructor(private readonly PostsService: PostsService,
     private readonly userauthsService: UserauthsService) { }
@@ -26,26 +27,26 @@ export class PostsController {
     await this.PostsService.create(CreatePostsDto);
   }
 
-  @Get()
+  @Get('api/posts')
   @UseGuards(JwtAuthGuard)
   async findAll(): Promise<Posts[]> {
     return this.PostsService.findAll();
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/regcontens')
+  @Get('api/posts/regcontens')
   async regContent(): Promise<Object> {
     return this.PostsService.regcontenMonetize();
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('/newcontens')
+  @Get('api/posts/newcontens')
   async newContent(): Promise<Object> {
     return this.PostsService.newcontenMonetize();
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('/getcontent/')
+  @Post('api/posts/getcontent/')
   async getContent(@Req() req): Promise<Object> {
     var email = req.body.email;
     var type = req.body.type;
@@ -64,7 +65,7 @@ export class PostsController {
   //   return this.PostsService.findOne(id);
   // }
 
-  @Get(':email')
+  @Get('api/posts:email')
   async findOneId(@Param('email') email: string): Promise<Posts> {
     return this.PostsService.findOne(email);
   }
@@ -75,13 +76,13 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('monetizebyyear')
+  @Post('api/postsmonetizebyyear')
   async countPost(@Body('year') year: number): Promise<Object> {
     return this.PostsService.MonetizeByYear(year);
   }
 
   @UseGuards(JwtAuthGuard)
-  @Put('update/:id')
+  @Put('update:id')
   async update(@Res() res, @Param('id') id: string, @Req() request: Request) {
     var saleAmount = 0;
     var request_json = JSON.parse(JSON.stringify(request.body));
@@ -114,7 +115,7 @@ export class PostsController {
 
 
   @UseGuards(JwtAuthGuard)
-  @Post('/deletetag')
+  @Post('api/posts/deletetag')
   async deleteTag(@Req() request) {
     var email = null;
     var postID = null;
@@ -157,6 +158,79 @@ export class PostsController {
       return { response_code: 500, messagesEror };
     }
 
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Get('api/posts/getpost')
+  async getposts(
+    @Query() CreatePostsDto_: CreatePostsDto,
+    @Headers() headers) {
+    var dataquery = await this.PostsService.findOnepostID(CreatePostsDto_.postID.toString());
+    var endpoind = '';
+    var data_post = {};
+    if (dataquery[0].postType == 'vid') {
+      data_post['metadata'] = {
+        "duration": dataquery[0].metadata.duration,
+        "postRoll": dataquery[0].metadata.postRoll,
+        "postType": dataquery[0].metadata.postType,
+        "preRoll": dataquery[0].metadata.preRoll,
+        "midRoll": dataquery[0].metadata.midRoll,
+        "postID": dataquery[0].metadata.postID,
+        "email": dataquery[0].metadata.email,
+      };
+    }
+    data_post['mediaBasePath'] = dataquery[0].datacontent[0].mediaBasePath; 
+    data_post['postType'] = dataquery[0].postType; 
+    data_post['mediaUri'] = dataquery[0].datacontent[0].mediaUri;
+    data_post['description'] = dataquery[0].description;
+    data_post['active'] = dataquery[0].active;
+    data_post['privacy'] = {
+      "isPostPrivate": dataquery[0].datauser[0].isPostPrivate,
+      "isCelebrity": dataquery[0].datauser[0].isCelebrity,
+      "isPrivate": dataquery[0].datauser[0].isPrivate,
+    }
+    data_post['mediaType'] = dataquery[0].datacontent[0].mediaType;
+    if (dataquery[0].postType == 'diary' || dataquery[0].postType == 'vid') {
+      data_post['mediaThumbEndpoint'] = '/thumb/' + dataquery[0].postID;
+    }
+    data_post['postID'] = dataquery[0].postID;
+    data_post['avatar'] = dataquery[0].datauser[0].avatar;
+    if (dataquery[0].postType == 'vid') {
+      data_post['title'] = dataquery[0].description;
+    }
+    data_post['tags'] = dataquery[0].tags;
+    data_post['allowComments'] = dataquery[0].allowComments;
+    data_post['createdAt'] = dataquery[0].createdAt;
+    data_post['insight'] = {
+      "shares": dataquery[0].datauser[0].insight.shares,
+      "comments": dataquery[0].datauser[0].insight.comments,
+      "reactions": dataquery[0].datauser[0].insight.reactions,
+      "views": dataquery[0].datauser[0].insight.views,
+      "likes": dataquery[0].datauser[0].insight.likes,
+    };
+    data_post['profileInsight'] = {
+      "follower": dataquery[0].datauser[0].insight.followers,
+      "following": dataquery[0].datauser[0].insight.followings,
+    };
+    if (dataquery[0].postType == 'pict') {
+      endpoind = '/pict/';
+    }
+    if (dataquery[0].postType == 'vid') {
+      endpoind = '/pict/';
+    }
+    data_post['mediaEndpoint'] = endpoind + dataquery[0].datacontent[0].postID;
+    data_post['email'] = dataquery[0].datauser[0].email;
+    data_post['updatedAt'] = dataquery[0].updatedAt;
+    data_post['username'] = dataquery[0].datauser[0].username;
+
+    var data = [data_post];
+    var response = {
+      "response_code": 202,
+      "data": data,
+        "messages": { },
+    }
+    return dataquery;
   }
 
 }

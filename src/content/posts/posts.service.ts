@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
 import { CreatePostsDto } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
+import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 
 
 @Injectable()
@@ -11,6 +12,7 @@ export class PostsService {
   constructor(
     @InjectModel(Posts.name, 'SERVER_CONTENT')
     private readonly PostsModel: Model<PostsDocument>,
+    private getuserprofilesService: GetuserprofilesService,
   ) { }
 
   async create(CreatePostsDto: CreatePostsDto): Promise<Posts> {
@@ -27,6 +29,42 @@ export class PostsService {
   }
   async findOne(email: string): Promise<Posts> {
     return this.PostsModel.findOne({ email: email }).exec();
+  }
+  async findOnepostID(postID: string): Promise<Object> {
+    var datacontent = null;
+    var CreatePostsDto_ = await this.PostsModel.findOne({ postID: postID }).exec();
+    if (CreatePostsDto_.postType =='vid'){
+      datacontent = 'mediavideos';
+    } else if (CreatePostsDto_.postType == 'pict') {
+      datacontent = 'mediapicts';
+    } else if (CreatePostsDto_.postType == 'diary') {
+      datacontent = 'mediadiaries';
+    } else if (CreatePostsDto_.postType == 'story') {
+      datacontent = 'mediastories';
+    }
+    
+    //Ceck User Userbasics
+    const datauserbasicsService = await this.getuserprofilesService.findUserDetailbyEmail(
+      CreatePostsDto_.email.toString()
+    );
+    
+    const query = await this.PostsModel.aggregate([
+      {
+        $match: {
+          postID: postID
+        }
+      },
+      {
+        $lookup: {
+          from: datacontent,
+          localField: "postID",
+          foreignField: "postID",
+          as: "datacontent"
+        }
+      },
+    ]); 
+    Object.assign(query[0], { datauser: datauserbasicsService });
+    return query;
   }
   async updateemail(id: string, email: string, iduser: {
     "$oid": string

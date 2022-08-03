@@ -1,0 +1,39 @@
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { ObjectId } from 'mongodb';
+import { Model } from 'mongoose';
+import { ModuleDto } from './dto/module.dto';
+import { Module, ModuleDocument } from './schemas/module.schema';
+
+@Injectable()
+export class ModuleService {
+    constructor(
+        @InjectModel(Module.name, 'SERVER_TRANS')
+        private readonly moduleModel: Model<ModuleDocument>,
+    ) {}
+
+    async create(ModuleDto: ModuleDto): Promise<Module> {
+        console.log(ModuleDto);
+        let data = await this.moduleModel.create(ModuleDto);
+        if (!data) {
+            throw new Error('data is not found!');
+        }
+        return data;
+    }
+
+    async findAll(skip: number, limit:number): Promise<Module[]> {
+        return this.moduleModel.find().skip(skip).limit(limit).exec();
+    }
+
+    async findOne(_id: String): Promise<Module> {
+        return this.moduleModel.findOne({ _id: _id }).exec();
+    }
+
+    async update(_id: String, ModuleDto: ModuleDto): Promise<Object> {
+        return await this.moduleModel.updateOne({ _id: _id }, ModuleDto);
+    }
+
+    async delete(_id: String) {
+        return await this.moduleModel.findByIdAndRemove({ _id: _id }).exec();
+    }
+}

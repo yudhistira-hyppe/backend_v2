@@ -2,8 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Cron, Interval } from '@nestjs/schedule';
 import { UtilsService } from '../../utils/utils.service';
 import { UserticketsService } from '../../trans/usertickets/usertickets.service';
-import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
-import { CreateUserticketsDto } from 'src/trans/usertickets/dto/create-usertickets.dto';
+import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
+import { CreateUserticketsDto } from '../../trans/usertickets/dto/create-usertickets.dto';
 
 const Imap = require('imap');
 const { simpleParser } = require('mailparser');

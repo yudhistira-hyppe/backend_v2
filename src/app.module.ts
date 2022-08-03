@@ -63,6 +63,9 @@ import { AwsModule } from './stream/aws/aws.module';
 import { SeaweedfsModule } from './stream/seaweedfs/seaweedfs.module';
 import { MediaModule } from './stream/media/media.module';
 import { ScheduleEmailModule } from './schedule/scheduleemail/scheduleemail.module';
+import { GroupModule } from './trans/usermanagement/group/group.module';
+import { ModuleModule } from './trans/usermanagement/module/module.module';
+import { GroupModuleModule } from './trans/usermanagement/groupmodule/groupmodule.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -75,6 +78,9 @@ import { ScheduleEmailModule } from './schedule/scheduleemail/scheduleemail.modu
     MongooseModule.forRoot(process.env.SERVER_INFRA, {
       connectionName: 'SERVER_INFRA',
     }), 
+    GroupModule,
+    ModuleModule,
+    GroupModuleModule,
     ScheduleEmailModule,
     MediaModule,
     SeaweedfsModule,

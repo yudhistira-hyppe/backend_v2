@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Headers, Param, Post, UseGuards, Req, BadRequestException, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Headers, Param, Post, UseGuards, Req, BadRequestException, Request, HttpCode, HttpStatus } from '@nestjs/common';
 import { GetcontenteventsService } from './getcontentevents.service';
 import { CreateGetcontenteventsDto } from './dto/create-getcontentevents.dto';
 import { Getcontentevents } from './schemas/getcontentevents.schema';
@@ -176,11 +176,12 @@ export class GetcontenteventsController {
     }
 
     @Post('api/post/viewlike')
+    @HttpCode(HttpStatus.ACCEPTED)
     @UseGuards(JwtAuthGuard)
     async getViewLike(
         @Body() CreateGetcontenteventsDto_: CreateGetcontenteventsDto,
         @Headers() headers
-    ): Promise<Getcontentevents[]> {
+    ) {
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed token and email not match',
@@ -205,7 +206,17 @@ export class GetcontenteventsController {
         );
         if (await this.utilsService.ceckData(datapostsService)) {
             CreateGetcontenteventsDto_.receiverParty = datapostsService.email;
-            return await this.getcontenteventsService.findAllviewlike(CreateGetcontenteventsDto_);
+            var data = await this.getcontenteventsService.findAllviewlike(CreateGetcontenteventsDto_);
+            var response = {
+                "response_code": 202,
+                "data": data,
+                "messages": {
+                    "info": [
+                        "successfully"
+                    ]
+                },
+            }
+            return response;
         } else {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed postID not found',

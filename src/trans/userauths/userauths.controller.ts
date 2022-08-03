@@ -42,5 +42,5 @@ export class UserauthsController {
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.userauthsService.delete(id);
-  }
+  } 
 }
