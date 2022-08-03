@@ -35,7 +35,7 @@ export class WithdrawsService {
 
     async updateone(partnerTrxid: string, payload: OyDisburseCallbackWithdraw): Promise<Object> {
         let data = await this.withdrawsModel.updateOne({ "partnerTrxid": partnerTrxid },
-            { $set: { "status": "success", "description": "Withdraw success", verified: true, payload: payload } });
+            { $set: { "status": "Success", "description": "Withdraw success", verified: true, payload: payload } });
         return data;
     }
 
@@ -43,7 +43,7 @@ export class WithdrawsService {
         const query = await this.withdrawsModel.aggregate([
             {
                 $match: {
-                    status: "success",
+                    status: "Success",
                     idUser: iduser
                 }
             },
@@ -67,7 +67,8 @@ export class WithdrawsService {
                     type: "$type",
                     timestamp: "$timestamp",
                     partnerTrxid: "$partnerTrxid",
-                    totalamount: "$amount",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
                     user: {
                         $arrayElemAt: [
                             "$userbasics_data",
@@ -84,6 +85,7 @@ export class WithdrawsService {
                     type: "$type",
                     timestamp: "$timestamp",
                     partnerTrxid: "$partnerTrxid",
+                    amount: "$amount",
                     totalamount: "$totalamount",
                 }
             },
@@ -104,7 +106,7 @@ export class WithdrawsService {
             {
                 $match: {
                     _id: id,
-                    status: "success",
+                    status: "Success",
 
                     idUser: iduser
                 }
@@ -129,7 +131,8 @@ export class WithdrawsService {
                     type: "$type",
                     timestamp: "$timestamp",
                     partnerTrxid: "$partnerTrxid",
-                    totalamount: "$amount",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
                     description: "$description",
                     status: "$status",
                     user: {
@@ -148,6 +151,7 @@ export class WithdrawsService {
                     type: "$type",
                     timestamp: "$timestamp",
                     partnerTrxid: "$partnerTrxid",
+                    amount: "$amount",
                     totalamount: "$totalamount",
                     description: "$description",
                     status: "$status",
