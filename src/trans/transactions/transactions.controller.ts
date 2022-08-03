@@ -2640,6 +2640,26 @@ export class TransactionsController {
                         throw new BadRequestException("Data not found...!");
                     }
 
+
+                    var idbankverificationcharge = "62bd4104f37a00001a004367";
+                    var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
+                    var iduseradmin = "61d9c847548ae516042f0b13";
+                    var datasettingbankvercharge = null;
+                    var datasettingdisbvercharge = null;
+                    var valuebankcharge = 0;
+                    var valuedisbcharge = 0;
+
+                    try {
+                        datasettingbankvercharge = await this.settingsService.findOne(idbankverificationcharge);
+                        valuebankcharge = datasettingbankvercharge._doc.value;
+                        datasettingdisbvercharge = await this.settingsService.findOne(idBankDisbursmentCharge);
+                        valuedisbcharge = datasettingdisbvercharge._doc.value;
+
+                    } catch (e) {
+                        valuebankcharge = 0;
+                        valuedisbcharge = 0;
+                    }
+
                     data = {
 
                         "_id": idtr,
@@ -2648,7 +2668,10 @@ export class TransactionsController {
                         "email": dataWitdraw[0].email,
                         "type": dataWitdraw[0].type,
                         "timestamp": dataWitdraw[0].timestamp,
+                        "amount": dataWitdraw[0].amount,
                         "totalamount": dataWitdraw[0].totalamount,
+                        "adminFee": valuedisbcharge,
+                        "bankverificationcharge": valuebankcharge,
                         "description": dataWitdraw[0].description,
                         "status": dataWitdraw[0].status,
                         "noRek": dataakunbank._doc.noRek,
