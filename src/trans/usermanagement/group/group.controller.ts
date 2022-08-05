@@ -5,14 +5,16 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Group } from './schemas/group.schema'; 
 import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
+import { UserbasicsService } from '../../../trans/userbasics/userbasics.service'; 
 
 @Controller('/api/group')
 export class GroupController {
 
     constructor(
         private readonly groupService: GroupService,
-        private readonly utilsService: UtilsService,
-        private readonly errorHandler: ErrorHandler
+        private readonly utilsService: UtilsService, 
+        private readonly errorHandler: ErrorHandler,
+        private readonly userbasicsService: UserbasicsService
         ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -31,8 +33,10 @@ export class GroupController {
             if (request.userbasics.length>0) {
                 var data = [];
                 for (var i = 0; i < request.userbasics.length; i++) {
-                    console.log(request.userbasics[i]);
-                    data[i] = new Object(request.userbasics[i]);
+                    var data_userbasic = await this.userbasicsService.findid(request.userbasics[i]);
+                    if (await this.utilsService.ceckData(data_userbasic)) {
+                        data[i] = new Object(request.userbasics[i]);
+                    };
                 }
                 GroupDto_.userbasics = data;
             }
@@ -92,8 +96,10 @@ export class GroupController {
             if (request.userbasics.length > 0) {
                 var data = [];
                 for (var i = 0; i < request.userbasics.length; i++) {
-                    console.log(request.userbasics[i]);
-                    data[i] = new Object(request.userbasics[i]);
+                    var data_userbasic = await this.userbasicsService.findid(request.userbasics[i]);
+                    if (await this.utilsService.ceckData(data_userbasic)) {
+                        data[i] = new Object(request.userbasics[i]);
+                    };
                 }
                 GroupDto_.userbasics = data;
             }

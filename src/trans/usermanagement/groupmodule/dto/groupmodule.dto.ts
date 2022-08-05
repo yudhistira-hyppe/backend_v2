@@ -12,3 +12,9 @@ export class GroupModuleDto {
   updateAt?: String = new Date().toString();
   desc: String;
 }
+
+export class ValidasiGroupModuleDto {
+  user: String;
+  module: String;
+  action: String;
+}
