@@ -49,6 +49,7 @@ export class TransactionsController {
         var saleview = null;
         var bankcode = null;
         var paymentmethod = null;
+        var type = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["postid"] !== undefined) {
             postid = request_json["postid"];
@@ -82,6 +83,12 @@ export class TransactionsController {
 
         if (request_json["bankcode"] !== undefined) {
             bankcode = request_json["bankcode"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }

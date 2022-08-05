@@ -22,7 +22,7 @@ export class AdrolesController {
   async findOne(@Param('id') id: string): Promise<Adroles> {
     return this.adrolesService.findOne(id);
   }
-
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.adrolesService.delete(id);

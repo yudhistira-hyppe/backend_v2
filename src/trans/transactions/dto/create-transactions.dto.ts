@@ -23,6 +23,7 @@ export class CreateTransactionsDto {
     expiredtimeva: string;
     payload: VaCallback;
     idva: string;
+    type: string;
 
 }
 

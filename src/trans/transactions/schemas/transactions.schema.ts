@@ -53,6 +53,8 @@ export class Transactions {
     payload: VaCallback
     @Prop()
     idva: string
+    @Prop()
+    type: string
 
 }
 

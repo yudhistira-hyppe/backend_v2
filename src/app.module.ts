@@ -66,6 +66,9 @@ import { ScheduleEmailModule } from './schedule/scheduleemail/scheduleemail.modu
 import { GroupModule } from './trans/usermanagement/group/group.module';
 import { ModuleModule } from './trans/usermanagement/module/module.module';
 import { GroupModuleModule } from './trans/usermanagement/groupmodule/groupmodule.module';
+import { AdsplacesModule } from './trans/adsplaces/adsplaces.module';
+import { VouchersModule } from './trans/vouchers/vouchers.module';
+import { UservouchersModule } from './trans/uservouchers/uservouchers.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -77,7 +80,10 @@ import { GroupModuleModule } from './trans/usermanagement/groupmodule/groupmodul
     }),
     MongooseModule.forRoot(process.env.SERVER_INFRA, {
       connectionName: 'SERVER_INFRA',
-    }), 
+    }),
+    UservouchersModule,
+    VouchersModule,
+    AdsplacesModule,
     GroupModule,
     ModuleModule,
     GroupModuleModule,
