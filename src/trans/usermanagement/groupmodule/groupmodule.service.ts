@@ -36,6 +36,10 @@ export class GroupModuleService {
         return this.moduleModel.findOne({ _id: _id }).exec();
     }
 
+    async findOnebygroupandmodule(group: String, module: String): Promise<GroupModuleDto> {
+        return this.moduleModel.findOne({ group: group, module: module }).exec();
+    }
+
     async update(_id: String, GroupModuleDto: GroupModuleDto): Promise<Object> {
         return await this.moduleModel.updateOne({ _id: _id }, GroupModuleDto);
     }
