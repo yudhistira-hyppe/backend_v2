@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { ModuleDto } from './dto/module.dto';
 import { Module, ModuleDocument } from './schemas/module.schema';
 
@@ -25,8 +25,8 @@ export class ModuleService {
         return this.moduleModel.find().skip(skip).limit(limit).exec();
     }
 
-    async findOne(_id: String): Promise<Module> {
-        return this.moduleModel.findOne({ _id: _id }).exec();
+    async findOne(_id: string): Promise<Module> {
+        return this.moduleModel.findOne({ _id: new Types.ObjectId(_id) }).exec();
     }
 
     async update(_id: String, ModuleDto: ModuleDto): Promise<Object> {

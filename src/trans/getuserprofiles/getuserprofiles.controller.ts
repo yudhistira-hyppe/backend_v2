@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Query, BadRequestException, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Query, BadRequestException, Req, HttpStatus, HttpCode } from '@nestjs/common';
 import { GetuserprofilesService } from './getuserprofiles.service';
 import { CreateGetuserprofilesDto } from './dto/create-getuserprofiles.dto';
 import { Getuserprofiles } from './schemas/getuserprofiles.schema';
@@ -49,6 +49,30 @@ export class GetuserprofilesController {
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.getuserprofilesService.delete(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('api/getuserhyppe')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async userhyppe(
+    @Query('skip') skip: number,
+    @Query('limit') limit: number,
+    @Query('search') search: string) {
+    console.log(skip);
+    console.log(limit);
+    if (search==undefined){
+      search="";
+    }
+    if (skip == undefined) {
+      skip = 0;
+    }
+    if (limit == undefined) {
+      limit = 10;
+    }
+    var data = await this.getuserprofilesService.getUserHyppe(search, Number(skip), Number(limit));
+    return {
+      response_code: 202, data: data, skip: skip, limit: limit, messages:{}
+    }
   }
 
 

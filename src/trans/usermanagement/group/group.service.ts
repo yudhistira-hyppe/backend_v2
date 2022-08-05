@@ -24,6 +24,10 @@ export class GroupService {
         return this.groupModel.find().skip(skip).limit(limit).exec();
     }
 
+    async findAllnoSkip(): Promise<Group[]> {
+        return this.groupModel.find().exec();
+    }
+
     async findOne(_id: String): Promise<Group> {
         return this.groupModel.findOne({ _id: _id }).exec();
     }
@@ -34,5 +38,9 @@ export class GroupService {
 
     async delete(_id: String) {
         return await this.groupModel.findByIdAndRemove({ _id: _id }).exec();
+    }
+
+    async findbyuser(_id: String) {
+        return await this.groupModel.find({userbasics: {$in: [_id]}}).exec();
     }
 }
