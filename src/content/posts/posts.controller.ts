@@ -16,11 +16,17 @@ import { CreatePostsDto } from './dto/create-posts.dto';
 import { Posts } from './schemas/posts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
+import { UtilsService } from '../../utils/utils.service';
+import { ErrorHandler } from '../../utils/error.handler';
+import { GroupModuleService } from 'src/trans/usermanagement/groupmodule/groupmodule.service';
 
 @Controller()
 export class PostsController {
   constructor(private readonly PostsService: PostsService,
-    private readonly userauthsService: UserauthsService) { }
+    private readonly userauthsService: UserauthsService,
+    private readonly utilsService: UtilsService,
+    private readonly errorHandler: ErrorHandler,
+    private readonly groupModuleService: GroupModuleService) { }
 
   @Post()
   async create(@Body() CreatePostsDto: CreatePostsDto) {
@@ -76,8 +82,20 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('api/postsmonetizebyyear')
-  async countPost(@Body('year') year: number): Promise<Object> {
+  @Post('api/posts/monetizebyyear')
+  async countPost(@Body('year') year: number, @Headers() headers): Promise<Object> {
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, email is required',
+      );
+    }
+
+    var user_email_header = headers['x-auth-user'];
+    if (!(await this.groupModuleService.validasiModule2(user_email_header, 'Beranda-Card-Status-Kepemilikan', 'view'))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, user permission cannot acces module',
+      );
+    }
     return this.PostsService.MonetizeByYear(year);
   }
 

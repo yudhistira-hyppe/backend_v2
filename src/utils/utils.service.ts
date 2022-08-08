@@ -88,6 +88,14 @@ export class UtilsService {
     return await this.templatesService.findOneByTypeAndCategory(type, category);
   }
 
+  async ceckObjectid(id: string): Promise<boolean> {
+    var valid = false;
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      valid = true;
+    }
+    return valid;
+  }
+
   async ceckUserByEmail(email: string): Promise<boolean> {
     var existing = false;
     var user_auth = await this.userauthsService.findOne(email);

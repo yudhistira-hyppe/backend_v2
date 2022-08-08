@@ -8,6 +8,7 @@ import { GroupService } from '../group/group.service';
 import { ModuleService } from '../module/module.service';
 import { UtilsService } from '../../../utils/utils.service';
 import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
+import { ErrorHandler } from '../../../utils/error.handler';
 
 @Injectable()
 export class GroupModuleService {
@@ -17,7 +18,8 @@ export class GroupModuleService {
         private readonly groupService: GroupService, 
         private readonly moduleService: ModuleService,
         private readonly utilsService: UtilsService,
-        private readonly userbasicsService: UserbasicsService
+        private readonly userbasicsService: UserbasicsService,
+        private readonly errorHandler: ErrorHandler
     ) {}
 
     async create(GroupModuleDto: GroupModuleDto): Promise<GroupModule> {
@@ -53,9 +55,6 @@ export class GroupModuleService {
 
         var group = await this.groupService.findbyuser(id_userbasic);
         var datapermission = await this.moduleModel.findOne({ group: group[0]._id.toString(), module: id_module }).exec();
-        console.log(group[0]._id.toString());
-        console.log(id_module);
-        console.log(datapermission);
         if (action == "create") {
             if (datapermission.createAcces != undefined) {
                 permission = datapermission.createAcces;
@@ -81,6 +80,64 @@ export class GroupModuleService {
                 permission = false;
             }
         }
+        return permission;
+    }
+
+    async validasiModule2(email: string, name_module: string, action: string): Promise<boolean> {
+        var permission = false;
+
+        var data_user = await this.userbasicsService.findOne(email);
+        if (!(await this.utilsService.ceckData(data_user))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed ceck permission, user does not exist',
+            );
+        }
+
+        var data_group = await this.groupService.findbyuser(data_user._id.toString());
+        if (!(await this.utilsService.ceckData(data_group))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed ceck permission, the user does not have a group',
+            );
+        } 
+
+        var data_module = await this.moduleService.findOnebyName(name_module);
+        if (!(await this.utilsService.ceckData(data_module))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed ceck permission, module does not exist',
+            );
+        }
+
+        var datapermission = await this.moduleModel.findOne({ group: data_group[0]._id.toString(), module: data_module._id.toString() }).exec();
+        if (await this.utilsService.ceckData(datapermission)) {
+            if (action == "create") {
+                if (datapermission.createAcces != undefined) {
+                    permission = datapermission.createAcces;
+                } else {
+                    permission = false;
+                }
+            } else if (action == "update") {
+                if (datapermission.updateAcces != undefined) {
+                    permission = datapermission.updateAcces;
+                } else {
+                    permission = false;
+                }
+            } else if (action == "delete") {
+                if (datapermission.deleteAcces != undefined) {
+                    permission = datapermission.deleteAcces;
+                } else {
+                    permission = false;
+                }
+            } else if (action == "view") {
+                if (datapermission.viewAcces != undefined) {
+                    permission = datapermission.viewAcces;
+                } else {
+                    permission = false;
+                }
+            }
+        }else{
+            permission = false;
+        }
+        
         return permission;
     }
 }

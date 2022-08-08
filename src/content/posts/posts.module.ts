@@ -6,9 +6,13 @@ import { ConfigModule } from '@nestjs/config';
 import { Posts, PostsSchema } from './schemas/posts.schema';
 import { UserauthsModule } from '../../trans/userauths/userauths.module';
 import { GetuserprofilesModule } from '../../trans/getuserprofiles/getuserprofiles.module';
+import { UtilsModule } from '../../utils/utils.module';
+import { GroupModuleModule } from '../../trans/usermanagement/groupmodule/groupmodule.module';
 @Module({
 
     imports: [
+        GroupModuleModule,
+        UtilsModule,
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule,
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
     ],
