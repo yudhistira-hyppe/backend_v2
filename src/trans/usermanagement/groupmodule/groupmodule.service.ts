@@ -54,30 +54,37 @@ export class GroupModuleService {
         var permission = false;
 
         var group = await this.groupService.findbyuser(id_userbasic);
+        if (!(await this.utilsService.ceckData(group))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed ceck permission, the user does not have a group',
+            );
+        }
         var datapermission = await this.moduleModel.findOne({ group: group[0]._id.toString(), module: id_module }).exec();
-        if (action == "create") {
-            if (datapermission.createAcces != undefined) {
-                permission = datapermission.createAcces;
-            } else {
-                permission = false;
-            }
-        } else if (action == "update") {
-            if (datapermission.updateAcces != undefined) {
-                permission = datapermission.updateAcces;
-            } else {
-                permission = false;
-            }
-        } else if (action == "delete") {
-            if (datapermission.deleteAcces != undefined) {
-                permission = datapermission.deleteAcces;
-            } else {
-                permission = false;
-            }
-        } else if (action == "view") {
-            if (datapermission.viewAcces != undefined) {
-                permission = datapermission.viewAcces;
-            } else {
-                permission = false;
+        if (await this.utilsService.ceckData(datapermission)) {
+            if (action == "create") {
+                if (datapermission.createAcces != undefined) {
+                    permission = datapermission.createAcces;
+                } else {
+                    permission = false;
+                }
+            } else if (action == "update") {
+                if (datapermission.updateAcces != undefined) {
+                    permission = datapermission.updateAcces;
+                } else {
+                    permission = false;
+                }
+            } else if (action == "delete") {
+                if (datapermission.deleteAcces != undefined) {
+                    permission = datapermission.deleteAcces;
+                } else {
+                    permission = false;
+                }
+            } else if (action == "view") {
+                if (datapermission.viewAcces != undefined) {
+                    permission = datapermission.viewAcces;
+                } else {
+                    permission = false;
+                }
             }
         }
         return permission;
