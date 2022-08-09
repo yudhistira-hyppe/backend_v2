@@ -9,6 +9,7 @@ import { ModuleService } from '../module/module.service';
 import { UtilsService } from '../../../utils/utils.service';
 import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
 import { ErrorHandler } from '../../../utils/error.handler';
+import { DomUtils } from 'htmlparser2';
 
 @Injectable()
 export class GroupModuleService {
