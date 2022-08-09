@@ -1,6 +1,7 @@
 export class CreateVouchersDto {
 
     readonly _id: { oid: String; };
+    noVoucher: string;
     codeVoucher: string;
     userID: { oid: String; };
     nameAds: string;
@@ -8,9 +9,10 @@ export class CreateVouchersDto {
     creditPromo: number;
     creditTotal: number;
     createdAt: string;
-    updateAt: string;
+    updatedAt: string;
     expiredAt: string;
     amount: number;
     totalUsed: number;
     isActive: boolean;
+    description: string;
 }

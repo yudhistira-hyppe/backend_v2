@@ -29,6 +29,11 @@ export class UservouchersService {
         return this.uservouchersModel.findOne({ _id: id }).exec();
     }
 
+    async findUser(userID: ObjectId): Promise<Uservouchers[]> {
+        return this.uservouchersModel.find({ userID: userID, isActive: true }).exec();
+    }
+
+
     async delete(id: string) {
         const deletedCat = await this.uservouchersModel
             .findByIdAndRemove({ _id: id })

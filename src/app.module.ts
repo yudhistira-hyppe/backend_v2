@@ -69,6 +69,8 @@ import { GroupModuleModule } from './trans/usermanagement/groupmodule/groupmodul
 import { AdsplacesModule } from './trans/adsplaces/adsplaces.module';
 import { VouchersModule } from './trans/vouchers/vouchers.module';
 import { UservouchersModule } from './trans/uservouchers/uservouchers.module';
+import { AdstypesModule } from './trans/adstypes/adstypes.module';
+import { AdsModule } from './trans/ads/ads.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -81,8 +83,10 @@ import { UservouchersModule } from './trans/uservouchers/uservouchers.module';
     MongooseModule.forRoot(process.env.SERVER_INFRA, {
       connectionName: 'SERVER_INFRA',
     }),
-    UservouchersModule,
-    VouchersModule,
+    // UservouchersModule,
+    // VouchersModule,
+    AdsModule,
+    AdstypesModule,
     AdsplacesModule,
     GroupModule,
     ModuleModule,

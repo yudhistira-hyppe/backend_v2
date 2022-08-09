@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateVouchersDto } from './dto/create-vouchers.dto';
 import { Vouchers, VouchersDocument } from './schemas/vouchers.schema';
 
@@ -26,6 +26,14 @@ export class VouchersService {
         return this.vouchersModel.find().exec();
     }
 
+    async findLatest(): Promise<Vouchers[]> {
+        return this.vouchersModel.find().sort({ "_id": -1 }).limit(1);
+    }
+
+    async findExpired(expiredAt: string): Promise<Vouchers[]> {
+        return this.vouchersModel.find({ expiredAt: { $lte: expiredAt } });
+    }
+
     async findOne(id: string): Promise<Vouchers> {
         return this.vouchersModel.findOne({ _id: id }).exec();
     }
@@ -35,6 +43,18 @@ export class VouchersService {
             .findByIdAndRemove({ _id: id })
             .exec();
         return deletedCat;
+    }
+
+    async updatestatusActive(id: Types.ObjectId, updatedAt: string): Promise<Object> {
+        let data = await this.vouchersModel.updateOne({ "_id": id, "isActive": true },
+            { $set: { "isActive": false, "description": "Voucher expired time" }, "updatedAt": updatedAt });
+        return data;
+    }
+
+    async updatestatuTotalUsed(id: Types.ObjectId, totalUsed: number): Promise<Object> {
+        let data = await this.vouchersModel.updateOne({ "_id": id, "isActive": true },
+            { $set: { "totalUsed": totalUsed } });
+        return data;
     }
 
     async update(

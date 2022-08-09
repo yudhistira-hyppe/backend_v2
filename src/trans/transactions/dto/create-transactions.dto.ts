@@ -26,7 +26,18 @@ export class CreateTransactionsDto {
     type: string;
 
 }
+export class Uservoucher {
 
+    userID: { oid: String; };
+    voucherID: { oid: String; };
+    createdAt: string;
+    isActive: boolean;
+    usedCredit: number;
+    voucherCredit: number;
+    totalCredit: number;
+    updatedAt: string;
+
+}
 export class VaCallback {
     va_number: string;
     amount: number;

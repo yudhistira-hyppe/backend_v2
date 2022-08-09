@@ -20,12 +20,14 @@ import { GetusercontentsModule } from '../getusercontents/getusercontents.module
 import { MediavideosModule } from '../../content/mediavideos/mediavideos.module';
 import { MediapictsModule } from '../../content/mediapicts/mediapicts.module';
 import { MediadiariesModule } from '../../content/mediadiaries/mediadiaries.module';
+import { UservouchersModule } from '../uservouchers/uservouchers.module';
+import { VouchersModule } from '../vouchers/vouchers.module';
 @Module({
 
     imports: [
 
         ConfigModule.forRoot(), GetusercontentsModule, UserbasicsModule, SettingsModule, MethodepaymentsModule, BanksModule, PostsModule, Pph21sModule, AccountbalancesModule, OyPgModule,
-        InsightsModule, UserbankaccountsModule, WithdrawsModule, MediavideosModule, MediapictsModule, MediadiariesModule,
+        InsightsModule, UserbankaccountsModule, WithdrawsModule, MediavideosModule, MediapictsModule, MediadiariesModule, UservouchersModule, VouchersModule,
         MongooseModule.forFeature([{ name: Transactions.name, schema: TransactionsSchema }], 'SERVER_TRANS')
     ],
     controllers: [TransactionsController],

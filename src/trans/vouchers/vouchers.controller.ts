@@ -24,6 +24,7 @@ export class VouchersController {
         var email = x.email;
 
         var ubasic = await this.userbasicsService.findOne(email);
+        var dataLast = null;
 
 
         var stringId = (await this.generateNumber()).toString();
@@ -34,8 +35,22 @@ export class VouchersController {
         dt = new Date(dt);
 
         var dtexpired = new Date(CreateVouchersDto.expiredAt);
-        // dtexpired.setHours(dtexpired.getHours() + 7); // timestamp
-        // dtexpired = new Date(dtexpired);
+        var leng = 0;
+        try {
+            dataLast = await this.vouchersService.findExpired(CreateVouchersDto.expiredAt);
+            leng = dataLast.length;
+
+            for (var i = 0; i < leng; i++) {
+                var id = dataLast[i]._id;
+                await this.vouchersService.updatestatusActive(id, dt.toISOString());
+
+            }
+
+        } catch (e) {
+            dataLast = null;
+        }
+
+
 
         try {
             var creditValue = CreateVouchersDto.creditValue;
@@ -43,11 +58,14 @@ export class VouchersController {
             var total = creditValue + creditpromo;
 
             CreateVouchersDto.creditTotal = total;
-            CreateVouchersDto.codeVoucher = kodevoucher;
+            CreateVouchersDto.noVoucher = kodevoucher;
             CreateVouchersDto.createdAt = dt.toISOString();
             CreateVouchersDto.userID = iduser;
+            CreateVouchersDto.totalUsed = 0;
             CreateVouchersDto.expiredAt = dtexpired.toISOString();
             let data = await this.vouchersService.create(CreateVouchersDto);
+
+
             res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": data,
@@ -92,7 +110,7 @@ export class VouchersController {
         try {
             var dt = new Date(Date.now());
 
-            createVouchersDto.updateAt = dt.toISOString();
+            createVouchersDto.updatedAt = dt.toISOString();
             let data = await this.vouchersService.update(id, createVouchersDto);
             res.status(HttpStatus.OK).json({
                 response_code: 202,

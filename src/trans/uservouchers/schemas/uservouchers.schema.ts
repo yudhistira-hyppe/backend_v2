@@ -18,6 +18,10 @@ export class Uservouchers {
     totalCredit: number;
     @Prop()
     updatedAt: string;
+    @Prop()
+    usedCredit: number;
+    @Prop()
+    voucherCredit: number;
 
 
 }

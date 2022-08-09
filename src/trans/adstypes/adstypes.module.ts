@@ -1,0 +1,18 @@
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AdstypesController } from './adstypes.controller';
+import { AdstypesService } from './adstypes.service';
+import { ConfigModule } from '@nestjs/config';
+import { Adstypes, AdstypesSchema } from './schemas/adstypes.schema';
+
+@Module({
+
+    imports: [
+        ConfigModule.forRoot(),
+        MongooseModule.forFeature([{ name: Adstypes.name, schema: AdstypesSchema }], 'SERVER_TRANS')
+    ],
+    controllers: [AdstypesController],
+    providers: [AdstypesService],
+    exports: [AdstypesService],
+})
+export class AdstypesModule { }

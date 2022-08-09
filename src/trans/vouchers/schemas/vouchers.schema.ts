@@ -9,6 +9,8 @@ export class Vouchers {
     // _id: { oid:string  }
     _id: mongoose.Types.ObjectId;
     @Prop()
+    noVoucher: string;
+    @Prop()
     codeVoucher: string;
     @Prop({ type: Object })
     userID: { oid: String; };
@@ -23,7 +25,7 @@ export class Vouchers {
     @Prop()
     createdAt: string;
     @Prop()
-    updateAt: string;
+    updatedAt: string;
     @Prop()
     expiredAt: string;
     @Prop()
@@ -32,6 +34,8 @@ export class Vouchers {
     totalUsed: number;
     @Prop()
     isActive: boolean;
+    @Prop()
+    description: string;
 
 }
 
