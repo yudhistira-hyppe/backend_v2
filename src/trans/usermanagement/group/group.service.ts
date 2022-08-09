@@ -32,6 +32,10 @@ export class GroupService {
         return this.groupModel.findOne({ _id: _id }).exec();
     }
 
+    async findOnebyName(nameGroup: String): Promise<Group> {
+        return this.groupModel.findOne({ nameGroup: nameGroup }).exec();
+    }
+
     async update(_id: String, GroupDto: GroupDto): Promise<Object> {
         return await this.groupModel.updateOne({ _id: _id }, GroupDto);
     }
@@ -43,4 +47,8 @@ export class GroupService {
     async findbyuser(_id: String) {
         return await this.groupModel.find({userbasics: {$in: [_id]}}).exec();
     }
+
+    // async validasiUserGroup(email: String) {
+    //     return await this.groupModel.find({ userbasics: { $in: [_id] } }).exec();
+    // }
 }

@@ -29,6 +29,10 @@ export class ModuleService {
         return this.moduleModel.findOne({ _id: new Types.ObjectId(_id) }).exec();
     }
 
+    async findOnebyName(nameModule: string): Promise<Module> {
+        return this.moduleModel.findOne({ nameModule: nameModule }).exec();
+    }
+
     async update(_id: String, ModuleDto: ModuleDto): Promise<Object> {
         return await this.moduleModel.updateOne({ _id: _id }, ModuleDto);
     }

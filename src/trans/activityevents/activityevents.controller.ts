@@ -1,13 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Headers } from '@nestjs/common';
 import { ActivityeventsService } from './activityevents.service';
 import { CreateActivityeventsDto } from './dto/create-activityevents.dto';
 import { Activityevents } from './schemas/activityevents.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { GroupModuleService } from '../../trans/usermanagement/groupmodule/groupmodule.service';
+import { UtilsService } from '../../utils/utils.service';
+import { ErrorHandler } from '../../utils/error.handler';
 
 
 @Controller('api/activityevents')
 export class ActivityeventsController {
-  constructor(private readonly activityeventsService: ActivityeventsService) { }
+  constructor(private readonly activityeventsService: ActivityeventsService,
+    private readonly groupModuleService: GroupModuleService,
+    private readonly utilsService: UtilsService,
+    private readonly errorHandler: ErrorHandler) { }
 
   @Post()
   async create(@Body() CreateActivityeventsDto: CreateActivityeventsDto) {
@@ -31,8 +37,20 @@ export class ActivityeventsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post('logsctivitas')
-  async countPost(@Body('year') year: number): Promise<Object> {
+  @Post('logactivitas')
+  async countPost(@Body('year') year: number, @Headers() headers): Promise<Object> {
+    // if (!(await this.utilsService.validasiTokenEmail(headers))) {
+    //   await this.errorHandler.generateNotAcceptableException(
+    //     'Unabled to proceed, email is required',
+    //   );
+    // }
+
+    // var user_email_header = headers['x-auth-user'];
+    // if (!(await this.groupModuleService.validasiModule2(user_email_header, 'Engagement-Log-Activitas', 'view'))) {
+    //   await this.errorHandler.generateNotAcceptableException(
+    //     'Unabled to proceed, user permission cannot acces module',
+    //   );
+    // }
     return this.activityeventsService.LogActivitas(year);
   }
 

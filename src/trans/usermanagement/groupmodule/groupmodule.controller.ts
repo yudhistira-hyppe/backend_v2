@@ -26,16 +26,18 @@ export class GroupModuleController {
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('/create')
     async create(@Body() request) {
-        var data_group = null;
-        var data_module = null;
+        var insert = false;
+
+        var current_date = await this.utilsService.getDateTimeString();
         var param = JSON.parse(JSON.stringify(request));
+
         if (param.length ==undefined){
             if (request.group == undefined) {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed Create groupmodule, param group is required',
                 );
             }else{
-                data_group = await this.moduleService.findOne(request.group);
+                var data_group = await this.groupService.findOne(request.group);
                 if (!(await this.utilsService.ceckData(data_group))) {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed Create groupmodule, group is not found',
@@ -47,85 +49,118 @@ export class GroupModuleController {
                     'Unabled to proceed Create groupmodule, param module is required',
                 );
             }else{
-                data_module = await this.moduleService.findOne(request.module);
+                var data_module = await this.moduleService.findOne(request.module);
                 if (!(await this.utilsService.ceckData(data_module))) {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed Create groupmodule, module is not found',
                     );
                 }
             }
-            var current_date = await this.utilsService.getDateTimeString();
+            var data_groupandmodule = await this.groupModuleService.findOnebygroupandmodule(request.group, request.module);
+            if (!(await this.utilsService.ceckData(data_groupandmodule))){
+                insert = true;
+            }
+
             var GroupModuleDto_ = new GroupModuleDto();
             GroupModuleDto_.group = request.group;
             GroupModuleDto_.module = request.module;
             if (request.createAcces != undefined) {
                 GroupModuleDto_.createAcces = request.createAcces;
+            } else {
+                GroupModuleDto_.createAcces = false;
             }
             if (request.updateAcces != undefined) {
                 GroupModuleDto_.updateAcces = request.updateAcces;
+            } else {
+                GroupModuleDto_.updateAcces = false;
             }
             if (request.deleteAcces != undefined) {
                 GroupModuleDto_.deleteAcces = request.deleteAcces;
+            } else {
+                GroupModuleDto_.deleteAcces = false;
             }
             if (request.viewAcces != undefined) {
                 GroupModuleDto_.viewAcces = request.viewAcces;
+            } else {
+                GroupModuleDto_.viewAcces = false;
             }
-            GroupModuleDto_.createAt = current_date;
-            GroupModuleDto_.updateAt = current_date;
             if (request.desc != undefined) {
                 GroupModuleDto_.desc = request.desc;
             }
-            await this.groupModuleService.create(GroupModuleDto_);
+            GroupModuleDto_.updateAt = current_date;
+            if (insert) {
+                GroupModuleDto_.createAt = current_date;
+                await this.groupModuleService.create(GroupModuleDto_);
+            } else {
+                await this.groupModuleService.update(data_groupandmodule._id.toString(),GroupModuleDto_);
+            }
         } else {
             for (var k = 0; k < param.length; k++) {
                 if (param[k].group == undefined) {
                     await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed Create groupmodule, param group is required',
+                        'Unabled to proceed Create groupmodule, param group is required in index ' + k,
                     );
                 } else {
-                    data_group = await this.groupService.findOne(param[k].group);
-                    if (!(await this.utilsService.ceckData(data_group))) {
+                    var data_group_ = await this.groupService.findOne(param[k].group);
+                    if (!(await this.utilsService.ceckData(data_group_))) {
                         await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed Create groupmodule, group is not found',
+                            'Unabled to proceed Create groupmodule, group is not found in index ' + k,
                         );
                     }
                 }
                 if (param[k].module == undefined) {
                     await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed Create groupmodule, param module is required',
+                        'Unabled to proceed Create groupmodule, param module is required in index ' + k,
                     );
                 } else {
-                    data_module = await this.moduleService.findOne(param[k].module);
+                    var data_module = await this.moduleService.findOne(param[k].module);
                     if (!(await this.utilsService.ceckData(data_module))) {
                         await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed Create groupmodule, module is not found',
+                            'Unabled to proceed Create groupmodule, module is not found in index ' + k,
                         );
                     }
                 }
             }
-            for (var i = 0; i < param.length;i++){
-                var current_date = await this.utilsService.getDateTimeString();
+            for (var i = 0; i < param.length; i++) {
+                var insert_array = false;
+                var data_groupandmodule = await this.groupModuleService.findOnebygroupandmodule(param[i].group, param[i].module);
+                if (!(await this.utilsService.ceckData(data_groupandmodule))) {
+                    insert_array = true;
+                }
+
                 var GroupModuleDto_ = new GroupModuleDto();
                 GroupModuleDto_.group = param[i].group;
                 GroupModuleDto_.module = param[i].module;
                 if (param[i].createAcces != undefined) {
                     GroupModuleDto_.createAcces = param[i].createAcces;
+                }else{
+                    GroupModuleDto_.createAcces = false;
                 }
                 if (param[i].updateAcces != undefined) {
                     GroupModuleDto_.updateAcces = param[i].updateAcces;
+                } else {
+                    GroupModuleDto_.updateAcces = false;
                 }
                 if (param[i].deleteAcces != undefined) {
                     GroupModuleDto_.deleteAcces = param[i].deleteAcces;
+                } else {
+                    GroupModuleDto_.deleteAcces = false;
                 }
                 if (param[i].viewAcces != undefined) {
                     GroupModuleDto_.viewAcces = param[i].viewAcces;
+                } else {
+                    GroupModuleDto_.viewAcces = false;
                 }
-                GroupModuleDto_.createAt = current_date;
-                GroupModuleDto_.updateAt = current_date;
                 if (param[i].desc != undefined) {
                     GroupModuleDto_.desc = param[i].desc;
                 }
-                await this.groupModuleService.create(GroupModuleDto_);
+                GroupModuleDto_.updateAt = current_date;
+                if (insert_array) {
+                    GroupModuleDto_.createAt = current_date;
+                    await this.groupModuleService.create(GroupModuleDto_);
+                } else {
+                    await this.groupModuleService.update(data_groupandmodule._id.toString(), GroupModuleDto_);
+                }
             }
         }
         return {
@@ -228,7 +263,7 @@ export class GroupModuleController {
                 'Unabled to proceed ceck permission, param user is required',
             );
         } else {
-            data_user = await this.userbasicsService.findbyid(ValidasiGroupModuleDto_.user.toString());
+            data_user = await this.userbasicsService.findOne(ValidasiGroupModuleDto_.user.toString());
             if (!(await this.utilsService.ceckData(data_user))) {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed ceck permission, user is not found',
@@ -240,7 +275,7 @@ export class GroupModuleController {
                 'Unabled to proceed ceck permission, param module is required',
             );
         }else{
-            data_module = await this.moduleService.findOne(ValidasiGroupModuleDto_.module.toString());
+            data_module = await this.moduleService.findOnebyName(ValidasiGroupModuleDto_.module.toString());
             if (!(await this.utilsService.ceckData(data_module))) {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed ceck permission, module is not found',
@@ -252,7 +287,7 @@ export class GroupModuleController {
                 'Unabled to proceed Create groupmodule, param action is required',
             );
         }
-        var permission = await this.groupModuleService.validasiModule(ValidasiGroupModuleDto_.user.toString(), ValidasiGroupModuleDto_.module.toString(), ValidasiGroupModuleDto_.action.toString());
+        var permission = await this.groupModuleService.validasiModule(data_user._id.toString(), data_module._id.toString(), ValidasiGroupModuleDto_.action.toString());
         return {
             "response_code": 202,
             "permission": permission,
@@ -286,73 +321,195 @@ export class GroupModuleController {
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('/update')
     async update(@Body() request) {
+        var current_date = await this.utilsService.getDateTimeString();
+        var param = JSON.parse(JSON.stringify(request));
         var data_group = null;
         var data_module = null;
-        var data_group_module = null;
-        if (request._id == undefined) {
-            await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Update groupmodule, param _id is required',
-            );
-        } else {
-            data_group_module = await this.groupModuleService.findOne(request._id);
+
+        var succes_update = [];
+        var group_not_found = []; 
+        var module_not_found = [];
+        var group_module_failed_update = [];
+        var group_module_succes_update = [];
+        if (param.length == undefined) {
+            if (request.group == undefined) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Create groupmodule, param group is required',
+                );
+            } else {
+                data_group = await this.groupService.findOne(request.group);
+                if (!(await this.utilsService.ceckData(data_group))) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed Create groupmodule, group is not found',
+                    );
+                }
+            }
+            if (request.module == undefined) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Create groupmodule, param module is required',
+                );
+            } else {
+                data_module = await this.moduleService.findOne(request.module);
+                if (!(await this.utilsService.ceckData(data_module))) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed Create groupmodule, module is not found',
+                    );
+                }
+            }
+            var data_group_module = await this.groupModuleService.findOnebygroupandmodule(data_group._id.toString(), data_module._id.toString());
             if (!(await this.utilsService.ceckData(data_group_module))) {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed Update groupmodule, data is not found',
                 );
             }
-        }
-        if (request.group == undefined) {
-            await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Update groupmodule, param group is required',
-            );
-        } else {
-            data_group = await this.moduleService.findOne(request.group);
-            if (!(await this.utilsService.ceckData(data_group))) {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Update groupmodule, group is not found',
-                );
-            }
-        }
-        if (request.module == undefined) {
-            await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Update groupmodule, param module is required',
-            );
-        } else {
-            data_module = await this.moduleService.findOne(request.module);
-            if (!(await this.utilsService.ceckData(data_module))) {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Update groupmodule, module is not found',
-                );
-            }
-        }
 
-        var current_date = await this.utilsService.getDateTimeString();
-        var GroupModuleDto_ = new GroupModuleDto();
-        GroupModuleDto_.group = request.group;
-        GroupModuleDto_.module = request.module;
-        if (request.createAcces != undefined) {
-            GroupModuleDto_.createAcces = request.createAcces;
+            var GroupModuleDto_ = new GroupModuleDto();
+            GroupModuleDto_.group = request.group;
+            GroupModuleDto_.module = request.module;
+            if (request.createAcces != undefined) {
+                GroupModuleDto_.createAcces = request.createAcces;
+            } else {
+                GroupModuleDto_.createAcces = false;
+            }
+            if (request.updateAcces != undefined) {
+                GroupModuleDto_.updateAcces = request.updateAcces;
+            } else {
+                GroupModuleDto_.updateAcces = false;
+            }
+            if (request.deleteAcces != undefined) {
+                GroupModuleDto_.deleteAcces = request.deleteAcces;
+            } else {
+                GroupModuleDto_.deleteAcces = false;
+            }
+            if (request.viewAcces != undefined) {
+                GroupModuleDto_.viewAcces = request.viewAcces;
+            } else {
+                GroupModuleDto_.viewAcces = false;
+            }
+            GroupModuleDto_.updateAt = current_date;
+            if (request.desc != undefined) {
+                GroupModuleDto_.desc = request.desc;
+            }
+            await this.groupModuleService.update(request._id, GroupModuleDto_);
+        } else {
+            for (var k = 0; k < param.length; k++) {
+                // if (param[k]._id == undefined) {
+                //     await this.errorHandler.generateNotAcceptableException(
+                //         'Unabled to proceed Update groupmodule, param _id is required in index ' + k,
+                //     );
+                // } else {
+                //     var data_group_module = await this.groupModuleService.findOne(param[k]._id);
+                //     if (!(await this.utilsService.ceckData(data_group_module))) {
+                //         await this.errorHandler.generateNotAcceptableException(
+                //             'Unabled to proceed Update groupmodule, data is not foundin index ' + k,
+                //         );
+                //     }
+                // }
+                if (param[k].group == undefined) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed Create groupmodule, param group is required in index ' + k,
+                    );
+                } else {
+                    if (await this.utilsService.ceckObjectid(param[k].group)) {
+                        data_group = await this.groupService.findOne(param[k].group);
+                        if (!(await this.utilsService.ceckData(data_group))) {
+                            succes_update[k] = false;
+                            group_not_found[k] = param[k].group + ' index ' + k;
+                            // await this.errorHandler.generateNotAcceptableException(
+                            //     'Unabled to proceed Create groupmodule, group is not found in index ' + k,
+                            // );
+                        }
+                    } else {
+                        succes_update[k] = false;
+                    }
+                }
+                if (param[k].module == undefined) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed Create groupmodule, param module is required in index ' + k,
+                    );
+                } else {
+                    if (await this.utilsService.ceckObjectid(param[k].module)) {
+                        data_module = await this.moduleService.findOne(param[k].module);
+                        if (!(await this.utilsService.ceckData(data_module))) {
+                            succes_update[k] = false;
+                            module_not_found[k] = param[k].module + ' index ' + k;
+                            // await this.errorHandler.generateNotAcceptableException(
+                            //     'Unabled to proceed Create groupmodule, module is not found in index ' + k,
+                            // );
+                        }
+                    } else {
+                        succes_update[k] = false;
+                    }
+                }
+
+                var data_group_module = await this.groupModuleService.findOnebygroupandmodule(param[k].group, param[k].module);
+                if (!(await this.utilsService.ceckData(data_group_module))) {
+                    succes_update[k] = false;
+                    group_module_failed_update.push({
+                        'index': k,
+                        'group': param[k].group,
+                        'module': param[k].module,
+                        'messages': 'group module is not found'
+                    });
+                    // await this.errorHandler.generateNotAcceptableException(
+                    //     'Unabled to proceed Update groupmodule, group module is not found in index ' + k,
+                    // );
+                } else {
+                    succes_update[k] = true;
+                    group_module_succes_update.push({
+                        'index': k,
+                        'group': param[k].group,
+                        'module': param[k].module,
+                        'messages': 'group module succes update'
+                    });
+                }
+            }
+            for (var i = 0; i < param.length; i++) {
+                if (succes_update[i]) {
+                    var GroupModuleDto_ = new GroupModuleDto();
+                    GroupModuleDto_.group = param[i].group;
+                    GroupModuleDto_.module = param[i].module;
+                    if (param[i].createAcces != undefined) {
+                        GroupModuleDto_.createAcces = param[i].createAcces;
+                    } else {
+                        GroupModuleDto_.createAcces = false;
+                    }
+                    if (param[i].updateAcces != undefined) {
+                        GroupModuleDto_.updateAcces = param[i].updateAcces;
+                    } else {
+                        GroupModuleDto_.updateAcces = false;
+                    }
+                    if (param[i].deleteAcces != undefined) {
+                        GroupModuleDto_.deleteAcces = param[i].deleteAcces;
+                    } else {
+                        GroupModuleDto_.deleteAcces = false;
+                    }
+                    if (param[i].viewAcces != undefined) {
+                        GroupModuleDto_.viewAcces = param[i].viewAcces;
+                    } else {
+                        GroupModuleDto_.viewAcces = false;
+                    }
+                    GroupModuleDto_.createAt = current_date;
+                    GroupModuleDto_.updateAt = current_date;
+                    if (param[i].desc != undefined) {
+                        GroupModuleDto_.desc = param[i].desc;
+                    }
+                    await this.groupModuleService.update(param[i]._id, GroupModuleDto_);
+                }
+            }
         }
-        if (request.updateAcces != undefined) {
-            GroupModuleDto_.updateAcces = request.updateAcces;
-        }
-        if (request.deleteAcces != undefined) {
-            GroupModuleDto_.deleteAcces = request.deleteAcces;
-        }
-        if (request.viewAcces != undefined) {
-            GroupModuleDto_.viewAcces = request.viewAcces;
-        }
-        GroupModuleDto_.createAt = current_date;
-        GroupModuleDto_.updateAt = current_date;
-        if (request.desc != undefined) {
-            GroupModuleDto_.desc = request.desc;
-        }
-        await this.groupModuleService.update(request._id, GroupModuleDto_);
+        
         return {
             "response_code": 202,
+            "data": {
+                "data_failed_update_group_mosule": group_module_failed_update,
+                "data_succes_update_group_mosule": group_module_succes_update,
+                "group_not_found": group_not_found,
+                "module_not_found": module_not_found
+            },
             "messages": {
                 "info": [
-                    "Update module successfully"
+                    "Update group module successfully"
                 ]
             },
         };
@@ -373,4 +530,5 @@ export class GroupModuleController {
             },
         };
     }
+
 }
