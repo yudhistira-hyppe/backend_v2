@@ -57,11 +57,15 @@ export class GetuserprofilesController {
   async userhyppe(
     @Query('skip') skip: number,
     @Query('limit') limit: number,
-    @Query('search') search: string) {
+    @Query('search') search: string,
+    @Query('searchemail') searchemail: string) {
     console.log(skip);
     console.log(limit);
     if (search==undefined){
       search="";
+    }
+    if (searchemail == undefined) {
+      searchemail = "";
     }
     if (skip == undefined) {
       skip = 0;
@@ -69,9 +73,11 @@ export class GetuserprofilesController {
     if (limit == undefined) {
       limit = 10;
     }
-    var data = await this.getuserprofilesService.getUserHyppe(search, Number(skip), Number(limit));
+    var data = await this.getuserprofilesService.getUserHyppe(searchemail, search, Number(skip), Number(limit));
+    var totalRow = (await this.getuserprofilesService.countUserHyppe(searchemail, search)).length;
+    console.log(totalRow);
     return {
-      response_code: 202, data: data, skip: skip, limit: limit, messages:{}
+      response_code: 202, data: data, totalRow:totalRow, skip: skip, limit: limit, messages:{}
     }
   }
 
