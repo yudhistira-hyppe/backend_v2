@@ -11,7 +11,11 @@ export class CreateAdsDto {
         $id: { oid: String };
         $db: String;
     };
-    interestID: any[];
+    interestID: [{
+        $ref: String;
+        $id: ObjectId;
+        $db: String;
+    }];
     typeAdsID: { oid: String; };
     placingID: { oid: String; };
     description: string;

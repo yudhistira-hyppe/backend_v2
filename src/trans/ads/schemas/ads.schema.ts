@@ -17,8 +17,18 @@ export class Ads {
         $id: { oid: String };
         $db: String;
     };
-    @Prop([])
-    interestID: [];
+    // @Prop([])
+    // interestID: [];
+    @Prop([{ type: Object }])
+    interestID: [
+        {
+            ref: String;
+            id: {
+                oid: String;
+            };
+            db: String;
+        },
+    ];
     @Prop({ type: Object })
     typeAdsID: { oid: String; };
     @Prop({ type: Object })

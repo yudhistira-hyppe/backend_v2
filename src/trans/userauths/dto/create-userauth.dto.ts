@@ -1,4 +1,4 @@
-import { ObjectId } from "mongodb";
+import { Double, ObjectId } from "mongodb";
 import { Long } from "mongodb";
 
 export class CreateUserauthDto {
@@ -33,4 +33,8 @@ export class CreateUserauthDto {
   oneTimePassword: String;
   upgradeRole: String; 
   otpToken: String;
+  location: {
+    latitude: Double;
+    longitude: Double;
+  }
 }

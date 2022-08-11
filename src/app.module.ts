@@ -71,6 +71,9 @@ import { VouchersModule } from './trans/vouchers/vouchers.module';
 import { UservouchersModule } from './trans/uservouchers/uservouchers.module';
 import { AdstypesModule } from './trans/adstypes/adstypes.module';
 import { AdsModule } from './trans/ads/ads.module';
+import { UserAdsModule } from './trans/userads/userads.module';
+import { DivisionModule } from './trans/usermanagement/division/division.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -85,6 +88,8 @@ import { AdsModule } from './trans/ads/ads.module';
     }),
     // UservouchersModule,
     // VouchersModule,
+    DivisionModule,
+    UserAdsModule,
     AdsModule,
     AdstypesModule,
     AdsplacesModule,

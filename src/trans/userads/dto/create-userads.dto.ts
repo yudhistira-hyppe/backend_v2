@@ -1,8 +1,9 @@
+import { Double } from "mongodb";
 import mongoose from "mongoose";
 
 export class CreateUserAdsDto {
     _id: mongoose.Types.ObjectId;
-    adsID: String;
+    adsID: mongoose.Types.ObjectId;
     clickAt: String;
     createdAt: String; 
     description: String;
@@ -10,7 +11,7 @@ export class CreateUserAdsDto {
     statusClick: String;
     statusView: String;
     updatedAt: String;
-    userID: String;
+    userID: mongoose.Types.ObjectId;
     viewAt: String;
-    viewed: String;
+    viewed: Double;
 }

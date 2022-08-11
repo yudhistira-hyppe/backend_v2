@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Double } from 'mongodb';
 import mongoose, { Document } from 'mongoose';
 
 export type UserAdsDocument = UserAds & Document;
@@ -28,6 +29,6 @@ export class UserAds {
     @Prop()
     viewAt: String;
     @Prop()
-    viewed: String;
+    viewed: Double;
 }
 export const UserAdsSchema = SchemaFactory.createForClass(UserAds);
