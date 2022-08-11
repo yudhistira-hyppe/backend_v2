@@ -521,13 +521,23 @@ export class GetuserprofilesService {
       {
         $lookup:
         {
+          
           from: "group",
           let: { userName: { $toString: '$_id' } },
           pipeline: [
             {
               $match: {
                 $expr: {
-                  $in: ["$$userName", "$userbasics"],
+                  $in: ["$$userName", {
+                    "$cond": {
+                      "if": {
+                        "$ne": [{ "$type": "$userbasics" }, "array"]
+                      },
+                      "then": [],
+                      "else": "$userbasics"
+                    }
+                  }
+  ],
                 },
               },
             },
