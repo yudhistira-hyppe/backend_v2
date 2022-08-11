@@ -372,7 +372,7 @@ export class GetuserprofilesService {
           profilePict_id: '$profilePict.$id',
           concat: '/profilepict',
           email: '$email',
-          status: '$isIdVerified',
+          isIdVerified: '$isIdVerified',
         },
       },
       {
@@ -436,7 +436,7 @@ export class GetuserprofilesService {
           fullName: '$fullName',
           username: '$userAuth_data.username',
           email: '$email',
-          status: '$status',
+          isIdVerified: '$isIdVerified',
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
@@ -460,7 +460,7 @@ export class GetuserprofilesService {
           fullName: '$fullName',
           group: '$group_userbasics.nameGroup',
           email: '$email',
-          status: '$status',
+          status: '$isIdVerified',
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',

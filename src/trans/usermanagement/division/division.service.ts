@@ -20,8 +20,12 @@ export class DivisionService {
         return data;
     }
 
-    async findAll(skip: number, limit: number): Promise<Division[]> {
-        return this.divisionModel.find().skip(skip).limit(limit).exec();
+    async findAll(search:string, skip: number, limit: number): Promise<Division[]> {
+        return this.divisionModel.find({ nameDivision: { $regex: search } }).skip(skip).limit(limit).exec();
+    }
+
+    async findAllCount(search: string): Promise<Division[]> {
+        return this.divisionModel.find({ nameDivision: { $regex: search } }).exec();
     }
 
     async findAllnoSkip(): Promise<Division[]> {

@@ -48,11 +48,19 @@ export class DivisionController {
     @Get('/all')
     async findAll(
         @Query('skip') skip: number,
-        @Query('limit') limit: number) {
-        var data = await this.divisionService.findAll(skip, limit);
+        @Query('limit') limit: number,
+        @Query('search') search: string) {
+        if (search == undefined) {
+            search = "";
+        }
+        var data = await this.divisionService.findAll(search, skip, limit);
+        var totalRow = (await this.divisionService.findAllCount(search)).length;
         return {
             "response_code": 202,
+            "totalRow": totalRow,
             "data": data,
+            skip: skip, 
+            limit: limit,
             "messages": {
                 "info": [
                     "Get list division successfully"

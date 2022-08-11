@@ -71,7 +71,7 @@ export class GetuserprofilesController {
       skip = 0;
     }
     if (limit == undefined) {
-      limit = 10;
+      limit = 100;
     }
     var data = await this.getuserprofilesService.getUserHyppe(searchemail, search, Number(skip), Number(limit));
     var totalRow = (await this.getuserprofilesService.countUserHyppe(searchemail, search)).length;

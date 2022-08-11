@@ -46,11 +46,25 @@ export class ModuleController {
     @Get('/all')
     async findAll(
         @Query('skip') skip: number,
-        @Query('limit') limit: number) {
-        var data = await this.moduleService.findAll(skip, limit);
+        @Query('limit') limit: number,
+        @Query('search') search: string) {
+        if (search == undefined) {
+            search = "";
+        }
+        if (skip == undefined) {
+            skip = 0;
+        }
+        if (limit == undefined) {
+            limit = 100;
+        }
+        var data = await this.moduleService.findAll(search, skip, limit);
+        var totalRow = (await this.moduleService.findAllCount(search)).length;
         return {
-            "response_code": 202,
+            "response_code": 202, 
+            "totalRow": totalRow,
             "data": data,
+            skip: skip,
+            limit: limit,
             "messages": {
                 "info": [
                     "Get list module successfully"
