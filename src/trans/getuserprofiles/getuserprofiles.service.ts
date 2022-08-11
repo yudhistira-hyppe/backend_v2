@@ -372,6 +372,7 @@ export class GetuserprofilesService {
           profilePict_id: '$profilePict.$id',
           concat: '/profilepict',
           email: '$email',
+          status: '$isIdVerified',
         },
       },
       {
@@ -435,6 +436,7 @@ export class GetuserprofilesService {
           fullName: '$fullName',
           username: '$userAuth_data.username',
           email: '$email',
+          status: '$status',
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
@@ -458,7 +460,7 @@ export class GetuserprofilesService {
           fullName: '$fullName',
           group: '$group_userbasics.nameGroup',
           email: '$email',
-          status: '$isIdVerified',
+          status: '$status',
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
@@ -492,6 +494,7 @@ export class GetuserprofilesService {
           profilePict_id: '$profilePict.$id',
           concat: '/profilepict',
           email: '$email',
+          status: '$isIdVerified',
         },
       },
       {
@@ -536,8 +539,7 @@ export class GetuserprofilesService {
                       "then": [],
                       "else": "$userbasics"
                     }
-                  }
-  ],
+                  }],
                 },
               },
             },
@@ -564,6 +566,7 @@ export class GetuserprofilesService {
           fullName: '$fullName',
           username: '$userAuth_data.username',
           email: '$email',
+          status: '$status',
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
@@ -587,7 +590,7 @@ export class GetuserprofilesService {
           fullName: '$fullName',
           group: '$group_userbasics.nameGroup',
           email: '$email',
-          status: '$isIdVerified',
+          status: '$status',
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
