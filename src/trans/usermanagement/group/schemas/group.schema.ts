@@ -8,6 +8,10 @@ export class Group {
   _id: ObjectId;
   @Prop()
   userbasics: Array<ObjectId>
+  @Prop({ type: mongoose.Types.ObjectId })
+  divisionId: {
+      $oid: string
+  }
   @Prop()
   nameGroup: string
   @Prop()
@@ -17,5 +21,4 @@ export class Group {
   @Prop()
   desc: string
 }
-
 export const GroupSchema = SchemaFactory.createForClass(Group);

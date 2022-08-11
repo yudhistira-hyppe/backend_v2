@@ -5,7 +5,8 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Group } from './schemas/group.schema'; 
 import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
-import { UserbasicsService } from '../../../trans/userbasics/userbasics.service'; 
+import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
+import { DivisionService } from '../division/division.service';
 
 @Controller('/api/group')
 export class GroupController {
@@ -13,8 +14,9 @@ export class GroupController {
     constructor(
         private readonly groupService: GroupService,
         private readonly utilsService: UtilsService, 
-        private readonly errorHandler: ErrorHandler,
-        private readonly userbasicsService: UserbasicsService
+        private readonly errorHandler: ErrorHandler, 
+        private readonly userbasicsService: UserbasicsService,
+        private readonly divisionService: DivisionService
         ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -23,6 +25,7 @@ export class GroupController {
     async create(@Body() request) {
         var current_date = await this.utilsService.getDateTimeString();
         var data_group = null;
+        var data_division = null;
         var insert = false;
         var data_user_insert = [];
         var data_user_insert_email = [];
@@ -40,8 +43,22 @@ export class GroupController {
             }
         }
 
+        if (request.divisionId == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create group param divisionId is required',
+            );
+        } else {
+            data_division = await this.divisionService.findOne(request.divisionId);
+            if (!(await this.utilsService.ceckData(data_division))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Create group param divisionId is not found',
+                );
+            }
+        }
+
         var GroupDto_ = new GroupDto();
         GroupDto_.nameGroup = request.nameGroup;
+        GroupDto_.divisionId = Object(request.divisionId);
         if (request.userbasics != undefined) {
             if (request.userbasics.length > 0) {
                 for (var i = 0; i < request.userbasics.length; i++) {
@@ -115,6 +132,7 @@ export class GroupController {
     @Post('/update')
     async update(@Body() request) {
         var current_date = await this.utilsService.getDateTimeString();
+        var data_division = null;
         var data_user_insert = [];
         var data_user_insert_email = [];
         var data_user_not_insert = [];
@@ -131,8 +149,22 @@ export class GroupController {
             );
         }
 
+        if (request.divisionId == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create group param divisionId is required',
+            );
+        } else {
+            data_division = await this.divisionService.findOne(request.divisionId);
+            if (!(await this.utilsService.ceckData(data_division))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Create group param divisionId is not found',
+                );
+            }
+        }
+
         var GroupDto_ = new GroupDto();
         GroupDto_.nameGroup = request.nameGroup;
+        GroupDto_.divisionId = Object(request.divisionId);
         if (request.userbasics != undefined) {
             if (request.userbasics.length > 0) {
                 for (var i = 0; i < request.userbasics.length; i++) {

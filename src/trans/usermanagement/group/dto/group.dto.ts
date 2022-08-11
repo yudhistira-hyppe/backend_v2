@@ -4,6 +4,7 @@ export class GroupDto {
   readonly _id: ObjectId;
   nameGroup: String;
   userbasics: Array<ObjectId>;
+  divisionId: ObjectId;
   createAt: String;
   updateAt: String;
   desc: String;

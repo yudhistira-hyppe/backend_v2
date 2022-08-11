@@ -22,7 +22,36 @@ export class ModuleService {
     }
 
     async findAll(skip: number, limit:number): Promise<Module[]> {
-        return this.moduleModel.find().skip(skip).limit(limit).exec();
+        var GetModule = this.moduleModel.aggregate([
+            {
+                $project: {
+                    _id: 0,
+                    id: '$_id',
+                    name: '$nameModule',
+                    children: [
+                        {
+                            id: 1,
+                            name: 'createAcces',
+                        },
+                        {
+                            id: 2,
+                            name: 'updateAcces',
+                        },
+                        {
+                            id: 3,
+                            name: 'deleteAcces',
+                        },
+                        {
+                            id: 4,
+                            name: 'viewAcces',
+                        }
+                    ],
+                },
+            },
+        ])
+        .exec();
+        return GetModule;
+        //return this.moduleModel.find().skip(skip).limit(limit).exec();
     }
 
     async findOne(_id: string): Promise<Module> {

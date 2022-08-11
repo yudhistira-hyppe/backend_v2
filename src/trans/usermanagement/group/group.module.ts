@@ -7,9 +7,11 @@ import { ConfigModule } from '@nestjs/config';
 import { Group, GroupSchema } from './schemas/group.schema';
 import { UtilsModule } from '../../../utils/utils.module';
 import { UserbasicsModule } from '../../../trans/userbasics/userbasics.module';
+import { DivisionModule } from '../division/division.module';
 
 @Module({
     imports: [
+        DivisionModule,
         UserbasicsModule,
         UtilsModule,
         ConfigModule.forRoot(),
