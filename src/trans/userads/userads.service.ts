@@ -66,10 +66,26 @@ export class UserAdsService {
 
             var ads_array_interest = data_ads.interestID;
             var user_array_interest = element.userInterests; 
-            
+
+            var priority = "Lowest";
             var priority_interest = false;
             var priority_gender = false;
             var priority_location = false;
+            
+            const ads_array_interest_toString = ads_array_interest.map(function (item) { return '"' + JSON.parse(JSON.stringify(item)).$id + '"' }).join(",");
+            const ads_array_interest_string = JSON.parse("[" + ads_array_interest_toString + "]");
+
+            const user_array_interest_toString = user_array_interest.map(function (item) { return '"' + JSON.parse(JSON.stringify(item)).$id + '"' }).join(",");
+            const user_array_interest_string = JSON.parse("[" + user_array_interest_toString + "]");
+
+            const compare_interest = ads_array_interest_string.filter(function (obj) {
+                return user_array_interest_string.indexOf(obj) !== -1;
+            });
+            const Count_compare_interest = compare_interest.length;
+
+            if (Count_compare_interest>0){
+                priority_interest = true;
+            }
 
             if (data_ads.gender.toLowerCase() =="l"){
                 if (element.gender != undefined) {
@@ -86,67 +102,66 @@ export class UserAdsService {
             }
 
             if ((user_location_long != null) && (user_location_lat != null) && (ads_location_long != null) && (ads_location_lat != null)) {
-                var data_distance = await this.utilsService.ceckDistance(user_location_long, user_location_lat, ads_location_long, ads_location_lat);
-                console.log("data_distance "+data_distance);
-            }
-            
-
-
-
-
-
-            // var CreateUserAdsDto_ = new CreateUserAdsDto();
-
-            // CreateUserAdsDto_.adsID = new mongoose.Types.ObjectId(_CreateUserAdsDto_._id.toString());
-            // CreateUserAdsDto_.userID = new mongoose.Types.ObjectId(element._id.toString());
-            // if (_CreateUserAdsDto_.description!=undefined){
-            //     CreateUserAdsDto_.description = _CreateUserAdsDto_.description; 
-            // }
-            // CreateUserAdsDto_.createdAt = current_date; 
-            // CreateUserAdsDto_.statusClick = 'NO';
-            // CreateUserAdsDto_.statusView = 'NO'; 
-            // CreateUserAdsDto_.viewed = new Double(0);
-            // const createUserAdsDto = await this.userAdsModel.create(CreateUserAdsDto_);
-        });
-
-
-            
-            //CreateUserAdsDto_.createdAt = current_date;
-                //console.log(element.profileID)
-            // if (element.profileID == 'ef9007ed-732a-41e6-9708-542026257497') {
-
-            //     let intersection = user_array_interest.filter(element_ =>
-            //         !ads_array_interest.includes(element_)
-                    
-            //     );
-                // console.log(user_array_interest.diff(ads_array_interest));
-                // console.log(ads_array_interest);
-                // console.log(user_array_interest);
-                // console.log(intersection);
-                //}
-            // let result = ads_array_interest.every(function (element_) {
-            //     return user_array_interest.includes(element_);
-            // });
-            //var priority_interest = false;
-            // for (var i = 0; i < element.userInterests.length;i++){
-            //     var ads_array_interest = data_ads.interestID;
-            //     var user_array_interest = element.element;
-            //     const found = array_interest.find(element_ => { console.log("user " + JSON.stringify(element_)); console.log("ads " + JSON.stringify(data_ads.interestID[i])); element_ == data_ads.interestID[i] });
+                if (typeof user_location_long == 'string'){
+                    user_location_long = parseFloat(user_location_long);
+                }
+                if (typeof user_location_lat == 'string') {
+                    user_location_lat = parseFloat(user_location_lat);
+                }
+                if (typeof ads_location_long == 'string') {
+                    ads_location_long = parseFloat(ads_location_long);
+                }
+                if (typeof ads_location_lat == 'string') {
+                    ads_location_lat = parseFloat(ads_location_lat);
+                }
+                const a = { latitude: user_location_lat, longitude: user_location_long }
+                const b = { latitude: ads_location_lat, longitude: ads_location_long }
+                console.log(a)
+                console.log(b)
+                const haversine = require('haversine-distance')
+                var distance_m = haversine(a, b);
+                var distance_km = distance_m/1000;
                 
-            // }
-            // var CreateUserAdsDto_ = new CreateUserAdsDto();
+                var setting = await this.utilsService.getSetting('Distance');
+                if (distance_km <= setting){
+                    priority_location = true;
+                }
+            }
 
-            // CreateUserAdsDto_.adsID = new mongoose.Types.ObjectId(_CreateUserAdsDto_._id.toString());
-            // if (_CreateUserAdsDto_.description!=undefined){
-            //     CreateUserAdsDto_.description = _CreateUserAdsDto_.description; 
-            // }
-            // CreateUserAdsDto_.createdAt = current_date;
+            if (priority_interest && priority_gender && priority_location){
+                priority = "Highest";
+            }else{
+                if (priority_interest && priority_gender) {
+                    priority = "High";
+                }else{
+                    if (priority_interest && priority_location) {
+                        priority = "Medium";
+                    }else{
+                        if (priority_interest) {
+                            priority = "Low";
+                        }else{
+                            if (priority_gender) {
+                                priority = "Lowest";
+                            }
+                        }
+                    }
+                }
+            }
 
+            var CreateUserAdsDto_ = new CreateUserAdsDto();
 
-            // CreateUserAdsDto_.userID = new mongoose.Types.ObjectId(element._id.toString());
-            // const createUserAdsDto = await this.userAdsModel.create(CreateUserAdsDto_);
-        //});
-        //const createUserAdsDto = await this.userAdsModel.create(_CreateUserAdsDto_);
+            CreateUserAdsDto_.adsID = new mongoose.Types.ObjectId(_CreateUserAdsDto_._id.toString());
+            CreateUserAdsDto_.userID = new mongoose.Types.ObjectId(element._id.toString());
+            CreateUserAdsDto_.priority = priority;
+            if (_CreateUserAdsDto_.description!=undefined){
+                CreateUserAdsDto_.description = _CreateUserAdsDto_.description; 
+            }
+            CreateUserAdsDto_.createdAt = current_date; 
+            CreateUserAdsDto_.statusClick = 'NO';
+            CreateUserAdsDto_.statusView = 'NO'; 
+            CreateUserAdsDto_.viewed = new Double(0);
+            const createUserAdsDto = await this.userAdsModel.create(CreateUserAdsDto_);
+        });
         return _CreateUserAdsDto_;
     }
 }
