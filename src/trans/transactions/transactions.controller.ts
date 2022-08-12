@@ -181,10 +181,10 @@ export class TransactionsController {
             for (var i = 0; i < lenghtpostid; i++) {
                 var postIds = postid[i].id;
 
-                var objid = mongoose.Types.ObjectId(postIds);
+                //  var objid = mongoose.Types.ObjectId(postIds);
                 var qty = postid[i].qty;
                 var totalAmount = postid[i].totalAmount;
-                var arraydetailobj = { "id": objid, "qty": qty, "totalAmount": totalAmount };
+                var arraydetailobj = { "id": postIds, "qty": qty, "totalAmount": totalAmount };
                 arrayDetail.push(arraydetailobj);
             }
             postidTR = postid[0].id;
