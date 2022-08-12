@@ -13,6 +13,9 @@ import { JwtService } from '@nestjs/jwt';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+import { GroupService } from '../usermanagement/group/group.service';
+import { DivisionService } from '../usermanagement/division/division.service';
+
 @Controller('api/profile')
 export class ProfileController {
   constructor(
@@ -25,6 +28,8 @@ export class ProfileController {
     private insightsService: InsightsService,
     private languagesService: LanguagesService,
     private interestsService: InterestsService,
+    private groupService: GroupService, 
+    private divisionService: DivisionService,
   ) { }
 
 
@@ -105,14 +110,25 @@ export class ProfileController {
     } catch (e) {
       citi = "";
     }
-
-
-
-
     const languages = await this.languagesService.findOne(languages_json.$id);
     const interests = await this.interestsService.findOne(interest_json.$id);
+    var datagroup = {};
+    var datadivision = {};
 
-
+    var group = await this.groupService.findbyuser(datauserbasicsService._id.toString());
+    if (group.length>0){
+      datagroup = {
+          _id: group[0]._id,
+          nameGroup: group[0].nameGroup,
+        }
+      var division = await this.divisionService.findOne(group[0].divisionId.toString());
+      if (division.nameDivision !=undefined) {
+        datadivision = {
+          _id: division._id,
+          nameDivision: division.nameDivision,
+        }
+      }
+    }
 
     try {
 
@@ -153,6 +169,8 @@ export class ProfileController {
     const data = [{
       "createdAt": datauserbasicsService.createdAt,
       "areas": areas,
+      "group": datagroup,
+      "division": datadivision,
       "country": countri,
       "gender": datauserbasicsService.gender,
       "idProofNumber": datauserbasicsService.idProofNumber,

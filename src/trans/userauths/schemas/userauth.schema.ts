@@ -49,7 +49,7 @@ export class Userauth {
   isCredentialsNonExpired: boolean;
 
   @Prop()
-  roles: [];
+  roles: Array<String>;
 
   @Prop([{ type: Object }])
   devices: [
