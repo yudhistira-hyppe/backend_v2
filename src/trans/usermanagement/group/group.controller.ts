@@ -341,4 +341,5 @@ export class GroupController {
                 'Unabled to proceed user not found',
             );
         }
+    }
 }
