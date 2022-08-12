@@ -28,5 +28,43 @@ export class CreateAdsDto {
     urlLink: string;
     userVoucherID: any[];
     isActive: boolean;
+    type: string;
+    mediaAds: { oid: String; };
 
+
+}
+
+export class MediaimageadsDto {
+
+    // readonly _id: String;
+    active: boolean;
+    createdAt: string;
+    updatedAt: string;
+    fsSourceName: string;
+    fsSourceUri: string;
+    fsTargetUri: string;
+    mediaBasePath: string;
+    mediaMime: string;
+    mediaType: string;
+    mediaUri: string;
+    originalName: string;
+}
+
+export class MediavodeosadsDto {
+
+    // readonly _id: String;
+    active: boolean;
+    createdAt: string;
+    updatedAt: string;
+    fsSourceName: string;
+    fsSourceUri: string;
+    fsTargetThumbUri: string;
+    fsTargetUri: string;
+    mediaBasePath: string;
+    mediaMime: string;
+    mediaThumb: string;
+    mediaType: string;
+    mediaUri: string;
+    originalName: string;
+    rotate: number;
 }

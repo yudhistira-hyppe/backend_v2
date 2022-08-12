@@ -18,6 +18,7 @@ import { Types } from 'mongoose';
 import { GetusercontentsService } from '../getusercontents/getusercontents.service';
 import { UservouchersService } from '../uservouchers/uservouchers.service';
 import { VouchersService } from '../vouchers/vouchers.service';
+import { post } from 'jquery';
 @Controller()
 export class TransactionsController {
     constructor(private readonly transactionsService: TransactionsService,
@@ -54,6 +55,10 @@ export class TransactionsController {
         var bankcode = null;
         var paymentmethod = null;
         var type = null;
+        var detail = null;
+        var arrayPostId = [];
+        var postidTR = null;
+        var qty = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["postid"] !== undefined) {
             postid = request_json["postid"];
@@ -67,17 +72,8 @@ export class TransactionsController {
             throw new BadRequestException("Unabled to proceed");
         }
 
-        // if (request_json["salelike"] !== undefined) {
-        //     salelike = request_json["salelike"];
-        // } else {
-        //     throw new BadRequestException("Unabled to proceed");
-        // }
-
-        // if (request_json["saleview"] !== undefined) {
-        //     saleview = request_json["saleview"];
-        // } else {
-        //     throw new BadRequestException("Unabled to proceed");
-        // }
+        //var splitPostid = postid.split(',');
+        var lenghtpostid = postid.length;
 
         salelike = request_json["salelike"];
         saleview = request_json["saleview"];
@@ -99,11 +95,14 @@ export class TransactionsController {
             throw new BadRequestException("Unabled to proceed");
         }
 
+
+        detail = request_json["detail"];
         var token = auth;
         var reptoken = token.replace("Bearer ", "");
         var x = await this.parseJwt(reptoken);
         var datatrpending = null;
-
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
 
         var totalamount = 0;
         var email = x.email;
@@ -142,11 +141,13 @@ export class TransactionsController {
         var ubasicseller = null;
         var iduserseller = null;
         var namapenjual = null;
-
+        var arraypostids = [];
+        var arraymount = [];
+        var arrayDetail = [];
 
         if (type === "CONTENT") {
             try {
-                datapost = await this.postsService.findid(postid);
+                datapost = await this.postsService.findid(postid[0].id);
 
                 emailseller = datapost._doc.email;
                 ubasicseller = await this.userbasicsService.findOne(emailseller);
@@ -157,6 +158,37 @@ export class TransactionsController {
                 throw new BadRequestException("User not found..!");
             }
 
+            try {
+
+                dataconten = await this.getusercontentsService.findcontenbuy(postid[0].id);
+                saleAmount = dataconten[0].saleAmount;
+            } catch (e) {
+                dataconten = null;
+                saleAmount = 0;
+            }
+
+            try {
+
+                datatrpending = await this.transactionsService.findpostidpending(postid[0].id);
+                console.log(datatrpending);
+
+            } catch (e) {
+                datatrpending = null;
+
+            }
+
+
+            for (var i = 0; i < lenghtpostid; i++) {
+                var postIds = postid[i].id;
+
+                var objid = mongoose.Types.ObjectId(postIds);
+                var qty = postid[i].qty;
+                var totalAmount = postid[i].totalAmount;
+                var arraydetailobj = { "id": objid, "qty": qty, "totalAmount": totalAmount };
+                arrayDetail.push(arraydetailobj);
+            }
+            postidTR = postid[0].id;
+            arraypostids.push(postid[0].id);
 
         }
         else if (type === "VOUCHER") {
@@ -172,29 +204,51 @@ export class TransactionsController {
             } catch (e) {
                 throw new BadRequestException("User not found..!");
             }
-
-        }
-
-        if (type === "CONTENT") {
             try {
-                dataconten = await this.getusercontentsService.findcontenbuy(postid);
-                saleAmount = dataconten[0].saleAmount;
+
+                datatrpending = await this.transactionsService.findpostidpendingVoucer(postid);
+                console.log(datatrpending);
+
+
+            } catch (e) {
+                datatrpending = null;
+
+            }
+
+            try {
+
+                var sum = 0;
+                for (var i = 0; i < lenghtpostid; i++) {
+                    var postIds = postid[i].id;
+
+                    var objid = mongoose.Types.ObjectId(postIds);
+                    var qty = postid[i].qty;
+                    var totalAmount = postid[i].totalAmount;
+                    dataconten = await this.vouchersService.findOne(postIds);
+                    var amountobj = dataconten.amount * qty;
+                    arraymount.push(amountobj);
+                    arraypostids.push(postIds);
+
+                    var arraydetailobj = { "id": objid, "qty": qty, "totalAmount": totalAmount };
+                    arrayDetail.push(arraydetailobj);
+                }
+
+                for (var i = 0; i < arraymount.length; i++) {
+                    sum += arraymount[i];
+                }
+
+                saleAmount = sum;
             } catch (e) {
                 dataconten = null;
                 saleAmount = 0;
             }
-        } else if (type === "VOUCHER") {
-            try {
-                dataconten = await this.vouchersService.findOne(postid);
-                saleAmount = dataconten.amount;
-            } catch (e) {
-                dataconten = null;
-                saleAmount = 0;
-            }
+
+            postidTR = arraypostids.toString();
+
         }
 
-        const mongoose = require('mongoose');
-        var ObjectId = require('mongodb').ObjectId;
+
+
         var idppn = "62bbbe43a7520000050077a3";
         //  var idmdradmin = "62bd413ff37a00001a004369";
         var idbankvacharge = "62bd40e0f37a00001a004366";
@@ -224,14 +278,6 @@ export class TransactionsController {
         }
 
 
-        try {
-            datatrpending = await this.transactionsService.findpostidpending(postid);
-
-
-        } catch (e) {
-            datatrpending = null;
-
-        }
 
 
         var idmethode = null;
@@ -356,12 +402,14 @@ export class TransactionsController {
                         CreateTransactionsDto.description = "buy " + type + " pending";
                         CreateTransactionsDto.payload = null;
                         CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                        CreateTransactionsDto.detail = arrayDetail;
+                        CreateTransactionsDto.postid = postidTR;
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
                         await this.transactionsService.updatestatuscancel(idtransaction);
                         var data = {
                             "noinvoice": datatr.noinvoice,
-                            "postid": datatr.postid,
+                            "postid": postidTR,
                             "idusersell": datatr.idusersell,
                             "NamaPenjual": namapenjual,
                             "iduserbuyer": datatr.iduserbuyer,
@@ -381,6 +429,7 @@ export class TransactionsController {
                             "bankvacharge": valuevacharge,
                             // "mdradmin": valuemradmin + " %",
                             // "nominalmdradmin": nominalmradmin,
+                            "detail": arrayDetail,
                             "totalamount": datatr.totalamount,
                             "accountbalance": datatr.accountbalance,
                             "timestamp": datatr.timestamp,
@@ -468,11 +517,13 @@ export class TransactionsController {
                     CreateTransactionsDto.description = "buy " + type + " pending";
                     CreateTransactionsDto.payload = null;
                     CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                    CreateTransactionsDto.detail = arrayDetail;
+                    CreateTransactionsDto.postid = postidTR;
                     let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
                     var data = {
                         "noinvoice": datatr.noinvoice,
-                        "postid": datatr.postid,
+                        "postid": postidTR,
                         "idusersell": datatr.idusersell,
                         "NamaPenjual": namapenjual,
                         "iduserbuyer": datatr.iduserbuyer,
@@ -492,6 +543,7 @@ export class TransactionsController {
                         "bankvacharge": valuevacharge,
                         // "mdradmin": valuemradmin + " %",
                         // "nominalmdradmin": nominalmradmin,
+                        "detail": arrayDetail,
                         "totalamount": datatr.totalamount,
                         "accountbalance": datatr.accountbalance,
                         "timestamp": datatr.timestamp,
@@ -567,6 +619,7 @@ export class TransactionsController {
                 var amount = datatransaksi.amount;
                 var tamount = datatransaksi.totalamount;
                 var status = datatransaksi.status;
+                var detail = datatransaksi.detail;
 
                 try {
                     salelike = datatransaksi.salelike;
@@ -575,6 +628,9 @@ export class TransactionsController {
                     salelike = null;
                     saleview = null;
                 }
+
+
+                var lengtvoucherid = detail.length;
 
 
 
@@ -655,20 +711,28 @@ export class TransactionsController {
                     var totalCredit = null;
                     var usedCredit = 0;
                     var totalUsed = 0;
-                    try {
-                        datavoucher = await this.vouchersService.findOne(postid);
-                        saleAmountVoucher = datavoucher.amount;
-                        voucherID = datavoucher._id;
-                        totalCredit = datavoucher.creditTotal;
-                        totalUsed = datavoucher.totalUsed;
+                    var postIds = "";
+                    var qty = null;
+                    var totalPrice = null;
+                    var arraymount = [];
 
-                    } catch (e) {
-                        datavoucher = null;
-                        saleAmountVoucher = 0;
-                        voucherID = null;
-                        totalCredit = 0;
-                        totalUsed = 0;
+                    var sum = 0;
+                    for (var i = 0; i < lengtvoucherid; i++) {
+                        postIds = detail[i].id.toString();
+                        qty = detail[i].qty;
+                        totalPrice = detail[i].totalAmount;
+
+                        datavoucher = await this.vouchersService.findOne(postIds);
+                        var amountobj = datavoucher.amount * qty;
+                        arraymount.push(amountobj);
+
                     }
+
+                    for (var i = 0; i < arraymount.length; i++) {
+                        sum += arraymount[i];
+                    }
+
+                    saleAmountVoucher = sum;
 
                     var dt = new Date(Date.now());
                     dt.setHours(dt.getHours() + 7); // timestamp
@@ -682,7 +746,10 @@ export class TransactionsController {
                     } catch (e) {
                         nominalmradmin = 0;
                     }
+
                     var amontVA = tamount - (saleAmountVoucher + nominalmradmin);
+
+
 
                     if (status == "WAITING_PAYMENT") {
                         var ubasic = await this.userbasicsService.findid(iduserbuy);
@@ -696,17 +763,28 @@ export class TransactionsController {
 
                         var idbalance = databalance._id;
                         await this.transactionsService.updateoneVoucher(idtransaction, idbalance, payload);
-                        let datauservoucher = new Uservoucher();
-                        datauservoucher.userID = iduserbuy;
-                        datauservoucher.createdAt = dt.toISOString();
-                        datauservoucher.updatedAt = dt.toISOString();
-                        datauservoucher.isActive = true;
-                        datauservoucher.usedCredit = usedCredit;
-                        datauservoucher.voucherID = voucherID;
-                        datauservoucher.voucherCredit = totalCredit;
-                        datauservoucher.totalCredit = totalCredit - usedCredit;
-                        await this.uservouchersService.create(datauservoucher);
-                        await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + 1));
+
+                        for (var i = 0; i < lengtvoucherid; i++) {
+                            var postvcid = detail[i].id.toString();
+                            var jml = detail[i].qty;
+                            var tprice = detail[i].totalAmount;
+                            datavoucher = await this.vouchersService.findOne(postvcid);
+
+                            voucherID = datavoucher._id;
+                            totalCredit = datavoucher.creditTotal * jml;
+                            let datauservoucher = new Uservoucher();
+                            datauservoucher.userID = iduserbuy;
+                            datauservoucher.createdAt = dt.toISOString();
+                            datauservoucher.updatedAt = dt.toISOString();
+                            datauservoucher.isActive = true;
+                            datauservoucher.usedCredit = usedCredit;
+                            datauservoucher.voucherID = voucherID;
+                            datauservoucher.voucherCredit = totalCredit;
+                            datauservoucher.totalCredit = totalCredit - usedCredit;
+                            await this.uservouchersService.create(datauservoucher);
+                            await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + 1));
+                        }
+
 
                         res.status(HttpStatus.OK).json({
                             response_code: 202,
@@ -2192,22 +2270,22 @@ export class TransactionsController {
         await this.accountbalancesService.createdata(dataacountbalance);
     }
 
-    async accontbalanceVoucher(postid: string, idusersell: { oid: string }, amount: number) {
+    async accontbalanceVoucher(postid: any[], idusersell: { oid: string }, amount: number) {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
         var datapost = null;
-        var desccontent = "";
-        try {
-            datapost = await this.vouchersService.findOne(postid);
+        var desccontent = postid;
+        // try {
+        //     datapost = await this.vouchersService.findOne(postid);
 
-            desccontent = datapost._doc.nameAds;
+        //     desccontent = datapost._doc.nameAds;
 
 
-        } catch (e) {
-            datapost = null;
-            desccontent = "";
-        }
+        // } catch (e) {
+        //     datapost = null;
+        //     desccontent = "";
+        // }
         var dataacountbalance = {
             iduser: idusersell,
             debet: 0,

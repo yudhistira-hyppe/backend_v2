@@ -24,6 +24,7 @@ export class CreateTransactionsDto {
     payload: VaCallback;
     idva: string;
     type: string;
+    detail: any[];
 
 }
 export class Uservoucher {

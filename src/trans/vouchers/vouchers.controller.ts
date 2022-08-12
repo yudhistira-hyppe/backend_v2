@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, HttpStatus, Put, Headers } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, HttpStatus, Put, Headers, Req, BadRequestException } from '@nestjs/common';
 import { VouchersService } from './vouchers.service';
 import { CreateVouchersDto } from './dto/create-vouchers.dto';
 import { Vouchers } from './schemas/vouchers.schema';
@@ -83,6 +83,49 @@ export class VouchersController {
     @Get()
     async findAll(): Promise<Vouchers[]> {
         return this.vouchersService.findAll();
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('listactive')
+    async findNonExpired(@Req() request: Request): Promise<any> {
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var expiredAt = "";
+        if (request_json["expiredAt"] !== undefined) {
+            expiredAt = request_json["expiredAt"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        return this.vouchersService.findExpirednactive(expiredAt);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('detail')
+    async finddetail(@Req() request: Request): Promise<any> {
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var idvoucher = null;
+        if (request_json["idvoucher"] !== undefined) {
+            idvoucher = request_json["idvoucher"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var arrayId = [];
+        var objid = {};
+        for (var i = 0; i < idvoucher.length; i++) {
+            var idv = idvoucher[i];
+            var idvocer = mongoose.Types.ObjectId(idv);
+
+            arrayId.push(idvocer);
+
+
+        }
+        let data = this.vouchersService.finddetailbuy(arrayId);
+
+        console.log(data);
+        return data;
     }
     @UseGuards(JwtAuthGuard)
     @Get(':id')
