@@ -21,8 +21,78 @@ export class ModuleService {
         return data;
     }
 
-    async findAll(skip: number, limit:number): Promise<Module[]> {
-        return this.moduleModel.find().skip(skip).limit(limit).exec();
+    async findAll(search:string, skip: number, limit:number): Promise<Module[]> {
+        var GetModule = this.moduleModel.aggregate([
+            {
+                "$match": {
+                    $and: [{ "nameModule": { $regex: search } }]
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    id: '$_id',
+                    name: '$nameModule',
+                    children: [
+                        {
+                            id: 1,
+                            name: 'createAcces',
+                        },
+                        {
+                            id: 2,
+                            name: 'updateAcces',
+                        },
+                        {
+                            id: 3,
+                            name: 'deleteAcces',
+                        },
+                        {
+                            id: 4,
+                            name: 'viewAcces',
+                        }
+                    ],
+                },
+            },
+        ]).skip(skip).limit(limit);
+        return GetModule;
+        //return this.moduleModel.find().skip(skip).limit(limit).exec();
+    }
+
+    async findAllCount(search: string): Promise<Module[]> {
+        var GetModule = this.moduleModel.aggregate([
+            {
+                "$match": {
+                    $and: [{ "nameModule": { $regex: search } }]
+                }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    id: '$_id',
+                    name: '$nameModule',
+                    children: [
+                        {
+                            id: 1,
+                            name: 'createAcces',
+                        },
+                        {
+                            id: 2,
+                            name: 'updateAcces',
+                        },
+                        {
+                            id: 3,
+                            name: 'deleteAcces',
+                        },
+                        {
+                            id: 4,
+                            name: 'viewAcces',
+                        }
+                    ],
+                },
+            },
+        ]).exec();
+        return GetModule;
+        //return this.moduleModel.find().skip(skip).limit(limit).exec();
     }
 
     async findOne(_id: string): Promise<Module> {

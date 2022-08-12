@@ -362,7 +362,7 @@ export class GetuserprofilesService {
     return query;
   }
 
-  async getUserHyppe(search: string, skip: number, limit: number) {
+  async getUserHyppe(searchemail: string, search: string, skip: number, limit: number) {
     const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
 
     const query = await this.getuserprofilesModel.aggregate([
@@ -372,10 +372,9 @@ export class GetuserprofilesService {
           profilePict_id: '$profilePict.$id',
           concat: '/profilepict',
           email: '$email',
-
+          isIdVerified: '$isIdVerified',
         },
       },
-
       {
         $lookup: {
           from: 'mediaprofilepicts2',
@@ -393,6 +392,31 @@ export class GetuserprofilesService {
         },
       },
       {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+      {
+        $lookup:
+        {
+          from: "group",
+          let: { userName: { $toString: '$_id' } },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $in: ["$$userName", "$userbasics"],
+                },
+              },
+            },
+          ],
+          as: 'group_userbasics',
+        }
+      },
+      {
         "$unwind": {
           "path": "$userAuth_data",
           "preserveNullAndEmptyArrays": false
@@ -401,20 +425,18 @@ export class GetuserprofilesService {
 
       {
         "$match": {
-          "userAuth_data.username": {
-            $regex: search
-          },
-          "userAuth_data.email": /@hyppe.id/i
+          $and: [{ "userAuth_data.username": { $regex: search } }, { "userAuth_data.email": { $regex: searchemail } }, { "userAuth_data.email": /@hyppe.id/i }]
         }
       },
       {
         $project: {
-
+          group_userbasics: { $arrayElemAt: ['$group_userbasics', 0] },
           profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
           idUserAuth: "$userAuth_data._id",
           fullName: '$fullName',
           username: '$userAuth_data.username',
           email: '$email',
+          isIdVerified: '$isIdVerified',
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
@@ -427,7 +449,6 @@ export class GetuserprofilesService {
       },
       {
         $addFields: {
-
           concat: '/profilepict',
           pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
         },
@@ -437,7 +458,9 @@ export class GetuserprofilesService {
           idUserAuth: '$idUserAuth',
           username: '$username',
           fullName: '$fullName',
+          group: '$group_userbasics.nameGroup',
           email: '$email',
+          status: '$isIdVerified',
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
@@ -447,9 +470,138 @@ export class GetuserprofilesService {
           },
         },
       },
-
+      // {
+      //   $facet: {
+      //     paginatedResults: [{ $skip: skip }, { $limit: skip }],
+      //     totalCount: [
+      //       {
+      //         $count: 'count'
+      //       }
+      //     ]
+      //   }
+      // },
       { $sort: { fullName: 1 }, }
     ]).skip(skip).limit(limit);
+    return query;
+  }
+
+  async countUserHyppe(searchemail: string, search: string) {
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+    const query = await this.getuserprofilesModel.aggregate([
+      {
+        $addFields: {
+          userAuth_id: '$userAuth.$id',
+          profilePict_id: '$profilePict.$id',
+          concat: '/profilepict',
+          email: '$email',
+          status: '$isIdVerified',
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts2',
+          localField: 'profilePict_id',
+          foreignField: '_id',
+          as: 'profilePict_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+      {
+        $lookup:
+        {
+          
+          from: "group",
+          let: { userName: { $toString: '$_id' } },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $in: ["$$userName", {
+                    "$cond": {
+                      "if": {
+                        "$ne": [{ "$type": "$userbasics" }, "array"]
+                      },
+                      "then": [],
+                      "else": "$userbasics"
+                    }
+                  }],
+                },
+              },
+            },
+          ],
+          as: 'group_userbasics',
+        }
+      },
+      {
+        "$unwind": {
+          "path": "$userAuth_data",
+          "preserveNullAndEmptyArrays": false
+        }
+      },
+      {
+        "$match": {
+          $and: [{ "userAuth_data.username": { $regex: search } }, { "userAuth_data.email": { $regex: searchemail } }, { "userAuth_data.email": /@hyppe.id/i }]
+        }
+      },
+      {
+        $project: {
+          group_userbasics: { $arrayElemAt: ['$group_userbasics', 0] },
+          profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+          idUserAuth: "$userAuth_data._id",
+          fullName: '$fullName',
+          username: '$userAuth_data.username',
+          email: '$email',
+          status: '$status',
+          avatar: {
+            mediaBasePath: '$profilpict.mediaBasePath',
+            mediaUri: '$profilpict.mediaUri',
+            mediaType: '$profilpict.mediaType',
+            mediaEndpoint: '$profilpict.fsTargetUri',
+            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+          },
+        },
+      },
+      {
+        $addFields: {
+          concat: '/profilepict',
+          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+        },
+      },
+      {
+        $project: {
+          idUserAuth: '$idUserAuth',
+          username: '$username',
+          fullName: '$fullName',
+          group: '$group_userbasics.nameGroup',
+          email: '$email',
+          status: '$status',
+          avatar: {
+            mediaBasePath: '$profilpict.mediaBasePath',
+            mediaUri: '$profilpict.mediaUri',
+            mediaType: '$profilpict.mediaType',
+            mediaEndpoint: { $concat: ["$concat", "/", "$pict"] },
+
+          },
+        },
+      },
+      { $sort: { fullName: 1 }, },
+    ]);
     return query;
   }
 

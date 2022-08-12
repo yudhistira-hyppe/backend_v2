@@ -1,10 +1,8 @@
 import { ObjectId } from "mongoose";
 
-export class GroupDto {
+export class DivisionDto {
   readonly _id: ObjectId;
-  nameGroup: String;
-  userbasics: Array<ObjectId>;
-  divisionId: ObjectId;
+  nameDivision: String;
   createAt: String;
   updateAt: String;
   desc: String;

@@ -5,7 +5,9 @@ import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { Group } from './schemas/group.schema'; 
 import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
-import { UserbasicsService } from '../../../trans/userbasics/userbasics.service'; 
+import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
+import { DivisionService } from '../division/division.service';
+import { UserauthsService } from 'src/trans/userauths/userauths.service';
 
 @Controller('/api/group')
 export class GroupController {
@@ -13,8 +15,10 @@ export class GroupController {
     constructor(
         private readonly groupService: GroupService,
         private readonly utilsService: UtilsService, 
-        private readonly errorHandler: ErrorHandler,
-        private readonly userbasicsService: UserbasicsService
+        private readonly errorHandler: ErrorHandler, 
+        private readonly userbasicsService: UserbasicsService,
+        private readonly divisionService: DivisionService, 
+        private readonly userauthsService: UserauthsService,
         ) { }
 
     @UseGuards(JwtAuthGuard)
@@ -23,6 +27,7 @@ export class GroupController {
     async create(@Body() request) {
         var current_date = await this.utilsService.getDateTimeString();
         var data_group = null;
+        var data_division = null;
         var insert = false;
         var data_user_insert = [];
         var data_user_insert_email = [];
@@ -40,8 +45,22 @@ export class GroupController {
             }
         }
 
+        if (request.divisionId == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create group param divisionId is required',
+            );
+        } else {
+            data_division = await this.divisionService.findOne(request.divisionId);
+            if (!(await this.utilsService.ceckData(data_division))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Create group param divisionId is not found',
+                );
+            }
+        }
+
         var GroupDto_ = new GroupDto();
         GroupDto_.nameGroup = request.nameGroup;
+        GroupDto_.divisionId = Object(request.divisionId);
         if (request.userbasics != undefined) {
             if (request.userbasics.length > 0) {
                 for (var i = 0; i < request.userbasics.length; i++) {
@@ -97,11 +116,19 @@ export class GroupController {
     @Get('/all')
     async findAll(
         @Query('skip') skip: number,
-        @Query('limit') limit: number) {
-        var data = await this.groupService.findAll(skip, limit);
+        @Query('limit') limit: number,
+        @Query('search') search: string) {
+        if (search == undefined) {
+            search = "";
+        } 
+        var data = await this.groupService.findAll(search, skip, limit);
+        var totalRow = (await this.groupService.findAllCount(search)).length;
         return {
             "response_code": 202,
+            "totalRow": totalRow,
             "data": data,
+            skip: skip,
+            limit: limit,
             "messages": {
                 "info": [
                     "Get list group user successfully"
@@ -115,6 +142,7 @@ export class GroupController {
     @Post('/update')
     async update(@Body() request) {
         var current_date = await this.utilsService.getDateTimeString();
+        var data_division = null;
         var data_user_insert = [];
         var data_user_insert_email = [];
         var data_user_not_insert = [];
@@ -131,8 +159,22 @@ export class GroupController {
             );
         }
 
+        if (request.divisionId == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create group param divisionId is required',
+            );
+        } else {
+            data_division = await this.divisionService.findOne(request.divisionId);
+            if (!(await this.utilsService.ceckData(data_division))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Create group param divisionId is not found',
+                );
+            }
+        }
+
         var GroupDto_ = new GroupDto();
         GroupDto_.nameGroup = request.nameGroup;
+        GroupDto_.divisionId = Object(request.divisionId);
         if (request.userbasics != undefined) {
             if (request.userbasics.length > 0) {
                 for (var i = 0; i < request.userbasics.length; i++) {
@@ -192,5 +234,112 @@ export class GroupController {
                 ]
             },
         };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Post('/user')
+    async addusergroup(@Body() request) {
+        if (request.email == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Add user to group param email is required',
+            );
+        }
+        if (request.groupId == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Add user to group param groupId is required',
+            );
+        }
+
+        var data_userbasic = await this.userbasicsService.findOne(request.email);
+        if (await this.utilsService.ceckData(data_userbasic)) {
+            var group = await this.groupService.findbyuser(data_userbasic._id.toString());
+            var user_auth = await this.userauthsService.findOneemail(request.email);
+            if (await this.utilsService.ceckData(user_auth)) {
+                if (await this.utilsService.ceckData(group)) {
+                    if (group[0]._id != request.groupId) {
+                        await this.groupService.deleteUserGroup(group[0]._id, data_userbasic._id.toString());
+                        await this.groupService.addUserGroup(request.groupId, data_userbasic._id.toString());
+
+                        var user_auth_role = await this.userauthsService.findRoleEmail(request.email, "ROLE_ADMIN");
+                        if (!(await this.utilsService.ceckData(user_auth_role))) {
+                            await this.userauthsService.addUserRole(request.email, "ROLE_ADMIN");
+                        }
+                    } else {
+                        var user_auth_role = await this.userauthsService.findRoleEmail(request.email, "ROLE_ADMIN");
+                        if (!(await this.utilsService.ceckData(user_auth_role))) {
+                            await this.userauthsService.addUserRole(request.email, "ROLE_ADMIN");
+                        }
+                    }
+                } else {
+                    await this.groupService.addUserGroup(request.groupId, data_userbasic._id.toString());
+
+                    var user_auth_role = await this.userauthsService.findRoleEmail(request.email, "ROLE_ADMIN");
+                    if (!(await this.utilsService.ceckData(user_auth_role))) {
+                        await this.userauthsService.addUserRole(request.email, "ROLE_ADMIN");
+                    }
+                }
+                return {
+                    "response_code": 202,
+                    "messages": {
+                        "info": [
+                            "Update user to group successfully"
+                        ]
+                    },
+                };
+            } else {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed userauth not found',
+                ); 
+            }
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed user not found',
+            );
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Delete('/user')
+    async deleteusergroup(
+        @Query('email') email: string,) {
+        if (email == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Add user to group param email is required',
+            );
+        }
+
+        var data_userbasic = await this.userbasicsService.findOne(email);
+        if (await this.utilsService.ceckData(data_userbasic)) {
+            var group = await this.groupService.findbyuser(data_userbasic._id.toString());
+            var user_auth = await this.userauthsService.findOneemail(email);
+            if (await this.utilsService.ceckData(user_auth)) {
+                if (await this.utilsService.ceckData(group)) {
+                    await this.groupService.deleteUserGroup(group[0]._id, data_userbasic._id.toString());
+                }
+
+                var user_auth_role = await this.userauthsService.findRoleEmail(email, "ROLE_ADMIN");
+                if (await this.utilsService.ceckData(user_auth_role)) {
+                    await this.userauthsService.deleteUserRole(email, "ROLE_ADMIN");
+                }
+                return {
+                    "response_code": 202,
+                    "messages": {
+                        "info": [
+                            "Delete user to group successfully"
+                        ]
+                    },
+                };
+            } else {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed userauth not found',
+                );
+            }
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed user not found',
+            );
+        }
     }
 }

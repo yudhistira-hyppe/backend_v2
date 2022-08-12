@@ -20,8 +20,12 @@ export class GroupService {
         return data;
     }
 
-    async findAll(skip: number, limit: number): Promise<Group[]> {
-        return this.groupModel.find().skip(skip).limit(limit).exec();
+    async findAll(search:string, skip: number, limit: number): Promise<Group[]> {
+        return this.groupModel.find({ nameGroup: { $regex: search }}).skip(skip).limit(limit).exec();
+    }
+
+    async findAllCount(search: string): Promise<Group[]> {
+        return this.groupModel.find({ nameGroup: { $regex: search } }).exec();
     }
 
     async findAllnoSkip(): Promise<Group[]> {
@@ -42,6 +46,14 @@ export class GroupService {
 
     async delete(_id: String) {
         return await this.groupModel.findByIdAndRemove({ _id: _id }).exec();
+    }
+
+    async deleteUserGroup(_id: String, userId: String) {
+        return await this.groupModel.updateOne({ _id: _id }, { $pull: { userbasics: Object(userId) } }).exec();
+    }
+
+    async addUserGroup(_id: String, userId: String) {
+        return await this.groupModel.updateOne({ _id: _id }, { $push: { userbasics: Object(userId) } }).exec();
     }
 
     async findbyuser(_id: String) {

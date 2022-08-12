@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Double } from 'mongodb';
 import mongoose, { Document } from 'mongoose';
 
 export type UserauthDocument = Userauth & Document ;
@@ -48,7 +49,7 @@ export class Userauth {
   isCredentialsNonExpired: boolean;
 
   @Prop()
-  roles: [];
+  roles: Array<String>;
 
   @Prop([{ type: Object }])
   devices: [
@@ -72,6 +73,12 @@ export class Userauth {
 
   @Prop()
   otpToken: String;
+
+  @Prop({ type: Object })
+  location: {
+      latitude: Double;
+      longitude: Double;
+  };
 }
 
 export const UserauthSchema = SchemaFactory.createForClass(Userauth);

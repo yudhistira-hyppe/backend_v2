@@ -1,3 +1,5 @@
+import { Double } from "mongodb";
+
 export class CreateAreasDto {
   
 
@@ -7,5 +9,9 @@ export class CreateAreasDto {
     readonly  stateID: String;
     readonly  createdAt: String;
     readonly  updatedAt: String;
-    readonly _class:String;
+  readonly _class: String;
+  location: {
+    latitude: Double;
+    longtitude: Double;
+  }
   }

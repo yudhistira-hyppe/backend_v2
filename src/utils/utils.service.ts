@@ -23,6 +23,7 @@ import { CreateInsightsDto } from '../content/insights/dto/create-insights.dto';
 import { SettingsService } from '../trans/settings/settings.service';
 import { SeaweedfsService } from '../stream/seaweedfs/seaweedfs.service';
 import * as fs from 'fs';
+import { double } from 'aws-sdk/clients/lightsail';
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -74,6 +75,34 @@ export class UtilsService {
         //console.log(err);
       });
     return sendEmail_;
+  }
+
+  async ceckDistance(
+    lat1: double,
+    lon1: double,
+    lat2: double,
+    lon2: double, 
+    unit: string
+  ): Promise<any> {
+    // 
+    var radlat1 = Math.PI * lat1 / 180;
+    var radlat2 = Math.PI * lat2 / 180;
+    var theta = lon1 - lon2;
+    var radtheta = Math.PI * theta / 180;
+    var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    if (dist > 1) {
+      dist = 1;
+    }
+    dist = Math.acos(dist);
+    dist = dist * 180 / Math.PI;
+    dist = dist * 60 * 1.1515;
+    if (unit == "K") { dist = dist * 1.609344 }
+    if (unit == "N") { dist = dist * 0.8684 }
+    return dist;
+  }
+
+  async toRad(Value) {
+    return Value * Math.PI / 180;
   }
 
   async sendFcm(fcmtoken:string,payload:any){
