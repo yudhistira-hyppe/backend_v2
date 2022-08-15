@@ -1,5 +1,7 @@
 import { CreateInsightsDto } from "src/content/insights/dto/create-insights.dto";
 import { CreateReferralDto } from "src/trans/referral/dto/create-referral.dto";
+import { DivisionDto } from "src/trans/usermanagement/division/dto/division.dto";
+import { GroupDto } from "src/trans/usermanagement/group/dto/group.dto";
 
 export class ProfileDTO {
     profileID: String;
@@ -28,7 +30,9 @@ export class ProfileDTO {
     isFollowPrivate: String;
     isPostPrivate: String;
     isComplete: String;
-    isEmailVerified: String;
+    group: Object;
+    division: Object; 
+    isEmailVerified: String; 
     otp: String;
     otpToken: String;
     event: String;

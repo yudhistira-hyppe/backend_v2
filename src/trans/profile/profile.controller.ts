@@ -15,6 +15,8 @@ import { Request } from 'express';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { GroupService } from '../usermanagement/group/group.service';
 import { DivisionService } from '../usermanagement/division/division.service';
+import { ProfileDTO } from '../../utils/data/Profile';
+import { UtilsService } from '../../utils/utils.service';
 
 @Controller('api/profile')
 export class ProfileController {
@@ -29,7 +31,8 @@ export class ProfileController {
     private languagesService: LanguagesService,
     private interestsService: InterestsService,
     private groupService: GroupService, 
-    private divisionService: DivisionService,
+    private divisionService: DivisionService, 
+    private utilsService: UtilsService,
   ) { }
 
 
@@ -37,6 +40,8 @@ export class ProfileController {
   //@FormDataRequest()
   @UseGuards(JwtAuthGuard)
   async profileuser(@Req() request: Request): Promise<any> {
+
+
     var request_json = JSON.parse(JSON.stringify(request.body));
 
     var emails = null;
@@ -54,64 +59,15 @@ export class ProfileController {
     var insights_json = null;
     var insights_res = null;
 
+    var datauserbasicsService = null;
+    var ProfileDTO_ = new ProfileDTO();
     if (request_json["email"] !== undefined) {
       emails = request_json["email"];
+      datauserbasicsService = await this.userbasicsService.findOne(emails);
+      ProfileDTO_ = await this.utilsService.generateProfile(emails, 'LOGIN');
     } else {
       throw new BadRequestException("Unabled to proceed");
     }
-
-
-    const datauserauthsService = await this.userauthsService.findOne(emails);
-    const datauserbasicsService = await this.userbasicsService.findOne(emails);
-
-
-    var languages_json = JSON.parse(JSON.stringify(datauserbasicsService.languages));
-
-    var interest_json = JSON.parse(JSON.stringify(datauserbasicsService.userInterests));
-    try {
-      insights_json = JSON.parse(JSON.stringify(datauserbasicsService.insight));
-      var insights = await this.insightsService.findOne(insights_json.$id);
-      insights_res = {
-        shares: insights.shares,
-        followers: insights.followers,
-        comments: insights.comments,
-        followings: insights.followings,
-        reactions: insights.reactions,
-        posts: insights.posts,
-        views: insights.views,
-        likes: insights.likes
-      };
-    } catch (e) {
-      insights_res = {
-        shares: 0,
-        followers: 0,
-        comments: 0,
-        followings: 0,
-        reactions: 0,
-        posts: 0,
-        views: 0,
-        likes: 0
-      };
-    }
-    try {
-      countries_json = JSON.parse(JSON.stringify(datauserbasicsService.countries));
-      countries = await this.countriesService.findOne(countries_json.$id);
-      areas = await this.areasService.findOne(countries.countryID);
-      countri = countries.country;
-    } catch (e) {
-      countri = "";
-      areas = "";
-    }
-
-    try {
-      cities_json = JSON.parse(JSON.stringify(datauserbasicsService.cities));
-      cities = await this.citiesService.findOne(cities_json.$id);
-      citi = cities.cityName;
-    } catch (e) {
-      citi = "";
-    }
-    const languages = await this.languagesService.findOne(languages_json.$id);
-    const interests = await this.interestsService.findOne(interest_json.$id);
     var datagroup = {};
     var datadivision = {};
 
@@ -129,70 +85,149 @@ export class ProfileController {
         }
       }
     }
+    ProfileDTO_.group = datagroup;
+    ProfileDTO_.division = datadivision;
 
-    try {
-
-      mediaprofilepicts_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
-      mediaprofilepicts = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
-      var mediaUri = mediaprofilepicts.mediaUri;
-      let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
-      mediaprofilepicts_res = {
-        mediaBasePath: mediaprofilepicts.mediaBasePath,
-        mediaUri: mediaprofilepicts.mediaUri,
-        mediaType: mediaprofilepicts.mediaType,
-        mediaEndpoint: result
-      };
-    } catch (e) {
-      mediaprofilepicts_res = {
-        mediaBasePath: "",
-        mediaUri: "",
-        mediaType: "",
-        mediaEndpoint: ""
-      };
-    }
-
-    try {
-      interest = [{
-        interestName: interests.interestName,
-        icon: interests.icon,
-        createdAt: interests.createdAt,
-        updatedAt: interests.updatedAt,
-        _class: interests._class,
-      }];
-    } catch (err) {
-      interest = [];
-    }
     const messages = {
       "info": ["The process successful"],
     };
+    console.log(ProfileDTO_)
 
-    const data = [{
-      "createdAt": datauserbasicsService.createdAt,
-      "areas": areas,
-      "group": datagroup,
-      "division": datadivision,
-      "country": countri,
-      "gender": datauserbasicsService.gender,
-      "idProofNumber": datauserbasicsService.idProofNumber,
-      "city": citi,
-      "mobileNumber": datauserbasicsService.mobileNumber,
-      "roles": datauserauthsService.roles,
-      "fullName": datauserbasicsService.fullName,
-      "bio": datauserbasicsService.bio,
-      "avatar": mediaprofilepicts_res,
-      "isIdVerified": datauserbasicsService.isIdVerified,
-      "isEmailVerified": datauserauthsService.isEmailVerified,
-      "idProofStatus": datauserbasicsService.idProofStatus,
-      "insight": insights_res,
-      "langIso": languages.langIso,
-      "interest": interest,
-      "dob": datauserbasicsService.dob,
-      "event": datauserbasicsService.event,
-      "email": datauserbasicsService.email,
-      "username": datauserauthsService.username,
-      "isComplete": datauserbasicsService.isComplete,
-      "status": datauserbasicsService.status,
-    }];
+    const data = [ProfileDTO_];
+    // const datauserauthsService = await this.userauthsService.findOne(emails);
+    // const datauserbasicsService = await this.userbasicsService.findOne(emails);
+
+    // var languages_json = null;
+    // if (datauserbasicsService.languages != undefined) {
+    //   languages_json = JSON.parse(JSON.stringify(datauserbasicsService.languages));
+    // }
+
+    // var interest_json = JSON.parse(JSON.stringify(datauserbasicsService.userInterests));
+    // try {
+    //   insights_json = JSON.parse(JSON.stringify(datauserbasicsService.insight));
+    //   var insights = await this.insightsService.findOne(insights_json.$id);
+    //   insights_res = {
+    //     shares: insights.shares,
+    //     followers: insights.followers,
+    //     comments: insights.comments,
+    //     followings: insights.followings,
+    //     reactions: insights.reactions,
+    //     posts: insights.posts,
+    //     views: insights.views,
+    //     likes: insights.likes
+    //   };
+    // } catch (e) {
+    //   insights_res = {
+    //     shares: 0,
+    //     followers: 0,
+    //     comments: 0,
+    //     followings: 0,
+    //     reactions: 0,
+    //     posts: 0,
+    //     views: 0,
+    //     likes: 0
+    //   };
+    // }
+    // try {
+    //   countries_json = JSON.parse(JSON.stringify(datauserbasicsService.countries));
+    //   countries = await this.countriesService.findOne(countries_json.$id);
+    //   areas = await this.areasService.findOne(countries.countryID);
+    //   countri = countries.country;
+    // } catch (e) {
+    //   countri = "";
+    //   areas = "";
+    // }
+
+    // try {
+    //   cities_json = JSON.parse(JSON.stringify(datauserbasicsService.cities));
+    //   cities = await this.citiesService.findOne(cities_json.$id);
+    //   citi = cities.cityName;
+    // } catch (e) {
+    //   citi = "";
+    // }
+    // const languages = await this.languagesService.findOne(languages_json.$id);
+    // const interests = await this.interestsService.findOne(interest_json.$id);
+    // var datagroup = {};
+    // var datadivision = {};
+
+    // var group = await this.groupService.findbyuser(datauserbasicsService._id.toString());
+    // if (group.length>0){
+    //   datagroup = {
+    //       _id: group[0]._id,
+    //       nameGroup: group[0].nameGroup,
+    //     }
+    //   var division = await this.divisionService.findOne(group[0].divisionId.toString());
+    //   if (division.nameDivision !=undefined) {
+    //     datadivision = {
+    //       _id: division._id,
+    //       nameDivision: division.nameDivision,
+    //     }
+    //   }
+    // }
+
+    // try {
+
+    //   mediaprofilepicts_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
+    //   mediaprofilepicts = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
+    //   var mediaUri = mediaprofilepicts.mediaUri;
+    //   let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+    //   mediaprofilepicts_res = {
+    //     mediaBasePath: mediaprofilepicts.mediaBasePath,
+    //     mediaUri: mediaprofilepicts.mediaUri,
+    //     mediaType: mediaprofilepicts.mediaType,
+    //     mediaEndpoint: result
+    //   };
+    // } catch (e) {
+    //   mediaprofilepicts_res = {
+    //     mediaBasePath: "",
+    //     mediaUri: "",
+    //     mediaType: "",
+    //     mediaEndpoint: ""
+    //   };
+    // }
+
+    // try {
+    //   interest = [{
+    //     interestName: interests.interestName,
+    //     icon: interests.icon,
+    //     createdAt: interests.createdAt,
+    //     updatedAt: interests.updatedAt,
+    //     _class: interests._class,
+    //   }];
+    // } catch (err) {
+    //   interest = [];
+    // }
+    // const messages = {
+    //   "info": ["The process successful"],
+    // };
+
+    // const data = [{
+    //   "createdAt": datauserbasicsService.createdAt,
+    //   "areas": areas,
+    //   "group": datagroup,
+    //   "division": datadivision,
+    //   "country": countri,
+    //   "gender": datauserbasicsService.gender,
+    //   "idProofNumber": datauserbasicsService.idProofNumber,
+    //   "city": citi,
+    //   "mobileNumber": datauserbasicsService.mobileNumber,
+    //   "roles": datauserauthsService.roles,
+    //   "fullName": datauserbasicsService.fullName,
+    //   "bio": datauserbasicsService.bio,
+    //   "avatar": mediaprofilepicts_res,
+    //   "isIdVerified": datauserbasicsService.isIdVerified,
+    //   "isEmailVerified": datauserauthsService.isEmailVerified,
+    //   "idProofStatus": datauserbasicsService.idProofStatus,
+    //   "insight": insights_res,
+    //   "langIso": languages.langIso,
+    //   "interest": interest,
+    //   "dob": datauserbasicsService.dob,
+    //   "event": datauserbasicsService.event,
+    //   "email": datauserbasicsService.email,
+    //   "username": datauserauthsService.username,
+    //   "isComplete": datauserbasicsService.isComplete,
+    //   "status": datauserbasicsService.status,
+    // }];
 
     return {
       response_code: 202,

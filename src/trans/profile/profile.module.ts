@@ -14,9 +14,11 @@ import { InterestsModule } from '../../infra/interests/interests.module';
 import { FileSystemStoredFile, FormDataRequest,NestjsFormDataModule } from 'nestjs-form-data';
 import { GroupModule } from '../usermanagement/group/group.module';
 import { DivisionModule } from '../usermanagement/division/division.module';
+import { UtilsModule } from '../../utils/utils.module';
 
 @Module({
   imports: [
+    UtilsModule,
     DivisionModule,
     GroupModule,
     ConfigModule.forRoot(),UserbasicsModule, NestjsFormDataModule,CountriesModule,AreasModule,UserauthsModule,CitiesModule,MediaprofilepictsModule,InsightsModule,LanguagesModule,InterestsModule,

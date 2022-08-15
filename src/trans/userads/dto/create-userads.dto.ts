@@ -14,4 +14,5 @@ export class CreateUserAdsDto {
     userID: mongoose.Types.ObjectId;
     viewAt: String;
     viewed: Double;
+    liveAt: string;
 }
