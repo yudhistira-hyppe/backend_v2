@@ -105,7 +105,6 @@ export class UserbasicsService {
 
     return data;
   }
-
   async updateIdVerified(id: ObjectId): Promise<Object> {
     let data = await this.userbasicModel.updateOne({ "_id": id },
       {

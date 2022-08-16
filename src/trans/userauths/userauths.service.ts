@@ -138,7 +138,6 @@ export class UserauthsService {
       },
     );
   }
-
   async update(email: String, roles: String): Promise<Object> {
     let data = await this.userauthModel.updateOne({ "email": email },
       { $set: { "roles": [roles] } });
