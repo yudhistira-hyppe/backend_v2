@@ -870,7 +870,6 @@ export class AuthController {
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/noneactive')
   async noneActive(@Req() request: any, @Headers() headers) {
-    console.log(request.body.email);
     if (request.body.email == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, Param email is required',
@@ -890,6 +889,8 @@ export class AuthController {
     try{
       //Ceck User Userbasics
       const user_userbasics = await this.userbasicsService.findOne(request.body.email);
+      //Ceck User Userauths
+      const datauserauthsService = await this.userauthsService.findOneByEmail(request.body.email);
       if (await this.utilsService.ceckData(user_userbasics)){
         await this.userbasicsService.updateNoneActive(request.body.email);
         await this.userauthsService.updateNoneActive(request.body.email);
