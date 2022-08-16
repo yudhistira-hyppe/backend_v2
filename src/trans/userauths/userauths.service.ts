@@ -128,6 +128,12 @@ export class UserauthsService {
     return data;
   }
 
+  async updateNoneActive(email: String): Promise<Object> {
+    let data = await this.userauthModel.updateOne({ "email": email },
+      { $set: { "isEnabled": false, "isEmailVerified": false } });
+    return data;
+  }
+
   async coutRow(keys: string) {
     const query = await this.userauthModel.aggregate([
       {

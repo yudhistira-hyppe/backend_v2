@@ -20,8 +20,8 @@ export class AdsUserCompareService {
         private readonly userbasicsService: UserbasicsService,
         private readonly errorHandler: ErrorHandler,
         private readonly userauthsService: UserauthsService,
-        private readonly areasService: AreasService,
-        private readonly userAdsService: UserAdsService, 
+        private readonly areasService: AreasService, 
+        private readonly userAdsService: UserAdsService,
     ) { }
 
     async createUserAds(_CreateAdsDto_: CreateAdsDto): Promise<any> {
@@ -62,9 +62,10 @@ export class AdsUserCompareService {
                 }
             }
         }
-
+        var UserSelfInsert = true;
+        //UserSelfInsert = await this.utilsService.getSetting("UserSelfInsert");
         data_user.forEach(async element => {
-            if (element._id != _CreateAdsDto_.userID){
+            if (element._id == _CreateAdsDto_.userID){
                 var data_user_auth = await this.userauthsService.findOneByEmail(element.email);
                 var user_location_long = null;
                 var user_location_lat = null;

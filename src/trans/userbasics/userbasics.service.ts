@@ -94,6 +94,17 @@ export class UserbasicsService {
     return deletedCat;
   }
 
+  async updateNoneActive(email: string): Promise<Object> {
+    let data = await this.userbasicModel.updateOne({ "email": email },
+      {
+        $set: {
+          "isIdVerified": false
+        }
+      });
+
+    return data;
+  }
+
   async updateIdVerified(id: ObjectId): Promise<Object> {
     let data = await this.userbasicModel.updateOne({ "_id": id },
       {

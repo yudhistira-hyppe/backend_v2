@@ -61,6 +61,22 @@ export class UserdevicesService {
     );
   }
 
+  async updateNoneActive(email: string) {
+    this.userdeviceModel.updateMany(
+      {
+        email: email,
+      },
+      { $set: { "active": false } },
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
 
   async findOneEmail(email: string, deviceID: string): Promise<Userdevice> {
     return this.userdeviceModel

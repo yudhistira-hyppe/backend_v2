@@ -48,15 +48,28 @@ export class AdsUserCompareController {
                 );
             }
         }
-
-        var _CreateAdsDto_ = new CreateAdsDto();
-        _CreateAdsDto_.userIDAssesment = dataUserBasic._id;
-        _CreateAdsDto_.status = 'APPROVE';
-        _CreateAdsDto_.isActive = true;
-        _CreateAdsDto_._id = dataAds._id;
-        _CreateAdsDto_.userID = dataAds.userID;
-        _CreateAdsDto_.liveAt = dataAds.liveAt;
-        await this.adsUserCompareService.createUserAds(_CreateAdsDto_);
+        try{
+            var _CreateAdsDto_ = new CreateAdsDto();
+            _CreateAdsDto_.userIDAssesment = dataUserBasic._id;
+            _CreateAdsDto_.status = 'APPROVE';
+            _CreateAdsDto_.isActive = true;
+            _CreateAdsDto_._id = dataAds._id;
+            _CreateAdsDto_.userID = dataAds.userID;
+            _CreateAdsDto_.liveAt = dataAds.liveAt;
+            await this.adsUserCompareService.createUserAds(_CreateAdsDto_);
+            return {
+                "response_code": 202,
+                "messages": {
+                    "info": [
+                        "The process successful"
+                    ]
+                }
+            };
+        }catch(e){
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, ' + e,
+            );
+        }
     }
 
 }
