@@ -5,10 +5,10 @@ import { UservouchersService } from './uservouchers.service';
 import { ConfigModule } from '@nestjs/config';
 import { Uservouchers, UservouchersSchema } from './schemas/uservouchers.schema';
 import { UserbasicsModule } from '../userbasics/userbasics.module';
-
+import { VouchersModule } from '../vouchers/vouchers.module';
 @Module({
     imports: [
-        ConfigModule.forRoot(), UserbasicsModule,
+        ConfigModule.forRoot(), UserbasicsModule, VouchersModule,
         MongooseModule.forFeature([{ name: Uservouchers.name, schema: UservouchersSchema }], 'SERVER_TRANS')
     ],
     controllers: [UservouchersController],

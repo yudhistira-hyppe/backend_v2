@@ -106,7 +106,7 @@ export class TransactionsService {
         const query = await this.transactionsModel.aggregate([
             {
                 $match: {
-                    status: "success",
+                    status: "Success",
                     iduserbuyer: iduser
                 }
             },
@@ -612,7 +612,7 @@ export class TransactionsService {
         const query = await this.transactionsModel.aggregate([
             {
                 $match: {
-                    status: "success",
+                    status: "Success",
                     idusersell: iduser
                 }
             },

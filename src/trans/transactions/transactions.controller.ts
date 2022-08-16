@@ -713,6 +713,7 @@ export class TransactionsController {
                     var totalUsed = 0;
                     var postIds = "";
                     var qty = null;
+                    var price = null;
                     var totalPrice = null;
                     var arraymount = [];
 
@@ -720,6 +721,7 @@ export class TransactionsController {
                     for (var i = 0; i < lengtvoucherid; i++) {
                         postIds = detail[i].id.toString();
                         qty = detail[i].qty;
+                        price = detail[i].price;
                         totalPrice = detail[i].totalAmount;
 
                         datavoucher = await this.vouchersService.findOne(postIds);
@@ -767,10 +769,10 @@ export class TransactionsController {
                         for (var i = 0; i < lengtvoucherid; i++) {
                             var postvcid = detail[i].id.toString();
                             var jml = detail[i].qty;
-                            var tprice = detail[i].totalAmount;
                             datavoucher = await this.vouchersService.findOne(postvcid);
 
                             voucherID = datavoucher._id;
+                            totalUsed = datavoucher.totalUsed;
                             totalCredit = datavoucher.creditTotal * jml;
                             let datauservoucher = new Uservoucher();
                             datauservoucher.userID = iduserbuy;
@@ -781,8 +783,9 @@ export class TransactionsController {
                             datauservoucher.voucherID = voucherID;
                             datauservoucher.voucherCredit = totalCredit;
                             datauservoucher.totalCredit = totalCredit - usedCredit;
+                            datauservoucher.jmlVoucher = jml;
                             await this.uservouchersService.create(datauservoucher);
-                            await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + 1));
+                            await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
                         }
 
 

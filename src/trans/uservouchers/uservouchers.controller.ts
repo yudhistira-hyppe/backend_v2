@@ -1,13 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, HttpStatus, Put, Headers } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, HttpStatus, Put, Headers, BadRequestException, Req } from '@nestjs/common';
 import { UservouchersService } from './uservouchers.service';
 import { CreateUservouchersDto } from './dto/create-uservouchers.dto';
 import { Uservouchers } from './schemas/uservouchers.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserbasicsService } from '../userbasics/userbasics.service';
+import { VouchersService } from '../vouchers/vouchers.service';
 
-@Controller('uservouchers')
+@Controller('api/uservouchers')
 export class UservouchersController {
-    constructor(private readonly uservouchersService: UservouchersService, private readonly userbasicsService: UserbasicsService,) { }
+    constructor(private readonly uservouchersService: UservouchersService, private readonly userbasicsService: UserbasicsService, private readonly vouchersService: VouchersService,) { }
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -85,6 +86,209 @@ export class UservouchersController {
 
             createUservouchersDto.updatedAt = dt.toISOString();
             let data = await this.uservouchersService.update(id, createUservouchersDto);
+            res.status(HttpStatus.OK).json({
+                response_code: 202,
+                "data": data,
+                "message": messages
+            });
+        } catch (e) {
+            res.status(HttpStatus.BAD_REQUEST).json({
+
+                "message": messagesEror
+            });
+        }
+    }
+
+    @Post('byuser')
+    @UseGuards(JwtAuthGuard)
+    async voucheruser(@Req() request: Request): Promise<any> {
+
+        var email = null;
+        var iduser = null;
+        var startdate = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        try {
+            var ubasic = await this.userbasicsService.findOne(email);
+
+            iduser = ubasic._id;
+        } catch (e) {
+            throw new BadRequestException("user not found");
+        }
+
+        var curdate = new Date(Date.now());
+        var beforedate = curdate.toISOString();
+
+        var substrtahun = beforedate.substring(0, 4);
+        var numtahun = parseInt(substrtahun);
+
+        var substrbulan = beforedate.substring(7, 5);
+        var numbulan = parseInt(substrbulan);
+        var substrtanggal = beforedate.substring(10, 8);
+        var numtanggal = parseInt(substrtanggal);
+        var date = substrtahun + "-" + substrbulan + "-" + substrtanggal;
+        let data = await this.uservouchersService.findUserVoucher(iduser, date);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('bycode')
+    @UseGuards(JwtAuthGuard)
+    async voucherkode(@Req() request: Request): Promise<any> {
+
+        var email = null;
+        var iduser = null;
+        var codeVoucher = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["codeVoucher"] !== undefined) {
+            codeVoucher = request_json["codeVoucher"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        try {
+            var ubasic = await this.userbasicsService.findOne(email);
+
+            iduser = ubasic._id;
+        } catch (e) {
+            throw new BadRequestException("user not found");
+        }
+
+        var curdate = new Date(Date.now());
+        var beforedate = curdate.toISOString();
+
+        var substrtahun = beforedate.substring(0, 4);
+        var numtahun = parseInt(substrtahun);
+
+        var substrbulan = beforedate.substring(7, 5);
+        var numbulan = parseInt(substrbulan);
+        var substrtanggal = beforedate.substring(10, 8);
+        var numtanggal = parseInt(substrtanggal);
+        var date = substrtahun + "-" + substrbulan + "-" + substrtanggal;
+        let data = await this.uservouchersService.findUserKodeVoucher(iduser, date, codeVoucher);
+
+        return { response_code: 202, data, messages };
+    }
+
+    @Post('change')
+    @UseGuards(JwtAuthGuard)
+    async voucheruserchange(@Res() res, @Req() request: Request): Promise<any> {
+
+        var email = null;
+        var iduser = null;
+        var idvoucher = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["idvoucher"] !== undefined) {
+            idvoucher = request_json["idvoucher"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+        var arrayId = [];
+        var objid = {};
+        var arrayqty = [];
+        var arraymount = [];
+        var arrayCredittotal = [];
+        var curdate = new Date(Date.now());
+        var beforedate = curdate.toISOString();
+
+        var substrtahun = beforedate.substring(0, 4);
+        var numtahun = parseInt(substrtahun);
+
+        var substrbulan = beforedate.substring(7, 5);
+        var numbulan = parseInt(substrbulan);
+        var substrtanggal = beforedate.substring(10, 8);
+        var numtanggal = parseInt(substrtanggal);
+        var date = substrtahun + "-" + substrbulan + "-" + substrtanggal;
+        const messages = {
+            "info": ["The process successful"],
+        };
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+        try {
+            var ubasic = await this.userbasicsService.findOne(email);
+
+            iduser = ubasic._id;
+        } catch (e) {
+            throw new BadRequestException("user not found");
+        }
+
+        var lenghtvc = idvoucher.length;
+        var datavoucher = null;
+        var sumCredittotal = 0;
+        for (var i = 0; i < lenghtvc; i++) {
+
+            var idv = mongoose.Types.ObjectId(idvoucher[i].id);
+
+            try {
+                datavoucher = await this.uservouchersService.findUserVoucherID(iduser, date, idv);
+                var jml = datavoucher[0].jmlVoucher;
+            } catch (e) {
+                datavoucher = null;
+            }
+
+
+            var tCreditTotal = (await datavoucher)[0].creditTotal;
+
+
+            objid = {
+                "id": idvoucher[i].id,
+                "noVoucher": (await datavoucher)[0].noVoucher,
+                "codeVoucher": (await datavoucher)[0].codeVoucher,
+                "nameAds": (await datavoucher)[0].nameAds,
+                "expiredAt": (await datavoucher)[0].expiredAt,
+                "jmlVoucher": jml,
+                "totalCredit": (await datavoucher)[0].creditTotal,
+            };
+            arrayId.push(objid);
+            arrayCredittotal.push(tCreditTotal);
+
+        }
+
+        for (var i = 0; i < arrayCredittotal.length; i++) {
+            sumCredittotal += arrayCredittotal[i];
+        };
+
+
+
+
+
+
+        try {
+            var data = { "voucherList": arrayId, "totalCredit": sumCredittotal };
             res.status(HttpStatus.OK).json({
                 response_code: 202,
                 "data": data,

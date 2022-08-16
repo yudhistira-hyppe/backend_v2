@@ -37,6 +37,7 @@ export class Uservoucher {
     voucherCredit: number;
     totalCredit: number;
     updatedAt: string;
+    jmlVoucher: number;
 
 }
 export class VaCallback {
