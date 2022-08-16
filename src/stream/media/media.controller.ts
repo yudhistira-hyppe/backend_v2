@@ -1,5 +1,5 @@
 import { Body, Controller, Post, UploadedFiles, Get, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards } from "@nestjs/common";
-import { FileFieldsInterceptor } from "@nestjs/platform-express/multer";
+import { AnyFilesInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
 import { MediaService } from "./media.service";
@@ -57,10 +57,10 @@ export class MediaController {
         private readonly mediaService: MediaService,
         private readonly errorHandler: ErrorHandler,
         private readonly awsService: AwsService,
-        private readonly utilsService: UtilsService, 
-        private readonly settingsService: SettingsService, 
-        private readonly mediaproofpictsService: MediaproofpictsService, 
-        private readonly userbasicsService: UserbasicsService, 
+        private readonly utilsService: UtilsService,
+        private readonly settingsService: SettingsService,
+        private readonly mediaproofpictsService: MediaproofpictsService,
+        private readonly userbasicsService: UserbasicsService,
         private readonly mediaprofilepictsService: MediaprofilepictsService,
         private readonly seaweedfsService: SeaweedfsService) { }
 
@@ -130,7 +130,7 @@ export class MediaController {
         //Ceck User Userbasics
         const datauserbasicsService = await this.userbasicsService.findOne(
             headers['x-auth-user'],
-        ); 
+        );
 
         if (await this.utilsService.ceckData(datauserbasicsService)) {
             if (datauserbasicsService.profilePict != undefined) {
@@ -141,9 +141,9 @@ export class MediaController {
                     id_mediaprofilepicts,
                 );
 
-                if (await this.utilsService.ceckData(datamediaprofilepictsService)){
+                if (await this.utilsService.ceckData(datamediaprofilepictsService)) {
                     mongoose_gen_media = datamediaprofilepictsService.mediaBasePath.toString().replace("/profilepict/", "");
-                }else{
+                } else {
                     mongoose_gen_media = new mongoose.Types.ObjectId();
                 }
             } else {
@@ -628,11 +628,9 @@ export class MediaController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('api/posts/supportfile')
-    @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 1 }], multerOptions))
+    @UseInterceptors(AnyFilesInterceptor(multerOptions))
     async uploadsuportfile(
-        @UploadedFiles() files: {
-            supportFile?: Express.Multer.File[]
-        },
+        @UploadedFiles() files: Array<Express.Multer.File>,
         @Body() CreateMediaproofpictsDto_: CreateMediaproofpictsDto,
         @Headers() headers) {
         var idmediaproofpict = CreateMediaproofpictsDto_._id.toString();
@@ -654,6 +652,7 @@ export class MediaController {
             );
         }
 
+        var countfile = files.length;
         //Var supportFile
         let supportFile_data = null;
         let supportFile_filename = '';
@@ -663,6 +662,10 @@ export class MediaController {
         let supportFile_filename_new = '';
         let supportFile_local_path = '';
         let supportFile_seaweedfs_path = '';
+        var arrayUri = [];
+        var arrayName = [];
+        var arraySuri = [];
+        var arraySname = [];
 
         //Var bitmap
         let bitmap_supportFile = null;
@@ -694,50 +697,56 @@ export class MediaController {
             var paths = datamediaproofService.mediaSelfieBasePath.toString();
             var mongoose_gen_meida = paths.replace("/selfiepict/", "");
             //Ceck supportFile
-            if (files.supportFile != undefined) {
-                var FormData_ = new FormData();
-                supportFile_data = files.supportFile[0];
-                supportFile_mimetype = files.supportFile[0].mimetype;
-                supportFile_filename = files.supportFile[0].filename;
-                supportFile_etx = supportFile_filename.substring(supportFile_filename.lastIndexOf('.') + 1, supportFile_filename.length);
-                supportFile_name = supportFile_filename.substring(0, supportFile_filename.lastIndexOf('.'));
+            if (files != undefined) {
 
-                //New Name file supportFile
-                supportFile_filename_new = idmediaproofpict + '_0001.' + supportFile_etx;
-                //Rename Name file supportFile
-                fs.renameSync('./temp/' + supportFile_filename, './temp/' + supportFile_filename_new);
 
-                //Local path
-                supportFile_local_path = './temp/' + mongoose_gen_meida + '/supportfile/' + supportFile_filename_new;
-                //SeaweedFs path
-                supportFile_seaweedfs_path = '/' + mongoose_gen_meida + '/supportfile/';
+                for (var i = 0; i < countfile; i++) {
+                    var FormData_ = new FormData();
+                    supportFile_data = files[i];
+                    supportFile_mimetype = files[i].mimetype;
+                    supportFile_filename = files[i].filename;
+                    supportFile_etx = supportFile_filename.substring(supportFile_filename.lastIndexOf('.') + 1, supportFile_filename.length);
+                    supportFile_name = supportFile_filename.substring(0, supportFile_filename.lastIndexOf('.'));
 
-                //Create Folder Id
-                if (await this.utilsService.createFolder('./temp/', mongoose_gen_meida)) {
-                    //Create folder proofpict
-                    if (await this.utilsService.createFolder('./temp/' + mongoose_gen_meida + '/', 'supportfile')) {
-                        //Move File
-                        await fse.move('./temp/' + supportFile_filename_new, './temp/' + mongoose_gen_meida + '/supportfile/' + supportFile_filename_new);
+                    //New Name file supportFile
+                    supportFile_filename_new = idmediaproofpict + '_000' + (i + 1) + '.' + supportFile_etx;
+                    //Rename Name file supportFile
+                    fs.renameSync('./temp/' + supportFile_filename, './temp/' + supportFile_filename_new);
+
+                    //Local path
+                    supportFile_local_path = './temp/' + mongoose_gen_meida + '/' + supportFile_filename_new;
+                    //SeaweedFs path
+                    supportFile_seaweedfs_path = '/' + mongoose_gen_meida + '/supportfile/';
+
+                    //Create Folder Id
+                    if (await this.utilsService.createFolder('./temp/', mongoose_gen_meida)) {
+
+                        await fse.move('./temp/' + supportFile_filename_new, './temp/' + mongoose_gen_meida + '/' + supportFile_filename_new);
                     } else {
                         await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed create folder proofpict',
+                            'Unabled to proceed create folder ' + mongoose_gen_meida,
                         );
                     }
-                } else {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed create folder ' + mongoose_gen_meida,
-                    );
+
+                    //Upload Seaweedfs
+                    try {
+                        FormData_.append('proofpict', fs.createReadStream(path.resolve(supportFile_local_path)));
+                        await this.seaweedfsService.write(supportFile_seaweedfs_path, FormData_);
+                    } catch (err) {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed proofpict failed upload seaweedfs',
+                        );
+                    }
+
+                    var objSuri = '/localrepo/' + mongoose_gen_meida + '/supportfile/' + supportFile_filename_new;
+                    var objsname = supportFile_filename_new.replace('_000' + i, '');
+
+                    arrayUri.push(supportFile_filename_new);
+                    arrayName.push(supportFile_filename);
+                    arraySuri.push(objSuri);
+                    arraySname.push(objsname);
                 }
 
-                //Upload Seaweedfs
-                try {
-                    FormData_.append('proofpict', fs.createReadStream(path.resolve(supportFile_local_path)));
-                    await this.seaweedfsService.write(supportFile_seaweedfs_path, FormData_);
-                } catch (err) {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed proofpict failed upload seaweedfs',
-                    );
-                }
             } else {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed supportFile is required',
@@ -762,11 +771,11 @@ export class MediaController {
 
                     CreateMediaproofpictsDto_.mediaSupportType = 'supportfile';
                     CreateMediaproofpictsDto_.mediaSupportBasePath = mongoose_gen_meida + '/supportfile/';
-                    CreateMediaproofpictsDto_.mediaSupportUri = supportFile_filename_new;
-                    CreateMediaproofpictsDto_.SupportOriginalName = supportFile_filename;
-                    CreateMediaproofpictsDto_.SupportfsSourceUri = '/localrepo/' + mongoose_gen_meida + '/supportfile/' + supportFile_filename_new;
-                    CreateMediaproofpictsDto_.SupportfsSourceName = supportFile_filename_new.replace(supportFile_etx, 'jpg').replace('_0001', '');
-                    CreateMediaproofpictsDto_.SupportfsTargetUri = '/localrepo/' + mongoose_gen_meida + '/supportfile/' + supportFile_filename_new;
+                    CreateMediaproofpictsDto_.mediaSupportUri = arrayUri;
+                    CreateMediaproofpictsDto_.SupportOriginalName = arrayName;
+                    CreateMediaproofpictsDto_.SupportfsSourceUri = arraySuri;
+                    CreateMediaproofpictsDto_.SupportfsSourceName = arraySname;
+                    CreateMediaproofpictsDto_.SupportfsTargetUri = arrayUri;
                     CreateMediaproofpictsDto_.SupportmediaMime = supportFile_mimetype;
                     CreateMediaproofpictsDto_.status = 'IN_PROGGRESS';
                     await this.mediaproofpictsService.updatebyId(idmediaproofpict, CreateMediaproofpictsDto_);
@@ -803,10 +812,196 @@ export class MediaController {
                     ]
                 }
             };
-        }else {
+        } else {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed user not found',
             );
         }
     }
+
+
+    // @UseGuards(JwtAuthGuard)
+    // @HttpCode(HttpStatus.ACCEPTED)
+    // @Post('api/posts/supportfile')
+    // @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 1 }], multerOptions))
+    // async uploadsuportfile(
+    //     @UploadedFiles() files: {
+    //         supportFile?: Express.Multer.File[]
+    //     },
+    //     @Body() CreateMediaproofpictsDto_: CreateMediaproofpictsDto,
+    //     @Headers() headers) {
+    //     var idmediaproofpict = CreateMediaproofpictsDto_._id.toString();
+    //     // var request_json = JSON.parse(JSON.stringify(request.body));
+    //     // if (request_json["idmediaproofpict"] !== undefined) {
+    //     //     idmediaproofpict = request_json["idmediaproofpict"];
+    //     // } else {
+    //     //     throw new BadRequestException("Unabled to proceed");
+    //     // }
+    //     if (!(await this.utilsService.validasiTokenEmail(headers))) {
+    //         await this.errorHandler.generateNotAcceptableException(
+    //             'Unabled to proceed token and email not match',
+    //         );
+    //     }
+
+    //     if (headers['x-auth-token'] == undefined) {
+    //         await this.errorHandler.generateNotAcceptableException(
+    //             'Unabled to proceed email is required',
+    //         );
+    //     }
+
+    //     //Var supportFile
+    //     let supportFile_data = null;
+    //     let supportFile_filename = '';
+    //     let supportFile_etx = '';
+    //     let supportFile_mimetype = '';
+    //     let supportFile_name = '';
+    //     let supportFile_filename_new = '';
+    //     let supportFile_local_path = '';
+    //     let supportFile_seaweedfs_path = '';
+
+    //     //Var bitmap
+    //     let bitmap_supportFile = null;
+
+    //     //Var buffer
+    //     let buffer_supportFile = null;
+
+    //     //Var response facedetect
+    //     let face_detect_supportFile = null;
+
+    //     let id_mediaproofpicts_ = null;
+
+    //     //Var current date
+    //     var current_date = await this.utilsService.getDateTimeString();
+
+    //     //Var generate id
+    //     // var IdMediaproofpictsDto = await this.utilsService.generateId();
+    //     //Var generate id mongoose
+
+
+    //     //Ceck User Userbasics
+    //     const datamediaproofService = await this.mediaproofpictsService.findOne(
+    //         idmediaproofpict
+    //     );
+
+    //     if (await this.utilsService.ceckData(datamediaproofService)) {
+    //         // var mongoose_gen_meida = new mongoose.Types.ObjectId();
+
+    //         var paths = datamediaproofService.mediaSelfieBasePath.toString();
+    //         var mongoose_gen_meida = paths.replace("/selfiepict/", "");
+    //         //Ceck supportFile
+    //         if (files.supportFile != undefined) {
+    //             var FormData_ = new FormData();
+    //             supportFile_data = files.supportFile[0];
+    //             supportFile_mimetype = files.supportFile[0].mimetype;
+    //             supportFile_filename = files.supportFile[0].filename;
+    //             supportFile_etx = supportFile_filename.substring(supportFile_filename.lastIndexOf('.') + 1, supportFile_filename.length);
+    //             supportFile_name = supportFile_filename.substring(0, supportFile_filename.lastIndexOf('.'));
+
+    //             //New Name file supportFile
+    //             supportFile_filename_new = idmediaproofpict + '_0001.' + supportFile_etx;
+    //             //Rename Name file supportFile
+    //             fs.renameSync('./temp/' + supportFile_filename, './temp/' + supportFile_filename_new);
+
+    //             //Local path
+    //             supportFile_local_path = './temp/' + mongoose_gen_meida + '/supportfile/' + supportFile_filename_new;
+    //             //SeaweedFs path
+    //             supportFile_seaweedfs_path = '/' + mongoose_gen_meida + '/supportfile/';
+
+    //             //Create Folder Id
+    //             if (await this.utilsService.createFolder('./temp/', mongoose_gen_meida)) {
+    //                 //Create folder proofpict
+    //                 if (await this.utilsService.createFolder('./temp/' + mongoose_gen_meida + '/', 'supportfile')) {
+    //                     //Move File
+    //                     await fse.move('./temp/' + supportFile_filename_new, './temp/' + mongoose_gen_meida + '/supportfile/' + supportFile_filename_new);
+    //                 } else {
+    //                     await this.errorHandler.generateNotAcceptableException(
+    //                         'Unabled to proceed create folder proofpict',
+    //                     );
+    //                 }
+    //             } else {
+    //                 await this.errorHandler.generateNotAcceptableException(
+    //                     'Unabled to proceed create folder ' + mongoose_gen_meida,
+    //                 );
+    //             }
+
+    //             //Upload Seaweedfs
+    //             try {
+    //                 FormData_.append('proofpict', fs.createReadStream(path.resolve(supportFile_local_path)));
+    //                 await this.seaweedfsService.write(supportFile_seaweedfs_path, FormData_);
+    //             } catch (err) {
+    //                 await this.errorHandler.generateNotAcceptableException(
+    //                     'Unabled to proceed proofpict failed upload seaweedfs',
+    //                 );
+    //             }
+    //         } else {
+    //             await this.errorHandler.generateNotAcceptableException(
+    //                 'Unabled to proceed supportFile is required',
+    //             );
+    //         }
+
+
+    //         //Ceck Data user proofPict
+    //         //Ceck Data user proofPict
+    //         if (datamediaproofService._id != undefined) {
+    //             //Update proofPict
+    //             try {
+
+    //                 var data_mediaproofpicts = datamediaproofService;
+    //                 id_mediaproofpicts_ = data_mediaproofpicts._id;
+    //                 CreateMediaproofpictsDto_._id = data_mediaproofpicts._id;
+    //                 CreateMediaproofpictsDto_.mediaID = data_mediaproofpicts.mediaID;
+    //                 CreateMediaproofpictsDto_.active = true;
+    //                 CreateMediaproofpictsDto_.valid = false;
+    //                 CreateMediaproofpictsDto_.createdAt = current_date;
+    //                 CreateMediaproofpictsDto_.updatedAt = current_date;
+
+    //                 CreateMediaproofpictsDto_.mediaSupportType = 'supportfile';
+    //                 CreateMediaproofpictsDto_.mediaSupportBasePath = mongoose_gen_meida + '/supportfile/';
+    //                 CreateMediaproofpictsDto_.mediaSupportUri = supportFile_filename_new;
+    //                 CreateMediaproofpictsDto_.SupportOriginalName = supportFile_filename;
+    //                 CreateMediaproofpictsDto_.SupportfsSourceUri = '/localrepo/' + mongoose_gen_meida + '/supportfile/' + supportFile_filename_new;
+    //                 CreateMediaproofpictsDto_.SupportfsSourceName = supportFile_filename_new.replace(supportFile_etx, 'jpg').replace('_0001', '');
+    //                 CreateMediaproofpictsDto_.SupportfsTargetUri = '/localrepo/' + mongoose_gen_meida + '/supportfile/' + supportFile_filename_new;
+    //                 CreateMediaproofpictsDto_.SupportmediaMime = supportFile_mimetype;
+    //                 CreateMediaproofpictsDto_.status = 'IN_PROGGRESS';
+    //                 await this.mediaproofpictsService.updatebyId(idmediaproofpict, CreateMediaproofpictsDto_);
+    //             } catch (err) {
+    //                 await this.errorHandler.generateNotAcceptableException(
+    //                     'Unabled to proceed failed update Mediaproofpicts ' + err,
+    //                 );
+    //             }
+    //         }
+    //         else {
+    //             await this.errorHandler.generateNotAcceptableException(
+    //                 'Unabled to proceed supportFile is required',
+    //             );
+
+    //         }
+
+
+    //         //Delete directory recursively
+    //         fs.rmdir('./temp/' + mongoose_gen_meida, { recursive: true }, (err) => {
+    //             if (err) {
+    //                 throw err;
+    //             }
+    //         });
+
+    //         return {
+    //             "response_code": 202,
+    //             "data": {
+    //                 "id_mediaproofpicts": idmediaproofpict,
+    //                 "status": "IN_PROGGRESS"
+    //             },
+    //             "messages": {
+    //                 "info": [
+    //                     "Success Upload"
+    //                 ]
+    //             }
+    //         };
+    //     }else {
+    //         await this.errorHandler.generateNotAcceptableException(
+    //             'Unabled to proceed user not found',
+    //         );
+    //     }
+    // }
 }

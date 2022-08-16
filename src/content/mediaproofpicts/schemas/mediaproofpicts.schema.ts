@@ -54,11 +54,11 @@ export class Mediaproofpicts {
 
   @Prop() mediaSupportType: String;
   @Prop() mediaSupportBasePath: String;
-  @Prop() mediaSupportUri: String;
-  @Prop() SupportOriginalName: String;
-  @Prop() SupportfsSourceUri: String;
-  @Prop() SupportfsSourceName: String;
-  @Prop() SupportfsTargetUri: String;
+  @Prop() mediaSupportUri: any[];
+  @Prop() SupportOriginalName: any[];
+  @Prop() SupportfsSourceUri: any[];
+  @Prop() SupportfsSourceName: any[];
+  @Prop() SupportfsTargetUri: any[];
   @Prop() SupportmediaMime: String;
 
   @Prop() status: String;

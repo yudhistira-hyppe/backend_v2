@@ -24,6 +24,7 @@ export class CreateTransactionsDto {
     payload: VaCallback;
     idva: string;
     type: string;
+    detail: any[];
 
 }
 export class Uservoucher {
@@ -36,6 +37,7 @@ export class Uservoucher {
     voucherCredit: number;
     totalCredit: number;
     updatedAt: string;
+    jmlVoucher: number;
 
 }
 export class VaCallback {

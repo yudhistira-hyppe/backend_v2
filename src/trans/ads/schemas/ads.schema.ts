@@ -61,6 +61,10 @@ export class Ads {
     userVoucherID: [];
     @Prop()
     isActive: boolean;
+    @Prop()
+    type: string;
+    @Prop({ type: Object })
+    mediaAds: { oid: String; };
 
 
 }

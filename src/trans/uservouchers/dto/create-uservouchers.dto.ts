@@ -10,5 +10,6 @@ export class CreateUservouchersDto {
     voucherCredit: number;
     totalCredit: number;
     updatedAt: string;
+    jmlVoucher: number;
 
 }

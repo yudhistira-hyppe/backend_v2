@@ -12,7 +12,8 @@ export class SeaweedfsService {
     constructor(private readonly httpService: HttpService) { }
 
     async write(path: string, FormData_: FormData): Promise<any> {
-        const res = await this.httpService.post('http://'+process.env.SEAWEEDFS_HOST + ':' + process.env.SEAWEEDFS_PORT + '/localrepo' + path, FormData_, {}).toPromise();
+        const res = await this.httpService.post('http://'+process.env.SEAWEEDFS_HOST + ':' + process.env.SEAWEEDFS_PORT + '/localrepo' + path, FormData_, {maxContentLength: Infinity,
+        maxBodyLength: Infinity}).toPromise();
         console.log(res); 
         // return new Promise(function (resolve, reject) {
         //     var options = {

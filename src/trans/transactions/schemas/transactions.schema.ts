@@ -11,7 +11,7 @@ export class Transactions {
     @Prop()
     noinvoice: string
     @Prop()
-    postid: string
+    postid: string;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId })
     idusersell: { oid: string }
@@ -55,6 +55,8 @@ export class Transactions {
     idva: string
     @Prop()
     type: string
+    @Prop([])
+    detail: [];
 
 }
 

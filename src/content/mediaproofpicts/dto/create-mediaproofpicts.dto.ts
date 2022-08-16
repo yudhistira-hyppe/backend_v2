@@ -38,11 +38,11 @@ export class CreateMediaproofpictsDto {
 
   mediaSupportType: String;
   mediaSupportBasePath: String;
-  mediaSupportUri: String;
-  SupportOriginalName: String;
-  SupportfsSourceUri: String;
-  SupportfsSourceName: String;
-  SupportfsTargetUri: String;
+  mediaSupportUri: any[];
+  SupportOriginalName: any[];
+  SupportfsSourceUri: any[];
+  SupportfsSourceName: any[];
+  SupportfsTargetUri: any[];
   SupportmediaMime: String;
   email: String;
   // mediaFileSuportType: String;
