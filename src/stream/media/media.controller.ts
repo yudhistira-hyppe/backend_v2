@@ -608,13 +608,42 @@ export class MediaController {
                 return face_detect_selfiepict;
             } else {
                 if (face_detect_selfiepict.FaceDetails.length == 0) {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed selfiepict not face detect',
+                    // await this.errorHandler.generateNotAcceptableException(
+                    //     'Unabled to proceed selfiepict not face detect',
+                    // );
+
+                    await this.errorHandler.generateCustomNotAcceptableException(
+                        {
+                            "response_code": 202,
+                            "data": {
+                                "id_mediaproofpicts": id_mediaproofpicts_,
+                                "valid": false
+                            },
+                            "messages": {
+                                "info": [
+                                    "Unabled to proceed selfiepict not face detect"
+                                ]
+                            }
+                        }
                     );
                 }
                 if (face_detect_cardPict.FaceDetails.length == 0) {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed cardPict not face detect',
+                    // await this.errorHandler.generateNotAcceptableException(
+                    //     'Unabled to proceed cardPict not face detect',
+                    // );
+                    await this.errorHandler.generateCustomNotAcceptableException(
+                        {
+                            "response_code": 202,
+                            "data": {
+                                "id_mediaproofpicts": id_mediaproofpicts_,
+                                "valid": false
+                            },
+                            "messages": {
+                                "info": [
+                                    "Unabled to proceed cardPict not face detect"
+                                ]
+                            }
+                        }
                     );
                 }
             }

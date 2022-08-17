@@ -604,6 +604,7 @@ export class TransactionsController {
         var type = null;
         var salelike = null;
         var saleview = null;
+        var expiredAt = null;
         if (statussucces == true) {
 
             try {
@@ -772,6 +773,7 @@ export class TransactionsController {
                             datavoucher = await this.vouchersService.findOne(postvcid);
 
                             voucherID = datavoucher._id;
+                            expiredAt = datavoucher.expiredAt;
                             totalUsed = datavoucher.totalUsed;
                             totalCredit = datavoucher.creditTotal * jml;
                             let datauservoucher = new Uservoucher();
@@ -784,6 +786,7 @@ export class TransactionsController {
                             datauservoucher.voucherCredit = totalCredit;
                             datauservoucher.totalCredit = totalCredit - usedCredit;
                             datauservoucher.jmlVoucher = jml;
+                            datauservoucher.expiredAt = expiredAt;
                             await this.uservouchersService.create(datauservoucher);
                             await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
                         }
@@ -2437,6 +2440,7 @@ export class TransactionsController {
         var type = null;
         var email = null;
         var iduser = null;
+        var jenis = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["id"] !== undefined) {
             id = request_json["id"];
@@ -2449,6 +2453,10 @@ export class TransactionsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+
+
+        jenis = request_json["jenis"];
+
 
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
@@ -2493,8 +2501,8 @@ export class TransactionsController {
         var dataakunbank = null;
         try {
 
-            if (type === "Buy") {
-                databuy = await this.transactionsService.findhistorydetailbuy(idtr, type, iduser);
+            if (type === "Buy" && jenis === "CONTENT") {
+                databuy = await this.transactionsService.findhistorydetailbuy(idtr, type, jenis, iduser);
                 var postid = databuy[0].postID;
 
 
@@ -2567,6 +2575,7 @@ export class TransactionsController {
 
                     "_id": idtr,
                     "type": databuy[0].type,
+                    "jenis": databuy[0].jenis,
                     "time": databuy[0].timestamp,
                     "description": databuy[0].description,
                     "noinvoice": noinvoice,
@@ -2597,8 +2606,8 @@ export class TransactionsController {
                     "mediaThumbUri": mediaThumbUri,
 
                 };
-            } else if (type === "Sell") {
-                databuy = await this.transactionsService.findhistorydetailsell(idtr, type, iduser);
+            } else if (type === "Sell" && jenis === "CONTENT") {
+                databuy = await this.transactionsService.findhistorydetailsell(idtr, type, jenis, iduser);
                 var postid = databuy[0].postID;
 
 
@@ -2668,6 +2677,7 @@ export class TransactionsController {
 
                     "_id": idtr,
                     "type": databuy[0].type,
+                    "jenis": databuy[0].jenis,
                     "time": databuy[0].timestamp,
                     "description": databuy[0].description,
                     "like": databuy[0].salelike,

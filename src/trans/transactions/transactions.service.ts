@@ -114,6 +114,7 @@ export class TransactionsService {
             {
                 $addFields: {
                     type: 'Buy',
+                    jenis: "$type",
 
                 },
             },
@@ -156,6 +157,7 @@ export class TransactionsService {
                 $project: {
                     iduser: "$iduserbuyer",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -203,6 +205,7 @@ export class TransactionsService {
                     contentMedias: "$postdata.contentMedias",
                     iduser: "$iduser",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -237,6 +240,7 @@ export class TransactionsService {
                     },
                     iduser: "$iduser",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -266,6 +270,7 @@ export class TransactionsService {
                     refs: "$refs.$ref",
                     iduser: "$iduser",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -295,6 +300,7 @@ export class TransactionsService {
                     refs: "$refs",
                     iduser: "$iduser",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -341,6 +347,7 @@ export class TransactionsService {
 
                     iduser: "$iduser",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -620,6 +627,7 @@ export class TransactionsService {
             {
                 $addFields: {
                     type: 'Sell',
+                    jenis: '$type'
 
                 },
             },
@@ -662,6 +670,7 @@ export class TransactionsService {
                 $project: {
                     iduser: "$idusersell",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -709,6 +718,7 @@ export class TransactionsService {
                     contentMedias: "$postdata.contentMedias",
                     iduser: "$iduser",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -743,6 +753,7 @@ export class TransactionsService {
                     },
                     iduser: "$iduser",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -772,6 +783,7 @@ export class TransactionsService {
                     refs: "$refs.$ref",
                     iduser: "$iduser",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -801,6 +813,7 @@ export class TransactionsService {
                     refs: "$refs",
                     iduser: "$iduser",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -847,6 +860,7 @@ export class TransactionsService {
 
                     iduser: "$iduser",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -1110,13 +1124,14 @@ export class TransactionsService {
         return query;
     }
 
-    async findhistorydetailsell(id: ObjectId, type: string, iduser: ObjectId) {
+    async findhistorydetailsell(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
         const query = await this.transactionsModel.aggregate([
 
 
             {
                 $addFields: {
                     type: 'Sell',
+                    jenis: "$type",
 
                 },
             },
@@ -1160,6 +1175,7 @@ export class TransactionsService {
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -1209,6 +1225,7 @@ export class TransactionsService {
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -1245,6 +1262,7 @@ export class TransactionsService {
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -1276,6 +1294,7 @@ export class TransactionsService {
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -1307,6 +1326,7 @@ export class TransactionsService {
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -1355,6 +1375,7 @@ export class TransactionsService {
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -1611,7 +1632,7 @@ export class TransactionsService {
             },
             {
                 $match: {
-                    _id: id, type: type, idusersell: iduser
+                    _id: id, type: type, jenis: jenis, idusersell: iduser
                 }
             },
 
@@ -1619,13 +1640,14 @@ export class TransactionsService {
         return query;
     }
 
-    async findhistorydetailbuy(id: ObjectId, type: string, iduser: ObjectId) {
+    async findhistorydetailbuy(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
         const query = await this.transactionsModel.aggregate([
 
 
             {
                 $addFields: {
                     type: 'Buy',
+                    jenis: "$type",
 
                 },
             },
@@ -1669,6 +1691,7 @@ export class TransactionsService {
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -1718,6 +1741,7 @@ export class TransactionsService {
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -1754,6 +1778,7 @@ export class TransactionsService {
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -1785,6 +1810,7 @@ export class TransactionsService {
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -1816,6 +1842,7 @@ export class TransactionsService {
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -1864,6 +1891,7 @@ export class TransactionsService {
                     idusersell: "$idusersell",
                     iduserbuyer: "$iduserbuyer",
                     type: "$type",
+                    jenis: "$jenis",
                     timestamp: "$timestamp",
                     description: "$description",
                     noinvoice: "$noinvoice",
@@ -2120,7 +2148,7 @@ export class TransactionsService {
             },
             {
                 $match: {
-                    _id: id, type: type, iduserbuyer: iduser
+                    _id: id, type: type, jenis: jenis, iduserbuyer: iduser
                 }
             },
 

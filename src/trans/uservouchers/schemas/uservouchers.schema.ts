@@ -19,6 +19,8 @@ export class Uservouchers {
     @Prop()
     updatedAt: string;
     @Prop()
+    expiredAt: string;
+    @Prop()
     usedCredit: number;
     @Prop()
     voucherCredit: number;
