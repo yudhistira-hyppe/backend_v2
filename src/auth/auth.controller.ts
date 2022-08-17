@@ -41,6 +41,7 @@ import { GlobalMessages } from '../utils/data/globalMessage';
 import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { FormDataRequest } from 'nestjs-form-data';
 import { CreateUserbasicDto, SearchUserbasicDto } from '../trans/userbasics/dto/create-userbasic.dto';
+import { PostsService } from '../content/posts/posts.service';
 
 @Controller()
 export class AuthController {
@@ -55,6 +56,7 @@ export class AuthController {
     private userauthsService: UserauthsService, 
     private interestsRepoService: InterestsRepoService, 
     private languagesService: LanguagesService,
+    private postsService: PostsService,
   ) { }
 
   @UseGuards(LocalAuthGuard)
@@ -862,6 +864,56 @@ export class AuthController {
   async updateRole(
     @Param('email') email: string, @Req() request: any, @Headers() headers) {
     return await this.authService.updateRole(email, headers, request);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/user/noneactive')
+  async noneActive(@Req() request: any, @Headers() headers) {
+    if (request.body.email == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, Param email is required',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    } 
+    if (request.body.email !=headers['x-auth-user']) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, Param email dan email header not match',
+      );
+    }
+
+    try{
+      //Ceck User Userbasics
+      const user_userbasics = await this.userbasicsService.findOne(request.body.email);
+      //Ceck User Userauths
+      const datauserauthsService = await this.userauthsService.findOneByEmail(request.body.email);
+      if (await this.utilsService.ceckData(user_userbasics)){
+        await this.userbasicsService.updateNoneActive(request.body.email);
+        await this.userauthsService.updateNoneActive(request.body.email);
+        await this.userdevicesService.updateNoneActive(request.body.email);
+        await this.postsService.updateNoneActive(request.body.email);
+        return {
+          "response_code": 202,
+          "messages": {
+            "info": [
+              "The process successful, User is not Active"
+            ]
+          }
+        };
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, User not found',
+        );
+      }
+    } catch (e) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, '+e,
+      );
+    }
   }
 
   @HttpCode(HttpStatus.ACCEPTED)

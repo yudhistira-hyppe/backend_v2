@@ -52,6 +52,23 @@ export class UserauthsService {
     return this.userauthModel.findOne({ email: email }).exec();
   }
 
+  async updatebyId(id: string, data: Object) {
+    console.log(id);
+    this.userauthModel.updateOne(
+      {
+        _id: Object(id),
+      },
+      data,
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
   async findOneByEmail(email: String): Promise<Userauth> {
     return this.userauthModel.findOne({ email: email }).exec();
   }
@@ -121,10 +138,21 @@ export class UserauthsService {
       },
     );
   }
-
   async update(email: String, roles: String): Promise<Object> {
     let data = await this.userauthModel.updateOne({ "email": email },
       { $set: { "roles": [roles] } });
+    return data;
+  }
+
+  async updateNoneActive(email: String): Promise<Object> {
+    let data = await this.userauthModel.updateOne({ "email": email },
+      {
+        $set: {
+          "isEnabled": false, 
+          "isEmailVerified": false,
+          "email": email + '_noneactive', 
+        } 
+      });
     return data;
   }
 

@@ -124,6 +124,22 @@ export class PostsService {
     return data;
   }
 
+  async updateNoneActive(email: string) {
+    this.PostsModel.updateMany(
+      {
+        email: email,
+      },
+      { $set: { "active": false } },
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
 
   async updateTags(id: string, idauth: Types.ObjectId) {
 

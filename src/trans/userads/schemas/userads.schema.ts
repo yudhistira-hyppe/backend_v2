@@ -29,6 +29,8 @@ export class UserAds {
     @Prop()
     viewAt: String;
     @Prop()
+    liveAt: String;
+    @Prop()
     viewed: Double;
 }
 export const UserAdsSchema = SchemaFactory.createForClass(UserAds);

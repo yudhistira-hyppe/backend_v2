@@ -3,7 +3,7 @@ import { ObjectId } from "mongoose";
 export class CreateAdsDto {
 
 
-    readonly _id: { oid: String; };
+    _id: { oid: String; };
     userID: { oid: String; };
     userIDAssesment: { oid: String; };
     demografisID: {

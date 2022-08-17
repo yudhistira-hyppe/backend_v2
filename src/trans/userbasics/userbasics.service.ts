@@ -38,18 +38,18 @@ export class UserbasicsService {
     );
   }
 
-  async updatebyId(id: string, data: Object) {
-    console.log(id);
-    this.userbasicModel.updateOne(
+  async updatebyId(email: string, data: Object) {
+    console.log(data);
+    this.userbasicModel.findByIdAndUpdate(
       {
-        _id: Object(id),
+        email: email,
       },
       data,
       function (err, docs) {
         if (err) {
-          //console.log(err);
+          console.log(err);
         } else {
-          //console.log(docs);
+          console.log(docs);
         }
       },
     );
@@ -94,6 +94,17 @@ export class UserbasicsService {
     return deletedCat;
   }
 
+  async updateNoneActive(email: string): Promise<Object> {
+    let data = await this.userbasicModel.updateOne({ "email": email },
+      {
+        $set: {
+          "email": email+'_noneactive',
+          "isIdVerified": false
+        }
+      });
+
+    return data;
+  }
   async updateIdVerified(id: ObjectId): Promise<Object> {
     let data = await this.userbasicModel.updateOne({ "_id": id },
       {

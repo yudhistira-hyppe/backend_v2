@@ -23,8 +23,10 @@ import { CitiesModule } from '../infra/cities/cities.module';
 import { ReferralModule } from '../trans/referral/referral.module';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { SeaweedfsModule } from '../stream/seaweedfs/seaweedfs.module';
+import { PostsModule } from '../content/posts/posts.module';
 @Module({
   imports: [
+    PostsModule,
     NestjsFormDataModule,
     UserauthsModule,
     UserbasicsModule,
