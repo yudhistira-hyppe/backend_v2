@@ -21,6 +21,7 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
 import { AuthService } from './auth.service';
 import { UtilsService } from '../utils/utils.service';
+import { SettingsService } from '../trans/settings/settings.service';
 import { JwtRefreshAuthGuard } from './refresh-auth.guard';
 import { DeviceActivityRequest, LoginRequest, LogoutRequest, RefreshTokenRequest } from '../utils/data/request/globalRequest';
 import { CreateActivityeventsDto } from '../trans/activityevents/dto/create-activityevents.dto';
@@ -30,7 +31,7 @@ import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken
 import { UserauthsService } from '../trans/userauths/userauths.service';
 import { UserbasicsService } from '../trans/userbasics/userbasics.service';
 import { UserdevicesService } from '../trans/userdevices/userdevices.service';
-import { InterestsRepoService } from '../infra/interests_repo/interests_repo.service'; 
+import { InterestsRepoService } from '../infra/interests_repo/interests_repo.service';
 import { LanguagesService } from '../infra/languages/languages.service';
 import { ErrorHandler } from '../utils/error.handler';
 import mongoose from 'mongoose';
@@ -53,10 +54,11 @@ export class AuthController {
     private userbasicsService: UserbasicsService,
     private userdevicesService: UserdevicesService,
     private jwtrefreshtokenService: JwtrefreshtokenService,
-    private userauthsService: UserauthsService, 
-    private interestsRepoService: InterestsRepoService, 
+    private userauthsService: UserauthsService,
+    private interestsRepoService: InterestsRepoService,
     private languagesService: LanguagesService,
     private postsService: PostsService,
+    private settingsService: SettingsService,
   ) { }
 
   @UseGuards(LocalAuthGuard)
@@ -363,10 +365,13 @@ export class AuthController {
           messages_response = 'Login successful';
         }
 
+        var datasetting = await this.settingsService.findAll();
+
         var ProfileDTO_ = new ProfileDTO();
         ProfileDTO_ = await this.utilsService.generateProfile(LoginRequest_.email, 'LOGIN');
         ProfileDTO_.token = 'Bearer ' + (await this.utilsService.generateToken(LoginRequest_.email, LoginRequest_.deviceId)).toString();
         ProfileDTO_.refreshToken = data_jwtrefreshtoken.refresh_token_id;
+        ProfileDTO_.listSetting = datasetting;
 
         var GlobalResponse_ = new GlobalResponse();
         var GlobalMessages_ = new GlobalMessages();
@@ -408,34 +413,34 @@ export class AuthController {
       //     'Refesh token still valid',
       //   );
       // } else {
-        //Ceck User Userauths
-        const datauserauthsService = await this.userauthsService.findOneByEmail(RefreshTokenRequest_.email);
+      //Ceck User Userauths
+      const datauserauthsService = await this.userauthsService.findOneByEmail(RefreshTokenRequest_.email);
 
-        //Get Id Userdevices
-        const datauserauthsService_devices = datauserauthsService.devices[datauserauthsService.devices.length - 1];
+      //Get Id Userdevices
+      const datauserauthsService_devices = datauserauthsService.devices[datauserauthsService.devices.length - 1];
 
-        //Descrip Token
-        var data_token = await this.utilsService.descripToken(headers);
+      //Descrip Token
+      var data_token = await this.utilsService.descripToken(headers);
 
-        //Generate Token
-        var Token = 'Bearer ' + (await this.utilsService.generateToken(data_userbasicsService.email.toString(), data_token.deviceId));
+      //Generate Token
+      var Token = 'Bearer ' + (await this.utilsService.generateToken(data_userbasicsService.email.toString(), data_token.deviceId));
 
-        //Generate Refresh Token
-        var RefreshToken = await this.authService.updateRefreshToken(data_userbasicsService.email.toString());
+      //Generate Refresh Token
+      var RefreshToken = await this.authService.updateRefreshToken(data_userbasicsService.email.toString());
 
-        var GlobalResponse_ = new GlobalResponse();
-        var GlobalMessages_ = new GlobalMessages();
-        var ProfileDTO_ = new ProfileDTO();
+      var GlobalResponse_ = new GlobalResponse();
+      var GlobalMessages_ = new GlobalMessages();
+      var ProfileDTO_ = new ProfileDTO();
 
-        ProfileDTO_.token = Token;
-        ProfileDTO_.refreshToken = RefreshToken;
+      ProfileDTO_.token = Token;
+      ProfileDTO_.refreshToken = RefreshToken;
 
-        GlobalMessages_.info = ['Refresh Token successful'];
+      GlobalMessages_.info = ['Refresh Token successful'];
 
-        GlobalResponse_.response_code = 202;
-        GlobalResponse_.data = ProfileDTO_;
-        GlobalResponse_.messages = GlobalMessages_;
-        return GlobalResponse_;
+      GlobalResponse_.response_code = 202;
+      GlobalResponse_.data = ProfileDTO_;
+      GlobalResponse_.messages = GlobalMessages_;
+      return GlobalResponse_;
       //}
     } else {
       await this.errorHandler.generateNotAcceptableException(
@@ -879,19 +884,19 @@ export class AuthController {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed email header dan token not match',
       );
-    } 
-    if (request.body.email !=headers['x-auth-user']) {
+    }
+    if (request.body.email != headers['x-auth-user']) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, Param email dan email header not match',
       );
     }
 
-    try{
+    try {
       //Ceck User Userbasics
       const user_userbasics = await this.userbasicsService.findOne(request.body.email);
       //Ceck User Userauths
       const datauserauthsService = await this.userauthsService.findOneByEmail(request.body.email);
-      if (await this.utilsService.ceckData(user_userbasics)){
+      if (await this.utilsService.ceckData(user_userbasics)) {
         await this.userbasicsService.updateNoneActive(request.body.email);
         await this.userauthsService.updateNoneActive(request.body.email);
         await this.userdevicesService.updateNoneActive(request.body.email);
@@ -911,7 +916,7 @@ export class AuthController {
       }
     } catch (e) {
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed, '+e,
+        'Unabled to proceed, ' + e,
       );
     }
   }
@@ -956,7 +961,7 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
-  @Post('api/user/getuserprofile') 
+  @Post('api/user/getuserprofile')
   @FormDataRequest()
   async getuserprofile(@Body() SearchUserbasicDto_: SearchUserbasicDto, @Headers() headers) {
     if (headers['x-auth-user'] == undefined) {
@@ -974,7 +979,7 @@ export class AuthController {
         'Unabled to proceed',
       );
     }
-    if (await this.utilsService.validasiEmail(SearchUserbasicDto_.search.toString())){
+    if (await this.utilsService.validasiEmail(SearchUserbasicDto_.search.toString())) {
       //Ceck User Userbasics
       const data_userbasics = await this.userbasicsService.findOne(SearchUserbasicDto_.search.toString());
       if (await this.utilsService.ceckData(data_userbasics)) {
@@ -1008,7 +1013,7 @@ export class AuthController {
     var user_langIso = null;
     var data_interest_id = [];
     var get_languages = null;
-    
+
     if (headers['x-auth-user'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
@@ -1018,12 +1023,12 @@ export class AuthController {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed Unauthorized email header dan token not match',
       );
-    } 
+    }
     if (request.body.email == undefined || request.body.interest == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed',
       );
-    }else{
+    } else {
       user_email = request.body.email;
       user_interest = request.body.interest;
     }
@@ -1040,7 +1045,7 @@ export class AuthController {
         if (datauserbasicsService.languages != undefined) {
           var languages_json = JSON.parse(JSON.stringify(datauserbasicsService.languages));
           get_languages = await this.languagesService.findOne(languages_json.$id);
-        } 
+        }
       } catch (error) {
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed Get Id Language. Error: ' + error,
@@ -1079,7 +1084,7 @@ export class AuthController {
       var data_update = {
         userInterests: data_interest_id
       }
-      if (data_interest_id.length>0) {
+      if (data_interest_id.length > 0) {
         await this.userbasicsService.updatebyEmail(user_email, data_update);
       }
       return {

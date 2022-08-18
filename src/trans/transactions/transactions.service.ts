@@ -8,6 +8,7 @@ import { PostsService } from '../../content/posts/posts.service';
 import { MediavideosService } from '../../content/mediavideos/mediavideos.service';
 import { MediapictsService } from '../../content/mediapicts/mediapicts.service';
 import { MediadiariesService } from '../../content/mediadiaries/mediadiaries.service';
+import { type } from 'os';
 
 @Injectable()
 export class TransactionsService {
@@ -2154,6 +2155,47 @@ export class TransactionsService {
 
         ]);
         return query;
+    }
+
+    async findtransactionvoucher(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
+
+        const query = await this.transactionsModel.aggregate([
+
+            {
+                $addFields: {
+                    type: 'Buy',
+                    jenis: "$type",
+
+                },
+            },
+
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "iduserbuyer",
+                    foreignField: "_id",
+                    as: "user_data"
+                }
+            }, {
+                $lookup: {
+                    from: "uservouchers",
+                    localField: "detail.id",
+                    foreignField: "voucherID",
+                    as: "user_voucher"
+                }
+            },
+            {
+                $match: {
+                    _id: id,
+                    type: type,
+                    jenis: jenis,
+                    iduserbuyer: iduser
+                }
+            },
+        ]);
+
+        return query;
+
     }
 
 }

@@ -24,8 +24,10 @@ import { ReferralModule } from '../trans/referral/referral.module';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { SeaweedfsModule } from '../stream/seaweedfs/seaweedfs.module';
 import { PostsModule } from '../content/posts/posts.module';
+import { SettingsModule } from '../trans/settings/settings.module';
 @Module({
   imports: [
+    SettingsModule,
     PostsModule,
     NestjsFormDataModule,
     UserauthsModule,
@@ -52,4 +54,4 @@ import { PostsModule } from '../content/posts/posts.module';
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
 })
-export class AuthModule {}
+export class AuthModule { }

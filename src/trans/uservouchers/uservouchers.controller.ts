@@ -249,42 +249,38 @@ export class UservouchersController {
         var lenghtvc = idvoucher.length;
         var datavoucher = null;
         var sumCredittotal = 0;
+        var tCreditTotal = 0;
+        var jml = 0;
         for (var i = 0; i < lenghtvc; i++) {
 
             var idv = mongoose.Types.ObjectId(idvoucher[i].id);
 
             try {
                 datavoucher = await this.uservouchersService.findUserVoucherID(iduser, date, idv);
-                var jml = datavoucher[0].jmlVoucher;
+                jml = datavoucher[0].jmlVoucher;
+                tCreditTotal = (await datavoucher)[0].creditTotal;
+
+                objid = {
+                    "id": idvoucher[i].id,
+                    "noVoucher": (await datavoucher)[0].noVoucher,
+                    "codeVoucher": (await datavoucher)[0].codeVoucher,
+                    "nameAds": (await datavoucher)[0].nameAds,
+                    "expiredAt": (await datavoucher)[0].expiredAt,
+                    "jmlVoucher": jml,
+                    "totalCredit": (await datavoucher)[0].creditTotal,
+                };
+                arrayId.push(objid);
+                arrayCredittotal.push(tCreditTotal);
+
             } catch (e) {
-                datavoucher = null;
+                throw new BadRequestException("Voucher is expired");
             }
-
-
-            var tCreditTotal = (await datavoucher)[0].creditTotal;
-
-
-            objid = {
-                "id": idvoucher[i].id,
-                "noVoucher": (await datavoucher)[0].noVoucher,
-                "codeVoucher": (await datavoucher)[0].codeVoucher,
-                "nameAds": (await datavoucher)[0].nameAds,
-                "expiredAt": (await datavoucher)[0].expiredAt,
-                "jmlVoucher": jml,
-                "totalCredit": (await datavoucher)[0].creditTotal,
-            };
-            arrayId.push(objid);
-            arrayCredittotal.push(tCreditTotal);
 
         }
 
         for (var i = 0; i < arrayCredittotal.length; i++) {
             sumCredittotal += arrayCredittotal[i];
         };
-
-
-
-
 
 
         try {
