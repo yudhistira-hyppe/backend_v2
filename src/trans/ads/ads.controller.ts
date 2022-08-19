@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, HttpStatus, Put, Headers, UploadedFiles, UseInterceptors, HttpCode, HttpException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, HttpStatus, Put, Headers, UploadedFiles, UseInterceptors, HttpCode, HttpException, Req, BadRequestException } from '@nestjs/common';
 import { AdsService } from './ads.service';
 import { CreateAdsDto, MediaimageadsDto, MediavodeosadsDto } from './dto/create-ads.dto';
 import { Ads } from './schemas/ads.schema';
@@ -14,6 +14,7 @@ import { ErrorHandler } from "../../utils/error.handler";
 import { SeaweedfsService } from "../../stream/seaweedfs/seaweedfs.service";
 import { UtilsService } from "../../utils/utils.service";
 import { SettingsService } from '../settings/settings.service';
+//import { UserAdsService } from '../userads/userads.service';
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
 import { diskStorage } from 'multer';
@@ -519,7 +520,124 @@ export class AdsController {
 
     }
 
+    @Post('listbyuser')
+    @UseGuards(JwtAuthGuard)
+    async adslistuser(@Req() request: Request): Promise<any> {
 
+        var email = null;
+        var ubasic = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var email = null;
+        var skip = 0;
+        var limit = 0;
+        var startdate = null;
+        var enddate = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        try {
+            ubasic = await this.userbasicsService.findOne(email);
+            var userid = mongoose.Types.ObjectId(ubasic._id);
+
+        } catch (e) {
+            throw new BadRequestException("User not found");
+        }
+
+
+        let data = await this.adsService.adsdata(userid, startdate, enddate, skip, limit);
+
+        var totalSearch = data.length;
+
+        return { response_code: 202, data, totalSearch, skip, limit, messages };
+    }
+
+    // @Post('details')
+    // @UseGuards(JwtAuthGuard)
+    // async adsdetail(@Req() request: Request): Promise<any> {
+
+    //     var id = null;
+    //     var dataads = null;
+    //     var data = null;
+    //     var datauserads = null;
+    //     const mongoose = require('mongoose');
+    //     var ObjectId = require('mongodb').ObjectId;
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    //     const messages = {
+    //         "info": ["The process successful"],
+    //     };
+    //     if (request_json["id"] !== undefined) {
+    //         id = request_json["id"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+
+
+
+    //     try {
+    //         dataads = await this.adsService.adsdatabyid(mongoose.Types.ObjectId(id));
+
+    //         var adsid = dataads[0]._id;
+
+    //         datauserads = await this.userAdsService.findAdsid(mongoose.Types.ObjectId(adsid));
+
+    //         data = [{
+    //             "_id": id,
+    //             "mediaBasePath": dataads[0].mediaBasePath,
+    //             "mediaUri": dataads[0].mediaUri,
+    //             "mediaType": dataads[0].mediaType,
+    //             "mediaThumbUri": dataads[0].mediaThumbUri,
+    //             "mediaThumbEndpoint": dataads[0].mediaThumbEndpoint,
+    //             "mediaEndpoint": dataads[0].mediaEndpoint,
+    //             "fullName": dataads[0].fullName,
+    //             "email": dataads[0].email,
+    //             "timestamp": dataads[0].timestamp,
+    //             "expiredAt": dataads[0].expiredAt,
+    //             "gender": dataads[0].gender,
+    //             "liveAt": dataads[0].liveAt,
+    //             "name": dataads[0].name,
+    //             "objectifitas": dataads[0].objectifitas,
+    //             "status": dataads[0].status,
+    //             "totalClick": dataads[0].totalClick,
+    //             "totalUsedCredit": dataads[0].totalUsedCredit,
+    //             "totalView": dataads[0].totalView,
+    //             "urlLink": dataads[0].urlLink,
+    //             "isActive": dataads[0].isActive,
+    //             "userAds": datauserads
+    //         }];
+
+
+    //     } catch (e) {
+    //         throw new BadRequestException("data not found..");
+    //     }
+
+
+    //     return { response_code: 202, dataads, messages };
+    // }
     async parseJwt(token) {
 
         return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());

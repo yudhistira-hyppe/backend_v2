@@ -1,15 +1,15 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res, UseGuards, Request, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res, UseGuards, Request, BadRequestException, Req } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { UserAdsService } from './userads.service';
 import { CreateUserAdsDto } from './dto/create-userads.dto';
 import { AdsService } from '../ads/ads.service';
-@Controller('api/userads')
+@Controller()
 export class UserAdsController {
     constructor(private readonly userAdsService: UserAdsService,
         private readonly adsService: AdsService) { }
 
     @UseGuards(JwtAuthGuard)
-    @Post('update')
+    @Post('api/userads/update')
     async update(@Res() res, @Body() createUserAdsDto: CreateUserAdsDto, @Request() request) {
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
@@ -93,5 +93,72 @@ export class UserAdsController {
                 "message": e.toString()
             });
         }
+    }
+
+    @Post('api/ads/details')
+    @UseGuards(JwtAuthGuard)
+    async adsdetail(@Req() request: Request): Promise<any> {
+
+        var id = null;
+        var dataads = null;
+        var data = null;
+        var datauserads = null;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        const messages = {
+            "info": ["The process successful"],
+        };
+        if (request_json["id"] !== undefined) {
+            id = request_json["id"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+
+        try {
+            dataads = await this.adsService.adsdatabyid(mongoose.Types.ObjectId(id));
+
+            var adsid = dataads[0]._id;
+            try {
+                datauserads = await this.userAdsService.findAdsid(mongoose.Types.ObjectId(adsid));
+            } catch (e) {
+                datauserads = [];
+            }
+
+
+            data = [{
+                "_id": id,
+                "mediaBasePath": dataads[0].mediaBasePath,
+                "mediaUri": dataads[0].mediaUri,
+                "mediaType": dataads[0].mediaType,
+                "mediaThumbUri": dataads[0].mediaThumbUri,
+                "mediaThumbEndpoint": dataads[0].mediaThumbEndpoint,
+                "mediaEndpoint": dataads[0].mediaEndpoint,
+                "fullName": dataads[0].fullName,
+                "email": dataads[0].email,
+                "timestamp": dataads[0].timestamp,
+                "expiredAt": dataads[0].expiredAt,
+                "gender": dataads[0].gender,
+                "liveAt": dataads[0].liveAt,
+                "name": dataads[0].name,
+                "objectifitas": dataads[0].objectifitas,
+                "status": dataads[0].status,
+                "totalClick": dataads[0].totalClick,
+                "totalUsedCredit": dataads[0].totalUsedCredit,
+                "totalView": dataads[0].totalView,
+                "urlLink": dataads[0].urlLink,
+                "isActive": dataads[0].isActive,
+                "userAds": datauserads
+            }];
+
+
+        } catch (e) {
+            throw new BadRequestException("data not found..");
+        }
+
+
+        return { response_code: 202, data, messages };
     }
 }

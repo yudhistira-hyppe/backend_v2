@@ -93,7 +93,7 @@ import { AdsUserCompareModule } from './trans/ads/adsusercompare/ads.module';
     DivisionModule,
     UserAdsModule,
     AdsModule,
-   // AdstypesModule,
+    // AdstypesModule,
     AdsplacesModule,
     GroupModule,
     ModuleModule,

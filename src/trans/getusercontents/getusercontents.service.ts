@@ -7342,7 +7342,7 @@ export class GetusercontentsService {
     const insight = await this.insightsService.findinsight();
     const diaries = await this.mediadiariesService.finddiaries();
 
-    var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate()));
+    var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
     var dateend = currentdate.toISOString();
 
@@ -8090,7 +8090,7 @@ export class GetusercontentsService {
     const diaries = await this.mediadiariesService.finddiaries();
 
     try {
-      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate()));
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
       var dateend = currentdate.toISOString();
     } catch (e) {
@@ -19263,7 +19263,7 @@ export class GetusercontentsService {
     const insight = await this.insightsService.findinsight();
     const diaries = await this.mediadiariesService.finddiaries();
     try {
-      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate()));
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
       var dateend = currentdate.toISOString();
     } catch (e) {

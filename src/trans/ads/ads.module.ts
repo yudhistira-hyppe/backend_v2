@@ -12,6 +12,7 @@ import { MediaimageadsModule } from '../../stream/mediaimageads/mediaimageads.mo
 import { UtilsModule } from '../../utils/utils.module';
 import { MediavideosadsModule } from '../../stream/mediavideosads/mediavideosads.module';
 import { SettingsModule } from '../settings/settings.module';
+//import { UserAdsModule } from '../userads/userads.module';
 @Module({
 
     imports: [
