@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateAdsDto } from './dto/create-ads.dto';
 import { Ads, AdsDocument } from './schemas/ads.schema';
 
@@ -48,6 +48,18 @@ export class AdsService {
         if (!data) {
             throw new Error('Todo is not found!');
         }
+        return data;
+    }
+
+    async updateStatusView(id: Types.ObjectId, totalView: number): Promise<Object> {
+        let data = await this.adsModel.updateOne({ "_id": id },
+            { $set: { "totalView": totalView } });
+        return data;
+    }
+
+    async updateStatusClick(id: Types.ObjectId, totalClick: number): Promise<Object> {
+        let data = await this.adsModel.updateOne({ "_id": id },
+            { $set: { "totalClick": totalClick } });
         return data;
     }
 

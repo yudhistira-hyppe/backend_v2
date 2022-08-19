@@ -13,6 +13,7 @@ import { FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import { ErrorHandler } from "../../utils/error.handler";
 import { SeaweedfsService } from "../../stream/seaweedfs/seaweedfs.service";
 import { UtilsService } from "../../utils/utils.service";
+import { SettingsService } from '../settings/settings.service';
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
 import { diskStorage } from 'multer';
@@ -65,7 +66,8 @@ export class AdsController {
         private readonly adstypesService: AdstypesService,
         private readonly errorHandler: ErrorHandler,
         private readonly utilsService: UtilsService,
-        private readonly seaweedfsService: SeaweedfsService) { }
+        private readonly seaweedfsService: SeaweedfsService,
+        private readonly settingsService: SettingsService,) { }
 
 
     @UseGuards(JwtAuthGuard)
@@ -516,9 +518,14 @@ export class AdsController {
 
 
     }
+
+
     async parseJwt(token) {
 
         return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     };
 
 }
+
+
+

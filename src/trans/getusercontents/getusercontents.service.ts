@@ -59,11 +59,11 @@ export class GetusercontentsService {
         $match: {
           $or: [{
             description: {
-              $regex: keys
+              $regex: keys, $options: 'i'
             }, postType: postType
           }, {
             tags: {
-              $regex: keys
+              $regex: keys, $options: 'i'
             }, postType: postType
           }]
         }
@@ -86,7 +86,7 @@ export class GetusercontentsService {
         $match: {
 
           tags: {
-            $regex: keys
+            $regex: keys, $options: 'i'
           }
 
 
@@ -1181,7 +1181,7 @@ export class GetusercontentsService {
     const diaries = await this.mediadiariesService.finddiaries();
 
     const query = await this.getusercontentsModel.aggregate([
-      { $match: { email: email, title: { $regex: title } } },
+      { $match: { email: email, title: { $regex: title, $options: 'i' } } },
       {
         $addFields: {
           ubasic_id: '$userProfile.$id',
@@ -4721,7 +4721,7 @@ export class GetusercontentsService {
         $match: {
           email: email,
           location: {
-            $regex: countries
+            $regex: countries, $options: 'i'
           }
         }
       },
@@ -23306,11 +23306,11 @@ export class GetusercontentsService {
         $match: {
           $or: [{
             description: {
-              $regex: keys
+              $regex: keys, $options: 'i'
             }, postType: postType, visibility: "PUBLIC", active: true
           }, {
             tags: {
-              $regex: keys
+              $regex: keys, $options: 'i'
             }, postType: postType, visibility: "PUBLIC", active: true
           }]
         }
@@ -23652,7 +23652,7 @@ export class GetusercontentsService {
         $match: {
 
           tags: {
-            $regex: keys
+            $regex: keys, $options: 'i'
           }
 
         }

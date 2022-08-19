@@ -11,10 +11,11 @@ import { SeaweedfsModule } from '../../stream/seaweedfs/seaweedfs.module';
 import { MediaimageadsModule } from '../../stream/mediaimageads/mediaimageads.module';
 import { UtilsModule } from '../../utils/utils.module';
 import { MediavideosadsModule } from '../../stream/mediavideosads/mediavideosads.module';
+import { SettingsModule } from '../settings/settings.module';
 @Module({
 
     imports: [
-        ConfigModule.forRoot(), UservouchersModule, UserbasicsModule, AdstypesModule, SeaweedfsModule,MediaimageadsModule,UtilsModule,MediavideosadsModule,
+        ConfigModule.forRoot(), UservouchersModule, UserbasicsModule, AdstypesModule, SeaweedfsModule, MediaimageadsModule, UtilsModule, MediavideosadsModule, SettingsModule,
         MongooseModule.forFeature([{ name: Ads.name, schema: AdsSchema }], 'SERVER_TRANS')
     ],
     controllers: [AdsController],

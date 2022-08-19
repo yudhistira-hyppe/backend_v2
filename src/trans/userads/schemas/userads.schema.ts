@@ -19,9 +19,9 @@ export class UserAds {
     @Prop()
     priority: String;
     @Prop()
-    statusClick: String;
+    statusClick: boolean;
     @Prop()
-    statusView: String;
+    statusView: boolean;
     @Prop()
     updatedAt: String;
     @Prop({ type: mongoose.Schema.Types.ObjectId })
@@ -31,6 +31,6 @@ export class UserAds {
     @Prop()
     liveAt: String;
     @Prop()
-    viewed: Double;
+    viewed: number;
 }
 export const UserAdsSchema = SchemaFactory.createForClass(UserAds);

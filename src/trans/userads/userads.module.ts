@@ -5,10 +5,10 @@ import { UserAdsController } from './userads.controller';
 import { UserAdsService } from './userads.service';
 import { ConfigModule } from '@nestjs/config';
 import { UserAds, UserAdsSchema } from './schemas/userads.schema';
-
+import { AdsModule } from '../ads/ads.module';
 @Module({
     imports: [
-        ConfigModule.forRoot(),
+        ConfigModule.forRoot(), AdsModule,
         MongooseModule.forFeature([{ name: UserAds.name, schema: UserAdsSchema }], 'SERVER_TRANS')
     ],
     controllers: [UserAdsController],
