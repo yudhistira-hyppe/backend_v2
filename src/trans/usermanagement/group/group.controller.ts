@@ -7,7 +7,7 @@ import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
 import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
 import { DivisionService } from '../division/division.service';
-import { UserauthsService } from 'src/trans/userauths/userauths.service';
+import { UserauthsService } from '../../../trans/userauths/userauths.service';
 import { ObjectId } from 'mongodb';
 import { Schema } from 'mongoose';
 
