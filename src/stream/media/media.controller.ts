@@ -197,7 +197,7 @@ export class MediaController {
                 }
 
                 //Delete directory recursively
-                fs.rmdir('./temp/' + mongoose_gen_media.toString(), { recursive: true }, (err) => {
+                fs.rm('./temp/' + mongoose_gen_media.toString(), { recursive: true }, (err) => {
                     if (err) {
                         throw err;
                     }
@@ -531,7 +531,7 @@ export class MediaController {
             }
 
             //Delete directory recursively
-            fs.rmdir('./temp/' + mongoose_gen_meida._id.toString(), { recursive: true }, (err) => {
+            fs.rm('./temp/' + mongoose_gen_meida._id.toString(), { recursive: true }, (err) => {
                 if (err) {
                     throw err;
                 }
