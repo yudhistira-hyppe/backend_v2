@@ -39,14 +39,9 @@ export class UserAdsController {
         var viewewd = null;
         var totalView = null;
         var totalClick = null;
+        var lenghtuserads = null;
 
-        try {
-            datauserads = await this.userAdsService.findAdsid(adsid);
-            console.log(datauserads);
-            viewewd = datauserads._doc.viewed;
-        } catch (e) {
-            throw new BadRequestException("data user ads not found..");
-        }
+
 
         try {
             dataads = await this.adsService.findOne(adsID);
@@ -61,29 +56,43 @@ export class UserAdsController {
             statusView = createUserAdsDto.statusView;
             statusClick = createUserAdsDto.statusClick;
 
-            if (statusView === true) {
-                createUserAdsDto.viewAt = dt.toISOString();
-                createUserAdsDto.viewed = viewewd + 1;
-                data = await this.userAdsService.updatesdata(adsid, createUserAdsDto);
-                var ads = await this.adsService.updateStatusView(adsid, totalView + 1);
-                res.status(HttpStatus.OK).json({
-                    response_code: 202,
-                    "data": data,
-                    "message": messages
-                });
+            try {
+                datauserads = await this.userAdsService.findAdsid(adsid);
+                lenghtuserads = datauserads.length;
 
+                for (var i = 0; i < lenghtuserads; i++) {
+                    viewewd = datauserads[i].viewed;
+
+                    if (statusView === true) {
+                        createUserAdsDto.viewAt = dt.toISOString();
+                        createUserAdsDto.viewed = viewewd + 1;
+                        data = await this.userAdsService.updatesdata(adsid, createUserAdsDto);
+                        var ads = await this.adsService.updateStatusView(adsid, totalView + 1);
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": messages
+                        });
+
+                    }
+                    if (statusClick === true) {
+                        createUserAdsDto.clickAt = dt.toISOString();
+                        createUserAdsDto.viewed = viewewd + 1;
+                        data = await this.userAdsService.updatesdata(adsid, createUserAdsDto);
+                        var ads = await this.adsService.updateStatusClick(adsid, totalClick + 1);
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": messages
+                        });
+                    }
+                }
+
+
+            } catch (e) {
+                throw new BadRequestException("data user ads not found..");
             }
-            if (statusClick === true) {
-                createUserAdsDto.clickAt = dt.toISOString();
-                createUserAdsDto.viewed = viewewd + 1;
-                data = await this.userAdsService.updatesdata(adsid, createUserAdsDto);
-                var ads = await this.adsService.updateStatusClick(adsid, totalClick + 1);
-                res.status(HttpStatus.OK).json({
-                    response_code: 202,
-                    "data": data,
-                    "message": messages
-                });
-            }
+
 
 
 
