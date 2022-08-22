@@ -731,7 +731,9 @@ export class MediaController {
 
 
             var paths = datamediaproofService.mediaBasePath.toString();
-            var mongoose_gen_meida = paths.replace("/PROOF_PICTURE/", "");
+            // var mongoose_gen_meida = paths.replace("/PROOF_PICTURE/", "");
+            var mongoose_gen_meidas = paths.split('/');
+            var mongoose_gen_meida = mongoose_gen_meidas[0];
             //Ceck supportFile
             if (files != undefined) {
 
@@ -831,11 +833,11 @@ export class MediaController {
 
             //Delete directory recursively
 
-            // fs.rm('./temp/' + mongoose_gen_meida, { recursive: true }, (err) => {
-            //     if (err) {
-            //         throw err;
-            //     }
-            // });
+            fs.rm('./temp/' + mongoose_gen_meida, { recursive: true }, (err) => {
+                if (err) {
+                    throw err;
+                }
+            });
 
             return {
                 "response_code": 202,
