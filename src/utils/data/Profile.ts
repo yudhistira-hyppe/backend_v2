@@ -10,8 +10,8 @@ export class ProfileDTO {
     fullName: String;
     email: String;
     langIso: String;
-    location: LocationDTO; 
-    regSrc: String; 
+    location: LocationDTO;
+    regSrc: String;
     interest: Array<String>;
     bio: String;
     deviceId: String;
@@ -31,15 +31,15 @@ export class ProfileDTO {
     isPostPrivate: String;
     isComplete: String;
     group: Object;
-    division: Object; 
-    isEmailVerified: String; 
+    division: Object;
+    isEmailVerified: String;
     otp: String;
     otpToken: String;
     event: String;
     status: String;
     oldPass: String;
-    newPass: String; 
-    avatar: AvatarDTO; 
+    newPass: String;
+    avatar: AvatarDTO;
     roles: Array<String>;
     authEmail: String;
     token: String;
@@ -51,6 +51,7 @@ export class ProfileDTO {
     imei: String;
     referralCount: String;
     children: Array<CreateReferralDto>;
+    listSetting: any[];
 }
 
 export class LocationDTO {

@@ -20,7 +20,7 @@ export class AdsUserCompareService {
         private readonly userbasicsService: UserbasicsService,
         private readonly errorHandler: ErrorHandler,
         private readonly userauthsService: UserauthsService,
-        private readonly areasService: AreasService, 
+        private readonly areasService: AreasService,
         private readonly userAdsService: UserAdsService,
     ) { }
 
@@ -41,7 +41,7 @@ export class AdsUserCompareService {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, Ads status is live',
                 );
-            }else{
+            } else {
                 try {
                     await this.adsService.update(_CreateAdsDto_._id.toString(), _CreateAdsDto_);
                 } catch (s) {
@@ -65,7 +65,7 @@ export class AdsUserCompareService {
         var UserSelfInsert = true;
         //UserSelfInsert = await this.utilsService.getSetting("UserSelfInsert");
         data_user.forEach(async element => {
-            if (element._id == _CreateAdsDto_.userID){
+            if (element._id == _CreateAdsDto_.userID) {
                 var data_user_auth = await this.userauthsService.findOneByEmail(element.email);
                 var user_location_long = null;
                 var user_location_lat = null;
@@ -93,7 +93,7 @@ export class AdsUserCompareService {
                 var user_array_interest_toString = null;
                 var user_array_interest_string = null;
 
-                var compare_interest=null;
+                var compare_interest = null;
                 var Count_compare_interest = null;
 
                 if (ads_array_interest.length > 0) {
@@ -104,7 +104,7 @@ export class AdsUserCompareService {
                     user_array_interest_toString = user_array_interest.map(function (item) { return '"' + JSON.parse(JSON.stringify(item)).$id + '"' }).join(",");
                     user_array_interest_string = JSON.parse("[" + user_array_interest_toString + "]");
                 }
-                if (ads_array_interest_string != null && user_array_interest_string != null){
+                if (ads_array_interest_string != null && user_array_interest_string != null) {
                     compare_interest = ads_array_interest_string.filter(function (obj) {
                         return user_array_interest_string.indexOf(obj) !== -1;
                     });
@@ -188,9 +188,9 @@ export class AdsUserCompareService {
                     CreateUserAdsDto_.description = _CreateAdsDto_.description;
                 }
                 CreateUserAdsDto_.createdAt = current_date;
-                CreateUserAdsDto_.statusClick = 'NO';
-                CreateUserAdsDto_.statusView = 'NO';
-                CreateUserAdsDto_.viewed = new Double(0);
+                CreateUserAdsDto_.statusClick = false;
+                CreateUserAdsDto_.statusView = false;
+                CreateUserAdsDto_.viewed = 0;
                 CreateUserAdsDto_.liveAt = _CreateAdsDto_.liveAt;
                 const createUserAdsDto = await this.userAdsService.create(CreateUserAdsDto_);
             }

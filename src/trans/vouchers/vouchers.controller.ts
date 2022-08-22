@@ -94,7 +94,11 @@ export class VouchersController {
     async findAll(): Promise<Vouchers[]> {
         return this.vouchersService.findAll();
     }
-
+    @UseGuards(JwtAuthGuard)
+    @Get(':id')
+    async findid(@Param('id') id: string): Promise<Vouchers> {
+        return this.vouchersService.findOne(id);
+    }
     @UseGuards(JwtAuthGuard)
     @Post('listactive')
     async findNonExpired(@Req() request: Request): Promise<any> {

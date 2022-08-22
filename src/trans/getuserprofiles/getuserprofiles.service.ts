@@ -310,7 +310,7 @@ export class GetuserprofilesService {
       {
         "$match": {
           "userAuth_data.username": {
-            $regex: username
+            $regex: username, $options: 'i'
           }
         }
       },
@@ -524,7 +524,7 @@ export class GetuserprofilesService {
       {
         $lookup:
         {
-          
+
           from: "group",
           let: { userName: { $toString: '$_id' } },
           pipeline: [
@@ -715,7 +715,7 @@ export class GetuserprofilesService {
       {
         "$match": {
           "userAuth_data.username": {
-            $regex: username
+            $regex: username, $options: 'i'
           }
         }
       },

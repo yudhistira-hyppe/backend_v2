@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, HttpStatus, Put, Headers, UploadedFiles, UseInterceptors, HttpCode, HttpException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, HttpStatus, Put, Headers, UploadedFiles, UseInterceptors, HttpCode, HttpException, Req, BadRequestException } from '@nestjs/common';
 import { AdsService } from './ads.service';
 import { CreateAdsDto, MediaimageadsDto, MediavodeosadsDto } from './dto/create-ads.dto';
 import { Ads } from './schemas/ads.schema';
@@ -13,6 +13,8 @@ import { FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import { ErrorHandler } from "../../utils/error.handler";
 import { SeaweedfsService } from "../../stream/seaweedfs/seaweedfs.service";
 import { UtilsService } from "../../utils/utils.service";
+import { SettingsService } from '../settings/settings.service';
+//import { UserAdsService } from '../userads/userads.service';
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
 import { diskStorage } from 'multer';
@@ -65,7 +67,8 @@ export class AdsController {
         private readonly adstypesService: AdstypesService,
         private readonly errorHandler: ErrorHandler,
         private readonly utilsService: UtilsService,
-        private readonly seaweedfsService: SeaweedfsService) { }
+        private readonly seaweedfsService: SeaweedfsService,
+        private readonly settingsService: SettingsService,) { }
 
 
     @UseGuards(JwtAuthGuard)
@@ -516,9 +519,70 @@ export class AdsController {
 
 
     }
+
+    @Post('listbyuser')
+    @UseGuards(JwtAuthGuard)
+    async adslistuser(@Req() request: Request): Promise<any> {
+
+        var email = null;
+        var ubasic = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var email = null;
+        var skip = 0;
+        var limit = 0;
+        var startdate = null;
+        var enddate = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        try {
+            ubasic = await this.userbasicsService.findOne(email);
+            var userid = mongoose.Types.ObjectId(ubasic._id);
+
+        } catch (e) {
+            throw new BadRequestException("User not found");
+        }
+
+
+        let data = await this.adsService.adsdata(userid, startdate, enddate, skip, limit);
+
+        var totalSearch = data.length;
+
+        return { response_code: 202, data, totalSearch, skip, limit, messages };
+    }
+
+
     async parseJwt(token) {
 
         return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     };
 
 }
+
+
+
