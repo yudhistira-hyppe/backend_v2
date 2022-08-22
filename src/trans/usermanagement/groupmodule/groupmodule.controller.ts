@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Query, Post, UseGuards, Param } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
 import { GroupModuleService } from './groupmodule.service';
