@@ -420,7 +420,7 @@ export class AdsController {
             }
 
             //Delete directory recursively
-            fs.rmdir('./temp/' + mongoose_gen_meida, { recursive: true }, (err) => {
+            fs.rm('./temp/' + mongoose_gen_meida, { recursive: true }, (err) => {
                 if (err) {
                     throw err;
                 }
