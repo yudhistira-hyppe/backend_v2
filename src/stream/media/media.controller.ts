@@ -726,7 +726,9 @@ export class MediaController {
 
 
             var paths = datamediaproofService.mediaBasePath.toString();
-            var mongoose_gen_meida = paths.replace("/PROOF_PICTURE/", "");
+            // var mongoose_gen_meida = paths.replace("/PROOF_PICTURE/", "");
+            var mongoose_gen_meidas = paths.split('/');
+            var mongoose_gen_meida = mongoose_gen_meidas[0];
             //Ceck supportFile
             if (files != undefined) {
 
