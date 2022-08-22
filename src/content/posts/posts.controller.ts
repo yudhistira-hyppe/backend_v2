@@ -18,7 +18,7 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
-import { GroupModuleService } from 'src/trans/usermanagement/groupmodule/groupmodule.service';
+import { GroupModuleService } from '../../trans/usermanagement/groupmodule/groupmodule.service';
 
 @Controller()
 export class PostsController {

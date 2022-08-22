@@ -6,7 +6,7 @@ import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { UtilsService } from "../../../utils/utils.service";
 import { ErrorHandler } from "../../../utils/error.handler";
 import { PostsService } from "../../../content/posts/posts.service";
-import { ProfileDTO } from 'src/utils/data/Profile';
+import { ProfileDTO } from '../../../utils/data/Profile';
 
 @Controller()
 export class GetcontenteventsController {
