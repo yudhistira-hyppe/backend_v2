@@ -175,9 +175,9 @@ export class GetcontenteventsController {
         return { response_code: 202, data, messages };
     }
 
-    @Post('api/post/viewlike')
+    //@UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
-    @UseGuards(JwtAuthGuard)
+    @Post('api/post/viewlike')
     async getViewLike(
         @Body() CreateGetcontenteventsDto_: CreateGetcontenteventsDto,
         @Headers() headers
