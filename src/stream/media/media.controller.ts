@@ -16,6 +16,7 @@ import { MediaprofilepictsService } from "../../content/mediaprofilepicts/mediap
 import mongoose from "mongoose";
 import { SettingsService } from "../../trans/settings/settings.service";
 import { JwtAuthGuard } from "../../auth/jwt-auth.guard";
+import { UserauthsService } from "../../trans/userauths/userauths.service";
 //import FormData from "form-data";
 const multer = require('multer');
 var FormData = require('form-data');
@@ -60,8 +61,9 @@ export class MediaController {
         private readonly utilsService: UtilsService,
         private readonly settingsService: SettingsService,
         private readonly mediaproofpictsService: MediaproofpictsService,
-        private readonly userbasicsService: UserbasicsService,
+        private readonly userbasicsService: UserbasicsService, 
         private readonly mediaprofilepictsService: MediaprofilepictsService,
+        private readonly userauthsService: UserauthsService,
         private readonly seaweedfsService: SeaweedfsService) { }
 
     @UseGuards(JwtAuthGuard)
@@ -290,6 +292,7 @@ export class MediaController {
 
         let id_mediaproofpicts_ = null;
         let iduserbasic = null;
+        let emailuserbasic = null;
         //Var current date
         var current_date = await this.utilsService.getDateTimeString();
 
@@ -554,12 +557,14 @@ export class MediaController {
                     face_detect_selfiepict = await this.awsService.comparing(data_comparing);
                     if (face_detect_selfiepict.FaceMatches.length > 0) {
                         iduserbasic = datauserbasicsService._id;
+                        emailuserbasic = datauserbasicsService.email;
                         var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                         _CreateMediaproofpictsDto.status = 'FINISH';
                         _CreateMediaproofpictsDto.valid = true;
                         await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                         iduserbasic = datauserbasicsService._id;
                         await this.userbasicsService.updateIdVerified(iduserbasic);
+                        await this.userauthsService.update(emailuserbasic, 'ROLE_PREMIUM');
 
                         return {
                             "response_code": 202,

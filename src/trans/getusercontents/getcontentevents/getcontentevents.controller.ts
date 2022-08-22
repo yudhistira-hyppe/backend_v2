@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { UtilsService } from "../../../utils/utils.service";
 import { ErrorHandler } from "../../../utils/error.handler";
 import { PostsService } from "../../../content/posts/posts.service";
+import { ProfileDTO } from 'src/utils/data/Profile';
 
 @Controller()
 export class GetcontenteventsController {
@@ -206,10 +207,28 @@ export class GetcontenteventsController {
         );
         if (await this.utilsService.ceckData(datapostsService)) {
             CreateGetcontenteventsDto_.receiverParty = datapostsService.email;
-            var data = await this.getcontenteventsService.findAllviewlike(CreateGetcontenteventsDto_);
+            var data_contentevents = await this.getcontenteventsService.getConteneventbyType(CreateGetcontenteventsDto_);
+            var data_response = [];
+            if (await this.utilsService.ceckData(data_contentevents)){
+                if (data_contentevents.length > 0) {
+                    for (var i = 0; i < data_contentevents.length; i++) {
+                        const data_profile = await this.utilsService.generateProfile(data_contentevents[i].email, 'FULL');
+                        var ProfileDTO_ = new ProfileDTO();
+                        ProfileDTO_.fullName = data_profile.fullName;
+                        ProfileDTO_.email = data_profile.email;
+                        ProfileDTO_.username = data_profile.username;
+                        ProfileDTO_.avatar = data_profile.avatar;
+                        var mediaEndpoint = data_profile.avatar.mediaEndpoint;
+                        if (mediaEndpoint != undefined) {
+                            ProfileDTO_.avatar.profilePict_id = mediaEndpoint.replace("/profilepict/", "");
+                        }
+                        data_response.push(ProfileDTO_);
+                    }
+                }
+            }
             var response = {
                 "response_code": 202,
-                "data": data,
+                "data": data_response,
                 "messages": {
                     "info": [
                         "successfully"

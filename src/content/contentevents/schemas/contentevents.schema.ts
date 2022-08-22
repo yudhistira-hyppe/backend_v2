@@ -26,8 +26,12 @@ export class Contentevents {
  sequenceNumber:Number
  @Prop()
  flowIsDone: boolean
- @Prop()
- _class:String
+@Prop()
+postID: String;
+@Prop()
+senderParty: String;
+@Prop()
+receiverParty: String;
 }
 
 export const ContenteventsSchema = SchemaFactory.createForClass(Contentevents);

@@ -814,6 +814,11 @@ export class GetcontenteventsService {
         return query;
     }
 
+    async getConteneventbyType(CreateGetcontenteventsDto_: CreateGetcontenteventsDto): Promise<any[]>{
+        const getcontenteventsModel = await this.contenteventsService.getConteneventbyType(CreateGetcontenteventsDto_);
+        return getcontenteventsModel;
+    }
+
 
     async findAllviewlike(CreateGetcontenteventsDto_: CreateGetcontenteventsDto): Promise<Getcontentevents[]> {
         await this.contenteventsService.findcontent();
