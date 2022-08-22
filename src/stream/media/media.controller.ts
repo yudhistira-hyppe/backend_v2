@@ -723,8 +723,10 @@ export class MediaController {
         if (await this.utilsService.ceckData(datamediaproofService)) {
             // var mongoose_gen_meida = new mongoose.Types.ObjectId();
 
-            var paths = datamediaproofService.mediaSelfieBasePath.toString();
-            var mongoose_gen_meida = paths.replace("/selfiepict/", "");
+
+
+            var paths = datamediaproofService.mediaBasePath.toString();
+            var mongoose_gen_meida = paths.replace("/PROOF_PICTURE/", "");
             //Ceck supportFile
             if (files != undefined) {
 
