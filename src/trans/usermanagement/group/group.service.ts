@@ -36,6 +36,34 @@ export class GroupService {
         return this.groupModel.findOne({ _id: _id }).exec();
     }
 
+    async findByid(_id: String): Promise<any> {
+        var GetGroup = this.groupModel.aggregate([
+            {
+                $addFields: {
+                    division_id: '$divisionId',
+                    group_id: '$group._id',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'division',
+                    localField: 'division_id',
+                    foreignField: '_id',
+                    as: 'division_data',
+                },
+            },
+            {
+                $lookup: {
+                    from: 'groupmodule',
+                    localField: 'group_id',
+                    foreignField: 'group',
+                    as: 'groupmodule_data',
+                },
+            },
+        ]).exec();
+        return GetGroup;
+    }
+
     async findOnebyName(nameGroup: String): Promise<Group> {
         return this.groupModel.findOne({ nameGroup: nameGroup }).exec();
     }

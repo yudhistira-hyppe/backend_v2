@@ -8,6 +8,8 @@ import { ErrorHandler } from '../../../utils/error.handler';
 import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
 import { DivisionService } from '../division/division.service';
 import { UserauthsService } from 'src/trans/userauths/userauths.service';
+import { ObjectId } from 'mongodb';
+import { Schema } from 'mongoose';
 
 @Controller('/api/group')
 export class GroupController {
@@ -132,6 +134,22 @@ export class GroupController {
             "messages": {
                 "info": [
                     "Get list group user successfully"
+                ]
+            },
+        };
+    }
+    
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Get('/:id')
+    async getByid(@Param('id') id: string) {
+        var data = await this.groupService.findByid(id);
+        return {
+            "response_code": 202,
+            "data": data,
+            "messages": {
+                "info": [
+                    "Get group successfully"
                 ]
             },
         };
