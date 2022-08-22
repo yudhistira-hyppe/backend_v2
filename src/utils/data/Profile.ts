@@ -60,6 +60,7 @@ export class LocationDTO {
 }
 
 export class AvatarDTO {
+    profilePict_id: String;
     mediaBasePath: String;
     mediaUri: String;
     mediaType: String;

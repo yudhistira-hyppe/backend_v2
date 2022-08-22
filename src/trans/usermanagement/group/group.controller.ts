@@ -1,13 +1,13 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Query, Post, UseGuards, Param } from '@nestjs/common';
 import { GroupService } from './group.service';
 import { GroupDto } from './dto/group.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { Group } from './schemas/group.schema'; 
 import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
 import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
 import { DivisionService } from '../division/division.service';
-import { UserauthsService } from 'src/trans/userauths/userauths.service';
+import { UserauthsService } from '../../../trans/userauths/userauths.service';
 import { ObjectId } from 'mongodb';
 import { Schema } from 'mongoose';
 

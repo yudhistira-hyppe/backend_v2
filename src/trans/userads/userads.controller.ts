@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, HttpStatus, Param, Post, Res, UseGuards, Request, BadRequestException, Req } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserAdsService } from './userads.service';
 import { CreateUserAdsDto } from './dto/create-userads.dto';
 import { AdsService } from '../ads/ads.service';

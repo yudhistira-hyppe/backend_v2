@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Double } from 'mongodb';
 import mongoose, { Model } from 'mongoose';
-import { CreateUserAdsDto } from 'src/trans/userads/dto/create-userads.dto';
+import { CreateUserAdsDto } from '../../../trans/userads/dto/create-userads.dto';
 import { AreasService } from '../../../infra/areas/areas.service';
 import { UserauthsService } from '../../../trans/userauths/userauths.service';
 import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';

@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { CreateGetcontenteventsDto } from 'src/trans/getusercontents/getcontentevents/dto/create-getcontentevents.dto';
 import { CreateContenteventsDto } from './dto/create-contentevents.dto';
 import { Contentevents, ContenteventsDocument } from './schemas/contentevents.schema';
 
@@ -22,6 +23,17 @@ export class ContenteventsService {
 
   async findAll(): Promise<Contentevents[]> {
     return this.ContenteventsModel.find().exec();
+  }
+
+  async getConteneventbyType(CreateGetcontenteventsDto_: CreateGetcontenteventsDto): Promise<Contentevents[]> {
+    
+
+
+    return this.ContenteventsModel.find({
+      postID: CreateGetcontenteventsDto_.postID,
+          eventType: CreateGetcontenteventsDto_.eventType,
+      receiverParty: CreateGetcontenteventsDto_.receiverParty,
+    }).exec();
   }
 
   //    async findOne(id: string): Promise<Contentevents> {
