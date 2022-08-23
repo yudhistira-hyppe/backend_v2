@@ -39,25 +39,50 @@ export class GroupService {
     async findByid(_id: String): Promise<any> {
         var GetGroup = this.groupModel.aggregate([
             {
-                $addFields: {
-                    division_id: '$divisionId',
-                    group_id: '$group._id',
-                },
-            },
-            {
                 $lookup: {
                     from: 'division',
-                    localField: 'division_id',
-                    foreignField: '_id',
-                    as: 'division_data',
-                },
+                    let: { division_Id: "$divisionId" },
+                    pipeline: [
+                        { "$addFields": { "_id": { "$toString": "$_id" } } },
+                        { "$match": { "$expr": { "$eq": ["$_id", "$$division_Id"] } } }
+                    ],
+                    as: 'division_data'
+                }
             },
             {
                 $lookup: {
                     from: 'groupmodule',
-                    localField: 'group_id',
-                    foreignField: 'group',
+                    let: { group_id: "$_id" },
+                    pipeline: [
+                        { "$addFields": { "group": { "$toObjectId": "$group" } } },
+                        { "$match": { "$expr": { "$eq": ["$group", "$$group_id"] } } }
+                    ],
                     as: 'groupmodule_data',
+                },
+            },
+            {
+                $project: {
+                    _id: '$_id',
+                    nameGroup: '$nameGroup',
+                    divisionId: { $arrayElemAt: ['$division_data._id', 0] },
+                    nameDivision: { $arrayElemAt: ['$division_data.nameDivision', 0] },
+                    fullName: '$fullName',
+                    createAt: '$createAt',
+                    updateAt: '$updateAt',
+                    desc: '$desc',
+                    accesModule: {
+                        "$map": {
+                            "input": "$groupmodule_data",
+                            "as": "dline",
+                            "in": {
+                                "module": "$$dline.module",
+                                "createAcces": "$$dline.createAcces",
+                                "updateAcces": "$$dline.updateAcces",
+                                "deleteAcces": "$$dline.deleteAcces",
+                                "viewAcces": "$$dline.viewAcces"
+                            }
+                        }
+                    } 
                 },
             },
         ]).exec();

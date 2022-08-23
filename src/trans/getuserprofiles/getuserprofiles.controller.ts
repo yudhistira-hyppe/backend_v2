@@ -58,7 +58,8 @@ export class GetuserprofilesController {
     @Query('skip') skip: number,
     @Query('limit') limit: number,
     @Query('search') search: string,
-    @Query('searchemail') searchemail: string) {
+    @Query('searchemail') searchemail: string,
+    @Query('groupId') groupId: string) {
     console.log(skip);
     console.log(limit);
     if (search==undefined){
@@ -67,15 +68,17 @@ export class GetuserprofilesController {
     if (searchemail == undefined) {
       searchemail = "";
     }
+    if (groupId == undefined) {
+      groupId = "";
+    }
     if (skip == undefined) {
       skip = 0;
     }
     if (limit == undefined) {
       limit = 100;
     }
-    var data = await this.getuserprofilesService.getUserHyppe(searchemail, search, Number(skip), Number(limit));
+    var data = await this.getuserprofilesService.getUserHyppe(searchemail, search, Number(skip), Number(limit), groupId);
     var totalRow = (await this.getuserprofilesService.countUserHyppe(searchemail, search)).length;
-    console.log(totalRow);
     return {
       response_code: 202, data: data, totalRow:totalRow, skip: skip, limit: limit, messages:{}
     }

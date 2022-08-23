@@ -10,6 +10,7 @@ import { LanguagesService } from '../../infra/languages/languages.service';
 import { InsightsService } from '../../content/insights/insights.service';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { InterestsRepoService } from '../../infra/interests_repo/interests_repo.service';
+import { ObjectId } from 'mongodb';
 @Injectable()
 export class GetuserprofilesService {
   constructor(
@@ -362,9 +363,12 @@ export class GetuserprofilesService {
     return query;
   }
 
-  async getUserHyppe(searchemail: string, search: string, skip: number, limit: number) {
+  async getUserHyppe(searchemail: string, search: string, skip: number, limit: number, groupId: string) {
     const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-
+    var groupId_match = {};
+    if (groupId!=""){
+      groupId_match = { 'group_userbasics._id': new ObjectId(groupId) } 
+    }
     const query = await this.getuserprofilesModel.aggregate([
       {
         $addFields: {
@@ -422,10 +426,13 @@ export class GetuserprofilesService {
           "preserveNullAndEmptyArrays": false
         }
       },
-
       {
         "$match": {
-          $and: [{ "userAuth_data.username": { $regex: search } }, { "userAuth_data.email": { $regex: searchemail } }, { "userAuth_data.email": /@hyppe.id/i }]
+          $and: [
+            groupId_match,
+            { "userAuth_data.username": { $regex: search } }, 
+            { "userAuth_data.email": { $regex: searchemail } }, 
+            { "userAuth_data.email": /@hyppe.id/i }]
         }
       },
       {
@@ -459,6 +466,7 @@ export class GetuserprofilesService {
           username: '$username',
           fullName: '$fullName',
           group: '$group_userbasics.nameGroup',
+          groupId: '$group_userbasics._id',
           email: '$email',
           status: '$isIdVerified',
           avatar: {
@@ -470,6 +478,10 @@ export class GetuserprofilesService {
           },
         },
       },
+
+      // {
+      //   "$match": groupId_match
+      // },
       // {
       //   $facet: {
       //     paginatedResults: [{ $skip: skip }, { $limit: skip }],

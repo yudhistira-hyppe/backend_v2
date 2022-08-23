@@ -55,6 +55,17 @@ export class UserbasicsService {
     );
   }
 
+  async updateStatus(email: string, status: Boolean): Promise<Object> {
+    let data = await this.userbasicModel.updateOne({ "email": email },
+      {
+        $set: {
+          "isIdVerified": status
+        }
+      },
+    );
+    return data;
+  }
+
   async update(
     id: string,
     createUserbasicDto: CreateUserbasicDto,
