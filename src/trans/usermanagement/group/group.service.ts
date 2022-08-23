@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { GroupDto } from './dto/group.dto';
 import { Group, GroupDocument } from './schemas/group.schema';
 
@@ -38,6 +38,16 @@ export class GroupService {
 
     async findByid(_id: String): Promise<any> {
         var GetGroup = this.groupModel.aggregate([
+            // { 
+            //     $project: { 
+            //         param_id: { "$toObjectId": _id } 
+            //     }
+            // },
+            {
+                "$match": {
+                    _id: new ObjectId(_id.toString())
+                },
+            },
             {
                 $lookup: {
                     from: 'division',
