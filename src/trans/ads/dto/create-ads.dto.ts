@@ -30,6 +30,7 @@ export class CreateAdsDto {
     isActive: boolean;
     type: string;
     mediaAds: { oid: String; };
+    tayang: number;
 
 
 }

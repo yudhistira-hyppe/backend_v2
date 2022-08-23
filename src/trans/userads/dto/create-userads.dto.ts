@@ -15,4 +15,5 @@ export class CreateUserAdsDto {
     viewAt: String;
     viewed: number;
     liveAt: string;
+
 }

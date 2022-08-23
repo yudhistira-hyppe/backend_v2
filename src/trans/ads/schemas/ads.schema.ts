@@ -65,6 +65,8 @@ export class Ads {
     type: string;
     @Prop({ type: Object })
     mediaAds: { oid: String; };
+    @Prop()
+    tayang: number;
 
 
 }

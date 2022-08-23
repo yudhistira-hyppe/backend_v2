@@ -36,6 +36,8 @@ export class Vouchers {
     isActive: boolean;
     @Prop()
     description: string;
+    @Prop()
+    qty: number;
 
 }
 
