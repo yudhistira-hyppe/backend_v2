@@ -243,7 +243,9 @@ export class GroupController {
     @Delete('/delete')
     async delete(
         @Query('id') id: string,) {
-        var data = await this.groupService.delete(id);
+
+        //var data_ceck = await this.groupService.findOne(id);
+        await this.groupService.delete(id);
         return {
             "response_code": 202,
             "messages": {
