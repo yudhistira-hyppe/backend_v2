@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Query, Post, UseGuards, Param } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Query, Post, UseGuards, Param, Request, Headers } from '@nestjs/common';
 import { GroupService } from './group.service';
 import { GroupDto } from './dto/group.dto';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
@@ -359,5 +359,31 @@ export class GroupController {
                 'Unabled to proceed user not found',
             );
         }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('statususer')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async updatestatususer(@Request() req, @Headers('x-auth-token') auth: string) {
+        if (req.body.email == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed param email is required',
+            );
+        }
+        if (req.body.status == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed param status is required',
+            );
+        }
+
+        await this.userbasicsService.updateStatus(req.body.email, req.body.status);
+        return {
+            "response_code": 202,
+            "messages": {
+                "info": [
+                    "Update user to successfully"
+                ]
+            },
+        };
     }
 }
