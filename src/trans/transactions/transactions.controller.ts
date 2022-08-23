@@ -1033,7 +1033,7 @@ export class TransactionsController {
                     }
                 }
                 else {
-                    throw new BadRequestException("data not found");
+                    throw new BadRequestException("Disbursement is FAILED");
                 }
 
             }
@@ -1051,7 +1051,7 @@ export class TransactionsController {
         console.log(payload);
 
         const messages = {
-            "info": ["The update successful"],
+            "info": ["Disbursement Request has been completed (success)"],
         };
         var datarek = null;
         var databank = null;
@@ -1061,6 +1061,7 @@ export class TransactionsController {
         var recipient_account = payload.recipient_account;
         var partner_trx_id = payload.partner_trx_id;
         var statusCallback = payload.status.code;
+        var statusMessage = payload.status.message;
         try {
             databank = await this.banksService.findbankcode(recipient_bank);
             idbank = databank._doc._id;
@@ -1088,10 +1089,45 @@ export class TransactionsController {
                     "message": messages
                 });
 
-            } else {
-                throw new BadRequestException("Failed disbursement...!");
+            }
+            else if (statusCallback === "210") {
+
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload);
+
+                res.status(HttpStatus.OK).json({
+                    response_code: 202,
+                    "message": "Request is Rejected (Amount is not valid)"
+                });
+
             }
 
+            else if (statusCallback === "300") {
+
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
+
+                res.status(HttpStatus.OK).json({
+                    response_code: 202,
+                    "message": "Disbursement is FAILED"
+                });
+
+            }
+            else if (statusCallback === "301") {
+
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload);
+
+                res.status(HttpStatus.OK).json({
+                    response_code: 202,
+                    "message": "Pending (When there is a unclear answer from Banks Network)"
+                });
+
+            } else {
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
+
+                res.status(HttpStatus.OK).json({
+                    response_code: 202,
+                    "message": "Disbursement is FAILED"
+                });
+            }
         } else {
             throw new BadRequestException("recipient_account not found...!");
         }
@@ -2384,6 +2420,11 @@ export class TransactionsController {
         var limit = null;
         var databuy = null;
         var datawithdraw = null;
+        var sell = null;
+        var buy = null;
+        var withdrawal = null;
+        var data = null;
+
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
@@ -2394,17 +2435,27 @@ export class TransactionsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-        // if (request_json["startdate"] !== undefined) {
-        //     startdate = request_json["startdate"];
-        // } else {
-        //     throw new BadRequestException("Unabled to proceed");
-        // }
 
-        // if (request_json["enddate"] !== undefined) {
-        //     enddate = request_json["enddate"];
-        // } else {
-        //     throw new BadRequestException("Unabled to proceed");
-        // }
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+
+        if (request_json["sell"] !== undefined) {
+            sell = request_json["sell"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["buy"] !== undefined) {
+            buy = request_json["buy"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["withdrawal"] !== undefined) {
+            withdrawal = request_json["withdrawal"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
@@ -2423,14 +2474,113 @@ export class TransactionsController {
         var ObjectId = require('mongodb').ObjectId;
         var idadmin = mongoose.Types.ObjectId(iduser);
 
-        datasell = await this.transactionsService.findhistorySell(idadmin, skip, limit);
-        databuy = await this.transactionsService.findhistoryBuy(idadmin, skip, limit);
-        datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, skip, limit);
-        console.log(datawithdraw)
-        var data = datasell.concat(databuy, datawithdraw);
+        if (sell === true && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
+            data = datasell;
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === true && buy === false && withdrawal === false && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
+            data = datasell;
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === false && buy === true && withdrawal === false && startdate === undefined && enddate === undefined) {
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            data = databuy;
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === false && buy === true && withdrawal === false && startdate !== undefined && enddate !== undefined) {
 
-        return { response_code: 202, data, skip, limit, messages };
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            data = databuy;
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === false && buy === false && withdrawal === true && startdate === undefined && enddate === undefined) {
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            data = datawithdraw;
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === false && buy === false && withdrawal === true && startdate !== undefined && enddate !== undefined) {
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            data = datawithdraw;
+            return { response_code: 202, data, skip, limit, messages };
+        }
+
+        else if (sell === true && buy === true && withdrawal === false && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(databuy);
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === true && buy === true && withdrawal === false && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(databuy);
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === true && buy === false && withdrawal === true && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(datawithdraw);
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === true && buy === false && withdrawal === true && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(datawithdraw);
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === false && buy === true && withdrawal === true && startdate === undefined && enddate === undefined) {
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            data = databuy.concat(datawithdraw);
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === false && buy === true && withdrawal === true && startdate !== undefined && enddate !== undefined) {
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            data = databuy.concat(datawithdraw);
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === false && buy === false && withdrawal === false && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(databuy, datawithdraw);
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === true && buy === true && withdrawal === true && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(databuy, datawithdraw);
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === true && buy === true && withdrawal === true && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(databuy, datawithdraw);
+            return { response_code: 202, data, skip, limit, messages };
+        }
+        else if (sell === false && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(databuy, datawithdraw);
+            return { response_code: 202, data, skip, limit, messages };
+        }
+
+
+
+        // console.log(datawithdraw)
+        // var data = datasell.concat(databuy, datawithdraw);
+
+
     }
+
+
+
 
     @Post('api/transactions/historys/details')
     @UseGuards(JwtAuthGuard)
