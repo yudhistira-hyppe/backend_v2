@@ -26,14 +26,11 @@ export class ContenteventsService {
   }
 
   async getConteneventbyType(CreateGetcontenteventsDto_: CreateGetcontenteventsDto): Promise<Contentevents[]> {
-    
-
-
     return this.ContenteventsModel.find({
       postID: CreateGetcontenteventsDto_.postID,
           eventType: CreateGetcontenteventsDto_.eventType,
       receiverParty: CreateGetcontenteventsDto_.receiverParty,
-    }).exec();
+    }).skip(CreateGetcontenteventsDto_.skip).limit(CreateGetcontenteventsDto_.limit).exec();
   }
 
   //    async findOne(id: string): Promise<Contentevents> {

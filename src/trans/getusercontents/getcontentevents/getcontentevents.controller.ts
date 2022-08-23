@@ -6,7 +6,7 @@ import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { UtilsService } from "../../../utils/utils.service";
 import { ErrorHandler } from "../../../utils/error.handler";
 import { PostsService } from "../../../content/posts/posts.service";
-import { ProfileDTO } from '../../../utils/data/Profile';
+import { AvatarDTO, ProfileDTO } from '../../../utils/data/Profile';
 
 @Controller()
 export class GetcontenteventsController {
@@ -217,10 +217,25 @@ export class GetcontenteventsController {
                         ProfileDTO_.fullName = data_profile.fullName;
                         ProfileDTO_.email = data_profile.email;
                         ProfileDTO_.username = data_profile.username;
-                        ProfileDTO_.avatar = data_profile.avatar;
-                        var mediaEndpoint = data_profile.avatar.mediaEndpoint;
-                        if (mediaEndpoint != undefined) {
-                            ProfileDTO_.avatar.profilePict_id = mediaEndpoint.replace("/profilepict/", "");
+                        var AvatarDTO_ = new AvatarDTO();
+                        if (data_profile.avatar != undefined) {
+                            if (data_profile.avatar.mediaBasePath != undefined){
+                                AvatarDTO_.mediaBasePath = data_profile.avatar.mediaBasePath;
+                            }
+                            if (data_profile.avatar.mediaUri != undefined) {
+                                AvatarDTO_.mediaUri = data_profile.avatar.mediaUri;
+                            }
+                            if (data_profile.avatar.mediaType != undefined) {
+                                AvatarDTO_.mediaType = data_profile.avatar.mediaType;
+                            } 
+                            if (data_profile.avatar.mediaEndpoint != undefined) {
+                                AvatarDTO_.mediaEndpoint = data_profile.avatar.mediaEndpoint;
+                                var mediaEndpoint = data_profile.avatar.mediaEndpoint;
+                                AvatarDTO_.profilePict_id = mediaEndpoint.replace("/profilepict/", "");
+                            }
+                            ProfileDTO_.avatar = AvatarDTO_;
+                        }else{
+                            ProfileDTO_.avatar = null;
                         }
                         data_response.push(ProfileDTO_);
                     }
