@@ -147,6 +147,7 @@ export class AdsController {
         };
 
         var typeadsId = CreateAdsDto.typeAdsID;
+        var tayang = CreateAdsDto.tayang;
         var datatypesAds = null;
         var creditValue = 0;
         const mongoose = require('mongoose');
@@ -483,7 +484,7 @@ export class AdsController {
                     CreateAdsDto.status = "DRAFT";
                     CreateAdsDto.isActive = false;
                     CreateAdsDto.demografisID = demografisIDs;
-                    CreateAdsDto.totalUsedCredit = creditValue;
+                    CreateAdsDto.totalUsedCredit = creditValue * tayang;
                     CreateAdsDto.userVoucherID = arrayUservoucher;
                     CreateAdsDto.typeAdsID = mongoose.Types.ObjectId(CreateAdsDto.typeAdsID);
                     CreateAdsDto.placingID = mongoose.Types.ObjectId(CreateAdsDto.placingID);

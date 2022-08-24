@@ -65,6 +65,12 @@ export class VouchersService {
         return data;
     }
 
+    async updatestatusVoucher(id: Types.ObjectId, updatedAt: string): Promise<Object> {
+        let data = await this.vouchersModel.updateOne({ "_id": id, "isActive": true },
+            { $set: { "isActive": false, "updatedAt": updatedAt } });
+        return data;
+    }
+
     async update(
         id: string,
         createVouchersDto: CreateVouchersDto,

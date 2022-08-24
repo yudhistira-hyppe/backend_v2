@@ -15,4 +15,5 @@ export class CreateVouchersDto {
     totalUsed: number;
     isActive: boolean;
     description: string;
+    qty: number;
 }

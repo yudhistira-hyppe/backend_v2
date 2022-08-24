@@ -574,8 +574,6 @@ export class TransactionsController {
 
     }
 
-
-
     @Post('api/pg/oy/callback/va')
     async callbackVa(@Res() res, @Body() payload: VaCallback) {
 
@@ -712,6 +710,7 @@ export class TransactionsController {
                     var totalCredit = null;
                     var usedCredit = 0;
                     var totalUsed = 0;
+                    var qtyvoucher = 0;
                     var postIds = "";
                     var qty = null;
                     var price = null;
@@ -775,20 +774,28 @@ export class TransactionsController {
                             voucherID = datavoucher._id;
                             expiredAt = datavoucher.expiredAt;
                             totalUsed = datavoucher.totalUsed;
+                            qtyvoucher = datavoucher.qty;
                             totalCredit = datavoucher.creditTotal * jml;
-                            let datauservoucher = new Uservoucher();
-                            datauservoucher.userID = iduserbuy;
-                            datauservoucher.createdAt = dt.toISOString();
-                            datauservoucher.updatedAt = dt.toISOString();
-                            datauservoucher.isActive = true;
-                            datauservoucher.usedCredit = usedCredit;
-                            datauservoucher.voucherID = voucherID;
-                            datauservoucher.voucherCredit = totalCredit;
-                            datauservoucher.totalCredit = totalCredit - usedCredit;
-                            datauservoucher.jmlVoucher = jml;
-                            datauservoucher.expiredAt = expiredAt;
-                            await this.uservouchersService.create(datauservoucher);
-                            await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
+
+                            if (totalUsed !== qtyvoucher) {
+                                let datauservoucher = new Uservoucher();
+                                datauservoucher.userID = iduserbuy;
+                                datauservoucher.createdAt = dt.toISOString();
+                                datauservoucher.updatedAt = dt.toISOString();
+                                datauservoucher.isActive = true;
+                                datauservoucher.usedCredit = usedCredit;
+                                datauservoucher.voucherID = voucherID;
+                                datauservoucher.voucherCredit = totalCredit;
+                                datauservoucher.totalCredit = totalCredit - usedCredit;
+                                datauservoucher.jmlVoucher = jml;
+                                datauservoucher.expiredAt = expiredAt;
+                                await this.uservouchersService.create(datauservoucher);
+                                await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
+                            }
+                            else {
+                                await this.vouchersService.updatestatusVoucher(voucherID, dt.toISOString());
+                                throw new BadRequestException("Voucher is non aktif");
+                            }
                         }
 
 
@@ -2578,8 +2585,6 @@ export class TransactionsController {
 
 
     }
-
-
 
 
     @Post('api/transactions/historys/details')
