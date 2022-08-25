@@ -16,8 +16,10 @@ export class UserAds {
     createdAt: String;
     @Prop()
     description: String;
-    @Prop()
+    @Prop() 
     priority: String;
+    @Prop() 
+    priorityNumber: number;
     @Prop()
     statusClick: boolean;
     @Prop()

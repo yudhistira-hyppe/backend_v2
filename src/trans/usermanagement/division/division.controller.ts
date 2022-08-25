@@ -103,6 +103,13 @@ export class DivisionController {
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
+    @Get('/:id')
+    async findOne(@Param('id') id: string){
+        return this.divisionService.findOne(id);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
     @Delete('/delete')
     async delete(
         @Query('id') id: string,) {

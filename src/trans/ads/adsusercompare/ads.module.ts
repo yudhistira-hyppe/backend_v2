@@ -9,9 +9,11 @@ import { UtilsModule } from '../../../utils/utils.module';
 import { AreasModule } from '../../../infra/areas/areas.module';
 import { UserauthsModule } from '../../../trans/userauths/userauths.module';
 import { UserbasicsModule } from '../../../trans/userbasics/userbasics.module';
+import { MediavideosadsModule } from '../../../stream/mediavideosads/mediavideosads.module';
 
 @Module({
     imports: [
+        MediavideosadsModule,
         AreasModule,
         UserauthsModule,
         UserbasicsModule,

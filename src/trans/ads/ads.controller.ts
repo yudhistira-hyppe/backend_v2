@@ -114,8 +114,6 @@ export class AdsController {
         }
     }
 
-
-
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('createads')
@@ -577,9 +575,7 @@ export class AdsController {
         return { response_code: 202, data, totalSearch, skip, limit, messages };
     }
 
-
     async parseJwt(token) {
-
         return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     };
 
