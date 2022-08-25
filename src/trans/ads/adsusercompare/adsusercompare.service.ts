@@ -11,6 +11,7 @@ import { UtilsService } from '../../../utils/utils.service';
 import { AdsService } from '../ads.service';
 import { UserAdsService } from '../../../trans/userads/userads.service';
 import { CreateAdsDto } from '../dto/create-ads.dto';
+import { UserAds } from 'src/trans/userads/schemas/userads.schema';
 
 @Injectable()
 export class AdsUserCompareService {
@@ -41,15 +42,7 @@ export class AdsUserCompareService {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed, Ads status is live',
                 );
-            } else {
-                try {
-                    await this.adsService.update(_CreateAdsDto_._id.toString(), _CreateAdsDto_);
-                } catch (s) {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed Failed update Ads',
-                    );
-                }
-            }
+            } 
             var data_area = await this.areasService.findOneid(JSON.parse(JSON.stringify(data_ads.demografisID)).$id);
             if (await this.utilsService.ceckData(data_area)) {
                 if (data_area.location != undefined) {
@@ -65,7 +58,7 @@ export class AdsUserCompareService {
         var UserSelfInsert = true;
         //UserSelfInsert = await this.utilsService.getSetting("UserSelfInsert");
         data_user.forEach(async element => {
-            if (element._id == _CreateAdsDto_.userID) {
+            //if (element._id == _CreateAdsDto_.userID) {
                 var data_user_auth = await this.userauthsService.findOneByEmail(element.email);
                 var user_location_long = null;
                 var user_location_lat = null;
@@ -84,6 +77,7 @@ export class AdsUserCompareService {
                 var user_array_interest = element.userInterests;
 
                 var priority = "Lowest";
+                var priority_number = 4;
                 var priority_interest = false;
                 var priority_gender = false;
                 var priority_location = false;
@@ -101,7 +95,11 @@ export class AdsUserCompareService {
                     ads_array_interest_string = JSON.parse("[" + ads_array_interest_toString + "]");
                 }
                 if (user_array_interest.length > 0) {
-                    user_array_interest_toString = user_array_interest.map(function (item) { return '"' + JSON.parse(JSON.stringify(item)).$id + '"' }).join(",");
+                    user_array_interest_toString = user_array_interest.map(function (item) { 
+                        if ((JSON.parse(JSON.stringify(item)) != null)) {
+                            return '"' + JSON.parse(JSON.stringify(item)).$id + '"' 
+                        }
+                    }).join(",");
                     user_array_interest_string = JSON.parse("[" + user_array_interest_toString + "]");
                 }
                 if (ads_array_interest_string != null && user_array_interest_string != null) {
@@ -146,8 +144,7 @@ export class AdsUserCompareService {
                     }
                     const a = { latitude: user_location_lat, longitude: user_location_long }
                     const b = { latitude: ads_location_lat, longitude: ads_location_long }
-                    console.log(a)
-                    console.log(b)
+                    
                     const haversine = require('haversine-distance')
                     var distance_m = haversine(a, b);
                     var distance_km = distance_m / 1000;
@@ -159,19 +156,24 @@ export class AdsUserCompareService {
                 }
 
                 if (priority_interest && priority_gender && priority_location) {
-                    priority = "Highest";
+                    priority = "Highest"; 
+                    priority_number = 1; 
                 } else {
                     if (priority_interest && priority_gender) {
                         priority = "High";
+                        priority_number = 1; 
                     } else {
                         if (priority_interest && priority_location) {
                             priority = "Medium";
+                            priority_number = 2; 
                         } else {
                             if (priority_interest) {
                                 priority = "Low";
+                                priority_number = 3; 
                             } else {
                                 if (priority_gender) {
                                     priority = "Lowest";
+                                    priority_number = 4; 
                                 }
                             }
                         }
@@ -179,22 +181,39 @@ export class AdsUserCompareService {
                 }
 
                 var CreateUserAdsDto_ = new CreateUserAdsDto();
-
-                CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
-                CreateUserAdsDto_.adsID = new mongoose.Types.ObjectId(_CreateAdsDto_._id.toString());
-                CreateUserAdsDto_.userID = new mongoose.Types.ObjectId(element._id.toString());
-                CreateUserAdsDto_.priority = priority;
-                if (_CreateAdsDto_.description != undefined) {
-                    CreateUserAdsDto_.description = _CreateAdsDto_.description;
+                try {
+                    CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
+                    CreateUserAdsDto_.adsID = new mongoose.Types.ObjectId(_CreateAdsDto_._id.toString());
+                    CreateUserAdsDto_.userID = new mongoose.Types.ObjectId(element._id.toString());
+                    CreateUserAdsDto_.priority = priority;
+                    CreateUserAdsDto_.priorityNumber = priority_number;
+                    if (_CreateAdsDto_.description != undefined) {
+                        CreateUserAdsDto_.description = _CreateAdsDto_.description;
+                    }
+                    CreateUserAdsDto_.createdAt = current_date;
+                    CreateUserAdsDto_.statusClick = false;
+                    CreateUserAdsDto_.statusView = false;
+                    CreateUserAdsDto_.viewed = 0;
+                    CreateUserAdsDto_.liveAt = _CreateAdsDto_.liveAt;
+                    const createUserAdsDto = await this.userAdsService.create(CreateUserAdsDto_);
+                } catch (s) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed Failed update Ads',
+                    );
                 }
-                CreateUserAdsDto_.createdAt = current_date;
-                CreateUserAdsDto_.statusClick = false;
-                CreateUserAdsDto_.statusView = false;
-                CreateUserAdsDto_.viewed = 0;
-                CreateUserAdsDto_.liveAt = _CreateAdsDto_.liveAt;
-                const createUserAdsDto = await this.userAdsService.create(CreateUserAdsDto_);
-            }
+            //}
         });
+        try {
+            await this.adsService.update(_CreateAdsDto_._id.toString(), _CreateAdsDto_);
+        } catch (s) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Failed update Ads',
+            );
+        }
         return _CreateAdsDto_;
+    }
+
+    async getListUserAds(limit:number): Promise<UserAds[]>{
+        return await await this.userAdsService.findAllLimit(limit);
     }
 }

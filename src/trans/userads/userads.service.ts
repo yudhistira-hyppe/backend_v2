@@ -22,8 +22,16 @@ export class UserAdsService {
         return this.userAdsModel.find().exec();
     }
 
+    async findAllLimit(limit:number): Promise<UserAds[]> {
+        return this.userAdsModel.find().sort({ priorityNumber: 1 }).limit(limit).exec();
+    }
+
     async findOne(id: string): Promise<UserAds> {
         return this.userAdsModel.findOne({ _id: id }).exec();
+    }
+
+    async findOneByuserID(userID: string): Promise<UserAds[]> {
+        return this.userAdsModel.find({ userID: userID }).sort({ liveAt: 1 }).exec();
     }
 
     // async findAdsid(adsID: ObjectId): Promise<UserAds> {

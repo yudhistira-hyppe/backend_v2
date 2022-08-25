@@ -9,10 +9,12 @@ import { UtilsModule } from '../../../utils/utils.module';
 import { GroupModule } from '../group/group.module';
 import { ModuleModule } from '../module/module.module'; 
 import { UserbasicsModule } from '../../../trans/userbasics/userbasics.module';
+import { DivisionModule } from '../division/division.module';
 
 @Module({
 
     imports: [
+        DivisionModule,
         UserbasicsModule,
         ModuleModule,
         GroupModule,

@@ -193,30 +193,6 @@ export class GroupController {
         var GroupDto_ = new GroupDto();
         GroupDto_.nameGroup = request.nameGroup;
         GroupDto_.divisionId = Object(request.divisionId);
-        if (request.userbasics != undefined) {
-            if (request.userbasics.length > 0) {
-                for (var i = 0; i < request.userbasics.length; i++) {
-                    var data_userbasic = await this.userbasicsService.findOne(request.userbasics[i]);
-                    if (await this.utilsService.ceckData(data_userbasic)) {
-                        var data_user_group = await this.groupService.findbyuser(data_userbasic._id.toString());
-                        if (await this.utilsService.ceckData(data_user_group)) {
-                            if (data_user_group[0]._id.toString() == request._id) {
-                                data_user_insert.push(new Object(data_userbasic._id.toString()));
-                                data_user_insert_email.push(request.userbasics[i]);
-                            } else {
-                                data_user_not_insert.push(request.userbasics[i]);
-                            }
-                        } else {
-                            data_user_insert.push(new Object(data_userbasic._id.toString()));
-                            data_user_insert_email.push(request.userbasics[i]);
-                        }
-                    } else {
-                        data_user_not_found.push(request.userbasics[i]);
-                    }
-                }
-                GroupDto_.userbasics = data_user_insert;
-            }
-        }
         GroupDto_.updateAt = current_date;
         if (request.desc != undefined) {
             GroupDto_.desc = request.desc;

@@ -8,6 +8,7 @@ export class CreateUserAdsDto {
     createdAt: String;
     description: String;
     priority: String;
+    priorityNumber: number;
     statusClick: boolean;
     statusView: boolean;
     updatedAt: String;

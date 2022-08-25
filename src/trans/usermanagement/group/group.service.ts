@@ -80,12 +80,12 @@ export class GroupService {
                     createAt: '$createAt',
                     updateAt: '$updateAt',
                     desc: '$desc',
-                    accesModule: {
+                    data: {
                         "$map": {
                             "input": "$groupmodule_data",
                             "as": "dline",
                             "in": {
-                                "module": "$$dline.module",
+                                "id": "$$dline.module",
                                 "createAcces": "$$dline.createAcces",
                                 "updateAcces": "$$dline.updateAcces",
                                 "deleteAcces": "$$dline.deleteAcces",
