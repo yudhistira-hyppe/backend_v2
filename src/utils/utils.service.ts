@@ -113,7 +113,7 @@ export class UtilsService {
 
   //   await admin.messaging().sendToDevice(fcmtoken, payload);
   // }
-  async sendFcm(email: string, titlein: string, titleen: string, bodyin: string, bodyen: string, eventType: string) {
+  async sendFcm(email: string, titlein: string, titleen: string, bodyin: string, bodyen: string, eventType: string, event: string) {
 
     var emailuserbasic = null;
     var datadevice = null;
@@ -236,7 +236,7 @@ export class UtilsService {
         createNotificationsDto.notificationID = generateID;
         createNotificationsDto.email = emailuserbasic;
         createNotificationsDto.eventType = eventType;
-        createNotificationsDto.event = "REQUEST";
+        createNotificationsDto.event = event;
         createNotificationsDto.mate = emailuserbasic;
         createNotificationsDto.devices = [deviceid];
         createNotificationsDto.title = payload.notification.title;

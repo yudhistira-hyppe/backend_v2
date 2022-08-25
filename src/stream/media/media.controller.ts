@@ -268,6 +268,7 @@ export class MediaController {
         var bodyinsukses = "Proses identifikasi berhasil, kamu telah terverifikasi";
         var bodyensukses = "Identification successful, you’ve been verified";
         var eventType = "VERIFICATIONID";
+        var event = "REQUEST";
         //Var cardPict
         let cardPict_data = null;
         let cardPict_filename = '';
@@ -580,7 +581,7 @@ export class MediaController {
                         iduserbasic = datauserbasicsService._id;
                         await this.userbasicsService.updateIdVerified(iduserbasic);
                         await this.userauthsService.update(emailuserbasic, 'ROLE_PREMIUM');
-                        await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType);
+                        await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
                         return {
                             "response_code": 202,
@@ -596,7 +597,7 @@ export class MediaController {
                         };
                     }
                     else {
-                        await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType);
+                        await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                         await this.errorHandler.generateCustomNotAcceptableException(
                             {
                                 "response_code": 202,
@@ -614,7 +615,7 @@ export class MediaController {
                     }
                 } catch (err) {
 
-                    await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType);
+                    await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
                         {
                             "response_code": 202,
@@ -634,7 +635,7 @@ export class MediaController {
             }
             else {
                 if (face_detect_selfiepict.FaceDetails.length == 0) {
-                    await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType);
+                    await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
                         {
                             "response_code": 202,
@@ -651,7 +652,7 @@ export class MediaController {
                     );
                 }
                 if (face_detect_cardPict.FaceDetails.length == 0) {
-                    await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType);
+                    await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
                         {
                             "response_code": 202,
