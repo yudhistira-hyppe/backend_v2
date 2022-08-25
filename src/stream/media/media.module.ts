@@ -11,8 +11,6 @@ import { MediaproofpictsModule } from '../../content/mediaproofpicts/mediaproofp
 import { SettingsModule } from '../../trans/settings/settings.module';
 import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediaprofilepicts.module';
 import { UserauthsModule } from '../../trans/userauths/userauths.module';
-
-
 @Module({
   imports: [
     UserauthsModule,
@@ -23,7 +21,7 @@ import { UserauthsModule } from '../../trans/userauths/userauths.module';
     AwsModule,
     SeaweedfsModule,
     UtilsModule,
-    NestjsFormDataModule, 
+    NestjsFormDataModule,
     ConfigService,
     ConfigModule.forRoot()
   ],
@@ -31,4 +29,4 @@ import { UserauthsModule } from '../../trans/userauths/userauths.module';
   providers: [MediaService],
   exports: [MediaService],
 })
-export class MediaModule {}
+export class MediaModule { }

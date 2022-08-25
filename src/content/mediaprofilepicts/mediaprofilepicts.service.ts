@@ -9,7 +9,7 @@ export class MediaprofilepictsService {
   constructor(
     @InjectModel(Mediaprofilepicts.name, 'SERVER_CONTENT')
     private readonly MediaprofilepictsModel: Model<MediaprofilepictsDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateMediaprofilepictsDto: CreateMediaprofilepictsDto,
@@ -28,6 +28,7 @@ export class MediaprofilepictsService {
     return this.MediaprofilepictsModel.findOne({ _id: id }).exec();
   }
 
+
   async findOnemediaID(mediaID: string): Promise<Mediaprofilepicts> {
     return this.MediaprofilepictsModel.findOne({ mediaID: mediaID }).exec();
   }
@@ -39,9 +40,9 @@ export class MediaprofilepictsService {
     return deletedCat;
   }
 
-  async findmediaprofil(){
-    const query =await this.MediaprofilepictsModel.aggregate([
-  
+  async findmediaprofil() {
+    const query = await this.MediaprofilepictsModel.aggregate([
+
       {
         $lookup: {
           from: 'mediaprofilepicts',
@@ -49,13 +50,13 @@ export class MediaprofilepictsService {
           foreignField: '_id',
           as: 'roless',
         },
-      },{
-        $out:{
-          db:'hyppe_trans_db',
-          coll:'mediaprofilepicts2'
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'mediaprofilepicts2'
         }
       },
-     
+
     ]);
     return query;
   }

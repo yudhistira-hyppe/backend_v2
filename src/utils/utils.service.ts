@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UserbasicsService } from '../trans/userbasics/userbasics.service';
+import { UserdevicesService } from '../trans/userdevices/userdevices.service';
 import { UserauthsService } from '../trans/userauths/userauths.service';
 import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken.service';
 import { TemplatesService } from '../infra/templates/templates.service';
 import { JwtService } from '@nestjs/jwt';
-import { MailerService } from '@nestjs-modules/mailer'; 
+import { MailerService } from '@nestjs-modules/mailer';
 import { Templates } from '../infra/templates/schemas/templates.schema';
 import * as admin from 'firebase-admin';
 import { ErrorHandler } from './error.handler';
@@ -14,7 +15,7 @@ import { LanguagesService } from '../infra/languages/languages.service';
 import { InsightsService } from '../content/insights/insights.service';
 import { CitiesService } from '../infra/cities/cities.service';
 import { CountriesService } from '../infra/countries/countries.service';
-import { AreasService } from '../infra/areas/areas.service'; 
+import { AreasService } from '../infra/areas/areas.service';
 import { InterestsRepoService } from '../infra/interests_repo/interests_repo.service';
 import { InterestsService } from '../infra/interests/interests.service';
 import { EulasService } from '../infra/eulas/eulas.service';
@@ -22,8 +23,10 @@ import { MediaprofilepictsService } from '../content/mediaprofilepicts/mediaprof
 import { CreateInsightsDto } from '../content/insights/dto/create-insights.dto';
 import { SettingsService } from '../trans/settings/settings.service';
 import { SeaweedfsService } from '../stream/seaweedfs/seaweedfs.service';
+import { NotificationsService } from "../content/notifications/notifications.service";
 import * as fs from 'fs';
 import { double } from 'aws-sdk/clients/lightsail';
+import { CreateNotificationsDto } from 'src/content/notifications/dto/create-notifications.dto';
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -37,20 +40,22 @@ export class UtilsService {
     private jwtService: JwtService,
     private mailerService: MailerService,
     private templatesService: TemplatesService,
-    private errorHandler: ErrorHandler, 
-    private userbasicsService: UserbasicsService, 
-    private languagesService: LanguagesService, 
+    private errorHandler: ErrorHandler,
+    private userbasicsService: UserbasicsService,
+    private languagesService: LanguagesService,
     private insightsService: InsightsService,
     private citiesService: CitiesService,
     private countriesService: CountriesService,
-    private areasService: AreasService, 
-    private interestsRepoService: InterestsRepoService, 
+    private areasService: AreasService,
+    private interestsRepoService: InterestsRepoService,
     private interestsService: InterestsService,
-    private eulasService: EulasService, 
+    private eulasService: EulasService,
     private mediaprofilepictsService: MediaprofilepictsService,
-    private settingsService: SettingsService, 
-    private seaweedfsService: SeaweedfsService, 
-  ) {}
+    private settingsService: SettingsService,
+    private seaweedfsService: SeaweedfsService,
+    private userdevicesService: UserdevicesService,
+    private notificationsService: NotificationsService
+  ) { }
 
   async sendEmail(
     to: string,
@@ -81,7 +86,7 @@ export class UtilsService {
     lat1: double,
     lon1: double,
     lat2: double,
-    lon2: double, 
+    lon2: double,
     unit: string
   ): Promise<any> {
     // 
@@ -104,12 +109,156 @@ export class UtilsService {
   async toRad(Value) {
     return Value * Math.PI / 180;
   }
+  // async sendFcm(fcmtoken: string, payload: any) {
 
-  async sendFcm(fcmtoken:string,payload:any){
-    await admin.messaging().sendToDevice(fcmtoken, payload);
+  //   await admin.messaging().sendToDevice(fcmtoken, payload);
+  // }
+  async sendFcm(email: string, titlein: string, titleen: string, bodyin: string, bodyen: string, eventType: string) {
+
+    var emailuserbasic = null;
+    var datadevice = null;
+    var languages = null;
+    var payload = null;
+    var idlanguages = null;
+    var datalanguage = null;
+    var langIso = null;
+    var idprofilepict = null;
+    var profilepict = null;
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+    var dtstring = dt.toISOString();
+    var splitdt = dtstring.split(".");
+    var date = splitdt[0].replace("T", " ");
+
+    let createNotificationsDto = new CreateNotificationsDto();
+
+    const datauserbasicsService = await this.userbasicsService.findOne(
+      email
+    );
+    if (await this.ceckData(datauserbasicsService)) {
+      emailuserbasic = datauserbasicsService.email;
+      profilepict = datauserbasicsService.profilePict;
+      idprofilepict = profilepict.oid;
+      console.log(idprofilepict);
+      const user_userAuth = await this.userauthsService.findOne(
+        emailuserbasic
+      );
+
+      var mediaprofilepicts = await this.mediaprofilepictsService.findOne(idprofilepict);
+      console.log(mediaprofilepicts);
+      var mediaUri = null;
+      var mediaBasePath = null;
+      var mediaType = null;
+      var mediaEndpoint = null;
+      if (mediaprofilepicts != null) {
+        mediaUri = mediaprofilepicts.mediaUri;
+      }
+
+      let result = null;
+      if (mediaUri != null) {
+        result = '/profilepict/' + mediaUri.replace('_0001.jpeg', '');
+      }
+      if (mediaprofilepicts != null) {
+        if (mediaprofilepicts.mediaBasePath != null) {
+          mediaBasePath = mediaprofilepicts.mediaBasePath;
+        }
+
+        if (mediaprofilepicts.mediaUri != null) {
+          mediaUri = mediaprofilepicts.mediaUri;
+        }
+
+        if (mediaprofilepicts.mediaType != null) {
+          mediaType = mediaprofilepicts.mediaType;
+        }
+      }
+
+      if (result != null) {
+        mediaEndpoint = result;
+      }
+
+      var senderreceiver = {
+        fullName: datauserbasicsService.fullName,
+        avatar: {
+          mediaBasePath: mediaBasePath,
+          mediaUri: mediaUri,
+          mediaType: mediaType,
+          mediaEndpoint: mediaEndpoint
+        },
+        username: user_userAuth.username.toString()
+      };
+      try {
+        languages = datauserbasicsService.languages;
+        idlanguages = languages.oid.toString();
+        datalanguage = await this.languagesService.findOne(idlanguages)
+        langIso = datalanguage.langIso;
+
+        console.log(idlanguages)
+      } catch (e) {
+        languages = null;
+        idlanguages = "";
+        datalanguage = null;
+        langIso = "";
+      }
+
+      if (langIso === "id") {
+        payload = {
+          notification: {
+
+            title: titlein,
+            body: bodyin
+          }
+        };
+      } else if (langIso === "en") {
+        payload = {
+          notification: {
+
+            title: titleen,
+            body: bodyen
+          }
+        };
+      } else {
+        payload = {
+          notification: {
+            title: titlein,
+            body: bodyin
+          }
+        };
+      }
+
+
+      datadevice = await this.userdevicesService.findActive(emailuserbasic);
+      for (var i = 0; i < datadevice.length; i++) {
+        var deviceid = datadevice[i].deviceID;
+        await admin.messaging().sendToDevice(deviceid, payload);
+        var generateID = await this.generateId();
+        createNotificationsDto._id = generateID;
+        createNotificationsDto.notificationID = generateID;
+        createNotificationsDto.email = emailuserbasic;
+        createNotificationsDto.eventType = eventType;
+        createNotificationsDto.event = "REQUEST";
+        createNotificationsDto.mate = emailuserbasic;
+        createNotificationsDto.devices = [deviceid];
+        createNotificationsDto.title = payload.notification.title;
+        createNotificationsDto.body = bodyen;
+        createNotificationsDto.bodyId = bodyin;
+        createNotificationsDto.active = true;
+        createNotificationsDto.flowIsDone = true;
+        createNotificationsDto.createdAt = date;
+        createNotificationsDto.updatedAt = date;
+        createNotificationsDto.actionButtons = null;
+        createNotificationsDto.contentEventID = null;
+        createNotificationsDto.senderOrReceiverInfo = senderreceiver;
+        await this.notificationsService.create(createNotificationsDto);
+
+
+      }
+
+
+    }
   }
 
-  async getSetting(jenis:string){
+  async getSetting(jenis: string) {
     return (await this.settingsService.findOneByJenis(jenis)).value;
   }
 
@@ -191,10 +340,10 @@ export class UtilsService {
     return IdGenarate;
   }
 
-  async isAuthVerified(Data:any): Promise<boolean> {
+  async isAuthVerified(Data: any): Promise<boolean> {
     var isTrue = false;
-    if(Data.isEmailVerified){
-      if(!(Data.status=='NOTIFY')||!(Data.status=='INITIAL')){
+    if (Data.isEmailVerified) {
+      if (!(Data.status == 'NOTIFY') || !(Data.status == 'INITIAL')) {
         isTrue = true;
       }
     }
@@ -287,7 +436,7 @@ export class UtilsService {
     var username = email.substring(0, email.indexOf('@'));
     var list_username = await this.userauthsService.findOneUsername(username);
     if (await this.ceckData(list_username)) {
-      username += '_'+this.generateOTP();
+      username += '_' + this.generateOTP();
     }
     return username;
   }
@@ -325,7 +474,7 @@ export class UtilsService {
   async validasiTokenEmail(head: any): Promise<boolean> {
     var isTrue = false;
     if (head != undefined) {
-      if (head['x-auth-token']!=undefined){
+      if (head['x-auth-token'] != undefined) {
         var email = head['x-auth-user'];
         var token = ((head['x-auth-token']).split(" "))[1];
         var data = await this.jwtService.decode(token);
@@ -350,19 +499,19 @@ export class UtilsService {
     return null;
   }
 
-  async validasiTokenEmailParam(bearer_token: string,email: string): Promise<boolean> {
+  async validasiTokenEmailParam(bearer_token: string, email: string): Promise<boolean> {
     var isTrue = false;
     var email = email;
     var token = bearer_token.split(" ")[1];
     var data = await this.jwtService.decode(token);
-    if(data!=undefined){
-      if(data['email']==email){
+    if (data != undefined) {
+      if (data['email'] == email) {
         isTrue = true;
       }
     }
     return isTrue;
   }
-  
+
   async generateRomawi(num: number) {
     if (typeof num !== 'number')
       return false;
@@ -409,7 +558,7 @@ export class UtilsService {
   }
 
   async generateReferralImage(data: any): Promise<any> {
-    try{
+    try {
       var Templates_ = new Templates();
       Templates_ = await this.getTemplate('REFERRAL', 'REFERRAL');
       var html_body = Templates_.body_detail.trim().toString();
@@ -417,24 +566,24 @@ export class UtilsService {
       var dataimage = null;
       if (data.image_profile != '') {
         dataimage = await this.seaweedfsService.read(data.image_profile.replace('/localrepo', ''));
-      }else{
+      } else {
         dataimage = fs.readFileSync('./profile-default.jpg');
       }
-      var data_string = 'data:image/png;base64,'+dataimage.toString('base64');
-      $_('#profile').attr('src',data_string);
+      var data_string = 'data:image/png;base64,' + dataimage.toString('base64');
+      $_('#profile').attr('src', data_string);
       $_('#fullname').text(data.fullName);
       $_('#username').text(data.username);
       $_('#qrcode').attr('src', await this.generateQRCode(data.refCode));
       var string_html = $_.html().toString();
       const images = await nodeHtmlToImage({
         html: string_html,
-        quality:80
+        quality: 80
       });
       return images;
-    }catch(e){
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed failed generate Image QR '+e,
-        );
+    } catch (e) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed failed generate Image QR ' + e,
+      );
     }
   }
 
@@ -444,11 +593,11 @@ export class UtilsService {
       type: 'image/jpeg',
       quality: 0.3,
       margin: 0,
-       })
+    })
     return generateQR;
   }
 
-  async getversion(): Promise<string>{
+  async getversion(): Promise<string> {
     var get_version = await this.settingsService.findOneByJenis('AppsVersion');
     var version_number = '';
     if (await this.ceckData(get_version)) {
@@ -457,7 +606,7 @@ export class UtilsService {
     return version_number;
   }
 
-  async generateProfile(email: string,datafor:string): Promise<ProfileDTO> {
+  async generateProfile(email: string, datafor: string): Promise<ProfileDTO> {
     var get_userbasic = await this.userbasicsService.findOne(email);
     var get_userauth = await this.userauthsService.findOne(email);
 
@@ -473,8 +622,8 @@ export class UtilsService {
       if (get_userbasic.languages != undefined) {
         var languages_json = JSON.parse(JSON.stringify(get_userbasic.languages));
         get_languages = await this.languagesService.findOne(languages_json.$id);
-      } 
-      
+      }
+
       if (get_userbasic.insight != undefined) {
         var insight_json = JSON.parse(JSON.stringify(get_userbasic.insight));
         get_insight = await this.insightsService.findOne(insight_json.$id);
@@ -548,7 +697,7 @@ export class UtilsService {
     if (datafor == 'FULL') {
       if (get_userbasic.profileID != undefined) { ProfileDTO_.profileID = get_userbasic.profileID; }
       if (get_userauth.regSrc != undefined) { ProfileDTO_.regSrc = get_userauth.regSrc; }
-      if (get_userbasic.bio != undefined) { ProfileDTO_.bio = get_userbasic.bio; } 
+      if (get_userbasic.bio != undefined) { ProfileDTO_.bio = get_userbasic.bio; }
       if (get_userbasic.dob != undefined) { ProfileDTO_.dob = get_userbasic.dob; }
       if (get_userbasic.gender != undefined) { ProfileDTO_.gender = get_userbasic.gender; }
       if (get_userbasic.idProofNumber != undefined) { ProfileDTO_.idProofNumber = get_userbasic.idProofNumber; }
@@ -600,7 +749,7 @@ export class UtilsService {
       if (get_userauth.username != undefined) { ProfileDTO_.username = get_userauth.username; }
       ProfileDTO_.isComplete = get_userbasic.isComplete.toString();
       ProfileDTO_.status = get_userbasic.status;
-    } 
+    }
 
     return ProfileDTO_;
   }
