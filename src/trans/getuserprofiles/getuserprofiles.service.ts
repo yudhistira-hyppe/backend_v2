@@ -12452,7 +12452,7 @@ export class GetuserprofilesService {
 
   }
 
-  async findataNew(username: string, gender: string, roles: string, age: string, page: number) {
+  async findataNew(username: string, regender: any[], roles: string, age: string, page: number) {
 
     const countries = await this.countriesService.findcountries();
     const cities = await this.citiesService.findcities();
@@ -12462,6 +12462,23 @@ export class GetuserprofilesService {
     const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
     const interes = await this.interestsRepoService.findinterst();
 
+    var arraygenderF = null;
+    var arraygenderM = null;
+    var gender = null;
+    var lenghtgender = regender.length;
+    for (var i = 0; i < lenghtgender; i++) {
+      var gen = regender[i];
+
+      if (gen === "FEMALE") {
+        arraygenderF = ["FEMALE", " FEMALE", "Perempuan"];
+      }
+      if (gen === "MALE") {
+        arraygenderM = ["MALE", " MALE", "Laki-laki"];
+      }
+
+    }
+    gender = arraygenderM.concat(arraygenderM);
+    console.log(gender);
 
 
     if (username !== undefined && gender === undefined && roles === undefined && age === undefined) {
@@ -12744,7 +12761,19 @@ export class GetuserprofilesService {
     }
     else if (username === undefined && gender !== undefined && roles === undefined && age === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
-        { $match: { gender: gender } },
+
+        {
+          $match: {
+            $or: [
+              {
+                gender: {
+                  "$in": { $regex: gender, $options: 'i' }
+                }
+              },
+
+            ]
+          }
+        },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
