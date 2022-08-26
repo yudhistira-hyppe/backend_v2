@@ -141,7 +141,7 @@ import { AdsUserCompareModule } from './trans/ads/adsusercompare/ads.module';
     ReportsModule,
     ReactionsRepoModule,
     ReactionsModule,
-    LanguagesModule,
+    // LanguagesModule,
     InterestsRepoModule,
     InterestsModule,
     FsfilesModule,

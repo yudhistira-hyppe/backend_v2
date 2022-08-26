@@ -62,8 +62,8 @@ export class GetuserprofilesController {
     @Query('groupId') groupId: string) {
     console.log(skip);
     console.log(limit);
-    if (search==undefined){
-      search="";
+    if (search == undefined) {
+      search = "";
     }
     if (searchemail == undefined) {
       searchemail = "";
@@ -80,7 +80,7 @@ export class GetuserprofilesController {
     var data = await this.getuserprofilesService.getUserHyppe(searchemail, search, Number(skip), Number(limit), groupId);
     var totalRow = (await this.getuserprofilesService.countUserHyppe(searchemail, search)).length;
     return {
-      response_code: 202, data: data, totalRow:totalRow, skip: skip, limit: limit, messages:{}
+      response_code: 202, data: data, totalRow: totalRow, skip: skip, limit: limit, messages: {}
     }
   }
 

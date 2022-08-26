@@ -44,6 +44,20 @@ export class UserdevicesService {
       .exec();
   }
 
+  async findActive(email: string) {
+    const query = await this.userdeviceModel.aggregate([
+
+      {
+        $match: {
+          email: email,
+          active: true
+        }
+      },
+
+    ]);
+    return query;
+  }
+
   async updatebyEmail(email: string, deviceID: string, data: Object) {
     this.userdeviceModel.updateOne(
       {

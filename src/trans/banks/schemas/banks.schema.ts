@@ -15,6 +15,15 @@ export class Banks {
 
     @Prop()
     bankIcon: string
+    @Prop()
+    urlEbanking: string
+    @Prop()
+    atm: string
+    @Prop()
+    internetBanking: string
+    @Prop()
+    mobileBanking: string
+
 
 
 

@@ -1,12 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 
-export type NotificationsDocument = Notifications & Document ;
+export type NotificationsDocument = Notifications & Document;
 
 @Schema()
 export class Notifications {
- @Prop()
- _id:String;
+  @Prop()
+  _id: String;
   @Prop()
   notificationID: String
   @Prop()
@@ -17,36 +17,38 @@ export class Notifications {
   event: String
   @Prop()
   mate: String
-  @Prop({type:Object})
+  @Prop({ type: Object })
   senderOrReceiverInfo: {
-    fullName:String
-    avatar:{
-        mediaBasePath:String
-        mediaUri:String
-        mediaType:String
-        mediaEndpoint:String
+    fullName: String
+    avatar: {
+      mediaBasePath: String
+      mediaUri: String
+      mediaType: String
+      mediaEndpoint: String
     };
-    username:String
+    username: String
   }
   @Prop()
   title: String
   @Prop()
   body: String
   @Prop()
+  bodyId: String
+  @Prop()
   active: boolean
   @Prop()
   flowIsDone: boolean
   @Prop()
- createdAt: String
- @Prop()
- updatedAt: String
- @Prop()
- contentEventID: String
- @Prop([])
- devices: []
+  createdAt: String
+  @Prop()
+  updatedAt: String
+  @Prop()
+  contentEventID: String
+  @Prop([])
+  devices: any[]
   @Prop()
   actionButtons: String
- 
+
 }
 
 export const NotificationsSchema = SchemaFactory.createForClass(Notifications);
