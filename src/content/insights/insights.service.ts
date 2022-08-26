@@ -19,6 +19,27 @@ export class InsightsService {
     return createInsightsDto;
   }
 
+  async updateNoneActive(email: string) {
+    this.InsightsModel.updateMany(
+      {
+        email: email,
+      },
+      {
+        $set: {
+          "active": false,
+          "email": email + '_noneactive'
+        }
+      },
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
   async findAll(): Promise<Insights[]> {
     return this.InsightsModel.find().exec();
   }

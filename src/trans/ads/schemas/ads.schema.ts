@@ -67,6 +67,10 @@ export class Ads {
     mediaAds: { oid: String; };
     @Prop()
     tayang: number;
+    @Prop()
+    startAge: number;
+    @Prop()
+    endAge: number;
 
 
 }

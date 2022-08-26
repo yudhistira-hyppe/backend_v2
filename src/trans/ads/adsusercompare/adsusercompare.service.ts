@@ -55,10 +55,16 @@ export class AdsUserCompareService {
                 }
             }
         }
-        var UserSelfInsert = true;
-        //UserSelfInsert = await this.utilsService.getSetting("UserSelfInsert");
+        var UserSelfInsert = 0;
+        UserSelfInsert = await this.utilsService.getSetting("UserSelfInsert");
+        
         data_user.forEach(async element => {
             //if (element._id == _CreateAdsDto_.userID) {
+                if (element._id == _CreateAdsDto_.userID) {
+                    if (UserSelfInsert) {
+
+                    }
+                }
                 var data_user_auth = await this.userauthsService.findOneByEmail(element.email);
                 var user_location_long = null;
                 var user_location_lat = null;
@@ -76,11 +82,12 @@ export class AdsUserCompareService {
                 var ads_array_interest = data_ads.interestID;
                 var user_array_interest = element.userInterests;
 
-                var priority = "Lowest";
-                var priority_number = 4;
+                var priority = "Very Lowest";
+                var priority_number = await this.utilsService.getSetting("VeryLowest");
                 var priority_interest = false;
                 var priority_gender = false;
                 var priority_location = false;
+                var priority_age = false;
 
                 var ads_array_interest_toString = null;
                 var ads_array_interest_string = null;
@@ -111,10 +118,37 @@ export class AdsUserCompareService {
                     Count_compare_interest = compare_interest.length;
                 }
 
+                //Compare Interes
                 if (Count_compare_interest > 0) {
                     priority_interest = true;
                 }
 
+                //Compare Age
+                if ((data_ads.startAge != undefined) && (data_ads.endAge != undefined) && (element.dob != undefined)) {
+                    console.log("Date Now", new Date(Date.now()));
+                    var date_end_age_int = new Date().setFullYear(new Date().getFullYear() - data_ads.endAge);
+                    var date_end_age = new Date(new Date().setFullYear(new Date().getFullYear() - data_ads.endAge));
+                    console.log("date_end_age", date_end_age);
+                    console.log("date_end_age_int", date_end_age_int);
+                    var date_start_age_int = new Date().setFullYear(new Date().getFullYear() - data_ads.startAge);
+                    var date_start_age = new Date(new Date().setFullYear(new Date().getFullYear() - data_ads.startAge));
+                    console.log("date_start_age", date_start_age);
+                    console.log("date_start_age_int", date_start_age_int);
+                    var date_dob_int = new Date(element.dob.toString()).getTime();
+                    var date_dob = new Date(element.dob.toString());
+                    console.log("date_dob", date_dob);
+                    console.log("date_dob_int", date_dob_int);
+                    if ((date_end_age_int <= date_dob_int) && (date_dob_int <= date_start_age_int)) {
+                        //priority_age = true;
+                        console.log("CECK", true); 
+                    }else{
+                        //priority_age = false;
+                        console.log("CECK", false); 
+                    }
+                
+                }
+
+                //Compare Gender
                 if (data_ads.gender.toLowerCase() == "l") {
                     if (element.gender != undefined) {
                         if ((element.gender.toLowerCase() == "male") || (element.gender.toLowerCase() == "laki-laki")) {
@@ -129,6 +163,7 @@ export class AdsUserCompareService {
                     }
                 }
 
+                //Compare Location
                 if ((user_location_long != null) && (user_location_lat != null) && (ads_location_long != null) && (ads_location_lat != null)) {
                     if (typeof user_location_long == 'string') {
                         user_location_long = parseFloat(user_location_long);
@@ -155,25 +190,35 @@ export class AdsUserCompareService {
                     }
                 }
 
-                if (priority_interest && priority_gender && priority_location) {
+                console.log("----------------------------------------------------------");
+                console.log("priority_interest", priority_interest);
+                console.log("priority_gender", priority_gender);
+                console.log("priority_location", priority_location);
+                console.log("priority_age", priority_age);
+                console.log("----------------------------------------------------------");
+
+                if (priority_interest && priority_gender && priority_location && priority_age) {
                     priority = "Highest"; 
-                    priority_number = 1; 
+                    priority_number = await this.utilsService.getSetting("Highest");
                 } else {
-                    if (priority_interest && priority_gender) {
+                    if (priority_interest && priority_gender && priority_age) {
                         priority = "High";
-                        priority_number = 1; 
+                        priority_number = await this.utilsService.getSetting("High"); 
                     } else {
-                        if (priority_interest && priority_location) {
+                        if (priority_interest && priority_location && priority_age) {
                             priority = "Medium";
-                            priority_number = 2; 
+                            priority_number = await this.utilsService.getSetting("Medium"); 
                         } else {
-                            if (priority_interest) {
+                            if (priority_interest && priority_age) {
                                 priority = "Low";
-                                priority_number = 3; 
+                                priority_number = await this.utilsService.getSetting("Low"); 
                             } else {
-                                if (priority_gender) {
-                                    priority = "Lowest";
-                                    priority_number = 4; 
+                                if (priority_gender && priority_age) {
+                                    priority = "Very Low";
+                                    priority_number = await this.utilsService.getSetting("VeryLow"); 
+                                }else{
+                                    priority = "Very Lowest";
+                                    priority_number = await this.utilsService.getSetting("VeryLowest");
                                 }
                             }
                         }
@@ -216,4 +261,5 @@ export class AdsUserCompareService {
     async getListUserAds(limit:number): Promise<UserAds[]>{
         return await await this.userAdsService.findAllLimit(limit);
     }
+    
 }

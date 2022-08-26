@@ -43,6 +43,8 @@ import { FileInterceptor } from '@nestjs/platform-express/multer';
 import { FormDataRequest } from 'nestjs-form-data';
 import { CreateUserbasicDto, SearchUserbasicDto } from '../trans/userbasics/dto/create-userbasic.dto';
 import { PostsService } from '../content/posts/posts.service';
+import { ContenteventsService } from '../content/contentevents/contentevents.service';
+import { InsightsService } from '../content/insights/insights.service';
 
 @Controller()
 export class AuthController {
@@ -59,6 +61,8 @@ export class AuthController {
     private languagesService: LanguagesService,
     private postsService: PostsService,
     private settingsService: SettingsService,
+    private contenteventsService: ContenteventsService,
+    private insightsService: InsightsService,
   ) { }
 
   @UseGuards(LocalAuthGuard)
@@ -901,6 +905,8 @@ export class AuthController {
         await this.userauthsService.updateNoneActive(request.body.email);
         await this.userdevicesService.updateNoneActive(request.body.email);
         await this.postsService.updateNoneActive(request.body.email);
+        await this.contenteventsService.updateNoneActive(request.body.email);
+        await this.insightsService.updateNoneActive(request.body.email);
         return {
           "response_code": 202,
           "messages": {

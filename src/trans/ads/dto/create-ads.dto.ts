@@ -31,6 +31,8 @@ export class CreateAdsDto {
     type: string;
     mediaAds: { oid: String; };
     tayang: number;
+    startAge: number;
+    endAge: number;
 
 
 }

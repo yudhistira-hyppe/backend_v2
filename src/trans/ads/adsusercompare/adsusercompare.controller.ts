@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, HttpStatus, Put, Headers, HttpCode, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, HttpStatus, Put, Headers, HttpCode, Query, NotFoundException } from '@nestjs/common';
 import { AdsUserCompareService } from './adsusercompare.service';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { UtilsService } from '../../../utils/utils.service';
@@ -8,6 +8,10 @@ import { AdsService } from '../ads.service';
 import { UserAdsService } from '../../../trans/userads/userads.service';
 import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
 import { MediavideosadsService } from '../../../stream/mediavideosads/mediavideosads.service';
+import { AdstypesService } from '../../../trans/adstypes/adstypes.service';
+import { CreateUserAdsDto } from '../../../trans/userads/dto/create-userads.dto';
+import { AccountbalancesService } from '../../../trans/accountbalances/accountbalances.service';
+import { CreateAccountbalancesDto } from 'src/trans/accountbalances/dto/create-accountbalances.dto';
 
 @Controller('api/ads')
 export class AdsUserCompareController {
@@ -19,6 +23,8 @@ export class AdsUserCompareController {
         private userbasicsService: UserbasicsService,
         private utilsService: UtilsService,
         private mediavideosadsService: MediavideosadsService,
+        private adstypesService: AdstypesService,
+        private accountbalancesService: AccountbalancesService,
         private errorHandler: ErrorHandler,) { }
 
 
@@ -86,40 +92,49 @@ export class AdsUserCompareController {
         }
         const data_userbasic = await this.userbasicsService.findOne(headers['x-auth-user']);
         if (await this.utilsService.ceckData(data_userbasic)){
-            var id_user = data_userbasic._id;
-            var data_userads = await this.userAdsService.findOneByuserID(id_user.toString());
+            var userbasicId = data_userbasic._id;
+            var data_userads = await this.userAdsService.findOneByuserID(userbasicId.toString());
             if (await this.utilsService.ceckData(data_userads)) {
-                for (var k = 0; k < data_userads.length;k++){
-                    if(k==0){
-                        var id_ads = data_userads[k].adsID;
-                        var data_ads = await this.adsService.findOne(id_ads.toString());
-                        if (await this.utilsService.ceckData(data_ads)) {
-                            var limit_ads = data_ads.totalUsedCredit;
-                            var data_userads_with_limit = await this.adsUserCompareService.getListUserAds(limit_ads);
-                            var filteredArray = data_userads_with_limit.filter(function (itm) {
-                                return itm.userID.toString() == id_user.toString();
-                            });
-                            var data_ads2 = await this.adsService.findOne(filteredArray[1].adsID.toString());
-                            return {
-                                "response_code": 202,
-                                "data": data_ads2,
-                                "messages": {
-                                    "info": [
-                                        "The process successfuly"
-                                    ]
-                                }
-                            };
-                        } else {
-                            await this.errorHandler.generateNotAcceptableException(
-                                'Unabled to proceed Ads not found'
-                            );
+                var adsId = data_userads[0].adsID;
+                var data_ads = await this.adsService.findOne(adsId.toString());
+                if (await this.utilsService.ceckData(data_ads)) {
+                    var data_response = {};
+                    var media = await this.mediavideosadsService.findOne(data_ads.mediaAds.toString());
+                    data_response['adsId'] = data_ads._id;
+                    data_response['adsskip'] = await this.utilsService.getSetting("AdsPlay");
+                    data_response['typeAdsID'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).nameType;
+                    if (await this.utilsService.ceckData(media)) {
+                        data_response['mediaAds'] = {
+                            mediaBasePath: media.mediaBasePath,
+                            mediaUri: media.mediaUri,
+                            mediaType: media.mediaType,
+                            mediaThumbEndpoint: media.mediaThumb,
                         }
                     }
+                    return {
+                        "response_code": 202,
+                        "data": data_response,
+                        "messages": {
+                            "info": [
+                                "The process successfuly"
+                            ]
+                        }
+                    };
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed Ads not found'
+                    );
                 }
             } else {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed User Ads not found'
-                );
+                return {
+                    "response_code": 202,
+                    "data": null,
+                    "messages": {
+                        "info": [
+                            "The process successfuly"
+                        ]
+                    }
+                };
             }
         }else{
             await this.errorHandler.generateNotAcceptableException(
@@ -134,9 +149,152 @@ export class AdsUserCompareController {
         @Param('id') id: string,
         @Query('x-auth-token') token: string,
         @Query('x-auth-user') email: string, @Res({ passthrough: true }) response) {
-        var data = await this.mediavideosadsService.findOne_(id);
-        response.set("Content-Type", "video/mp4");
-        response.send(data);
+        var ads_data = await this.adsService.findOne(id);
+        var ads_media = null;
+        if (await this.utilsService.ceckData(ads_data)){
+            ads_media = await this.mediavideosadsService.findOne(ads_data.mediaAds.toString());
+        }
+        if (ads_media != null) {
+            var data = await this.mediavideosadsService.seaweedfsRead(ads_media.fsSourceUri);
+            response.set("Content-Type", ads_media.mediaMime);
+            response.send(data);
+
+        } else {
+            await this.errorHandler.generateNotFoundException(
+                'Unabled to proceed File not found'
+            );
+        }
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post('/viewads/')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async viewads(@Headers() headers, @Body() body): Promise<any> {
+        if (await this.utilsService.validasiTokenEmail(headers)) {
+            if (body.watchingTime == undefined) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed param watchingTime is reqired',
+                );
+            }
+            if (body.adsId == undefined) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed param adsId is reqired',
+                );
+            } 
+            if (typeof body.watchingTime == 'number')  {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed param watchingTime invalid format',
+                );
+            }
+            var user_email = headers['x-auth-user'];
+            var watching_time = body.watchingTime;
+            var ads_id = body.adsId;
+
+            //Ceck UserbasicsService
+            const data_userbasicsService = await this.userbasicsService.findOne(user_email);
+            if (await this.utilsService.ceckData(data_userbasicsService)) {
+                //Ceck adsService
+                var data_adsService = await this.adsService.findOne(ads_id.toString());
+                if (await this.utilsService.ceckData(data_adsService)) {
+                    //Ceck mediavideosadsService
+                    var data_mediavideosadsService = await this.mediavideosadsService.findOne(data_adsService.mediaAds.toString());
+                    if (await this.utilsService.ceckData(data_mediavideosadsService)) {
+                        var data_minimum_AdsPlay = await this.utilsService.getSetting("AdsPlay");
+                        if (data_minimum_AdsPlay!=undefined){
+                            if (watching_time==0) {
+                                //Update ads
+                                try {
+                                    var CreateAdsDto_ = new CreateAdsDto();
+                                    
+                                    await this.adsService.update(data_adsService._id.toString(), CreateAdsDto_);
+                                } catch (e) {
+                                    await this.errorHandler.generateNotAcceptableException(
+                                        'Unabled to proceed, ' + e,
+                                    );
+                                }
+
+                                //Update userads
+                                try {
+                                    var CreateUserAdsDto_ = new CreateUserAdsDto();
+
+                                    await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
+                                } catch (e) {
+                                    await this.errorHandler.generateNotAcceptableException(
+                                        'Unabled to proceed, ' + e,
+                                    );
+                                }
+
+                                //Update accountbalace
+                                try {
+                                    var CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
+
+                                    await this.accountbalancesService.create(CreateAccountbalancesDto_);
+                                } catch (e) {
+                                    await this.errorHandler.generateNotAcceptableException(
+                                        'Unabled to proceed, ' + e,
+                                    );
+                                }
+                            }else{
+                                if (watching_time < data_minimum_AdsPlay) {
+                                    //Update userads
+                                    try {
+                                        var CreateUserAdsDto_ = new CreateUserAdsDto();
+
+                                        await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
+                                    } catch (e) {
+                                        await this.errorHandler.generateNotAcceptableException(
+                                            'Unabled to proceed, ' + e,
+                                        );
+                                    }
+                                } else {
+                                    //Update ads
+                                    try {
+                                        var CreateAdsDto_ = new CreateAdsDto();
+
+                                        await this.adsService.update(data_adsService._id.toString(), CreateAdsDto_);
+                                    } catch (e) {
+                                        await this.errorHandler.generateNotAcceptableException(
+                                            'Unabled to proceed, ' + e,
+                                        );
+                                    }
+                                    
+                                    //Update userads
+                                    try {
+                                        var CreateUserAdsDto_ = new CreateUserAdsDto();
+
+                                        await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
+
+                                    } catch (e) {
+                                        await this.errorHandler.generateNotAcceptableException(
+                                            'Unabled to proceed, ' + e,
+                                        );
+                                    }
+                                }
+                            }
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed data setting AdsPlay not found',
+                            );
+                        }
+                    }else{
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed Ads media not found',
+                        );
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed Ads not found',
+                    );
+                }
+            } else {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed User not found',
+                );
+            }
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed token and email not match',
+            );
+        }
+    }
 }

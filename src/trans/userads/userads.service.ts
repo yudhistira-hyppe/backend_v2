@@ -236,5 +236,23 @@ export class UserAdsService {
         return query;
     }
 
+    async updatesdataUserId(adsID: string, userID: string, createUserAdsDto: CreateUserAdsDto): Promise<Object> {
+        let data = await this.userAdsModel.updateOne(
+            {
+                "adsID": adsID,
+                "userID": userID
+            },
+            {
+                $set: {
+                    "statusClick": createUserAdsDto.statusClick,
+                    "statusView": createUserAdsDto.statusView,
+                    "viewAt": createUserAdsDto.viewAt,
+                    "viewed": createUserAdsDto.viewed,
+                    "clickAt": createUserAdsDto.clickAt
+                }
+            });
+        return data;
+    }
+
 
 }

@@ -10,9 +10,13 @@ import { AreasModule } from '../../../infra/areas/areas.module';
 import { UserauthsModule } from '../../../trans/userauths/userauths.module';
 import { UserbasicsModule } from '../../../trans/userbasics/userbasics.module';
 import { MediavideosadsModule } from '../../../stream/mediavideosads/mediavideosads.module';
+import { AdstypesModule } from '../../../trans/adstypes/adstypes.module';
+import { AccountbalancesModule } from '../../../trans/accountbalances/accountbalances.module';
 
 @Module({
     imports: [
+        AccountbalancesModule,
+        AdstypesModule,
         MediavideosadsModule,
         AreasModule,
         UserauthsModule,
