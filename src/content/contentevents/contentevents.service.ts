@@ -25,6 +25,27 @@ export class ContenteventsService {
     return this.ContenteventsModel.find().exec();
   }
 
+  async updateNoneActive(email: string) {
+    this.ContenteventsModel.updateMany(
+      {
+        email: email,
+      },
+      {
+        $set: {
+          "active": false,
+          "email": email + '_noneactive'
+        }
+      },
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
   async getConteneventbyType(CreateGetcontenteventsDto_: CreateGetcontenteventsDto): Promise<Contentevents[]> {
     return this.ContenteventsModel.find({
       postID: CreateGetcontenteventsDto_.postID,

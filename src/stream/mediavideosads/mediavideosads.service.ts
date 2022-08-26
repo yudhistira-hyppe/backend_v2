@@ -32,12 +32,8 @@ export class MediavideosadsService {
         return this.mediavideosadsModel.findOne({ _id: id }).exec();
     }
 
-    async findOne_(id: string) {
-        var data_ads = await this.mediavideosadsModel.findOne({ _id: id }).exec();
-        // console.log(id)
-        // console.log(data_ads)
-        var data = await this.seaweedfsService.read(data_ads.fsSourceUri.replace('/localrepo', ''));
-        console.log(data)
+    async seaweedfsRead(path: string) {
+        var data = await this.seaweedfsService.read(path.replace('/localrepo', ''));
         if (data != null) {
             return data;
         }

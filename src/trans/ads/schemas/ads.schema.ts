@@ -85,6 +85,7 @@ export class Ads {
     liveTypeAds: boolean;
 
 
+
 }
 
 export const AdsSchema = SchemaFactory.createForClass(Ads);

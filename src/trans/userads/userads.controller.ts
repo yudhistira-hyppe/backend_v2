@@ -161,8 +161,6 @@ export class UserAdsController {
                 "isActive": dataads[0].isActive,
                 "userAds": datauserads
             }];
-
-
         } catch (e) {
             throw new BadRequestException("data not found..");
         }

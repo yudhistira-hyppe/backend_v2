@@ -109,8 +109,7 @@ export class UserbasicsService {
     let data = await this.userbasicModel.updateOne({ "email": email },
       {
         $set: {
-          "email": email+'_noneactive',
-          "isIdVerified": false
+          "email": email+'_noneactive'
         }
       });
 

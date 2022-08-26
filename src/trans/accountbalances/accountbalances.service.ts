@@ -128,6 +128,15 @@ export class AccountbalancesService {
         return query;
     }
 
+    async create(CreateAccountbalancesDto: CreateAccountbalancesDto): Promise<Accountbalances> {
+        let data = await this.accountbalancesModel.create(CreateAccountbalancesDto);
+
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
+        return data;
+    }
+
     async createdata(datas: {
         iduser: { oid: String; },
         debet: number,
