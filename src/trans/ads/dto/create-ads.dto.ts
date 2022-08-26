@@ -39,8 +39,6 @@ export class CreateAdsDto {
     creditValue: number;
     totalCredit: number;
     liveTypeAds: boolean;
-
-
 }
 
 export class MediaimageadsDto {

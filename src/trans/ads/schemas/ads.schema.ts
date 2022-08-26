@@ -83,9 +83,6 @@ export class Ads {
     totalCredit: number;
     @Prop()
     liveTypeAds: boolean;
-
-
-
 }
 
 export const AdsSchema = SchemaFactory.createForClass(Ads);
