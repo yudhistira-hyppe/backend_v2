@@ -12462,24 +12462,21 @@ export class GetuserprofilesService {
     const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
     const interes = await this.interestsRepoService.findinterst();
 
-    var arraygenderF = null;
-    var arraygenderM = null;
     var gender = null;
     var lenghtgender = regender.length;
-    for (var i = 0; i < lenghtgender; i++) {
-      var gen = regender[i];
+    var genMale = regender.find(element => element === "MALE");
+    var genFeMale = regender.find(element => element === "FEMALE");
 
-      if (gen === "FEMALE") {
-        arraygenderF = ["FEMALE", " FEMALE", "Perempuan"];
-      }
-      if (gen === "MALE") {
-        arraygenderM = ["MALE", " MALE", "Laki-laki"];
-      }
+    if (genFeMale !== "" && genMale === "") {
+      gender = ["FEMALE", " FEMALE", "Perempuan"];
 
     }
-    gender = arraygenderM.concat(arraygenderM);
-    console.log(gender);
-
+    else if (genMale !== "" && genFeMale === "") {
+      gender = ["MALE", " MALE", "Laki-laki",];
+    } else {
+      gender = ["MALE", " MALE", "Laki-laki", "FEMALE", " FEMALE", "Perempuan"];
+      console.log(gender);
+    }
 
     if (username !== undefined && gender === undefined && roles === undefined && age === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
@@ -12767,7 +12764,7 @@ export class GetuserprofilesService {
             $or: [
               {
                 gender: {
-                  "$in": { $regex: gender, $options: 'i' }
+                  "$in": gender
                 }
               },
 
