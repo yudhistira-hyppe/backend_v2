@@ -11,7 +11,8 @@ import { MediavideosadsService } from '../../../stream/mediavideosads/mediavideo
 import { AdstypesService } from '../../../trans/adstypes/adstypes.service';
 import { CreateUserAdsDto } from '../../../trans/userads/dto/create-userads.dto';
 import { AccountbalancesService } from '../../../trans/accountbalances/accountbalances.service';
-import { CreateAccountbalancesDto } from 'src/trans/accountbalances/dto/create-accountbalances.dto';
+import { CreateAccountbalancesDto } from '../../../trans/accountbalances/dto/create-accountbalances.dto';
+import { AdsplacesService } from '../../../trans/adsplaces/adsplaces.service';
 
 @Controller('api/ads')
 export class AdsUserCompareController {
@@ -25,6 +26,7 @@ export class AdsUserCompareController {
         private mediavideosadsService: MediavideosadsService,
         private adstypesService: AdstypesService,
         private accountbalancesService: AccountbalancesService,
+        private adsplacesService: AdsplacesService,
         private errorHandler: ErrorHandler,) { }
 
 
@@ -101,15 +103,18 @@ export class AdsUserCompareController {
                     var data_response = {};
                     var media = await this.mediavideosadsService.findOne(data_ads.mediaAds.toString());
                     data_response['adsId'] = data_ads._id;
-                    data_response['adsskip'] = await this.utilsService.getSetting("AdsPlay");
-                    data_response['typeAdsID'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).nameType;
+                    data_response['adsPlace'] = (await this.adsplacesService.findOne(data_ads.placingID.toString())).namePlace;
+                    data_response['adsType'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).nameType;
+                    data_response['adsSkip'] = await this.utilsService.getSetting("AdsPlay");
                     if (await this.utilsService.ceckData(media)) {
-                        data_response['mediaAds'] = {
+                        data_response['adsMedia'] = {
                             mediaBasePath: media.mediaBasePath,
                             mediaUri: media.mediaUri,
                             mediaType: media.mediaType,
                             mediaThumbEndpoint: media.mediaThumb,
                         }
+                    }else{
+                        data_response['adsMedia'] = null;
                     }
                     return {
                         "response_code": 202,
