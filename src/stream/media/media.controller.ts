@@ -874,7 +874,7 @@ export class MediaController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('api/posts/upload')
-    @UseInterceptors(FileFieldsInterceptor([{ name: 'cardPict', maxCount: 1 }, { name: 'selfiepict', maxCount: 1, }, { name: 'supportFile', maxCount: 2, }], multerOptions))
+    @UseInterceptors(FileFieldsInterceptor([{ name: 'cardPict', maxCount: 1 }, { name: 'selfiepict', maxCount: 1, }, { name: 'supportFile', maxCount: 10, }], multerOptions))
     async upload(
         @UploadedFiles() files1: {
             cardPict?: Express.Multer.File[],
