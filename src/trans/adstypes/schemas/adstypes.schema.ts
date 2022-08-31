@@ -18,6 +18,10 @@ export class Adstypes {
     formatType: [];
     @Prop()
     descType: string;
+    @Prop()
+    AdsSkip: number;
+    @Prop()
+    rewards: number;  
 
 
 }

@@ -24,6 +24,10 @@ export class AdsService {
         return this.adsModel.find().exec();
     }
 
+    async findOneActive(id: string): Promise<Ads> {
+        return this.adsModel.findOne({ _id: id, isActive: true }).exec();
+    }
+
     async findOne(id: string): Promise<Ads> {
         return this.adsModel.findOne({ _id: id }).exec();
     }

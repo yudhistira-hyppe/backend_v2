@@ -13,6 +13,7 @@ import { CreateUserAdsDto } from '../../../trans/userads/dto/create-userads.dto'
 import { AccountbalancesService } from '../../../trans/accountbalances/accountbalances.service';
 import { CreateAccountbalancesDto } from '../../../trans/accountbalances/dto/create-accountbalances.dto';
 import { AdsplacesService } from '../../../trans/adsplaces/adsplaces.service';
+import mongoose from 'mongoose';
 
 @Controller('api/ads')
 export class AdsUserCompareController {
@@ -176,6 +177,13 @@ export class AdsUserCompareController {
     @HttpCode(HttpStatus.ACCEPTED)
     async viewads(@Headers() headers, @Body() body): Promise<any> {
         if (await this.utilsService.validasiTokenEmail(headers)) {
+
+            var user_email = null;
+            var watching_time = null;
+            var ads_id = null;
+            var userads_id = null;
+            var current_date = await this.utilsService.getDateTimeString();
+
             if (body.watchingTime == undefined) {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed param watchingTime is reqired',
@@ -186,115 +194,267 @@ export class AdsUserCompareController {
                     'Unabled to proceed param adsId is reqired',
                 );
             } 
-            if (typeof body.watchingTime == 'number')  {
+            if (typeof body.watchingTime != 'number')  {
                 await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed param watchingTime invalid format',
+                    'Unabled to proceed param watchingTime invalid format ' + typeof body.watchingTime,
                 );
             }
-            var user_email = headers['x-auth-user'];
-            var watching_time = body.watchingTime;
-            var ads_id = body.adsId;
+            if (body.watchingTime>0){
+                if (body.useradsId == undefined) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed param body.watchingTime is reqired',
+                    );
+                }
+            }
 
-            //Ceck UserbasicsService
+            user_email = headers['x-auth-user'];
+            watching_time = body.watchingTime;
+            ads_id = body.adsId;
+            userads_id = body.useradsId;
+
+            var rewards = false;
+
             const data_userbasicsService = await this.userbasicsService.findOne(user_email);
-            if (await this.utilsService.ceckData(data_userbasicsService)) {
-                //Ceck adsService
-                var data_adsService = await this.adsService.findOne(ads_id.toString());
-                if (await this.utilsService.ceckData(data_adsService)) {
-                    //Ceck mediavideosadsService
-                    var data_mediavideosadsService = await this.mediavideosadsService.findOne(data_adsService.mediaAds.toString());
-                    if (await this.utilsService.ceckData(data_mediavideosadsService)) {
-                        var data_minimum_AdsPlay = await this.utilsService.getSetting("AdsPlay");
-                        if (data_minimum_AdsPlay!=undefined){
-                            if (watching_time==0) {
-                                //Update ads
-                                try {
-                                    var CreateAdsDto_ = new CreateAdsDto();
-                                    
-                                    await this.adsService.update(data_adsService._id.toString(), CreateAdsDto_);
-                                } catch (e) {
-                                    await this.errorHandler.generateNotAcceptableException(
-                                        'Unabled to proceed, ' + e,
-                                    );
-                                }
+            if (!(await this.utilsService.ceckData(data_userbasicsService))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed User not found',
+                );
+            }
 
-                                //Update userads
-                                try {
-                                    var CreateUserAdsDto_ = new CreateUserAdsDto();
+            const data_adsService = await this.adsService.findOneActive(ads_id.toString());
+            if (!(await this.utilsService.ceckData(data_adsService))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Ads not found',
+                );
+            }
 
-                                    await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
-                                } catch (e) {
-                                    await this.errorHandler.generateNotAcceptableException(
-                                        'Unabled to proceed, ' + e,
-                                    );
-                                }
+            var data_mediavideosadsService = await this.mediavideosadsService.findOne(data_adsService.mediaAds.toString());
+            if (!(await this.utilsService.ceckData(data_mediavideosadsService))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Ads media not found',
+                );
+            }
 
-                                //Update accountbalace
-                                try {
-                                    var CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
+            var data_adstypesService = await this.adstypesService.findOne(data_adsService.typeAdsID.toString());
+            if (!(await this.utilsService.ceckData(data_adstypesService))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Ads types not found',
+                );
+            }
 
-                                    await this.accountbalancesService.create(CreateAccountbalancesDto_);
-                                } catch (e) {
-                                    await this.errorHandler.generateNotAcceptableException(
-                                        'Unabled to proceed, ' + e,
-                                    );
-                                }
-                            }else{
-                                if (watching_time < data_minimum_AdsPlay) {
-                                    //Update userads
-                                    try {
-                                        var CreateUserAdsDto_ = new CreateUserAdsDto();
-
-                                        await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
-                                    } catch (e) {
-                                        await this.errorHandler.generateNotAcceptableException(
-                                            'Unabled to proceed, ' + e,
-                                        );
-                                    }
-                                } else {
-                                    //Update ads
-                                    try {
-                                        var CreateAdsDto_ = new CreateAdsDto();
-
-                                        await this.adsService.update(data_adsService._id.toString(), CreateAdsDto_);
-                                    } catch (e) {
-                                        await this.errorHandler.generateNotAcceptableException(
-                                            'Unabled to proceed, ' + e,
-                                        );
-                                    }
-                                    
-                                    //Update userads
-                                    try {
-                                        var CreateUserAdsDto_ = new CreateUserAdsDto();
-
-                                        await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
-
-                                    } catch (e) {
-                                        await this.errorHandler.generateNotAcceptableException(
-                                            'Unabled to proceed, ' + e,
-                                        );
-                                    }
-                                }
-                            }
-                        } else {
-                            await this.errorHandler.generateNotAcceptableException(
-                                'Unabled to proceed data setting AdsPlay not found',
-                            );
-                        }
-                    }else{
+            if (body.watchingTime == 0) {
+                const data_userAdsService = await this.userAdsService.findOneByuserIDAds(data_userbasicsService._id.toString(), ads_id.toString());
+                if (await this.utilsService.ceckData(data_userAdsService)) {
+                    //Update userads
+                    try {
+                        var CreateUserAdsDto_ = new CreateUserAdsDto();
+                        CreateUserAdsDto_.statusView = true;
+                        CreateUserAdsDto_.viewed = 1;
+                        await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
+                    } catch (e) {
                         await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed Ads media not found',
+                            'Unabled to proceed, ' + e,
                         );
                     }
                 } else {
                     await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed Ads not found',
+                        'Unabled to proceed User Ads not found',
                     );
                 }
+
+                if (userAds_liveTypeuserads) {
+                    //Insert userads
+                    try {
+                        var _CreateUserAdsDto_ = new CreateUserAdsDto();
+                        _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
+                        _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
+                        _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
+                        _CreateUserAdsDto_.createdAt = data_userAdsService.createdAt;
+                        _CreateUserAdsDto_.description = data_userAdsService.description;
+                        _CreateUserAdsDto_.priority = data_userAdsService.priority;
+                        _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
+                        _CreateUserAdsDto_.statusClick = data_userAdsService.statusClick;
+                        _CreateUserAdsDto_.statusView = data_userAdsService.statusView;
+                        _CreateUserAdsDto_.updatedAt = data_userAdsService.updatedAt;
+                        _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
+                        _CreateUserAdsDto_.userID = data_userAdsService.userID;
+                        _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
+                        _CreateUserAdsDto_.viewed = 0;
+                        _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
+                        await this.userAdsService.create(_CreateUserAdsDto_);
+                    } catch (e) {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed, Insert userAds liveTypeuserads' + e,
+                        );
+                    }
+                }
+
+                return {
+                    response_code: 202,
+                    data: {
+                        userAds_id: data_userAdsService ._id.toString() 
+                    },
+                    messages: {
+                        info: ['successfully'],
+                    },
+                };
             } else {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed User not found',
-                );
+                const data_userAdsService = await this.userAdsService.findOne(userads_id);
+                if (await this.utilsService.ceckData(data_userAdsService)) {
+                    if (data_adstypesService.AdsSkip == undefined) {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed data setting Ads Skip not found',
+                        );
+                    }
+                    if (data_adstypesService.creditValue == undefined) {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed data setting Ads Credit not found',
+                        );
+                    }
+
+                    var credit_view = data_adstypesService.creditValue;
+                    var AdsSkip = data_adstypesService.AdsSkip;
+                    var ads_rewards = data_adstypesService.rewards;
+                    var userAds_liveTypeuserads = data_userAdsService.liveTypeuserads;
+
+                    var ads_tayang = data_adsService.tayang;
+                    var ads_totalView = 0;
+                    if (data_adsService.totalView != undefined) {
+                        ads_totalView = data_adsService.totalView;
+                    }
+
+                    var credit = data_adsService.creditValue;
+                    var credit_free = data_adsService.creditFree;
+                    var used_credit = data_adsService.usedCredit;
+                    var used_credit_free = data_adsService.usedCreditFree;
+
+                    if ((ads_totalView + 1) <= ads_tayang) {
+                        const sisa_credit = credit - (used_credit + credit_view);
+                        const sisa_credit_free = credit_free - (used_credit_free + credit_view);
+                        let sisa_credit_view = 0;
+                        if (sisa_credit==0){
+
+                        } else if (sisa_credit > 0) {
+                            if (watching_time > AdsSkip){
+                                rewards = true;
+                            }
+                            if (sisa_credit < credit_view){
+                                sisa_credit_view = credit_view - sisa_credit;
+                                used_credit = used_credit + sisa_credit;
+                                used_credit_free = used_credit_free + sisa_credit_view;
+                            } else {
+                                used_credit = used_credit + credit_view;
+                            }
+                        } else {
+                            if (sisa_credit_free < credit_view) {
+                                sisa_credit_view = credit_view - sisa_credit_free;
+                                used_credit_free = used_credit_free + sisa_credit_free;
+                                used_credit_free = used_credit_free + sisa_credit_view;
+                            } else {
+                                used_credit_free = used_credit_free + credit_view;
+                            }
+                        }
+
+                        if (watching_time > 0 && watching_time < AdsSkip) {
+                            //Update userads
+                            try {
+                                var CreateUserAdsDto_ = new CreateUserAdsDto();
+                                CreateUserAdsDto_.statusView = true;
+                                CreateUserAdsDto_.viewed = 1;
+                                await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
+                            } catch (e) {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed, ' + e,
+                                );
+                            }
+                        } else if (watching_time > 0 && watching_time > AdsSkip) {
+                            //Update userads
+                            try {
+                                var CreateUserAdsDto_ = new CreateUserAdsDto();
+                                CreateUserAdsDto_.statusView = true;
+                                CreateUserAdsDto_.viewed = 1;
+                                await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
+
+                            } catch (e) {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed, ' + e,
+                                );
+                            }
+
+                            //Update ads
+                            try {
+                                var CreateAdsDto_ = new CreateAdsDto();
+                                CreateAdsDto_.usedCredit = used_credit;
+                                CreateAdsDto_.usedCreditFree = used_credit_free;
+                                CreateAdsDto_.totalView = ads_totalView + 1;
+                                await this.adsService.update(data_adsService._id.toString(), CreateAdsDto_);
+                            } catch (e) {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed, ' + e,
+                                );
+                            }
+                        }
+
+                        if (rewards) {
+                            //Update accountbalace
+                            try {
+                                var CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
+                                CreateAccountbalancesDto_.iduser = data_userbasicsService._id;
+                                CreateAccountbalancesDto_.debet = 0;
+                                CreateAccountbalancesDto_.kredit = ads_rewards;
+                                CreateAccountbalancesDto_.type = "topup";
+                                CreateAccountbalancesDto_.timestamp = current_date;
+                                CreateAccountbalancesDto_.description = "rewards form ads";
+                                await this.accountbalancesService.create(CreateAccountbalancesDto_);
+                            } catch (e) {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed, ' + e,
+                                );
+                            }
+                        }
+
+                        if (ads_tayang == (ads_totalView + 1)) {
+                            //Update userads
+                            try {
+                                var CreateUserAdsDto_ = new CreateUserAdsDto();
+                                CreateUserAdsDto_.statusView = false;
+                                await this.userAdsService.updatesdataAdsID(data_adsService._id.toString(), CreateUserAdsDto_);
+
+                            } catch (e) {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed, ' + e,
+                                );
+                            }
+
+                            //Update ads
+                            try {
+                                var CreateAdsDto_ = new CreateAdsDto();
+                                CreateAdsDto_.usedCredit = used_credit;
+                                CreateAdsDto_.usedCreditFree = used_credit_free;
+                                CreateAdsDto_.totalView = ads_totalView + 1;
+                                await this.adsService.update(data_adsService._id.toString(), CreateAdsDto_);
+                            } catch (e) {
+                                await this.errorHandler.generateNotAcceptableException(
+                                    'Unabled to proceed, ' + e,
+                                );
+                            }
+                        }
+                    }
+
+                    return {
+                        response_code: 202,
+                        data:{
+                            rewards: rewards,
+                        },
+                        messages: {
+                            info: ['successfully'],
+                        },
+                    };
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed User Ads not found',
+                    );
+                }
             }
         } else {
             await this.errorHandler.generateNotAcceptableException(

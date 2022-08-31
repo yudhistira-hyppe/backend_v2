@@ -240,6 +240,7 @@ export class AdsUserCompareService {
                     CreateUserAdsDto_.statusView = false;
                     CreateUserAdsDto_.viewed = 0;
                     CreateUserAdsDto_.liveAt = _CreateAdsDto_.liveAt;
+                    CreateUserAdsDto_.liveTypeuserads = data_ads.liveTypeAds;
                     const createUserAdsDto = await this.userAdsService.create(CreateUserAdsDto_);
                 } catch (s) {
                     await this.errorHandler.generateNotAcceptableException(

@@ -34,5 +34,7 @@ export class UserAds {
     liveAt: String;
     @Prop()
     viewed: number;
+    @Prop()
+    liveTypeuserads: boolean;
 }
 export const UserAdsSchema = SchemaFactory.createForClass(UserAds);
