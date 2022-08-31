@@ -39,8 +39,12 @@ export class Mediavideos {
   mediaMime: String
   @Prop()
   rotate: Number
- @Prop()
- _class:String
+  @Prop()
+  _class:String
+  @Prop()
+  apsara: boolean 
+  @Prop()
+  apsaraId: String   
 }
 
 export const MediavideosSchema = SchemaFactory.createForClass(Mediavideos);

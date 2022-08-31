@@ -1,18 +1,40 @@
-import { Injectable } from '@nestjs/common';
+import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
+import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { CreatePostsDto } from './dto/create-posts.dto';
+import { CreatePostResponse, CreatePostsDto } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
+import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
+import { GlobalResponse } from 'src/utils/data/globalResponse';
+import { Mediavideos, MediavideosDocument } from '../mediavideos/schemas/mediavideos.schema';
+import { UtilsService } from 'src/utils/utils.service';
+import { InterestsService } from 'src/infra/interests/interests.service';
+import { UserauthsService } from 'src/trans/userauths/userauths.service';
+import { MediavideosService } from '../mediavideos/mediavideos.service';
+import { InsightsService } from '../insights/insights.service';
+import { Insights } from '../insights/schemas/insights.schema';
+import axios from 'axios';
+import { ConfigService } from '@nestjs/config';
+import {createWriteStream} from 'fs'
+import { QueryDiscusDto } from '../disqus/dto/create-disqus.dto';
 
 
 @Injectable()
 export class PostsService {
+  private readonly logger = new Logger(PostsService.name);
+
   constructor(
     @InjectModel(Posts.name, 'SERVER_CONTENT')
     private readonly PostsModel: Model<PostsDocument>,
     private getuserprofilesService: GetuserprofilesService,
+    private userService: UserbasicsService,
+    private utilService: UtilsService,
+    private interestService: InterestsService,
+    private userAuthService: UserauthsService,
+    private videoService: MediavideosService,
+    private insightService: InsightsService,
+    private readonly configService: ConfigService,
   ) { }
 
   async create(CreatePostsDto: CreatePostsDto): Promise<Posts> {
@@ -1197,5 +1219,269 @@ export class PostsService {
       },
     ]).exec();
     return GetCount;
+  }
+
+  async createNewPost(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    this.logger.log('createNewPost >>> start');
+    var res = new CreatePostResponse();
+    res.response_code = 204;
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+    if (profile == undefined) {
+      res.messages = "Email tidak dikenali";
+      return res;
+    }
+
+    if (body.certified && body.certified == "true") {
+      if (profile.isIdVerified != true) {
+        res.messages = "Profile belum verifikasi KTP";
+        return res;        
+      } 
+    }
+
+    var mime = file.mimetype;
+    if (mime.startsWith('video')) {
+      this.logger.log('createNewPost >>> is video');
+      return this.createNewPostVideo(file, body, headers);
+    }
+    return null;
+  }
+
+  private async createNewPostVideo(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+    this.logger.log('createNewPostVideo >>> start');
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);    
+    this.logger.log('createNewPostVideo >>> profile: ' + profile);
+ 
+    var post = new Posts();
+    post._id = await this.utilService.generateId();
+    post.postID = post._id;
+    post.postType = 'vid';
+    post.active = true;
+    post.email = auth.email;
+    post.createdAt = await this.utilService.getDateTimeString();
+    post.updatedAt = await this.utilService.getDateTimeString();
+    post.expiration = new Long(1000);
+
+    if (body.description != undefined) {
+      post.description = body.description;
+    }
+
+    if (body.tags != undefined) {
+      var obj = body.tags;
+      var tgs = obj.split(",");
+      post.tags = tgs;
+    }
+
+    if (body.visibility != undefined) {
+      post.visibility = body.visibility;
+    } else {
+      post.visibility = 'PUBLIC';
+    }
+
+    if (body.location != undefined) {
+      post.location = body.location;
+    }
+
+    if (body.lat != undefined) {
+      post.lat = body.lat;
+    }
+    
+    if (body.lon != undefined) {
+      post.lon = body.lon;
+    }
+
+    if (body.saleAmount != undefined) {
+      post.saleAmount = body.saleAmount;
+    }
+    
+    if (body.saleLike != undefined) {
+      post.saleLike = body.saleLike;
+    }
+    
+    if (body.saleView != undefined) {
+      post.saleView = body.saleView;
+    }   
+    
+    if (body.allowComments != undefined) {
+      post.allowComments = body.allowComments;
+    } else {
+      post.allowComments = true;      
+    }
+
+    if (body.isSafe != undefined) {
+      post.isSafe = body.isSafe;
+    } else {
+      post.isSafe = false;      
+    }
+    
+    if (body.isOwned != undefined) {
+      post.isOwned = body.isOwned;
+    } else {
+      post.isOwned = false;      
+    }
+    
+    if (body.isCertified != undefined) {
+      post.isCertified = body.isCertified;
+    } else {
+      post.isCertified = false;      
+    }    
+    
+    if (body.cats != undefined) {
+      var obj = body.cats;
+      var cats = obj.split(",");
+      var pcats = [];
+      for(var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        var cat = await this.interestService.findByName(tmp);
+        if (cat != undefined) {
+          var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(cat._id), "$db": "hyppe_infra_db" };
+          pcats.push(objintr);
+        }
+      }
+      post.category = pcats;
+    }
+    
+    if (body.tagPeople != undefined) {
+      var obj = body.tagPeople;
+      var cats = obj.split(",");
+      var pcats = [];
+      for(var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        var tp = await this.userAuthService.findOneUsername(tmp);
+        if (cat != undefined) {
+          var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
+          pcats.push(objintr);
+        }
+      }
+      post.tagPeople = pcats;
+    }
+    
+    if (body.tagDescription != undefined) {
+      var obj = body.tagDescription;
+      var cats = obj.split(",");
+      var pcats = [];
+      for(var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        var tp = await this.userAuthService.findOneUsername(tmp);
+        if (cat != undefined) {
+          var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
+          pcats.push(objintr);
+        }
+      }
+      post.tagDescription = pcats;
+    }    
+
+    post.active = false;
+
+    //TODO Insight
+    var ins = await this.insightService.findemail(auth.email);
+    if (ins == undefined) {
+      ins = new Insights();
+      ins._id = await this.utilService.generateId();
+      ins.insightID = ins._id;
+      ins.active = false;
+      ins.email = auth.email
+      ins.createdAt = await this.utilService.getDateTimeString();
+      ins.updatedAt = await this.utilService.getDateTimeString(); 
+    }
+
+    //METADATA
+    let metadata = {postType : 'vid', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
+    post.metadata = metadata;
+
+    var med = new Mediavideos();
+    med._id = await this.utilService.generateId();
+    med.mediaID = med._id;
+    med.postID = post.postID;
+    med.active = false;
+    med.createdAt = await this.utilService.getDateTimeString();
+    med.updatedAt = await this.utilService.getDateTimeString();
+    med.mediaMime = file.mimetype;
+    med.mediaType = 'video';
+    med.originalName = file.originalname;
+    med.apsara = true;
+
+    this.logger.log('createNewPostVideo >>> prepare save');
+    var retm = await this.videoService.create(med);
+    this.logger.log('createNewPostVideo >>> ' + retm);
+    var cm = [];
+    var vids = { "$ref": "mediavideos", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+    cm.push(vids);
+    post.contentMedias = cm;
+    let apost = await this.PostsModel.create(post);
+
+    let fn = file.originalname;
+    let ext = fn.split(".");
+    let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + post._id + "." + ext[1];
+    const ws = createWriteStream(nm);
+    ws.write(file.buffer);
+    ws.close();
+
+    let payload = {'file' : nm, 'postId' : apost._id};
+    axios.post(this.configService.get("APSARA_UPLOADER"), JSON.stringify(payload), { headers: {'Content-Type': 'application/json'}});
+    var res = new CreatePostResponse();
+    res.response_code = 202;
+    res.messages = "";
+    return null;
+  }
+
+  async updateNewPost(body: any, headers: any) {
+    let post = await this.findid(body.postID);
+    if (post == undefined) {
+      return;
+    }
+    let cm = post.contentMedias[0];
+    let ns = cm.namespace;
+    if (ns == 'mediavideos') {
+      let vid = await this.videoService.findOne(cm.oid);
+      if (vid == undefined) {
+        return;
+      }
+
+      vid.apsaraId = body.videoId;
+      this.videoService.create(vid);
+    }
+
+    let meta = post.metadata;
+    let metadata = {postType : meta.postType, duration: parseInt(body.duration), postID : post._id, email: meta.email, postRoll : meta.postRoll, midRoll : meta.midRoll, preRoll: meta.preRoll};
+    post.metadata = metadata;
+    post.active = false;
+    this.create(post);    
+  }
+
+  async getUserPost(body: any, headers: any): Promise<CreatePostResponse> {
+
+    let type = 'GET_POST';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);    
+    this.logger.log('getUserPost >>> profile: ' + profile);
+
+    let res = new CreatePostResponse();
+    res.response_code = 202;
+    res.messages = "";
+    let posts = await this.doGetUserPost(body, headers);
+    res.data = posts;
+    return res;
+  }
+
+  private async doGetUserPost(body: any, headers: any): Promise<Posts[]> {
+
+    let query = this.PostsModel.find();
+    query.where('active', true);
+    query.or([{ postType: 'pict' }, { postType: 'diary' }]);
+    query.sort({'createdAt': -1});
+    query.limit(10);
+    query.skip(10);
+
+    let res = await query.exec();
+    return res;
   }
 }

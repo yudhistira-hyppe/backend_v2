@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { Long } from "mongodb";
 
 export type PostsDocument = Posts & Document;
 
@@ -19,11 +20,11 @@ export class Posts {
   active: boolean
 
   @Prop()
+  createdAt: String  
+  @Prop()
   updatedAt: String
-  @Prop({ type: Object })
-  expiration: {
-    numberLong: String
-  }
+  @Prop()
+  expiration: Long;
   @Prop()
   visibility: String
   @Prop()
@@ -37,7 +38,13 @@ export class Posts {
   @Prop()
   isOwned: boolean
   @Prop()
+  isCertified: boolean
+  @Prop()
   saleAmount: number
+  @Prop()
+  saleLike: boolean
+  @Prop()
+  saleView: boolean    
 
   @Prop({ type: Object })
   metadata: {
@@ -50,42 +57,37 @@ export class Posts {
     email: String
   }
 
-  @Prop({ type: Object })
-  likes: {
-    numberLong: String
-  }
-  @Prop({ type: Object })
-  views: {
-    numberLong: String
-  }
-  @Prop({ type: Object })
-  shares: {
-    numberLong: String
-  }
-  @Prop({ type: Object })
-  comments: {
-    numberLong: String
-  }
+  @Prop()
+  likes: Long;
+  @Prop()
+  views: Long;
+  @Prop()
+  shares: Long;
+  @Prop()
+  comments: Long;
 
   @Prop({ type: Object })
-  userProfile: {
-    ref: String
-    id: {
-      oid: String
-    };
-    db: String
-  }
+  userProfile: any;
 
-  @Prop([{ type: Object }])
-  contentMedias: [{
-    ref: String
-    id: String
-    db: String
-  }]
+  @Prop()
+  contentMedias: any[];  
   @Prop()
   _class: String
-  @Prop([])
-  tagPeople: any[]
+
+  @Prop()
+  lat: number;  
+
+  @Prop()
+  lon: number;    
+
+  @Prop()
+  category: any[];
+
+  @Prop()
+  tagPeople: any[];
+  
+  @Prop()
+  tagDescription: any[];  
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

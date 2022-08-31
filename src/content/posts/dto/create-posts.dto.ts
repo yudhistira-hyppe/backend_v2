@@ -1,3 +1,5 @@
+import { Long } from "mongodb";
+
 export class CreatePostsDto {
   
 
@@ -9,9 +11,7 @@ export class CreatePostsDto {
     readonly active: boolean;
     readonly  createdAt: String;
     readonly  updatedAt: String;
-    readonly expiration: {
-        numberLong:String;
-    };
+    readonly expiration: Long;
     readonly  visibility: String;
     readonly  location: String;
     readonly  tags: [];
@@ -28,19 +28,11 @@ export class CreatePostsDto {
         email: String;
     };
 
-    readonly likes: {
-        numberLong:String;
-    };
-    readonly views: {
-        numberLong:String;
-    };
-    readonly shares: {
-        numberLong:String;
-    };
+    readonly likes: Long;
+    readonly views: Long;
+    readonly shares: Long;
    
-    readonly comments: {
-        numberLong:String;
-    };
+    readonly comments: Long;
     readonly userProfile: {
         ref: String;
         id: {
@@ -50,10 +42,12 @@ export class CreatePostsDto {
     };
    
    
-    readonly contentMedias:[ {
-        ref: String;
-        id:String;
-        db:String;
-    }];
+    readonly contentMedias: any[];
     readonly _class:String;
   }
+
+  export class CreatePostResponse {
+    response_code: number;
+    messages: String;
+    data: any;
+  }  
