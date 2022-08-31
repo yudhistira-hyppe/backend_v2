@@ -777,25 +777,21 @@ export class TransactionsController {
                             qtyvoucher = datavoucher.qty;
                             totalCredit = datavoucher.creditTotal * jml;
 
-                            if (totalUsed !== qtyvoucher) {
-                                let datauservoucher = new Uservoucher();
-                                datauservoucher.userID = iduserbuy;
-                                datauservoucher.createdAt = dt.toISOString();
-                                datauservoucher.updatedAt = dt.toISOString();
-                                datauservoucher.isActive = true;
-                                datauservoucher.usedCredit = usedCredit;
-                                datauservoucher.voucherID = voucherID;
-                                datauservoucher.voucherCredit = totalCredit;
-                                datauservoucher.totalCredit = totalCredit - usedCredit;
-                                datauservoucher.jmlVoucher = jml;
-                                datauservoucher.expiredAt = expiredAt;
-                                await this.uservouchersService.create(datauservoucher);
-                                await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
-                            }
-                            else {
-                                await this.vouchersService.updatestatusVoucher(voucherID, dt.toISOString());
-                                throw new BadRequestException("Voucher is non aktif");
-                            }
+
+                            let datauservoucher = new Uservoucher();
+                            datauservoucher.userID = iduserbuy;
+                            datauservoucher.createdAt = dt.toISOString();
+                            datauservoucher.updatedAt = dt.toISOString();
+                            datauservoucher.isActive = true;
+                            datauservoucher.usedCredit = usedCredit;
+                            datauservoucher.voucherID = voucherID;
+                            datauservoucher.voucherCredit = totalCredit;
+                            datauservoucher.totalCredit = totalCredit - usedCredit;
+                            datauservoucher.jmlVoucher = jml;
+                            datauservoucher.expiredAt = expiredAt;
+                            await this.uservouchersService.create(datauservoucher);
+                            await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
+
                         }
 
 

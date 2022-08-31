@@ -96,7 +96,10 @@ export class GetuserprofilesController {
     var roles = null;
     var data = null;
     var page = null;
+    var interest = null;
     var countrow = null;
+    var startdate = null;
+    var enddate = null;
 
     const messages = {
       "info": ["The process successful"],
@@ -106,8 +109,9 @@ export class GetuserprofilesController {
     fullName = request_json["fullName"];
     gender = request_json["gender"];
     roles = request_json["roles"];
-
-
+    interest = request_json["interest"];
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
     if (request_json["page"] !== undefined) {
       page = request_json["page"];
     } else {
@@ -115,7 +119,7 @@ export class GetuserprofilesController {
     }
 
 
-    data = await this.getuserprofilesService.findata(fullName, gender, roles, age, page);
+    data = await this.getuserprofilesService.findataNew(fullName, gender, roles, age, startdate, enddate, interest, page);
 
     var allrow = await this.getuserprofilesService.totalcount();
     var totalallrow = allrow[0].countrow;
