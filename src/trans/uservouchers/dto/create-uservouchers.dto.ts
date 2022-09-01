@@ -12,9 +12,5 @@ export class CreateUservouchersDto {
     updatedAt: string;
     expiredAt: string;
     jmlVoucher: number;
-    kredit: number;
-    kreditFree: number;
-    useKredit: number;
-    useKreditFree: number;
 
 }

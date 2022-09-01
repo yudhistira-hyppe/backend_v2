@@ -26,7 +26,7 @@ import { SeaweedfsService } from '../stream/seaweedfs/seaweedfs.service';
 import { NotificationsService } from "../content/notifications/notifications.service";
 import * as fs from 'fs';
 import { double } from 'aws-sdk/clients/lightsail';
-import { CreateNotificationsDto } from 'src/content/notifications/dto/create-notifications.dto';
+import { CreateNotificationsDto } from '../content/notifications/dto/create-notifications.dto';
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
 const nodeHtmlToImage = require('node-html-to-image');

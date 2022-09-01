@@ -27,11 +27,15 @@ export class UserAdsService {
     }
 
     async findOne(id: string): Promise<UserAds> {
-        return this.userAdsModel.findOne({ _id: id }).exec();
+        return this.userAdsModel.findOne({ _id: new ObjectId(id) }).exec();
     }
 
     async findOneByuserID(userID: string): Promise<UserAds[]> {
-        return this.userAdsModel.find({ userID: userID }).sort({ liveAt: 1 }).exec();
+        return this.userAdsModel.find({ userID: userID, statusView: false }).sort({ priorityNumber:-1, createdAt: -1 }).exec();
+    }
+
+    async findOneByuserIDAds(userID: string, adsId: string): Promise<UserAds> {
+        return this.userAdsModel.findOne({ userID: userID, adsID: adsId, statusView: false }).exec();
     }
 
     // async findAdsid(adsID: ObjectId): Promise<UserAds> {
@@ -241,6 +245,23 @@ export class UserAdsService {
             {
                 "adsID": adsID,
                 "userID": userID
+            },
+            {
+                $set: {
+                    "statusClick": createUserAdsDto.statusClick,
+                    "statusView": createUserAdsDto.statusView,
+                    "viewAt": createUserAdsDto.viewAt,
+                    "viewed": createUserAdsDto.viewed,
+                    "clickAt": createUserAdsDto.clickAt
+                }
+            });
+        return data;
+    }
+
+    async updatesdataAdsID(adsID: string, createUserAdsDto: CreateUserAdsDto): Promise<Object> {
+        let data = await this.userAdsModel.updateMany(
+            {
+                "adsID": adsID
             },
             {
                 $set: {

@@ -8,5 +8,7 @@ export class CreateAdstypesDto {
     sizeType: [];
     formatType: [];
     descType: string;
+    rewards: number; 
+    AdsSkip: number; 
 
 }

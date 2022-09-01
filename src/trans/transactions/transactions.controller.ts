@@ -767,6 +767,7 @@ export class TransactionsController {
                     var totalCredit = null;
                     var usedCredit = 0;
                     var totalUsed = 0;
+                    var pendingUsed = 0;
                     var qtyvoucher = 0;
                     var postIds = "";
                     var qty = null;
@@ -831,9 +832,11 @@ export class TransactionsController {
                             voucherID = datavoucher._id;
                             expiredAt = datavoucher.expiredAt;
                             totalUsed = datavoucher.totalUsed;
+                            pendingUsed = datavoucher.pendingUsed;
                             qtyvoucher = datavoucher.qty;
                             totalCredit = datavoucher.creditTotal * jml;
-
+                            var total_creditValue_voucher = datavoucher.creditValue * jml;
+                            var total_creditPromo_voucher = datavoucher.creditPromo * jml;
 
                             let datauservoucher = new Uservoucher();
                             datauservoucher.userID = iduserbuy;
@@ -846,8 +849,10 @@ export class TransactionsController {
                             datauservoucher.totalCredit = totalCredit - usedCredit;
                             datauservoucher.jmlVoucher = jml;
                             datauservoucher.expiredAt = expiredAt;
+                            datauservoucher.kredit = total_creditValue_voucher;
+                            datauservoucher.kreditFree = total_creditPromo_voucher;
                             await this.uservouchersService.create(datauservoucher);
-                            await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
+                            await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml), (pendingUsed - jml));
 
                         }
 
