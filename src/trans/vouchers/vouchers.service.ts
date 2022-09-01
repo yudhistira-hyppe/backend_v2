@@ -64,6 +64,11 @@ export class VouchersService {
             { $set: { "totalUsed": totalUsed } });
         return data;
     }
+    async updatesPendingUsed(id: Types.ObjectId, pendingUsed: number): Promise<Object> {
+        let data = await this.vouchersModel.updateOne({ "_id": id, "isActive": true },
+            { $set: { "pendingUsed": pendingUsed } });
+        return data;
+    }
 
     async updatestatusVoucher(id: Types.ObjectId, updatedAt: string): Promise<Object> {
         let data = await this.vouchersModel.updateOne({ "_id": id, "isActive": true },

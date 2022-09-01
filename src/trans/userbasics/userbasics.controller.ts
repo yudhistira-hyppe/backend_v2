@@ -57,8 +57,6 @@ export class UserbasicsController {
   }
 
 
-
-
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.userbasicsService.delete(id);

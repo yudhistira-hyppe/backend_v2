@@ -160,11 +160,13 @@ export class AdsController {
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         var typemedia = "";
+        var totalCreditTayang = 0;
         try {
             datatypesAds = await this.adstypesService.findOne(mongoose.Types.ObjectId(typeadsId));
             console.log(datatypesAds);
             creditValue = datatypesAds._doc.creditValue;
             typemedia = datatypesAds._doc.mediaType;
+
 
         } catch (e) {
             datatypesAds = null;
@@ -459,16 +461,18 @@ export class AdsController {
 
             if (dataUservoucher !== null) {
 
-                for (var x = 0; x < dataUservoucher.length; x++) {
-                    totalCreditusvoucher = dataUservoucher[x].totalCredit;
-                    if (totalCreditusvoucher >= creditValue) {
-                        res.status(HttpStatus.BAD_REQUEST).json({
+                // for (var x = 0; x < dataUservoucher.length; x++) {
+                //     totalCreditusvoucher = dataUservoucher[x].totalCredit;
+                //     totalCreditTayang=creditValue*tayang;
 
-                            "message": "Silahkan beli voucher dahulu.."
-                        });
-                    }
+                //     if (totalCreditusvoucher >= totalCreditTayang) {
+                //         res.status(HttpStatus.BAD_REQUEST).json({
 
-                }
+                //             "message": "Silahkan beli voucher dahulu.."
+                //         });
+                //     }
+
+                // }
                 try {
                     var reqdemografisID = mongoose.Types.ObjectId(CreateAdsDto.demografisID);
 
@@ -518,32 +522,39 @@ export class AdsController {
                         sumFreeCredit += arrayFreeCredit[i];
                         sumCredittotal += arrayTotalCredit[i];
                     }
+                    totalCreditTayang = creditValue * tayang;
+                    if (sumCredittotal <= totalCreditTayang) {
+                        CreateAdsDto.timestamp = dt.toISOString();
+                        CreateAdsDto.expiredAt = dtexpired.toISOString();
+                        CreateAdsDto.userID = iduser;
+                        CreateAdsDto.status = "DRAFT";
+                        CreateAdsDto.isActive = false;
+                        CreateAdsDto.demografisID = demografisIDs;
+                        CreateAdsDto.totalUsedCredit = creditValue * tayang;
+                        CreateAdsDto.userVoucherID = arrayUservoucher;
+                        CreateAdsDto.typeAdsID = mongoose.Types.ObjectId(CreateAdsDto.typeAdsID);
+                        CreateAdsDto.placingID = mongoose.Types.ObjectId(CreateAdsDto.placingID);
+                        CreateAdsDto.interestID = arrayInterest;
+                        CreateAdsDto.type = typemedia;
+                        CreateAdsDto.usedCredit = 0;
+                        CreateAdsDto.usedCreditFree = 0;
+                        CreateAdsDto.creditValue = sumCreditValue;
+                        CreateAdsDto.creditFree = sumFreeCredit;
+                        CreateAdsDto.totalCredit = sumCredittotal;
+                        CreateAdsDto.mediaAds = mongoose.Types.ObjectId(idmedia);;
+                        let data = await this.adsService.create(CreateAdsDto);
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": messages
+                        });
+                    } else {
+                        res.status(HttpStatus.BAD_REQUEST).json({
+                            "message": "Silahkan beli voucher dahulu.."
+                        });
+                    }
 
 
-                    CreateAdsDto.timestamp = dt.toISOString();
-                    CreateAdsDto.expiredAt = dtexpired.toISOString();
-                    CreateAdsDto.userID = iduser;
-                    CreateAdsDto.status = "DRAFT";
-                    CreateAdsDto.isActive = false;
-                    CreateAdsDto.demografisID = demografisIDs;
-                    CreateAdsDto.totalUsedCredit = creditValue * tayang;
-                    CreateAdsDto.userVoucherID = arrayUservoucher;
-                    CreateAdsDto.typeAdsID = mongoose.Types.ObjectId(CreateAdsDto.typeAdsID);
-                    CreateAdsDto.placingID = mongoose.Types.ObjectId(CreateAdsDto.placingID);
-                    CreateAdsDto.interestID = arrayInterest;
-                    CreateAdsDto.type = typemedia;
-                    CreateAdsDto.usedCredit = 0;
-                    CreateAdsDto.usedCreditFree = 0;
-                    CreateAdsDto.creditValue = sumCreditValue;
-                    CreateAdsDto.creditFree = sumFreeCredit;
-                    CreateAdsDto.totalCredit = sumCredittotal;
-                    CreateAdsDto.mediaAds = mongoose.Types.ObjectId(idmedia);;
-                    let data = await this.adsService.create(CreateAdsDto);
-                    res.status(HttpStatus.OK).json({
-                        response_code: 202,
-                        "data": data,
-                        "message": messages
-                    });
                 } catch (e) {
                     res.status(HttpStatus.BAD_REQUEST).json({
 

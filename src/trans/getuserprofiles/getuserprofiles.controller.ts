@@ -90,12 +90,12 @@ export class GetuserprofilesController {
   @UseGuards(JwtAuthGuard)
   async profileuser(@Req() request: Request): Promise<any> {
     var request_json = JSON.parse(JSON.stringify(request.body));
-    var fullName = null;
+    var username = null;
     var gender = null;
     var age = null;
     var roles = null;
     var data = null;
-    var page = null;
+    var skip = null;
     var interest = null;
     var countrow = null;
     var startdate = null;
@@ -106,25 +106,25 @@ export class GetuserprofilesController {
     };
 
     age = request_json["age"];
-    fullName = request_json["fullName"];
+    username = request_json["username"];
     gender = request_json["gender"];
     roles = request_json["roles"];
     interest = request_json["interest"];
     startdate = request_json["startdate"];
     enddate = request_json["enddate"];
-    if (request_json["page"] !== undefined) {
-      page = request_json["page"];
+    if (request_json["skip"] !== undefined) {
+      skip = request_json["skip"];
     } else {
       throw new BadRequestException("Unabled to proceed");
     }
 
 
-    data = await this.getuserprofilesService.findataNew(fullName, gender, roles, age, startdate, enddate, interest, page);
+    data = await this.getuserprofilesService.findataNew(username, gender, roles, age, startdate, enddate, interest, skip);
 
     var allrow = await this.getuserprofilesService.totalcount();
     var totalallrow = allrow[0].countrow;
     var totalrow = data.length;
-    return { response_code: 202, data, page, totalrow, totalallrow, messages };
+    return { response_code: 202, data, skip, totalrow, totalallrow, messages };
   }
 
   @Post('api/getuserprofiles/search')
