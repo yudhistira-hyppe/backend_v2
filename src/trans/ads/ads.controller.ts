@@ -150,7 +150,7 @@ export class AdsController {
             throw new BadRequestException("Unabled to proceed");
         }
         var typeadsId = CreateAdsDto.typeAdsID;
-        var tayang = CreateAdsDto.tayang;
+        var tayang = Number(CreateAdsDto.tayang);
         var datatypesAds = null;
         var creditValue = 0;
         var datavoucher = null;
@@ -463,7 +463,6 @@ export class AdsController {
             if (dataUservoucher !== null) {
 
                 for (var x = 0; x < dataUservoucher.length; x++) {
-                    totalCreditusvoucher = dataUservoucher[x].totalCredit;
                     totalCreditusvoucher += dataUservoucher[x].totalCredit;
 
                 }
@@ -528,8 +527,8 @@ export class AdsController {
                     for (var i = 0; i < splituserv2.length; i++) {
                         var idu = splituserv2[i];
                         uservoucherdata = await this.uservouchersService.findOne(idu);
-                        var kredit = uservoucherdata.kredit;
-                        var kreditFree = uservoucherdata.kreditFree;
+                        var kredit = uservoucherdata.credit;
+                        var kreditFree = uservoucherdata.creditFree;
                         var totalCredit = uservoucherdata.totalCredit;
 
                         var useKredit = 0;
@@ -541,9 +540,8 @@ export class AdsController {
                             useKredit = kredit;
                             totalCredit -= kredit;
                         } else if (total_credit_data < 0) {
-                            useKredit = kredit;
-                            totalCredit -= kredit;
-                            kredit = total_credit_data * -1;
+                            useKredit = (kredit + total_credit_data);
+                            totalCredit -= (kredit + total_credit_data);;
                         } else if (total_credit_data > 0) {
                             useKredit = kredit;
                             totalCredit -= kredit;
@@ -552,8 +550,8 @@ export class AdsController {
                                 useKreditFree = kreditFree;
                                 totalCredit -= kreditFree;
                             } else if (total_credit_data < 0) {
-                                useKreditFree = kreditFree;
-                                totalCredit -= kreditFree;
+                                useKreditFree = (kreditFree + total_credit_data);
+                                totalCredit -= (kreditFree + total_credit_data);
                             } else if (total_credit_data > 0) {
                                 useKreditFree = kreditFree;
                                 totalCredit -= kreditFree;
@@ -561,10 +559,10 @@ export class AdsController {
                         }
 
                         var CreateUservouchersDto_ = new CreateUservouchersDto();
-                        CreateUservouchersDto_.useKredit = useKredit;
-                        CreateUservouchersDto_.useKreditFree = useKreditFree;
+                        CreateUservouchersDto_.usedCredit = useKredit;
+                        CreateUservouchersDto_.usedCreditFree = useKreditFree;
                         CreateUservouchersDto_.totalCredit = totalCredit;
-                        await this.uservouchersService.update(datavoucher._id, CreateUservouchersDto_);
+                        await this.uservouchersService.update(uservoucherdata._id.toString(), CreateUservouchersDto_);
                     }
 
 
