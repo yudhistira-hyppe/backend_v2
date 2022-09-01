@@ -890,6 +890,7 @@ export class AuthController {
       );
     }
     if (request.body.email != headers['x-auth-user']) {
+      console.log("ok");
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, Param email dan email header not match',
       );
