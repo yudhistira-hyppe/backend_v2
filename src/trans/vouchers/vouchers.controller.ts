@@ -73,6 +73,7 @@ export class VouchersController {
             CreateVouchersDto.userID = iduser;
             CreateVouchersDto.totalUsed = 0;
             CreateVouchersDto.expiredAt = dtexpired.toISOString();
+            CreateVouchersDto.pendingUsed = 0;
             let data = await this.vouchersService.create(CreateVouchersDto);
 
 
