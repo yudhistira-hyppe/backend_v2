@@ -16,4 +16,5 @@ export class CreateVouchersDto {
     isActive: boolean;
     description: string;
     qty: number;
+    pendingUsed: number;
 }

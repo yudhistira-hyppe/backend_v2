@@ -39,6 +39,10 @@ export class Uservoucher {
     updatedAt: string;
     expiredAt: string;
     jmlVoucher: number;
+    kredit: number;
+    kreditFree: number;
+    useKredit: number;
+    useKreditFree: number;
 
 }
 export class VaCallback {

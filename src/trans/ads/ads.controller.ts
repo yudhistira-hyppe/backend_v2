@@ -26,6 +26,7 @@ var path = require("path");
 import { v4 as uuidv4 } from 'uuid';
 import { FormDataRequest } from 'nestjs-form-data';
 import { json } from 'stream/consumers';
+import { CreateUservouchersDto } from '../uservouchers/dto/create-uservouchers.dto';
 
 export const multerConfig = {
     dest: process.env.PATH_UPLOAD,
@@ -458,16 +459,8 @@ export class AdsController {
 
 
             if (dataUservoucher !== null) {
-
                 for (var x = 0; x < dataUservoucher.length; x++) {
-                    totalCreditusvoucher = dataUservoucher[x].totalCredit;
-                    if (totalCreditusvoucher >= creditValue) {
-                        res.status(HttpStatus.BAD_REQUEST).json({
-
-                            "message": "Silahkan beli voucher dahulu.."
-                        });
-                    }
-
+                    totalCreditusvoucher += dataUservoucher[x].totalCredit;
                 }
                 try {
                     var reqdemografisID = mongoose.Types.ObjectId(CreateAdsDto.demografisID);
@@ -493,6 +486,7 @@ export class AdsController {
                     var sumFreeCredit = 0;
                     var sumCredittotal = 0;
 
+                    var total_credit_data = creditValue * tayang;
                     for (var i = 0; i < splituserv2.length; i++) {
                         var idu = splituserv2[i];
 
@@ -510,15 +504,63 @@ export class AdsController {
 
                         var objuservoucher = mongoose.Types.ObjectId(idu);
                         arrayUservoucher.push(objuservoucher);
-
                     }
-
+                    
                     for (var i = 0; i < splituserv2.length; i++) {
                         sumCreditValue += arrayCreditvalue[i];
                         sumFreeCredit += arrayFreeCredit[i];
                         sumCredittotal += arrayTotalCredit[i];
                     }
 
+                    if (totalCreditusvoucher < (creditValue * tayang)) {
+
+                        res.status(HttpStatus.BAD_REQUEST).json({
+
+                            "message": "Voucher credit is not sufficient, please buy a voucher first"
+                        });
+                    }
+
+                    for (var i = 0; i < splituserv2.length; i++) {
+                        var idu = splituserv2[i];
+                        uservoucherdata = await this.uservouchersService.findOne(idu);
+                        var kredit = uservoucherdata.kredit;
+                        var kreditFree = uservoucherdata.kreditFree;
+                        var totalCredit = uservoucherdata.totalCredit;
+
+                        var useKredit = 0;
+                        var useKreditFree = 0;
+
+                        total_credit_data -= kredit;
+
+                        if (total_credit_data == 0) {
+                            useKredit = kredit;
+                            totalCredit -= kredit;
+                        } else if (total_credit_data < 0) {
+                            useKredit = kredit;
+                            totalCredit -= kredit;
+                            kredit = total_credit_data * -1;
+                        } else if (total_credit_data > 0) {
+                            useKredit = kredit;
+                            totalCredit -= kredit;
+                            total_credit_data -= kreditFree;
+                            if (total_credit_data == 0) {
+                                useKreditFree = kreditFree;
+                                totalCredit -= kreditFree;
+                            } else if (total_credit_data < 0) {
+                                useKreditFree = kreditFree;
+                                totalCredit -= kreditFree;
+                            } else if (total_credit_data > 0) {
+                                useKreditFree = kreditFree;
+                                totalCredit -= kreditFree;
+                            }
+                        }
+
+                        var CreateUservouchersDto_ = new CreateUservouchersDto();
+                        CreateUservouchersDto_.useKredit = useKredit;
+                        CreateUservouchersDto_.useKreditFree = useKreditFree;
+                        CreateUservouchersDto_.totalCredit = totalCredit;
+                        await this.uservouchersService.update(datavoucher._id, CreateUservouchersDto_);
+                    }
 
                     CreateAdsDto.timestamp = dt.toISOString();
                     CreateAdsDto.expiredAt = dtexpired.toISOString();

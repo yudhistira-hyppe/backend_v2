@@ -26,6 +26,14 @@ export class Uservouchers {
     voucherCredit: number;
     @Prop()
     jmlVoucher: number;
+    @Prop()
+    kredit: number;
+    @Prop()
+    kreditFree: number;
+    @Prop()
+    useKredit: number;
+    @Prop()
+    useKreditFree: number;
 
 
 }

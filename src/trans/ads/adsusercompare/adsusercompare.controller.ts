@@ -94,59 +94,73 @@ export class AdsUserCompareController {
             );
         }
         const data_userbasic = await this.userbasicsService.findOne(headers['x-auth-user']);
-        if (await this.utilsService.ceckData(data_userbasic)){
-            var userbasicId = data_userbasic._id;
-            var data_userads = await this.userAdsService.findOneByuserID(userbasicId.toString());
-            if (await this.utilsService.ceckData(data_userads)) {
-                var adsId = data_userads[0].adsID;
-                var data_ads = await this.adsService.findOne(adsId.toString());
-                if (await this.utilsService.ceckData(data_ads)) {
-                    var data_response = {};
-                    var media = await this.mediavideosadsService.findOne(data_ads.mediaAds.toString());
-                    data_response['adsId'] = data_ads._id;
-                    data_response['adsPlace'] = (await this.adsplacesService.findOne(data_ads.placingID.toString())).namePlace;
-                    data_response['adsType'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).nameType;
-                    data_response['adsSkip'] = await this.utilsService.getSetting("AdsPlay");
-                    if (await this.utilsService.ceckData(media)) {
-                        data_response['adsMedia'] = {
-                            mediaBasePath: media.mediaBasePath,
-                            mediaUri: media.mediaUri,
-                            mediaType: media.mediaType,
-                            mediaThumbEndpoint: media.mediaThumb,
-                        }
-                    }else{
-                        data_response['adsMedia'] = null;
-                    }
-                    return {
-                        "response_code": 202,
-                        "data": data_response,
-                        "messages": {
-                            "info": [
-                                "The process successfuly"
-                            ]
-                        }
-                    };
-                } else {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed Ads not found'
-                    );
-                }
-            } else {
-                return {
-                    "response_code": 202,
-                    "data": null,
-                    "messages": {
-                        "info": [
-                            "The process successfuly"
-                        ]
-                    }
-                };
-            }
-        }else{
+        if (!(await this.utilsService.ceckData(data_userbasic))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed User not found'
             );
         }
+
+        const data_userads = await this.userAdsService.findOneByuserID(data_userbasic._id.toString());
+        if (!(await this.utilsService.ceckData(data_userads))) {
+            return {
+                "response_code": 202,
+                "data": null,
+                "messages": {
+                    "info": [
+                        "The process successfuly"
+                    ]
+                }
+            };
+        }
+
+        const data_ads = await this.adsService.findOne(data_userads[0].adsID.toString());
+        if (!(await this.utilsService.ceckData(data_ads))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Ads not found'
+            );
+        }
+
+        const data_media = await this.mediavideosadsService.findOne(data_ads.mediaAds.toString());
+        if (!(await this.utilsService.ceckData(data_media))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Ads media not found'
+            );
+        }
+
+        var data_response = {};
+        data_response['adsId'] = data_ads._id;
+        data_response['useradsId'] = data_userads[0]._id;
+        data_response['adsPlace'] = (await this.adsplacesService.findOne(data_ads.placingID.toString())).namePlace;
+        data_response['adsType'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).nameType;
+        data_response['adsSkip'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).AdsSkip;
+        let adsMedia = {}
+        if (await this.utilsService.ceckData(data_media)) {
+            if (data_media.mediaBasePath!=undefined){
+                adsMedia['mediaBasePath'] = data_media.mediaBasePath;
+            }
+            if (data_media.mediaUri != undefined) {
+                adsMedia['mediaUri'] = data_media.mediaUri;
+            }
+            if (data_media.mediaType != undefined) {
+                adsMedia['mediaType'] = data_media.mediaType;
+            }
+            if (data_media.mediaThumb != undefined) {
+                adsMedia['mediaThumbEndpoint'] = data_media.mediaThumb;
+            }
+            data_response['adsMedia'] = adsMedia;
+        } else {
+            data_response['adsMedia'] = null;
+        }
+        
+        return {
+            "response_code": 202,
+            "data": data_response,
+            "messages": {
+                "info": [
+                    "The process successfuly"
+                ]
+            }
+        };
     }
 
     @Get('/getads/stream/:id')
@@ -332,8 +346,10 @@ export class AdsUserCompareController {
                         const sisa_credit = credit - (used_credit + credit_view);
                         const sisa_credit_free = credit_free - (used_credit_free + credit_view);
                         let sisa_credit_view = 0;
-                        if (sisa_credit==0){
-
+                        if (sisa_credit == 0) {
+                            if (sisa_credit_free >= credit_view) {
+                                used_credit_free = used_credit_free + credit_view;
+                            } 
                         } else if (sisa_credit > 0) {
                             if (watching_time > AdsSkip){
                                 rewards = true;
@@ -346,11 +362,7 @@ export class AdsUserCompareController {
                                 used_credit = used_credit + credit_view;
                             }
                         } else {
-                            if (sisa_credit_free < credit_view) {
-                                sisa_credit_view = credit_view - sisa_credit_free;
-                                used_credit_free = used_credit_free + sisa_credit_free;
-                                used_credit_free = used_credit_free + sisa_credit_view;
-                            } else {
+                            if (sisa_credit_free >= credit_view) {
                                 used_credit_free = used_credit_free + credit_view;
                             }
                         }
