@@ -451,7 +451,8 @@ export class UtilsService {
   }
 
   async getDateTimeString(): Promise<string> {
-    var DateTime = new Date().toISOString().replace('T', ' ');
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
     return DateTime.substring(0, DateTime.lastIndexOf('.'));
   }
 
