@@ -21,10 +21,12 @@ import { ErrorHandler } from '../../utils/error.handler';
 import { GroupModuleService } from '../../trans/usermanagement/groupmodule/groupmodule.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GlobalResponse } from 'src/utils/data/globalResponse';
+import { PostContentService } from './postcontent.service';
 
 @Controller()
 export class PostsController {
   constructor(private readonly PostsService: PostsService,
+    private readonly postContentService: PostContentService,
     private readonly userauthsService: UserauthsService,
     private readonly utilsService: UtilsService,
     private readonly errorHandler: ErrorHandler,
@@ -258,7 +260,7 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('postContent'))
   async createPost(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
     console.log(body);
-    return this.PostsService.createNewPost(file, body, headers);
+    return this.postContentService.createNewPost(file, body, headers);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -273,7 +275,7 @@ export class PostsController {
   @Post('api/posts/notifyapsara')
   async notifyApsara(@Body() body, @Headers() headers) {
     console.log(body);
-    this.PostsService.updateNewPost(body, headers);
+    this.postContentService.updateNewPost(body, headers);
     let t = {'response' : 'Done'};
     return JSON.stringify(t);
   }  
