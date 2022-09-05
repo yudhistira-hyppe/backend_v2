@@ -15,6 +15,8 @@ export class UserticketsController {
   @UseGuards(JwtAuthGuard)
   @Post('api/usertickets/createticket')
   async create(@Res() res, @Body() CreateUserticketsDto: CreateUserticketsDto, @Request() req) {
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
     const messages = {
       "info": ["The create successful"],
     };
@@ -53,10 +55,17 @@ export class UserticketsController {
     var dt = new Date(Date.now());
     dt.setHours(dt.getHours() + 7); // timestamp
     dt = new Date(dt);
+
+    var idcategory = mongoose.Types.ObjectId(CreateUserticketsDto.categoryTicket);
+    var idsource = mongoose.Types.ObjectId(CreateUserticketsDto.sourceTicket);
+    var idlevel = mongoose.Types.ObjectId(CreateUserticketsDto.levelTicket);
     CreateUserticketsDto.IdUser = iduser;
     CreateUserticketsDto.datetime = dt.toISOString();
     CreateUserticketsDto.nomortiket = no;
     CreateUserticketsDto.active = true;
+    CreateUserticketsDto.categoryTicket = idcategory;
+    CreateUserticketsDto.sourceTicket = idsource;
+    CreateUserticketsDto.levelTicket = idlevel;
 
     try {
       let data = await this.userticketsService.create(CreateUserticketsDto);
@@ -204,6 +213,42 @@ export class UserticketsController {
     var idobj = mongoose.Types.ObjectId(id);
     try {
       let data = await this.userticketsService.delete(idobj);
+      res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "message": messages
+      });
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+
+        "message": messagesEror
+      });
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put('api/usertickets/update/:id')
+  async updatedata(@Res() res, @Param('id') id: string, @Body() CreateUserticketsDto: CreateUserticketsDto) {
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+    const messages = {
+      "info": ["The update successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+    try {
+
+      var idcategory = mongoose.Types.ObjectId(CreateUserticketsDto.categoryTicket);
+      var idsource = mongoose.Types.ObjectId(CreateUserticketsDto.sourceTicket);
+      var idlevel = mongoose.Types.ObjectId(CreateUserticketsDto.levelTicket);
+      var assignto = mongoose.Types.ObjectId(CreateUserticketsDto.assignTo);
+      CreateUserticketsDto.active = true;
+      CreateUserticketsDto.categoryTicket = idcategory;
+      CreateUserticketsDto.sourceTicket = idsource;
+      CreateUserticketsDto.levelTicket = idlevel;
+      CreateUserticketsDto.assignTo = assignto;
+      let data = await this.userticketsService.updatedata(id, CreateUserticketsDto);
       res.status(HttpStatus.OK).json({
         response_code: 202,
         "message": messages

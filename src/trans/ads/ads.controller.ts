@@ -149,6 +149,7 @@ export class AdsController {
         if (CreateAdsDto.liveTypeAds === undefined) {
             throw new BadRequestException("Unabled to proceed");
         }
+        
         var startAge = CreateAdsDto.startAge;
         var endAge = CreateAdsDto.endAge;
         var typeadsId = CreateAdsDto.typeAdsID;

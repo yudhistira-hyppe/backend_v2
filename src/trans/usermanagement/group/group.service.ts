@@ -10,7 +10,7 @@ export class GroupService {
     constructor(
         @InjectModel(Group.name, 'SERVER_TRANS')
         private readonly groupModel: Model<GroupDocument>
-    ) {}
+    ) { }
 
     async create(GroupDto: GroupDto): Promise<Group> {
         let data = await this.groupModel.create(GroupDto);
@@ -20,8 +20,8 @@ export class GroupService {
         return data;
     }
 
-    async findAll(search:string, skip: number, limit: number): Promise<Group[]> {
-        return this.groupModel.find({ nameGroup: { $regex: search }}).skip(skip).limit(limit).exec();
+    async findAll(search: string, skip: number, limit: number): Promise<Group[]> {
+        return this.groupModel.find({ nameGroup: { $regex: search } }).skip(skip).limit(limit).exec();
     }
 
     async findAllCount(search: string): Promise<Group[]> {
@@ -92,7 +92,7 @@ export class GroupService {
                                 "viewAcces": "$$dline.viewAcces"
                             }
                         }
-                    } 
+                    }
                 },
             },
         ]).exec();
@@ -120,7 +120,52 @@ export class GroupService {
     }
 
     async findbyuser(_id: String) {
-        return await this.groupModel.find({userbasics: {$in: [_id]}}).exec();
+        return await this.groupModel.find({ userbasics: { $in: [_id] } }).exec();
+    }
+
+    async listGroupUserAll() {
+        var query = await this.groupModel.aggregate([
+
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "userbasics",
+                    foreignField: "_id",
+                    as: "userdata"
+                }
+            },
+            {
+                $lookup: {
+                    from: "division",
+                    localField: "divisionId",
+                    foreignField: "_id",
+                    as: "divisidata"
+                }
+            },
+            {
+                $project: {
+                    divisi: {
+                        $arrayElemAt: ['$divisidata', 0]
+                    },
+                    user: {
+                        $arrayElemAt: ['$userdata', 0]
+                    },
+
+                },
+            },
+            {
+                $project: {
+                    userId: '$user._id',
+                    fullName: '$user.fullName',
+                    email: '$user.email',
+                    divisionId: '$divisi._id',
+                    nameDivision: '$divisi.nameDivision'
+
+                },
+            }
+        ]);
+
+        return query;
     }
 
     // async validasiUserGroup(email: String) {

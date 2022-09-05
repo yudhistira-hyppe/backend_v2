@@ -2,12 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Double } from 'mongodb';
 import mongoose, { Document } from 'mongoose';
 
-export type UserauthDocument = Userauth & Document ;
+export type UserauthDocument = Userauth & Document;
 
 @Schema()
 export class Userauth {
-  @Prop({ type: mongoose.Types.ObjectId })
-  _id: { oid: Object };
+  _id: mongoose.Types.ObjectId;
   @Prop()
   username: string;
   @Prop()
@@ -69,15 +68,15 @@ export class Userauth {
   oneTimePassword: String;
 
   @Prop()
-  upgradeRole: String; 
+  upgradeRole: String;
 
   @Prop()
   otpToken: String;
 
   @Prop({ type: Object })
   location: {
-      latitude: Double;
-      longitude: Double;
+    latitude: Double;
+    longitude: Double;
   };
 }
 

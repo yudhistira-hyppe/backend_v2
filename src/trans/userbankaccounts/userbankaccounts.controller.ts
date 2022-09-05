@@ -125,4 +125,36 @@ export class UserbankaccountsController {
             });
         }
     }
+
+
+    @Post('byuser')
+    @UseGuards(JwtAuthGuard)
+    async contentuser(@Req() request: Request): Promise<any> {
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var email = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var datauserbasicsService = null;
+        var iduser = null;
+        //Ceck User Userbasics
+        try {
+            datauserbasicsService = await this.userbasicsService.findOne(email);
+        } catch (e) {
+            throw new BadRequestException("User not found");
+        }
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        iduser = mongoose.Types.ObjectId(datauserbasicsService._id);
+        let data = await this.userbankaccountsService.findOneUser(iduser);
+
+        return { response_code: 202, data, messages };
+    }
+
 }

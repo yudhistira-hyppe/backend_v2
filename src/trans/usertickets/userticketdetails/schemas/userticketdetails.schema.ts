@@ -11,7 +11,7 @@ export class Userticketdetails {
     @Prop({ type: Object })
     IdUserticket: { oid: string; }
     @Prop()
-    subject: string;
+    type: string;
 
     @Prop()
     body: string
