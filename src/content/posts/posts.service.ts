@@ -1387,8 +1387,8 @@ export class PostsService {
         var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
         if (cat != undefined) {
-          var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
-          pcats.push(objintr);
+          var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+          pcats.push(objintrx);
         }
       }
       post.tagDescription = pcats;
