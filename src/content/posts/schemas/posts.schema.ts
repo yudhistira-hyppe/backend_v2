@@ -38,7 +38,7 @@ export class Posts {
   @Prop()
   isOwned: boolean
   @Prop()
-  isCertified: boolean
+  certified: boolean
   @Prop()
   saleAmount: number
   @Prop()

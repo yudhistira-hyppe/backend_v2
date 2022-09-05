@@ -257,15 +257,17 @@ export class PostsController {
   @Post('api/posts/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPost(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
-    console.log(body);
+    console.log(file);
     return this.PostsService.createNewPost(file, body, headers);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts')
+  @UseInterceptors(FileInterceptor('postContent'))
   async getUserPost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     console.log(body);
-    return this.PostsService.getUserPost(body, headers);
+    //return this.PostsService.getUserPost(body, headers);
+    return null;
   }  
 
   @Post('api/posts/notifyapsara')

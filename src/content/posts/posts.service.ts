@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { CreatePostResponse, CreatePostsDto } from './dto/create-posts.dto';
+import { CreatePostResponse, CreatePostsDto, PostResponseApps } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
@@ -16,8 +16,11 @@ import { InsightsService } from '../insights/insights.service';
 import { Insights } from '../insights/schemas/insights.schema';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
-import {createWriteStream} from 'fs'
+import {createWriteStream, unlink} from 'fs'
 import { QueryDiscusDto } from '../disqus/dto/create-disqus.dto';
+import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
+import { ContenteventsService } from '../contentevents/contentevents.service';
+import { Contentevents } from '../contentevents/schemas/contentevents.schema';
 
 
 @Injectable()
@@ -34,6 +37,7 @@ export class PostsService {
     private userAuthService: UserauthsService,
     private videoService: MediavideosService,
     private insightService: InsightsService,
+    private contentEventService: ContenteventsService,
     private readonly configService: ConfigService,
   ) { }
 
@@ -1222,7 +1226,7 @@ export class PostsService {
   }
 
   async createNewPost(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
-    this.logger.log('createNewPost >>> start');
+    this.logger.log('createNewPost >>> start:');
     var res = new CreatePostResponse();
     res.response_code = 204;
 
@@ -1268,6 +1272,7 @@ export class PostsService {
     post.createdAt = await this.utilService.getDateTimeString();
     post.updatedAt = await this.utilService.getDateTimeString();
     post.expiration = new Long(1000);
+    post._class = 'io.melody.hyppe.content.domain.ContentPost';
 
     if (body.description != undefined) {
       post.description = body.description;
@@ -1299,15 +1304,21 @@ export class PostsService {
 
     if (body.saleAmount != undefined) {
       post.saleAmount = body.saleAmount;
+    } else {
+      post.saleAmount = null;
     }
     
     if (body.saleLike != undefined) {
       post.saleLike = body.saleLike;
+    } else {
+      post.saleLike = false;
     }
     
     if (body.saleView != undefined) {
       post.saleView = body.saleView;
-    }   
+    } else {
+      post.saleView = false;
+    }
     
     if (body.allowComments != undefined) {
       post.allowComments = body.allowComments;
@@ -1327,10 +1338,10 @@ export class PostsService {
       post.isOwned = false;      
     }
     
-    if (body.isCertified != undefined) {
-      post.isCertified = body.isCertified;
+    if (body.certified != undefined) {
+      post.certified = body.certified;
     } else {
-      post.isCertified = false;      
+      post.certified = false;      
     }    
     
     if (body.cats != undefined) {
@@ -1386,11 +1397,37 @@ export class PostsService {
       ins = new Insights();
       ins._id = await this.utilService.generateId();
       ins.insightID = ins._id;
-      ins.active = false;
+      ins.active = true;
       ins.email = auth.email
       ins.createdAt = await this.utilService.getDateTimeString();
       ins.updatedAt = await this.utilService.getDateTimeString(); 
+      ins._class = 'io.melody.hyppe.content.domain.Insight';
+      
+      if (post.postType != 'story') {
+        ins.posts = new Long(1);
+      }
+    } else {
+      console.log(ins);
+      let prevPost = ins.posts;
+      //prevPost = prevPost + 1;
+      //ins.posts = new Long(prevPost);
     }
+    this.insightService.create(ins);
+
+    //TODO ContentEVent
+    var ce = new Contentevents();
+    ce._id = await this.utilService.generateId();
+    ce.contentEventID = ce._id;
+    ce.eventType = 'POST';
+    ce.createdAt = await this.utilService.getDateTimeString();
+    ce.updatedAt = await this.utilService.getDateTimeString();    
+    ce.active = true; 
+    ce.event = 'ACCEPT';
+    ce.flowIsDone = true;
+    ce.email = auth.email;
+    ce.sequenceNumber = 0;
+    ce._class = 'io.melody.hyppe.content.domain.ContentEvent';
+    this.contentEventService.create(ce);
 
     //METADATA
     let metadata = {postType : 'vid', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
@@ -1407,6 +1444,7 @@ export class PostsService {
     med.mediaType = 'video';
     med.originalName = file.originalname;
     med.apsara = true;
+    med._class = 'io.melody.hyppe.content.domain.MediaVideo';
 
     this.logger.log('createNewPostVideo >>> prepare save');
     var retm = await this.videoService.create(med);
@@ -1449,6 +1487,13 @@ export class PostsService {
       this.videoService.create(vid);
     }
 
+    let todel = body.filedel + "";
+    unlink(todel, (err) => {
+      if (err) {
+
+      }
+    });
+
     let meta = post.metadata;
     let metadata = {postType : meta.postType, duration: parseInt(body.duration), postID : post._id, email: meta.email, postRoll : meta.postRoll, midRoll : meta.midRoll, preRoll: meta.preRoll};
     post.metadata = metadata;
@@ -1456,7 +1501,7 @@ export class PostsService {
     this.create(post);    
   }
 
-  async getUserPost(body: any, headers: any): Promise<CreatePostResponse> {
+  async getUserPost(body: any, headers: any): Promise<PostResponseApps> {
 
     let type = 'GET_POST';
     var token = headers['x-auth-token'];
@@ -1467,21 +1512,118 @@ export class PostsService {
     let res = new CreatePostResponse();
     res.response_code = 202;
     res.messages = "";
-    let posts = await this.doGetUserPost(body, headers);
+    let posts = await this.doGetUserPost(body, headers, profile);
+    posts = await this.loadPostData(posts, body);
     res.data = posts;
-    return res;
+
+    let tmp = new PostResponseApps();
+    tmp.response_code = 202;
+
+    return tmp;
   }
 
-  private async doGetUserPost(body: any, headers: any): Promise<Posts[]> {
-
+  private async doGetUserPost(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
+    //this.logger.log('doGetUserPost >>> start: ' + body);
     let query = this.PostsModel.find();
-    query.where('active', true);
-    query.or([{ postType: 'pict' }, { postType: 'diary' }]);
-    query.sort({'createdAt': -1});
-    query.limit(10);
-    query.skip(10);
+    if (body.visibility != undefined) {
+      if (body.visibility == 'PRIVATE') {
+        query.where('email', whoami.email);
+      } else if (body.visibility == 'FOLLOWING') {
+        let following = [];
+        let check = await this.contentEventService.findFollowing(whoami.email);
+        if (check != undefined) {
+          for(let i = 0; i < check.length; i++) {
+            var ce = check[i];
+            if (ce.receiverParty != undefined && ce.receiverParty.length > 1) {
+              following.push({email: ce.receiverParty});
+            }
+          }
+        }
+
+        query.where('visibility').in('FRIEND', 'PUBLIC').or(following);
+      } else if (body.visibility == 'FRIEND') {
+        let friend = [];
+        let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
+        console.log(check);
+        if (check != undefined) {
+          for(let i = 0; i < check.length; i++) {
+            var cex = check[i];
+            friend.push(cex.friend);
+          }
+        }
+
+        if (friend.length > 0) {
+          friend.push(whoami.email);
+          query.where('visibility').in('FRIEND', 'PUBLIC');
+          query.where('email').in(friend);
+        } else {
+          query.where('visibility', 'PUBLIC');
+        }
+      } else {
+        let friend = [];
+        let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
+        if (check != undefined) {
+          for(let i = 0; i < check.length; i++) {
+            var cex = check[i];
+            friend.push(cex.friend);
+          }
+        }
+
+        if (friend.length > 0) {
+          friend.push(whoami.email);
+          query.where('visibility').in('FRIEND', 'PUBLIC');
+          query.where('email').in(friend);
+        } else {
+          query.where('visibility', 'PUBLIC');
+        }
+      }
+    }
+
+    if (body.postID != undefined) {
+      query.where('postID', body.postID);
+    }
+
+    if (body.postType != undefined) {
+      query.where('postType', body.postType);
+    } else {
+      query.where('postType').ne('advertise');
+    }
+
+    if (body.withActive != undefined && body.withActive == true) {
+      query.where('active', true);
+    }
+
+    let row = 20;
+    let page = 0;
+    if (body.pageNumber != undefined) {
+      page = body.pageNumber;
+    }
+    if (body.pageRow != undefined) {
+      row = body.pageRow;      
+    }
+    let skip = this.paging(page, row);
+    query.skip(skip);
+    query.limit(row);    
+
+    console.log(skip + " - " + row + " - " + page);
+        
+    query.sort({'postType': 1, 'createdAt': -1});
+
 
     let res = await query.exec();
     return res;
+  }
+
+  private async loadPostData(posts: Posts[], body: any): Promise<Posts[]> {
+
+    return posts;
+  }
+
+  private paging(page: number, row: number) {
+    if (page == 0 || page == 1) {
+      return 0;
+    }
+    let num = ((page - 1) * row);
+    return num;
   }
 }
