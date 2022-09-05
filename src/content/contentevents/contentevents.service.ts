@@ -21,10 +21,25 @@ export class ContenteventsService {
     return createContenteventsDto;
   }
 
+  async createNew(
+    data: Contentevents,
+  ): Promise<Contentevents> {
+    const createContenteventsDto = await this.ContenteventsModel.create(
+      CreateContenteventsDto,
+    );
+    return createContenteventsDto;
+  }  
+
   async findAll(): Promise<Contentevents[]> {
     return this.ContenteventsModel.find().exec();
   }
 
+  async findFollowing(email: String): Promise<Contentevents[]> {
+    let query =  this.ContenteventsModel.find();
+    query.where('eventType', 'FOLLOWING');
+    query.where('email', email);
+    return query.exec();
+  }  
   async updateNoneActive(email: string) {
     this.ContenteventsModel.updateMany(
       {

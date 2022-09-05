@@ -846,16 +846,15 @@ export class TransactionsController {
                             datauservoucher.usedCredit = usedCredit;
                             datauservoucher.voucherID = voucherID;
                             datauservoucher.voucherCredit = totalCredit;
-                            datauservoucher.totalCredit = totalCredit - usedCredit;
+                            datauservoucher.totalCredit = totalCredit * jml;
                             datauservoucher.jmlVoucher = jml;
                             datauservoucher.expiredAt = expiredAt;
-                            datauservoucher.kredit = total_creditValue_voucher;
-                            datauservoucher.kreditFree = total_creditPromo_voucher;
+                            datauservoucher.credit = total_creditValue_voucher;
+                            datauservoucher.creditFree = total_creditPromo_voucher;
                             await this.uservouchersService.create(datauservoucher);
                             await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml), (pendingUsed - jml));
 
                         }
-
 
                         res.status(HttpStatus.OK).json({
                             response_code: 202,

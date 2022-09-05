@@ -149,8 +149,10 @@ export class AdsController {
         if (CreateAdsDto.liveTypeAds === undefined) {
             throw new BadRequestException("Unabled to proceed");
         }
+        var startAge = CreateAdsDto.startAge;
+        var endAge = CreateAdsDto.endAge;
         var typeadsId = CreateAdsDto.typeAdsID;
-        var tayang = CreateAdsDto.tayang;
+        var tayang = Number(CreateAdsDto.tayang);
         var datatypesAds = null;
         var creditValue = 0;
         var datavoucher = null;
@@ -167,8 +169,6 @@ export class AdsController {
             console.log(datatypesAds);
             creditValue = datatypesAds._doc.creditValue;
             typemedia = datatypesAds._doc.mediaType;
-
-
         } catch (e) {
             datatypesAds = null;
             creditValue = 0;
@@ -463,13 +463,7 @@ export class AdsController {
             if (dataUservoucher !== null) {
 
                 for (var x = 0; x < dataUservoucher.length; x++) {
-                    totalCreditusvoucher = dataUservoucher[x].totalCredit;
-                    if (totalCreditusvoucher >= creditValue) {
-                        res.status(HttpStatus.BAD_REQUEST).json({
-
-                            "message": "Silahkan beli voucher dahulu.."
-                        });
-                    }
+                    totalCreditusvoucher += dataUservoucher[x].totalCredit;
 
                 }
                 try {
@@ -522,6 +516,55 @@ export class AdsController {
                         sumCredittotal += arrayTotalCredit[i];
                     }
 
+                    if (totalCreditusvoucher < (creditValue * tayang)) {
+
+                        res.status(HttpStatus.BAD_REQUEST).json({
+
+                            "message": "Voucher credit is not sufficient, please buy a voucher first"
+                        });
+                    }
+
+                    for (var i = 0; i < splituserv2.length; i++) {
+                        var idu = splituserv2[i];
+                        uservoucherdata = await this.uservouchersService.findOne(idu);
+                        var kredit = uservoucherdata.credit;
+                        var kreditFree = uservoucherdata.creditFree;
+                        var totalCredit = uservoucherdata.totalCredit;
+
+                        var useKredit = 0;
+                        var useKreditFree = 0;
+
+                        total_credit_data -= kredit;
+
+                        if (total_credit_data == 0) {
+                            useKredit = kredit;
+                            totalCredit -= kredit;
+                        } else if (total_credit_data < 0) {
+                            useKredit = (kredit + total_credit_data);
+                            totalCredit -= (kredit + total_credit_data);;
+                        } else if (total_credit_data > 0) {
+                            useKredit = kredit;
+                            totalCredit -= kredit;
+                            total_credit_data -= kreditFree;
+                            if (total_credit_data == 0) {
+                                useKreditFree = kreditFree;
+                                totalCredit -= kreditFree;
+                            } else if (total_credit_data < 0) {
+                                useKreditFree = (kreditFree + total_credit_data);
+                                totalCredit -= (kreditFree + total_credit_data);
+                            } else if (total_credit_data > 0) {
+                                useKreditFree = kreditFree;
+                                totalCredit -= kreditFree;
+                            }
+                        }
+
+                        var CreateUservouchersDto_ = new CreateUservouchersDto();
+                        CreateUservouchersDto_.usedCredit = useKredit;
+                        CreateUservouchersDto_.usedCreditFree = useKreditFree;
+                        CreateUservouchersDto_.totalCredit = totalCredit;
+                        await this.uservouchersService.update(uservoucherdata._id.toString(), CreateUservouchersDto_);
+                    }
+
 
                     CreateAdsDto.timestamp = dt.toISOString();
                     CreateAdsDto.expiredAt = dtexpired.toISOString();
@@ -536,6 +579,8 @@ export class AdsController {
                     CreateAdsDto.interestID = arrayInterest;
                     CreateAdsDto.type = typemedia;
                     CreateAdsDto.usedCredit = 0;
+                    CreateAdsDto.startAge = startAge;
+                    CreateAdsDto.endAge = endAge;
                     CreateAdsDto.usedCreditFree = 0;
                     CreateAdsDto.creditValue = sumCreditValue;
                     CreateAdsDto.creditFree = sumFreeCredit;

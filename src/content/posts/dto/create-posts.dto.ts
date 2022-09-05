@@ -1,3 +1,5 @@
+import { Long } from "mongodb";
+
 export class CreatePostsDto {
   
 
@@ -9,9 +11,7 @@ export class CreatePostsDto {
     readonly active: boolean;
     readonly  createdAt: String;
     readonly  updatedAt: String;
-    readonly expiration: {
-        numberLong:String;
-    };
+    readonly expiration: Long;
     readonly  visibility: String;
     readonly  location: String;
     readonly  tags: [];
@@ -28,19 +28,11 @@ export class CreatePostsDto {
         email: String;
     };
 
-    readonly likes: {
-        numberLong:String;
-    };
-    readonly views: {
-        numberLong:String;
-    };
-    readonly shares: {
-        numberLong:String;
-    };
+    readonly likes: Long;
+    readonly views: Long;
+    readonly shares: Long;
    
-    readonly comments: {
-        numberLong:String;
-    };
+    readonly comments: Long;
     readonly userProfile: {
         ref: String;
         id: {
@@ -50,10 +42,86 @@ export class CreatePostsDto {
     };
    
    
-    readonly contentMedias:[ {
-        ref: String;
-        id:String;
-        db:String;
-    }];
+    readonly contentMedias: any[];
     readonly _class:String;
   }
+
+  export class CreatePostResponse {
+    response_code: number;
+    messages: String;
+    data: any;
+  }  
+
+  export class Metadata {
+    postType: string;
+    duration: number;
+    postID: string;
+    email: string;
+    postRoll: number;
+    midRoll: number;
+    preRoll: number;
+}
+
+export class Cat {
+    _id: string;
+    interestName: string;
+    langIso: string;
+    icon: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export class Avatar {
+    mediaBasePath: string;
+    mediaUri: string;
+    mediaType: string;
+    mediaEndpoint: string;
+}
+
+export class TagPeople {
+    avatar: Avatar;
+    email: string;
+    username: string;
+    status: string;
+}
+
+export class PostData {
+    rotate: number;
+    metadata: Metadata;
+    description: string;
+    postID: string;
+    title: string;
+    createdAt: string;
+    certified: boolean;
+    saleLike: boolean;
+    email: string;
+    updatedAt: string;
+    saleAmount?: any;
+    visibility: string;
+    mediaBasePath?: any;
+    postType: string;
+    isApsara: boolean;
+    mediaUri?: any;
+    active: boolean;
+    mediaType: string;
+    saleView: boolean;
+    mediaThumbEndpoint: string;
+    tags: string[];
+    allowComments: boolean;
+    cats: Cat[];
+    tagPeople: TagPeople[];
+    mediaThumbUri?: any;
+    location?: any;
+    mediaEndpoint: string;
+}
+
+export class Messages {
+    info: string[];
+}
+
+export class PostResponseApps {
+    response_code: number;
+    data: PostData[];
+    messages: Messages;
+    version: string;
+}  
