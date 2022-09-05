@@ -149,6 +149,8 @@ export class AdsController {
         if (CreateAdsDto.liveTypeAds === undefined) {
             throw new BadRequestException("Unabled to proceed");
         }
+        var startAge = CreateAdsDto.startAge;
+        var endAge = CreateAdsDto.endAge;
         var typeadsId = CreateAdsDto.typeAdsID;
         var tayang = Number(CreateAdsDto.tayang);
         var datatypesAds = null;
@@ -167,8 +169,6 @@ export class AdsController {
             console.log(datatypesAds);
             creditValue = datatypesAds._doc.creditValue;
             typemedia = datatypesAds._doc.mediaType;
-
-
         } catch (e) {
             datatypesAds = null;
             creditValue = 0;
@@ -579,6 +579,8 @@ export class AdsController {
                     CreateAdsDto.interestID = arrayInterest;
                     CreateAdsDto.type = typemedia;
                     CreateAdsDto.usedCredit = 0;
+                    CreateAdsDto.startAge = startAge;
+                    CreateAdsDto.endAge = endAge;
                     CreateAdsDto.usedCreditFree = 0;
                     CreateAdsDto.creditValue = sumCreditValue;
                     CreateAdsDto.creditFree = sumFreeCredit;

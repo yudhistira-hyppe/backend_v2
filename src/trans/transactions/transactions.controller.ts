@@ -846,7 +846,7 @@ export class TransactionsController {
                             datauservoucher.usedCredit = usedCredit;
                             datauservoucher.voucherID = voucherID;
                             datauservoucher.voucherCredit = totalCredit;
-                            datauservoucher.totalCredit = totalCredit;
+                            datauservoucher.totalCredit = totalCredit * jml;
                             datauservoucher.jmlVoucher = jml;
                             datauservoucher.expiredAt = expiredAt;
                             datauservoucher.credit = total_creditValue_voucher;
@@ -855,7 +855,6 @@ export class TransactionsController {
                             await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml), (pendingUsed - jml));
 
                         }
-
 
                         res.status(HttpStatus.OK).json({
                             response_code: 202,
