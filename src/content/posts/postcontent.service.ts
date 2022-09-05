@@ -19,6 +19,7 @@ import {createWriteStream, unlink} from 'fs'
 import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
 import { ContenteventsService } from '../contentevents/contentevents.service';
 import { Contentevents } from '../contentevents/schemas/contentevents.schema';
+import { PostsService } from './posts.service';
 
 
 @Injectable()
@@ -28,7 +29,7 @@ export class PostContentService {
   constructor(
     @InjectModel(Posts.name, 'SERVER_CONTENT')
     private readonly PostsModel: Model<PostsDocument>,
-    private getuserprofilesService: GetuserprofilesService,
+    private postService: PostsService,
     private userService: UserbasicsService,
     private utilService: UtilsService,
     private interestService: InterestsService,
@@ -285,7 +286,7 @@ export class PostContentService {
   }
 
   async updateNewPost(body: any, headers: any) {
-    let post = await this.findid(body.postID);
+    let post = await this.postService.findid(body.postID);
     if (post == undefined) {
       return;
     }
@@ -313,7 +314,7 @@ export class PostContentService {
     let metadata = {postType : meta.postType, duration: parseInt(body.duration), postID : post._id, email: meta.email, postRoll : meta.postRoll, midRoll : meta.midRoll, preRoll: meta.preRoll};
     post.metadata = metadata;
     post.active = true;
-    this.create(post);    
+    this.postService.create(post);    
   }
 
   async getUserPost(body: any, headers: any): Promise<PostResponseApps> {
