@@ -32,6 +32,8 @@ postID: String;
 senderParty: String;
 @Prop()
 receiverParty: String;
+@Prop()
+_class:String
 }
 
 export const ContenteventsSchema = SchemaFactory.createForClass(Contentevents);

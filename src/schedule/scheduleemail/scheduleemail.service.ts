@@ -12,7 +12,7 @@ const imapConfig = {
   password: process.env.EMAIL_PASSWORD_SUPORT,
   host: process.env.EMAIL_HOST_SUPORT,
   port: process.env.EMAIL_PORT_SUPORT,
-  tls: true, 
+  tls: true,
   tlsOptions: { rejectUnauthorized: false }
 };
 const imap = new Imap(imapConfig);
@@ -22,13 +22,13 @@ export class ScheduleEmailService {
   constructor(
     private utilsService: UtilsService,
     private userticketsService: UserticketsService,
-    private userbasicsService: UserbasicsService, 
+    private userbasicsService: UserbasicsService,
   ) { }
 
   private readonly logger = new Logger(ScheduleEmailService.name);
 
   //@Interval(process.env.TIME_INTERVAL)
-  @Cron(process.env.TIME_SECOND + ' ' + process.env.TIME_MINUTES + ' ' + process.env.TIME_HOURS + ' ' + process.env.TIME_DAY_OF_MONTH + ' ' + process.env.TIME_MONTHS + ' ' +process.env.TIME_DAY_OF_WEEK, {
+  @Cron(process.env.TIME_SECOND + ' ' + process.env.TIME_MINUTES + ' ' + process.env.TIME_HOURS + ' ' + process.env.TIME_DAY_OF_MONTH + ' ' + process.env.TIME_MONTHS + ' ' + process.env.TIME_DAY_OF_WEEK, {
     name: 'email',
     timeZone: process.env.TIMEZONE,
   })
@@ -86,7 +86,6 @@ export class ScheduleEmailService {
                           CreateUserticketsDto_.datetime = email_date.toISOString();
                           CreateUserticketsDto_.IdUser = iduser;
                           CreateUserticketsDto_.active = true;
-                          CreateUserticketsDto_.tipe = 'Troubleshoot';
                           await this.userticketsService.create(CreateUserticketsDto_);
                         } catch (err) {
                           console.log('Failed insert usertiket ' + err);

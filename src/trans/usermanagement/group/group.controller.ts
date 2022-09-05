@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Query, Post, UseGu
 import { GroupService } from './group.service';
 import { GroupDto } from './dto/group.dto';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
-import { Group } from './schemas/group.schema'; 
+import { Group } from './schemas/group.schema';
 import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
 import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
@@ -16,12 +16,12 @@ export class GroupController {
 
     constructor(
         private readonly groupService: GroupService,
-        private readonly utilsService: UtilsService, 
-        private readonly errorHandler: ErrorHandler, 
+        private readonly utilsService: UtilsService,
+        private readonly errorHandler: ErrorHandler,
         private readonly userbasicsService: UserbasicsService,
-        private readonly divisionService: DivisionService, 
+        private readonly divisionService: DivisionService,
         private readonly userauthsService: UserauthsService,
-        ) { }
+    ) { }
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
@@ -40,10 +40,10 @@ export class GroupController {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create group param nameGroup is required',
             );
-        }else{
+        } else {
             data_group = await this.groupService.findOnebyName(request.nameGroup);
-            if (!(await this.utilsService.ceckData(data_group))){
-                insert =true
+            if (!(await this.utilsService.ceckData(data_group))) {
+                insert = true
             }
         }
 
@@ -95,11 +95,11 @@ export class GroupController {
             GroupDto_.createAt = current_date;
             await this.groupService.create(GroupDto_);
         } else {
-            await this.groupService.update(data_group._id,GroupDto_);
+            await this.groupService.update(data_group._id, GroupDto_);
         }
         return {
             "response_code": 202,
-            "data":{
+            "data": {
                 "nameGroup": request.nameGroup,
                 "data_usert_insert_in_group": data_user_insert_email,
                 "user_exist_in_another_group": data_user_not_insert,
@@ -122,7 +122,7 @@ export class GroupController {
         @Query('search') search: string) {
         if (search == undefined) {
             search = "";
-        } 
+        }
         var data = await this.groupService.findAll(search, skip, limit);
         var totalRow = (await this.groupService.findAllCount(search)).length;
         return {
@@ -138,7 +138,7 @@ export class GroupController {
             },
         };
     }
-    
+
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Get('/:id')
@@ -197,7 +197,7 @@ export class GroupController {
         if (request.desc != undefined) {
             GroupDto_.desc = request.desc;
         }
-        await this.groupService.update(request._id,GroupDto_);
+        await this.groupService.update(request._id, GroupDto_);
         return {
             "response_code": 202,
             "data": {
@@ -286,7 +286,7 @@ export class GroupController {
             } else {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed userauth not found',
-                ); 
+                );
             }
         } else {
             await this.errorHandler.generateNotAcceptableException(
@@ -360,6 +360,22 @@ export class GroupController {
             "messages": {
                 "info": [
                     "Update user to successfully"
+                ]
+            },
+        };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Get()
+    async getListUserGroup() {
+        var data = await this.groupService.listGroupUserAll();
+        return {
+            "response_code": 202,
+            "data": data,
+            "messages": {
+                "info": [
+                    "Get group successfully"
                 ]
             },
         };

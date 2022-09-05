@@ -9,16 +9,18 @@ import {
   Req,
   Headers,
   Request,
-  BadRequestException, HttpStatus, Put, Res, HttpCode, Query
+  BadRequestException, HttpStatus, Put, Res, HttpCode, Query, UseInterceptors, UploadedFile
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { CreatePostsDto } from './dto/create-posts.dto';
+import { CreatePostResponse, CreatePostsDto } from './dto/create-posts.dto';
 import { Posts } from './schemas/posts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import { GroupModuleService } from '../../trans/usermanagement/groupmodule/groupmodule.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { GlobalResponse } from 'src/utils/data/globalResponse';
 
 @Controller()
 export class PostsController {
@@ -251,4 +253,28 @@ export class PostsController {
     return dataquery;
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/createpost')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async createPost(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    console.log(body);
+    return this.PostsService.createNewPost(file, body, headers);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/getuserposts')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async getUserPost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    console.log(body);
+    //return this.PostsService.getUserPost(body, headers);
+    return null;
+  }  
+
+  @Post('api/posts/notifyapsara')
+  async notifyApsara(@Body() body, @Headers() headers) {
+    console.log(body);
+    this.PostsService.updateNewPost(body, headers);
+    let t = {'response' : 'Done'};
+    return JSON.stringify(t);
+  }  
 }

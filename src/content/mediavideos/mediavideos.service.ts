@@ -20,6 +20,11 @@ export class MediavideosService {
     return createMediavideosDto;
   }
 
+  //async update(CreateMediavideosDto: CreateMediavideosDto): Promise<Mediavideos> {
+  //  const createMediavideosDto = await this.MediavideosModel.updateOne(CreateMediavideosDto);
+  //  return createMediavideosDto;
+  //}  
+
   async findAll(): Promise<Mediavideos[]> {
     return this.MediavideosModel.find().exec();
   }

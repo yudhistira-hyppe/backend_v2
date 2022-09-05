@@ -26,6 +26,10 @@ export class InterestsService {
     return this.interestsModel.findOne({ _id: id }).exec();
   }
 
+  async findByName(name: string): Promise<Interests> {
+    return this.interestsModel.findOne({ interestName: name }).exec();
+  }  
+
   async delete(id: string) {
     const deletedCat = await this.interestsModel
       .findByIdAndRemove({ _id: id })

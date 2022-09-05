@@ -8,9 +8,11 @@ export class CreateUserticketsDto {
   datetime: string;
   IdUser: { oid: String; };
   status: string;
-  tipe: string;
   active: boolean;
-
-
+  isRead: boolean;
+  levelTicket: { oid: String; };
+  sourceTicket: { oid: String; };
+  assignTo: { oid: String; };
+  categoryTicket: { oid: String; };
 
 }

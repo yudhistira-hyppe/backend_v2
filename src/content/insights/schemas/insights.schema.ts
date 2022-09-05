@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
+import { Long } from "mongodb";
 
 export type InsightsDocument = Insights & Document ;
 
@@ -17,42 +18,24 @@ export class Insights {
  updatedAt: String
   @Prop()
   email: String
-  @Prop({type:Object})
-  followers: {
-    numberLong:String
-  }
-  @Prop({type:Object})
-  followings: {
-    numberLong:String
-  }
-  @Prop({type:Object})
-  unfollows: {
-    numberLong:String
-  }
-  @Prop({type:Object})
-  likes: {
-    numberLong:String
-  }
-  @Prop({type:Object})
-  views: {
-    numberLong:String
-  }
-  @Prop({type:Object})
-  comments: {
-    numberLong:String
-  }
-  @Prop({type:Object})
-  posts: {
-    numberLong:String
-  }
-  @Prop({type:Object})
-  shares: {
-    numberLong:String
-  }
-  @Prop({type:Object})
-  reactions: {
-    numberLong:String
-  }
+  @Prop()
+  followers: Long;
+  @Prop()
+  followings: Long;
+  @Prop()
+  unfollows: Long;
+  @Prop()
+  likes: Long;
+  @Prop()
+  views: Long;
+  @Prop()
+  comments: Long;
+  @Prop()
+  posts: Long;
+  @Prop()
+  shares: Long;
+  @Prop()
+  reactions: Long;
  @Prop()
  _class:String
 }
