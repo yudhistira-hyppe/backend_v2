@@ -6,8 +6,7 @@ export type UserauthDocument = Userauth & Document;
 
 @Schema()
 export class Userauth {
-  @Prop()
-  _id: { oid: mongoose.Types.ObjectId };
+  _id: mongoose.Types.ObjectId;
   @Prop()
   username: string;
   @Prop()
