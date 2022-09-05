@@ -9,7 +9,7 @@ export class BanksController {
     constructor(private readonly banksService: BanksService) { }
 
     @UseGuards(JwtAuthGuard)
-    @Get(':id')
+    @Get('api/banks/:id')
     async findOne(@Param('id') id: string): Promise<Banks> {
         return this.banksService.findOne(id);
     }

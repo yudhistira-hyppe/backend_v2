@@ -842,20 +842,35 @@ export class UserticketsService {
 
     return query;
   }
+  async updatedata(
+    id: string,
+    CreateUserticketsDto: CreateUserticketsDto,
+  ): Promise<Usertickets> {
+    let data = await this.userticketsModel.findByIdAndUpdate(
+      id,
+      CreateUserticketsDto,
+      { new: true },
+    );
 
-
-  async dateRange(startDate, endDate, steps = 1) {
-    const dateArray = [];
-    let currentDate = new Date(startDate);
-
-    while (currentDate <= new Date(endDate)) {
-      dateArray.push(new Date(currentDate));
-      // Use UTC date to prevent problems with time zones and DST
-      currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+    if (!data) {
+      throw new Error('Todo is not found!');
     }
-
-    return dateArray;
+    return data;
   }
+
+
+  // async dateRange(startDate, endDate, steps = 1) {
+  //   const dateArray = [];
+  //   let currentDate = new Date(startDate);
+
+  //   while (currentDate <= new Date(endDate)) {
+  //     dateArray.push(new Date(currentDate));
+  //     // Use UTC date to prevent problems with time zones and DST
+  //     currentDate.setUTCDate(currentDate.getUTCDate() + steps);
+  //   }
+
+  //   return dateArray;
+  // }
 
 
 }

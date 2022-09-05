@@ -10,26 +10,29 @@ export class Usertickets {
   _id: mongoose.Types.ObjectId;
   @Prop()
   nomortiket: string;
-
   @Prop()
   subject: string;
-
   @Prop()
-  body: string
+  body: string;
   @Prop()
-  datetime: string
-
-
+  datetime: string;
   @Prop({ type: Object })
   IdUser: { oid: string; }
+  @Prop()
+  status: string;
+  @Prop()
+  active: boolean;
+  @Prop()
+  isRead: boolean;
+  @Prop({ type: Object })
+  levelTicket: { oid: string; };
+  @Prop({ type: Object })
+  sourceTicket: { oid: string; };
+  @Prop({ type: Object })
+  categoryTicket: { oid: string; };
+  @Prop({ type: Object })
+  assignTo: { oid: string; };
 
-  @Prop()
-  status: string
-
-  @Prop()
-  tipe: string
-  @Prop()
-  active: boolean
 
 }
 

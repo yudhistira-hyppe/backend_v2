@@ -5,8 +5,7 @@ export type BanksDocument = Banks & Document;
 
 @Schema()
 export class Banks {
-    @Prop({ type: mongoose.Schema.Types.ObjectId })
-    _id: { oid: String }
+    _id: mongoose.Types.ObjectId;
     @Prop()
     bankcode: string
 
