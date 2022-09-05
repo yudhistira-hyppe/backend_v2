@@ -38,6 +38,8 @@ export class Vouchers {
     description: string;
     @Prop()
     qty: number;
+    @Prop()
+    pendingUsed: number;
 
 }
 

@@ -67,8 +67,22 @@ export class Ads {
     mediaAds: { oid: String; };
     @Prop()
     tayang: number;
-
-
+    @Prop()
+    endAge: number;
+    @Prop()
+    startAge: number;
+    @Prop()
+    usedCredit: number;
+    @Prop()
+    usedCreditFree: number;
+    @Prop()
+    creditFree: number;
+    @Prop()
+    creditValue: number;
+    @Prop()
+    totalCredit: number;
+    @Prop()
+    liveTypeAds: boolean;
 }
 
 export const AdsSchema = SchemaFactory.createForClass(Ads);

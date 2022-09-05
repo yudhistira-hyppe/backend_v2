@@ -62,8 +62,8 @@ export class GetuserprofilesController {
     @Query('groupId') groupId: string) {
     console.log(skip);
     console.log(limit);
-    if (search==undefined){
-      search="";
+    if (search == undefined) {
+      search = "";
     }
     if (searchemail == undefined) {
       searchemail = "";
@@ -80,7 +80,7 @@ export class GetuserprofilesController {
     var data = await this.getuserprofilesService.getUserHyppe(searchemail, search, Number(skip), Number(limit), groupId);
     var totalRow = (await this.getuserprofilesService.countUserHyppe(searchemail, search)).length;
     return {
-      response_code: 202, data: data, totalRow:totalRow, skip: skip, limit: limit, messages:{}
+      response_code: 202, data: data, totalRow: totalRow, skip: skip, limit: limit, messages: {}
     }
   }
 
@@ -90,37 +90,41 @@ export class GetuserprofilesController {
   @UseGuards(JwtAuthGuard)
   async profileuser(@Req() request: Request): Promise<any> {
     var request_json = JSON.parse(JSON.stringify(request.body));
-    var fullName = null;
+    var username = null;
     var gender = null;
     var age = null;
     var roles = null;
     var data = null;
-    var page = null;
+    var skip = null;
+    var interest = null;
     var countrow = null;
+    var startdate = null;
+    var enddate = null;
 
     const messages = {
       "info": ["The process successful"],
     };
 
     age = request_json["age"];
-    fullName = request_json["fullName"];
+    username = request_json["username"];
     gender = request_json["gender"];
     roles = request_json["roles"];
-
-
-    if (request_json["page"] !== undefined) {
-      page = request_json["page"];
+    interest = request_json["interest"];
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
+    if (request_json["skip"] !== undefined) {
+      skip = request_json["skip"];
     } else {
       throw new BadRequestException("Unabled to proceed");
     }
 
 
-    data = await this.getuserprofilesService.findata(fullName, gender, roles, age, page);
+    data = await this.getuserprofilesService.findataNew(username, gender, roles, age, startdate, enddate, interest, skip);
 
     var allrow = await this.getuserprofilesService.totalcount();
     var totalallrow = allrow[0].countrow;
     var totalrow = data.length;
-    return { response_code: 202, data, page, totalrow, totalallrow, messages };
+    return { response_code: 202, data, skip, totalrow, totalallrow, messages };
   }
 
   @Post('api/getuserprofiles/search')

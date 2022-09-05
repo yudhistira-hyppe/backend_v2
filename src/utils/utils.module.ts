@@ -5,7 +5,7 @@ import { UserauthsModule } from '../trans/userauths/userauths.module';
 import { JwtrefreshtokenModule } from '../trans/jwtrefreshtoken/jwtrefreshtoken.module';
 import { TemplatesModule } from '../infra/templates/templates.module';
 import { JwtModule } from '@nestjs/jwt';
-import { MailerModule } from '@nestjs-modules/mailer'; 
+import { MailerModule } from '@nestjs-modules/mailer';
 import { UtilsController } from './utils.controller';
 import { ConfigService } from '@nestjs/config';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
@@ -25,12 +25,15 @@ import { UserbasicsModule } from '../trans/userbasics/userbasics.module';
 import { InsightsModule } from '../content/insights/insights.module';
 import { InterestsModule } from '../infra/interests/interests.module';
 import { EulasModule } from '../infra/eulas/eulas.module';
-import { MediaprofilepictsModule } from '../content/mediaprofilepicts/mediaprofilepicts.module'; 
+import { MediaprofilepictsModule } from '../content/mediaprofilepicts/mediaprofilepicts.module';
 import { SettingsModule } from '../trans/settings/settings.module';
-import { SeaweedfsModule } from '../stream/seaweedfs/seaweedfs.module'; 
-
+import { SeaweedfsModule } from '../stream/seaweedfs/seaweedfs.module';
+import { UserdevicesModule } from "../trans/userdevices/userdevices.module";
+import { NotificationsModule } from "../content/notifications/notifications.module";
 @Module({
   imports: [
+    UserdevicesModule,
+    NotificationsModule,
     SeaweedfsModule,
     SettingsModule,
     MediaprofilepictsModule,
@@ -86,4 +89,4 @@ import { SeaweedfsModule } from '../stream/seaweedfs/seaweedfs.module';
   providers: [ErrorHandler, UtilsService],
   exports: [ErrorHandler, UtilsService],
 })
-export class UtilsModule {}
+export class UtilsModule { }

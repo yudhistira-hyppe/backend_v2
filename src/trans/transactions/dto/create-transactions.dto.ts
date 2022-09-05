@@ -33,12 +33,15 @@ export class Uservoucher {
     voucherID: { oid: String; };
     createdAt: string;
     isActive: boolean;
-    usedCredit: number;
     voucherCredit: number;
     totalCredit: number;
     updatedAt: string;
     expiredAt: string;
     jmlVoucher: number;
+    credit: number;
+    creditFree: number;
+    usedCredit: number;
+    usedCreditFree: number;
 
 }
 export class VaCallback {

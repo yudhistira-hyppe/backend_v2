@@ -144,6 +144,8 @@ export class TransactionsController {
         var arraypostids = [];
         var arraymount = [];
         var arrayDetail = [];
+        var datavoucher = null;
+        var transactionVoucher = null;
 
         if (type === "CONTENT") {
             try {
@@ -206,7 +208,7 @@ export class TransactionsController {
             }
             try {
 
-                datatrpending = await this.transactionsService.findpostidpendingVoucer(postid);
+                datatrpending = await this.transactionsService.findpostidpendingVoucer();
                 console.log(datatrpending);
 
 
@@ -223,14 +225,35 @@ export class TransactionsController {
 
                     var objid = mongoose.Types.ObjectId(postIds);
                     var qty = postid[i].qty;
+
+
                     var totalAmount = postid[i].totalAmount;
                     dataconten = await this.vouchersService.findOne(postIds);
-                    var amountobj = dataconten.amount * qty;
-                    arraymount.push(amountobj);
-                    arraypostids.push(postIds);
+                    var qtyvoucher = dataconten.qty;
+                    var tusedvoucher = dataconten.totalUsed;
+                    var codeVoucher = dataconten.codeVoucher;
+                    var pendingUsed = dataconten.pendingUsed;
+                    var totalUsePending = tusedvoucher + pendingUsed;
 
-                    var arraydetailobj = { "id": objid, "qty": qty, "totalAmount": totalAmount };
-                    arrayDetail.push(arraydetailobj);
+                    if (qty >= qtyvoucher) {
+                        res.status(HttpStatus.BAD_REQUEST).json({
+                            "message": "Maaf quantity Voucher melebihi quota.."
+                        });
+                        process.exit(0);
+                    }
+                    else if (totalUsePending === qtyvoucher) {
+                        res.status(HttpStatus.BAD_REQUEST).json({
+                            "message": "Maaf Voucher " + codeVoucher + " quota sudah habis.."
+                        });
+                        process.exit(0);
+                    } else {
+                        var amountobj = dataconten.amount * qty;
+                        arraymount.push(amountobj);
+                        arraypostids.push(postIds);
+
+                        var arraydetailobj = { "id": objid, "qty": qty, "totalAmount": totalAmount };
+                        arrayDetail.push(arraydetailobj);
+                    }
                 }
 
                 for (var i = 0; i < arraymount.length; i++) {
@@ -406,7 +429,31 @@ export class TransactionsController {
                         CreateTransactionsDto.postid = postidTR;
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
+                        var lengArrDetail = arrayDetail.length;
+
+                        for (var i = 0; i < lengArrDetail; i++) {
+                            var qtyDetail = arrayDetail[i].qty;
+                            var idvoucher = arrayDetail[i].id.toString();
+                            datavoucher = await this.vouchersService.findOne(idvoucher);
+                            var pendingUsed = datavoucher.pendingUsed;
+                            var totalPending = pendingUsed + qtyDetail;
+                            await this.vouchersService.updatesPendingUsed(idvoucher, totalPending);
+                        }
+
                         await this.transactionsService.updatestatuscancel(idtransaction);
+                        transactionVoucher = await this.transactionsService.findid(idtransaction.toString());
+                        console.log(transactionVoucher);
+
+                        var detailTr = transactionVoucher.detail;
+                        for (var a = 0; a < detailTr.length; a++) {
+                            var qtyDetail2 = detailTr[a].qty;
+                            var idvoucher2 = detailTr[a].id.toString();
+                            datavoucher = await this.vouchersService.findOne(idvoucher2);
+                            var pendingUsed2 = datavoucher.pendingUsed;
+                            var totalPending2 = pendingUsed2 - qtyDetail2;
+                            await this.vouchersService.updatesPendingUsed(idvoucher2, totalPending2);
+                        }
+
                         var data = {
                             "noinvoice": datatr.noinvoice,
                             "postid": postidTR,
@@ -520,6 +567,16 @@ export class TransactionsController {
                     CreateTransactionsDto.detail = arrayDetail;
                     CreateTransactionsDto.postid = postidTR;
                     let datatr = await this.transactionsService.create(CreateTransactionsDto);
+                    var lengArrDetail = arrayDetail.length;
+
+                    for (var i = 0; i < lengArrDetail; i++) {
+                        var qtyDetail = arrayDetail[i].qty;
+                        var idvoucher = arrayDetail[i].id.toString();
+                        datavoucher = await this.vouchersService.findOne(idvoucher);
+                        var pendingUsed = datavoucher.pendingUsed;
+                        var totalPending = pendingUsed + qtyDetail;
+                        await this.vouchersService.updatesPendingUsed(idvoucher, totalPending);
+                    }
 
                     var data = {
                         "noinvoice": datatr.noinvoice,
@@ -710,6 +767,7 @@ export class TransactionsController {
                     var totalCredit = null;
                     var usedCredit = 0;
                     var totalUsed = 0;
+                    var pendingUsed = 0;
                     var qtyvoucher = 0;
                     var postIds = "";
                     var qty = null;
@@ -774,30 +832,29 @@ export class TransactionsController {
                             voucherID = datavoucher._id;
                             expiredAt = datavoucher.expiredAt;
                             totalUsed = datavoucher.totalUsed;
+                            pendingUsed = datavoucher.pendingUsed;
                             qtyvoucher = datavoucher.qty;
                             totalCredit = datavoucher.creditTotal * jml;
+                            var total_creditValue_voucher = datavoucher.creditValue * jml;
+                            var total_creditPromo_voucher = datavoucher.creditPromo * jml;
 
-                            if (totalUsed !== qtyvoucher) {
-                                let datauservoucher = new Uservoucher();
-                                datauservoucher.userID = iduserbuy;
-                                datauservoucher.createdAt = dt.toISOString();
-                                datauservoucher.updatedAt = dt.toISOString();
-                                datauservoucher.isActive = true;
-                                datauservoucher.usedCredit = usedCredit;
-                                datauservoucher.voucherID = voucherID;
-                                datauservoucher.voucherCredit = totalCredit;
-                                datauservoucher.totalCredit = totalCredit - usedCredit;
-                                datauservoucher.jmlVoucher = jml;
-                                datauservoucher.expiredAt = expiredAt;
-                                await this.uservouchersService.create(datauservoucher);
-                                await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
-                            }
-                            else {
-                                await this.vouchersService.updatestatusVoucher(voucherID, dt.toISOString());
-                                throw new BadRequestException("Voucher is non aktif");
-                            }
+                            let datauservoucher = new Uservoucher();
+                            datauservoucher.userID = iduserbuy;
+                            datauservoucher.createdAt = dt.toISOString();
+                            datauservoucher.updatedAt = dt.toISOString();
+                            datauservoucher.isActive = true;
+                            datauservoucher.usedCredit = usedCredit;
+                            datauservoucher.voucherID = voucherID;
+                            datauservoucher.voucherCredit = totalCredit;
+                            datauservoucher.totalCredit = totalCredit * jml;
+                            datauservoucher.jmlVoucher = jml;
+                            datauservoucher.expiredAt = expiredAt;
+                            datauservoucher.credit = total_creditValue_voucher;
+                            datauservoucher.creditFree = total_creditPromo_voucher;
+                            await this.uservouchersService.create(datauservoucher);
+                            await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml), (pendingUsed - jml));
+
                         }
-
 
                         res.status(HttpStatus.OK).json({
                             response_code: 202,

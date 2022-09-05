@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
 
-export type UserbasicDocument = Userbasic & Document ;
+export type UserbasicDocument = Userbasic & Document;
 
 @Schema()
 export class Userbasic {
@@ -64,8 +64,8 @@ export class Userbasic {
   insight: {
     ref: String;
     id: {
-        oid: String;
-      };
+      oid: String;
+    };
     db: String;
   };
   @Prop([{ type: Object }])

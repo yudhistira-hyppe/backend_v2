@@ -12,6 +12,7 @@ export class CreateUserAdsDto {
     statusClick: boolean;
     statusView: boolean;
     updatedAt: String;
+    liveTypeuserads: boolean;
     userID: mongoose.Types.ObjectId;
     viewAt: String;
     viewed: number;

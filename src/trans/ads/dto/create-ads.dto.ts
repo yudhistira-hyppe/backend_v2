@@ -31,8 +31,14 @@ export class CreateAdsDto {
     type: string;
     mediaAds: { oid: String; };
     tayang: number;
-
-
+    endAge: number;
+    startAge: number;
+    usedCredit: number;
+    usedCreditFree: number;
+    creditFree: number;
+    creditValue: number;
+    totalCredit: number;
+    liveTypeAds: boolean;
 }
 
 export class MediaimageadsDto {

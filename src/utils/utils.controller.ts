@@ -17,7 +17,7 @@ import { ErrorHandler } from './error.handler';
 import { DevicelogService } from '../infra/devicelog/devicelog.service';
 import { CreateDevicelogDto } from '../infra/devicelog/dto/create-devicelog.dto';
 import mongoose from 'mongoose';
-import { Posts } from 'src/content/posts/schemas/posts.schema';
+import { Posts } from '../content/posts/schemas/posts.schema';
 
 
 @Controller('api/utils/')

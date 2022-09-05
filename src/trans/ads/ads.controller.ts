@@ -14,6 +14,7 @@ import { ErrorHandler } from "../../utils/error.handler";
 import { SeaweedfsService } from "../../stream/seaweedfs/seaweedfs.service";
 import { UtilsService } from "../../utils/utils.service";
 import { SettingsService } from '../settings/settings.service';
+import { VouchersService } from '../vouchers/vouchers.service';
 //import { UserAdsService } from '../userads/userads.service';
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
@@ -25,6 +26,7 @@ var path = require("path");
 import { v4 as uuidv4 } from 'uuid';
 import { FormDataRequest } from 'nestjs-form-data';
 import { json } from 'stream/consumers';
+import { CreateUservouchersDto } from '../uservouchers/dto/create-uservouchers.dto';
 
 export const multerConfig = {
     dest: process.env.PATH_UPLOAD,
@@ -68,7 +70,8 @@ export class AdsController {
         private readonly errorHandler: ErrorHandler,
         private readonly utilsService: UtilsService,
         private readonly seaweedfsService: SeaweedfsService,
-        private readonly settingsService: SettingsService,) { }
+        private readonly settingsService: SettingsService,
+        private readonly vouchersService: VouchersService) { }
 
 
     @UseGuards(JwtAuthGuard)
@@ -143,20 +146,29 @@ export class AdsController {
         const messagesEror = {
             "info": ["Todo is not found!"],
         };
-
+        if (CreateAdsDto.liveTypeAds === undefined) {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var startAge = CreateAdsDto.startAge;
+        var endAge = CreateAdsDto.endAge;
         var typeadsId = CreateAdsDto.typeAdsID;
-        var tayang = CreateAdsDto.tayang;
+        var tayang = Number(CreateAdsDto.tayang);
         var datatypesAds = null;
         var creditValue = 0;
+        var datavoucher = null;
+        var uservoucherdata = null;
+        var arrayCreditvalue = [];
+        var arrayFreeCredit = [];
+        var arrayTotalCredit = [];
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         var typemedia = "";
+        var totalCreditTayang = 0;
         try {
             datatypesAds = await this.adstypesService.findOne(mongoose.Types.ObjectId(typeadsId));
             console.log(datatypesAds);
             creditValue = datatypesAds._doc.creditValue;
             typemedia = datatypesAds._doc.mediaType;
-
         } catch (e) {
             datatypesAds = null;
             creditValue = 0;
@@ -376,10 +388,10 @@ export class AdsController {
                         FormData_.append('proofpict', fs.createReadStream(path.resolve(cardVid_local_path)));
                         await this.seaweedfsService.write(cardVid_seaweedfs_path, FormData_);
                     } catch (err) {
-                        // await this.errorHandler.generateNotAcceptableException(
-                        //     'Unabled to proceed proofpict failed upload seaweedfs',
-                        // );
-                        err.toString();
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed proofpict failed upload seaweedfs'
+                        );
+
                     }
                 }
 
@@ -418,7 +430,7 @@ export class AdsController {
 
             }
 
-            //Delete directory recursively
+            // Delete directory recursively
             fs.rm('./temp/' + mongoose_gen_meida, { recursive: true }, (err) => {
                 if (err) {
                     throw err;
@@ -436,18 +448,24 @@ export class AdsController {
             var arrayUservoucher = [];
             var totalCreditusvoucher = 0;
 
+
             try {
                 dataUservoucher = await this.uservouchersService.findUser(mongoose.Types.ObjectId(iduser));
                 console.log(dataUservoucher);
-                totalCreditusvoucher = dataUservoucher[0].totalCredit;
+
 
             } catch (e) {
                 dataUservoucher = null;
-                totalCreditusvoucher = 0;
+
             }
 
 
-            if (dataUservoucher !== null && totalCreditusvoucher >= creditValue) {
+            if (dataUservoucher !== null) {
+
+                for (var x = 0; x < dataUservoucher.length; x++) {
+                    totalCreditusvoucher += dataUservoucher[x].totalCredit;
+
+                }
                 try {
                     var reqdemografisID = mongoose.Types.ObjectId(CreateAdsDto.demografisID);
 
@@ -468,13 +486,85 @@ export class AdsController {
                     console.log(userVoucherID);
                     var splituserv = userVoucherID.toString();
                     var splituserv2 = splituserv.split(',');
+                    var sumCreditValue = 0;
+                    var sumFreeCredit = 0;
+                    var sumCredittotal = 0;
 
-
+                    var total_credit_data = creditValue * tayang;
                     for (var i = 0; i < splituserv2.length; i++) {
                         var idu = splituserv2[i];
+
+                        uservoucherdata = await this.uservouchersService.findOne(idu);
+                        var voucherid = uservoucherdata.voucherID;
+
+                        datavoucher = await this.vouchersService.findOne(voucherid);
+                        var valueCredit = datavoucher.creditValue;
+                        var freeCredit = datavoucher.creditPromo;
+                        var creditTotal = datavoucher.creditTotal;
+
+                        arrayCreditvalue.push(valueCredit);
+                        arrayFreeCredit.push(freeCredit);
+                        arrayTotalCredit.push(creditTotal);
+
                         var objuservoucher = mongoose.Types.ObjectId(idu);
                         arrayUservoucher.push(objuservoucher);
                     }
+
+                    for (var i = 0; i < splituserv2.length; i++) {
+                        sumCreditValue += arrayCreditvalue[i];
+                        sumFreeCredit += arrayFreeCredit[i];
+                        sumCredittotal += arrayTotalCredit[i];
+                    }
+
+                    if (totalCreditusvoucher < (creditValue * tayang)) {
+
+                        res.status(HttpStatus.BAD_REQUEST).json({
+
+                            "message": "Voucher credit is not sufficient, please buy a voucher first"
+                        });
+                    }
+
+                    for (var i = 0; i < splituserv2.length; i++) {
+                        var idu = splituserv2[i];
+                        uservoucherdata = await this.uservouchersService.findOne(idu);
+                        var kredit = uservoucherdata.credit;
+                        var kreditFree = uservoucherdata.creditFree;
+                        var totalCredit = uservoucherdata.totalCredit;
+
+                        var useKredit = 0;
+                        var useKreditFree = 0;
+
+                        total_credit_data -= kredit;
+
+                        if (total_credit_data == 0) {
+                            useKredit = kredit;
+                            totalCredit -= kredit;
+                        } else if (total_credit_data < 0) {
+                            useKredit = (kredit + total_credit_data);
+                            totalCredit -= (kredit + total_credit_data);;
+                        } else if (total_credit_data > 0) {
+                            useKredit = kredit;
+                            totalCredit -= kredit;
+                            total_credit_data -= kreditFree;
+                            if (total_credit_data == 0) {
+                                useKreditFree = kreditFree;
+                                totalCredit -= kreditFree;
+                            } else if (total_credit_data < 0) {
+                                useKreditFree = (kreditFree + total_credit_data);
+                                totalCredit -= (kreditFree + total_credit_data);
+                            } else if (total_credit_data > 0) {
+                                useKreditFree = kreditFree;
+                                totalCredit -= kreditFree;
+                            }
+                        }
+
+                        var CreateUservouchersDto_ = new CreateUservouchersDto();
+                        CreateUservouchersDto_.usedCredit = useKredit;
+                        CreateUservouchersDto_.usedCreditFree = useKreditFree;
+                        CreateUservouchersDto_.totalCredit = totalCredit;
+                        await this.uservouchersService.update(uservoucherdata._id.toString(), CreateUservouchersDto_);
+                    }
+
 
                     CreateAdsDto.timestamp = dt.toISOString();
                     CreateAdsDto.expiredAt = dtexpired.toISOString();
@@ -488,6 +578,13 @@ export class AdsController {
                     CreateAdsDto.placingID = mongoose.Types.ObjectId(CreateAdsDto.placingID);
                     CreateAdsDto.interestID = arrayInterest;
                     CreateAdsDto.type = typemedia;
+                    CreateAdsDto.usedCredit = 0;
+                    CreateAdsDto.startAge = startAge;
+                    CreateAdsDto.endAge = endAge;
+                    CreateAdsDto.usedCreditFree = 0;
+                    CreateAdsDto.creditValue = sumCreditValue;
+                    CreateAdsDto.creditFree = sumFreeCredit;
+                    CreateAdsDto.totalCredit = sumCredittotal;
                     CreateAdsDto.mediaAds = mongoose.Types.ObjectId(idmedia);;
                     let data = await this.adsService.create(CreateAdsDto);
                     res.status(HttpStatus.OK).json({

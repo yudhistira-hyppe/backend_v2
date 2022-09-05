@@ -155,7 +155,12 @@ export class PostsService {
       {
         email: email,
       },
-      { $set: { "active": false } },
+      { 
+        $set: { 
+          "active": false,
+          "email": email + '_noneactive'
+        } 
+      },
       function (err, docs) {
         if (err) {
           //console.log(err);

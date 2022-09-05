@@ -12,11 +12,12 @@ import { MediaimageadsModule } from '../../stream/mediaimageads/mediaimageads.mo
 import { UtilsModule } from '../../utils/utils.module';
 import { MediavideosadsModule } from '../../stream/mediavideosads/mediavideosads.module';
 import { SettingsModule } from '../settings/settings.module';
+import { VouchersModule } from '../vouchers/vouchers.module';
 //import { UserAdsModule } from '../userads/userads.module';
 @Module({
 
     imports: [
-        ConfigModule.forRoot(), UservouchersModule, UserbasicsModule, AdstypesModule, SeaweedfsModule, MediaimageadsModule, UtilsModule, MediavideosadsModule, SettingsModule,
+        ConfigModule.forRoot(), UservouchersModule, UserbasicsModule, AdstypesModule, SeaweedfsModule, MediaimageadsModule, UtilsModule, MediavideosadsModule, SettingsModule, VouchersModule,
         MongooseModule.forFeature([{ name: Ads.name, schema: AdsSchema }], 'SERVER_TRANS')
     ],
     controllers: [AdsController],

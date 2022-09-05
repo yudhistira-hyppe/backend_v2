@@ -25,8 +25,10 @@ import { NestjsFormDataModule } from 'nestjs-form-data';
 import { SeaweedfsModule } from '../stream/seaweedfs/seaweedfs.module';
 import { PostsModule } from '../content/posts/posts.module';
 import { SettingsModule } from '../trans/settings/settings.module';
+import { ContenteventsModule } from '../content/contentevents/contentevents.module';
 @Module({
   imports: [
+    ContenteventsModule,
     SettingsModule,
     PostsModule,
     NestjsFormDataModule,

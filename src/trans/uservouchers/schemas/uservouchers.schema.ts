@@ -21,11 +21,17 @@ export class Uservouchers {
     @Prop()
     expiredAt: string;
     @Prop()
-    usedCredit: number;
-    @Prop()
     voucherCredit: number;
     @Prop()
     jmlVoucher: number;
+    @Prop()
+    credit: number;
+    @Prop()
+    creditFree: number;
+    @Prop()
+    usedCredit: number;
+    @Prop()
+    usedCreditFree: number;
 
 
 }

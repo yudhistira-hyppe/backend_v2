@@ -42,7 +42,7 @@ export class ErrorHandler {
 
   async generateNotFoundException(messages: string): Promise<any> {
     throw new NotFoundException({
-      response_code: 406,
+      response_code: 404,
       messages: {
         info: [messages],
       },
