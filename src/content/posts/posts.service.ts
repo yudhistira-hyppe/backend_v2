@@ -1349,7 +1349,7 @@ export class PostsService {
       post.certified = false;      
     }    
     
-    if (body.cats != undefined) {
+    if (body.cats != undefined && body.cats.length > 1) {
       var obj = body.cats;
       var cats = obj.split(",");
       var pcats = [];
@@ -1364,7 +1364,7 @@ export class PostsService {
       post.category = pcats;
     }
     
-    if (body.tagPeople != undefined) {
+    if (body.tagPeople != undefined && body.tagPeople.length > 1) {
       var obj = body.tagPeople;
       var cats = obj.split(",");
       var pcats = [];
@@ -1379,7 +1379,7 @@ export class PostsService {
       post.tagPeople = pcats;
     }
     
-    if (body.tagDescription != undefined) {
+    if (body.tagDescription != undefined && body.tagDescription.length > 0) {
       var obj = body.tagDescription;
       var cats = obj.split(",");
       var pcats = [];
