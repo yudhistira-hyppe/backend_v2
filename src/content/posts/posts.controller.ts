@@ -257,7 +257,7 @@ export class PostsController {
   @Post('api/posts/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPost(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
-    console.log(file);
+    console.log(body);
     return this.PostsService.createNewPost(file, body, headers);
   }
 
