@@ -16,8 +16,8 @@ export class UserbankaccountsService {
         return this.userbankaccountsModel.find().exec();
     }
 
-    async findOneUser(iduser: ObjectId): Promise<Userbankaccounts> {
-        return this.userbankaccountsModel.findOne({ userId: iduser }).exec();
+    async findOneUser(iduser: ObjectId): Promise<Userbankaccounts[]> {
+        return this.userbankaccountsModel.find({ userId: iduser }).exec();
     }
     async findOne(id: string): Promise<Userbankaccounts> {
         return this.userbankaccountsModel.findOne({ _id: id }).exec();
