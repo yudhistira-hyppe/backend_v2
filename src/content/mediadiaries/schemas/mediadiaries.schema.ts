@@ -39,6 +39,12 @@ export class Mediadiaries {
   rotate: Number
  @Prop()
  _class:String
+ @Prop()
+ apsara: boolean 
+ @Prop()
+ apsaraId: String
+ @Prop()
+ originalName: String  
 }
 
 export const MediadiariesSchema = SchemaFactory.createForClass(Mediadiaries);

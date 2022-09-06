@@ -20,6 +20,11 @@ import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
 import { ContenteventsService } from '../contentevents/contentevents.service';
 import { Contentevents } from '../contentevents/schemas/contentevents.schema';
 import { PostsService } from './posts.service';
+import { Mediastories } from '../mediastories/schemas/mediastories.schema';
+import { MediastoriesService } from '../mediastories/mediastories.service';
+import { Mediadiaries } from '../mediadiaries/schemas/mediadiaries.schema';
+import { Mediapicts } from '../mediapicts/schemas/mediapicts.schema';
+import { MediapictsService } from '../mediapicts/mediapicts.service';
 
 
 @Injectable()
@@ -35,13 +40,15 @@ export class PostContentService {
     private interestService: InterestsService,
     private userAuthService: UserauthsService,
     private videoService: MediavideosService,
+    private storyService: MediastoriesService,
+    private picService: MediapictsService,
     private insightService: InsightsService,
     private contentEventService: ContenteventsService,
     private readonly configService: ConfigService,
   ) { }
 
   async createNewPost(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
-    this.logger.log('createNewPost >>> start:');
+    console.log(body);
     var res = new CreatePostResponse();
     res.response_code = 204;
 
@@ -64,24 +71,26 @@ export class PostContentService {
     if (mime.startsWith('video')) {
       this.logger.log('createNewPost >>> is video');
       return this.createNewPostVideo(file, body, headers);
+    } else {
+      return this.createNewPostPict(file, body, headers);
     }
     return null;
   }
 
-  private async createNewPostVideo(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
-    this.logger.log('createNewPostVideo >>> start');
+  private async buildPost(body: any, headers: any): Promise<Posts> {
+    this.logger.log('buildPost >>> start');
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
 
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);    
-    this.logger.log('createNewPostVideo >>> profile: ' + profile);
+    this.logger.log('buildPost >>> profile: ' + profile);
  
-    var post = new Posts();
+    let post = new Posts();
     post._id = await this.utilService.generateId();
     post.postID = post._id;
-    post.postType = 'vid';
+    //post.postType = 'vid';
     post.active = true;
     post.email = auth.email;
     post.createdAt = await this.utilService.getDateTimeString();
@@ -222,7 +231,7 @@ export class PostContentService {
         ins.posts = new Long(1);
       }
     } else {
-      console.log(ins);
+      //TODO BUG BUG BUG
       let prevPost = ins.posts;
       //prevPost = prevPost + 1;
       //ins.posts = new Long(prevPost);
@@ -244,29 +253,99 @@ export class PostContentService {
     ce._class = 'io.melody.hyppe.content.domain.ContentEvent';
     this.contentEventService.create(ce);
 
-    //METADATA
-    let metadata = {postType : 'vid', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
-    post.metadata = metadata;
+    return post;
+  }
 
-    var med = new Mediavideos();
-    med._id = await this.utilService.generateId();
-    med.mediaID = med._id;
-    med.postID = post.postID;
-    med.active = false;
-    med.createdAt = await this.utilService.getDateTimeString();
-    med.updatedAt = await this.utilService.getDateTimeString();
-    med.mediaMime = file.mimetype;
-    med.mediaType = 'video';
-    med.originalName = file.originalname;
-    med.apsara = true;
-    med._class = 'io.melody.hyppe.content.domain.MediaVideo';
+  private async createNewPostVideo(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
 
-    this.logger.log('createNewPostVideo >>> prepare save');
-    var retm = await this.videoService.create(med);
-    this.logger.log('createNewPostVideo >>> ' + retm);
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
+    let post = await this.buildPost(body, headers);
+
+    let postType = body.postType;
     var cm = [];
-    var vids = { "$ref": "mediavideos", "$id": retm.mediaID, "$db": "hyppe_content_db" };
-    cm.push(vids);
+
+    if (postType == 'vid') {
+      let metadata = {postType : 'vid', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
+      post.metadata = metadata;
+  
+      var med = new Mediavideos();
+      med._id = await this.utilService.generateId();
+      med.mediaID = med._id;
+      med.postID = post.postID;
+      med.active = false;
+      med.createdAt = await this.utilService.getDateTimeString();
+      med.updatedAt = await this.utilService.getDateTimeString();
+      med.mediaMime = file.mimetype;
+      med.mediaType = 'video';
+      med.originalName = file.originalname;
+      med.apsara = true;
+      med._class = 'io.melody.hyppe.content.domain.MediaVideo';
+  
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retm = await this.videoService.create(med);
+
+      this.logger.log('createNewPostVideo >>> ' + retm);
+
+      var vids = { "$ref": "mediavideos", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);      
+
+    } else if (postType == 'advertise') {
+
+    } else if (postType == 'story') {
+      let metadata = {postType : 'story', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
+      post.metadata = metadata;
+  
+      var mes = new Mediastories();
+      mes._id = await this.utilService.generateId();
+      mes.mediaID = med._id;
+      mes.postID = post.postID;
+      mes.active = false;
+      mes.createdAt = await this.utilService.getDateTimeString();
+      mes.updatedAt = await this.utilService.getDateTimeString();
+      mes.mediaMime = file.mimetype;
+      mes.mediaType = 'video';
+      mes.originalName = file.originalname;
+      mes.apsara = true;
+      mes._class = 'io.melody.hyppe.content.domain.MediaStory';
+  
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var rets = await this.storyService.create(mes);
+
+      this.logger.log('createNewPostVideo >>> ' + rets);
+
+      var stories = { "$ref": "mediastories", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      cm.push(stories);  
+
+    } else if (postType == 'diary') {
+
+      let metadata = {postType : 'diary', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
+      post.metadata = metadata;
+  
+      var mem = new Mediadiaries();
+      mem._id = await this.utilService.generateId();
+      mem.mediaID = med._id;
+      mem.postID = post.postID;
+      mem.active = false;
+      mem.createdAt = await this.utilService.getDateTimeString();
+      mem.updatedAt = await this.utilService.getDateTimeString();
+      mem.mediaMime = file.mimetype;
+      mem.mediaType = 'video';
+      mem.originalName = file.originalname;
+      mem.apsara = true;
+      mem._class = 'io.melody.hyppe.content.domain.MediaDiary';
+  
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var rets = await this.storyService.create(mes);
+
+      this.logger.log('createNewPostVideo >>> ' + rets);
+
+      var stories = { "$ref": "mediadiaries", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      cm.push(stories);      
+    }
+
+    post.postType = 'vid';
     post.contentMedias = cm;
     let apost = await this.PostsModel.create(post);
 
@@ -278,12 +357,95 @@ export class PostContentService {
     ws.close();
 
     let payload = {'file' : nm, 'postId' : apost._id};
-    axios.post(this.configService.get("APSARA_UPLOADER"), JSON.stringify(payload), { headers: {'Content-Type': 'application/json'}});
+    axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: {'Content-Type': 'application/json'}});
     var res = new CreatePostResponse();
     res.response_code = 202;
     res.messages = "";
     return null;
   }
+
+  private async createNewPostPict(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+
+    let post = await this.buildPost(body, headers);
+
+    let postType = body.postType;
+    var cm = [];
+
+    if (postType == 'pict') {
+      var med = new Mediapicts();
+      med._id = await this.utilService.generateId();
+      med.mediaID = med._id;
+      med.postID = post.postID;
+      med.active = false;
+      med.createdAt = await this.utilService.getDateTimeString();
+      med.updatedAt = await this.utilService.getDateTimeString();
+      med.mediaMime = file.mimetype;
+      med.mediaType = 'image';
+      med.originalName = file.originalname;
+      med.apsara = true;
+      med._class = 'io.melody.hyppe.content.domain.MediaPict';
+  
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retm = await this.picService.create(med);
+
+      this.logger.log('createNewPostVideo >>> ' + retm);
+
+      var vids = { "$ref": "mediapicts", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);      
+
+    } else if (postType == 'advertise') {
+
+    } else if (postType == 'story') {
+      let metadata = {postType : 'story', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
+      post.metadata = metadata;
+  
+      var mes = new Mediastories();
+      mes._id = await this.utilService.generateId();
+      mes.mediaID = med._id;
+      mes.postID = post.postID;
+      mes.active = false;
+      mes.createdAt = await this.utilService.getDateTimeString();
+      mes.updatedAt = await this.utilService.getDateTimeString();
+      mes.mediaMime = file.mimetype;
+      mes.mediaType = 'image';
+      mes.originalName = file.originalname;
+      mes.apsara = true;
+      mes._class = 'io.melody.hyppe.content.domain.MediaStory';
+  
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var rets = await this.storyService.create(mes);
+
+      this.logger.log('createNewPostVideo >>> ' + rets);
+
+      var stories = { "$ref": "mediastories", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      cm.push(stories);  
+
+    } else if (postType == 'diary') {
+    }
+
+    post.postType = 'pict';
+    post.contentMedias = cm;
+    let apost = await this.PostsModel.create(post);
+
+    let fn = file.originalname;
+    let ext = fn.split(".");
+    let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + post._id + "." + ext[1];
+    const ws = createWriteStream(nm);
+    ws.write(file.buffer);
+    ws.close();
+
+    let payload = {'file' : nm, 'postId' : apost._id};
+    axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: {'Content-Type': 'application/json'}});
+    var res = new CreatePostResponse();
+    res.response_code = 202;
+    res.messages = "";
+    return null;
+  }
+
+
 
   async updateNewPost(body: any, headers: any) {
     let post = await this.postService.findid(body.postID);
@@ -301,20 +463,34 @@ export class PostContentService {
       vid.apsaraId = body.videoId;
       vid.active = true;
       this.videoService.create(vid);
+
+      let todel = body.filedel + "";
+      unlink(todel, (err) => {
+        if (err) {
+  
+        }
+      });
+  
+      let meta = post.metadata;
+      let metadata = {postType : meta.postType, duration: parseInt(body.duration), postID : post._id, email: meta.email, postRoll : meta.postRoll, midRoll : meta.midRoll, preRoll: meta.preRoll};
+      post.metadata = metadata;
+      post.active = true;
+      this.postService.create(post);          
+    } else {
+      let pic = await this.picService.findOne(cm.oid);
+      if (pic == undefined) {
+        return;
+      }
+
+      pic.apsaraId = body.videoId;
+      pic.active = true;
+      this.picService.create(pic);
+
+      post.active = true;
+      this.postService.create(post);                
     }
 
-    let todel = body.filedel + "";
-    unlink(todel, (err) => {
-      if (err) {
 
-      }
-    });
-
-    let meta = post.metadata;
-    let metadata = {postType : meta.postType, duration: parseInt(body.duration), postID : post._id, email: meta.email, postRoll : meta.postRoll, midRoll : meta.midRoll, preRoll: meta.preRoll};
-    post.metadata = metadata;
-    post.active = true;
-    this.postService.create(post);    
   }
 
   async getUserPost(body: any, headers: any): Promise<PostResponseApps> {

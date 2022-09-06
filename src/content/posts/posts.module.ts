@@ -14,13 +14,17 @@ import { MediavideosModule } from '../mediavideos/mediavideos.module';
 import { InsightsModule } from '../insights/insights.module';
 import { ContenteventsModule } from '../contentevents/contentevents.module';
 import { PostContentService } from './postcontent.service';
+import { MediadiariesModule } from '../mediadiaries/mediadiaries.module';
+import { MediastoriesModule } from '../mediastories/mediastories.module';
+import { MediapictsModule } from '../mediapicts/mediapicts.module';
 @Module({
 
     imports: [
         GroupModuleModule,
         UtilsModule,
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
-        UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,
+        UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
+        MediapictsModule,
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [PostsController],
