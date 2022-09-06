@@ -13,6 +13,7 @@ import { InterestsModule } from 'src/infra/interests/interests.module';
 import { MediavideosModule } from '../mediavideos/mediavideos.module';
 import { InsightsModule } from '../insights/insights.module';
 import { ContenteventsModule } from '../contentevents/contentevents.module';
+import { PostContentService } from './postcontent.service';
 @Module({
 
     imports: [
@@ -23,7 +24,7 @@ import { ContenteventsModule } from '../contentevents/contentevents.module';
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [PostsController],
-    providers: [PostsService],
-    exports: [PostsService],
+    providers: [PostsService, PostContentService],
+    exports: [PostsService, PostContentService],
 })
 export class PostsModule { }

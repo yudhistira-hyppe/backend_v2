@@ -446,6 +446,7 @@ export class AdsUserCompareService {
                     }
                 }
             }
+
             console.log("ads priority", priority);
             console.log("----------------------------------------------------------");
 
@@ -468,7 +469,7 @@ export class AdsUserCompareService {
                 await this.userAdsService.create(CreateUserAdsDto_);
             } catch (s) {
                 await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Failed update Ads',
+                    'Unabled to proceed Failed create user Ads',
                 );
             }
         }
