@@ -35,6 +35,10 @@ export class Mediapicts {
   mediaMime: String
  @Prop()
  _class:String
+ @Prop()
+ apsara: boolean 
+ @Prop()
+ apsaraId: String     
 }
 
 export const MediapictsSchema = SchemaFactory.createForClass(Mediapicts);

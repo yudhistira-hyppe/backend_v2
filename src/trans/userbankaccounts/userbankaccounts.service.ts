@@ -17,7 +17,48 @@ export class UserbankaccountsService {
     }
 
     async findOneUser(iduser: ObjectId): Promise<Userbankaccounts[]> {
-        return this.userbankaccountsModel.find({ userId: iduser }).exec();
+
+        let query = await this.userbankaccountsModel.aggregate([
+            {
+                $lookup: {
+                    from: "banks",
+                    localField: "idBank",
+                    foreignField: "_id",
+                    as: "dataBank"
+                }
+            }, {
+                $project: {
+                    databank: {
+                        $arrayElemAt: [
+                            "$dataBank",
+                            0
+                        ]
+                    },
+                    userId: "$userId",
+                    noRek: "$noRek",
+                    nama: "$nama",
+                    statusInquiry: "$statusInquiry"
+                }
+            }, {
+                $project: {
+                    userId: "$userId",
+                    noRek: "$noRek",
+                    nama: "$nama",
+                    statusInquiry: "$statusInquiry",
+                    bankId: "$databank._id",
+                    bankcode: "$databank.bankcode",
+                    bankname: "$databank.bankname",
+                    urlEbanking: "$databank.urlEbanking",
+                    bankIcon: "$databank.bankIcon"
+                }
+            }, {
+                $match: {
+                    userId: iduser
+                }
+            }
+
+        ]);
+        return query;
     }
     async findOne(id: string): Promise<Userbankaccounts> {
         return this.userbankaccountsModel.findOne({ _id: id }).exec();
