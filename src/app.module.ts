@@ -73,7 +73,7 @@ import { AdstypesModule } from './trans/adstypes/adstypes.module';
 import { AdsModule } from './trans/ads/ads.module';
 import { UserAdsModule } from './trans/userads/userads.module';
 import { DivisionModule } from './trans/usermanagement/division/division.module';
-import { AdsUserCompareModule } from './trans/ads/adsusercompare/ads.module';
+import { AdsUserCompareModule } from './trans/ads/adsusercompare/adsusercompare.module';
 import { LevelticketsModule } from './trans/leveltickets/leveltickets.module';
 import { SourceticketsModule } from './trans/sourcetickets/sourcetickets.module';
 import { CategoryticketsModule } from './trans/categorytickets/categorytickets.module';

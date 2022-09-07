@@ -69,6 +69,8 @@ export class CreateUserbasicDto {
     $db: String;
   };
   _class: String;
+  pin: String;
+  otp_pin: String;
 }
 
 export class SearchUserbasicDto {

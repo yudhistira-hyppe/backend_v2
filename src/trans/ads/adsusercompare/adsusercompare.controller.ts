@@ -13,7 +13,10 @@ import { CreateUserAdsDto } from '../../../trans/userads/dto/create-userads.dto'
 import { AccountbalancesService } from '../../../trans/accountbalances/accountbalances.service';
 import { CreateAccountbalancesDto } from '../../../trans/accountbalances/dto/create-accountbalances.dto';
 import { AdsplacesService } from '../../../trans/adsplaces/adsplaces.service';
+import { UservouchersService } from '../../../trans/uservouchers/uservouchers.service';
+import { VouchersService } from '../../../trans/vouchers/vouchers.service';
 import mongoose from 'mongoose';
+import { MongoServerClosedError } from 'mongodb';
 
 @Controller('api/ads')
 export class AdsUserCompareController {
@@ -28,6 +31,8 @@ export class AdsUserCompareController {
         private adstypesService: AdstypesService,
         private accountbalancesService: AccountbalancesService,
         private adsplacesService: AdsplacesService,
+        private readonly uservouchersService: UservouchersService, 
+        private readonly vouchersService: VouchersService,
         private errorHandler: ErrorHandler,) { }
 
 
@@ -58,6 +63,12 @@ export class AdsUserCompareController {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed ADS not found',
                 );
+            }else{
+                if (dataAds.isActive && dataAds.status == 'APPROVE') {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed, Ads status is live',
+                    );
+                }
             }
         }
         // try {
@@ -471,6 +482,109 @@ export class AdsUserCompareController {
         } else {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed token and email not match',
+            );
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('/update/')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async update(@Body() body): Promise<any> {
+        if (body.adsId == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed param adsId is reqired',
+            );
+        }
+        if (body.tayang == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed param tayang is reqired',
+            );
+        }
+        if (body.userVoucherID == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed param userVoucherID is reqired',
+            );
+        }
+
+        var Ads_data = await this.adsService.findOne(body.adsId);
+        if (await this.utilsService.ceckData(Ads_data)) {
+
+            var creditTayang = Ads_data.totalUsedCredit / Ads_data.tayang;
+            var totalTayang = Ads_data.tayang + body.tayang;
+            var totalcreditTayang = creditTayang * totalTayang;
+
+            var string_userVoucherID = body.userVoucherID.toString();
+            var split_userVoucherID = string_userVoucherID.split(',');
+
+            var arrayCreditvalue = [];
+            var arrayFreeCredit = [];
+            var arrayTotalCredit = [];
+            var arrayUservoucher = [];
+
+            var sumCreditValue = 0;
+            var sumFreeCredit = 0;
+            var sumCredittotal = 0;
+            var totalCreditusvoucher = 0;
+
+            for (var i = 0; i < split_userVoucherID.length; i++) {
+                var _id_userVoucher = split_userVoucherID[i];
+
+                var uservoucher_data = await this.uservouchersService.findOne(_id_userVoucher);
+                var voucherid = uservoucher_data.voucherID;
+
+                var voucher_data = await this.vouchersService.findOne(voucherid.toString());
+                var valueCredit = voucher_data.creditValue;
+                var freeCredit = voucher_data.creditPromo;
+                var creditTotal = voucher_data.creditTotal;
+
+                sumCreditValue += valueCredit;
+                sumFreeCredit += freeCredit;
+                sumCredittotal += creditTotal;
+
+                // arrayCreditvalue.push(valueCredit);
+                // arrayFreeCredit.push(freeCredit);
+                // arrayTotalCredit.push(creditTotal);
+
+                var objuservoucher = new mongoose.Types.ObjectId(_id_userVoucher);
+                arrayUservoucher.push(objuservoucher);
+                totalCreditusvoucher += uservoucher_data[i].totalCredit;
+            }
+
+            // for (var i = 0; i < split_userVoucherID.length; i++) {
+            //     sumCreditValue += arrayCreditvalue[i];
+            //     sumFreeCredit += arrayFreeCredit[i];
+            //     sumCredittotal += arrayTotalCredit[i];
+            // }
+
+            var arrayUservoucher_existing = Ads_data.userVoucherID;
+            arrayUservoucher = arrayUservoucher.concat(arrayUservoucher_existing);
+
+            if (totalCreditusvoucher < totalcreditTayang) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Voucher credit is not sufficient, please buy a voucher first',
+                );
+            }
+
+            var CreateAdsDto_ = new CreateAdsDto();
+            CreateAdsDto_.tayang = totalTayang;
+            CreateAdsDto_.totalUsedCredit = totalcreditTayang;
+            CreateAdsDto_.userVoucherID = arrayUservoucher;
+            CreateAdsDto_.creditValue = sumCreditValue + Ads_data.creditValue;
+            CreateAdsDto_.creditFree = sumFreeCredit + Ads_data.creditFree;
+            CreateAdsDto_.totalCredit = sumCredittotal + Ads_data.totalCredit;
+            await this.adsService.update(Ads_data._id.toString(), CreateAdsDto_);
+            CreateAdsDto_.userIDAssesment = Ads_data.userIDAssesment;
+            CreateAdsDto_.status = 'APPROVE';
+            CreateAdsDto_.isActive = true;
+            CreateAdsDto_._id = {
+                oid: Ads_data._id.toString(),
+            };
+            CreateAdsDto_.userID = Ads_data.userID;
+            CreateAdsDto_.liveAt = Ads_data.liveAt;
+            await this.adsUserCompareService.createUserAds(CreateAdsDto_);
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Ads not found',
             );
         }
     }

@@ -38,11 +38,6 @@ export class AdsUserCompareService {
         var data_user = await this.userbasicsService.findAll();
         var data_ads = await this.adsService.findOne(_CreateAdsDto_._id.toString());
         if (await this.utilsService.ceckData(data_ads)) {
-            if (data_ads.isActive && data_ads.status == 'APPROVE') {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed, Ads status is live',
-                );
-            } 
             var data_area = await this.areasService.findOneid(JSON.parse(JSON.stringify(data_ads.demografisID)).$id);
             if (await this.utilsService.ceckData(data_area)) {
                 if (data_area.location != undefined) {
@@ -442,7 +437,7 @@ export class AdsUserCompareService {
                                 priority = "Very Lowest";
                                 priority_number = await this.utilsService.getSetting("VeryLowest");
                             }
-                        }
+                        }              
                     }
                 }
             }
