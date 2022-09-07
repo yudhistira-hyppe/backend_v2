@@ -38,13 +38,14 @@ export class UserbasicsService {
     );
   }
 
-  async updatebyId(email: string, data: Object) {
-    console.log(data);
+  async updatebyId(email: string,
+    createUserbasicDto: CreateUserbasicDto,) {
+    console.log(createUserbasicDto);
     this.userbasicModel.findByIdAndUpdate(
       {
         email: email,
       },
-      data,
+      createUserbasicDto,
       function (err, docs) {
         if (err) {
           console.log(err);
@@ -53,6 +54,15 @@ export class UserbasicsService {
         }
       },
     );
+  }
+
+  async updateData(email: string, createUserbasicDto: CreateUserbasicDto): Promise<Object> {
+    let data = await this.userbasicModel.updateOne({ "email": email },
+      {
+        $set: createUserbasicDto
+      },
+    );
+    return data;
   }
 
   async updateStatus(email: string, status: Boolean): Promise<Object> {

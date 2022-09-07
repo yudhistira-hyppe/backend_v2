@@ -934,7 +934,6 @@ export class AuthController {
     return await this.authService.signupsosmed(request);
   }
 
-
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/sign/socmed')
   async signsosmed(@Req() request: any) {
@@ -1139,13 +1138,13 @@ export class AuthController {
           if (body_.pin != undefined) {
             var pin = body_.pin;
             try {
-              var encrypt_pin = await this.utilsService.encrypt(pin);
+              var encrypt_pin = await this.utilsService.encrypt(pin.toString());
               var OTP = await this.utilsService.generateOTP();
 
               var createUserbasicDto_ = new CreateUserbasicDto();
-              createUserbasicDto_.pin = encrypt_pin.toString();
+              createUserbasicDto_.pin = encrypt_pin;
               createUserbasicDto_.otp_pin = OTP;
-              await this.userbasicsService.update(user_userbasics._id.toString(), createUserbasicDto_);
+              await this.userbasicsService.updateData(user_userbasics.email.toString(), createUserbasicDto_);
 
               await this.authService.sendemailOTP(
                 user_userAuth.email.toString(),
@@ -1175,7 +1174,7 @@ export class AuthController {
               if (otp == user_userbasics.otp_pin) {
                 var createUserbasicDto_ = new CreateUserbasicDto();
                 createUserbasicDto_.otp_pin = null;
-                await this.userbasicsService.update(user_userbasics._id.toString(), createUserbasicDto_);
+                await this.userbasicsService.updateData(user_userbasics.email.toString(), createUserbasicDto_);
 
                 return {
                   response_code: 202,
@@ -1184,32 +1183,54 @@ export class AuthController {
                   },
                 };
               } else {
+                try {
+                  var OTP = await this.utilsService.generateOTP();
 
+                  var createUserbasicDto_ = new CreateUserbasicDto();
+                  createUserbasicDto_.otp_pin = OTP;
+                  await this.userbasicsService.updateData(user_userbasics.email.toString(), createUserbasicDto_);
+
+                  await this.authService.sendemailOTP(
+                    user_userAuth.email.toString(),
+                    OTP.toString(),
+                    'RECOVER_PASS',
+                  );
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, otp not match OTP request has been sent',
+                  );
+                } catch (e) {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, Error ' + e,
+                  );
+                }
               }
-            }else{
-              try {
-                var OTP = await this.utilsService.generateOTP();
+            } else {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, otp is expires',
+              );
+              // try {
+              //   var OTP = await this.utilsService.generateOTP();
 
-                var createUserbasicDto_ = new CreateUserbasicDto();
-                createUserbasicDto_.otp_pin = OTP;
-                await this.userbasicsService.update(user_userbasics._id.toString(), createUserbasicDto_);
+              //   var createUserbasicDto_ = new CreateUserbasicDto();
+              //   createUserbasicDto_.otp_pin = OTP;
+              //   await this.userbasicsService.updateData(user_userbasics.email.toString(), createUserbasicDto_);
 
-                await this.authService.sendemailOTP(
-                  user_userAuth.email.toString(),
-                  OTP.toString(),
-                  'RECOVER_PASS',
-                );
-                return {
-                  response_code: 202,
-                  messages: {
-                    info: ['OTP request has been sent'],
-                  },
-                };
-              } catch (e) {
-                await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed, Error ' + e,
-                );
-              }
+              //   await this.authService.sendemailOTP(
+              //     user_userAuth.email.toString(),
+              //     OTP.toString(),
+              //     'RECOVER_PASS',
+              //   );
+              //   return {
+              //     response_code: 202,
+              //     messages: {
+              //       info: ['OTP request has been sent'],
+              //     },
+              //   };
+              // } catch (e) {
+              //   await this.errorHandler.generateNotAcceptableException(
+              //     'Unabled to proceed, Error ' + e,
+              //   );
+              // }
             }
           } else {
             await this.errorHandler.generateNotAcceptableException(
@@ -1240,4 +1261,10 @@ export class AuthController {
       );
     }
   }
+
+  // @HttpCode(HttpStatus.ACCEPTED)
+  // @Get('api/user/getpin?')
+  // async getPin(@Query('email') email: string) {
+  //   return await this.utilsService.getPin(email);
+  // }
 }
