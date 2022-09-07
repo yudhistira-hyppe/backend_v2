@@ -20,6 +20,8 @@ export class Userbankaccounts {
     statusInquiry: boolean
     @Prop()
     description: string
+    @Prop()
+    active: boolean
 
 
 }

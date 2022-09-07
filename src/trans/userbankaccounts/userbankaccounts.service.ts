@@ -37,7 +37,8 @@ export class UserbankaccountsService {
                     userId: "$userId",
                     noRek: "$noRek",
                     nama: "$nama",
-                    statusInquiry: "$statusInquiry"
+                    statusInquiry: "$statusInquiry",
+                    active: "$active"
                 }
             }, {
                 $project: {
@@ -45,6 +46,7 @@ export class UserbankaccountsService {
                     noRek: "$noRek",
                     nama: "$nama",
                     statusInquiry: "$statusInquiry",
+                    active: "$active",
                     bankId: "$databank._id",
                     bankcode: "$databank.bankcode",
                     bankname: "$databank.bankname",
@@ -53,7 +55,7 @@ export class UserbankaccountsService {
                 }
             }, {
                 $match: {
-                    userId: iduser
+                    userId: iduser, active: true
                 }
             }
 
@@ -89,7 +91,11 @@ export class UserbankaccountsService {
         return data;
     }
 
-
+    async updateactive(id: Types.ObjectId): Promise<Object> {
+        let data = await this.userbankaccountsModel.updateOne({ "_id": id },
+            { $set: { "active": false } });
+        return data;
+    }
     async update(
         id: string,
         createUserbankaccountsDto: CreateUserbankaccountsDto,

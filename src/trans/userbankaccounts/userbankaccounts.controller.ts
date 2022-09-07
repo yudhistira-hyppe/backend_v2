@@ -79,7 +79,7 @@ export class UserbankaccountsController {
                 CreateUserbankaccountsDto.noRek = noRek;
                 CreateUserbankaccountsDto.idBank = idbank;
                 CreateUserbankaccountsDto.statusInquiry = false;
-                CreateUserbankaccountsDto.nama;
+                CreateUserbankaccountsDto.active=true;
 
                 let data = await this.userbankaccountsService.create(CreateUserbankaccountsDto);
                 res.status(HttpStatus.OK).json({
@@ -155,6 +155,28 @@ export class UserbankaccountsController {
         let data = await this.userbankaccountsService.findOneUser(iduser);
 
         return { response_code: 202, data, messages };
+    }
+
+    @Post('delete')
+    @UseGuards(JwtAuthGuard)
+    async delete(@Req() request: Request): Promise<any> {
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var id = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["id"] !== undefined) {
+            id = request_json["id"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        const messages = {
+            "info": ["The delete successful"],
+        };
+
+       var  _id = mongoose.Types.ObjectId(id);
+        let data = await this.userbankaccountsService.updateactive(_id);
+
+        return { response_code: 202, messages };
     }
 
 }

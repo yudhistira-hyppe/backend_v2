@@ -64,10 +64,7 @@ export class UserticketdetailsController {
             CreateUserticketdetailsDto.IdUserticket = idusertiket;
             try {
                 let data = await this.userticketdetailsService.create(CreateUserticketdetailsDto);
-
-                if (status == "close") {
-                    await this.userticketsService.update(idusertiket, status);
-                }
+                await this.userticketsService.update(idusertiket, status);
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "data": data,
