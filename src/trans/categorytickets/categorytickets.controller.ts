@@ -5,7 +5,7 @@ import { Categorytickets } from './schemas/categorytickets.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 
-@Controller('categorytickets')
+@Controller('api/categorytickets')
 export class CategoryticketsController {
 
     constructor(private readonly categoryticketsService: CategoryticketsService) { }
@@ -39,11 +39,11 @@ export class CategoryticketsController {
 
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Get(':id')
-    async findOne(@Param('id') id: string): Promise<Categorytickets> {
-        return this.categoryticketsService.findOne(id);
-    }
+    // @UseGuards(JwtAuthGuard)
+    // @Get(':id')
+    // async findOne(@Param('id') id: string): Promise<Categorytickets> {
+    //     return this.categoryticketsService.findOne(id);
+    // }
     @UseGuards(JwtAuthGuard)
     @Get('all')
     async findAll() {
