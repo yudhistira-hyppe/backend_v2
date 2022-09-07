@@ -5,12 +5,12 @@ import { Model, Types } from 'mongoose';
 import { CreatePostResponse, CreatePostsDto, PostResponseApps } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
-import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
-import { GlobalResponse } from 'src/utils/data/globalResponse';
+import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
+import { GlobalResponse } from '../../utils/data/globalResponse';
 import { Mediavideos, MediavideosDocument } from '../mediavideos/schemas/mediavideos.schema';
-import { UtilsService } from 'src/utils/utils.service';
-import { InterestsService } from 'src/infra/interests/interests.service';
-import { UserauthsService } from 'src/trans/userauths/userauths.service';
+import { UtilsService } from '../../utils/utils.service';
+import { InterestsService } from '../../infra/interests/interests.service';
+import { UserauthsService } from '../../trans/userauths/userauths.service';
 import { MediavideosService } from '../mediavideos/mediavideos.service';
 import { InsightsService } from '../insights/insights.service';
 import { Insights } from '../insights/schemas/insights.schema';
@@ -18,7 +18,7 @@ import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import {createWriteStream, unlink} from 'fs'
 import { QueryDiscusDto } from '../disqus/dto/create-disqus.dto';
-import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
+import { Userbasic } from '../../trans/userbasics/schemas/userbasic.schema';
 import { ContenteventsService } from '../contentevents/contentevents.service';
 import { Contentevents } from '../contentevents/schemas/contentevents.schema';
 
