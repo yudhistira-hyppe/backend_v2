@@ -708,11 +708,9 @@ export class AdsController {
             var arrayUservoucher = [];
             var totalCreditusvoucher = 0;
 
-
+            var userid = mongoose.Types.ObjectId(iduser)
             try {
-                dataUservoucher = await this.uservouchersService.findUser(mongoose.Types.ObjectId(iduser));
-                console.log(dataUservoucher);
-
+                dataUservoucher = await this.uservouchersService.findUser(userid);
 
             } catch (e) {
                 dataUservoucher = null;
