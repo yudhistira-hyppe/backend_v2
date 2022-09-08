@@ -2892,6 +2892,7 @@ export class TransactionsController {
                     "type": databuy[0].type,
                     "jenis": databuy[0].jenis,
                     "time": databuy[0].timestamp,
+                    "noinvoice": noinvoice,
                     "description": databuy[0].description,
                     "like": databuy[0].salelike,
                     "view": databuy[0].saleview,

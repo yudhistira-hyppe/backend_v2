@@ -78,3 +78,9 @@ export class MediavodeosadsDto {
     duration: number;
     rotate: number;
 }
+
+export class CreateAdsResponse {
+    response_code: number;
+    messages: String;
+    data: any;
+}  

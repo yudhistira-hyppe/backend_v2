@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, HttpStatus, Put, Headers, UploadedFiles, UseInterceptors, HttpCode, HttpException, Req, BadRequestException } from '@nestjs/common';
 import { AdsService } from './ads.service';
-import { CreateAdsDto, MediaimageadsDto, MediavodeosadsDto } from './dto/create-ads.dto';
+import { CreateAdsDto, CreateAdsResponse, MediaimageadsDto, MediavodeosadsDto } from './dto/create-ads.dto';
 import { Ads } from './schemas/ads.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UservouchersService } from '../uservouchers/uservouchers.service';
@@ -621,6 +621,7 @@ export class AdsController {
 
 
     }
+
 
 
 
