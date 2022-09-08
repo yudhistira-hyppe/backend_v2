@@ -934,7 +934,6 @@ export class AuthController {
     return await this.authService.signupsosmed(request);
   }
 
-
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/sign/socmed')
   async signsosmed(@Req() request: any) {
@@ -1108,4 +1107,164 @@ export class AuthController {
       );
     }
   }
+
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/user/pin/')
+  async createorupdatdePin(@Body() body_, @Headers() headers) {
+    var user_email_header = null;
+    if (headers['x-auth-user'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, email is required',
+      );
+    }else{
+      user_email_header = headers['x-auth-user'];
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, token email not match',
+      );
+    }
+
+    if (body_.event != undefined){
+      var event = body_.event;
+      const user_userAuth = await this.userauthsService.findOne(
+        user_email_header,
+      );
+      const user_userbasics = await this.userbasicsService.findOne(
+        user_email_header,
+      );
+      if ((await this.utilsService.ceckData(user_userAuth)) && (await this.utilsService.ceckData(user_userbasics))){
+        if (event == "REQUEST") {
+          if (body_.pin != undefined) {
+            var pin = body_.pin;
+            try {
+              var encrypt_pin = await this.utilsService.encrypt(pin.toString());
+              var OTP = await this.utilsService.generateOTP();
+
+              var createUserbasicDto_ = new CreateUserbasicDto();
+              createUserbasicDto_.pin = encrypt_pin;
+              createUserbasicDto_.otp_pin = OTP;
+              await this.userbasicsService.updateData(user_userbasics.email.toString(), createUserbasicDto_);
+
+              await this.authService.sendemailOTP(
+                user_userAuth.email.toString(),
+                OTP.toString(),
+                'RECOVER_PASS',
+              );
+              return {
+                response_code: 202,
+                messages: {
+                  info: ['OTP request has been sent'],
+                },
+              };
+            } catch (e) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, Error ' + e,
+              );
+            }
+          } else {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed, param pin is required',
+            );
+          }
+        } else if (event == "VERIFY_OTP") {
+          if (body_.otp != undefined) {
+            var otp = body_.otp;
+            if (user_userbasics.otp_pin!=undefined){
+              if (otp == user_userbasics.otp_pin) {
+                var createUserbasicDto_ = new CreateUserbasicDto();
+                createUserbasicDto_.otp_pin = null;
+                await this.userbasicsService.updateData(user_userbasics.email.toString(), createUserbasicDto_);
+
+                return {
+                  response_code: 202,
+                  messages: {
+                    info: ['PIN has been created'],
+                  },
+                };
+              } else {
+                try {
+                  var OTP = await this.utilsService.generateOTP();
+
+                  var createUserbasicDto_ = new CreateUserbasicDto();
+                  createUserbasicDto_.otp_pin = OTP;
+                  await this.userbasicsService.updateData(user_userbasics.email.toString(), createUserbasicDto_);
+
+                  await this.authService.sendemailOTP(
+                    user_userAuth.email.toString(),
+                    OTP.toString(),
+                    'RECOVER_PASS',
+                  );
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, otp not match OTP request has been sent',
+                  );
+                } catch (e) {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, Error ' + e,
+                  );
+                }
+              }
+            } else {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, otp is expires',
+              );
+              // try {
+              //   var OTP = await this.utilsService.generateOTP();
+
+              //   var createUserbasicDto_ = new CreateUserbasicDto();
+              //   createUserbasicDto_.otp_pin = OTP;
+              //   await this.userbasicsService.updateData(user_userbasics.email.toString(), createUserbasicDto_);
+
+              //   await this.authService.sendemailOTP(
+              //     user_userAuth.email.toString(),
+              //     OTP.toString(),
+              //     'RECOVER_PASS',
+              //   );
+              //   return {
+              //     response_code: 202,
+              //     messages: {
+              //       info: ['OTP request has been sent'],
+              //     },
+              //   };
+              // } catch (e) {
+              //   await this.errorHandler.generateNotAcceptableException(
+              //     'Unabled to proceed, Error ' + e,
+              //   );
+              // }
+            }
+          } else {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed, otp pin is required',
+            );
+          }
+        } else if (event == "RESEND") {
+          await this.authService.sendemailOTP(
+            user_userAuth.email.toString(),
+            user_userbasics.otp_pin.toString(),
+            'RECOVER_PASS',
+          );
+          return {
+            response_code: 202,
+            messages: {
+              info: ['OTP request has been sent'],
+            },
+          };
+        }
+      }else{
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, user not found',
+        );
+      }
+    } else {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, param event is required',
+      );
+    }
+  }
+
+  // @HttpCode(HttpStatus.ACCEPTED)
+  // @Get('api/user/getpin?')
+  // async getPin(@Query('email') email: string) {
+  //   return await this.utilsService.getPin(email);
+  // }
 }

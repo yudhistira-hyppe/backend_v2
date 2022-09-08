@@ -4,7 +4,7 @@ import { CreateSourceticketsDto } from './dto/create-sourcetickets.dto';
 import { Sourcetickets } from './schemas/sourcetickets.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
-@Controller('sourcetickets')
+@Controller('api/sourcetickets')
 export class SourceticketsController {
     constructor(private readonly sourceticketsService: SourceticketsService) { }
 
@@ -37,11 +37,11 @@ export class SourceticketsController {
 
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Get(':id')
-    async findOne(@Param('id') id: string): Promise<Sourcetickets> {
-        return this.sourceticketsService.findOne(id);
-    }
+    // @UseGuards(JwtAuthGuard)
+    // @Get(':id')
+    // async findOne(@Param('id') id: string): Promise<Sourcetickets> {
+    //     return this.sourceticketsService.findOne(id);
+    // }
     @UseGuards(JwtAuthGuard)
     @Get('all')
     async findAll() {

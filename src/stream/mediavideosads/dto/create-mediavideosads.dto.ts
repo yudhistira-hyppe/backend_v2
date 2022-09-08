@@ -14,5 +14,7 @@ export class CreateMediavodeosadsDto {
     mediaType: string;
     mediaUri: string;
     originalName: string;
+    videoId: string;
+    duration: number;
     rotate: number;
 }

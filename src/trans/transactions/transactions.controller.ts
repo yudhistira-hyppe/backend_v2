@@ -3029,8 +3029,8 @@ export class TransactionsController {
 
                 try {
                     dataWitdraw = await this.withdrawsService.findhistoryWithdrawdetail(idtr, iduser);
-
-                    dataakunbank = await this.userbankaccountsService.findOneUser(iduser);
+                    var idacountbank = dataWitdraw[0].idAccountBank;
+                    dataakunbank = await this.userbankaccountsService.findOneid(idacountbank);
                     var idBnk = dataakunbank._doc.idBank;
                     var databank = null;
                     var namabank = "";

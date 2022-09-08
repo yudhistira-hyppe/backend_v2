@@ -4,7 +4,7 @@ import { CreateLevelticketsDto } from './dto/create-leveltickets.dto';
 import { Leveltickets } from './schemas/leveltickets.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
-@Controller('leveltickets')
+@Controller('api/leveltickets')
 export class LevelticketsController {
     constructor(private readonly levelticketsService: LevelticketsService) { }
 
@@ -37,11 +37,11 @@ export class LevelticketsController {
 
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Get(':id')
-    async findOne(@Param('id') id: string): Promise<Leveltickets> {
-        return this.levelticketsService.findOne(id);
-    }
+    // @UseGuards(JwtAuthGuard)
+    // @Get(':id')
+    // async findOne(@Param('id') id: string): Promise<Leveltickets> {
+    //     return this.levelticketsService.findOne(id);
+    // }
     @UseGuards(JwtAuthGuard)
     @Get('all')
     async findAll() {

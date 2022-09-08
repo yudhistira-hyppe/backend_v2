@@ -34,6 +34,10 @@ export class Mediavideosads {
     originalName: string;
     @Prop()
     rotate: number;
+    @Prop()
+    videoId: string;
+    @Prop()
+    duration: number;
 }
 
 export const MediavideosadsSchema = SchemaFactory.createForClass(Mediavideosads);

@@ -31,6 +31,8 @@ const cheerio = require('cheerio');
 const QRCode = require('qrcode');
 const nodeHtmlToImage = require('node-html-to-image');
 var path = require("path");
+const Cryptr = require('cryptr');
+const cryptr = new Cryptr(process.env.SALT_PIN);
 
 @Injectable()
 export class UtilsService {
@@ -753,5 +755,22 @@ export class UtilsService {
     }
 
     return ProfileDTO_;
+  }
+
+  async getPin(email: string) {
+    var pin = "";
+    var data_user = await this.userbasicsService.findOne(email);
+    if (data_user.otp_pin == undefined) {
+      pin = data_user.pin.toString();
+    }
+    return await this.decrypt(pin);
+  }
+
+  async encrypt(text) {
+    return await cryptr.encrypt(text);;
+  }
+
+  async decrypt(text) {
+    return cryptr.decrypt(text);;
   }
 }

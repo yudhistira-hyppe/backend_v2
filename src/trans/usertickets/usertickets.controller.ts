@@ -261,6 +261,57 @@ export class UserticketsController {
     }
   }
 
+  @Post('api/usertickets/filter')
+  @UseGuards(JwtAuthGuard)
+  async profileuser(@Req() request: Request): Promise<any> {
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var search = null;
+    var data = null;
+    var skip = null;
+    var limit = null;
+    var countrow = null;
+    var startdate = null;
+    var enddate = null;
+    var sumber = null;
+    var level = null;
+    var status = null;
+    var sort = null;
+    var order = null;
+    var kategori = null;
+    var startdate = null;
+    var enddate = null;
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
+    sumber = request_json["sumber"];
+    kategori = request_json["kategori"];
+    level = request_json["level"];
+    search = request_json["search"];
+    status = request_json["status"];
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
+    if (request_json["skip"] !== undefined) {
+      skip = request_json["skip"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["limit"] !== undefined) {
+      limit = request_json["limit"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    data = await this.userticketsService.filterdata(search, sumber, kategori, level, status, startdate, enddate, skip, limit);
+
+    var allrow = await this.userticketsService.totalcount();
+    var totalallrow = allrow[0].countrow;
+    var totalrow = data.length;
+    return { response_code: 202, data, skip, limit, totalrow, totalallrow, messages };
+  }
 
   async romawi(num: number) {
     if (typeof num !== 'number')

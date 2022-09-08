@@ -120,6 +120,10 @@ export class Userbasic {
   };
   @Prop()
   _class: String;
+  @Prop()
+  pin: String;
+  @Prop()
+  otp_pin: String;
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);
