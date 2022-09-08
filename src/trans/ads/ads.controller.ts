@@ -1081,6 +1081,7 @@ export class AdsController {
         var url = body.url;
         var thumbnail = body.thumbnail;
         var filedel = body.filedel;
+        var videoid = body.videoId;
         var data = null;
         try {
             data = await this.adsService.findOne(adsid);
@@ -1091,15 +1092,14 @@ export class AdsController {
             var datamediavid = null;
 
             if (type === "video") {
-                datamediavid = await this.mediavideosadsService.findOne(mediaid.toString());
-                var videoid = datamediavid.videoId;
+                // datamediavid = await this.mediavideosadsService.findOne(mediaid.toString());
 
                 await this.mediavideosadsService.updatemediavidAds(mediaid, videoid, duration, url, thumbnail);
             }
             else if (type === "image") {
-                datamediaads = await this.mediaimageadsService.findOne(mediaid.toString());
-                var imageid = datamediaads.imageId;
-                await this.mediaimageadsService.updatemediaAds(mediaid, imageid, url);
+                // datamediaads = await this.mediaimageadsService.findOne(mediaid.toString());
+                // var imageid = datamediaads.imageId;
+                await this.mediaimageadsService.updatemediaAds(mediaid, videoid, url);
             }
 
             // Delete directory recursively
