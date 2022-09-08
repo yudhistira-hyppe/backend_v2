@@ -12,7 +12,7 @@ import {
   BadRequestException, HttpStatus, Put, Res, HttpCode, Query, UseInterceptors, UploadedFile
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { CreatePostResponse, CreatePostsDto } from './dto/create-posts.dto';
+import { CreatePostResponse, CreatePostsDto, PostResponseApps } from './dto/create-posts.dto';
 import { Posts } from './schemas/posts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
@@ -266,10 +266,9 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts')
   @UseInterceptors(FileInterceptor('postContent'))
-  async getUserPost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+  async getUserPost(@Body() body, @Headers() headers): Promise<PostResponseApps> {
     console.log(body);
-    //return this.PostsService.getUserPost(body, headers);
-    return null;
+    return this.postContentService.getUserPost(body, headers);
   }  
 
   @Post('api/posts/notifyapsara')

@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { CreatePostResponse, CreatePostsDto, PostResponseApps } from './dto/create-posts.dto';
+import { Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, TagPeople } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
@@ -233,8 +233,8 @@ export class PostContentService {
     } else {
       //TODO BUG BUG BUG
       let prevPost = ins.posts;
-      //prevPost = prevPost + 1;
-      //ins.posts = new Long(prevPost);
+      let nextPost = Number(prevPost) + 1;
+      ins.posts = new Long(nextPost);
     }
     this.insightService.create(ins);
 
@@ -501,17 +501,13 @@ export class PostContentService {
     var profile = await this.userService.findOne(auth.email);    
     this.logger.log('getUserPost >>> profile: ' + profile);
 
-    let res = new CreatePostResponse();
+    let res = new PostResponseApps();
     res.response_code = 202;
-    res.messages = "";
     let posts = await this.doGetUserPost(body, headers, profile);
-    posts = await this.loadPostData(posts, body);
-    res.data = posts;
+    let pd = await this.loadPostData(posts, body);
+    res.data = pd;
 
-    let tmp = new PostResponseApps();
-    tmp.response_code = 202;
-
-    return tmp;
+    return res;
   }
 
   private async doGetUserPost(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
@@ -606,9 +602,96 @@ export class PostContentService {
     return res;
   }
 
-  private async loadPostData(posts: Posts[], body: any): Promise<Posts[]> {
+  private async loadPostData(posts: Posts[], body: any): Promise<PostData[]> {
+    let pd = Array<PostData>();
+    if (posts != undefined) {
+      for(let i = 0; i < posts.length; i++) {
+        let ps = posts[i];
+        let pa = new PostData();
+        pa.active = ps.active;
+        pa.allowComments = ps.allowComments;
+        pa.certified = ps.certified;
+        pa.createdAt = String(ps.createdAt);
+        pa.description = String(ps.description);
+        pa.email = String(ps.email);
+        pa.isApsara = false;
+        pa.location = ps.location;
 
-    return posts;
+        if (ps.metadata != undefined) {
+          let md = ps.metadata;
+          let md1 = new Metadata();
+          md1.duration = Number(md.duration);
+          md1.email = String(md.email);
+          md1.midRoll = Number(md.midRoll);
+          md1.postID = String(md.postID);
+          md1.postRoll = Number(md.postRoll);
+          md1.postType = String(md.postType);
+          md1.preRoll = Number(md.preRoll);
+          pa.metadata = md1;
+        }
+
+
+        pa.postID = String(ps.postID);
+        pa.postType = String(ps.postType);
+        pa.saleAmount = ps.saleAmount;
+        pa.saleLike = ps.saleLike;
+        pa.saleView = ps.saleView;
+
+        if (ps.tagPeople != undefined && ps.tagPeople.length > 0) {
+          let atp = ps.tagPeople;
+          let atp1 = Array<TagPeople>();
+  
+          for(let x = 0; x < atp.length; x++) {
+            let tp = atp[i];
+            if (tp?.namespace) {
+              let oid = tp.oid;
+              let ua = await this.userAuthService.findById(oid.toString());
+              if (ua != undefined) {
+                let tp1 = new TagPeople();
+                tp1.email = String(ua.email);
+                tp1.status = 'TOFOLLOW';
+                tp1.username = String(ua.username);
+      
+                atp1.push(tp1);
+              }
+            }
+          }
+  
+          pa.tagPeople = atp1;
+        }
+        
+        if (ps.category != undefined && ps.category.length > 0) {
+          let atp = ps.category;
+          let atp1 = Array<Cat>();
+  
+          for(let x = 0; x < atp.length; x++) {
+            let tp = atp[i];
+            if (tp?.namespace) {
+              let oid = tp.oid;
+              let ua = await this.interestService.findOne(oid.toString());
+              if (ua != undefined) {
+                let tp1 = new Cat();
+                tp1._id = String(ua._id);
+                tp1.interestName = String(ua.interestName);
+                tp1.langIso = String(ua.langIso);
+                tp1.icon = String(ua.icon);
+                tp1.createdAt = String(ua.createdAt);
+                tp1.updatedAt = String(ua.updatedAt);
+      
+                atp1.push(tp1);
+              }
+            }
+          }
+          pa.cats = atp1;
+        }        
+
+        pa.tags = ps.tags;
+        
+        
+        pd.push(pa);
+      }
+    }
+    return pd;
   }
 
   private paging(page: number, row: number) {
