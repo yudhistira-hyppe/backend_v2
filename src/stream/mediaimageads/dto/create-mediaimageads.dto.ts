@@ -12,4 +12,5 @@ export class CreateMediaimageadsDto {
     mediaType: string;
     mediaUri: string;
     originalName: string;
+    imageId: string;
 }

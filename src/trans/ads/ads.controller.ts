@@ -27,6 +27,10 @@ import { v4 as uuidv4 } from 'uuid';
 import { FormDataRequest } from 'nestjs-form-data';
 import { json } from 'stream/consumers';
 import { CreateUservouchersDto } from '../uservouchers/dto/create-uservouchers.dto';
+import console from 'console';
+import { createWriteStream } from 'fs';
+import axios from 'axios';
+import { ConfigService } from '@nestjs/config';
 
 export const multerConfig = {
     dest: process.env.PATH_UPLOAD,
@@ -63,7 +67,7 @@ export class AdsController {
     constructor(private readonly adsService: AdsService,
         private readonly uservouchersService: UservouchersService,
         private readonly userbasicsService: UserbasicsService,
-
+        private readonly configService: ConfigService,
         private readonly mediaimageadsService: MediaimageadsService,
         private readonly mediavideosadsService: MediavideosadsService,
         private readonly adstypesService: AdstypesService,
@@ -117,6 +121,7 @@ export class AdsController {
         }
     }
 
+
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('createads')
@@ -149,7 +154,7 @@ export class AdsController {
         if (CreateAdsDto.liveTypeAds === undefined) {
             throw new BadRequestException("Unabled to proceed");
         }
-        
+
         var startAge = CreateAdsDto.startAge;
         var endAge = CreateAdsDto.endAge;
         var typeadsId = CreateAdsDto.typeAdsID;
@@ -616,6 +621,8 @@ export class AdsController {
 
 
     }
+
+
 
     @Post('listbyuser')
     @UseGuards(JwtAuthGuard)

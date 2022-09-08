@@ -1,14 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateAdsDto } from './dto/create-ads.dto';
 import { Ads, AdsDocument } from './schemas/ads.schema';
-
+import { UtilsService } from '../../utils/utils.service';
 @Injectable()
 export class AdsService {
+    private readonly logger = new Logger(AdsService.name);
     constructor(
         @InjectModel(Ads.name, 'SERVER_TRANS')
-        private readonly adsModel: Model<AdsDocument>,
+        private readonly adsModel: Model<AdsDocument>, private utilService: UtilsService,
     ) { }
 
     async create(CreateAdsDto: CreateAdsDto): Promise<Ads> {
@@ -780,5 +781,8 @@ export class AdsService {
         ]);
         return query;
     }
+
+
+
 
 }

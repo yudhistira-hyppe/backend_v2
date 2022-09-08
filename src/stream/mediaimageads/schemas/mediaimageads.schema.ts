@@ -28,6 +28,8 @@ export class Mediaimageads {
     mediaUri: string;
     @Prop()
     originalName: string;
+    @Prop()
+    imageId: string;
 }
 
 export const MediaimageadsSchema = SchemaFactory.createForClass(Mediaimageads);

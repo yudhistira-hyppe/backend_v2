@@ -208,6 +208,7 @@ export class WithdrawsService {
                     totalamount: "$totalamount",
                     description: "$description",
                     status: "$status",
+                    idAccountBank: "$idAccountBank",
                     user: {
                         $arrayElemAt: [
                             "$userbasics_data",
@@ -228,6 +229,7 @@ export class WithdrawsService {
                     totalamount: "$totalamount",
                     description: "$description",
                     status: "$status",
+                    idAccountBank: "$idAccountBank",
                 }
             },
 

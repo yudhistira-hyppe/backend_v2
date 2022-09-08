@@ -88,6 +88,7 @@ export class CreateWithdraws {
     partnerTrxid: string;
     statusOtp: string;
     totalamount: number;
+    idAccountBank: { oid: String; };
 }
 export class OyDisburseCallbacks {
 

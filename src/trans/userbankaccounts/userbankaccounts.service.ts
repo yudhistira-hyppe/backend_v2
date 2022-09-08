@@ -65,6 +65,10 @@ export class UserbankaccountsService {
     async findOne(id: string): Promise<Userbankaccounts> {
         return this.userbankaccountsModel.findOne({ _id: id }).exec();
     }
+    async findOneid(id: ObjectId): Promise<Userbankaccounts> {
+        return this.userbankaccountsModel.findOne({ _id: id }).exec();
+    }
+
 
     async findnorekkembar(noRek: string): Promise<Userbankaccounts> {
         return this.userbankaccountsModel.findOne({ noRek: noRek }).exec();
