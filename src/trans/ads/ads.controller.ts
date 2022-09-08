@@ -172,7 +172,7 @@ export class AdsController {
     //     var totalCreditTayang = 0;
     //     try {
     //         datatypesAds = await this.adstypesService.findOne(mongoose.Types.ObjectId(typeadsId));
-    //         console.log(datatypesAds);
+
     //         creditValue = datatypesAds._doc.creditValue;
     //         typemedia = datatypesAds._doc.mediaType;
     //     } catch (e) {
@@ -432,7 +432,7 @@ export class AdsController {
 
     //             idmedia = datavideosads._id;
 
-    //             console.log(datavideosads);
+
 
     //         }
 
@@ -457,7 +457,6 @@ export class AdsController {
 
     //         try {
     //             dataUservoucher = await this.uservouchersService.findUser(mongoose.Types.ObjectId(iduser));
-    //             console.log(dataUservoucher);
 
 
     //         } catch (e) {
@@ -478,7 +477,6 @@ export class AdsController {
     //                 var demografisIDs = { "$ref": "cities", "$id": reqdemografisID, "$db": "hyppe_infra_db" };
 
     //                 var reqinterestID = CreateAdsDto.interestID;
-    //                 console.log(reqinterestID);
     //                 var splitreq = reqinterestID.toString();
     //                 var splitreq2 = splitreq.split(',');
 
@@ -489,7 +487,6 @@ export class AdsController {
     //                 }
 
     //                 var userVoucherID = CreateAdsDto.userVoucherID;
-    //                 console.log(userVoucherID);
     //                 var splituserv = userVoucherID.toString();
     //                 var splituserv2 = splituserv.split(',');
     //                 var sumCreditValue = 0;
@@ -672,7 +669,7 @@ export class AdsController {
         var totalCreditTayang = 0;
         try {
             datatypesAds = await this.adstypesService.findOne(mongoose.Types.ObjectId(typeadsId));
-            console.log(datatypesAds);
+
             creditValue = datatypesAds._doc.creditValue;
             typemedia = datatypesAds._doc.mediaType;
         } catch (e) {
@@ -730,7 +727,6 @@ export class AdsController {
                     var demografisIDs = { "$ref": "cities", "$id": reqdemografisID, "$db": "hyppe_infra_db" };
 
                     var reqinterestID = CreateAdsDto.interestID;
-                    console.log(reqinterestID);
                     var splitreq = reqinterestID.toString();
                     var splitreq2 = splitreq.split(',');
 
@@ -741,7 +737,6 @@ export class AdsController {
                     }
 
                     var userVoucherID = CreateAdsDto.userVoucherID;
-                    console.log(userVoucherID);
                     var splituserv = userVoucherID.toString();
                     var splituserv2 = splituserv.split(',');
                     var sumCreditValue = 0;
@@ -1039,7 +1034,7 @@ export class AdsController {
 
                         idmedia = datavideosads._id;
                         await this.adsService.updatemediaAds(objadsid, idmedia);
-                        console.log(datavideosads);
+
 
                     }
                     res.status(HttpStatus.OK).json({
