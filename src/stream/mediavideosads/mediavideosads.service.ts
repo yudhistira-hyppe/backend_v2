@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateMediavodeosadsDto } from './dto/create-mediavideosads.dto';
 import { Mediavideosads, MediavideosadsDocument } from './schemas/mediavideosads.schema';
-import { SeaweedfsService } from '../../stream/seaweedfs/seaweedfs.service'; 
+import { SeaweedfsService } from '../../stream/seaweedfs/seaweedfs.service';
 
 @Injectable()
 export class MediavideosadsService {
@@ -62,5 +62,9 @@ export class MediavideosadsService {
         return data;
     }
 
-
+    async updatemediavidAds(id: Types.ObjectId, videoId: string, duration: number, url: string, thumbnail: string): Promise<Object> {
+        let data = await this.mediavideosadsModel.updateOne({ "_id": id },
+            { $set: { "videoId": videoId, "duration": duration, "fsSourceUri": url, "fsTargetThumbUri": thumbnail } });
+        return data;
+    }
 }

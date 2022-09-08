@@ -71,7 +71,11 @@ export class AdsService {
             { $set: { "totalClick": totalClick } });
         return data;
     }
-
+    async updatemediaAds(id: Types.ObjectId, mediaAds: Types.ObjectId): Promise<Object> {
+        let data = await this.adsModel.updateOne({ "_id": id },
+            { $set: { "mediaAds": mediaAds } });
+        return data;
+    }
     async adsdata(userid: Types.ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
