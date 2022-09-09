@@ -425,7 +425,7 @@ export class AdsUserCompareController {
                                 CreateAccountbalancesDto_.iduser = data_userbasicsService._id;
                                 CreateAccountbalancesDto_.debet = 0;
                                 CreateAccountbalancesDto_.kredit = ads_rewards;
-                                CreateAccountbalancesDto_.type = "topup";
+                                CreateAccountbalancesDto_.type = "rewards";
                                 CreateAccountbalancesDto_.timestamp = current_date;
                                 CreateAccountbalancesDto_.description = "rewards form ads";
                                 await this.accountbalancesService.create(CreateAccountbalancesDto_);
