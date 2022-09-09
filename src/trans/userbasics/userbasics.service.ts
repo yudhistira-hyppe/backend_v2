@@ -125,6 +125,7 @@ export class UserbasicsService {
 
     return data;
   }
+  
   async updateIdVerified(id: ObjectId): Promise<Object> {
     let data = await this.userbasicModel.updateOne({ "_id": id },
       {
@@ -422,6 +423,22 @@ export class UserbasicsService {
 
 
     return query;
+  }
+
+  async findOneupdatebyEmail(email: String) {
+    this.userbasicModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { otp_attemp: 1 } },
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
   }
 }
 
