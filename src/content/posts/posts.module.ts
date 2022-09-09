@@ -24,7 +24,7 @@ import { MediapictsModule } from '../mediapicts/mediapicts.module';
         UtilsModule,
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
         UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
-        MediapictsModule,
+        MediapictsModule,MediadiariesModule,
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [PostsController],

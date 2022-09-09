@@ -25,6 +25,7 @@ import { MediastoriesService } from '../mediastories/mediastories.service';
 import { Mediadiaries } from '../mediadiaries/schemas/mediadiaries.schema';
 import { Mediapicts } from '../mediapicts/schemas/mediapicts.schema';
 import { MediapictsService } from '../mediapicts/mediapicts.service';
+import { MediadiariesService } from '../mediadiaries/mediadiaries.service';
 
 
 @Injectable()
@@ -42,6 +43,7 @@ export class PostContentService {
     private videoService: MediavideosService,
     private storyService: MediastoriesService,
     private picService: MediapictsService,
+    private diaryService: MediadiariesService,
     private insightService: InsightsService,
     private contentEventService: ContenteventsService,
     private readonly configService: ConfigService,
@@ -732,6 +734,16 @@ export class PostContentService {
               } else {
                 pa.mediaEndpoint = '/pict/' + pic.postID;
                 pa.mediaUri = pic.mediaUri;
+              }
+            } else if (ns == 'mediadiaries') {
+              let diary = await this.diaryService.findOne(String(med.oid));
+              if (diary.apsara == true) {
+                vids.push(diary.apsaraId);
+                pa.apsaraId = String(diary.apsaraId);
+              } else {
+                pa.mediaThumbUri = diary.mediaThumb;
+                pa.mediaEndpoint = '/stream/' + diary.mediaUri;
+                pa.mediaThumbEndpoint = '/thumb/' + diary.postID;
               }
             }
           }
