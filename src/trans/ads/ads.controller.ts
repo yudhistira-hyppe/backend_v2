@@ -878,7 +878,7 @@ export class AdsController {
                             ws.write(files.mediaAdsFile[0].buffer);
                             ws.close();
 
-                            let payload = { 'file': nm, 'adsId': adsid };
+                            let payload = { 'file': nm, 'postId': adsid };
                             axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
                             var resp = new CreateAdsResponse();
                             resp.response_code = 202;
@@ -907,7 +907,7 @@ export class AdsController {
                             ws.write(files.mediaVidFile[0].buffer);
                             ws.close();
 
-                            let payload = { 'file': nm, 'adsId': adsid };
+                            let payload = { 'file': nm, 'postId': adsid };
                             axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
                             var resp = new CreateAdsResponse();
                             resp.response_code = 202;
@@ -972,7 +972,7 @@ export class AdsController {
                             ws.write(files.mediaAdsFile[0].buffer);
                             ws.close();
 
-                            let payload = { 'file': nm, 'adsId': adsid };
+                            let payload = { 'file': nm, 'postId': adsid };
                             axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
                             var resp = new CreateAdsResponse();
                             resp.response_code = 202;
@@ -995,7 +995,7 @@ export class AdsController {
                             ws.write(files.mediaVidFile[0].buffer);
                             ws.close();
 
-                            let payload = { 'file': nm, 'adsId': adsid };
+                            let payload = { 'file': nm, 'postId': adsid };
                             axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
                             var resp = new CreateAdsResponse();
                             resp.response_code = 202;
@@ -1068,7 +1068,7 @@ export class AdsController {
     @Post('notifyapsara')
     async notifyApsara(@Body() body, @Res() res, @Headers() headers) {
 
-        var adsid = body.adsId;
+        var adsid = body.postId;
         var duration = body.duration;
         var url = body.url;
         var thumbnail = body.thumbnail;
