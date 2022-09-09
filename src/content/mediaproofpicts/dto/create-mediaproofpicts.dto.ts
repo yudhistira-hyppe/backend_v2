@@ -57,4 +57,10 @@ export class CreateMediaproofpictsDto {
   description: String;
 
   _class: String;
+  userId: {
+    $ref: String;
+    $id: { oid: String };
+    $db: String;
+  };
+  state: String;
 }
