@@ -71,6 +71,10 @@ export class CreateUserbasicDto {
   _class: String;
   pin: String;
   otp_pin: String;
+  otp_request_time: Long;
+  otp_expired_time: Long;
+  otppinVerified: Boolean;
+  otp_attemp:number;
 }
 
 export class SearchUserbasicDto {

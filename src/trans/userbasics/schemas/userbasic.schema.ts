@@ -124,6 +124,14 @@ export class Userbasic {
   pin: String;
   @Prop()
   otp_pin: String;
+  @Prop()
+  otp_request_time: String;
+  @Prop()
+  otp_expired_time: String;
+  @Prop()
+  otppinVerified: Boolean;
+  @Prop()
+  otp_attemp: number;
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);
