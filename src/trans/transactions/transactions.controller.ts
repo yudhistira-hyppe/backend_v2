@@ -2809,6 +2809,8 @@ export class TransactionsController {
                     "emailpenjual": emailpenjual,
                     "postID": databuy[0].postID,
                     "postType": databuy[0].postType,
+                    "totallike": databuy[0].likes,
+                    "totalview": databuy[0].views,
                     "descriptionContent": databuy[0].descriptionContent,
                     "title": databuy[0].title,
                     "mediaBasePath": databuy[0].mediaBasePath,
@@ -2819,7 +2821,8 @@ export class TransactionsController {
                     "mediaThumbUri": mediaThumbUri,
 
                 };
-            } else if (type === "Sell" && jenis === "CONTENT") {
+            }
+            else if (type === "Sell" && jenis === "CONTENT") {
                 databuy = await this.transactionsService.findhistorydetailsell(idtr, type, jenis, iduser);
                 var postid = databuy[0].postID;
 
@@ -2907,6 +2910,8 @@ export class TransactionsController {
                     "emailpembeli": emailpembeli,
                     "postID": databuy[0].postID,
                     "postType": databuy[0].postType,
+                    "totallike": databuy[0].likes,
+                    "totalview": databuy[0].views,
                     "descriptionContent": databuy[0].descriptionContent,
                     "title": databuy[0].title,
                     "mediaBasePath": databuy[0].mediaBasePath,

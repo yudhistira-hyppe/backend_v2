@@ -867,11 +867,11 @@ export class AdsController {
                             // var FormData_ = new FormData();
                             // supportFile_data = files.mediaAdsFile[0];
                             supportFile_mimetype = files.mediaAdsFile[0].mimetype;
-                            // supportFile_filename = files.mediaAdsFile[0].filename;
+                            supportFile_filename = files.mediaAdsFile[0].originalname;
                             // supportFile_etx = supportFile_filename.substring(supportFile_filename.lastIndexOf('.') + 1, supportFile_filename.length);
                             // supportFile_name = supportFile_filename.substring(0, supportFile_filename.lastIndexOf('.'));
 
-                            let fn = files.mediaAdsFile[0].filename;
+                            let fn = files.mediaAdsFile[0].originalname;
                             let ext = fn.split(".");
                             let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + adsid + "." + ext[1];
                             const ws = createWriteStream(nm);
@@ -900,7 +900,7 @@ export class AdsController {
                             // cardVid_name = cardVid_filename.substring(0, cardVid_filename.lastIndexOf('.'));
 
 
-                            let fn = files.mediaVidFile[0].filename;
+                            let fn = files.mediaVidFile[0].originalname;
                             let ext = fn.split(".");
                             let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + adsid + "." + ext[1];
                             const ws = createWriteStream(nm);
@@ -961,11 +961,11 @@ export class AdsController {
                             // var FormData_ = new FormData();
                             // supportFile_data = files.mediaAdsFile[0];
                             supportFile_mimetype = files.mediaAdsFile[0].mimetype;
-                            // supportFile_filename = files.mediaAdsFile[0].filename;
+                            supportFile_filename = files.mediaAdsFile[0].originalname;
                             // supportFile_etx = supportFile_filename.substring(supportFile_filename.lastIndexOf('.') + 1, supportFile_filename.length);
                             // supportFile_name = supportFile_filename.substring(0, supportFile_filename.lastIndexOf('.'));
 
-                            let fn = files.mediaAdsFile[0].filename;
+                            let fn = files.mediaAdsFile[0].originalname;
                             let ext = fn.split(".");
                             let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + adsid + "." + ext[1];
                             const ws = createWriteStream(nm);
@@ -983,12 +983,12 @@ export class AdsController {
                             // var FormData_ = new FormData();
                             // cardVid_data = files.mediaVidFile[0];
                             cardVid_mimetype = files.mediaVidFile[0].mimetype;
-                            // cardVid_filename = files.mediaVidFile[0].filename;
+                            cardVid_filename = files.mediaVidFile[0].originalname;
                             // cardVid_etx = cardVid_filename.substring(cardVid_filename.lastIndexOf('.') + 1, cardVid_filename.length);
                             // cardVid_name = cardVid_filename.substring(0, cardVid_filename.lastIndexOf('.'));
 
 
-                            let fn = files.mediaVidFile[0].filename;
+                            let fn = files.mediaVidFile[0].originalname;
                             let ext = fn.split(".");
                             let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + adsid + "." + ext[1];
                             const ws = createWriteStream(nm);
@@ -1028,7 +1028,6 @@ export class AdsController {
                         // dtmedia.fsTargetThumbUri = '/localrepo/' + mongoose_gen_meida + '/mediaadsfile/thumb/' + supportFile_filename_new;
                         dtmedia.mediaMime = cardVid_mimetype;
                         dtmedia.mediaType = typemedia;
-                        dtmedia.mediaThumb = supportFile_filename_new;
 
                         let datavideosads = await this.mediavideosadsService.create(dtmedia);
 
@@ -1045,7 +1044,7 @@ export class AdsController {
                 } catch (e) {
                     res.status(HttpStatus.BAD_REQUEST).json({
 
-                        "message": messagesEror
+                        "message": e.toString()
                     });
                 }
             } else {
