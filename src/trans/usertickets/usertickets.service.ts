@@ -874,6 +874,71 @@ export class UserticketsService {
       }]);
     return query;
   }
+  async totalcountNew() {
+    const query = await this.userticketsModel.aggregate([
+      {
+        $match: { status: "new" }
+      },
+      {
+        $group: {
+          _id: null,
+          countrow: {
+            $sum: 1
+          }
+        }
+      },
+
+      {
+        $project: {
+          _id: 0
+        }
+      }]);
+    return query;
+  }
+  async totalcountOnProgres() {
+    const query = await this.userticketsModel.aggregate([
+      {
+        $match: { status: "onprogress" }
+      },
+      {
+        $group: {
+          _id: null,
+          countrow: {
+            $sum: 1
+          }
+        }
+      },
+
+      {
+        $project: {
+          _id: 0
+        }
+      }]);
+    return query;
+  }
+
+  async totalcountClose() {
+    const query = await this.userticketsModel.aggregate([
+      {
+        $match: { status: "close" }
+      },
+      {
+        $group: {
+          _id: null,
+          countrow: {
+            $sum: 1
+          }
+        }
+      },
+
+      {
+        $project: {
+          _id: 0
+        }
+      }]);
+    return query;
+  }
+
 
   async filterdata(search: string, sumber: any[], kategori: any[], level: any[], status: any[], startdate: string, enddate: string, skip: number, limit: number) {
     var lenghtkategori = 0;
