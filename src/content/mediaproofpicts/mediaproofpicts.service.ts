@@ -35,12 +35,12 @@ export class MediaproofpictsService {
     return deletedCat;
   }
 
-  async updatebyId(id: string, Mediaproofpicts_: Mediaproofpicts) {
+  async updatebyId(id: string, CreateMediaproofpictsDto_: CreateMediaproofpictsDto) {
     this.MediaproofpictsModel.updateOne(
       {
         _id: id,
       },
-      Mediaproofpicts_,
+      CreateMediaproofpictsDto_,
       function (err, docs) {
         if (err) {
           //console.log(err);

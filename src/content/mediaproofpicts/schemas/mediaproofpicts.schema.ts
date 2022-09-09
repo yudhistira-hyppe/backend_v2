@@ -67,6 +67,15 @@ export class Mediaproofpicts {
   idcardnumber: String;
   @Prop()
   _class: String
+  @Prop({ type: Object })
+  userId: {
+    ref: String;
+    id: {
+      oid: String;
+    };
+    db: String;
+  };
+  @Prop() state: String;
 }
 
 export const MediaproofpictsSchema = SchemaFactory.createForClass(Mediaproofpicts);
