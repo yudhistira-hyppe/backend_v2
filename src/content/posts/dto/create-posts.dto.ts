@@ -49,7 +49,7 @@ export class CreatePostsDto {
   export class CreatePostResponse {
     response_code: number;
     messages: String;
-    data: any;
+    data: PostData[];
   }  
 
   export class Metadata {
@@ -76,6 +76,12 @@ export class Avatar {
     mediaUri: string;
     mediaType: string;
     mediaEndpoint: string;
+}
+
+export class Privacy {
+    isPostPrivate: boolean;
+    isCelebrity: boolean;
+    isPrivate: boolean;
 }
 
 export class TagPeople {
@@ -113,6 +119,9 @@ export class PostData {
     mediaThumbUri?: any;
     location?: any;
     mediaEndpoint: string;
+    privacy?: Privacy;
+    username: string;
+    apsaraId: string;
 }
 
 export class Messages {
@@ -125,3 +134,54 @@ export class PostResponseApps {
     messages: Messages;
     version: string;
 }  
+
+export class VideoList {
+    Status: string;
+    VideoId: string;
+    Size: number;
+    DownloadSwitch: string;
+    Title: string;
+    Duration: number;
+    ModificationTime: Date;
+    CateId: number;
+    CateName: string;
+    PreprocessStatus: string;
+    AppId: string;
+    CreationTime: Date;
+    CoverURL: string;
+    RegionId: string;
+    StorageLocation: string;
+    Snapshots: string[];
+    TemplateGroupId: string;
+}
+
+export class ApsaraVideoResponse {
+    RequestId: string;
+    VideoList: VideoList[];
+}
+
+export class Mezzanine {
+    FileURL: string;
+    OriginalFileName: string;
+    Height: number;
+    Width: number;
+    FileSize: number;
+}
+
+export class ImageInfo {
+    Status: string;
+    Mezzanine: Mezzanine;
+    CreationTime: Date;
+    ImageId: string;
+    Title: string;
+    RegionId: string;
+    StorageLocation: string;
+    URL: string;
+    ImageType: string;
+}
+
+export class ApsaraImageResponse {
+    RequestId: string;
+    NonExistImageIds: any[];
+    ImageInfo: ImageInfo[];
+}
