@@ -35,6 +35,8 @@ export class Withdraws {
     payload: OyDisburseCallbackWithdraw
     @Prop()
     totalamount: number
+    @Prop({ type: mongoose.Schema.Types.ObjectId })
+    idAccountBank: { oid: string }
 
 
 }

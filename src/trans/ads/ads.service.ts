@@ -1,14 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateAdsDto } from './dto/create-ads.dto';
 import { Ads, AdsDocument } from './schemas/ads.schema';
-
+import { UtilsService } from '../../utils/utils.service';
 @Injectable()
 export class AdsService {
+    private readonly logger = new Logger(AdsService.name);
     constructor(
         @InjectModel(Ads.name, 'SERVER_TRANS')
-        private readonly adsModel: Model<AdsDocument>,
+        private readonly adsModel: Model<AdsDocument>, private utilService: UtilsService,
     ) { }
 
     async create(CreateAdsDto: CreateAdsDto): Promise<Ads> {
@@ -70,7 +71,11 @@ export class AdsService {
             { $set: { "totalClick": totalClick } });
         return data;
     }
-
+    async updatemediaAds(id: Types.ObjectId, mediaAds: Types.ObjectId): Promise<Object> {
+        let data = await this.adsModel.updateOne({ "_id": id },
+            { $set: { "mediaAds": mediaAds } });
+        return data;
+    }
     async adsdata(userid: Types.ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -780,5 +785,8 @@ export class AdsService {
         ]);
         return query;
     }
+
+
+
 
 }

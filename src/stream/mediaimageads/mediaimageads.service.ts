@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateMediaimageadsDto } from './dto/create-mediaimageads.dto';
 import { Mediaimageads, MediaimageadsDocument } from './schemas/mediaimageads.schema';
 
@@ -52,5 +52,9 @@ export class MediaimageadsService {
         }
         return data;
     }
-
+    async updatemediaAds(id: Types.ObjectId, imageId: string, url: string): Promise<Object> {
+        let data = await this.mediaimageadsModel.updateOne({ "_id": id },
+            { $set: { "imageId": imageId, "fsSourceUri": url } });
+        return data;
+    }
 }

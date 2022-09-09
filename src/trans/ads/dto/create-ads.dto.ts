@@ -55,6 +55,7 @@ export class MediaimageadsDto {
     mediaType: string;
     mediaUri: string;
     originalName: string;
+    imageId: string;
 }
 
 export class MediavodeosadsDto {
@@ -73,5 +74,13 @@ export class MediavodeosadsDto {
     mediaType: string;
     mediaUri: string;
     originalName: string;
+    videoId: string;
+    duration: number;
     rotate: number;
 }
+
+export class CreateAdsResponse {
+    response_code: number;
+    messages: String;
+    data: any;
+}  

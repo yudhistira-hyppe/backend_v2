@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+// import { Types } from 'aws-sdk/clients/lightsail';
 import { query } from 'express';
 import { ObjectId } from 'mongodb';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateUservouchersDto } from './dto/create-uservouchers.dto';
 import { Uservouchers, UservouchersDocument } from './schemas/uservouchers.schema';
 
@@ -30,8 +31,25 @@ export class UservouchersService {
         return this.uservouchersModel.findOne({ _id: id }).exec();
     }
 
-    async findUser(userID: ObjectId): Promise<Uservouchers[]> {
-        return this.uservouchersModel.find({ userID: userID, isActive: true }).exec();
+    // async findUser(userID: ObjectId): Promise<Uservouchers[]> {
+    //     return this.uservouchersModel.find({ userID: userID, isActive: true }).exec();
+    // }
+
+    async findUser(userID: Types.ObjectId): Promise<Object> {
+
+        const query = this.uservouchersModel.aggregate([
+
+
+
+            {
+                $match: {
+                    "userID": userID,
+                    "isActive": true,
+                }
+            },
+
+        ]);
+        return query;
     }
 
     async findUserVoucher(userID: ObjectId, date: string): Promise<Object> {

@@ -2892,6 +2892,7 @@ export class TransactionsController {
                     "type": databuy[0].type,
                     "jenis": databuy[0].jenis,
                     "time": databuy[0].timestamp,
+                    "noinvoice": noinvoice,
                     "description": databuy[0].description,
                     "like": databuy[0].salelike,
                     "view": databuy[0].saleview,
@@ -3029,8 +3030,8 @@ export class TransactionsController {
 
                 try {
                     dataWitdraw = await this.withdrawsService.findhistoryWithdrawdetail(idtr, iduser);
-
-                    dataakunbank = await this.userbankaccountsService.findOneUser(iduser);
+                    var idacountbank = dataWitdraw[0].idAccountBank;
+                    dataakunbank = await this.userbankaccountsService.findOneid(idacountbank);
                     var idBnk = dataakunbank._doc.idBank;
                     var databank = null;
                     var namabank = "";
