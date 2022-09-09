@@ -935,7 +935,7 @@ export class AdsController {
                             ws.close();
 
                             let payload = { 'file': nm, 'postId': adsid };
-                            axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+                            axios.post(this.configService.get("APSARA_UPLOADER_ADS_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
                             res.status(HttpStatus.OK).json({
                                 response_code: 202,
                                 "message": messages
