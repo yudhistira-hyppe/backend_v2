@@ -861,6 +861,9 @@ export class UserticketsService {
   async totalcount() {
     const query = await this.userticketsModel.aggregate([
       {
+        $match: { active: true }
+      },
+      {
         $group: {
           _id: null,
           countrow: {
@@ -874,6 +877,71 @@ export class UserticketsService {
       }]);
     return query;
   }
+  async totalcountNew() {
+    const query = await this.userticketsModel.aggregate([
+      {
+        $match: { status: "new", active: true }
+      },
+      {
+        $group: {
+          _id: null,
+          countrow: {
+            $sum: 1
+          }
+        }
+      },
+
+      {
+        $project: {
+          _id: 0
+        }
+      }]);
+    return query;
+  }
+  async totalcountOnProgres() {
+    const query = await this.userticketsModel.aggregate([
+      {
+        $match: { status: "onprogress", active: true }
+      },
+      {
+        $group: {
+          _id: null,
+          countrow: {
+            $sum: 1
+          }
+        }
+      },
+
+      {
+        $project: {
+          _id: 0
+        }
+      }]);
+    return query;
+  }
+
+  async totalcountClose() {
+    const query = await this.userticketsModel.aggregate([
+      {
+        $match: { status: "close", active: true }
+      },
+      {
+        $group: {
+          _id: null,
+          countrow: {
+            $sum: 1
+          }
+        }
+      },
+
+      {
+        $project: {
+          _id: 0
+        }
+      }]);
+    return query;
+  }
+
 
   async filterdata(search: string, sumber: any[], kategori: any[], level: any[], status: any[], startdate: string, enddate: string, skip: number, limit: number) {
     var lenghtkategori = 0;

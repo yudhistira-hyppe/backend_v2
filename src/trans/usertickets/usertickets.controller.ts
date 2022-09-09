@@ -313,6 +313,82 @@ export class UserticketsController {
     return { response_code: 202, data, skip, limit, totalrow, totalallrow, messages };
   }
 
+  @Post('api/usertickets/count')
+  @UseGuards(JwtAuthGuard)
+  async countticket(): Promise<any> {
+    var datanew = null;
+    var dataprogres = null;
+    var dataclose = null;
+    var allrow = null;
+    var totalallrow = null;
+    var totalnew = null;
+    var totalprogress = null;
+    var totalclose = null;
+    var prosentaseNew = null;
+    var prosentaseProgress = null;
+    var prosentaseClose = null;
+    const messages = {
+      "info": ["The process successful"],
+    };
+    try {
+      allrow = await this.userticketsService.totalcount();
+      totalallrow = allrow[0].countrow;
+
+    } catch (e) {
+      allrow = null;
+      totalallrow = 0;
+    }
+    try {
+
+      datanew = await this.userticketsService.totalcountNew();
+      totalnew = datanew[0].countrow;
+      prosentaseNew = ((totalnew * 100) / totalallrow).toFixed(1);
+
+    } catch (e) {
+      datanew = null;
+      totalnew = 0;
+      prosentaseNew = 0;
+    }
+
+    try {
+
+      dataprogres = await this.userticketsService.totalcountOnProgres();
+      totalprogress = dataprogres[0].countrow;
+      prosentaseProgress = ((totalprogress * 100) / totalallrow).toFixed(1);
+
+    } catch (e) {
+      dataprogres = null;
+      totalprogress = 0;
+      prosentaseProgress = 0;
+    }
+
+    try {
+
+      dataclose = await this.userticketsService.totalcountClose();
+      totalclose = dataclose[0].countrow;
+      prosentaseClose = ((totalclose * 100) / totalallrow).toFixed(1);
+    } catch (e) {
+
+      dataclose = null
+      totalclose = 0;
+      prosentaseClose = 0;
+    }
+
+    var data = {
+      "all": totalallrow,
+      "new": totalnew,
+      "prosentaseNew": prosentaseNew,
+      "onprogress": totalprogress,
+      "prosentaseProgress": prosentaseProgress,
+      "close": totalclose,
+      "prosentaseClose": prosentaseClose,
+    };
+
+
+
+    return { response_code: 202, data, messages };
+  }
+
   async romawi(num: number) {
     if (typeof num !== 'number')
       return false;

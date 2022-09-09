@@ -844,32 +844,35 @@ export class AdsController {
                     var objadsid = data._id;
 
                     if (typemedia === "image") {
-                        //Var cardPict
-                        let cardVid_data = null;
-                        let cardVid_filename = '';
-                        let cardVid_etx = '';
-                        let cardVid_mimetype = '';
-                        let cardVid_name = '';
-                        let cardVid_filename_new = '';
-                        let cardVid_local_path = '';
-                        let cardVid_seaweedfs_path = '';
-                        //Var supportFile
-                        let supportFile_data = null;
+
                         let supportFile_filename = '';
-                        let supportFile_etx = '';
                         let supportFile_mimetype = '';
-                        let supportFile_name = '';
-                        let supportFile_filename_new = '';
-                        let supportFile_local_path = '';
-                        let supportFile_seaweedfs_path = '';
+
                         if (files.mediaAdsFile != undefined) {
 
-                            // var FormData_ = new FormData();
-                            // supportFile_data = files.mediaAdsFile[0];
+
                             supportFile_mimetype = files.mediaAdsFile[0].mimetype;
                             supportFile_filename = files.mediaAdsFile[0].originalname;
-                            // supportFile_etx = supportFile_filename.substring(supportFile_filename.lastIndexOf('.') + 1, supportFile_filename.length);
-                            // supportFile_name = supportFile_filename.substring(0, supportFile_filename.lastIndexOf('.'));
+
+                            var name = supportFile_mimetype;
+                            var splitname = name.split('/');
+                            var type = splitname[0];
+
+                            var dt = new Date(Date.now());
+                            dt.setHours(dt.getHours() + 7); // timestamp
+                            dt = new Date(dt);
+                            let dtmedia = new MediaimageadsDto();
+                            dtmedia.active = true;
+                            dtmedia.createdAt = dt.toISOString();
+                            dtmedia.updatedAt = dt.toISOString();
+                            dtmedia.originalName = supportFile_filename;
+
+                            dtmedia.mediaMime = supportFile_mimetype;
+                            dtmedia.mediaType = type;
+
+                            let dataimageads = await this.mediaimageadsService.create(dtmedia);
+                            idmedia = dataimageads._id;
+                            await this.adsService.updatemediaAds(objadsid, idmedia);
 
                             let fn = files.mediaAdsFile[0].originalname;
                             let ext = fn.split(".");
@@ -880,10 +883,10 @@ export class AdsController {
 
                             let payload = { 'file': nm, 'postId': adsid };
                             axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
-                            var resp = new CreateAdsResponse();
-                            resp.response_code = 202;
-                            resp.messages = "";
-                            return null;
+                            res.status(HttpStatus.OK).json({
+                                response_code: 202,
+                                "message": messages
+                            });
 
                         } else {
                             await this.errorHandler.generateNotAcceptableException(
@@ -891,102 +894,38 @@ export class AdsController {
                             );
                         }
 
-                        if (files.mediaVidFile != undefined) {
-                            // var FormData_ = new FormData();
-                            // cardVid_data = files.mediaVidFile[0];
-                            cardVid_mimetype = files.mediaVidFile[0].mimetype;
-                            // cardVid_filename = files.mediaVidFile[0].filename;
-                            // cardVid_etx = cardVid_filename.substring(cardVid_filename.lastIndexOf('.') + 1, cardVid_filename.length);
-                            // cardVid_name = cardVid_filename.substring(0, cardVid_filename.lastIndexOf('.'));
-
-
-                            let fn = files.mediaVidFile[0].originalname;
-                            let ext = fn.split(".");
-                            let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + adsid + "." + ext[1];
-                            const ws = createWriteStream(nm);
-                            ws.write(files.mediaVidFile[0].buffer);
-                            ws.close();
-
-                            let payload = { 'file': nm, 'postId': adsid };
-                            axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
-                            var resp = new CreateAdsResponse();
-                            resp.response_code = 202;
-                            resp.messages = "";
-                            return null;
-                        }
-
-                        var name = supportFile_mimetype;
-                        var splitname = name.split('/');
-                        var type = splitname[0];
-
-                        var dt = new Date(Date.now());
-                        dt.setHours(dt.getHours() + 7); // timestamp
-                        dt = new Date(dt);
-                        let dtmedia = new MediaimageadsDto();
-                        dtmedia.active = true;
-                        dtmedia.createdAt = dt.toISOString();
-                        dtmedia.updatedAt = dt.toISOString();
-                        dtmedia.originalName = supportFile_filename;
-
-                        dtmedia.mediaMime = supportFile_mimetype;
-                        dtmedia.mediaType = type;
-
-                        let dataimageads = await this.mediaimageadsService.create(dtmedia);
-                        idmedia = dataimageads._id;
-                        await this.adsService.updatemediaAds(objadsid, idmedia);
 
                     }
 
                     else if (typemedia === "video") {
-                        //Var cardPict
-                        let cardVid_data = null;
+
                         let cardVid_filename = '';
-                        let cardVid_etx = '';
                         let cardVid_mimetype = '';
-                        let cardVid_name = '';
-                        let cardVid_filename_new = '';
-                        let cardVid_local_path = '';
-                        let cardVid_seaweedfs_path = '';
-                        //Var supportFile
-                        let supportFile_data = null;
-                        let supportFile_filename = '';
-                        let supportFile_etx = '';
-                        let supportFile_mimetype = '';
-                        let supportFile_name = '';
-                        let supportFile_filename_new = '';
-                        let supportFile_local_path = '';
-                        let supportFile_seaweedfs_path = '';
 
-                        if (files.mediaAdsFile != undefined) {
-                            // var FormData_ = new FormData();
-                            // supportFile_data = files.mediaAdsFile[0];
-                            supportFile_mimetype = files.mediaAdsFile[0].mimetype;
-                            supportFile_filename = files.mediaAdsFile[0].originalname;
-                            // supportFile_etx = supportFile_filename.substring(supportFile_filename.lastIndexOf('.') + 1, supportFile_filename.length);
-                            // supportFile_name = supportFile_filename.substring(0, supportFile_filename.lastIndexOf('.'));
-
-                            let fn = files.mediaAdsFile[0].originalname;
-                            let ext = fn.split(".");
-                            let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + adsid + "." + ext[1];
-                            const ws = createWriteStream(nm);
-                            ws.write(files.mediaAdsFile[0].buffer);
-                            ws.close();
-
-                            let payload = { 'file': nm, 'postId': adsid };
-                            axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
-                            var resp = new CreateAdsResponse();
-                            resp.response_code = 202;
-                            resp.messages = "";
-                            return null;
-                        }
                         if (files.mediaVidFile != undefined) {
-                            // var FormData_ = new FormData();
-                            // cardVid_data = files.mediaVidFile[0];
+
                             cardVid_mimetype = files.mediaVidFile[0].mimetype;
                             cardVid_filename = files.mediaVidFile[0].originalname;
-                            // cardVid_etx = cardVid_filename.substring(cardVid_filename.lastIndexOf('.') + 1, cardVid_filename.length);
-                            // cardVid_name = cardVid_filename.substring(0, cardVid_filename.lastIndexOf('.'));
 
+                            var name = cardVid_mimetype;
+                            var splitname = name.split('/');
+                            var type = splitname[0];
+
+                            var dt = new Date(Date.now());
+                            dt.setHours(dt.getHours() + 7); // timestamp
+                            dt = new Date(dt);
+                            let dtmedia = new MediavodeosadsDto();
+                            dtmedia.active = true;
+                            dtmedia.createdAt = dt.toISOString();
+                            dtmedia.updatedAt = dt.toISOString();
+                            dtmedia.originalName = cardVid_filename;
+                            dtmedia.mediaMime = cardVid_mimetype;
+                            dtmedia.mediaType = typemedia;
+
+                            let datavideosads = await this.mediavideosadsService.create(dtmedia);
+
+                            idmedia = datavideosads._id;
+                            await this.adsService.updatemediaAds(objadsid, idmedia);
 
                             let fn = files.mediaVidFile[0].originalname;
                             let ext = fn.split(".");
@@ -996,11 +935,12 @@ export class AdsController {
                             ws.close();
 
                             let payload = { 'file': nm, 'postId': adsid };
-                            axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
-                            var resp = new CreateAdsResponse();
-                            resp.response_code = 202;
-                            resp.messages = "";
-                            return null;
+                            axios.post(this.configService.get("APSARA_UPLOADER_ADS_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+                            res.status(HttpStatus.OK).json({
+                                response_code: 202,
+                                "message": messages
+                            });
+
                         }
 
                         else {
@@ -1008,39 +948,9 @@ export class AdsController {
                                 'Unabled to proceed mediaAdsFile is required',
                             );
                         }
-                        var name = cardVid_mimetype;
-                        var splitname = name.split('/');
-                        var type = splitname[0];
-
-                        var dt = new Date(Date.now());
-                        dt.setHours(dt.getHours() + 7); // timestamp
-                        dt = new Date(dt);
-                        let dtmedia = new MediavodeosadsDto();
-                        dtmedia.active = true;
-                        dtmedia.createdAt = dt.toISOString();
-                        dtmedia.updatedAt = dt.toISOString();
-                        // dtmedia.mediaBasePath = mongoose_gen_meida + '/mediaadsfile/vid/';
-                        // dtmedia.mediaUri = cardVid_filename_new;
-                        dtmedia.originalName = cardVid_filename;
-                        // dtmedia.fsSourceUri = '/localrepo/' + mongoose_gen_meida + '/mediaadsfile/vid/' + cardVid_filename_new;
-                        // dtmedia.fsSourceName = cardVid_filename_new;
-                        // dtmedia.fsTargetUri = '/localrepo/' + mongoose_gen_meida + '/mediaadsfile/vid/' + cardVid_filename_new;
-                        // dtmedia.fsTargetThumbUri = '/localrepo/' + mongoose_gen_meida + '/mediaadsfile/thumb/' + supportFile_filename_new;
-                        dtmedia.mediaMime = cardVid_mimetype;
-                        dtmedia.mediaType = typemedia;
-
-                        let datavideosads = await this.mediavideosadsService.create(dtmedia);
-
-                        idmedia = datavideosads._id;
-                        await this.adsService.updatemediaAds(objadsid, idmedia);
-
 
                     }
-                    res.status(HttpStatus.OK).json({
-                        response_code: 202,
-                        "data": data,
-                        "message": messages
-                    });
+
                 } catch (e) {
                     res.status(HttpStatus.BAD_REQUEST).json({
 
