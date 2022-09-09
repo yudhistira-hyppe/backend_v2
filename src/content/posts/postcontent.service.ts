@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { CreatePostResponse, CreatePostsDto, PostResponseApps } from './dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -233,8 +233,8 @@ export class PostContentService {
     } else {
       //TODO BUG BUG BUG
       let prevPost = ins.posts;
-      //prevPost = prevPost + 1;
-      //ins.posts = new Long(prevPost);
+      let nextPost = Number(prevPost) + 1;
+      ins.posts = new Long(nextPost);
     }
     this.insightService.create(ins);
 
@@ -501,17 +501,13 @@ export class PostContentService {
     var profile = await this.userService.findOne(auth.email);    
     this.logger.log('getUserPost >>> profile: ' + profile);
 
-    let res = new CreatePostResponse();
+    let res = new PostResponseApps();
     res.response_code = 202;
-    res.messages = "";
     let posts = await this.doGetUserPost(body, headers, profile);
-    posts = await this.loadPostData(posts, body);
-    res.data = posts;
+    let pd = await this.loadPostData(posts, body);
+    res.data = pd;
 
-    let tmp = new PostResponseApps();
-    tmp.response_code = 202;
-
-    return tmp;
+    return res;
   }
 
   private async doGetUserPost(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
@@ -536,7 +532,6 @@ export class PostContentService {
       } else if (body.visibility == 'FRIEND') {
         let friend = [];
         let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
-        console.log(check);
         if (check != undefined) {
           for(let i = 0; i < check.length; i++) {
             var cex = check[i];
@@ -581,7 +576,7 @@ export class PostContentService {
       query.where('postType').ne('advertise');
     }
 
-    if (body.withActive != undefined && body.withActive == true) {
+    if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
       query.where('active', true);
     }
 
@@ -595,21 +590,239 @@ export class PostContentService {
     }
     let skip = this.paging(page, row);
     query.skip(skip);
-    query.limit(row);    
-
-    console.log(skip + " - " + row + " - " + page);
-        
+    query.limit(row);         
     query.sort({'postType': 1, 'createdAt': -1});
-
-
     let res = await query.exec();
     return res;
   }
 
-  private async loadPostData(posts: Posts[], body: any): Promise<Posts[]> {
+  private async loadPostData(posts: Posts[], body: any): Promise<PostData[]> {
+    let pd = Array<PostData>();
+    if (posts != undefined) {
 
-    return posts;
+      let vids:String[] = [];
+      let pics:String[] = [];
+
+      for(let i = 0; i < posts.length; i++) {
+        let ps = posts[i];
+        let pa = new PostData();
+        pa.active = ps.active;
+        pa.allowComments = ps.allowComments;
+        pa.certified = ps.certified;
+        pa.createdAt = String(ps.createdAt);
+        pa.updatedAt = String(ps.updatedAt);
+        pa.description = String(ps.description);
+        pa.email = String(ps.email);
+
+        if (ps.userProfile != undefined) {
+            if (ps.userProfile?.namespace) {
+              let oid = String(ps.userProfile.oid);
+              let ua = await this.userService.findbyid(oid.toString());
+              if (ua != undefined) {
+                let ub = await this.userAuthService.findOneByEmail(ua.email);
+                if (ub != undefined) {
+                  pa.username = ub.username;
+                }
+
+              }
+            }
+        }
+
+        pa.isApsara = false;
+        pa.location = ps.location;
+        pa.visibility = String(ps.visibility);
+
+        if (ps.metadata != undefined) {
+          let md = ps.metadata;
+          let md1 = new Metadata();
+          md1.duration = Number(md.duration);
+          md1.email = String(md.email);
+          md1.midRoll = Number(md.midRoll);
+          md1.postID = String(md.postID);
+          md1.postRoll = Number(md.postRoll);
+          md1.postType = String(md.postType);
+          md1.preRoll = Number(md.preRoll);
+          pa.metadata = md1;
+        }
+
+
+        pa.postID = String(ps.postID);
+        pa.postType = String(ps.postType);
+        pa.saleAmount = ps.saleAmount;
+        pa.saleLike = ps.saleLike;
+        pa.saleView = ps.saleView;
+
+        if (ps.tagPeople != undefined && ps.tagPeople.length > 0) {
+          let atp = ps.tagPeople;
+          let atp1 = Array<TagPeople>();
+  
+          for(let x = 0; x < atp.length; x++) {
+            let tp = atp[i];
+            if (tp?.namespace) {
+              let oid = tp.oid;
+              let ua = await this.userAuthService.findById(oid.toString());
+              if (ua != undefined) {
+                let tp1 = new TagPeople();
+                tp1.email = String(ua.email);
+                tp1.status = 'TOFOLLOW';
+                tp1.username = String(ua.username);
+      
+                atp1.push(tp1);
+              }
+            }
+          }
+  
+          pa.tagPeople = atp1;
+        }
+        
+        if (ps.category != undefined && ps.category.length > 0) {
+          let atp = ps.category;
+          let atp1 = Array<Cat>();
+  
+          for(let x = 0; x < atp.length; x++) {
+            let tp = atp[i];
+            if (tp?.namespace) {
+              let oid = tp.oid;
+              let ua = await this.interestService.findOne(oid.toString());
+              if (ua != undefined) {
+                let tp1 = new Cat();
+                tp1._id = String(ua._id);
+                tp1.interestName = String(ua.interestName);
+                tp1.langIso = String(ua.langIso);
+                tp1.icon = String(ua.icon);
+                tp1.createdAt = String(ua.createdAt);
+                tp1.updatedAt = String(ua.updatedAt);
+      
+                atp1.push(tp1);
+              }
+            }
+          }
+          pa.cats = atp1;
+        }        
+
+        let privacy = new Privacy();
+        privacy.isPostPrivate = false;
+        privacy.isPrivate = false;
+        privacy.isCelebrity = false;
+        pa.privacy = privacy;
+
+        pa.tags = ps.tags;
+
+        //MEDIA
+        let meds = ps.contentMedias;
+        if (meds != undefined) {
+          for(let i = 0; i < meds.length; i++) {
+            let med = meds[i];
+            let ns = med.namespace;
+            if (ns == 'mediavideos') {
+              let video = await this.videoService.findOne(String(med.oid));
+              if (video.apsara == true) {
+                vids.push(video.apsaraId);
+                pa.apsaraId = String(video.apsaraId);
+              } else {
+                pa.mediaThumbUri = video.mediaThumb;
+                pa.mediaEndpoint = '/stream/' + video.mediaUri;
+                pa.mediaThumbEndpoint = '/thumb/' + video.postID;
+              }
+            } else if (ns == 'mediapicts') {
+              let pic = await this.picService.findOne(String(med.oid));
+              if (pic.apsara == true) {
+                pics.push(pic.apsaraId);
+                pa.apsaraId = String(pic.apsaraId);
+              } else {
+                pa.mediaEndpoint = '/pict/' + pic.postID;
+                pa.mediaUri = pic.mediaUri;
+              }
+            }
+          }
+        }
+        pd.push(pa);
+      }
+
+      if (vids.length > 0) {
+        let res = await this.getVideoApsara(vids);
+        if (res != undefined && res.VideoList != undefined && res.VideoList.length > 0) {
+          for(let i = 0; i < res.VideoList.length; i++) {
+            let vi = res.VideoList[i];
+            for(let j = 0; j < pd.length; j++) {
+              let ps = pd[j];
+              if (ps.apsaraId == vi.VideoId) {
+                ps.mediaThumbEndpoint = vi.CoverURL;
+              }
+            }
+          }
+        }
+      }
+
+      if (pics.length > 0) {
+        let res = await this.getImageApsara(pics);
+        if (res != undefined && res.ImageInfo != undefined && res.ImageInfo.length > 0) {
+          for(let i = 0; i < res.ImageInfo.length; i++) {
+            let vi = res.ImageInfo[i];
+            for(let j = 0; j < pd.length; j++) {
+              let ps = pd[j];
+              if (ps.apsaraId == vi.ImageId) {
+                ps.mediaThumbEndpoint = vi.URL;
+              }
+            }
+          }
+        }
+      }
+    }
+    return pd;
   }
+
+  private async getVideoApsara(ids: String[]): Promise<ApsaraVideoResponse> {
+    let vids = ids.join(',');
+    var RPCClient = require('@alicloud/pop-core').RPCClient;
+
+    let client = new RPCClient({
+      accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+      accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+      endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+      apiVersion: '2017-03-21'
+    });
+
+    let params = {
+      "RegionId": this.configService.get("APSARA_REGION_ID"),
+      "VideoIds" : vids
+    }
+    
+    let requestOption = {
+      method: 'POST'
+    };    
+
+    let dto = new ApsaraVideoResponse();
+    let result = await client.request('GetVideoInfos', params, requestOption);
+    let tx: ApsaraVideoResponse = Object.assign(dto,JSON.parse(JSON.stringify(result)));
+    return tx;
+  }
+
+  private async getImageApsara(ids: String[]): Promise<ApsaraImageResponse> {
+    let vids = ids.join(',');
+    var RPCClient = require('@alicloud/pop-core').RPCClient;
+
+    let client = new RPCClient({
+      accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+      accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+      endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+      apiVersion: '2017-03-21'
+    });
+
+    let params = {
+      "RegionId": this.configService.get("APSARA_REGION_ID"),
+      "ImageIds" : vids
+    }
+    
+    let requestOption = {
+      method: 'POST'
+    };    
+
+    let dto = new ApsaraImageResponse();
+    let result = await client.request('GetImageInfos', params, requestOption);
+    let tx: ApsaraImageResponse = Object.assign(dto,JSON.parse(JSON.stringify(result)));
+    return tx;
+  }  
 
   private paging(page: number, row: number) {
     if (page == 0 || page == 1) {
