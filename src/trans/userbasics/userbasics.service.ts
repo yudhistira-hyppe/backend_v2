@@ -5,6 +5,7 @@ import { CreateUserbasicDto } from './dto/create-userbasic.dto';
 import { Userbasic, UserbasicDocument } from './schemas/userbasic.schema';
 import { LanguagesService } from '../../infra/languages/languages.service';
 import { InterestsRepoService } from '../../infra/interests_repo/interests_repo.service';
+import { MediaproofpictsService } from '../../content/mediaproofpicts/mediaproofpicts.service';
 @Injectable()
 export class UserbasicsService {
   constructor(
@@ -12,6 +13,7 @@ export class UserbasicsService {
     private readonly userbasicModel: Model<UserbasicDocument>,
     private readonly languagesService: LanguagesService,
     private readonly interestsRepoService: InterestsRepoService,
+    private readonly mediaproofpictsService: MediaproofpictsService,
   ) { }
 
   async create(CreateUserbasicDto: CreateUserbasicDto): Promise<Userbasic> {
@@ -125,6 +127,7 @@ export class UserbasicsService {
 
     return data;
   }
+  
   async updateIdVerified(id: ObjectId): Promise<Object> {
     let data = await this.userbasicModel.updateOne({ "_id": id },
       {
@@ -421,6 +424,95 @@ export class UserbasicsService {
     ]);
 
 
+    return query;
+  }
+
+  async findOneupdatebyEmail(email: String) {
+    this.userbasicModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { otp_attemp: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async kycList(startDate: String, endDate: String, search: String, skip: number ,limit: number): Promise<object> {
+    var date_range_match = {};
+    var startDate_format = null;
+    var endDate_format = null;
+    if (startDate != null) {
+      startDate_format = new Date(startDate.toString());
+    }
+    if (endDate != null) {
+      endDate_format = new Date(endDate.toString());
+    }
+    if (startDate_format != null && endDate_format!=null){
+      date_range_match = {
+        'createdAt': {
+          $gte: startDate_format,
+          $lt: endDate_format
+        }};
+    }
+    const mediaproofpictsService = await this.mediaproofpictsService.findmediaproofpicts();
+    const query = await this.userbasicModel.aggregate([
+      {
+        $match: {
+          proofPict: { $exists: true }
+        }
+      },
+      {
+        $addFields: {
+          id_mediaproofpicts: '$proofPict.$id',
+        },
+      },
+      {
+        $lookup: {
+          from: "mediaproofpicts2",
+          localField: "id_mediaproofpicts",
+          foreignField: "_id",
+          as: "mediaproofpicts"
+        }
+      },
+      {
+        $match: {
+          $and: [
+            {"mediaproofpicts.status": { $exists: true }},
+            {"mediaproofpicts.status": { "$ne": "" }},
+            {
+              $or: [
+                { "fullName": { $regex: search } },
+                { "email": { $regex: search } },
+              ]
+            },
+            date_range_match
+          ]
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          fullName: '$fullName',
+          email: '$email',
+          mediaproofpicts_: { $arrayElemAt: ['$mediaproofpicts', 0] }
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          fullName: '$fullName',
+          email: '$email',
+          dateOfSubmission: '$mediaproofpicts_.createdAt',
+          status: '$mediaproofpicts_.status',
+        },
+      },
+    ]);
     return query;
   }
 }

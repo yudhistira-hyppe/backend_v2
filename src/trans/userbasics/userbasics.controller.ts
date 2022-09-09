@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Req, Request, Query, Headers } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Req, Request, Query, Headers, HttpCode } from '@nestjs/common';
 import { UserbasicsService } from './userbasics.service';
 import { CreateUserbasicDto } from './dto/create-userbasic.dto';
 import { Userbasic } from './schemas/userbasic.schema';
@@ -144,5 +144,38 @@ export class UserbasicsController {
       });
     }
 
+  }
+
+  //@UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Get('kyc/list')
+  async getkyc(
+    @Query('startDate') startDate: string,
+    @Query('endDate') endDate: string,
+    @Query('search') search: string, 
+    @Query('skip') skip: number,
+    @Query('limit') limit: number,
+    @Headers('x-auth-token') auth: string) {
+    var startDate_ = null;
+    var endDate_ = null;
+    var search_ = "";
+    var skip_ = null;
+    var limit_ = null;
+    if (startDate != undefined && startDate != ""){
+      startDate_ = startDate;
+    }
+    if (endDate != undefined && endDate != "") {
+      endDate_ = endDate;
+    }
+    if (search != undefined && search != "") {
+      search_ = search;
+    }
+    if (skip != undefined) {
+      skip_ = skip;
+    }
+    if (limit != undefined) {
+      limit_ = limit;
+    }
+    return await this.userbasicsService.kycList(startDate_, endDate_, search_, skip_, limit_);
   }
 }

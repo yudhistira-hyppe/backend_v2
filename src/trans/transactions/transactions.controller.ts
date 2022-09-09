@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, BadRequestException, HttpStatus, Put, Headers, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, BadRequestException, HttpStatus, Put, Headers, Req, NotAcceptableException } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionsDto, CreateWithdraws, OyAccountInquirys, OyDisburseCallbacks, OyDisbursements, OyDisbursementStatus2, Uservoucher, VaCallback } from './dto/create-transactions.dto';
 import { Transactions } from './schemas/transactions.schema';
@@ -19,6 +19,8 @@ import { GetusercontentsService } from '../getusercontents/getusercontents.servi
 import { UservouchersService } from '../uservouchers/uservouchers.service';
 import { VouchersService } from '../vouchers/vouchers.service';
 import { post } from 'jquery';
+import { UtilsService } from '../../utils/utils.service';
+import { ErrorHandler } from '../../utils/error.handler';
 @Controller()
 export class TransactionsController {
     constructor(private readonly transactionsService: TransactionsService,
@@ -35,7 +37,9 @@ export class TransactionsController {
         private readonly withdrawsService: WithdrawsService,
         private readonly getusercontentsService: GetusercontentsService,
         private readonly uservouchersService: UservouchersService,
-        private readonly vouchersService: VouchersService,
+        private readonly vouchersService: VouchersService, 
+        private readonly utilsService: UtilsService,
+        private readonly errorHandler: ErrorHandler,
 
     ) { }
     @UseGuards(JwtAuthGuard)
@@ -880,6 +884,38 @@ export class TransactionsController {
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/withdraw')
     async createwithdraw(@Res() res, @Headers('x-auth-token') auth: string, @Body() OyDisbursements: OyDisbursements, @Request() request) {
+        if (OyDisbursements.pin!=undefined){
+            if (OyDisbursements.email!= undefined) {
+                var ubasic = await this.userbasicsService.findOne(OyDisbursements.email);
+                if (await this.utilsService.ceckData(ubasic)){
+                    if (ubasic.pin!=undefined){
+                        var pin_descript = await this.utilsService.decrypt(ubasic.pin);
+                        if (pin_descript != OyDisbursements.pin) {
+                            await this.errorHandler.generateNotAcceptableException(
+                                "Unabled to proceed, Pin not Match",
+                            );
+                        }
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            "Unabled to proceed, Create a pin first",
+                        );
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        "Unabled to proceed, User not found",
+                    );
+                }
+            } else {
+                await this.errorHandler.generateNotAcceptableException(
+                    "Unabled to proceed, Param Email is required",
+                );
+            }
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                "Unabled to proceed, Param pin is required",
+            );
+        }
+
         const messages = {
             "info": ["The create successful"],
         };
@@ -2809,6 +2845,8 @@ export class TransactionsController {
                     "emailpenjual": emailpenjual,
                     "postID": databuy[0].postID,
                     "postType": databuy[0].postType,
+                    "totallike": databuy[0].likes,
+                    "totalview": databuy[0].views,
                     "descriptionContent": databuy[0].descriptionContent,
                     "title": databuy[0].title,
                     "mediaBasePath": databuy[0].mediaBasePath,
@@ -2819,7 +2857,8 @@ export class TransactionsController {
                     "mediaThumbUri": mediaThumbUri,
 
                 };
-            } else if (type === "Sell" && jenis === "CONTENT") {
+            }
+            else if (type === "Sell" && jenis === "CONTENT") {
                 databuy = await this.transactionsService.findhistorydetailsell(idtr, type, jenis, iduser);
                 var postid = databuy[0].postID;
 
@@ -2892,6 +2931,7 @@ export class TransactionsController {
                     "type": databuy[0].type,
                     "jenis": databuy[0].jenis,
                     "time": databuy[0].timestamp,
+                    "noinvoice": noinvoice,
                     "description": databuy[0].description,
                     "like": databuy[0].salelike,
                     "view": databuy[0].saleview,
@@ -2906,6 +2946,8 @@ export class TransactionsController {
                     "emailpembeli": emailpembeli,
                     "postID": databuy[0].postID,
                     "postType": databuy[0].postType,
+                    "totallike": databuy[0].likes,
+                    "totalview": databuy[0].views,
                     "descriptionContent": databuy[0].descriptionContent,
                     "title": databuy[0].title,
                     "mediaBasePath": databuy[0].mediaBasePath,
