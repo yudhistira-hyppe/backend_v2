@@ -861,6 +861,9 @@ export class UserticketsService {
   async totalcount() {
     const query = await this.userticketsModel.aggregate([
       {
+        $match: { active: true }
+      },
+      {
         $group: {
           _id: null,
           countrow: {
@@ -877,7 +880,7 @@ export class UserticketsService {
   async totalcountNew() {
     const query = await this.userticketsModel.aggregate([
       {
-        $match: { status: "new" }
+        $match: { status: "new", active: true }
       },
       {
         $group: {
@@ -898,7 +901,7 @@ export class UserticketsService {
   async totalcountOnProgres() {
     const query = await this.userticketsModel.aggregate([
       {
-        $match: { status: "onprogress" }
+        $match: { status: "onprogress", active: true }
       },
       {
         $group: {
@@ -920,7 +923,7 @@ export class UserticketsService {
   async totalcountClose() {
     const query = await this.userticketsModel.aggregate([
       {
-        $match: { status: "close" }
+        $match: { status: "close", active: true }
       },
       {
         $group: {
