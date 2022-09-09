@@ -433,9 +433,9 @@ export class UserbasicsService {
       { $inc: { otp_attemp: 1 } },
       function (err, docs) {
         if (err) {
-          //console.log(err);
+          console.log(err);
         } else {
-          //console.log(docs);
+          console.log(docs);
         }
       },
     );
