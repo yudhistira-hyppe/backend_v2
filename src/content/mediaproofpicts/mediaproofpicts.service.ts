@@ -51,5 +51,26 @@ export class MediaproofpictsService {
     );
   }
 
+  async findmediaproofpicts() {
+    const query = await this.MediaproofpictsModel.aggregate([
+
+      {
+        $lookup: {
+          from: 'mediaproofpicts',
+          localField: 'mediaproofpicts.$id',
+          foreignField: '_id',
+          as: 'mediaproofpicts2',
+        },
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'mediaproofpicts2'
+        }
+      },
+
+    ]);
+    return query;
+  }
+
 
 }

@@ -7,9 +7,11 @@ import { Userbasic, UserbasicSchema } from './schemas/userbasic.schema';
 import { LanguagesModule } from '../../infra/languages/languages.module';
 import { CountriesModule } from '../../infra/countries/countries.module';
 import { InterestsRepoModule } from '../../infra/interests_repo/interests_repo.module';
+import { MediaproofpictsModule } from '../../content/mediaproofpicts/mediaproofpicts.module';
 @Module({
 
     imports: [
+        MediaproofpictsModule,
         InterestsRepoModule,
         LanguagesModule,
         CountriesModule,

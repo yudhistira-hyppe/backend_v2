@@ -70,6 +70,7 @@ export class OyDisbursements {
     note: string;
     partner_trx_id: string;
     email: string;
+    pin: number;
 }
 export class OyDisbursementStatus2 {
     partner_trx_id: string;
