@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, TagPeople } from './dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -532,7 +532,6 @@ export class PostContentService {
       } else if (body.visibility == 'FRIEND') {
         let friend = [];
         let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
-        console.log(check);
         if (check != undefined) {
           for(let i = 0; i < check.length; i++) {
             var cex = check[i];
@@ -577,7 +576,7 @@ export class PostContentService {
       query.where('postType').ne('advertise');
     }
 
-    if (body.withActive != undefined && body.withActive == true) {
+    if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
       query.where('active', true);
     }
 
@@ -591,13 +590,8 @@ export class PostContentService {
     }
     let skip = this.paging(page, row);
     query.skip(skip);
-    query.limit(row);    
-
-    console.log(skip + " - " + row + " - " + page);
-        
+    query.limit(row);         
     query.sort({'postType': 1, 'createdAt': -1});
-
-
     let res = await query.exec();
     return res;
   }
@@ -605,6 +599,10 @@ export class PostContentService {
   private async loadPostData(posts: Posts[], body: any): Promise<PostData[]> {
     let pd = Array<PostData>();
     if (posts != undefined) {
+
+      let vids:String[] = [];
+      let pics:String[] = [];
+
       for(let i = 0; i < posts.length; i++) {
         let ps = posts[i];
         let pa = new PostData();
@@ -612,10 +610,27 @@ export class PostContentService {
         pa.allowComments = ps.allowComments;
         pa.certified = ps.certified;
         pa.createdAt = String(ps.createdAt);
+        pa.updatedAt = String(ps.updatedAt);
         pa.description = String(ps.description);
         pa.email = String(ps.email);
+
+        if (ps.userProfile != undefined) {
+            if (ps.userProfile?.namespace) {
+              let oid = String(ps.userProfile.oid);
+              let ua = await this.userService.findbyid(oid.toString());
+              if (ua != undefined) {
+                let ub = await this.userAuthService.findOneByEmail(ua.email);
+                if (ub != undefined) {
+                  pa.username = ub.username;
+                }
+
+              }
+            }
+        }
+
         pa.isApsara = false;
         pa.location = ps.location;
+        pa.visibility = String(ps.visibility);
 
         if (ps.metadata != undefined) {
           let md = ps.metadata;
@@ -685,14 +700,129 @@ export class PostContentService {
           pa.cats = atp1;
         }        
 
+        let privacy = new Privacy();
+        privacy.isPostPrivate = false;
+        privacy.isPrivate = false;
+        privacy.isCelebrity = false;
+        pa.privacy = privacy;
+
         pa.tags = ps.tags;
-        
-        
+
+        //MEDIA
+        let meds = ps.contentMedias;
+        if (meds != undefined) {
+          for(let i = 0; i < meds.length; i++) {
+            let med = meds[i];
+            let ns = med.namespace;
+            if (ns == 'mediavideos') {
+              let video = await this.videoService.findOne(String(med.oid));
+              if (video.apsara == true) {
+                vids.push(video.apsaraId);
+                pa.apsaraId = String(video.apsaraId);
+              } else {
+                pa.mediaThumbUri = video.mediaThumb;
+                pa.mediaEndpoint = '/stream/' + video.mediaUri;
+                pa.mediaThumbEndpoint = '/thumb/' + video.postID;
+              }
+            } else if (ns == 'mediapicts') {
+              let pic = await this.picService.findOne(String(med.oid));
+              if (pic.apsara == true) {
+                pics.push(pic.apsaraId);
+                pa.apsaraId = String(pic.apsaraId);
+              } else {
+                pa.mediaEndpoint = '/pict/' + pic.postID;
+                pa.mediaUri = pic.mediaUri;
+              }
+            }
+          }
+        }
         pd.push(pa);
+      }
+
+      if (vids.length > 0) {
+        let res = await this.getVideoApsara(vids);
+        if (res != undefined && res.VideoList != undefined && res.VideoList.length > 0) {
+          for(let i = 0; i < res.VideoList.length; i++) {
+            let vi = res.VideoList[i];
+            for(let j = 0; j < pd.length; j++) {
+              let ps = pd[j];
+              if (ps.apsaraId == vi.VideoId) {
+                ps.mediaThumbEndpoint = vi.CoverURL;
+              }
+            }
+          }
+        }
+      }
+
+      if (pics.length > 0) {
+        let res = await this.getImageApsara(pics);
+        if (res != undefined && res.ImageInfo != undefined && res.ImageInfo.length > 0) {
+          for(let i = 0; i < res.ImageInfo.length; i++) {
+            let vi = res.ImageInfo[i];
+            for(let j = 0; j < pd.length; j++) {
+              let ps = pd[j];
+              if (ps.apsaraId == vi.ImageId) {
+                ps.mediaThumbEndpoint = vi.URL;
+              }
+            }
+          }
+        }
       }
     }
     return pd;
   }
+
+  private async getVideoApsara(ids: String[]): Promise<ApsaraVideoResponse> {
+    let vids = ids.join(',');
+    var RPCClient = require('@alicloud/pop-core').RPCClient;
+
+    let client = new RPCClient({
+      accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+      accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+      endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+      apiVersion: '2017-03-21'
+    });
+
+    let params = {
+      "RegionId": this.configService.get("APSARA_REGION_ID"),
+      "VideoIds" : vids
+    }
+    
+    let requestOption = {
+      method: 'POST'
+    };    
+
+    let dto = new ApsaraVideoResponse();
+    let result = await client.request('GetVideoInfos', params, requestOption);
+    let tx: ApsaraVideoResponse = Object.assign(dto,JSON.parse(JSON.stringify(result)));
+    return tx;
+  }
+
+  private async getImageApsara(ids: String[]): Promise<ApsaraImageResponse> {
+    let vids = ids.join(',');
+    var RPCClient = require('@alicloud/pop-core').RPCClient;
+
+    let client = new RPCClient({
+      accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+      accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+      endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+      apiVersion: '2017-03-21'
+    });
+
+    let params = {
+      "RegionId": this.configService.get("APSARA_REGION_ID"),
+      "ImageIds" : vids
+    }
+    
+    let requestOption = {
+      method: 'POST'
+    };    
+
+    let dto = new ApsaraImageResponse();
+    let result = await client.request('GetImageInfos', params, requestOption);
+    let tx: ApsaraImageResponse = Object.assign(dto,JSON.parse(JSON.stringify(result)));
+    return tx;
+  }  
 
   private paging(page: number, row: number) {
     if (page == 0 || page == 1) {

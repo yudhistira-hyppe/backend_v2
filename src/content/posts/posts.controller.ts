@@ -278,4 +278,10 @@ export class PostsController {
     let t = {'response' : 'Done'};
     return JSON.stringify(t);
   }  
+
+  @Post('api/posts/getvideo')
+  async getVideo(@Body() body, @Headers() headers) {
+    console.log(body);
+    return this.postContentService.getUserPost(body, headers);
+  }    
 }
