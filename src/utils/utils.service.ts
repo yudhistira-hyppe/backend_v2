@@ -32,7 +32,7 @@ const QRCode = require('qrcode');
 const nodeHtmlToImage = require('node-html-to-image');
 var path = require("path");
 const Cryptr = require('cryptr');
-const cryptr = new Cryptr(process.env.SALT_PIN);
+const cryptr = new Cryptr("vgqgveogdwinzlig");
 
 @Injectable()
 export class UtilsService {

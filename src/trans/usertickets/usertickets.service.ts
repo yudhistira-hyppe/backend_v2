@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateUserticketsDto } from './dto/create-usertickets.dto';
 import { Usertickets, UserticketsDocument } from './schemas/usertickets.schema';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
@@ -15,6 +15,10 @@ export class UserticketsService {
 
   async findAll(): Promise<Usertickets[]> {
     return this.userticketsModel.find().exec();
+  }
+
+  async findOne(id: ObjectId): Promise<Usertickets[]> {
+    return this.userticketsModel.find({ _id: id }).exec();
   }
   async update(IdUserticket: ObjectId, status: string): Promise<Object> {
     let data = await this.userticketsModel.updateOne({ "_id": IdUserticket },
@@ -165,6 +169,7 @@ export class UserticketsService {
 
     return query;
   }
+
 
   async searchdata(status: string, tipe: string, startdate: string, enddate: string, page: number, limit: number) {
     const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
@@ -1018,7 +1023,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -1039,6 +1051,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1070,6 +1090,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1089,6 +1117,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1184,7 +1220,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -1236,6 +1279,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1255,6 +1306,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1344,6 +1403,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
 
           }
@@ -1365,6 +1432,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1396,6 +1471,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1415,6 +1498,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1504,6 +1595,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
 
           }
@@ -1525,6 +1624,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1556,6 +1663,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1575,6 +1690,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1658,6 +1781,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
 
           }
@@ -1679,6 +1810,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1710,6 +1849,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1729,6 +1876,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1812,6 +1967,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
 
           }
@@ -1833,6 +1996,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1864,6 +2035,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1883,6 +2062,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -1965,6 +2152,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
 
           }
@@ -1986,6 +2181,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2017,6 +2220,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2036,6 +2247,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2134,6 +2353,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
 
           }
@@ -2155,6 +2382,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2186,6 +2421,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2205,6 +2448,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2303,6 +2554,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
 
           }
@@ -2324,6 +2583,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2355,6 +2622,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2374,6 +2649,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2466,6 +2749,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
 
           }
@@ -2487,6 +2778,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2518,6 +2817,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2537,6 +2844,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2628,6 +2943,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
 
           }
@@ -2649,6 +2972,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2680,6 +3011,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2699,6 +3038,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2795,6 +3142,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
 
           }
@@ -2816,6 +3171,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2847,6 +3210,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2866,6 +3237,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -2955,6 +3334,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
 
           }
@@ -2976,6 +3363,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3007,6 +3402,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3026,6 +3429,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3115,8 +3526,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3136,6 +3553,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3167,6 +3592,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3186,6 +3619,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3269,7 +3710,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -3290,6 +3738,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3321,6 +3777,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3340,6 +3804,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3437,7 +3909,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -3458,6 +3937,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3489,6 +3976,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3508,6 +4003,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3606,6 +4109,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
 
           }
@@ -3627,6 +4138,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3658,6 +4177,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3677,6 +4204,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3769,7 +4304,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -3790,6 +4332,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3821,6 +4371,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3840,6 +4398,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3932,7 +4498,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -3953,6 +4526,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -3984,6 +4565,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4003,6 +4592,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4099,7 +4696,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -4120,6 +4724,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4151,6 +4763,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4170,6 +4790,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4262,7 +4890,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -4283,6 +4918,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4314,6 +4957,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4333,6 +4984,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4425,7 +5084,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -4446,6 +5112,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4477,6 +5151,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4496,6 +5178,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4584,7 +5274,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -4605,6 +5302,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4636,6 +5341,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4655,6 +5368,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4743,7 +5464,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -4764,6 +5492,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4795,6 +5531,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4814,6 +5558,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4900,7 +5652,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -4921,6 +5680,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4952,6 +5719,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -4971,6 +5746,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5067,7 +5850,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -5088,6 +5878,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5119,6 +5917,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5138,6 +5944,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5245,8 +6059,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5266,6 +6086,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5297,6 +6125,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5316,6 +6152,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5426,7 +6270,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -5447,6 +6298,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5478,6 +6337,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5497,6 +6364,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5620,7 +6495,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -5641,6 +6523,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5672,6 +6562,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5691,6 +6589,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5813,7 +6719,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -5834,6 +6747,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5865,6 +6786,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5884,6 +6813,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -5997,7 +6934,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -6018,6 +6962,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -6049,6 +7001,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -6068,6 +7028,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -6162,7 +7130,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
-
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
 
           }
         },
@@ -6183,6 +7158,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -6214,6 +7197,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
         {
@@ -6233,6 +7224,14 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
         },
 

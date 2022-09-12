@@ -32,6 +32,22 @@ export class Usertickets {
   categoryTicket: { oid: string; };
   @Prop({ type: Object })
   assignTo: { oid: string; };
+  @Prop()
+  mediaType: String
+  @Prop()
+  mediaBasePath: String
+  @Prop()
+  mediaUri: any[]
+  @Prop()
+  originalName: any[]
+  @Prop()
+  fsSourceUri: any[]
+  @Prop()
+  fsSourceName: any[]
+  @Prop()
+  fsTargetUri: any[]
+  @Prop()
+  mediaMime: String
 
 
 }

@@ -24,7 +24,8 @@ var FormData = require('form-data');
 var path = require("path");
 
 export const multerConfig = {
-    dest: process.env.PATH_UPLOAD,
+    //dest: process.env.PATH_UPLOAD,
+    dest: './temp/'
 };
 
 export const multerOptions = {
@@ -605,7 +606,7 @@ export class MediaController {
                                 ]
                             }
                         };
-                    }else {
+                    } else {
                         var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                         _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict dan Selfie Pict';
                         await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
@@ -646,7 +647,7 @@ export class MediaController {
                     );
                 }
                 return face_detect_selfiepict;
-            }else {
+            } else {
                 if (face_detect_selfiepict.FaceDetails.length == 0) {
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.state = 'Kesalahan Selfie Pict';
