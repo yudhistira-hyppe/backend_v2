@@ -530,7 +530,7 @@ export class PostContentService {
           }
         }
 
-        query.where('visibility').in('FRIEND', 'PUBLIC').or(following);
+        query.where('visibility').in(['FRIEND', 'PUBLIC']).or(following);
       } else if (body.visibility == 'FRIEND') {
         let friend = [];
         let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
@@ -543,7 +543,7 @@ export class PostContentService {
 
         if (friend.length > 0) {
           friend.push(whoami.email);
-          query.where('visibility').in('FRIEND', 'PUBLIC');
+          query.where('visibility').in(['FRIEND', 'PUBLIC']);
           query.where('email').in(friend);
         } else {
           query.where('visibility', 'PUBLIC');
@@ -560,7 +560,7 @@ export class PostContentService {
 
         if (friend.length > 0) {
           friend.push(whoami.email);
-          query.where('visibility').in('FRIEND', 'PUBLIC');
+          query.where('visibility').in(['FRIEND', 'PUBLIC']);
           query.where('email').in(friend);
         } else {
           query.where('visibility', 'PUBLIC');
