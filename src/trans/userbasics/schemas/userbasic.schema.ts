@@ -129,7 +129,7 @@ export class Userbasic {
   @Prop()
   otp_expired_time: String;
   @Prop()
-  otppinVerified: Boolean;
+  otppinVerified: boolean;
   @Prop()
   otp_attemp: number;
 }
