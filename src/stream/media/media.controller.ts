@@ -498,6 +498,11 @@ export class MediaController {
                     CreateMediaproofpictsDto_.SelfiefsSourceName = cardPict_filename_new.replace(cardPict_etx, 'jpg').replace('_0001', '');
                     CreateMediaproofpictsDto_.SelfiefsTargetUri = '/localrepo/' + mongoose_gen_meida + '/selfiepict/' + cardPict_filename_new;
                     CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype;
+                    CreateMediaproofpictsDto_.userId = {
+                        $ref: "userbasics",
+                        $id: Object(datauserbasicsService._id.toString()),
+                        $db: "hyppe_trans_db"
+                    }
                     await this.mediaproofpictsService.updatebyId(data_mediaproofpicts._id.toString(), CreateMediaproofpictsDto_);
                 } catch (err) {
                     await this.errorHandler.generateNotAcceptableException(
@@ -531,6 +536,11 @@ export class MediaController {
                     CreateMediaproofpictsDto_.SelfiefsSourceName = cardPict_filename_new.replace(cardPict_etx, 'jpg').replace('_0001', '');
                     CreateMediaproofpictsDto_.SelfiefsTargetUri = '/localrepo/' + mongoose_gen_meida + '/selfiepict/' + cardPict_filename_new;
                     CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype;
+                    CreateMediaproofpictsDto_.userId = {
+                        $ref: "userbasics",
+                        $id: Object(datauserbasicsService._id.toString()),
+                        $db: "hyppe_trans_db"
+                    }
                     await this.mediaproofpictsService.create(CreateMediaproofpictsDto_);
                     await this.userbasicsService.updatebyEmail(datauserbasicsService.email.toString(), {
                         idProofName: CreateMediaproofpictsDto_.nama,
@@ -595,8 +605,10 @@ export class MediaController {
                                 ]
                             }
                         };
-                    }
-                    else {
+                    }else {
+                        var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                        _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict dan Selfie Pict';
+                        await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                         await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                         await this.errorHandler.generateCustomNotAcceptableException(
                             {
@@ -614,7 +626,9 @@ export class MediaController {
                         );
                     }
                 } catch (err) {
-
+                    var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict';
+                    await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
                         {
@@ -632,9 +646,11 @@ export class MediaController {
                     );
                 }
                 return face_detect_selfiepict;
-            }
-            else {
+            }else {
                 if (face_detect_selfiepict.FaceDetails.length == 0) {
+                    var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.state = 'Kesalahan Selfie Pict';
+                    await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
                         {
@@ -652,6 +668,9 @@ export class MediaController {
                     );
                 }
                 if (face_detect_cardPict.FaceDetails.length == 0) {
+                    var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.state = 'KTP Pict';
+                    await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
                         {
@@ -803,8 +822,6 @@ export class MediaController {
                 );
             }
 
-
-            ///Ceck Data user proofPict
             //Ceck Data user proofPict
             if (datamediaproofService._id != undefined) {
                 //Update proofPict

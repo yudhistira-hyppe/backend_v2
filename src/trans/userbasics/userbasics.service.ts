@@ -454,10 +454,12 @@ export class UserbasicsService {
       endDate_format = new Date(endDate.toString());
     }
     if (startDate_format != null && endDate_format!=null){
+      console.log(startDate_format);
+      console.log(endDate_format);
       date_range_match = {
-        'createdAt': {
-          $gte: startDate_format,
-          $lt: endDate_format
+        'createdAt_': {
+          $gte: startDate,
+          $lte: endDate
         }};
     }
     const mediaproofpictsService = await this.mediaproofpictsService.findmediaproofpicts();
@@ -470,6 +472,8 @@ export class UserbasicsService {
       {
         $addFields: {
           id_mediaproofpicts: '$proofPict.$id',
+          startDate: { $toDate: { $substrCP: [startDate_format, 0, 10] } },
+          endDate: { $toDate: { $substrCP: [endDate_format, 0, 10] } },
         },
       },
       {
@@ -487,11 +491,12 @@ export class UserbasicsService {
             {"mediaproofpicts.status": { "$ne": "" }},
             {
               $or: [
+                date_range_match,
                 { "fullName": { $regex: search } },
                 { "email": { $regex: search } },
               ]
             },
-            date_range_match
+            //date_range_match
           ]
         }
       },
@@ -500,6 +505,8 @@ export class UserbasicsService {
           _id: 0,
           fullName: '$fullName',
           email: '$email',
+          startDate: '$startDate',
+          endDate: '$endDate',
           mediaproofpicts_: { $arrayElemAt: ['$mediaproofpicts', 0] }
         },
       },
@@ -510,6 +517,10 @@ export class UserbasicsService {
           email: '$email',
           dateOfSubmission: '$mediaproofpicts_.createdAt',
           status: '$mediaproofpicts_.status',
+          state: '$mediaproofpicts_.state',
+          startDate: '$startDate',
+          endDate: '$endDate',
+          createdAt_: '$mediaproofpicts_.createdAt_',
         },
       },
     ]);
