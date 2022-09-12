@@ -97,7 +97,7 @@ export class PostContentService {
     post.email = auth.email;
     post.createdAt = await this.utilService.getDateTimeString();
     post.updatedAt = await this.utilService.getDateTimeString();
-    post.expiration = new Long(1000);
+    post.expiration = new Long(this.utilService.generateExpiration(new Date(), 1));
     post._class = 'io.melody.hyppe.content.domain.ContentPost';
 
     if (body.description != undefined) {
@@ -614,6 +614,10 @@ export class PostContentService {
 
     if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
       query.where('active', true);
+    }
+
+    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
+      query.where('expiration').gte(this.utilService.now());
     }
 
     let row = 20;

@@ -462,6 +462,20 @@ export class UtilsService {
     return new Date();
   }
 
+  now(): number {
+    let now = new Date();
+    return now.getTime();
+  }  
+
+  generateExpiration(date: Date, day: number): number {
+    if (date == undefined) {
+      return undefined;
+    }
+
+    date.setDate(date.getDate() + day);
+    return date.getTime();
+  }    
+
   async validasiEmail(email: string): Promise<boolean> {
     var valid_email = false;
     var atps = email.indexOf('@');
