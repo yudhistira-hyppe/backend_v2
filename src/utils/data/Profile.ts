@@ -52,6 +52,8 @@ export class ProfileDTO {
     referralCount: String;
     children: Array<CreateReferralDto>;
     listSetting: any[];
+    pin_verified: boolean; 
+    pin_create: boolean;
 }
 
 export class LocationDTO {

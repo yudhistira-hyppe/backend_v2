@@ -619,6 +619,8 @@ export class UtilsService {
     var get_countries = null;
     var get_states = null;
     var get_profilePict = null;
+    var pin_create = false;
+    var otppinVerified = false;
 
     if (await this.ceckData(get_userbasic)) {
 
@@ -666,8 +668,10 @@ export class UtilsService {
     if (await this.ceckData(get_insight)) {
       if (get_insight.shares != undefined) { CreateInsightsDto_.shares = get_insight.shares; }
       if (get_insight.followers != undefined) { CreateInsightsDto_.followers = get_insight.followers; }
+      if (get_insight.comments != undefined) { CreateInsightsDto_.comments = get_insight.comments; }
       if (get_insight.shares != undefined) { CreateInsightsDto_.shares = get_insight.shares; }
       if (get_insight.followings != undefined) { CreateInsightsDto_.followings = get_insight.followings; }
+      if (get_insight.posts != undefined) { CreateInsightsDto_.posts = get_insight.posts; }
       if (get_insight.reactions != undefined) { CreateInsightsDto_.reactions = get_insight.reactions; }
       if (get_insight.posts != undefined) { CreateInsightsDto_.followers = get_insight.posts; }
       if (get_insight.views != undefined) { CreateInsightsDto_.views = get_insight.views; }
@@ -733,11 +737,28 @@ export class UtilsService {
       //ProfileDTO_.children = 
     }
 
+    if (get_userbasic.pin!=undefined){
+      if (get_userbasic.pin != null) {
+        if (get_userbasic.pin != "") {
+          pin_create = true;
+        }
+      }
+    } 
+
+    if (get_userbasic.otppinVerified != undefined) {
+      otppinVerified = get_userbasic.otppinVerified;
+    }
+
     if (datafor == 'LOGIN' || datafor == 'FULL' || datafor == 'PROFILE') {
+      if (get_states != null) { ProfileDTO_.area = get_states.stateName; }
       if (get_countries != null) { ProfileDTO_.country = get_countries.country; }
+      if (get_userbasic.gender != undefined) { ProfileDTO_.gender = get_userbasic.gender; }
+      if (get_cities != null) { ProfileDTO_.city = get_cities.cityName; }
+      ProfileDTO_.mobileNumber = get_userbasic.mobileNumber;
       if (get_userbasic.idProofNumber != undefined) { ProfileDTO_.idProofNumber = get_userbasic.idProofNumber; }
       ProfileDTO_.roles = get_userauth.roles;
       if (get_userbasic.fullName != undefined) { ProfileDTO_.fullName = get_userbasic.fullName; }
+      if (get_userbasic.bio != undefined) { ProfileDTO_.bio = get_userbasic.bio; }
       if (await this.ceckData(get_profilePict)) {
         ProfileDTO_.avatar = AvatarDTO_;
       }
@@ -752,6 +773,8 @@ export class UtilsService {
       if (get_userauth.username != undefined) { ProfileDTO_.username = get_userauth.username; }
       ProfileDTO_.isComplete = get_userbasic.isComplete.toString();
       ProfileDTO_.status = get_userbasic.status;
+      ProfileDTO_.pin_create = pin_create;
+      ProfileDTO_.pin_verified = otppinVerified;
     }
 
     return ProfileDTO_;

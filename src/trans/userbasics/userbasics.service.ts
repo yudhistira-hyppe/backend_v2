@@ -472,8 +472,8 @@ export class UserbasicsService {
       {
         $addFields: {
           id_mediaproofpicts: '$proofPict.$id',
-          startDate: { $toDate: { $substrCP: [startDate_format, 0, 10] } },
-          endDate: { $toDate: { $substrCP: [endDate_format, 0, 10] } },
+          // startDate: { $toDate: { $substrCP: [startDate_format, 0, 10] } },
+          // endDate: { $toDate: { $substrCP: [endDate_format, 0, 10] } },
         },
       },
       {
@@ -511,6 +511,11 @@ export class UserbasicsService {
         },
       },
       {
+        $addFields: {
+          createdAt_: { $toDate: { $substrCP: ['$mediaproofpicts_.createdAt', 0, 10] } },
+        },
+      },
+      {
         $project: {
           _id: 0,
           fullName: '$fullName',
@@ -518,8 +523,8 @@ export class UserbasicsService {
           dateOfSubmission: '$mediaproofpicts_.createdAt',
           status: '$mediaproofpicts_.status',
           state: '$mediaproofpicts_.state',
-          startDate: '$startDate',
-          endDate: '$endDate',
+          // startDate: '$startDate',
+          // endDate: '$endDate',
           createdAt_: '$mediaproofpicts_.createdAt_',
         },
       },
