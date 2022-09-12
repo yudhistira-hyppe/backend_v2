@@ -422,7 +422,7 @@ export class PostContentService {
 
       this.logger.log('createNewPostVideo >>> ' + rets);
 
-      var stories = { "$ref": "mediastories", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
       cm.push(stories);  
 
     } else if (postType == 'diary') {
