@@ -406,7 +406,7 @@ export class PostContentService {
   
       var mes = new Mediastories();
       mes._id = await this.utilService.generateId();
-      mes.mediaID = med._id;
+      mes.mediaID = mes._id;
       mes.postID = post.postID;
       mes.active = false;
       mes.createdAt = await this.utilService.getDateTimeString();
