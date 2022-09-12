@@ -271,6 +271,22 @@ export class PostsController {
     return this.postContentService.getUserPost(body, headers);
   }  
 
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/getuserposts/my')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async getUserPostMy(@Body() body, @Headers() headers): Promise<PostResponseApps> {
+    console.log(body);
+    return this.postContentService.getUserPostMy(body, headers);
+  }
+  
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/getuserposts/byprofile')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async getUserPostByProfile(@Body() body, @Headers() headers): Promise<PostResponseApps> {
+    console.log(body);
+    return this.postContentService.getUserPostByProfile(body, headers);
+  }  
+
   @Post('api/posts/notifyapsara')
   async notifyApsara(@Body() body, @Headers() headers) {
     console.log(body);

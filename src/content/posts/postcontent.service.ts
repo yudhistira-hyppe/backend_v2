@@ -512,6 +512,40 @@ export class PostContentService {
     return res;
   }
 
+  async getUserPostMy(body: any, headers: any): Promise<PostResponseApps> {
+
+    let type = 'GET_POST';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);    
+    this.logger.log('getUserPost >>> profile: ' + profile);
+
+    let res = new PostResponseApps();
+    res.response_code = 202;
+    let posts = await this.doGetUserPostMy(body, headers, profile);
+    let pd = await this.loadPostData(posts, body);
+    res.data = pd;
+
+    return res;
+  }  
+
+  async getUserPostByProfile(body: any, headers: any): Promise<PostResponseApps> {
+
+    let type = 'GET_POST';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);    
+    this.logger.log('getUserPost >>> profile: ' + profile);
+
+    let res = new PostResponseApps();
+    res.response_code = 202;
+    let posts = await this.doGetUserPostTheir(body, headers, profile);
+    let pd = await this.loadPostData(posts, body);
+    res.data = pd;
+
+    return res;
+  }    
+
   private async doGetUserPost(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     let query = this.PostsModel.find();
@@ -597,6 +631,80 @@ export class PostContentService {
     let res = await query.exec();
     return res;
   }
+
+  private async doGetUserPostMy(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
+    //this.logger.log('doGetUserPost >>> start: ' + body);
+    let query = this.PostsModel.find();
+    query.where('email', whoami.email);
+    if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
+      query.where('active', true);
+    }
+    if (body.postType != undefined) {
+      query.where('postType', body.postType);
+    } else {
+      query.where('postType').ne('advertise');
+    }
+
+    let row = 20;
+    let page = 0;
+    if (body.pageNumber != undefined) {
+      page = body.pageNumber;
+    }
+    if (body.pageRow != undefined) {
+      row = body.pageRow;      
+    }
+    let skip = this.paging(page, row);
+    query.skip(skip);
+    query.limit(row);         
+    query.sort({'postType': 1, 'createdAt': -1});
+    let res = await query.exec();
+    return res;
+  }
+  
+  private async doGetUserPostTheir(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
+    //this.logger.log('doGetUserPost >>> start: ' + body);
+    let query = this.PostsModel.find();
+    query.where('email', whoami.email);
+    let friend = [];
+    let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
+    if (check != undefined) {
+      for(let i = 0; i < check.length; i++) {
+        var cex = check[i];
+        friend.push(cex.friend);
+      }
+    }
+
+    if (friend.length > 0) {
+      friend.push(whoami.email);
+      query.where('visibility').in(['FRIEND', 'PUBLIC']);
+      query.where('email').in(friend);
+    } else {
+      query.where('visibility', 'PUBLIC');
+    }
+    if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
+      query.where('active', true);
+    }
+    if (body.postType != undefined) {
+      query.where('postType', body.postType);
+    } else {
+      query.where('postType').ne('advertise');
+    }
+
+    let row = 20;
+    let page = 0;
+    if (body.pageNumber != undefined) {
+      page = body.pageNumber;
+    }
+    if (body.pageRow != undefined) {
+      row = body.pageRow;      
+    }
+    let skip = this.paging(page, row);
+    query.skip(skip);
+    query.limit(row);         
+    query.sort({'postType': 1, 'createdAt': -1});
+    let res = await query.exec();
+    return res;
+  }  
 
   private async loadPostData(posts: Posts[], body: any): Promise<PostData[]> {
     let pd = Array<PostData>();
