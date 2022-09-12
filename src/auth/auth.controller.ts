@@ -70,6 +70,7 @@ export class AuthController {
   @Post('api/user/login')
   @HttpCode(HttpStatus.ACCEPTED)
   async login(@Body() LoginRequest_: LoginRequest) {
+    console.log('dsfsdgdfgd');
     var current_date = await this.utilsService.getDateTimeString();
 
     var _class_ActivityEvent = 'io.melody.hyppe.trans.domain.ActivityEvent';
