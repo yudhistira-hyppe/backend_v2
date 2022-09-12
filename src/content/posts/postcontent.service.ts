@@ -422,7 +422,7 @@ export class PostContentService {
 
       this.logger.log('createNewPostVideo >>> ' + rets);
 
-      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
+      var stories = { "$ref": "mediastories", "$id": retm.mediaID, "$db": "hyppe_content_db" };
       cm.push(stories);  
 
     } else if (postType == 'diary') {
@@ -478,7 +478,7 @@ export class PostContentService {
       post.metadata = metadata;
       post.active = true;
       this.postService.create(post);          
-    } else {
+    } else if (ns == 'mediapicts') {
       let pic = await this.picService.findOne(cm.oid);
       if (pic == undefined) {
         return;
@@ -490,6 +490,32 @@ export class PostContentService {
 
       post.active = true;
       this.postService.create(post);                
+
+      let todel = body.filedel + "";
+      unlink(todel, (err) => {
+        if (err) {
+  
+        }
+      });      
+    } else if (ns == 'mediastories') {
+      let st = await this.storyService.findOne(cm.oid);
+      if (st == undefined) {
+        return;
+      }
+
+      st.apsaraId = body.videoId;
+      st.active = true;
+      this.storyService.create(st);
+
+      post.active = true;
+      this.postService.create(post);                
+
+      let todel = body.filedel + "";
+      unlink(todel, (err) => {
+        if (err) {
+  
+        }
+      });            
     }
 
 
