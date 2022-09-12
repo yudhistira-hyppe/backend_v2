@@ -516,6 +516,25 @@ export class PostContentService {
   
         }
       });            
+    } else if (ns == 'mediadiaries') {
+      let dy = await this.diaryService.findOne(cm.oid);
+      if (dy == undefined) {
+        return;
+      }
+
+      dy.apsaraId = body.videoId;
+      dy.active = true;
+      this.diaryService.create(dy);
+
+      post.active = true;
+      this.postService.create(post);                
+
+      let todel = body.filedel + "";
+      unlink(todel, (err) => {
+        if (err) {
+  
+        }
+      });            
     }
 
 
