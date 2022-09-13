@@ -306,10 +306,7 @@ export class PostContentService {
       if (mime.startsWith('video')) {
         let metadata = {postType : 'story', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
         post.metadata = metadata;       
-        post.postType = 'vid'; 
-      } else {
-        post.postType = 'pict';
-      }
+      } 
 
       var mes = new Mediastories();
       mes._id = await this.utilService.generateId();
@@ -319,13 +316,7 @@ export class PostContentService {
       mes.createdAt = await this.utilService.getDateTimeString();
       mes.updatedAt = await this.utilService.getDateTimeString();
       mes.mediaMime = file.mimetype;
-
-      if (mime.startsWith('video')) {
-        mes.mediaType = 'video';        
-      } else {
-        mes.mediaType = 'image';        
-      }
-
+      mes.mediaType = 'video';        
       mes.originalName = file.originalname;
       mes.apsara = true;
       mes._class = 'io.melody.hyppe.content.domain.MediaStory';
@@ -389,7 +380,6 @@ export class PostContentService {
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 
     let post = await this.buildPost(body, headers);
-
     let postType = body.postType;
     var cm = [];
 
@@ -413,9 +403,7 @@ export class PostContentService {
       this.logger.log('createNewPostVideo >>> ' + retm);
 
       var vids = { "$ref": "mediapicts", "$id": retm.mediaID, "$db": "hyppe_content_db" };
-      cm.push(vids);      
-
-    } else if (postType == 'advertise') {
+      cm.push(vids);
 
     } else if (postType == 'story') {
       let metadata = {postType : 'story', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
@@ -442,10 +430,7 @@ export class PostContentService {
       var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
       cm.push(stories);  
 
-    } else if (postType == 'diary') {
     }
-
-    post.postType = 'pict';
     post.contentMedias = cm;
     let apost = await this.PostsModel.create(post);
 
