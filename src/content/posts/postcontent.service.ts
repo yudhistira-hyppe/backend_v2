@@ -98,7 +98,8 @@ export class PostContentService {
     post.email = auth.email;
     post.createdAt = await this.utilService.getDateTimeString();
     post.updatedAt = await this.utilService.getDateTimeString();
-    post.expiration = new Long(this.utilService.generateExpiration(new Date(), 1));
+    let big = BigInt(this.utilService.generateExpiration(new Date(), 1));
+    post.expiration = Long.fromBigInt(big);
     post._class = 'io.melody.hyppe.content.domain.ContentPost';
 
     if (body.description != undefined) {

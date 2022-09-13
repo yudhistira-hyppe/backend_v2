@@ -472,7 +472,9 @@ export class UtilsService {
       return undefined;
     }
     let epoch = date.getTime();
+    console.log(epoch);
     epoch += ((1000 * 60 * 60 *24) * day);
+    console.log(epoch);
     return date.getTime();
   }    
 
