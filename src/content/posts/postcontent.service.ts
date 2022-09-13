@@ -291,11 +291,11 @@ export class PostContentService {
       med._class = 'io.melody.hyppe.content.domain.MediaVideo';
   
       this.logger.log('createNewPostVideo >>> prepare save');
-      var retm = await this.videoService.create(med);
+      var retd = await this.videoService.create(med);
 
-      this.logger.log('createNewPostVideo >>> ' + retm);
+      this.logger.log('createNewPostVideo >>> ' + retd);
 
-      var vids = { "$ref": "mediavideos", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
       cm.push(vids);      
 
     } else if (postType == 'advertise') {
@@ -343,25 +343,25 @@ export class PostContentService {
       let metadata = {postType : 'diary', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
       post.metadata = metadata;
   
-      var mem = new Mediadiaries();
-      mem._id = await this.utilService.generateId();
-      mem.mediaID = med._id;
-      mem.postID = post.postID;
-      mem.active = false;
-      mem.createdAt = await this.utilService.getDateTimeString();
-      mem.updatedAt = await this.utilService.getDateTimeString();
-      mem.mediaMime = file.mimetype;
-      mem.mediaType = 'video';
-      mem.originalName = file.originalname;
-      mem.apsara = true;
-      mem._class = 'io.melody.hyppe.content.domain.MediaDiary';
+      var mer = new Mediadiaries();
+      mer._id = await this.utilService.generateId();
+      mer.mediaID = mer._id;
+      mer.postID = post.postID;
+      mer.active = false;
+      mer.createdAt = await this.utilService.getDateTimeString();
+      mer.updatedAt = await this.utilService.getDateTimeString();
+      mer.mediaMime = file.mimetype;
+      mer.mediaType = 'video';
+      mer.originalName = file.originalname;
+      mer.apsara = true;
+      mer._class = 'io.melody.hyppe.content.domain.MediaDiary';
   
       this.logger.log('createNewPostVideo >>> prepare save');
-      var rets = await this.storyService.create(mes);
+      var retr = await this.storyService.create(mer);
 
-      this.logger.log('createNewPostVideo >>> ' + rets);
+      this.logger.log('createNewPostVideo >>> ' + retr);
 
-      var stories = { "$ref": "mediadiaries", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      var stories = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
       cm.push(stories);      
     }
 
