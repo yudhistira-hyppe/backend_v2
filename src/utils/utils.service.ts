@@ -471,8 +471,8 @@ export class UtilsService {
     if (date == undefined) {
       return undefined;
     }
-
-    date.setDate(date.getDate() + day);
+    let epoch = date.getTime();
+    epoch += ((1000 * 60 * 60 *24) * day);
     return date.getTime();
   }    
 
