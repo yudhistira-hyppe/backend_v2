@@ -48,6 +48,10 @@ export class Usertickets {
   fsTargetUri: any[]
   @Prop()
   mediaMime: String
+  @Prop()
+  version: number
+  @Prop()
+  OS: string
 
 
 }

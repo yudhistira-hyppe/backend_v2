@@ -3,12 +3,14 @@ import { UserticketsService } from './usertickets.service';
 import { CreateUserticketsDto } from './dto/create-usertickets.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserbasicsService } from '../userbasics/userbasics.service';
+import { UserauthsService } from '../userauths/userauths.service';
 import { Res, HttpStatus, Response } from '@nestjs/common';
 import { ErrorHandler } from "../../utils/error.handler";
 import { isEmpty } from 'rxjs';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UtilsService } from "../../utils/utils.service";
 import { SeaweedfsService } from "../../stream/seaweedfs/seaweedfs.service";
+import { SettingsService } from '../settings/settings.service';
 import { extname } from 'path';
 import { diskStorage } from 'multer';
 import * as fse from 'fs-extra';
@@ -54,6 +56,8 @@ export class UserticketsController {
     private readonly utilsService: UtilsService,
     private readonly errorHandler: ErrorHandler,
     private readonly userbasicsService: UserbasicsService,
+    private readonly settingsService: SettingsService,
+    private readonly userauthsService: UserauthsService,
     private readonly seaweedfsService: SeaweedfsService) { }
 
 
@@ -168,7 +172,8 @@ export class UserticketsController {
     var arrayName = [];
     var arraySuri = [];
     var arraySname = [];
-
+    var auth = null;
+    var os = null;
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
     const messages = {
@@ -217,10 +222,18 @@ export class UserticketsController {
         var ubasic = await this.userbasicsService.findOne(email);
 
         var iduser = ubasic._id;
+        try {
+          auth = await this.userauthsService.findOneByEmail(email);
+          os = auth.regSrc;
+        } catch (e) {
+          os = "";
+        }
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
-
+        var idversion = "62bbdb4ba7520000050077a7";
+        var dataversion = await this.settingsService.findOne(idversion);
+        var version = dataversion.value;
         var idcategory = mongoose.Types.ObjectId(CreateUserticketsDto.categoryTicket);
         var idsource = mongoose.Types.ObjectId(CreateUserticketsDto.sourceTicket);
         var idlevel = mongoose.Types.ObjectId(CreateUserticketsDto.levelTicket);
@@ -231,6 +244,8 @@ export class UserticketsController {
         CreateUserticketsDto.categoryTicket = idcategory;
         CreateUserticketsDto.sourceTicket = idsource;
         CreateUserticketsDto.levelTicket = idlevel;
+        CreateUserticketsDto.version = version;
+        CreateUserticketsDto.OS = os;
         datausertiket = await this.userticketsService.create(CreateUserticketsDto);
         var IdMediaproofpictsDto = datausertiket._id.toString();
         var objadsid = datausertiket._id;
@@ -361,8 +376,6 @@ export class UserticketsController {
 
     return { response_code: 202, data, messages };
   }
-
-
 
   @Post('api/usertickets/list')
   @UseGuards(JwtAuthGuard)

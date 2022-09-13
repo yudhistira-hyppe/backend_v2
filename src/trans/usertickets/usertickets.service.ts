@@ -50,7 +50,32 @@ export class UserticketsService {
           foreignField: "_id",
           as: "userdata"
         }
-      }, {
+      },
+      {
+        $lookup: {
+          from: "leveltickets",
+          localField: "levelTicket",
+          foreignField: '_id',
+          as: 'level_data'
+        }
+      },
+      {
+        $lookup: {
+          from: "sourcetickets",
+          localField: "sourceTicket",
+          foreignField: '_id',
+          as: 'source_data'
+        }
+      },
+      {
+        $lookup: {
+          from: "categorytickets",
+          localField: "categoryTicket",
+          foreignField: '_id',
+          as: 'category_data'
+        }
+      },
+      {
         $lookup: {
           from: "userticketdetails",
           localField: "_id",
@@ -58,7 +83,6 @@ export class UserticketsService {
           as: "tiketdata"
         }
       },
-
       {
         $lookup: {
           from: "userbasics",
@@ -72,6 +96,15 @@ export class UserticketsService {
           userdata: {
             $arrayElemAt: ['$userdata', 0]
           },
+          category: {
+            $arrayElemAt: ['$category_data', 0]
+          },
+          level: {
+            $arrayElemAt: ['$level_data', 0]
+          },
+          source: {
+            $arrayElemAt: ['$source_data', 0]
+          },
           profilpictid: '$userdata.profilePict.$id',
           replydata: "$tiketdata",
           userrequest: "$userdata.fullName",
@@ -81,13 +114,16 @@ export class UserticketsService {
           body: "$body",
           status: "$status",
           tipe: "$tipe",
-          datetime: "$datetime"
-
+          datetime: "$datetime",
+          version: "$version",
+          OS: "$OS",
         }
       },
       {
         $project: {
-
+          nameCategory: '$category.nameCategory',
+          nameLevel: '$level.nameLevel',
+          sourceName: '$source.sourceName',
           profilpictid: '$userdata.profilePict.$id',
           nomortiket: "$nomortiket",
           userrequest: "$userdata.fullName",
@@ -97,8 +133,9 @@ export class UserticketsService {
           status: "$status",
           tipe: "$tipe",
           datetime: "$datetime",
+          version: "$version",
+          OS: "$OS",
           replydata: "$replydata"
-
         }
       },
       {
@@ -107,12 +144,19 @@ export class UserticketsService {
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
+
         },
+
       },
       {
         $project: {
-          profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
+          profilpict: {
+            $arrayElemAt: ['$profilePict_data', 0]
+          },
           nomortiket: "$nomortiket",
+          nameCategory: '$nameCategory',
+          nameLevel: '$nameLevel',
+          sourceName: '$sourceName',
           userrequest: "$userrequest",
           email: "$email",
           subject: "$subject",
@@ -120,13 +164,21 @@ export class UserticketsService {
           status: "$status",
           tipe: "$tipe",
           datetime: "$datetime",
+          version: "$version",
+          OS: "$OS",
           replydata: "$replydata",
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
             mediaType: '$profilpict.mediaType',
             mediaEndpoint: '$profilpict.fsTargetUri',
-            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+            medreplace: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
 
           },
 
@@ -136,14 +188,23 @@ export class UserticketsService {
         $addFields: {
 
           concats: '/profilepict',
-          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          pict: {
+            $replaceOne: {
+              input: "$profilpict.mediaUri",
+              find: "_0001.jpeg",
+              replacement: ""
+            }
+          },
 
         },
-      },
 
+      },
       {
         $project: {
           nomortiket: "$nomortiket",
+          nameCategory: '$nameCategory',
+          nameLevel: '$nameLevel',
+          sourceName: '$sourceName',
           userrequest: "$userrequest",
           email: "$email",
           subject: "$subject",
@@ -151,19 +212,26 @@ export class UserticketsService {
           status: "$status",
           tipe: "$tipe",
           datetime: "$datetime",
+          version: "$version",
+          OS: "$OS",
           replydata: "$replydata",
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
             mediaType: '$profilpict.mediaType',
-            mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
-
+            mediaEndpoint: {
+              $concat: ["$concats", "/", "$pict"]
+            },
 
           },
 
         }
       },
-      { $match: { "_id": id } }
+      {
+        $match: {
+          "_id": id
+        }
+      }
     ]);
 
 

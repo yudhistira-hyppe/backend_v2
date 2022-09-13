@@ -12,10 +12,12 @@ import { UserticketdetailsModule } from './userticketdetails/userticketdetails.m
 import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediaprofilepicts.module';
 import { UtilsModule } from '../../utils/utils.module';
 import { SeaweedfsModule } from '../../stream/seaweedfs/seaweedfs.module';
+import { SettingsModule } from '../settings/settings.module';
+import { UserauthsModule } from '../userauths/userauths.module';
 @Module({
     imports: [
 
-        UserbasicsModule, MediaprofilepictsModule, UtilsModule, SeaweedfsModule, NestjsFormDataModule, ConfigService, ConfigModule.forRoot(),
+        UserbasicsModule, MediaprofilepictsModule, UtilsModule, SeaweedfsModule, NestjsFormDataModule, ConfigService, SettingsModule, UserauthsModule, ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Usertickets.name, schema: UserticketsSchema }], 'SERVER_TRANS')
     ],
     controllers: [UserticketsController],

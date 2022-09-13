@@ -22,5 +22,7 @@ export class CreateUserticketsDto {
   fsSourceName: any[];
   fsTargetUri: any[];
   mediaMime: string;
+  version: number;
+  OS: string;
 
 }
