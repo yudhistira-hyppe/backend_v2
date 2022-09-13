@@ -14,5 +14,15 @@ export class CreateUserticketsDto {
   sourceTicket: { oid: String; };
   assignTo: { oid: String; };
   categoryTicket: { oid: String; };
+  mediaType: String;
+  mediaBasePath: String;
+  mediaUri: any[];
+  originalName: any[];
+  fsSourceUri: any[];
+  fsSourceName: any[];
+  fsTargetUri: any[];
+  mediaMime: string;
+  version: number;
+  OS: string;
 
 }

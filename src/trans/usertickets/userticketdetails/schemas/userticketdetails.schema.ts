@@ -24,6 +24,22 @@ export class Userticketdetails {
 
     @Prop()
     status: string
+    @Prop()
+    mediaType: String
+    @Prop()
+    mediaBasePath: String
+    @Prop()
+    mediaUri: any[]
+    @Prop()
+    originalName: any[]
+    @Prop()
+    fsSourceUri: any[]
+    @Prop()
+    fsSourceName: any[]
+    @Prop()
+    fsTargetUri: any[]
+    @Prop()
+    mediaMime: String
 
 }
 
