@@ -301,9 +301,16 @@ export class PostContentService {
     } else if (postType == 'advertise') {
 
     } else if (postType == 'story') {
-      let metadata = {postType : 'story', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
-      post.metadata = metadata;
-  
+
+      var mime = file.mimetype;
+      if (mime.startsWith('video')) {
+        let metadata = {postType : 'story', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
+        post.metadata = metadata;       
+        post.postType = 'vid'; 
+      } else {
+        post.postType = 'pict';
+      }
+
       var mes = new Mediastories();
       mes._id = await this.utilService.generateId();
       mes.mediaID = mes._id;
@@ -312,7 +319,13 @@ export class PostContentService {
       mes.createdAt = await this.utilService.getDateTimeString();
       mes.updatedAt = await this.utilService.getDateTimeString();
       mes.mediaMime = file.mimetype;
-      mes.mediaType = 'video';
+
+      if (mime.startsWith('video')) {
+        mes.mediaType = 'video';        
+      } else {
+        mes.mediaType = 'image';        
+      }
+
       mes.originalName = file.originalname;
       mes.apsara = true;
       mes._class = 'io.melody.hyppe.content.domain.MediaStory';
@@ -352,7 +365,6 @@ export class PostContentService {
       cm.push(stories);      
     }
 
-    post.postType = 'vid';
     post.contentMedias = cm;
     let apost = await this.PostsModel.create(post);
 
@@ -427,7 +439,7 @@ export class PostContentService {
 
       this.logger.log('createNewPostVideo >>> ' + rets);
 
-      var stories = { "$ref": "mediastories", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
       cm.push(stories);  
 
     } else if (postType == 'diary') {
