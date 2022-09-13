@@ -261,13 +261,13 @@ export class MediaController {
         }
         var titleingagal = "Verifikasi Gagal";
         var titleengagal = "Verification Failed";
-        var bodyingagal = "Proses identifikasi gagal, coba ulangi kembali";
-        var bodyengagal = "Identification failed, please try again";
+        var bodyingagal = "Maaf! verifikasi ID Anda ditolak karena data yang diterima tidak cocok, silahkan coba unggah lagi dengan data asli.";
+        var bodyengagal = "Sorry! your ID verification is denied because the data received did not match, please upload it again with the genuine data.";
 
         var titleinsukses = "Verifikasi Berhasil";
         var titleensukses = "Verification Successful";
-        var bodyinsukses = "Proses identifikasi berhasil, kamu telah terverifikasi";
-        var bodyensukses = "Identification successful, you’ve been verified";
+        var bodyinsukses = "Selamat! Anda telah menjadi pengguna premium, nikmati manfaatnya";
+        var bodyensukses = "Congratulations! you have become a premium user, enjoy the benefits";
         var eventType = "VERIFICATIONID";
         var event = "REQUEST";
         //Var cardPict
@@ -904,6 +904,17 @@ export class MediaController {
         @Headers() headers) {
         //  var idmediaproofpict = CreateMediaproofpictsDto_._id.toString();
 
+        var titleingagal = "Verifikasi Gagal";
+        var titleengagal = "Verification Failed";
+        var bodyingagal = "Maaf! verifikasi ID Anda ditolak karena data yang diterima tidak cocok, silahkan coba unggah lagi dengan data asli.";
+        var bodyengagal = "Sorry! your ID verification is denied because the data received did not match, please upload it again with the genuine data.";
+
+        var titleinsukses = "Dalam Proses Verifikasi";
+        var titleensukses = "Verification On Progress";
+        var bodyinsukses = "Hai Stephany! Kami sedang meninjau data yang Anda kirimkan. ini akan memakan waktu 3x24 jam proses";
+        var bodyensukses = "Hi Stephany! We are currently reviewing the data you submitted. this will take a 3x24 hour process";
+        var eventType = "SUPPORTFILE";
+        var event = "REQUEST";
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed token and email not match',
@@ -953,7 +964,7 @@ export class MediaController {
         let selfiepict_filename_new = '';
         let selfiepict_local_path = '';
         let selfiepict_seaweedfs_path = '';
-
+        var emailuserbasic = null;
         //Var current date
         var current_date = await this.utilsService.getDateTimeString();
 
@@ -969,7 +980,7 @@ export class MediaController {
 
         if (await this.utilsService.ceckData(datauserbasicsService)) {
             // var mongoose_gen_meida = new mongoose.Types.ObjectId();
-
+            emailuserbasic = datauserbasicsService.email;
 
 
             var paths = IdMediaproofpictsDto;
@@ -1207,6 +1218,8 @@ export class MediaController {
                         $db: 'hyppe_content_db'
                     }
                 });
+
+                await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
             } catch (err) {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed failed update Mediaproofpicts ' + err,
