@@ -445,7 +445,8 @@ export class UserbasicsService {
     );
   }
 
-  async kycList(startDate: String, endDate: String, search: String, skip: number, limit: number): Promise<object> {
+  async kycList(startDate: String, endDate: String, search: String, skip: number, limit: number) {
+    const mediaproofpictsService = await this.mediaproofpictsService.findmediaproofpicts();
     const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
     var date_range_match = {};
     var startDate_format = null;
@@ -556,7 +557,6 @@ export class UserbasicsService {
       limit_ = { $limit: Number(limit) };
       Query_aggregate.push(limit_);
     }
-    const mediaproofpictsService = await this.mediaproofpictsService.findmediaproofpicts();
     const query = await this.userbasicModel.aggregate(Query_aggregate);
     return query;
   }
