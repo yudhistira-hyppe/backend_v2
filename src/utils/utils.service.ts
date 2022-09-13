@@ -32,7 +32,7 @@ const QRCode = require('qrcode');
 const nodeHtmlToImage = require('node-html-to-image');
 var path = require("path");
 const Cryptr = require('cryptr');
-const cryptr = new Cryptr(process.env.SALT_PIN);
+const cryptr = new Cryptr("vgqgveogdwinzlig");
 
 @Injectable()
 export class UtilsService {
@@ -461,6 +461,20 @@ export class UtilsService {
   async getDateTimeDate(): Promise<Date> {
     return new Date();
   }
+
+  now(): number {
+    let now = new Date();
+    return now.getTime();
+  }  
+
+  generateExpiration(date: Date, day: number): number {
+    if (date == undefined) {
+      return undefined;
+    }
+
+    date.setDate(date.getDate() + day);
+    return date.getTime();
+  }    
 
   async validasiEmail(email: string): Promise<boolean> {
     var valid_email = false;

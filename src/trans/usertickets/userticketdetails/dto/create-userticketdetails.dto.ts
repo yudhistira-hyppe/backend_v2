@@ -11,7 +11,14 @@ export class CreateUserticketdetailsDto {
     datetime: string;
     IdUser: { oid: String; };
     status: string;
-
+    mediaType: String;
+    mediaBasePath: String;
+    mediaUri: any[];
+    originalName: any[];
+    fsSourceUri: any[];
+    fsSourceName: any[];
+    fsTargetUri: any[];
+    mediaMime: string;
 
 
 }

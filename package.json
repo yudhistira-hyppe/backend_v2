@@ -10,7 +10,6 @@
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
-    "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
@@ -18,7 +17,9 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "start:local": "NODE_ENV=local npm run start",
+    "start:dev": "NODE_ENV=dev npm run start"
   },
   "dependencies": {
     "@alicloud/pop-core": "^1.7.12",
@@ -44,6 +45,7 @@
     "cryptr": "^6.0.3",
     "date-diff": "^1.0.2",
     "debug-mode": "^2.0.2",
+    "dotenv": "^16.0.2",
     "express-session": "^1.17.3",
     "firebase-admin": "^11.0.0",
     "form-data": "^4.0.0",

@@ -1,20 +1,179 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Request, Req, BadRequestException } from '@nestjs/common';
+import { Body, Controller, Headers, Delete, Get, Param, Post, UseGuards, Put, Request, Req, BadRequestException, HttpCode, UseInterceptors, UploadedFiles, HttpException } from '@nestjs/common';
 import { UserticketsService } from './usertickets.service';
 import { CreateUserticketsDto } from './dto/create-usertickets.dto';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserbasicsService } from '../userbasics/userbasics.service';
+import { UserauthsService } from '../userauths/userauths.service';
 import { Res, HttpStatus, Response } from '@nestjs/common';
+import { ErrorHandler } from "../../utils/error.handler";
 import { isEmpty } from 'rxjs';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { UtilsService } from "../../utils/utils.service";
+import { SeaweedfsService } from "../../stream/seaweedfs/seaweedfs.service";
+import { SettingsService } from '../settings/settings.service';
+import { extname } from 'path';
+import { diskStorage } from 'multer';
+import * as fse from 'fs-extra';
+import * as fs from 'fs';
+//import FormData from "form-data";
+const multer = require('multer');
+var FormData = require('form-data');
+var path = require("path");
 
+export const multerConfig = {
+  // dest: process.env.PATH_UPLOAD,
+  dest: './temp/'
+};
 
+export const multerOptions = {
+  limits: {
+    fileSize: +process.env.MAX_FILE_SIZE,
+  },
+  fileFilter: (req: any, file: any, cb: any) => {
+    if (file.mimetype.match(/\/(jpg|jpeg|png|gif)$/)) {
+      cb(null, true);
+    } else {
+      cb(new HttpException(`Unsupported file type ${extname(file.originalname)}`, HttpStatus.BAD_REQUEST), false);
+    }
+  },
+  storage: diskStorage({
+    destination: (req: any, file: any, cb: any) => {
+      const uploadPath = multerConfig.dest;
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath);
+      }
+      cb(null, uploadPath);
+    },
+    filename: (req: any, file: any, cb: any) => {
+      const fileName = file.originalname.toLowerCase().split(' ').join('-');
+      cb(null, fileName)
+    },
+  }),
+};
 @Controller()
 export class UserticketsController {
-  constructor(private readonly userticketsService: UserticketsService, private readonly userbasicsService: UserbasicsService) { }
+  constructor(private readonly userticketsService: UserticketsService,
+    private readonly utilsService: UtilsService,
+    private readonly errorHandler: ErrorHandler,
+    private readonly userbasicsService: UserbasicsService,
+    private readonly settingsService: SettingsService,
+    private readonly userauthsService: UserauthsService,
+    private readonly seaweedfsService: SeaweedfsService) { }
 
+
+  // @UseGuards(JwtAuthGuard)
+  // @Post('api/usertickets/createticket')
+  // async create(@Res() res, @Body() CreateUserticketsDto: CreateUserticketsDto, @Request() req) {
+  //   const mongoose = require('mongoose');
+  //   var ObjectId = require('mongodb').ObjectId;
+  //   const messages = {
+  //     "info": ["The create successful"],
+  //   };
+
+  //   const messagesEror = {
+  //     "info": ["Todo is not found!"],
+  //   };
+  //   var reqdata = req.user;
+  //   var email = reqdata.email;
+
+  //   var datatiket = await this.userticketsService.findAll();
+  //   var leng = datatiket.length + 1;
+
+  //   var curdate = new Date(Date.now());
+  //   var beforedate = curdate.toISOString();
+
+  //   var substrtahun = beforedate.substring(0, 4);
+  //   var numtahun = parseInt(substrtahun);
+
+
+
+  //   var substrbulan = beforedate.substring(7, 5);
+  //   var numbulan = parseInt(substrbulan);
+  //   var substrtanggal = beforedate.substring(10, 8);
+  //   var numtanggal = parseInt(substrtanggal);
+
+  //   var rotahun = this.romawi(numtahun);
+  //   var robulan = this.romawi(numbulan);
+  //   var rotanggal = this.romawi(numtanggal);
+  //   var angka = await this.generateNumber();
+  //   var no = "HYPPE/" + (await rotahun).toString() + "/" + (await robulan).toString() + "/" + (await rotanggal).toString() + "/" + leng;
+
+  //   var ubasic = await this.userbasicsService.findOne(email);
+
+  //   var iduser = ubasic._id;
+  //   var dt = new Date(Date.now());
+  //   dt.setHours(dt.getHours() + 7); // timestamp
+  //   dt = new Date(dt);
+
+  //   var idcategory = mongoose.Types.ObjectId(CreateUserticketsDto.categoryTicket);
+  //   var idsource = mongoose.Types.ObjectId(CreateUserticketsDto.sourceTicket);
+  //   var idlevel = mongoose.Types.ObjectId(CreateUserticketsDto.levelTicket);
+  //   CreateUserticketsDto.IdUser = iduser;
+  //   CreateUserticketsDto.datetime = dt.toISOString();
+  //   CreateUserticketsDto.nomortiket = no;
+  //   CreateUserticketsDto.active = true;
+  //   CreateUserticketsDto.categoryTicket = idcategory;
+  //   CreateUserticketsDto.sourceTicket = idsource;
+  //   CreateUserticketsDto.levelTicket = idlevel;
+
+  //   try {
+  //     let data = await this.userticketsService.create(CreateUserticketsDto);
+  //     res.status(HttpStatus.OK).json({
+  //       response_code: 202,
+  //       "data": data,
+  //       "message": messages
+  //     });
+  //   } catch (e) {
+  //     res.status(HttpStatus.BAD_REQUEST).json({
+
+  //       "message": messagesEror
+  //     });
+  //   }
+  // }
 
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/usertickets/createticket')
-  async create(@Res() res, @Body() CreateUserticketsDto: CreateUserticketsDto, @Request() req) {
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 3 }], multerOptions))
+  async upload(
+    @UploadedFiles() files: {
+      supportFile?: Express.Multer.File[],
+
+    },
+    // @UploadedFiles() files2: Array<Express.Multer.File>,
+    @Body() CreateUserticketsDto: CreateUserticketsDto,
+    @Headers() headers, @Res() res) {
+    //  var idmediaproofpict = CreateMediaproofpictsDto_._id.toString();
+
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed token and email not match',
+      );
+    }
+
+    if (headers['x-auth-token'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email is required',
+      );
+    }
+
+
+    var datausertiket = null;
+    //Var supportFile
+    let supportFile_data = null;
+    let supportFile_filename = '';
+    let supportFile_etx = '';
+    let supportFile_mimetype = '';
+    let supportFile_name = '';
+    let supportFile_filename_new = '';
+    let supportFile_local_path = '';
+    let supportFile_seaweedfs_path = '';
+    var arrayUri = [];
+    var arrayName = [];
+    var arraySuri = [];
+    var arraySname = [];
+    var auth = null;
+    var os = null;
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
     const messages = {
@@ -24,61 +183,175 @@ export class UserticketsController {
     const messagesEror = {
       "info": ["Todo is not found!"],
     };
-    var reqdata = req.user;
-    var email = reqdata.email;
+    //Ceck User Userbasics
+    const datauserbasicsService = await this.userbasicsService.findOne(
+      headers['x-auth-user'],
+    );
 
-    var datatiket = await this.userticketsService.findAll();
-    var leng = datatiket.length + 1;
+    if (await this.utilsService.ceckData(datauserbasicsService)) {
+      // var mongoose_gen_meida = new mongoose.Types.ObjectId();
 
-    var curdate = new Date(Date.now());
-    var beforedate = curdate.toISOString();
-
-    var substrtahun = beforedate.substring(0, 4);
-    var numtahun = parseInt(substrtahun);
-
+      //Update proofPict
+      try {
 
 
-    var substrbulan = beforedate.substring(7, 5);
-    var numbulan = parseInt(substrbulan);
-    var substrtanggal = beforedate.substring(10, 8);
-    var numtanggal = parseInt(substrtanggal);
+        var email = headers['x-auth-user'];
 
-    var rotahun = this.romawi(numtahun);
-    var robulan = this.romawi(numbulan);
-    var rotanggal = this.romawi(numtanggal);
-    var angka = await this.generateNumber();
-    var no = "HYPPE/" + (await rotahun).toString() + "/" + (await robulan).toString() + "/" + (await rotanggal).toString() + "/" + leng;
+        var datatiket = await this.userticketsService.findAll();
+        var leng = datatiket.length + 1;
 
-    var ubasic = await this.userbasicsService.findOne(email);
+        var curdate = new Date(Date.now());
+        var beforedate = curdate.toISOString();
 
-    var iduser = ubasic._id;
-    var dt = new Date(Date.now());
-    dt.setHours(dt.getHours() + 7); // timestamp
-    dt = new Date(dt);
+        var substrtahun = beforedate.substring(0, 4);
+        var numtahun = parseInt(substrtahun);
 
-    var idcategory = mongoose.Types.ObjectId(CreateUserticketsDto.categoryTicket);
-    var idsource = mongoose.Types.ObjectId(CreateUserticketsDto.sourceTicket);
-    var idlevel = mongoose.Types.ObjectId(CreateUserticketsDto.levelTicket);
-    CreateUserticketsDto.IdUser = iduser;
-    CreateUserticketsDto.datetime = dt.toISOString();
-    CreateUserticketsDto.nomortiket = no;
-    CreateUserticketsDto.active = true;
-    CreateUserticketsDto.categoryTicket = idcategory;
-    CreateUserticketsDto.sourceTicket = idsource;
-    CreateUserticketsDto.levelTicket = idlevel;
 
-    try {
-      let data = await this.userticketsService.create(CreateUserticketsDto);
-      res.status(HttpStatus.OK).json({
-        response_code: 202,
-        "data": data,
-        "message": messages
-      });
-    } catch (e) {
-      res.status(HttpStatus.BAD_REQUEST).json({
 
-        "message": messagesEror
-      });
+        var substrbulan = beforedate.substring(7, 5);
+        var numbulan = parseInt(substrbulan);
+        var substrtanggal = beforedate.substring(10, 8);
+        var numtanggal = parseInt(substrtanggal);
+
+        var rotahun = this.romawi(numtahun);
+        var robulan = this.romawi(numbulan);
+        var rotanggal = this.romawi(numtanggal);
+        var angka = await this.generateNumber();
+        var no = "HYPPE/" + (await rotahun).toString() + "/" + (await robulan).toString() + "/" + (await rotanggal).toString() + "/" + leng;
+
+        var ubasic = await this.userbasicsService.findOne(email);
+
+        var iduser = ubasic._id;
+        try {
+          auth = await this.userauthsService.findOneByEmail(email);
+          os = auth.regSrc;
+        } catch (e) {
+          os = "";
+        }
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var idversion = "62bbdb4ba7520000050077a7";
+        var dataversion = await this.settingsService.findOne(idversion);
+        var version = dataversion.value;
+        var idcategory = mongoose.Types.ObjectId(CreateUserticketsDto.categoryTicket);
+        var idsource = mongoose.Types.ObjectId(CreateUserticketsDto.sourceTicket);
+        var idlevel = mongoose.Types.ObjectId(CreateUserticketsDto.levelTicket);
+        CreateUserticketsDto.IdUser = iduser;
+        CreateUserticketsDto.datetime = dt.toISOString();
+        CreateUserticketsDto.nomortiket = no;
+        CreateUserticketsDto.active = true;
+        CreateUserticketsDto.categoryTicket = idcategory;
+        CreateUserticketsDto.sourceTicket = idsource;
+        CreateUserticketsDto.levelTicket = idlevel;
+        CreateUserticketsDto.version = version;
+        CreateUserticketsDto.OS = os;
+        datausertiket = await this.userticketsService.create(CreateUserticketsDto);
+        var IdMediaproofpictsDto = datausertiket._id.toString();
+        var objadsid = datausertiket._id;
+        var paths = IdMediaproofpictsDto;
+        var mongoose_gen_meida = paths;
+        //Ceck supportFile
+        if (files.supportFile != undefined) {
+          var countfile = files.supportFile.length;
+
+          for (var i = 0; i < countfile; i++) {
+            var FormData_ = new FormData();
+            supportFile_data = files.supportFile[i];
+            supportFile_mimetype = files.supportFile[i].mimetype;
+            supportFile_filename = files.supportFile[i].filename;
+            supportFile_etx = supportFile_filename.substring(supportFile_filename.lastIndexOf('.') + 1, supportFile_filename.length);
+            supportFile_name = supportFile_filename.substring(0, supportFile_filename.lastIndexOf('.'));
+
+            //New Name file supportFile
+            supportFile_filename_new = IdMediaproofpictsDto + '_000' + (i + 1) + '.' + supportFile_etx;
+            //Rename Name file supportFile
+            fs.renameSync('./temp/' + supportFile_filename, './temp/' + supportFile_filename_new);
+
+            //Local path
+            supportFile_local_path = './temp/' + mongoose_gen_meida + '/' + supportFile_filename_new;
+            //SeaweedFs path
+            supportFile_seaweedfs_path = '/' + mongoose_gen_meida + '/supportfile/';
+
+            //Create Folder Id
+            if (await this.utilsService.createFolder('./temp/', mongoose_gen_meida)) {
+
+              await fse.move('./temp/' + supportFile_filename_new, './temp/' + mongoose_gen_meida + '/' + supportFile_filename_new);
+            } else {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed create folder ' + mongoose_gen_meida,
+              );
+            }
+
+            //Upload Seaweedfs
+            try {
+              FormData_.append('proofpict', fs.createReadStream(path.resolve(supportFile_local_path)));
+              await this.seaweedfsService.write(supportFile_seaweedfs_path, FormData_);
+            } catch (err) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed proofpict failed upload seaweedfs',
+              );
+            }
+
+            var objSuri = '/localrepo/' + mongoose_gen_meida + '/supportfile/' + supportFile_filename_new;
+            var objsname = supportFile_filename_new.replace('_000' + i, '');
+
+            arrayUri.push(supportFile_filename_new);
+            arrayName.push(supportFile_filename);
+            arraySuri.push(objSuri);
+            arraySname.push(objsname);
+          }
+
+          CreateUserticketsDto.mediaType = 'supportfile';
+          CreateUserticketsDto.mediaBasePath = mongoose_gen_meida + '/supportfile/';
+          CreateUserticketsDto.mediaUri = arrayUri;
+          CreateUserticketsDto.originalName = arrayName;
+          CreateUserticketsDto.fsSourceUri = arraySuri;
+          CreateUserticketsDto.fsSourceName = arraySname;
+          CreateUserticketsDto.fsTargetUri = arraySuri;
+          CreateUserticketsDto.mediaMime = supportFile_mimetype;
+          await this.userticketsService.updatedata(objadsid, CreateUserticketsDto);
+
+          var data = await this.userticketsService.findOne(objadsid);
+
+
+
+          //Delete directory recursively
+
+          fs.rm('./temp/' + mongoose_gen_meida, { recursive: true }, (err) => {
+            if (err) {
+              throw err;
+            }
+          });
+
+          res.status(HttpStatus.OK).json({
+            response_code: 202,
+            "data": data,
+            "message": messages
+          });
+
+
+        } else {
+          res.status(HttpStatus.OK).json({
+            response_code: 202,
+            "data": datausertiket,
+            "message": messages
+          });
+
+        }
+
+      } catch (err) {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed' + err,
+        );
+      }
+
+
+    }
+    else {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed user not found',
+      );
     }
   }
 

@@ -97,7 +97,7 @@ export class PostContentService {
     post.email = auth.email;
     post.createdAt = await this.utilService.getDateTimeString();
     post.updatedAt = await this.utilService.getDateTimeString();
-    post.expiration = new Long(1000);
+    post.expiration = new Long(this.utilService.generateExpiration(new Date(), 1));
     post._class = 'io.melody.hyppe.content.domain.ContentPost';
 
     if (body.description != undefined) {
@@ -406,7 +406,7 @@ export class PostContentService {
   
       var mes = new Mediastories();
       mes._id = await this.utilService.generateId();
-      mes.mediaID = med._id;
+      mes.mediaID = mes._id;
       mes.postID = post.postID;
       mes.active = false;
       mes.createdAt = await this.utilService.getDateTimeString();
@@ -478,7 +478,7 @@ export class PostContentService {
       post.metadata = metadata;
       post.active = true;
       this.postService.create(post);          
-    } else {
+    } else if (ns == 'mediapicts') {
       let pic = await this.picService.findOne(cm.oid);
       if (pic == undefined) {
         return;
@@ -490,6 +490,51 @@ export class PostContentService {
 
       post.active = true;
       this.postService.create(post);                
+
+      let todel = body.filedel + "";
+      unlink(todel, (err) => {
+        if (err) {
+  
+        }
+      });      
+    } else if (ns == 'mediastories') {
+      let st = await this.storyService.findOne(cm.oid);
+      if (st == undefined) {
+        return;
+      }
+
+      st.apsaraId = body.videoId;
+      st.active = true;
+      this.storyService.create(st);
+
+      post.active = true;
+      this.postService.create(post);                
+
+      let todel = body.filedel + "";
+      unlink(todel, (err) => {
+        if (err) {
+  
+        }
+      });            
+    } else if (ns == 'mediadiaries') {
+      let dy = await this.diaryService.findOne(cm.oid);
+      if (dy == undefined) {
+        return;
+      }
+
+      dy.apsaraId = body.videoId;
+      dy.active = true;
+      this.diaryService.create(dy);
+
+      post.active = true;
+      this.postService.create(post);                
+
+      let todel = body.filedel + "";
+      unlink(todel, (err) => {
+        if (err) {
+  
+        }
+      });            
     }
 
 
@@ -614,6 +659,10 @@ export class PostContentService {
 
     if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
       query.where('active', true);
+    }
+
+    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
+      query.where('expiration').gte(this.utilService.now());
     }
 
     let row = 20;
