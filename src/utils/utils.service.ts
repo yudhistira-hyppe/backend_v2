@@ -673,7 +673,7 @@ export class UtilsService {
       if (get_insight.followings != undefined) { CreateInsightsDto_.followings = get_insight.followings; }
       if (get_insight.posts != undefined) { CreateInsightsDto_.posts = get_insight.posts; }
       if (get_insight.reactions != undefined) { CreateInsightsDto_.reactions = get_insight.reactions; }
-      if (get_insight.posts != undefined) { CreateInsightsDto_.followers = get_insight.posts; }
+      if (get_insight.posts != undefined) { CreateInsightsDto_.posts = get_insight.posts; }
       if (get_insight.views != undefined) { CreateInsightsDto_.views = get_insight.views; }
       if (get_insight.likes != undefined) { CreateInsightsDto_.likes = get_insight.likes; }
     }

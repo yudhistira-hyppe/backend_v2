@@ -176,6 +176,12 @@ export class UserbasicsController {
     if (limit != undefined) {
       limit_ = limit;
     }
-    return await this.userbasicsService.kycList(startDate_, endDate_, search_, skip_, limit_);
+    var data = await this.userbasicsService.kycList(startDate_, endDate_, search_, skip_, limit_);
+    var data_ = (await this.userbasicsService.kycList(null, null, "", null, null));
+    const totalRow = data_;
+    console.log(typeof data_);
+    return {
+      response_code: 202, data: data, totalRow: totalRow, skip: skip, limit: limit, messages: {}
+    }
   }
 }

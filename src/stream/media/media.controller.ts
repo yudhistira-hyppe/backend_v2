@@ -498,6 +498,7 @@ export class MediaController {
                     CreateMediaproofpictsDto_.SelfiefsSourceName = cardPict_filename_new.replace(cardPict_etx, 'jpg').replace('_0001', '');
                     CreateMediaproofpictsDto_.SelfiefsTargetUri = '/localrepo/' + mongoose_gen_meida + '/selfiepict/' + cardPict_filename_new;
                     CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype;
+                    CreateMediaproofpictsDto_._class = "io.melody.hyppe.content.domain.MediaProofPict";
                     CreateMediaproofpictsDto_.userId = {
                         $ref: "userbasics",
                         $id: Object(datauserbasicsService._id.toString()),
@@ -535,7 +536,8 @@ export class MediaController {
                     CreateMediaproofpictsDto_.SelfiefsSourceUri = '/localrepo/' + mongoose_gen_meida + '/selfiepict/' + selfiepict_filename_new;
                     CreateMediaproofpictsDto_.SelfiefsSourceName = cardPict_filename_new.replace(cardPict_etx, 'jpg').replace('_0001', '');
                     CreateMediaproofpictsDto_.SelfiefsTargetUri = '/localrepo/' + mongoose_gen_meida + '/selfiepict/' + cardPict_filename_new;
-                    CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype;
+                    CreateMediaproofpictsDto_._class = "io.melody.hyppe.content.domain.MediaProofPict";
+                    CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype; 
                     CreateMediaproofpictsDto_.userId = {
                         $ref: "userbasics",
                         $id: Object(datauserbasicsService._id.toString()),
@@ -607,6 +609,7 @@ export class MediaController {
                         };
                     }else {
                         var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                        _CreateMediaproofpictsDto.status = 'FAILED';
                         _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict dan Selfie Pict';
                         await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                         await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
@@ -627,6 +630,7 @@ export class MediaController {
                     }
                 } catch (err) {
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.status = 'FAILED';
                     _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict';
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
@@ -649,6 +653,7 @@ export class MediaController {
             }else {
                 if (face_detect_selfiepict.FaceDetails.length == 0) {
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
+                    _CreateMediaproofpictsDto.status = 'FAILED';
                     _CreateMediaproofpictsDto.state = 'Kesalahan Selfie Pict';
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
