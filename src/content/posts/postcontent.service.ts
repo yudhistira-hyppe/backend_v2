@@ -50,7 +50,7 @@ export class PostContentService {
   ) { }
 
   async createNewPost(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
-    console.log(body);
+    this.logger.log('createNewPost >>> start: ' + JSON.stringify(body));
     var res = new CreatePostResponse();
     res.response_code = 204;
 
@@ -74,6 +74,7 @@ export class PostContentService {
       this.logger.log('createNewPost >>> is video');
       return this.createNewPostVideo(file, body, headers);
     } else {
+      this.logger.log('createNewPost >>> is picture');
       return this.createNewPostPict(file, body, headers);
     }
     return null;
@@ -233,10 +234,14 @@ export class PostContentService {
         ins.posts = new Long(1);
       }
     } else {
-      //TODO BUG BUG BUG
-      let prevPost = ins.posts;
-      let nextPost = Number(prevPost) + 1;
-      ins.posts = new Long(nextPost);
+
+      if (post.postType != 'story') {
+        //TODO BUG BUG BUG
+        let prevPost = ins.posts;
+        let nextPost = Number(prevPost) + 1;
+        ins.posts = new Long(nextPost);        
+      }
+
     }
     this.insightService.create(ins);
 
@@ -259,7 +264,7 @@ export class PostContentService {
   }
 
   private async createNewPostVideo(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
-
+    this.logger.log('createNewPostVideo >>> start: ' + JSON.stringify(body));
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 
@@ -301,7 +306,7 @@ export class PostContentService {
   
       var mes = new Mediastories();
       mes._id = await this.utilService.generateId();
-      mes.mediaID = med._id;
+      mes.mediaID = mes._id;
       mes.postID = post.postID;
       mes.active = false;
       mes.createdAt = await this.utilService.getDateTimeString();
@@ -317,7 +322,7 @@ export class PostContentService {
 
       this.logger.log('createNewPostVideo >>> ' + rets);
 
-      var stories = { "$ref": "mediastories", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
       cm.push(stories);  
 
     } else if (postType == 'diary') {
