@@ -93,7 +93,7 @@ export class PostContentService {
     let post = new Posts();
     post._id = await this.utilService.generateId();
     post.postID = post._id;
-    //post.postType = 'vid';
+    post.postType = body.postType;
     post.active = true;
     post.email = auth.email;
     post.createdAt = await this.utilService.getDateTimeString();
