@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople } from './dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -58,13 +58,17 @@ export class PostContentService {
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
     if (profile == undefined) {
-      res.messages = "Email tidak dikenali";
+      let msg = new Messages();
+      msg.info = ["Email unknown"];
+      res.messages = msg;
       return res;
     }
 
     if (body.certified && body.certified == "true") {
       if (profile.isIdVerified != true) {
-        res.messages = "Profile belum verifikasi KTP";
+        let msg = new Messages();
+        msg.info = ["The user ID has not been verified"];
+        res.messages = msg;
         return res;        
       } 
     }
@@ -77,7 +81,6 @@ export class PostContentService {
       this.logger.log('createNewPost >>> is picture');
       return this.createNewPostPict(file, body, headers);
     }
-    return null;
   }
 
   private async buildPost(body: any, headers: any): Promise<Posts> {
@@ -369,10 +372,17 @@ export class PostContentService {
 
     let payload = {'file' : nm, 'postId' : apost._id};
     axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: {'Content-Type': 'application/json'}});
+    
     var res = new CreatePostResponse();
     res.response_code = 202;
-    res.messages = "";
-    return null;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+    
+    return res;
   }
 
   private async createNewPostPict(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
@@ -444,10 +454,17 @@ export class PostContentService {
 
     let payload = {'file' : nm, 'postId' : apost._id};
     axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: {'Content-Type': 'application/json'}});
+
     var res = new CreatePostResponse();
     res.response_code = 202;
-    res.messages = "";
-    return null;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+    
+    return res;
   }
 
 
@@ -549,7 +566,15 @@ export class PostContentService {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);    
-    this.logger.log('getUserPost >>> profile: ' + profile);
+    if (profile == null) {
+      let res = new PostResponseApps();
+      let msg = new Messages
+      msg.info = ["User tidak tedaftar"];
+      res.messages = msg;
+      res.response_code = 204;
+      return res;      
+    }
+    this.logger.log('getUserPost >>> profile: ' + profile.email);
 
     let res = new PostResponseApps();
     res.response_code = 202;

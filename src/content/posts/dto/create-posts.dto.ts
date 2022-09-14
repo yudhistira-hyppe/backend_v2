@@ -48,8 +48,8 @@ export class CreatePostsDto {
 
   export class CreatePostResponse {
     response_code: number;
-    messages: String;
-    data: PostData[];
+    messages: Messages;
+    data: PostData;
   }  
 
   export class Metadata {
