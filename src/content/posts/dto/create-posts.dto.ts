@@ -189,6 +189,10 @@ export class ApsaraImageResponse {
     ImageInfo: ImageInfo[];
 }
 
+export class ApsaraPlayResponse {
+    PlayUrl: string;
+}
+
 export class InsightPost {
     follower: number;
     following: number;

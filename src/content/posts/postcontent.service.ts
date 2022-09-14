@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost } from './dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -1062,6 +1062,34 @@ export class PostContentService {
     let tx: ApsaraImageResponse = Object.assign(dto,JSON.parse(JSON.stringify(result)));
     return tx;
   }  
+
+  async getVideoApsaraSingle(ids: String): Promise<ApsaraPlayResponse> {
+    var RPCClient = require('@alicloud/pop-core').RPCClient;
+
+    let client = new RPCClient({
+      accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+      accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+      endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+      apiVersion: '2017-03-21'
+    });
+
+    let params = {
+      "RegionId": this.configService.get("APSARA_REGION_ID"),
+      "VideoId" : ids
+    }
+    
+    let requestOption = {
+      method: 'POST'
+    };    
+
+    let dto = new ApsaraVideoResponse();
+    let result = await client.request('GetPlayInfo', params, requestOption);
+    let xres = new ApsaraPlayResponse();
+    if (result != null && result.PlayInfoList != null && result.PlayInfoList.PlayInfo && result.PlayInfoList.PlayInfo.length > 0) {
+      xres.PlayUrl = result.PlayInfoList.PlayInfo[0].PlayURL;
+    }
+    return xres;
+  }
 
   private paging(page: number, row: number) {
     if (page == 0 || page == 1) {
