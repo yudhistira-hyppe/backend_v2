@@ -907,6 +907,7 @@ export class PostContentService {
               if (video.apsara == true) {
                 vids.push(video.apsaraId);
                 pa.apsaraId = String(video.apsaraId);
+                pa.isApsara = true;
               } else {
                 pa.mediaThumbUri = video.mediaThumb;
                 pa.mediaEndpoint = '/stream/' + video.mediaUri;
@@ -917,6 +918,7 @@ export class PostContentService {
               if (pic.apsara == true) {
                 pics.push(pic.apsaraId);
                 pa.apsaraId = String(pic.apsaraId);
+                pa.isApsara = true;
               } else {
                 pa.mediaEndpoint = '/pict/' + pic.postID;
                 pa.mediaUri = pic.mediaUri;
@@ -926,6 +928,7 @@ export class PostContentService {
               if (diary.apsara == true) {
                 vids.push(diary.apsaraId);
                 pa.apsaraId = String(diary.apsaraId);
+                pa.isApsara = true;
               } else {
                 pa.mediaThumbUri = diary.mediaThumb;
                 pa.mediaEndpoint = '/stream/' + diary.mediaUri;
@@ -961,6 +964,7 @@ export class PostContentService {
               let ps = pd[j];
               if (ps.apsaraId == vi.ImageId) {
                 ps.mediaThumbEndpoint = vi.URL;
+                ps.mediaThumbUri = vi.URL;
               }
             }
           }
