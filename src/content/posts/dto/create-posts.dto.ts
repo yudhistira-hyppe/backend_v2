@@ -122,6 +122,7 @@ export class PostData {
     privacy?: Privacy;
     username: string;
     apsaraId: string;
+    insight: InsightPost;
 }
 
 export class Messages {
@@ -184,4 +185,14 @@ export class ApsaraImageResponse {
     RequestId: string;
     NonExistImageIds: any[];
     ImageInfo: ImageInfo[];
+}
+
+export class InsightPost {
+    follower: number;
+    following: number;
+    likes: number;
+    views: number;
+    shares: number;
+    comments: number;
+    reactions: number;
 }
