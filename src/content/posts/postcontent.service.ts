@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages } from './dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -895,6 +895,26 @@ export class PostContentService {
         pa.privacy = privacy;
 
         pa.tags = ps.tags;
+
+        //Insight
+
+        if ((body.withInsight != undefined && (body.withInsight == true || body.withInsight == 'true'))) {
+          let insight = await this.insightService.findemail(String(ps.email));
+          if (insight == undefined) {
+            continue;
+          }
+
+          let tmp = new InsightPost();
+          tmp.follower = Number(insight.followers);
+          tmp.following = Number(insight.followings);
+          tmp.likes = Number(insight.likes);
+          tmp.views = Number(insight.views);
+          tmp.shares = Number(insight.shares);
+          tmp.comments = Number(insight.comments);
+          tmp.reactions = Number(insight.reactions);
+          pa.insight = tmp;
+
+        }
 
         //MEDIA
         let meds = ps.contentMedias;
