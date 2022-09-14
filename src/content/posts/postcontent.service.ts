@@ -579,7 +579,7 @@ export class PostContentService {
     let res = new PostResponseApps();
     res.response_code = 202;
     let posts = await this.doGetUserPost(body, headers, profile);
-    let pd = await this.loadPostData(posts, body);
+    let pd = await this.loadPostData(posts, body, profile);
     res.data = pd;
 
     return res;
@@ -596,7 +596,7 @@ export class PostContentService {
     let res = new PostResponseApps();
     res.response_code = 202;
     let posts = await this.doGetUserPostMy(body, headers, profile);
-    let pd = await this.loadPostData(posts, body);
+    let pd = await this.loadPostData(posts, body, profile);
     res.data = pd;
 
     return res;
@@ -607,13 +607,13 @@ export class PostContentService {
     let type = 'GET_POST';
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    var profile = await this.userService.findOne(auth.email);    
+    var profile = await this.userService.findOne(body.email);    
     this.logger.log('getUserPost >>> profile: ' + profile);
 
     let res = new PostResponseApps();
     res.response_code = 202;
     let posts = await this.doGetUserPostTheir(body, headers, profile);
-    let pd = await this.loadPostData(posts, body);
+    let pd = await this.loadPostData(posts, body, profile);
     res.data = pd;
 
     return res;
@@ -784,7 +784,7 @@ export class PostContentService {
     return res;
   }  
 
-  private async loadPostData(posts: Posts[], body: any): Promise<PostData[]> {
+  private async loadPostData(posts: Posts[], body: any, iam: Userbasic): Promise<PostData[]> {
     let pd = Array<PostData>();
     if (posts != undefined) {
 
@@ -933,6 +933,23 @@ export class PostContentService {
                 pa.mediaEndpoint = '/stream/' + video.mediaUri;
                 pa.mediaThumbEndpoint = '/thumb/' + video.postID;
               }
+
+              //isview
+              pa.isViewed = false;
+              if (video.viewers != undefined && video.viewers.length > 0) {
+                for(let i = 0; i < video.viewers.length; i++) {
+                  let vwt = video.viewers[i];
+                  let vwns = vwt.namespace;
+                  if (vwns == 'userbasics') {
+                    let vw = await this.userService.findbyid(vwns.oid);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }
+
             } else if (ns == 'mediapicts') {
               let pic = await this.picService.findOne(String(med.oid));
               if (pic.apsara == true) {
