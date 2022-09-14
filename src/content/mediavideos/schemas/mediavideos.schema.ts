@@ -45,6 +45,8 @@ export class Mediavideos {
   apsara: boolean 
   @Prop()
   apsaraId: String   
+  @Prop()
+  viewers: any[];    
 }
 
 export const MediavideosSchema = SchemaFactory.createForClass(Mediavideos);

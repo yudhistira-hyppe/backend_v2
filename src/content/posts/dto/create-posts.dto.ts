@@ -123,6 +123,8 @@ export class PostData {
     username: string;
     apsaraId: string;
     insight: InsightPost;
+    isViewed: boolean;
+    isLiked: boolean;
 }
 
 export class Messages {

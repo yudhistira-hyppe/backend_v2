@@ -45,6 +45,8 @@ export class Mediadiaries {
  apsaraId: String
  @Prop()
  originalName: String  
+ @Prop()
+ viewers: any[]; 
 }
 
 export const MediadiariesSchema = SchemaFactory.createForClass(Mediadiaries);
