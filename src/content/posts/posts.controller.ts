@@ -300,6 +300,6 @@ export class PostsController {
   @Post('api/posts/getvideo')
   async getVideo(@Body() body, @Headers() headers) {
     this.logger.log("getVideo >>> start: " + JSON.stringify(body));
-    return this.postContentService.getUserPost(body, headers);
+    return this.postContentService.getVideoApsaraSingle(String(body.apsaraId));
   }    
 }
