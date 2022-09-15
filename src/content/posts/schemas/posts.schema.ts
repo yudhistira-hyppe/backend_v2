@@ -71,6 +71,7 @@ export class Posts {
 
   @Prop()
   contentMedias: any[];  
+
   @Prop()
   _class: String
 
@@ -88,6 +89,7 @@ export class Posts {
   
   @Prop()
   tagDescription: any[];  
+  
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

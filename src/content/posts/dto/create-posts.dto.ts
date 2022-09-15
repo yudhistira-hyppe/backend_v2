@@ -125,6 +125,7 @@ export class PostData {
     insight: InsightPost;
     isViewed: boolean;
     isLiked: boolean;
+    avatar: Avatar;
 }
 
 export class Messages {
@@ -202,3 +203,4 @@ export class InsightPost {
     comments: number;
     reactions: number;
 }
+
