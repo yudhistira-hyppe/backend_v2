@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse } from './dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -26,6 +26,8 @@ import { Mediadiaries } from '../mediadiaries/schemas/mediadiaries.schema';
 import { Mediapicts } from '../mediapicts/schemas/mediapicts.schema';
 import { MediapictsService } from '../mediapicts/mediapicts.service';
 import { MediadiariesService } from '../mediadiaries/mediadiaries.service';
+import { MediaprofilepictsService } from '../mediaprofilepicts/mediaprofilepicts.service';
+import { IsDefined } from 'class-validator';
 
 
 @Injectable()
@@ -46,6 +48,7 @@ export class PostContentService {
     private diaryService: MediadiariesService,
     private insightService: InsightsService,
     private contentEventService: ContenteventsService,
+    private profilePictService: MediaprofilepictsService,
     private readonly configService: ConfigService,
   ) { }
 
@@ -812,6 +815,7 @@ export class PostContentService {
                   pa.username = ub.username;
                 }
 
+                pa.avatar = await this.getProfileAvatar(ua);
               }
             }
         }
@@ -854,7 +858,11 @@ export class PostContentService {
                 tp1.email = String(ua.email);
                 tp1.status = 'TOFOLLOW';
                 tp1.username = String(ua.username);
-      
+
+                let ub = await this.userService.findOne(String(ua.email));
+                if (ub != undefined) {
+                  tp1.avatar = await this.getProfileAvatar(ub);
+                }
                 atp1.push(tp1);
               }
             }
@@ -934,6 +942,9 @@ export class PostContentService {
                 pa.mediaThumbEndpoint = '/thumb/' + video.postID;
               }
 
+              //mediatype
+              pa.mediaType = 'video';
+
               //isview
               pa.isViewed = false;
               if (video.viewers != undefined && video.viewers.length > 0) {
@@ -960,6 +971,24 @@ export class PostContentService {
                 pa.mediaEndpoint = '/pict/' + pic.postID;
                 pa.mediaUri = pic.mediaUri;
               }
+
+              pa.mediaType = 'image';
+
+              //isview
+              pa.isViewed = false;
+              if (pic.viewers != undefined && pic.viewers.length > 0) {
+                for(let i = 0; i < pic.viewers.length; i++) {
+                  let pct = pic.viewers[i];
+                  let pcns = pct.namespace;
+                  if (pcns == 'userbasics') {
+                    let vw = await this.userService.findbyid(pcns.oid);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }              
             } else if (ns == 'mediadiaries') {
               let diary = await this.diaryService.findOne(String(med.oid));
               if (diary.apsara == true) {
@@ -971,6 +1000,66 @@ export class PostContentService {
                 pa.mediaEndpoint = '/stream/' + diary.mediaUri;
                 pa.mediaThumbEndpoint = '/thumb/' + diary.postID;
               }
+
+              pa.mediaType = 'video';
+
+              //isview
+              pa.isViewed = false;
+              if (diary.viewers != undefined && diary.viewers.length > 0) {
+                for(let i = 0; i < diary.viewers.length; i++) {
+                  let drt = diary.viewers[i];
+                  let drns = drt.namespace;
+                  if (drns == 'userbasics') {
+                    let vw = await this.userService.findbyid(drns.oid);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }                            
+            } else if (ns == 'mediastories') {
+              let story = await this.storyService.findOne(String(med.oid));
+
+              if (story.mediaType == 'video') {
+                if (story.apsara == true) {
+                  vids.push(story.apsaraId);
+                  pa.apsaraId = String(story.apsaraId);
+                  pa.isApsara = true;
+                } else {
+                  pa.mediaThumbUri = story.mediaThumb;
+                  pa.mediaEndpoint = '/stream/' + story.mediaUri;
+                  pa.mediaThumbEndpoint = '/thumb/' + story.postID;
+                }
+                pa.mediaType = 'video';
+              } else {
+                if (story.apsara == true) {
+                  pics.push(story.apsaraId);
+                  pa.apsaraId = String(story.apsaraId);
+                  pa.isApsara = true;
+                } else {
+                  pa.mediaThumbUri = story.mediaThumb;
+                  pa.mediaEndpoint = '/pict/' + story.mediaUri;
+                  pa.mediaThumbEndpoint = '/thumb/' + story.postID;
+                }
+                pa.mediaType = 'image';                
+              }
+
+              //isview
+              pa.isViewed = false;
+              if (story.viewers != undefined && story.viewers.length > 0) {
+                for(let i = 0; i < story.viewers.length; i++) {
+                  let drt = story.viewers[i];
+                  let drns = drt.namespace;
+                  if (drns == 'userbasics') {
+                    let vw = await this.userService.findbyid(drns.oid);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }                            
             }
           }
         }
@@ -1097,5 +1186,28 @@ export class PostContentService {
     }
     let num = ((page - 1) * row);
     return num;
+  }
+
+  private async getProfileAvatar(profile: Userbasic) {
+    if (profile == undefined || profile.profilePict == undefined) {
+      return undefined;
+    }
+
+    let cm = profile.profilePict;
+    let ns = cm.namespace;
+    if (ns == 'mediaprofilepicts') {
+      let pp = await this.profilePictService.findOne(cm.oid);
+      if (pp == undefined) {
+        return;
+      }
+
+      let av = new Avatar();
+      av.mediaBasePath = String(pp.mediaBasePath);
+      av.mediaType = String(pp.mediaType);
+      av.mediaUri = String(pp.mediaUri);
+      av.mediaEndpoint = '/profilepict/' + pp.mediaID;
+      return av;
+    }    
+    return undefined;    
   }
 }

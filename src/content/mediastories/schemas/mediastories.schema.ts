@@ -43,6 +43,9 @@ export class Mediastories {
  apsaraId: String    
  @Prop()
  viewers: any[]; 
+ @Prop()
+ mediaThumb: String
+ 
 }
 
 export const MediastoriesSchema = SchemaFactory.createForClass(Mediastories);
