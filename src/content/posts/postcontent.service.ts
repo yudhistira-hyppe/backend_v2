@@ -358,12 +358,12 @@ export class PostContentService {
       mer._class = 'io.melody.hyppe.content.domain.MediaDiary';
   
       this.logger.log('createNewPostVideo >>> prepare save');
-      var retr = await this.storyService.create(mer);
+      var retr = await this.diaryService.create(mer);
 
       this.logger.log('createNewPostVideo >>> ' + retr);
 
-      var stories = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
-      cm.push(stories);      
+      var diaries = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
+      cm.push(diaries);      
     }
 
     post.contentMedias = cm;
@@ -440,7 +440,7 @@ export class PostContentService {
       mes._class = 'io.melody.hyppe.content.domain.MediaStory';
   
       this.logger.log('createNewPostVideo >>> prepare save');
-      var rets = await this.storyService.create(mes);
+      var rets = await this.diaryService.create(mes);
 
       this.logger.log('createNewPostVideo >>> ' + rets);
 
