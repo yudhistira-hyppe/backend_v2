@@ -9,11 +9,13 @@ import { UserticketsModule } from '../../usertickets/usertickets.module';
 import { UtilsModule } from '../../../utils/utils.module';
 import { SeaweedfsModule } from '../../../stream/seaweedfs/seaweedfs.module';
 import { NestjsFormDataModule } from 'nestjs-form-data';
+import { LogticketsModule } from '../../logtickets/logtickets.module';
+import { MediaprofilepictsModule } from '../../../content/mediaprofilepicts/mediaprofilepicts.module';
 @Module({
 
     imports: [
 
-        UserbasicsModule, UserticketsModule, UtilsModule, SeaweedfsModule, NestjsFormDataModule, ConfigService, ConfigModule.forRoot(),
+        UserbasicsModule, UserticketsModule, UtilsModule, SeaweedfsModule, LogticketsModule, MediaprofilepictsModule, NestjsFormDataModule, ConfigService, ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Userticketdetails.name, schema: UserticketdetailsSchema }], 'SERVER_TRANS'),
         UserticketdetailsModule
     ],

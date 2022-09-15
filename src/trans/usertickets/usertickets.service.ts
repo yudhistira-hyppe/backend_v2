@@ -576,7 +576,6 @@ export class UserticketsService {
     return query;
   }
 
-
   async alldatatiket(tipe: string, startdate: string, enddate: string, page: number, limit: number) {
     const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
     try {

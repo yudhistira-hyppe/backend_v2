@@ -1,37 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ObjectId } from 'mongodb';
-import { Model } from 'mongoose';
-import { MediaprofilepictsService } from '../../../content/mediaprofilepicts/mediaprofilepicts.service';
-import { CreateUserticketdetailsDto } from './dto/create-userticketdetails.dto';
-import { Userticketdetails, UserticketdetailsDocument } from './schemas/userticketdetails.schema';
+import { Model, ObjectId } from 'mongoose';
+import { CreateLogticketsDto } from './dto/create-logtickets.dto';
+import { Logtickets, LogticketsDocument } from './schemas/logtickets.schema';
+import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 @Injectable()
-export class UserticketdetailsService {
+export class LogticketsService {
+
     constructor(
-        @InjectModel(Userticketdetails.name, 'SERVER_TRANS')
-        private readonly userticketsModel: Model<UserticketdetailsDocument>,
-        private readonly mediaprofilepictsService: MediaprofilepictsService,
-
+        @InjectModel(Logtickets.name, 'SERVER_TRANS')
+        private readonly logticketsModel: Model<LogticketsDocument>, private readonly mediaprofilepictsService: MediaprofilepictsService,
     ) { }
-    async create(CreateUserticketdetailsDto: CreateUserticketdetailsDto): Promise<Userticketdetails> {
-        let data = await this.userticketsModel.create(CreateUserticketdetailsDto);
-
-        if (!data) {
-            throw new Error('Todo is not found!');
-        }
-        return data;
-    }
-    async findOne(id: ObjectId): Promise<Userticketdetails[]> {
-        return this.userticketsModel.find({ _id: id }).exec();
+    async findAll(): Promise<Logtickets[]> {
+        return this.logticketsModel.find().exec();
     }
 
-    async detailKomentar(id: object, type: string): Promise<object> {
+    async findOne(id: string): Promise<Logtickets> {
+        return this.logticketsModel.findOne({ _id: id }).exec();
+    }
+
+    async findbyidticket(id: object): Promise<object> {
         const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-        const query = await this.userticketsModel.aggregate([
+        const query = await this.logticketsModel.aggregate([
             {
                 $lookup: {
                     from: "userbasics",
-                    localField: "IdUser",
+                    localField: "userId",
                     foreignField: "_id",
                     as: "userdata"
                 }
@@ -39,12 +33,11 @@ export class UserticketdetailsService {
             {
                 $lookup: {
                     from: "usertickets",
-                    localField: "IdUserticket",
+                    localField: "ticketId",
                     foreignField: "_id",
                     as: "tiketdata"
                 }
             },
-
             {
                 $project: {
                     userdata: {
@@ -54,14 +47,10 @@ export class UserticketdetailsService {
                         $arrayElemAt: ['$tiketdata', 0]
                     },
                     "profilpictid": '$userdata.profilePict.$id',
-                    "IdUserticket": "$IdUserticket",
-                    "type": "$type",
-                    "body": "$body",
-                    "datetime": "$datetime",
-                    "IdUser": "$IdUser",
-                    "status": "$status",
-
-
+                    "ticketId": "$ticketId",
+                    "createdAt": "$createdAt",
+                    "remark": "$remark",
+                    "type": "$type"
                 }
             },
             {
@@ -82,16 +71,13 @@ export class UserticketdetailsService {
                     },
                     "fullName": "$userdata.fullName",
                     "email": "$userdata.email",
-                    "IdUserticket": "$IdUserticket",
+                    "ticketId": "$ticketId",
+                    "createdAt": "$createdAt",
+                    "remark": "$remark",
                     "type": "$type",
-                    "body": "$body",
-                    "datetime": "$datetime",
-                    "IdUser": "$IdUser",
-                    "status": "$status",
                     "tiketdata": "$tiketdata"
                 }
             },
-
             {
                 $addFields: {
 
@@ -111,14 +97,12 @@ export class UserticketdetailsService {
                 $project: {
 
 
-                    "fullName": "$fullName",
-                    "email": "$email",
-                    "IdUserticket": "$IdUserticket",
+                    "fullName": "$userdata.fullName",
+                    "email": "$userdata.email",
+                    "ticketId": "$ticketId",
+                    "createdAt": "$createdAt",
+                    "remark": "$remark",
                     "type": "$type",
-                    "body": "$body",
-                    "datetime": "$datetime",
-                    "IdUser": "$IdUser",
-                    "status": "$status",
                     "tiketdata": "$tiketdata",
                     avatar: {
                         mediaBasePath: '$profilpict.mediaBasePath',
@@ -129,11 +113,12 @@ export class UserticketdetailsService {
                         },
 
                     },
+
                 }
             },
             {
                 $match: {
-                    "type": type, "tiketdata._id": id
+                    "ticketId": id
                 }
             }
         ]);
@@ -141,19 +126,13 @@ export class UserticketdetailsService {
 
         return query;
     }
-    async updatedata(
-        id: string,
-        CreateUserticketdetailsDto: CreateUserticketdetailsDto,
-    ): Promise<Userticketdetails> {
-        let data = await this.userticketsModel.findByIdAndUpdate(
-            id,
-            CreateUserticketdetailsDto,
-            { new: true },
-        );
+    async create(CreateLogticketsDto: CreateLogticketsDto): Promise<Logtickets> {
+        let data = await this.logticketsModel.create(CreateLogticketsDto);
 
         if (!data) {
             throw new Error('Todo is not found!');
         }
         return data;
     }
+
 }
