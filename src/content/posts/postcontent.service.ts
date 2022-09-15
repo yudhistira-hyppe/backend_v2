@@ -94,7 +94,7 @@ export class PostContentService {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);    
-    this.logger.log('buildPost >>> profile: ' + profile);
+    this.logger.log('buildPost >>> profile: ' + profile.email);
  
     let post = new Posts();
     post._id = await this.utilService.generateId();
@@ -177,6 +177,9 @@ export class PostContentService {
     } else {
       post.certified = false;      
     }    
+
+    var usp = { "$ref": "userbasics", "$id": mongoose.Types.ObjectId(profile._id), "$db": "hyppe_trans_db" };
+    post.userProfile = usp;
     
     if (body.cats != undefined && body.cats.length > 1) {
       var obj = body.cats;
@@ -355,12 +358,12 @@ export class PostContentService {
       mer._class = 'io.melody.hyppe.content.domain.MediaDiary';
   
       this.logger.log('createNewPostVideo >>> prepare save');
-      var retr = await this.storyService.create(mer);
+      var retr = await this.diaryService.create(mer);
 
       this.logger.log('createNewPostVideo >>> ' + retr);
 
-      var stories = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
-      cm.push(stories);      
+      var diaries = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
+      cm.push(diaries);      
     }
 
     post.contentMedias = cm;
@@ -473,12 +476,14 @@ export class PostContentService {
 
 
   async updateNewPost(body: any, headers: any) {
+    this.logger.log('updateNewPost >>> start');
     let post = await this.postService.findid(body.postID);
     if (post == undefined) {
       return;
     }
     let cm = post.contentMedias[0];
     let ns = cm.namespace;
+    this.logger.log('updateNewPost >>> namespace: ' + ns);
     if (ns == 'mediavideos') {
       let vid = await this.videoService.findOne(cm.oid);
       if (vid == undefined) {
@@ -531,6 +536,13 @@ export class PostContentService {
       this.storyService.create(st);
 
       post.active = true;
+
+      this.logger.log('updateNewPost >>> mediatype: ' + st.mediaType);
+      if (st.mediaType == 'video') {
+        let meta = post.metadata;
+        let metadata = {postType : meta.postType, duration: parseInt(body.duration), postID : post._id, email: meta.email, postRoll : meta.postRoll, midRoll : meta.midRoll, preRoll: meta.preRoll};
+        post.metadata = metadata;        
+      }
       this.postService.create(post);                
 
       let todel = body.filedel + "";
@@ -549,6 +561,9 @@ export class PostContentService {
       dy.active = true;
       this.diaryService.create(dy);
 
+      let meta = post.metadata;
+      let metadata = {postType : meta.postType, duration: parseInt(body.duration), postID : post._id, email: meta.email, postRoll : meta.postRoll, midRoll : meta.midRoll, preRoll: meta.preRoll};
+      post.metadata = metadata;        
       post.active = true;
       this.postService.create(post);                
 
@@ -797,6 +812,7 @@ export class PostContentService {
       for(let i = 0; i < posts.length; i++) {
         let ps = posts[i];
         let pa = new PostData();
+
         pa.active = ps.active;
         pa.allowComments = ps.allowComments;
         pa.certified = ps.certified;
@@ -804,6 +820,8 @@ export class PostContentService {
         pa.updatedAt = String(ps.updatedAt);
         pa.description = String(ps.description);
         pa.email = String(ps.email);
+
+        let following = await this.contentEventService.findFollowing(pa.email);
 
         if (ps.userProfile != undefined) {
             if (ps.userProfile?.namespace) {
@@ -816,6 +834,8 @@ export class PostContentService {
                 }
 
                 pa.avatar = await this.getProfileAvatar(ua);
+              } else {
+                this.logger.log('oid: ' + oid + ' error');
               }
             }
         }
@@ -856,12 +876,23 @@ export class PostContentService {
               if (ua != undefined) {
                 let tp1 = new TagPeople();
                 tp1.email = String(ua.email);
-                tp1.status = 'TOFOLLOW';
                 tp1.username = String(ua.username);
 
                 let ub = await this.userService.findOne(String(ua.email));
                 if (ub != undefined) {
                   tp1.avatar = await this.getProfileAvatar(ub);
+                }
+
+                tp1.status = 'TOFOLLOW';
+                if (tp1.email == pa.email) {
+                  tp1.status = "UNLINK";
+                } else {
+                  for(let i = 0; i < following.length; i++) {
+                    let fol = following[i];
+                    if (fol.email == tp1.email) {
+                      tp1.status = "FOLLOWING";
+                    }
+                  }
                 }
                 atp1.push(tp1);
               }
