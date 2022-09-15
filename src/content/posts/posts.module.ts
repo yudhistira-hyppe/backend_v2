@@ -17,6 +17,7 @@ import { PostContentService } from './postcontent.service';
 import { MediadiariesModule } from '../mediadiaries/mediadiaries.module';
 import { MediastoriesModule } from '../mediastories/mediastories.module';
 import { MediapictsModule } from '../mediapicts/mediapicts.module';
+import { MediaprofilepictsModule } from '../mediaprofilepicts/mediaprofilepicts.module';
 @Module({
 
     imports: [
@@ -24,7 +25,7 @@ import { MediapictsModule } from '../mediapicts/mediapicts.module';
         UtilsModule,
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
         UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
-        MediapictsModule,MediadiariesModule,
+        MediapictsModule,MediadiariesModule,MediaprofilepictsModule,
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [PostsController],

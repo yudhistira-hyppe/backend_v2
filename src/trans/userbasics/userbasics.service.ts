@@ -6,6 +6,7 @@ import { Userbasic, UserbasicDocument } from './schemas/userbasic.schema';
 import { LanguagesService } from '../../infra/languages/languages.service';
 import { InterestsRepoService } from '../../infra/interests_repo/interests_repo.service';
 import { MediaproofpictsService } from '../../content/mediaproofpicts/mediaproofpicts.service';
+import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 @Injectable()
 export class UserbasicsService {
   constructor(
@@ -13,6 +14,7 @@ export class UserbasicsService {
     private readonly userbasicModel: Model<UserbasicDocument>,
     private readonly languagesService: LanguagesService,
     private readonly interestsRepoService: InterestsRepoService,
+    private readonly mediaprofilepictsService: MediaprofilepictsService,
     private readonly mediaproofpictsService: MediaproofpictsService,
   ) { }
 
@@ -443,10 +445,14 @@ export class UserbasicsService {
     );
   }
 
-  async kycList(startDate: String, endDate: String, search: String, skip: number ,limit: number): Promise<object> {
+  async kycList(startDate: String, endDate: String, search: String, skip: number, limit: number) {
+    const mediaproofpictsService = await this.mediaproofpictsService.findmediaproofpicts();
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
     var date_range_match = {};
     var startDate_format = null;
     var endDate_format = null;
+    var skip_ = null;
+    var limit_ = null;
     if (startDate != null) {
       startDate_format = new Date(startDate.toString());
     }
@@ -454,16 +460,9 @@ export class UserbasicsService {
       endDate_format = new Date(endDate.toString());
     }
     if (startDate_format != null && endDate_format!=null){
-      console.log(startDate_format);
-      console.log(endDate_format);
-      date_range_match = {
-        'createdAt_': {
-          $gte: startDate,
-          $lte: endDate
-        }};
+      date_range_match = { "createdAt_format": { $gte: startDate_format, $lte: endDate_format }};
     }
-    const mediaproofpictsService = await this.mediaproofpictsService.findmediaproofpicts();
-    const query = await this.userbasicModel.aggregate([
+    let Query_aggregate = [
       {
         $match: {
           proofPict: { $exists: true }
@@ -472,8 +471,9 @@ export class UserbasicsService {
       {
         $addFields: {
           id_mediaproofpicts: '$proofPict.$id',
-          // startDate: { $toDate: { $substrCP: [startDate_format, 0, 10] } },
-          // endDate: { $toDate: { $substrCP: [endDate_format, 0, 10] } },
+          id_mediaprofilepicts: '$profilePict.$id',
+          startDate: startDate_format,
+          endDate: endDate_format
         },
       },
       {
@@ -484,11 +484,20 @@ export class UserbasicsService {
           as: "mediaproofpicts"
         }
       },
+
+      {
+        $lookup: {
+          from: 'mediaprofilepicts2',
+          localField: 'id_mediaprofilepicts',
+          foreignField: '_id',
+          as: 'mediaprofilepicts',
+        },
+      },
       {
         $match: {
           $and: [
-            {"mediaproofpicts.status": { $exists: true }},
-            {"mediaproofpicts.status": { "$ne": "" }},
+            { "mediaproofpicts.status": { $exists: true } },
+            { "mediaproofpicts.status": { $ne: "" } },
             {
               $or: [
                 date_range_match,
@@ -496,7 +505,6 @@ export class UserbasicsService {
                 { "email": { $regex: search } },
               ]
             },
-            //date_range_match
           ]
         }
       },
@@ -507,13 +515,21 @@ export class UserbasicsService {
           email: '$email',
           startDate: '$startDate',
           endDate: '$endDate',
-          mediaproofpicts_: { $arrayElemAt: ['$mediaproofpicts', 0] }
+          mediaproofpicts_: { $arrayElemAt: ['$mediaproofpicts', 0] },
+          mediaprofilepicts_: { $arrayElemAt: ['$mediaprofilepicts', 0] }
         },
       },
       {
         $addFields: {
-          createdAt_: { $toDate: { $substrCP: ['$mediaproofpicts_.createdAt', 0, 10] } },
+          createdAt_format: { $toDate: { $substrCP: ['$mediaproofpicts_.createdAt', 0, 10] } },
         },
+      },
+      {
+        $match: {
+          $and: [
+            date_range_match
+          ]
+        }
       },
       {
         $project: {
@@ -523,13 +539,25 @@ export class UserbasicsService {
           dateOfSubmission: '$mediaproofpicts_.createdAt',
           status: '$mediaproofpicts_.status',
           state: '$mediaproofpicts_.state',
-          // startDate: '$startDate',
-          // endDate: '$endDate',
-          createdAt_: '$mediaproofpicts_.createdAt_',
+          avatar: {
+            mediaBasePath: '$mediaprofilepicts_.mediaBasePath',
+            mediaUri: '$mediaprofilepicts_.mediaUri',
+            mediaType: '$mediaprofilepicts_.mediaType',
+            mediaEndpoint: '$mediaprofilepicts_.fsTargetUri',
+            //medreplace: { $replaceOne: { input: "$mediaprofilepicts_.mediaUri", find: "_0001.jpeg", replacement: "" } },
+          },
         },
       },
-    ]);
+    ];
+    if (skip != null) {
+      skip_ = { $skip: Number(skip) };
+      Query_aggregate.push(skip_);
+    }
+    if (limit != null) {
+      limit_ = { $limit: Number(limit) };
+      Query_aggregate.push(limit_);
+    }
+    const query = await this.userbasicModel.aggregate(Query_aggregate);
     return query;
   }
 }
-

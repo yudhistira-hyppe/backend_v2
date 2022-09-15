@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople } from './dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -26,6 +26,8 @@ import { Mediadiaries } from '../mediadiaries/schemas/mediadiaries.schema';
 import { Mediapicts } from '../mediapicts/schemas/mediapicts.schema';
 import { MediapictsService } from '../mediapicts/mediapicts.service';
 import { MediadiariesService } from '../mediadiaries/mediadiaries.service';
+import { MediaprofilepictsService } from '../mediaprofilepicts/mediaprofilepicts.service';
+import { IsDefined } from 'class-validator';
 
 
 @Injectable()
@@ -46,11 +48,12 @@ export class PostContentService {
     private diaryService: MediadiariesService,
     private insightService: InsightsService,
     private contentEventService: ContenteventsService,
+    private profilePictService: MediaprofilepictsService,
     private readonly configService: ConfigService,
   ) { }
 
   async createNewPost(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
-    console.log(body);
+    this.logger.log('createNewPost >>> start: ' + JSON.stringify(body));
     var res = new CreatePostResponse();
     res.response_code = 204;
 
@@ -58,13 +61,17 @@ export class PostContentService {
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
     if (profile == undefined) {
-      res.messages = "Email tidak dikenali";
+      let msg = new Messages();
+      msg.info = ["Email unknown"];
+      res.messages = msg;
       return res;
     }
 
     if (body.certified && body.certified == "true") {
       if (profile.isIdVerified != true) {
-        res.messages = "Profile belum verifikasi KTP";
+        let msg = new Messages();
+        msg.info = ["The user ID has not been verified"];
+        res.messages = msg;
         return res;        
       } 
     }
@@ -74,9 +81,9 @@ export class PostContentService {
       this.logger.log('createNewPost >>> is video');
       return this.createNewPostVideo(file, body, headers);
     } else {
+      this.logger.log('createNewPost >>> is picture');
       return this.createNewPostPict(file, body, headers);
     }
-    return null;
   }
 
   private async buildPost(body: any, headers: any): Promise<Posts> {
@@ -92,12 +99,13 @@ export class PostContentService {
     let post = new Posts();
     post._id = await this.utilService.generateId();
     post.postID = post._id;
-    //post.postType = 'vid';
+    post.postType = body.postType;
     post.active = true;
     post.email = auth.email;
     post.createdAt = await this.utilService.getDateTimeString();
     post.updatedAt = await this.utilService.getDateTimeString();
-    post.expiration = new Long(this.utilService.generateExpiration(new Date(), 1));
+    let big = BigInt(this.utilService.generateExpiration(new Date(), 1));
+    post.expiration = Long.fromBigInt(big);
     post._class = 'io.melody.hyppe.content.domain.ContentPost';
 
     if (body.description != undefined) {
@@ -233,10 +241,14 @@ export class PostContentService {
         ins.posts = new Long(1);
       }
     } else {
-      //TODO BUG BUG BUG
-      let prevPost = ins.posts;
-      let nextPost = Number(prevPost) + 1;
-      ins.posts = new Long(nextPost);
+
+      if (post.postType != 'story') {
+        //TODO BUG BUG BUG
+        let prevPost = ins.posts;
+        let nextPost = Number(prevPost) + 1;
+        ins.posts = new Long(nextPost);        
+      }
+
     }
     this.insightService.create(ins);
 
@@ -259,7 +271,7 @@ export class PostContentService {
   }
 
   private async createNewPostVideo(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
-
+    this.logger.log('createNewPostVideo >>> start: ' + JSON.stringify(body));
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 
@@ -286,28 +298,32 @@ export class PostContentService {
       med._class = 'io.melody.hyppe.content.domain.MediaVideo';
   
       this.logger.log('createNewPostVideo >>> prepare save');
-      var retm = await this.videoService.create(med);
+      var retd = await this.videoService.create(med);
 
-      this.logger.log('createNewPostVideo >>> ' + retm);
+      this.logger.log('createNewPostVideo >>> ' + retd);
 
-      var vids = { "$ref": "mediavideos", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
       cm.push(vids);      
 
     } else if (postType == 'advertise') {
 
     } else if (postType == 'story') {
-      let metadata = {postType : 'story', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
-      post.metadata = metadata;
-  
+
+      var mime = file.mimetype;
+      if (mime.startsWith('video')) {
+        let metadata = {postType : 'story', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
+        post.metadata = metadata;       
+      } 
+
       var mes = new Mediastories();
       mes._id = await this.utilService.generateId();
-      mes.mediaID = med._id;
+      mes.mediaID = mes._id;
       mes.postID = post.postID;
       mes.active = false;
       mes.createdAt = await this.utilService.getDateTimeString();
       mes.updatedAt = await this.utilService.getDateTimeString();
       mes.mediaMime = file.mimetype;
-      mes.mediaType = 'video';
+      mes.mediaType = 'video';        
       mes.originalName = file.originalname;
       mes.apsara = true;
       mes._class = 'io.melody.hyppe.content.domain.MediaStory';
@@ -317,7 +333,7 @@ export class PostContentService {
 
       this.logger.log('createNewPostVideo >>> ' + rets);
 
-      var stories = { "$ref": "mediastories", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
       cm.push(stories);  
 
     } else if (postType == 'diary') {
@@ -325,29 +341,28 @@ export class PostContentService {
       let metadata = {postType : 'diary', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
       post.metadata = metadata;
   
-      var mem = new Mediadiaries();
-      mem._id = await this.utilService.generateId();
-      mem.mediaID = med._id;
-      mem.postID = post.postID;
-      mem.active = false;
-      mem.createdAt = await this.utilService.getDateTimeString();
-      mem.updatedAt = await this.utilService.getDateTimeString();
-      mem.mediaMime = file.mimetype;
-      mem.mediaType = 'video';
-      mem.originalName = file.originalname;
-      mem.apsara = true;
-      mem._class = 'io.melody.hyppe.content.domain.MediaDiary';
+      var mer = new Mediadiaries();
+      mer._id = await this.utilService.generateId();
+      mer.mediaID = mer._id;
+      mer.postID = post.postID;
+      mer.active = false;
+      mer.createdAt = await this.utilService.getDateTimeString();
+      mer.updatedAt = await this.utilService.getDateTimeString();
+      mer.mediaMime = file.mimetype;
+      mer.mediaType = 'video';
+      mer.originalName = file.originalname;
+      mer.apsara = true;
+      mer._class = 'io.melody.hyppe.content.domain.MediaDiary';
   
       this.logger.log('createNewPostVideo >>> prepare save');
-      var rets = await this.storyService.create(mes);
+      var retr = await this.storyService.create(mer);
 
-      this.logger.log('createNewPostVideo >>> ' + rets);
+      this.logger.log('createNewPostVideo >>> ' + retr);
 
-      var stories = { "$ref": "mediadiaries", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      var stories = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
       cm.push(stories);      
     }
 
-    post.postType = 'vid';
     post.contentMedias = cm;
     let apost = await this.PostsModel.create(post);
 
@@ -360,10 +375,17 @@ export class PostContentService {
 
     let payload = {'file' : nm, 'postId' : apost._id};
     axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: {'Content-Type': 'application/json'}});
+    
     var res = new CreatePostResponse();
     res.response_code = 202;
-    res.messages = "";
-    return null;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+    
+    return res;
   }
 
   private async createNewPostPict(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
@@ -372,7 +394,6 @@ export class PostContentService {
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
 
     let post = await this.buildPost(body, headers);
-
     let postType = body.postType;
     var cm = [];
 
@@ -396,9 +417,7 @@ export class PostContentService {
       this.logger.log('createNewPostVideo >>> ' + retm);
 
       var vids = { "$ref": "mediapicts", "$id": retm.mediaID, "$db": "hyppe_content_db" };
-      cm.push(vids);      
-
-    } else if (postType == 'advertise') {
+      cm.push(vids);
 
     } else if (postType == 'story') {
       let metadata = {postType : 'story', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
@@ -422,13 +441,10 @@ export class PostContentService {
 
       this.logger.log('createNewPostVideo >>> ' + rets);
 
-      var stories = { "$ref": "mediastories", "$id": retm.mediaID, "$db": "hyppe_content_db" };
+      var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
       cm.push(stories);  
 
-    } else if (postType == 'diary') {
     }
-
-    post.postType = 'pict';
     post.contentMedias = cm;
     let apost = await this.PostsModel.create(post);
 
@@ -441,10 +457,17 @@ export class PostContentService {
 
     let payload = {'file' : nm, 'postId' : apost._id};
     axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: {'Content-Type': 'application/json'}});
+
     var res = new CreatePostResponse();
     res.response_code = 202;
-    res.messages = "";
-    return null;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+    
+    return res;
   }
 
 
@@ -546,12 +569,20 @@ export class PostContentService {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);    
-    this.logger.log('getUserPost >>> profile: ' + profile);
+    if (profile == null) {
+      let res = new PostResponseApps();
+      let msg = new Messages
+      msg.info = ["User tidak tedaftar"];
+      res.messages = msg;
+      res.response_code = 204;
+      return res;      
+    }
+    this.logger.log('getUserPost >>> profile: ' + profile.email);
 
     let res = new PostResponseApps();
     res.response_code = 202;
     let posts = await this.doGetUserPost(body, headers, profile);
-    let pd = await this.loadPostData(posts, body);
+    let pd = await this.loadPostData(posts, body, profile);
     res.data = pd;
 
     return res;
@@ -568,7 +599,7 @@ export class PostContentService {
     let res = new PostResponseApps();
     res.response_code = 202;
     let posts = await this.doGetUserPostMy(body, headers, profile);
-    let pd = await this.loadPostData(posts, body);
+    let pd = await this.loadPostData(posts, body, profile);
     res.data = pd;
 
     return res;
@@ -579,13 +610,13 @@ export class PostContentService {
     let type = 'GET_POST';
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    var profile = await this.userService.findOne(auth.email);    
+    var profile = await this.userService.findOne(body.email);    
     this.logger.log('getUserPost >>> profile: ' + profile);
 
     let res = new PostResponseApps();
     res.response_code = 202;
     let posts = await this.doGetUserPostTheir(body, headers, profile);
-    let pd = await this.loadPostData(posts, body);
+    let pd = await this.loadPostData(posts, body, profile);
     res.data = pd;
 
     return res;
@@ -662,7 +693,8 @@ export class PostContentService {
     }
 
     if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
-      query.where('expiration').gte(this.utilService.now());
+      this.logger.log("today: " + this.utilService.now());
+      query.where('expiration').lte(this.utilService.now());
     }
 
     let row = 20;
@@ -755,7 +787,7 @@ export class PostContentService {
     return res;
   }  
 
-  private async loadPostData(posts: Posts[], body: any): Promise<PostData[]> {
+  private async loadPostData(posts: Posts[], body: any, iam: Userbasic): Promise<PostData[]> {
     let pd = Array<PostData>();
     if (posts != undefined) {
 
@@ -783,6 +815,7 @@ export class PostContentService {
                   pa.username = ub.username;
                 }
 
+                pa.avatar = await this.getProfileAvatar(ua);
               }
             }
         }
@@ -825,7 +858,11 @@ export class PostContentService {
                 tp1.email = String(ua.email);
                 tp1.status = 'TOFOLLOW';
                 tp1.username = String(ua.username);
-      
+
+                let ub = await this.userService.findOne(String(ua.email));
+                if (ub != undefined) {
+                  tp1.avatar = await this.getProfileAvatar(ub);
+                }
                 atp1.push(tp1);
               }
             }
@@ -867,6 +904,26 @@ export class PostContentService {
 
         pa.tags = ps.tags;
 
+        //Insight
+
+        if ((body.withInsight != undefined && (body.withInsight == true || body.withInsight == 'true'))) {
+          let insight = await this.insightService.findemail(String(ps.email));
+          if (insight == undefined) {
+            continue;
+          }
+
+          let tmp = new InsightPost();
+          tmp.follower = Number(insight.followers);
+          tmp.following = Number(insight.followings);
+          tmp.likes = Number(insight.likes);
+          tmp.views = Number(insight.views);
+          tmp.shares = Number(insight.shares);
+          tmp.comments = Number(insight.comments);
+          tmp.reactions = Number(insight.reactions);
+          pa.insight = tmp;
+
+        }
+
         //MEDIA
         let meds = ps.contentMedias;
         if (meds != undefined) {
@@ -878,30 +935,131 @@ export class PostContentService {
               if (video.apsara == true) {
                 vids.push(video.apsaraId);
                 pa.apsaraId = String(video.apsaraId);
+                pa.isApsara = true;
               } else {
                 pa.mediaThumbUri = video.mediaThumb;
                 pa.mediaEndpoint = '/stream/' + video.mediaUri;
                 pa.mediaThumbEndpoint = '/thumb/' + video.postID;
               }
+
+              //mediatype
+              pa.mediaType = 'video';
+
+              //isview
+              pa.isViewed = false;
+              if (video.viewers != undefined && video.viewers.length > 0) {
+                for(let i = 0; i < video.viewers.length; i++) {
+                  let vwt = video.viewers[i];
+                  let vwns = vwt.namespace;
+                  if (vwns == 'userbasics') {
+                    let vw = await this.userService.findbyid(vwns.oid);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }
+
             } else if (ns == 'mediapicts') {
               let pic = await this.picService.findOne(String(med.oid));
               if (pic.apsara == true) {
                 pics.push(pic.apsaraId);
                 pa.apsaraId = String(pic.apsaraId);
+                pa.isApsara = true;
               } else {
                 pa.mediaEndpoint = '/pict/' + pic.postID;
                 pa.mediaUri = pic.mediaUri;
               }
+
+              pa.mediaType = 'image';
+
+              //isview
+              pa.isViewed = false;
+              if (pic.viewers != undefined && pic.viewers.length > 0) {
+                for(let i = 0; i < pic.viewers.length; i++) {
+                  let pct = pic.viewers[i];
+                  let pcns = pct.namespace;
+                  if (pcns == 'userbasics') {
+                    let vw = await this.userService.findbyid(pcns.oid);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }              
             } else if (ns == 'mediadiaries') {
               let diary = await this.diaryService.findOne(String(med.oid));
               if (diary.apsara == true) {
                 vids.push(diary.apsaraId);
                 pa.apsaraId = String(diary.apsaraId);
+                pa.isApsara = true;
               } else {
                 pa.mediaThumbUri = diary.mediaThumb;
                 pa.mediaEndpoint = '/stream/' + diary.mediaUri;
                 pa.mediaThumbEndpoint = '/thumb/' + diary.postID;
               }
+
+              pa.mediaType = 'video';
+
+              //isview
+              pa.isViewed = false;
+              if (diary.viewers != undefined && diary.viewers.length > 0) {
+                for(let i = 0; i < diary.viewers.length; i++) {
+                  let drt = diary.viewers[i];
+                  let drns = drt.namespace;
+                  if (drns == 'userbasics') {
+                    let vw = await this.userService.findbyid(drns.oid);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }                            
+            } else if (ns == 'mediastories') {
+              let story = await this.storyService.findOne(String(med.oid));
+
+              if (story.mediaType == 'video') {
+                if (story.apsara == true) {
+                  vids.push(story.apsaraId);
+                  pa.apsaraId = String(story.apsaraId);
+                  pa.isApsara = true;
+                } else {
+                  pa.mediaThumbUri = story.mediaThumb;
+                  pa.mediaEndpoint = '/stream/' + story.mediaUri;
+                  pa.mediaThumbEndpoint = '/thumb/' + story.postID;
+                }
+                pa.mediaType = 'video';
+              } else {
+                if (story.apsara == true) {
+                  pics.push(story.apsaraId);
+                  pa.apsaraId = String(story.apsaraId);
+                  pa.isApsara = true;
+                } else {
+                  pa.mediaThumbUri = story.mediaThumb;
+                  pa.mediaEndpoint = '/pict/' + story.mediaUri;
+                  pa.mediaThumbEndpoint = '/thumb/' + story.postID;
+                }
+                pa.mediaType = 'image';                
+              }
+
+              //isview
+              pa.isViewed = false;
+              if (story.viewers != undefined && story.viewers.length > 0) {
+                for(let i = 0; i < story.viewers.length; i++) {
+                  let drt = story.viewers[i];
+                  let drns = drt.namespace;
+                  if (drns == 'userbasics') {
+                    let vw = await this.userService.findbyid(drns.oid);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }                            
             }
           }
         }
@@ -932,6 +1090,7 @@ export class PostContentService {
               let ps = pd[j];
               if (ps.apsaraId == vi.ImageId) {
                 ps.mediaThumbEndpoint = vi.URL;
+                ps.mediaThumbUri = vi.URL;
               }
             }
           }
@@ -993,11 +1152,62 @@ export class PostContentService {
     return tx;
   }  
 
+  async getVideoApsaraSingle(ids: String): Promise<ApsaraPlayResponse> {
+    var RPCClient = require('@alicloud/pop-core').RPCClient;
+
+    let client = new RPCClient({
+      accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+      accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+      endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+      apiVersion: '2017-03-21'
+    });
+
+    let params = {
+      "RegionId": this.configService.get("APSARA_REGION_ID"),
+      "VideoId" : ids
+    }
+    
+    let requestOption = {
+      method: 'POST'
+    };    
+
+    let dto = new ApsaraVideoResponse();
+    let result = await client.request('GetPlayInfo', params, requestOption);
+    let xres = new ApsaraPlayResponse();
+    if (result != null && result.PlayInfoList != null && result.PlayInfoList.PlayInfo && result.PlayInfoList.PlayInfo.length > 0) {
+      xres.PlayUrl = result.PlayInfoList.PlayInfo[0].PlayURL;
+    }
+    return xres;
+  }
+
   private paging(page: number, row: number) {
     if (page == 0 || page == 1) {
       return 0;
     }
     let num = ((page - 1) * row);
     return num;
+  }
+
+  private async getProfileAvatar(profile: Userbasic) {
+    if (profile == undefined || profile.profilePict == undefined) {
+      return undefined;
+    }
+
+    let cm = profile.profilePict;
+    let ns = cm.namespace;
+    if (ns == 'mediaprofilepicts') {
+      let pp = await this.profilePictService.findOne(cm.oid);
+      if (pp == undefined) {
+        return;
+      }
+
+      let av = new Avatar();
+      av.mediaBasePath = String(pp.mediaBasePath);
+      av.mediaType = String(pp.mediaType);
+      av.mediaUri = String(pp.mediaUri);
+      av.mediaEndpoint = '/profilepict/' + pp.mediaID;
+      return av;
+    }    
+    return undefined;    
   }
 }

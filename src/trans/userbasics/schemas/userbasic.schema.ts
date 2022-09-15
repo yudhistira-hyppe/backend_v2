@@ -49,11 +49,7 @@ export class Userbasic {
   @Prop()
   bio: String;
   @Prop({ type: Object })
-  profilePict: {
-    ref: String;
-    id: String;
-    db: String;
-  };
+  profilePict: any;
   @Prop({ type: Object })
   proofPict: {
     ref: String;

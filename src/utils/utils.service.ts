@@ -471,8 +471,10 @@ export class UtilsService {
     if (date == undefined) {
       return undefined;
     }
-
-    date.setDate(date.getDate() + day);
+    let epoch = date.getTime();
+    console.log(epoch);
+    epoch += ((1000 * 60 * 60 *24) * day);
+    console.log(epoch);
     return date.getTime();
   }    
 
@@ -683,11 +685,9 @@ export class UtilsService {
       if (get_insight.shares != undefined) { CreateInsightsDto_.shares = get_insight.shares; }
       if (get_insight.followers != undefined) { CreateInsightsDto_.followers = get_insight.followers; }
       if (get_insight.comments != undefined) { CreateInsightsDto_.comments = get_insight.comments; }
-      if (get_insight.shares != undefined) { CreateInsightsDto_.shares = get_insight.shares; }
       if (get_insight.followings != undefined) { CreateInsightsDto_.followings = get_insight.followings; }
-      if (get_insight.posts != undefined) { CreateInsightsDto_.posts = get_insight.posts; }
       if (get_insight.reactions != undefined) { CreateInsightsDto_.reactions = get_insight.reactions; }
-      if (get_insight.posts != undefined) { CreateInsightsDto_.followers = get_insight.posts; }
+      if (get_insight.posts != undefined) { CreateInsightsDto_.posts = get_insight.posts; }
       if (get_insight.views != undefined) { CreateInsightsDto_.views = get_insight.views; }
       if (get_insight.likes != undefined) { CreateInsightsDto_.likes = get_insight.likes; }
     }
