@@ -534,6 +534,12 @@ export class PostContentService {
       this.storyService.create(st);
 
       post.active = true;
+
+      if (st.mediaType == 'video') {
+        let meta = post.metadata;
+        let metadata = {postType : meta.postType, duration: parseInt(body.duration), postID : post._id, email: meta.email, postRoll : meta.postRoll, midRoll : meta.midRoll, preRoll: meta.preRoll};
+        post.metadata = metadata;        
+      }
       this.postService.create(post);                
 
       let todel = body.filedel + "";
