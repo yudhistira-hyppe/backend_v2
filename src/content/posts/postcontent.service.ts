@@ -440,7 +440,7 @@ export class PostContentService {
       mes._class = 'io.melody.hyppe.content.domain.MediaStory';
   
       this.logger.log('createNewPostVideo >>> prepare save');
-      var rets = await this.diaryService.create(mes);
+      var rets = await this.storyService.create(mes);
 
       this.logger.log('createNewPostVideo >>> ' + rets);
 
