@@ -94,7 +94,7 @@ export class PostContentService {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);    
-    this.logger.log('buildPost >>> profile: ' + profile);
+    this.logger.log('buildPost >>> profile: ' + profile.email);
  
     let post = new Posts();
     post._id = await this.utilService.generateId();
@@ -476,12 +476,14 @@ export class PostContentService {
 
 
   async updateNewPost(body: any, headers: any) {
+    this.logger.log('updateNewPost >>> start');
     let post = await this.postService.findid(body.postID);
     if (post == undefined) {
       return;
     }
     let cm = post.contentMedias[0];
     let ns = cm.namespace;
+    this.logger.log('updateNewPost >>> namespace: ' + ns);
     if (ns == 'mediavideos') {
       let vid = await this.videoService.findOne(cm.oid);
       if (vid == undefined) {
@@ -535,6 +537,7 @@ export class PostContentService {
 
       post.active = true;
 
+      this.logger.log('updateNewPost >>> mediatype: ' + st.mediaType);
       if (st.mediaType == 'video') {
         let meta = post.metadata;
         let metadata = {postType : meta.postType, duration: parseInt(body.duration), postID : post._id, email: meta.email, postRoll : meta.postRoll, midRoll : meta.midRoll, preRoll: meta.preRoll};
@@ -558,6 +561,9 @@ export class PostContentService {
       dy.active = true;
       this.diaryService.create(dy);
 
+      let meta = post.metadata;
+      let metadata = {postType : meta.postType, duration: parseInt(body.duration), postID : post._id, email: meta.email, postRoll : meta.postRoll, midRoll : meta.midRoll, preRoll: meta.preRoll};
+      post.metadata = metadata;        
       post.active = true;
       this.postService.create(post);                
 
