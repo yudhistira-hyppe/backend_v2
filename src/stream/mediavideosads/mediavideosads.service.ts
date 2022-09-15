@@ -62,9 +62,9 @@ export class MediavideosadsService {
         return data;
     }
 
-    async updatemediavidAds(id: Types.ObjectId, videoId: string, duration: number, url: string, thumbnail: string): Promise<Object> {
+    async updatemediavidAds(id: Types.ObjectId, videoId: string, duration: number): Promise<Object> {
         let data = await this.mediavideosadsModel.updateOne({ "_id": id },
-            { $set: { "videoId": videoId, "duration": duration, "fsSourceUri": url, "fsTargetThumbUri": thumbnail } });
+            { $set: { "videoId": videoId, "duration": duration } });
         return data;
     }
 }
