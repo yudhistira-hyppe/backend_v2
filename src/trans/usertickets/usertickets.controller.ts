@@ -551,7 +551,7 @@ export class UserticketsController {
       datalogticket.createdAt = dt.toISOString();
       datalogticket.ticketId = idusertiket;
       datalogticket.type = "change status";
-      datalogticket.remark = "change status to " + status + "and change assign to " + assignto;
+      datalogticket.remark = "change status to " + status + " and change assign to " + assignto;
       await this.logticketsService.create(datalogticket);
       res.status(HttpStatus.OK).json({
         response_code: 202,
