@@ -11,10 +11,12 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UtilsService } from "../../utils/utils.service";
 import { SeaweedfsService } from "../../stream/seaweedfs/seaweedfs.service";
 import { SettingsService } from '../settings/settings.service';
+import { LogticketsService } from '../logtickets/logtickets.service';
 import { extname } from 'path';
 import { diskStorage } from 'multer';
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
+import { CreateLogticketsDto } from '../logtickets/dto/create-logtickets.dto';
 //import FormData from "form-data";
 const multer = require('multer');
 var FormData = require('form-data');
@@ -58,7 +60,8 @@ export class UserticketsController {
     private readonly userbasicsService: UserbasicsService,
     private readonly settingsService: SettingsService,
     private readonly userauthsService: UserauthsService,
-    private readonly seaweedfsService: SeaweedfsService) { }
+    private readonly seaweedfsService: SeaweedfsService,
+    private readonly logticketsService: LogticketsService) { }
 
 
   // @UseGuards(JwtAuthGuard)
@@ -237,6 +240,7 @@ export class UserticketsController {
         var idcategory = mongoose.Types.ObjectId(CreateUserticketsDto.categoryTicket);
         var idsource = mongoose.Types.ObjectId(CreateUserticketsDto.sourceTicket);
         var idlevel = mongoose.Types.ObjectId(CreateUserticketsDto.levelTicket);
+        var status = CreateUserticketsDto.status;
         CreateUserticketsDto.IdUser = iduser;
         CreateUserticketsDto.datetime = dt.toISOString();
         CreateUserticketsDto.nomortiket = no;
@@ -251,6 +255,14 @@ export class UserticketsController {
         var objadsid = datausertiket._id;
         var paths = IdMediaproofpictsDto;
         var mongoose_gen_meida = paths;
+
+        let datalogticket = new CreateLogticketsDto();
+        datalogticket.userId = iduser;
+        datalogticket.createdAt = dt.toISOString();
+        datalogticket.ticketId = objadsid;
+        datalogticket.type = "change status";
+        datalogticket.remark = "change status to " + status;
+        await this.logticketsService.create(datalogticket);
         //Ceck supportFile
         if (files.supportFile != undefined) {
           var countfile = files.supportFile.length;
@@ -500,7 +512,7 @@ export class UserticketsController {
 
   @UseGuards(JwtAuthGuard)
   @Put('api/usertickets/update/:id')
-  async updatedata(@Res() res, @Param('id') id: string, @Body() CreateUserticketsDto: CreateUserticketsDto) {
+  async updatedata(@Res() res, @Param('id') id: string, @Headers() headers, @Body() CreateUserticketsDto: CreateUserticketsDto) {
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
     const messages = {
@@ -510,18 +522,37 @@ export class UserticketsController {
     const messagesEror = {
       "info": ["Todo is not found!"],
     };
+
+    var email = headers['x-auth-user'];
+
+    var ubasic = await this.userbasicsService.findOne(email);
+
+    var iduser = ubasic._id;
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
     try {
 
       var idcategory = mongoose.Types.ObjectId(CreateUserticketsDto.categoryTicket);
       var idsource = mongoose.Types.ObjectId(CreateUserticketsDto.sourceTicket);
       var idlevel = mongoose.Types.ObjectId(CreateUserticketsDto.levelTicket);
       var assignto = mongoose.Types.ObjectId(CreateUserticketsDto.assignTo);
+      var idusertiket = mongoose.Types.ObjectId(id);
+      var status = CreateUserticketsDto.status;
       CreateUserticketsDto.active = true;
       CreateUserticketsDto.categoryTicket = idcategory;
       CreateUserticketsDto.sourceTicket = idsource;
       CreateUserticketsDto.levelTicket = idlevel;
       CreateUserticketsDto.assignTo = assignto;
       let data = await this.userticketsService.updatedata(id, CreateUserticketsDto);
+
+      let datalogticket = new CreateLogticketsDto();
+      datalogticket.userId = iduser;
+      datalogticket.createdAt = dt.toISOString();
+      datalogticket.ticketId = idusertiket;
+      datalogticket.type = "change status";
+      datalogticket.remark = "change status to " + status + " and change assign to " + assignto;
+      await this.logticketsService.create(datalogticket);
       res.status(HttpStatus.OK).json({
         response_code: 202,
         "message": messages

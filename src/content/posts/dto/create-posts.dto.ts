@@ -48,8 +48,8 @@ export class CreatePostsDto {
 
   export class CreatePostResponse {
     response_code: number;
-    messages: String;
-    data: PostData[];
+    messages: Messages;
+    data: PostData;
   }  
 
   export class Metadata {
@@ -122,6 +122,10 @@ export class PostData {
     privacy?: Privacy;
     username: string;
     apsaraId: string;
+    insight: InsightPost;
+    isViewed: boolean;
+    isLiked: boolean;
+    avatar: Avatar;
 }
 
 export class Messages {
@@ -185,3 +189,18 @@ export class ApsaraImageResponse {
     NonExistImageIds: any[];
     ImageInfo: ImageInfo[];
 }
+
+export class ApsaraPlayResponse {
+    PlayUrl: string;
+}
+
+export class InsightPost {
+    follower: number;
+    following: number;
+    likes: number;
+    views: number;
+    shares: number;
+    comments: number;
+    reactions: number;
+}
+

@@ -14,10 +14,11 @@ import { UtilsModule } from '../../utils/utils.module';
 import { SeaweedfsModule } from '../../stream/seaweedfs/seaweedfs.module';
 import { SettingsModule } from '../settings/settings.module';
 import { UserauthsModule } from '../userauths/userauths.module';
+import { LogticketsModule } from '../logtickets/logtickets.module';
 @Module({
     imports: [
 
-        UserbasicsModule, MediaprofilepictsModule, UtilsModule, SeaweedfsModule, NestjsFormDataModule, ConfigService, SettingsModule, UserauthsModule, ConfigModule.forRoot(),
+        UserbasicsModule, MediaprofilepictsModule, UtilsModule, SeaweedfsModule, NestjsFormDataModule, ConfigService, SettingsModule, LogticketsModule, UserauthsModule, ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Usertickets.name, schema: UserticketsSchema }], 'SERVER_TRANS')
     ],
     controllers: [UserticketsController],

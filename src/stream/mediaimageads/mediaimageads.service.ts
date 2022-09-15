@@ -52,9 +52,9 @@ export class MediaimageadsService {
         }
         return data;
     }
-    async updatemediaAds(id: Types.ObjectId, imageId: string, url: string): Promise<Object> {
+    async updatemediaAds(id: Types.ObjectId, imageId: string): Promise<Object> {
         let data = await this.mediaimageadsModel.updateOne({ "_id": id },
-            { $set: { "imageId": imageId, "fsSourceUri": url } });
+            { $set: { "imageId": imageId } });
         return data;
     }
 }

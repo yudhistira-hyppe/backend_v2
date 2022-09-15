@@ -77,7 +77,11 @@ import { AdsUserCompareModule } from './trans/ads/adsusercompare/adsusercompare.
 import { LevelticketsModule } from './trans/leveltickets/leveltickets.module';
 import { SourceticketsModule } from './trans/sourcetickets/sourcetickets.module';
 import { CategoryticketsModule } from './trans/categorytickets/categorytickets.module';
+<<<<<<< HEAD
 import { UserplaylistModule } from './trans/userplaylist/userplaylist.module';
+=======
+// import { LogticketsModule } from './trans/logtickets/logtickets.module';
+>>>>>>> a84903f3fb582e5dc066df37087e8656a734c867
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -90,7 +94,11 @@ import { UserplaylistModule } from './trans/userplaylist/userplaylist.module';
     MongooseModule.forRoot(process.env.SERVER_INFRA, {
       connectionName: 'SERVER_INFRA',
     }),
+<<<<<<< HEAD
     UserplaylistModule,
+=======
+    // LogticketsModule,
+>>>>>>> a84903f3fb582e5dc066df37087e8656a734c867
     CategoryticketsModule,
     SourceticketsModule,
     LevelticketsModule,

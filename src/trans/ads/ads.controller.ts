@@ -882,7 +882,7 @@ export class AdsController {
                             ws.close();
 
                             let payload = { 'file': nm, 'postId': adsid };
-                            axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+                            axios.post(this.configService.get("APSARA_UPLOADER_ADS_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
                             res.status(HttpStatus.OK).json({
                                 response_code: 202,
                                 "message": messages
@@ -996,12 +996,12 @@ export class AdsController {
             if (type === "video") {
                 // datamediavid = await this.mediavideosadsService.findOne(mediaid.toString());
 
-                await this.mediavideosadsService.updatemediavidAds(mediaid, videoid, duration, url, thumbnail);
+                await this.mediavideosadsService.updatemediavidAds(mediaid, videoid, duration);
             }
             else if (type === "image") {
                 // datamediaads = await this.mediaimageadsService.findOne(mediaid.toString());
                 // var imageid = datamediaads.imageId;
-                await this.mediaimageadsService.updatemediaAds(mediaid, videoid, url);
+                await this.mediaimageadsService.updatemediaAds(mediaid, videoid);
             }
 
             // Delete directory recursively

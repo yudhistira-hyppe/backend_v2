@@ -4,15 +4,8 @@ export class CreateMediavodeosadsDto {
     active: boolean;
     createdAt: string;
     updatedAt: string;
-    fsSourceName: string;
-    fsSourceUri: string;
-    fsTargetThumbUri: string;
-    fsTargetUri: string;
-    mediaBasePath: string;
     mediaMime: string;
-    mediaThumb: string;
     mediaType: string;
-    mediaUri: string;
     originalName: string;
     videoId: string;
     duration: number;

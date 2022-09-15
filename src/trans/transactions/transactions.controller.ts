@@ -37,7 +37,7 @@ export class TransactionsController {
         private readonly withdrawsService: WithdrawsService,
         private readonly getusercontentsService: GetusercontentsService,
         private readonly uservouchersService: UservouchersService,
-        private readonly vouchersService: VouchersService, 
+        private readonly vouchersService: VouchersService,
         private readonly utilsService: UtilsService,
         private readonly errorHandler: ErrorHandler,
 
@@ -280,6 +280,7 @@ export class TransactionsController {
         //  var idmdradmin = "62bd413ff37a00001a004369";
         var idbankvacharge = "62bd40e0f37a00001a004366";
         var idexpiredva = "62bbbe8ea7520000050077a4";
+
         // var datasettingppn = null;
         var datamradmin = null;
         var databankvacharge = null;
@@ -645,7 +646,7 @@ export class TransactionsController {
         const messagesnull = {
             "info": ["This process is success but cannot update"],
         };
-
+        var bankcode = null;
         var nova = payload.va_number;
         var statussucces = payload.success;
         var datatransaksi = null;
@@ -658,20 +659,55 @@ export class TransactionsController {
         var idadmin = mongoose.Types.ObjectId(iduseradmin);
 
         var idmdradmin = "62bd413ff37a00001a004369";
+        var idbankvachargeBCA = "63217919ec46000002007403";
+        var idbankvachargeLainya = "6321796aec46000002007404";
+        var idbank = null;
         var datamradmin = null;
+        var datavabankbca = null;
+        var datavabanklainya = null;
         var nominalmradmin = 0;
         var type = null;
         var salelike = null;
         var saleview = null;
         var expiredAt = null;
+        var valuevaBCA = null;
+        var valuevalainya = null;
+        var databank = null;
+        var amontVA = null;
+
+        try {
+
+            datavabankbca = await this.settingsService.findOne(idbankvachargeBCA);
+            valuevaBCA = datavabankbca._doc.value;
+
+
+        } catch (e) {
+            valuevaBCA = 0;
+        }
+
+        try {
+
+            datavabanklainya = await this.settingsService.findOne(idbankvachargeLainya);
+            valuevalainya = datavabanklainya._doc.value;
+
+
+        } catch (e) {
+            valuevalainya = 0;
+        }
         if (statussucces == true) {
 
             try {
 
                 datatransaksi = await this.transactionsService.findva(nova);
+                idbank = datatransaksi.bank.toString();
+                try {
+                    databank = await this.banksService.findOne(idbank);
+                    bankcode = databank._doc.bankcode;
+
+                } catch (e) {
+                    throw new BadRequestException("Banks not found...!");
+                }
                 type = datatransaksi.type;
-
-
                 var idtransaction = datatransaksi._id;
                 var postid = datatransaksi.postid;
                 var idusersell = datatransaksi.idusersell;
@@ -689,10 +725,7 @@ export class TransactionsController {
                     saleview = null;
                 }
 
-
                 var lengtvoucherid = detail.length;
-
-
 
                 if (type === "CONTENT") {
                     let databuy = await this.getusercontentsService.findcontenbuy(postid);
@@ -707,7 +740,15 @@ export class TransactionsController {
                     } catch (e) {
                         nominalmradmin = 0;
                     }
-                    var amontVA = tamount - (amount + nominalmradmin);
+
+
+                    amontVA = tamount - (amount + nominalmradmin);
+                    var amounvaadmin = null;
+                    if (bankcode === "014") {
+                        amounvaadmin = amontVA - valuevaBCA;
+                    } else {
+                        amounvaadmin = amontVA - valuevalainya;
+                    }
 
                     if (status == "WAITING_PAYMENT") {
                         var ubasic = await this.userbasicsService.findid(iduserbuy);
@@ -716,7 +757,7 @@ export class TransactionsController {
 
                         var createbalance = await this.accontbalance(postid, idusersell, saleAmount);
                         var createbalanceadmin = await this.accontbalanceAdmin("Admin", idadmin, idusersell, nominalmradmin);
-                        var createbalanceadminVa = await this.accontbalanceAdmin("Bank VA", idadmin, idusersell, amontVA);
+                        var createbalanceadminVa = await this.accontbalanceAdmin("Bank VA", idadmin, idusersell, amounvaadmin);
                         let databalance = await this.accountbalancesService.findOne(idusersell);
 
                         var idbalance = databalance._id;
@@ -811,8 +852,13 @@ export class TransactionsController {
                         nominalmradmin = 0;
                     }
 
-                    var amontVA = tamount - (saleAmountVoucher + nominalmradmin);
-
+                    amontVA = tamount - (saleAmountVoucher + nominalmradmin);
+                    var amounvaadmin = null;
+                    if (bankcode === "014") {
+                        amounvaadmin = amontVA - valuevaBCA;
+                    } else {
+                        amounvaadmin = amontVA - valuevalainya;
+                    }
 
 
                     if (status == "WAITING_PAYMENT") {
@@ -822,7 +868,7 @@ export class TransactionsController {
 
                         var createbalance = await this.accontbalanceVoucher(postid, idusersell, saleAmountVoucher);
                         var createbalanceadmin = await this.accontbalanceAdmin("Admin", idadmin, idusersell, nominalmradmin);
-                        var createbalanceadminVa = await this.accontbalanceAdmin("Bank VA", idadmin, idusersell, amontVA);
+                        var createbalanceadminVa = await this.accontbalanceAdmin("Bank VA", idadmin, idusersell, amounvaadmin);
                         let databalance = await this.accountbalancesService.findOne(idusersell);
 
                         var idbalance = databalance._id;
@@ -884,11 +930,11 @@ export class TransactionsController {
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/withdraw')
     async createwithdraw(@Res() res, @Headers('x-auth-token') auth: string, @Body() OyDisbursements: OyDisbursements, @Request() request) {
-        if (OyDisbursements.pin!=undefined){
-            if (OyDisbursements.email!= undefined) {
+        if (OyDisbursements.pin != undefined) {
+            if (OyDisbursements.email != undefined) {
                 var ubasic = await this.userbasicsService.findOne(OyDisbursements.email);
-                if (await this.utilsService.ceckData(ubasic)){
-                    if (ubasic.pin!=undefined){
+                if (await this.utilsService.ceckData(ubasic)) {
+                    if (ubasic.pin != undefined) {
                         var pin_descript = await this.utilsService.decrypt(ubasic.pin);
                         if (pin_descript != OyDisbursements.pin) {
                             await this.errorHandler.generateNotAcceptableException(
@@ -968,6 +1014,19 @@ export class TransactionsController {
         var idbankverificationcharge = "62bd4104f37a00001a004367";
         var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
         var iduseradmin = "61d9c847548ae516042f0b13";
+        var datainquiry = null;
+        var valueinquiry = null;
+        var idinquirycharge = "63217ae5ec46000002007405";
+        var totalinquiry = null;
+        try {
+
+            datainquiry = await this.settingsService.findOne(idinquirycharge);
+            valueinquiry = datainquiry._doc.value;
+
+
+        } catch (e) {
+            valueinquiry = 0;
+        }
         var idadmin = mongoose.Types.ObjectId(iduseradmin);
         try {
             databalance = await this.accountbalancesService.findwallettotalsaldo(iduser);
@@ -981,6 +1040,7 @@ export class TransactionsController {
         try {
             datasettingbankvercharge = await this.settingsService.findOne(idbankverificationcharge);
             valuebankcharge = datasettingbankvercharge._doc.value;
+            totalinquiry = valuebankcharge - valueinquiry;
             datasettingdisbvercharge = await this.settingsService.findOne(idBankDisbursmentCharge);
             valuedisbcharge = datasettingdisbvercharge._doc.value;
 
@@ -1010,7 +1070,8 @@ export class TransactionsController {
         var totalamount = amounreq - valuedisbcharge - valuebankcharge;
         if (amounreq > totalsaldo) {
             throw new BadRequestException("The balance is not sufficient...!");
-        } else {
+        }
+        else {
             if (norekdb !== null) {
 
                 let datareqinquiry = new OyAccountInquirys();
@@ -1030,7 +1091,7 @@ export class TransactionsController {
                         var partnertrxid = "OYO" + stringId;
                         await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
                         await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
-                        await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, valuebankcharge);
+                        await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, totalinquiry);
                         OyDisbursements.partner_trx_id = partnertrxid;
                         OyDisbursements.amount = totalamount;
                         let datadisbursemen = await this.oyPgService.disbursement(OyDisbursements);
@@ -1148,14 +1209,13 @@ export class TransactionsController {
     @Post('api/pg/oy/callback/disbursement')
     async callbackDisbursement(@Res() res, @Body() payload: OyDisburseCallbacks) {
 
-        console.log(payload);
-
         const messages = {
             "info": ["Disbursement Request has been completed (success)"],
         };
         var datarek = null;
         var databank = null;
         var idbank = null;
+
         var recipient_name = payload.recipient_name;
         var recipient_bank = payload.recipient_bank;
         var recipient_account = payload.recipient_account;

@@ -13,23 +13,9 @@ export class Mediavideosads {
     @Prop()
     updatedAt: string;
     @Prop()
-    fsSourceName: string;
-    @Prop()
-    fsSourceUri: string;
-    @Prop()
-    fsTargetThumbUri: string;
-    @Prop()
-    fsTargetUri: string;
-    @Prop()
-    mediaBasePath: string;
-    @Prop()
     mediaMime: string;
     @Prop()
-    mediaThumb: string;
-    @Prop()
     mediaType: string;
-    @Prop()
-    mediaUri: string;
     @Prop()
     originalName: string;
     @Prop()

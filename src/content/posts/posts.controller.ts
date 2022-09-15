@@ -8,7 +8,7 @@ import {
   UseGuards,
   Req,
   Headers,
-  Request,
+  Request, Logger,
   BadRequestException, HttpStatus, Put, Res, HttpCode, Query, UseInterceptors, UploadedFile
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
@@ -25,6 +25,8 @@ import { PostContentService } from './postcontent.service';
 
 @Controller()
 export class PostsController {
+  private readonly logger = new Logger(PostsController.name);
+  
   constructor(private readonly PostsService: PostsService,
     private readonly postContentService: PostContentService,
     private readonly userauthsService: UserauthsService,
@@ -259,7 +261,7 @@ export class PostsController {
   @Post('api/posts/createpost')
   @UseInterceptors(FileInterceptor('postContent'))
   async createPost(@UploadedFile() file: Express.Multer.File, @Body() body, @Headers() headers): Promise<CreatePostResponse> {
-    console.log(file);
+    this.logger.log("createPost >>> start");
     return this.postContentService.createNewPost(file, body, headers);
   }
 
@@ -267,7 +269,7 @@ export class PostsController {
   @Post('api/posts/getuserposts')
   @UseInterceptors(FileInterceptor('postContent'))
   async getUserPost(@Body() body, @Headers() headers): Promise<PostResponseApps> {
-    console.log(body);
+    this.logger.log("getUserPost >>> start: " + JSON.stringify(body));
     return this.postContentService.getUserPost(body, headers);
   }  
 
@@ -275,7 +277,7 @@ export class PostsController {
   @Post('api/posts/getuserposts/my')
   @UseInterceptors(FileInterceptor('postContent'))
   async getUserPostMy(@Body() body, @Headers() headers): Promise<PostResponseApps> {
-    console.log(body);
+    this.logger.log("getUserPostMy >>> start: " + JSON.stringify(body));
     return this.postContentService.getUserPostMy(body, headers);
   }
   
@@ -283,13 +285,13 @@ export class PostsController {
   @Post('api/posts/getuserposts/byprofile')
   @UseInterceptors(FileInterceptor('postContent'))
   async getUserPostByProfile(@Body() body, @Headers() headers): Promise<PostResponseApps> {
-    console.log(body);
+    this.logger.log("getUserPostByProfile >>> start: " + JSON.stringify(body));
     return this.postContentService.getUserPostByProfile(body, headers);
   }  
 
   @Post('api/posts/notifyapsara')
   async notifyApsara(@Body() body, @Headers() headers) {
-    console.log(body);
+    this.logger.log("notifyApsara >>> start: " + JSON.stringify(body));
     this.postContentService.updateNewPost(body, headers);
     let t = {'response' : 'Done'};
     return JSON.stringify(t);
@@ -297,7 +299,7 @@ export class PostsController {
 
   @Post('api/posts/getvideo')
   async getVideo(@Body() body, @Headers() headers) {
-    console.log(body);
-    return this.postContentService.getUserPost(body, headers);
+    this.logger.log("getVideo >>> start: " + JSON.stringify(body));
+    return this.postContentService.getVideoApsaraSingle(String(body.apsaraId));
   }    
 }
