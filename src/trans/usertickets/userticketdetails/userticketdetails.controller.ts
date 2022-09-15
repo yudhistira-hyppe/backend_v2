@@ -10,10 +10,12 @@ import { isEmpty } from 'rxjs';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { UtilsService } from "../../../utils/utils.service";
 import { SeaweedfsService } from "../../../stream/seaweedfs/seaweedfs.service";
+import { LogticketsService } from '../../logtickets/logtickets.service';
 import { extname } from 'path';
 import { diskStorage } from 'multer';
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
+import { CreateLogticketsDto } from 'src/trans/logtickets/dto/create-logtickets.dto';
 //import FormData from "form-data";
 const multer = require('multer');
 var FormData = require('form-data');
@@ -56,7 +58,8 @@ export class UserticketdetailsController {
         private readonly errorHandler: ErrorHandler,
         private readonly userbasicsService: UserbasicsService,
         private readonly seaweedfsService: SeaweedfsService,
-        private readonly userticketsService: UserticketsService) { }
+        private readonly userticketsService: UserticketsService,
+        private readonly logticketsService: LogticketsService) { }
 
     // @UseGuards(JwtAuthGuard)
     // @Post('api/usertickets/reply')
@@ -222,17 +225,40 @@ export class UserticketdetailsController {
 
 
                 IdUserticket = request_json["IdUserticket"];
+                var body = CreateUserticketdetailsDto.body;
                 var idusertiket = mongoose.Types.ObjectId(request_json["IdUserticket"]);
                 CreateUserticketdetailsDto.IdUser = iduser;
                 CreateUserticketdetailsDto.datetime = dt.toISOString();
                 CreateUserticketdetailsDto.IdUserticket = idusertiket;
                 datausertiket = await this.userticketdetailsService.create(CreateUserticketdetailsDto);
 
-                await this.userticketsService.update(idusertiket, status);
+
                 var IdMediaproofpictsDto = datausertiket._id.toString();
                 var objadsid = datausertiket._id;
                 var paths = IdMediaproofpictsDto;
                 var mongoose_gen_meida = paths;
+
+
+                if (type === "comment") {
+
+                    let datalogticket = new CreateLogticketsDto();
+                    datalogticket.userId = iduser;
+                    datalogticket.createdAt = dt.toISOString();
+                    datalogticket.ticketId = idusertiket;
+                    datalogticket.type = "comment";
+                    datalogticket.remark = "comment on " + body;
+                    await this.logticketsService.create(datalogticket);
+                } else {
+                    await this.userticketsService.update(idusertiket, status);
+                    let datalogticket = new CreateLogticketsDto();
+                    datalogticket.userId = iduser;
+                    datalogticket.createdAt = dt.toISOString();
+                    datalogticket.ticketId = idusertiket;
+                    datalogticket.type = "change status";
+                    datalogticket.remark = "change status to " + status;
+                    await this.logticketsService.create(datalogticket);
+
+                }
                 //Ceck supportFile
                 if (files.supportFile != undefined) {
                     var countfile = files.supportFile.length;

@@ -77,6 +77,7 @@ import { AdsUserCompareModule } from './trans/ads/adsusercompare/adsusercompare.
 import { LevelticketsModule } from './trans/leveltickets/leveltickets.module';
 import { SourceticketsModule } from './trans/sourcetickets/sourcetickets.module';
 import { CategoryticketsModule } from './trans/categorytickets/categorytickets.module';
+// import { LogticketsModule } from './trans/logtickets/logtickets.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -89,6 +90,7 @@ import { CategoryticketsModule } from './trans/categorytickets/categorytickets.m
     MongooseModule.forRoot(process.env.SERVER_INFRA, {
       connectionName: 'SERVER_INFRA',
     }),
+    // LogticketsModule,
     CategoryticketsModule,
     SourceticketsModule,
     LevelticketsModule,
