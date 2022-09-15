@@ -177,6 +177,9 @@ export class PostContentService {
     } else {
       post.certified = false;      
     }    
+
+    var usp = { "$ref": "userbasics", "$id": mongoose.Types.ObjectId(profile._id), "$db": "hyppe_trans_db" };
+    post.userProfile = usp;
     
     if (body.cats != undefined && body.cats.length > 1) {
       var obj = body.cats;
@@ -797,6 +800,7 @@ export class PostContentService {
       for(let i = 0; i < posts.length; i++) {
         let ps = posts[i];
         let pa = new PostData();
+
         pa.active = ps.active;
         pa.allowComments = ps.allowComments;
         pa.certified = ps.certified;
@@ -804,6 +808,8 @@ export class PostContentService {
         pa.updatedAt = String(ps.updatedAt);
         pa.description = String(ps.description);
         pa.email = String(ps.email);
+
+        let following = await this.contentEventService.findFollowing(pa.email);
 
         if (ps.userProfile != undefined) {
             if (ps.userProfile?.namespace) {
@@ -816,6 +822,8 @@ export class PostContentService {
                 }
 
                 pa.avatar = await this.getProfileAvatar(ua);
+              } else {
+                this.logger.log('oid: ' + oid + ' error');
               }
             }
         }
@@ -856,12 +864,23 @@ export class PostContentService {
               if (ua != undefined) {
                 let tp1 = new TagPeople();
                 tp1.email = String(ua.email);
-                tp1.status = 'TOFOLLOW';
                 tp1.username = String(ua.username);
 
                 let ub = await this.userService.findOne(String(ua.email));
                 if (ub != undefined) {
                   tp1.avatar = await this.getProfileAvatar(ub);
+                }
+
+                tp1.status = 'TOFOLLOW';
+                if (tp1.email == pa.email) {
+                  tp1.status = "UNLINK";
+                } else {
+                  for(let i = 0; i < following.length; i++) {
+                    let fol = following[i];
+                    if (fol.email == tp1.email) {
+                      tp1.status = "FOLLOWING";
+                    }
+                  }
                 }
                 atp1.push(tp1);
               }
