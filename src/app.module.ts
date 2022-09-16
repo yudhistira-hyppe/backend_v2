@@ -77,6 +77,7 @@ import { AdsUserCompareModule } from './trans/ads/adsusercompare/adsusercompare.
 import { LevelticketsModule } from './trans/leveltickets/leveltickets.module';
 import { SourceticketsModule } from './trans/sourcetickets/sourcetickets.module';
 import { CategoryticketsModule } from './trans/categorytickets/categorytickets.module';
+import { RemovedreasonsModule } from './trans/removedreasons/removedreasons.module';
 // import { LogticketsModule } from './trans/logtickets/logtickets.module';
 @Module({
   imports: [
@@ -91,6 +92,7 @@ import { CategoryticketsModule } from './trans/categorytickets/categorytickets.m
       connectionName: 'SERVER_INFRA',
     }),
     // LogticketsModule,
+    RemovedreasonsModule,
     CategoryticketsModule,
     SourceticketsModule,
     LevelticketsModule,
