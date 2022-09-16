@@ -1157,6 +1157,8 @@ export class AuthController {
       type = "CREATE_PIN";
     } else if (body_.type == "CHANGE_PIN") {
       type = "CHANGE_PIN";
+    } else if (body_.type == "CECK_PIN") {
+      type = "CECK_PIN";
     } else {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, type cannot be processed',
@@ -1623,146 +1625,275 @@ export class AuthController {
             };
           }
         } else {
-          if (body_.pin == undefined) {
-            await this.errorHandler.generateNotAcceptableException(
-              'Unabled to proceed, param pin is required',
-            );
-          }else{
-            if (body_.pin.length != 6) {
+          if (type =="CECK_PIN"){
+            if (body_.pin == undefined) {
               await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed, pin lenght must 6 digit',
+                'Unabled to proceed, param pin is required',
+              );
+            } else {
+              if (body_.pin.length != 6) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed, pin lenght must 6 digit',
+                );
+              }
+            }
+            
+            if (datauserbasicsService.pin != undefined){
+              var current_pin = datauserbasicsService.pin;
+              var decript_pin = await this.utilsService.decrypt(current_pin.toString());
+              if (decript_pin == body_.pin) {
+                return {
+                  response_code: 202,
+                  messages: {
+                    info: ['Ceck Pin Succcesfully'],
+                  },
+                };
+              } else {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed, pin not match current pin',
+                );
+              }
+
+              //Create ActivityEvent Parent
+              try {
+                var id_parent = new mongoose.Types.ObjectId();
+                data_CreateActivityeventsDto_parent._id = id_parent;
+                data_CreateActivityeventsDto_parent.activityEventID =
+                  ID_parent_ActivityEvent;
+                data_CreateActivityeventsDto_parent.activityType = type;
+                data_CreateActivityeventsDto_parent.active = true;
+                data_CreateActivityeventsDto_parent.status = 'INITIAL';
+                data_CreateActivityeventsDto_parent.target = 'COMPLETE';
+                data_CreateActivityeventsDto_parent.event = type;
+                data_CreateActivityeventsDto_parent._class =
+                  'io.melody.hyppe.trans.domain.ActivityEvent';
+                data_CreateActivityeventsDto_parent.payload = {
+                  login_location: {
+                    latitude: undefined,
+                    longitude: undefined,
+                  },
+                  logout_date: undefined,
+                  login_date: undefined,
+                  login_device: undefined,
+                  email: user_email,
+                };
+                data_CreateActivityeventsDto_parent.createdAt = current_date_string;
+                data_CreateActivityeventsDto_parent.updatedAt = current_date_string;
+                data_CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
+                data_CreateActivityeventsDto_parent.__v = undefined;
+                data_CreateActivityeventsDto_parent.flowIsDone = true;
+                data_CreateActivityeventsDto_parent.transitions = [
+                  {
+                    $ref: 'activityevents',
+                    $id: Object(ID_child_ActivityEvent),
+                    $db: 'hyppe_trans_db',
+                  },
+                ];
+                data_CreateActivityeventsDto_parent.userbasic =
+                  datauserbasicsService._id;
+
+                //Insert ActivityEvent Parent
+                await this.activityeventsService.create(
+                  data_CreateActivityeventsDto_parent,
+                );
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Create Activity events Parent. Error: ' +
+                  error,
+                );
+              }
+
+              //Create ActivityEvent child
+              try {
+                var id_child = new mongoose.Types.ObjectId();
+                data_CreateActivityeventsDto_child._id = id_child;
+                data_CreateActivityeventsDto_child.activityEventID =
+                  ID_child_ActivityEvent;
+                data_CreateActivityeventsDto_child.activityType = type;
+                data_CreateActivityeventsDto_child.active = true;
+                data_CreateActivityeventsDto_child.status = 'COMPLETE';
+                data_CreateActivityeventsDto_child.target = 'COMPLETE';
+                data_CreateActivityeventsDto_child.event = type;
+                data_CreateActivityeventsDto_child._class =
+                  'io.melody.hyppe.trans.domain.ActivityEvent';
+                data_CreateActivityeventsDto_child.payload = {
+                  login_location: {
+                    latitude: undefined,
+                    longitude: undefined,
+                  },
+                  logout_date: undefined,
+                  login_date: undefined,
+                  login_device: undefined,
+                  email: user_email,
+                };
+                data_CreateActivityeventsDto_child.createdAt = current_date_string;
+                data_CreateActivityeventsDto_child.updatedAt = current_date_string;
+                data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
+                data_CreateActivityeventsDto_child.flowIsDone = true;
+                data_CreateActivityeventsDto_child.__v = undefined;
+                data_CreateActivityeventsDto_child.parentActivityEventID =
+                  ID_parent_ActivityEvent;
+                data_CreateActivityeventsDto_child.userbasic =
+                  datauserbasicsService._id;
+
+                //Insert ActivityEvent Parent
+                await this.activityeventsService.create(
+                  data_CreateActivityeventsDto_child,
+                );
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Create Activity events Child. Error: ' +
+                  error,
+                );
+              }
+            } else {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, you must create pin first',
               );
             }
-          }
+          }else{
 
-          //Create ActivityEvent Parent
-          try {
-            var id_parent = new mongoose.Types.ObjectId();
-            data_CreateActivityeventsDto_parent._id = id_parent;
-            data_CreateActivityeventsDto_parent.activityEventID =
-              ID_parent_ActivityEvent;
-            data_CreateActivityeventsDto_parent.activityType = type;
-            data_CreateActivityeventsDto_parent.active = true;
-            data_CreateActivityeventsDto_parent.status = 'INITIAL';
-            data_CreateActivityeventsDto_parent.target = 'NOTIFY';
-            data_CreateActivityeventsDto_parent.event = 'CREATE_PIN';
-            data_CreateActivityeventsDto_parent.fork = 'NOTIFY_OTP';
-            data_CreateActivityeventsDto_parent.action = 'RecoverPassCommand';
-            data_CreateActivityeventsDto_parent._class =
-              'io.melody.hyppe.trans.domain.ActivityEvent';
-            data_CreateActivityeventsDto_parent.payload = {
-              login_location: {
-                latitude: undefined,
-                longitude: undefined,
-              },
-              logout_date: undefined,
-              login_date: undefined,
-              login_device: undefined,
-              email: user_email,
-            };
-            data_CreateActivityeventsDto_parent.createdAt = current_date_string;
-            data_CreateActivityeventsDto_parent.updatedAt = current_date_string;
-            data_CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
-            data_CreateActivityeventsDto_parent.__v = undefined;
-            data_CreateActivityeventsDto_parent.flowIsDone = false;
-            data_CreateActivityeventsDto_parent.transitions = [
-              {
-                $ref: 'activityevents',
-                $id: Object(ID_child_ActivityEvent),
-                $db: 'hyppe_trans_db',
-              },
-            ];
-            data_CreateActivityeventsDto_parent.userbasic =
-              datauserbasicsService._id;
+            if (body_.pin == undefined) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, param pin is required',
+              );
+            } else {
+              if (body_.pin.length != 6) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed, pin lenght must 6 digit',
+                );
+              }
+            }
 
-            //Insert ActivityEvent Parent
-            await this.activityeventsService.create(
-              data_CreateActivityeventsDto_parent,
-            );
-          } catch (error) {
-            await this.errorHandler.generateNotAcceptableException(
-              'Unabled to proceed Create Activity events Parent. Error: ' +
-              error,
-            );
-          }
+            //Create ActivityEvent Parent
+            try {
+              var id_parent = new mongoose.Types.ObjectId();
+              data_CreateActivityeventsDto_parent._id = id_parent;
+              data_CreateActivityeventsDto_parent.activityEventID =
+                ID_parent_ActivityEvent;
+              data_CreateActivityeventsDto_parent.activityType = type;
+              data_CreateActivityeventsDto_parent.active = true;
+              data_CreateActivityeventsDto_parent.status = 'INITIAL';
+              data_CreateActivityeventsDto_parent.target = 'NOTIFY';
+              data_CreateActivityeventsDto_parent.event = type;
+              data_CreateActivityeventsDto_parent.fork = 'NOTIFY_OTP';
+              data_CreateActivityeventsDto_parent.action = 'RecoverPassCommand';
+              data_CreateActivityeventsDto_parent._class =
+                'io.melody.hyppe.trans.domain.ActivityEvent';
+              data_CreateActivityeventsDto_parent.payload = {
+                login_location: {
+                  latitude: undefined,
+                  longitude: undefined,
+                },
+                logout_date: undefined,
+                login_date: undefined,
+                login_device: undefined,
+                email: user_email,
+              };
+              data_CreateActivityeventsDto_parent.createdAt = current_date_string;
+              data_CreateActivityeventsDto_parent.updatedAt = current_date_string;
+              data_CreateActivityeventsDto_parent.sequenceNumber = new Int32(0);
+              data_CreateActivityeventsDto_parent.__v = undefined;
+              data_CreateActivityeventsDto_parent.flowIsDone = false;
+              data_CreateActivityeventsDto_parent.transitions = [
+                {
+                  $ref: 'activityevents',
+                  $id: Object(ID_child_ActivityEvent),
+                  $db: 'hyppe_trans_db',
+                },
+              ];
+              data_CreateActivityeventsDto_parent.userbasic =
+                datauserbasicsService._id;
 
-          //Create ActivityEvent child
-          try {
-            var id_child = new mongoose.Types.ObjectId();
-            data_CreateActivityeventsDto_child._id = id_child;
-            data_CreateActivityeventsDto_child.activityEventID =
-              ID_child_ActivityEvent;
-            data_CreateActivityeventsDto_child.activityType = type;
-            data_CreateActivityeventsDto_child.active = true;
-            data_CreateActivityeventsDto_child.status = 'NOTIFY';
-            data_CreateActivityeventsDto_child.target = 'REPLY';
-            data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
-            data_CreateActivityeventsDto_child._class =
-              'io.melody.hyppe.trans.domain.ActivityEvent';
-            data_CreateActivityeventsDto_child.action = 'NotifyActivityCommand';
-            data_CreateActivityeventsDto_child.payload = {
-              login_location: {
-                latitude: undefined,
-                longitude: undefined,
-              },
-              logout_date: undefined,
-              login_date: undefined,
-              login_device: undefined,
-              email: user_email,
-            };
-            data_CreateActivityeventsDto_child.createdAt = current_date_string;
-            data_CreateActivityeventsDto_child.updatedAt = current_date_string;
-            data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
-            data_CreateActivityeventsDto_child.flowIsDone = false;
-            data_CreateActivityeventsDto_child.__v = undefined;
-            data_CreateActivityeventsDto_child.parentActivityEventID =
-              ID_parent_ActivityEvent;
-            data_CreateActivityeventsDto_child.userbasic =
-              datauserbasicsService._id;
+              //Insert ActivityEvent Parent
+              await this.activityeventsService.create(
+                data_CreateActivityeventsDto_parent,
+              );
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create Activity events Parent. Error: ' +
+                error,
+              );
+            }
 
-            //Insert ActivityEvent Parent
-            await this.activityeventsService.create(
-              data_CreateActivityeventsDto_child,
-            );
-          } catch (error) {
-            await this.errorHandler.generateNotAcceptableException(
-              'Unabled to proceed Create Activity events Child. Error: ' +
-              error,
-            );
-          }
+            //Create ActivityEvent child
+            try {
+              var id_child = new mongoose.Types.ObjectId();
+              data_CreateActivityeventsDto_child._id = id_child;
+              data_CreateActivityeventsDto_child.activityEventID =
+                ID_child_ActivityEvent;
+              data_CreateActivityeventsDto_child.activityType = type;
+              data_CreateActivityeventsDto_child.active = true;
+              data_CreateActivityeventsDto_child.status = 'NOTIFY';
+              data_CreateActivityeventsDto_child.target = 'REPLY';
+              data_CreateActivityeventsDto_child.event = 'NOTIFY_OTP';
+              data_CreateActivityeventsDto_child._class =
+                'io.melody.hyppe.trans.domain.ActivityEvent';
+              data_CreateActivityeventsDto_child.action = 'NotifyActivityCommand';
+              data_CreateActivityeventsDto_child.payload = {
+                login_location: {
+                  latitude: undefined,
+                  longitude: undefined,
+                },
+                logout_date: undefined,
+                login_date: undefined,
+                login_device: undefined,
+                email: user_email,
+              };
+              data_CreateActivityeventsDto_child.createdAt = current_date_string;
+              data_CreateActivityeventsDto_child.updatedAt = current_date_string;
+              data_CreateActivityeventsDto_child.sequenceNumber = new Int32(2);
+              data_CreateActivityeventsDto_child.flowIsDone = false;
+              data_CreateActivityeventsDto_child.__v = undefined;
+              data_CreateActivityeventsDto_child.parentActivityEventID =
+                ID_parent_ActivityEvent;
+              data_CreateActivityeventsDto_child.userbasic =
+                datauserbasicsService._id;
 
-          //Generate OTP
-          try {
-            var encrypt_pin = await this.utilsService.encrypt(body_.pin.toString());
-            var OTP = await this.utilsService.generateOTP();
-            var OTP_request_time = current_date.getTime();
-            var OTP_expired_time = (current_date.setMinutes(current_date.getMinutes() + Number(setting_ExpiredTimeOTPPin)));
+              //Insert ActivityEvent Parent
+              await this.activityeventsService.create(
+                data_CreateActivityeventsDto_child,
+              );
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Create Activity events Child. Error: ' +
+                error,
+              );
+            }
 
-            var createUserbasicDto_ = new CreateUserbasicDto();
-            createUserbasicDto_.pin = encrypt_pin;
-            createUserbasicDto_.otp_pin = OTP;
-            createUserbasicDto_.otp_attemp = 0;
-            createUserbasicDto_.otppinVerified = false;
-            createUserbasicDto_.otp_request_time = Long.fromString(OTP_request_time.toString());
-            createUserbasicDto_.otp_expired_time = Long.fromString(OTP_expired_time.toString());
-            await this.userbasicsService.updateData(user_email, createUserbasicDto_);
+            //Generate OTP
+            try {
+              var encrypt_pin = await this.utilsService.encrypt(body_.pin.toString());
+              var OTP = await this.utilsService.generateOTP();
+              var OTP_request_time = current_date.getTime();
+              var OTP_expired_time = (current_date.setMinutes(current_date.getMinutes() + Number(setting_ExpiredTimeOTPPin)));
 
-            await this.authService.sendemailOTP(
-              user_userAuth.email.toString(),
-              OTP.toString(),
-              'RECOVER_PASS',
-            );
+              var createUserbasicDto_ = new CreateUserbasicDto();
+              createUserbasicDto_.pin = encrypt_pin;
+              createUserbasicDto_.otp_pin = OTP;
+              createUserbasicDto_.otp_attemp = 0;
+              createUserbasicDto_.otppinVerified = false;
+              createUserbasicDto_.otp_request_time = Long.fromString(OTP_request_time.toString());
+              createUserbasicDto_.otp_expired_time = Long.fromString(OTP_expired_time.toString());
+              await this.userbasicsService.updateData(user_email, createUserbasicDto_);
 
-            return {
-              response_code: 202,
-              messages: {
-                info: ['Request create PIN request successful'],
-              },
-            };
-          } catch (error) {
-            await this.errorHandler.generateNotAcceptableException(
-              'Unabled to proceed Gnerate OTP. Error: ' + error,
-            );
+              await this.authService.sendemailOTP(
+                user_userAuth.email.toString(),
+                OTP.toString(),
+                'RECOVER_PASS',
+              );
+
+              return {
+                response_code: 202,
+                messages: {
+                  info: ['Request create PIN request successful'],
+                },
+              };
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Gnerate OTP. Error: ' + error,
+              );
+            }
           }
         }
       } else {

@@ -78,9 +78,11 @@ import { LevelticketsModule } from './trans/leveltickets/leveltickets.module';
 import { SourceticketsModule } from './trans/sourcetickets/sourcetickets.module';
 import { CategoryticketsModule } from './trans/categorytickets/categorytickets.module';
 import { UserplaylistModule } from './trans/userplaylist/userplaylist.module';
+import { ScheduleUserPlaylistModule } from './schedule/userplaylist/scheduleuserplaylist.module';
 // import { LogticketsModule } from './trans/logtickets/logtickets.module';
 @Module({
   imports: [
+    ScheduleUserPlaylistModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.SERVER_TRANS, {
       connectionName: 'SERVER_TRANS',
