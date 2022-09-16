@@ -1,6 +1,6 @@
 export class CreateVouchersDto {
 
-    readonly _id: { oid: String; };
+    _id: { oid: String; };
     noVoucher: string;
     codeVoucher: string;
     userID: { oid: String; };

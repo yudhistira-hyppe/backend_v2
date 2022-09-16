@@ -348,37 +348,15 @@ export class TransactionsController {
                             CreateTransactionsDto.payload = null;
                             CreateTransactionsDto.expiredtimeva = d1.toISOString();
                             CreateTransactionsDto.detail = arrayDetail;
-                            CreateTransactionsDto.postid = postidTR;
+                            CreateTransactionsDto.postid = postidTR.toString();
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
-                            // var lengArrDetail = arrayDetail.length;
-
-                            // for (var i = 0; i < lengArrDetail; i++) {
-                            //     var qtyDetail = arrayDetail[i].qty;
-                            //     var idvoucher = arrayDetail[i].id.toString();
-                            //     datavoucher = await this.vouchersService.findOne(idvoucher);
-                            //     var pendingUsed = datavoucher.pendingUsed;
-                            //     var totalPending = pendingUsed + qtyDetail;
-                            //     await this.vouchersService.updatesPendingUsed(idvoucher, totalPending);
-                            // }
-
                             await this.transactionsService.updatestatuscancel(idtransaction);
-                            // transactionVoucher = await this.transactionsService.findid(idtransaction.toString());
 
-
-                            // var detailTr = transactionVoucher.detail;
-                            // for (var a = 0; a < detailTr.length; a++) {
-                            //     var qtyDetail2 = detailTr[a].qty;
-                            //     var idvoucher2 = detailTr[a].id.toString();
-                            //     datavoucher = await this.vouchersService.findOne(idvoucher2);
-                            //     var pendingUsed2 = datavoucher.pendingUsed;
-                            //     var totalPending2 = pendingUsed2 - qtyDetail2;
-                            //     await this.vouchersService.updatesPendingUsed(idvoucher2, totalPending2);
-                            // }
 
                             var data = {
                                 "noinvoice": datatr.noinvoice,
-                                "postid": postidTR,
+                                "postid": postidTR.toString(),
                                 "idusersell": datatr.idusersell,
                                 "NamaPenjual": namapenjual,
                                 "iduserbuyer": datatr.iduserbuyer,
@@ -487,22 +465,12 @@ export class TransactionsController {
                         CreateTransactionsDto.payload = null;
                         CreateTransactionsDto.expiredtimeva = d1.toISOString();
                         CreateTransactionsDto.detail = arrayDetail;
-                        CreateTransactionsDto.postid = postidTR;
+                        CreateTransactionsDto.postid = postidTR.toString();
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
-                        var lengArrDetail = arrayDetail.length;
-
-                        for (var i = 0; i < lengArrDetail; i++) {
-                            var qtyDetail = arrayDetail[i].qty;
-                            var idvoucher = arrayDetail[i].id.toString();
-                            datavoucher = await this.vouchersService.findOne(idvoucher);
-                            var pendingUsed = datavoucher.pendingUsed;
-                            var totalPending = pendingUsed + qtyDetail;
-                            await this.vouchersService.updatesPendingUsed(idvoucher, totalPending);
-                        }
 
                         var data = {
                             "noinvoice": datatr.noinvoice,
-                            "postid": postidTR,
+                            "postid": postidTR.toString(),
                             "idusersell": datatr.idusersell,
                             "NamaPenjual": namapenjual,
                             "iduserbuyer": datatr.iduserbuyer,
@@ -636,18 +604,7 @@ export class TransactionsController {
                     throw new BadRequestException("This content is already in the process of being purchased");
                 }
                 else if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
-
-
-                    // var datenow = new Date(Date.now());
-                    // var expiredvas = dex;
-                    // var dateVa = new Date(expiredvas);
-                    // dateVa.setHours(dateVa.getHours() - 7); // timestamp
-
-
                     var idtransaction = datatrpending._id;
-
-                    // if (datenow > dateVa) {
-
                     var datava = {
                         "partner_user_id": userbuy.toString() + stringId,
                         "amount": totalamount,
@@ -701,7 +658,7 @@ export class TransactionsController {
                             CreateTransactionsDto.payload = null;
                             CreateTransactionsDto.expiredtimeva = d1.toISOString();
                             CreateTransactionsDto.detail = arrayDetail;
-                            CreateTransactionsDto.postid = postidTR;
+                            CreateTransactionsDto.postid = postidTR.toString();
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
                             var lengArrDetail = arrayDetail.length;
@@ -709,10 +666,11 @@ export class TransactionsController {
                             for (var i = 0; i < lengArrDetail; i++) {
                                 var qtyDetail = arrayDetail[i].qty;
                                 var idvoucher = arrayDetail[i].id.toString();
+                                var idvcr = mongoose.Types.ObjectId(idvoucher);
                                 datavoucher = await this.vouchersService.findOne(idvoucher);
                                 var pendingUsed = datavoucher.pendingUsed;
                                 var totalPending = pendingUsed + qtyDetail;
-                                await this.vouchersService.updatesPendingUsed(idvoucher, totalPending);
+                                await this.vouchersService.updatesPendingUsed(idvcr, totalPending);
                             }
 
                             await this.transactionsService.updatestatuscancel(idtransaction);
@@ -723,15 +681,16 @@ export class TransactionsController {
                             for (var a = 0; a < detailTr.length; a++) {
                                 var qtyDetail2 = detailTr[a].qty;
                                 var idvoucher2 = detailTr[a].id.toString();
+                                var idvcr2 = mongoose.Types.ObjectId(idvoucher2);
                                 datavoucher = await this.vouchersService.findOne(idvoucher2);
                                 var pendingUsed2 = datavoucher.pendingUsed;
                                 var totalPending2 = pendingUsed2 - qtyDetail2;
-                                await this.vouchersService.updatesPendingUsed(idvoucher2, totalPending2);
+                                await this.vouchersService.updatesPendingUsed(idvcr2, totalPending2);
                             }
 
                             var data = {
                                 "noinvoice": datatr.noinvoice,
-                                "postid": postidTR,
+                                "postid": postidTR.toString(),
                                 "idusersell": datatr.idusersell,
                                 "NamaPenjual": namapenjual,
                                 "iduserbuyer": datatr.iduserbuyer,
@@ -840,7 +799,7 @@ export class TransactionsController {
                         CreateTransactionsDto.payload = null;
                         CreateTransactionsDto.expiredtimeva = d1.toISOString();
                         CreateTransactionsDto.detail = arrayDetail;
-                        CreateTransactionsDto.postid = postidTR;
+                        CreateTransactionsDto.postid = postidTR.toString();
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
                         var lengArrDetail = arrayDetail.length;
 
@@ -855,7 +814,7 @@ export class TransactionsController {
 
                         var data = {
                             "noinvoice": datatr.noinvoice,
-                            "postid": postidTR,
+                            "postid": postidTR.toString(),
                             "idusersell": datatr.idusersell,
                             "NamaPenjual": namapenjual,
                             "iduserbuyer": datatr.iduserbuyer,

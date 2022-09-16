@@ -1,7 +1,7 @@
 export class CreateTransactionsDto {
 
 
-    readonly _id: { oid: string; };
+    _id: { oid: string; };
     noinvoice: string;
     postid: string;
     idusersell: { oid: String; };
