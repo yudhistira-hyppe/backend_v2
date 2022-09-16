@@ -15,7 +15,7 @@ import { extname } from 'path';
 import { diskStorage } from 'multer';
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
-import { CreateLogticketsDto } from 'src/trans/logtickets/dto/create-logtickets.dto';
+import { CreateLogticketsDto } from '../../../trans/logtickets/dto/create-logtickets.dto';
 //import FormData from "form-data";
 const multer = require('multer');
 var FormData = require('form-data');
