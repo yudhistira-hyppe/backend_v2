@@ -1157,6 +1157,8 @@ export class AuthController {
       type = "CREATE_PIN";
     } else if (body_.type == "CHANGE_PIN") {
       type = "CHANGE_PIN";
+    } else if (body_.type == "CECK_PIN") {
+      type = "CECK_PIN";
     } else {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, type cannot be processed',
