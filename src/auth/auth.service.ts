@@ -27,6 +27,7 @@ import { ReferralService } from '../trans/referral/referral.service';
 import { CreateReferralDto } from '../trans/referral/dto/create-referral.dto';
 import mongoose from 'mongoose';
 import { SeaweedfsService } from '../stream/seaweedfs/seaweedfs.service'; 
+import { AdsUserCompareService } from '../trans/ads/adsusercompare/adsusercompare.service';
 import { Long } from 'mongodb';
 import * as fs from 'fs';
 
@@ -50,7 +51,8 @@ export class AuthService {
     private errorHandler: ErrorHandler,
     private citiesService: CitiesService,
     private referralService: ReferralService,
-    private seaweedfsService: SeaweedfsService,
+    private seaweedfsService: SeaweedfsService, 
+    private adsUserCompareService: AdsUserCompareService,
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -791,8 +793,7 @@ export class AuthService {
                   );
                 }
 
-                const datajwtrefreshtokenService =
-                  await this.jwtrefreshtokenService.findOne(user_email);
+                const datajwtrefreshtokenService = await this.jwtrefreshtokenService.findOne(user_email);
 
                 //Create Or Update refresh Token
                 await this.updateRefreshToken(user_email);
@@ -1138,6 +1139,13 @@ export class AuthService {
                 data["isComplete"] = datauserbasicsService.isComplete;
                 data["status"] = 'IN_PROGRESS';
                 data["refreshToken"] = datajwtrefreshtoken_data.refresh_token_id;
+
+                //Create User Ads
+                try{
+                  await this.adsUserCompareService.createNewUserAds(datauserbasicsService._id.toString());
+                }catch(e){
+                  console.log("Create User Ads",e);
+                }
 
                 return {
                   response_code: 202,

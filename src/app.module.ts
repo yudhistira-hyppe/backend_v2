@@ -77,7 +77,7 @@ import { AdsUserCompareModule } from './trans/ads/adsusercompare/adsusercompare.
 import { LevelticketsModule } from './trans/leveltickets/leveltickets.module';
 import { SourceticketsModule } from './trans/sourcetickets/sourcetickets.module';
 import { CategoryticketsModule } from './trans/categorytickets/categorytickets.module';
-import { RemovedreasonsModule } from './trans/removedreasons/removedreasons.module';
+import { UserplaylistModule } from './trans/userplaylist/userplaylist.module';
 // import { LogticketsModule } from './trans/logtickets/logtickets.module';
 @Module({
   imports: [
@@ -91,8 +91,9 @@ import { RemovedreasonsModule } from './trans/removedreasons/removedreasons.modu
     MongooseModule.forRoot(process.env.SERVER_INFRA, {
       connectionName: 'SERVER_INFRA',
     }),
+    UserplaylistModule,
     // LogticketsModule,
-    RemovedreasonsModule,
+    // RemovedreasonsModule,
     CategoryticketsModule,
     SourceticketsModule,
     LevelticketsModule,

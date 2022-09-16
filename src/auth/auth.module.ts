@@ -26,8 +26,10 @@ import { SeaweedfsModule } from '../stream/seaweedfs/seaweedfs.module';
 import { PostsModule } from '../content/posts/posts.module';
 import { SettingsModule } from '../trans/settings/settings.module';
 import { ContenteventsModule } from '../content/contentevents/contentevents.module';
+import { AdsUserCompareModule } from '../trans/ads/adsusercompare/adsusercompare.module';
 @Module({
   imports: [
+    AdsUserCompareModule,
     ContenteventsModule,
     SettingsModule,
     PostsModule,

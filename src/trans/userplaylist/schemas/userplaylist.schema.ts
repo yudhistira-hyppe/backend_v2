@@ -7,20 +7,22 @@ export type UserplaylistDocument = Userplaylist & Document;
 export class Userplaylist {
   @Prop({ type: Object })
   _id: { oid: String };
-  @Prop()
+  @Prop({ type: Object })
   userId: { oid: String };
-  @Prop()
+  @Prop([{ type: Object }])
   interestId: [{
     $ref: String;
     $id: { oid: String };
     $db: String;
   }];
   @Prop()
+  interestIdCount: number;
+  @Prop({ type: Object })
   userPostId: { oid: String };
   @Prop()
   postType: String;
   @Prop()
-  mediaId: { oid: String };
+  mediaId: String;
   @Prop()
   type: String;
   @Prop()
@@ -29,6 +31,8 @@ export class Userplaylist {
   updatedAt: String;
   @Prop()
   isWatched: boolean;
+  @Prop()
+  isHidden: boolean;
 }
 
 export const UserplaylistSchema = SchemaFactory.createForClass(Userplaylist);
