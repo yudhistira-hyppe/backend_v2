@@ -95,6 +95,7 @@ import { ScheduleUserPlaylistModule } from './schedule/userplaylist/scheduleuser
     }),
     UserplaylistModule,
     // LogticketsModule,
+    // RemovedreasonsModule,
     CategoryticketsModule,
     SourceticketsModule,
     LevelticketsModule,
