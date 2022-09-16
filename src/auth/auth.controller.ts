@@ -1638,7 +1638,7 @@ export class AuthController {
               }
             }
             var current_pin = datauserbasicsService.pin;
-            var decript_pin = await this.utilsService.decrypt(current_pin);
+            var decript_pin = await this.utilsService.decrypt(current_pin.toString());
             if (decript_pin == body_.pin){
               return {
                 response_code: 202,

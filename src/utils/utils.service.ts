@@ -823,11 +823,11 @@ export class UtilsService {
     return await this.decrypt(pin);
   }
 
-  async encrypt(text) {
+  async encrypt(text: string) {
     return await cryptr.encrypt(text);;
   }
 
-  async decrypt(text) {
+  async decrypt(text: string) {
     return cryptr.decrypt(text);;
   }
 }
