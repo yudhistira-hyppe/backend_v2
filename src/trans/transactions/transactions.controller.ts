@@ -1204,7 +1204,7 @@ export class TransactionsController {
                 var ubasic = await this.userbasicsService.findOne(OyDisbursements.email);
                 if (await this.utilsService.ceckData(ubasic)) {
                     if (ubasic.pin != undefined) {
-                        var pin_descript = await this.utilsService.decrypt(ubasic.pin);
+                        var pin_descript = await this.utilsService.decrypt(ubasic.pin.toString());
                         if (pin_descript != OyDisbursements.pin) {
                             await this.errorHandler.generateNotAcceptableException(
                                 "Unabled to proceed, Pin not Match",
