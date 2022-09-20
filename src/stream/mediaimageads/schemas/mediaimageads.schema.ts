@@ -13,19 +13,9 @@ export class Mediaimageads {
     @Prop()
     updatedAt: string;
     @Prop()
-    fsSourceName: string;
-    @Prop()
-    fsSourceUri: string;
-    @Prop()
-    fsTargetUri: string;
-    @Prop()
-    mediaBasePath: string;
-    @Prop()
     mediaMime: string;
     @Prop()
     mediaType: string;
-    @Prop()
-    mediaUri: string;
     @Prop()
     originalName: string;
     @Prop()

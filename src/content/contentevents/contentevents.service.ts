@@ -608,4 +608,48 @@ export class ContenteventsService {
     ]);
     return query;
   }
+
+  async ceckFriendFollowingFollower(email1: string, email2: string) {
+    const query = await this.ContenteventsModel.aggregate([
+      {
+        "$match": {
+          "$or": [
+            {
+              "$and": [
+                {
+                  "eventType": "FOLLOWER"
+                },
+                {
+                  "receiverParty": email2
+                },
+                {
+                  "email": email1
+                },
+                {
+                  "event": "ACCEPT"
+                }
+              ]
+            },
+            {
+              "$and": [
+                {
+                  "eventType": "FOLLOWING"
+                },
+                {
+                  "senderParty": email1
+                },
+                {
+                  "email": email2
+                },
+                {
+                  "event": "ACCEPT"
+                }
+              ]
+            }
+          ],
+        }
+      }
+    ]);
+    return query;
+  }
 }

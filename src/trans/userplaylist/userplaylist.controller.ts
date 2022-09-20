@@ -6,7 +6,7 @@ import { UserplaylistService } from './userplaylist.service';
 import { CreateUserplaylistDto } from './dto/create-userplaylist.dto';
 import { Userplaylist } from './schemas/userplaylist.schema';
 
-@Controller('api/userplaylist')
+@Controller()
 export class UserplaylistController {
   constructor(private readonly userplaylistService: UserplaylistService) { }
 
@@ -24,5 +24,11 @@ export class UserplaylistController {
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.userplaylistService.delete(id);
+  }
+
+  @Post('api/userplaylist/generate')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async generateUserPlaylist(@Body() CreateUserplaylistDto_: CreateUserplaylistDto) {
+    return await this.userplaylistService.generateUserPlaylist(CreateUserplaylistDto_);
   }
 }

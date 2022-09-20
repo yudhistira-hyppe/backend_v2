@@ -7,14 +7,16 @@ export class CreateUserplaylistDto {
   userId: mongoose.Types.ObjectId;
   interestId: [{
     $ref: String;
-    $id: { oid: String };
+    $id: ObjectId;
     $db: String;
   }];
+  interestIdCount: number;
   userPostId: mongoose.Types.ObjectId;
   postType: String;
-  mediaId: mongoose.Types.ObjectId;
+  mediaId: String;
   type: String;
   createAt: String;
   updatedAt: String;
   isWatched: boolean;
+  isHidden: boolean;
 }

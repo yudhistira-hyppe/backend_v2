@@ -228,7 +228,6 @@ export class UtilsService {
         };
       }
 
-
       datadevice = await this.userdevicesService.findActive(emailuserbasic);
       for (var i = 0; i < datadevice.length; i++) {
         var deviceid = datadevice[i].deviceID;
@@ -252,8 +251,6 @@ export class UtilsService {
         createNotificationsDto.contentEventID = null;
         createNotificationsDto.senderOrReceiverInfo = senderreceiver;
         await this.notificationsService.create(createNotificationsDto);
-
-
       }
 
 
@@ -262,6 +259,29 @@ export class UtilsService {
 
   async getSetting(jenis: string) {
     return (await this.settingsService.findOneByJenis(jenis)).value;
+  }
+
+  async getSetting_(_id_setting: string) {
+    return (await this.settingsService.findOne(_id_setting)).value;
+  }
+
+  async convertToTime(time: string) {
+    let timeString = "";
+    let time1 = time.split(".")[0];
+    let time2 = time.split(".")[1];
+    if (time1.length==2){
+      timeString = timeString.concat(time1);
+    } else if (time1.length == 1) {
+      timeString = timeString.concat("0" + time1);
+    }
+    timeString = timeString.concat(":");
+    if (time2.length == 2) {
+      timeString = timeString.concat(time2);
+    } else if (time2.length == 1) {
+      timeString = timeString.concat("0" + time2);
+    }
+    timeString = timeString.concat(":00");
+    return timeString;
   }
 
   async getTemplate(type: string, category: string): Promise<Templates> {
@@ -803,11 +823,11 @@ export class UtilsService {
     return await this.decrypt(pin);
   }
 
-  async encrypt(text) {
+  async encrypt(text: string) {
     return await cryptr.encrypt(text);;
   }
 
-  async decrypt(text) {
+  async decrypt(text: string) {
     return cryptr.decrypt(text);;
   }
 }

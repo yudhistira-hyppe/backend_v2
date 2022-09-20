@@ -77,9 +77,15 @@ import { AdsUserCompareModule } from './trans/ads/adsusercompare/adsusercompare.
 import { LevelticketsModule } from './trans/leveltickets/leveltickets.module';
 import { SourceticketsModule } from './trans/sourcetickets/sourcetickets.module';
 import { CategoryticketsModule } from './trans/categorytickets/categorytickets.module';
+import { UserplaylistModule } from './trans/userplaylist/userplaylist.module';
+import { ScheduleUserPlaylistModule } from './schedule/userplaylist/scheduleuserplaylist.module';
 // import { LogticketsModule } from './trans/logtickets/logtickets.module';
+import { RemovedreasonsModule } from './trans/removedreasons/removedreasons.module';
+import { ReportreasonsModule } from './trans/reportreasons/reportreasons.module';
+import { ReportuserModule } from './trans/reportuser/reportuser.module';
 @Module({
   imports: [
+    ScheduleUserPlaylistModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.SERVER_TRANS, {
       connectionName: 'SERVER_TRANS',
@@ -90,7 +96,11 @@ import { CategoryticketsModule } from './trans/categorytickets/categorytickets.m
     MongooseModule.forRoot(process.env.SERVER_INFRA, {
       connectionName: 'SERVER_INFRA',
     }),
+    UserplaylistModule,
     // LogticketsModule,
+    // ReportreasonsModule,
+    // RemovedreasonsModule,
+    ReportuserModule,
     CategoryticketsModule,
     SourceticketsModule,
     LevelticketsModule,
@@ -130,7 +140,7 @@ import { CategoryticketsModule } from './trans/categorytickets/categorytickets.m
     NotificationsModule,
     MediavideosModule,
     MediastoriesModule,
-    MediaproofpictsModule,
+    // MediaproofpictsModule,
     MediaprofilepictsModule,
     MediapictsModule,
     MediadiariesModule,
