@@ -80,6 +80,9 @@ import { CategoryticketsModule } from './trans/categorytickets/categorytickets.m
 import { UserplaylistModule } from './trans/userplaylist/userplaylist.module';
 import { ScheduleUserPlaylistModule } from './schedule/userplaylist/scheduleuserplaylist.module';
 // import { LogticketsModule } from './trans/logtickets/logtickets.module';
+import { RemovedreasonsModule } from './trans/removedreasons/removedreasons.module';
+import { ReportreasonsModule } from './trans/reportreasons/reportreasons.module';
+import { ReportuserModule } from './trans/reportuser/reportuser.module';
 @Module({
   imports: [
     ScheduleUserPlaylistModule,
@@ -95,7 +98,9 @@ import { ScheduleUserPlaylistModule } from './schedule/userplaylist/scheduleuser
     }),
     UserplaylistModule,
     // LogticketsModule,
+    // ReportreasonsModule,
     // RemovedreasonsModule,
+    ReportuserModule,
     CategoryticketsModule,
     SourceticketsModule,
     LevelticketsModule,
@@ -135,7 +140,7 @@ import { ScheduleUserPlaylistModule } from './schedule/userplaylist/scheduleuser
     NotificationsModule,
     MediavideosModule,
     MediastoriesModule,
-    MediaproofpictsModule,
+    // MediaproofpictsModule,
     MediaprofilepictsModule,
     MediapictsModule,
     MediadiariesModule,
