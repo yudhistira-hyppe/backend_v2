@@ -708,7 +708,7 @@ export class PostContentService {
     }
 
     if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
-      this.logger.log("today: " + this.utilService.now());
+      this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
       query.where('expiration').lte(this.utilService.now());
     }
 
