@@ -667,15 +667,45 @@ export class AdsController {
         var ObjectId = require('mongodb').ObjectId;
         var typemedia = "";
         var totalCreditTayang = 0;
+        var titleMax = null;
+        var descriptionMax = null;
+        var nama = null;
+        var description = null;
+        var sizeMax = null;
+        var size = null;
+        nama = CreateAdsDto.name;
+        description = CreateAdsDto.description;
+        var lengname = nama.length;
+        var lengdesc = description.length;
         try {
             datatypesAds = await this.adstypesService.findOne(mongoose.Types.ObjectId(typeadsId));
 
             creditValue = datatypesAds._doc.creditValue;
             typemedia = datatypesAds._doc.mediaType;
+            titleMax = datatypesAds._doc.titleMax;
+            descriptionMax = datatypesAds._doc.descriptionMax;
+            sizeMax = datatypesAds._doc.sizeMax;
+
         } catch (e) {
             datatypesAds = null;
             creditValue = 0;
             typemedia = "";
+            titleMax = 0;
+            descriptionMax = 0;
+            sizeMax = 0;
+        }
+
+        if (lengname > titleMax) {
+            res.status(HttpStatus.BAD_REQUEST).json({
+
+                "message": "Maksimal jumlah karakter judul iklan konten " + titleMax
+            });
+        }
+        if (lengdesc > descriptionMax) {
+            res.status(HttpStatus.BAD_REQUEST).json({
+
+                "message": "Maksimal jumlah karakter deskripsi iklan konten " + descriptionMax
+            });
         }
 
         var mongoose_gen_meida = uuidv4();
@@ -849,44 +879,53 @@ export class AdsController {
                         let supportFile_mimetype = '';
 
                         if (files.mediaAdsFile != undefined) {
+                            size = files.mediaAdsFile[0].size / (1024 * 1024);
 
+                            if (size > sizeMax) {
+                                res.status(HttpStatus.BAD_REQUEST).json({
 
-                            supportFile_mimetype = files.mediaAdsFile[0].mimetype;
-                            supportFile_filename = files.mediaAdsFile[0].originalname;
+                                    "message": "Maksimal ukuran media " + sizeMax
+                                });
+                            }
+                            else {
 
-                            var name = supportFile_mimetype;
-                            var splitname = name.split('/');
-                            var type = splitname[0];
+                                supportFile_mimetype = files.mediaAdsFile[0].mimetype;
+                                supportFile_filename = files.mediaAdsFile[0].originalname;
 
-                            var dt = new Date(Date.now());
-                            dt.setHours(dt.getHours() + 7); // timestamp
-                            dt = new Date(dt);
-                            let dtmedia = new MediaimageadsDto();
-                            dtmedia.active = true;
-                            dtmedia.createdAt = dt.toISOString();
-                            dtmedia.updatedAt = dt.toISOString();
-                            dtmedia.originalName = supportFile_filename;
+                                var name = supportFile_mimetype;
+                                var splitname = name.split('/');
+                                var type = splitname[0];
 
-                            dtmedia.mediaMime = supportFile_mimetype;
-                            dtmedia.mediaType = type;
+                                var dt = new Date(Date.now());
+                                dt.setHours(dt.getHours() + 7); // timestamp
+                                dt = new Date(dt);
+                                let dtmedia = new MediaimageadsDto();
+                                dtmedia.active = true;
+                                dtmedia.createdAt = dt.toISOString();
+                                dtmedia.updatedAt = dt.toISOString();
+                                dtmedia.originalName = supportFile_filename;
 
-                            let dataimageads = await this.mediaimageadsService.create(dtmedia);
-                            idmedia = dataimageads._id;
-                            await this.adsService.updatemediaAds(objadsid, idmedia);
+                                dtmedia.mediaMime = supportFile_mimetype;
+                                dtmedia.mediaType = type;
 
-                            let fn = files.mediaAdsFile[0].originalname;
-                            let ext = fn.split(".");
-                            let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + adsid + "." + ext[1];
-                            const ws = createWriteStream(nm);
-                            ws.write(files.mediaAdsFile[0].buffer);
-                            ws.close();
+                                let dataimageads = await this.mediaimageadsService.create(dtmedia);
+                                idmedia = dataimageads._id;
+                                await this.adsService.updatemediaAds(objadsid, idmedia);
 
-                            let payload = { 'file': nm, 'postId': adsid };
-                            axios.post(this.configService.get("APSARA_UPLOADER_ADS_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
-                            res.status(HttpStatus.OK).json({
-                                response_code: 202,
-                                "message": messages
-                            });
+                                let fn = files.mediaAdsFile[0].originalname;
+                                let ext = fn.split(".");
+                                let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + adsid + "." + ext[1];
+                                const ws = createWriteStream(nm);
+                                ws.write(files.mediaAdsFile[0].buffer);
+                                ws.close();
+
+                                let payload = { 'file': nm, 'postId': adsid };
+                                axios.post(this.configService.get("APSARA_UPLOADER_ADS_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+                                res.status(HttpStatus.OK).json({
+                                    response_code: 202,
+                                    "message": messages
+                                });
+                            }
 
                         } else {
                             await this.errorHandler.generateNotAcceptableException(
@@ -903,44 +942,52 @@ export class AdsController {
                         let cardVid_mimetype = '';
 
                         if (files.mediaVidFile != undefined) {
+                            size = files.mediaVidFile[0].size / (1024 * 1024);
 
-                            cardVid_mimetype = files.mediaVidFile[0].mimetype;
-                            cardVid_filename = files.mediaVidFile[0].originalname;
+                            if (size > sizeMax) {
+                                res.status(HttpStatus.BAD_REQUEST).json({
 
-                            var name = cardVid_mimetype;
-                            var splitname = name.split('/');
-                            var type = splitname[0];
+                                    "message": "Maksimal ukuran media " + sizeMax
+                                });
+                            }
+                            else {
+                                cardVid_mimetype = files.mediaVidFile[0].mimetype;
+                                cardVid_filename = files.mediaVidFile[0].originalname;
 
-                            var dt = new Date(Date.now());
-                            dt.setHours(dt.getHours() + 7); // timestamp
-                            dt = new Date(dt);
-                            let dtmedia = new MediavodeosadsDto();
-                            dtmedia.active = true;
-                            dtmedia.createdAt = dt.toISOString();
-                            dtmedia.updatedAt = dt.toISOString();
-                            dtmedia.originalName = cardVid_filename;
-                            dtmedia.mediaMime = cardVid_mimetype;
-                            dtmedia.mediaType = typemedia;
+                                var name = cardVid_mimetype;
+                                var splitname = name.split('/');
+                                var type = splitname[0];
 
-                            let datavideosads = await this.mediavideosadsService.create(dtmedia);
+                                var dt = new Date(Date.now());
+                                dt.setHours(dt.getHours() + 7); // timestamp
+                                dt = new Date(dt);
+                                let dtmedia = new MediavodeosadsDto();
+                                dtmedia.active = true;
+                                dtmedia.createdAt = dt.toISOString();
+                                dtmedia.updatedAt = dt.toISOString();
+                                dtmedia.originalName = cardVid_filename;
+                                dtmedia.mediaMime = cardVid_mimetype;
+                                dtmedia.mediaType = typemedia;
 
-                            idmedia = datavideosads._id;
-                            await this.adsService.updatemediaAds(objadsid, idmedia);
+                                let datavideosads = await this.mediavideosadsService.create(dtmedia);
 
-                            let fn = files.mediaVidFile[0].originalname;
-                            let ext = fn.split(".");
-                            let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + adsid + "." + ext[1];
-                            const ws = createWriteStream(nm);
-                            ws.write(files.mediaVidFile[0].buffer);
-                            ws.close();
+                                idmedia = datavideosads._id;
+                                await this.adsService.updatemediaAds(objadsid, idmedia);
 
-                            let payload = { 'file': nm, 'postId': adsid };
-                            axios.post(this.configService.get("APSARA_UPLOADER_ADS_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
-                            res.status(HttpStatus.OK).json({
-                                response_code: 202,
-                                "message": messages
-                            });
+                                let fn = files.mediaVidFile[0].originalname;
+                                let ext = fn.split(".");
+                                let nm = this.configService.get("APSARA_UPLOADER_FOLDER") + adsid + "." + ext[1];
+                                const ws = createWriteStream(nm);
+                                ws.write(files.mediaVidFile[0].buffer);
+                                ws.close();
 
+                                let payload = { 'file': nm, 'postId': adsid };
+                                axios.post(this.configService.get("APSARA_UPLOADER_ADS_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+                                res.status(HttpStatus.OK).json({
+                                    response_code: 202,
+                                    "message": messages
+                                });
+                            }
                         }
 
                         else {
