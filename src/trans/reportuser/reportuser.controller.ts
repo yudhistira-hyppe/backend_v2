@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Request, Req, BadRequestException, Res, HttpStatus } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Put, Headers, Request, Req, BadRequestException, Res, HttpStatus } from '@nestjs/common';
 import { ReportuserService } from './reportuser.service';
-import { CreateReportsuserDto } from './dto/create-reportuser.dto';
+import { CreateReportsuserDto, DetailReport } from './dto/create-reportuser.dto';
 import { Reportuser } from './schemas/reportuser.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { ReportreasonsService } from '../reportreasons/reportreasons.service';
@@ -32,7 +32,8 @@ export class ReportuserController {
 
     @UseGuards(JwtAuthGuard)
     @Post()
-    async create(@Res() res, @Body() CreateReportsuserDto: CreateReportsuserDto, @Request() request) {
+    async create(@Res() res, @Headers() headers, @Body() CreateReportsuserDto: CreateReportsuserDto, @Request() request) {
+        var userid = null;
         const messages = {
             "info": ["The create successful"],
         };
@@ -40,14 +41,45 @@ export class ReportuserController {
         const messagesEror = {
             "info": ["Todo is not found!"],
         };
+        if (headers['x-auth-token'] == undefined) {
+            throw new BadRequestException("Unabled to proceed email is required");
+        }
+        try {
+            const datauserbasicsService = await this.userbasicsService.findOne(
+                headers['x-auth-user'],
+            );
+            userid = datauserbasicsService._id;
+        } catch (e) {
+            throw new BadRequestException("Unabled to proceed email is required");
+        }
 
         var type = null;
         var reportTypeId = null;
         var cekdata = null;
         var cektypeid = null;
+        var iduser = null;
+        var reportReasonId = null;
+        var detail = [];
+        var objdetail = {};
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         // var idadmin = mongoose.Types.ObjectId(iduseradmin);
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var detailreport = CreateReportsuserDto.detailReport;
+        var lenghtdetail = detailreport.length;
+
+        for (var i = 0; i < lenghtdetail; i++) {
+            iduser = mongoose.Types.ObjectId(detailreport[i].userId);
+            reportReasonId = mongoose.Types.ObjectId(detailreport[i].reportReasonId);
+
+            let detailrpt = new DetailReport();
+            detailrpt.userId = iduser;
+            detailrpt.reportReasonId = reportReasonId;
+            detailrpt.createdAt = dt.toISOString();
+            detail.push(detailrpt);
+        }
         try {
             type = CreateReportsuserDto.type;
         } catch (e) {
@@ -81,11 +113,9 @@ export class ReportuserController {
             if (cektypeid === null) {
 
                 try {
-
+                    CreateReportsuserDto.createdAt = dt.toISOString();
+                    CreateReportsuserDto.detailReport = detail;
                     let data = await this.reportuserService.create(CreateReportsuserDto);
-
-
-
 
                     res.status(HttpStatus.OK).json({
                         response_code: 202,
@@ -95,7 +125,7 @@ export class ReportuserController {
                 } catch (e) {
                     res.status(HttpStatus.BAD_REQUEST).json({
 
-                        "message": messagesEror
+                        "message": messagesEror + "" + e
                     });
                 }
             } else {
@@ -104,7 +134,8 @@ export class ReportuserController {
 
                 if (isremoved === false) {
                     try {
-
+                        CreateReportsuserDto.createdAt = dt.toISOString();
+                        CreateReportsuserDto.detailReport = detail;
                         let data = await this.reportuserService.create(CreateReportsuserDto);
 
                         res.status(HttpStatus.OK).json({
@@ -115,13 +146,13 @@ export class ReportuserController {
                     } catch (e) {
                         res.status(HttpStatus.BAD_REQUEST).json({
 
-                            "message": messagesEror
+                            "message": messagesEror + "" + e
                         });
                     }
                 } else {
                     try {
 
-                        let data = await this.reportuserService.updateid(id);
+                        let data = await this.reportuserService.updateid(id, userid, dt.toISOString());
 
                         res.status(HttpStatus.OK).json({
                             response_code: 202,
@@ -130,7 +161,7 @@ export class ReportuserController {
                     } catch (e) {
                         res.status(HttpStatus.BAD_REQUEST).json({
 
-                            "message": messagesEror
+                            "message": messagesEror + "" + e
                         });
                     }
                 }

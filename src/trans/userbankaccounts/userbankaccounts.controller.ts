@@ -126,7 +126,7 @@ export class UserbankaccountsController {
                 }
             } else {
                 res.status(HttpStatus.BAD_REQUEST).json({
-
+                    response_code: 202,
                     "message": messageRespon
                 });
             }

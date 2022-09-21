@@ -8,7 +8,16 @@ export class CreateAdstypesDto {
     sizeType: [];
     formatType: [];
     descType: string;
-    rewards: number; 
-    AdsSkip: number; 
+    rewards: number;
+    AdsSkip: number;
+    conterImpression: number;
+    descriptionMax: number;
+    durationMax: number;
+    durationMin: number;
+    sizeMax: number;
+    titleMax: number;
+    distanceArea: number;
+    intervalAds: number;
+    servingMultiplier: number;
 
 }

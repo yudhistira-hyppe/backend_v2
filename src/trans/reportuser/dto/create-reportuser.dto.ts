@@ -10,3 +10,9 @@ export class CreateReportsuserDto {
     isRemoved: boolean;
     detailReport: any[];
 }
+
+export class DetailReport {
+    userId: { oid: String; };
+    reportReasonId: { oid: String; };
+    createdAt: string;
+}

@@ -21,9 +21,9 @@ export class ReportuserService {
     async findType(reportTypeId: string): Promise<Reportuser> {
         return this.reportuserModel.findOne({ reportTypeId: reportTypeId }).exec();
     }
-    async updateid(id: ObjectId): Promise<Object> {
+    async updateid(id: ObjectId, userUpdate: ObjectId, updatedAt: string): Promise<Object> {
         let data = await this.reportuserModel.updateOne({ "_id": id },
-            { $set: { "isRemoved": true } });
+            { $set: { "isRemoved": true, "updatedBy": userUpdate, "updatedAt": updatedAt } });
         return data;
     }
 
