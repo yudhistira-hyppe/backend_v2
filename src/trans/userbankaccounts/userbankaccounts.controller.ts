@@ -119,13 +119,13 @@ export class UserbankaccountsController {
                         "message": messages
                     });
                 } catch (e) {
-                    res.status(HttpStatus.BAD_REQUEST).json({
+                    res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "message": messagesEror
                     });
                 }
             } else {
-                res.status(HttpStatus.BAD_REQUEST).json({
+                res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "message": messageRespon
                 });
