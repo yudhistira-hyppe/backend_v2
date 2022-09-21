@@ -104,7 +104,7 @@ export class PostContentService {
     post.email = auth.email;
     post.createdAt = await this.utilService.getDateTimeString();
     post.updatedAt = await this.utilService.getDateTimeString();
-    let big = BigInt(this.utilService.generateExpiration(new Date(), 1));
+    let big = BigInt(this.utilService.generateAddExpirationFromToday(1));
     post.expiration = Long.fromBigInt(big);
     post._class = 'io.melody.hyppe.content.domain.ContentPost';
 
@@ -708,8 +708,8 @@ export class PostContentService {
     }
 
     if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
-      this.logger.log("today: " + this.utilService.now());
-      query.where('expiration').lte(this.utilService.now());
+      this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
+      query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
     }
 
     let row = 20;
