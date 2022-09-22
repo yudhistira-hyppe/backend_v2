@@ -261,26 +261,22 @@ export class UtilsService {
     return (await this.settingsService.findOneByJenis(jenis)).value;
   }
 
+  async updateSetting(jenis: string, value:any) {
+    return await this.settingsService.findOneAndUpdate(jenis, value);
+  }
+
   async getSetting_(_id_setting: string) {
     return (await this.settingsService.findOne(_id_setting)).value;
   }
 
   async convertToTime(time: string) {
     let timeString = "";
-    let time1 = time.split(".")[0];
-    let time2 = time.split(".")[1];
-    if (time1.length==2){
-      timeString = timeString.concat(time1);
-    } else if (time1.length == 1) {
-      timeString = timeString.concat("0" + time1);
+    if (time.length==2){
+      timeString = timeString.concat(time);
+    } else if (time.length == 1) {
+      timeString = timeString.concat("0" + time);
     }
-    timeString = timeString.concat(":");
-    if (time2.length == 2) {
-      timeString = timeString.concat(time2);
-    } else if (time2.length == 1) {
-      timeString = timeString.concat("0" + time2);
-    }
-    timeString = timeString.concat(":00");
+    timeString = timeString.concat(":00:00");
     return timeString;
   }
 

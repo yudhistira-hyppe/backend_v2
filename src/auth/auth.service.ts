@@ -3646,10 +3646,10 @@ export class AuthService {
 
       try {
         var langIso = req.body.langIso;
-        var languages = this.languagesService.findOneLangiso(langIso);
+        var languages = await this.languagesService.findOneLangiso(langIso);
         var data_update_userbasict = {};
         if ((await this.utilsService.ceckData(languages))) {
-          var languages_id = (await languages)._id;
+          var languages_id = languages._id;
           data_update_userbasict['languages'] = {
             ref: 'languages',
             id: languages_id,
@@ -3665,7 +3665,7 @@ export class AuthService {
         }
       } catch (error) {
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed',
+          'Unabled to proceed ' + error,
         );
       }
     } else {
