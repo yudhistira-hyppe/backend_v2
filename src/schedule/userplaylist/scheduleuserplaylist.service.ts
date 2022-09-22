@@ -41,7 +41,8 @@ export class ScheduleUserPlaylistService {
                 });
                 var DateStringLocaleToDate = new Date(DateStringLocale.split(' ')[0] + 'T' + DateStringLocale.split(' ')[1] + ".000Z");
 
-                var nowDateTime = DateStringLocaleToDate.toISOString();
+                var date_1 = new Date(DateStringLocaleToDate.setDate(DateStringLocaleToDate.getDate() + 1));
+                var nowDateTime = date_1.toISOString();
                 var nowDate = nowDateTime.split('T')[0];
                 //var hms = convertToTime;
                 var hms = "23:15:00";
