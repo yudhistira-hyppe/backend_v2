@@ -54,7 +54,7 @@ export class WithdrawsService {
             const query = await this.withdrawsModel.aggregate([
                 {
                     $match: {
-                        status: "Success",
+
                         idUser: iduser,
                         timestamp: { $gte: startdate, $lte: dateend }
                     }
@@ -110,11 +110,12 @@ export class WithdrawsService {
                 }
             ]);
             return query;
-        } else {
+        }
+        else {
             const query = await this.withdrawsModel.aggregate([
                 {
                     $match: {
-                        status: "Success",
+
                         idUser: iduser
                     }
                 },
@@ -179,7 +180,7 @@ export class WithdrawsService {
             {
                 $match: {
                     _id: id,
-                    status: "Success",
+
 
                     idUser: iduser
                 }
