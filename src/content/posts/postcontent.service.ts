@@ -390,8 +390,8 @@ export class PostContentService {
     playlist.userPostId =  Object(post.postID);
     playlist.postType = post.postType;
     playlist.mediaId = Object(mediaId);
-    this.logger.log('createNewPostVideo >>> generate playlist ' + playlist);    
-    //this.playService.generateUserPlaylist(playlist);
+    this.logger.log('createNewPostVideo >>> generate playlist ' + JSON.stringify(playlist));    
+    this.postService.generateUserPlaylist(playlist);
 
     var res = new CreatePostResponse();
     res.response_code = 202;
@@ -483,8 +483,8 @@ export class PostContentService {
     playlist.userPostId =  Object(post.postID);
     playlist.postType = post.postType;
     playlist.mediaId = Object(mediaId);
-    this.logger.log('createNewPostVideo >>> generate playlist ' + playlist);    
-    //this.playService.generateUserPlaylist(playlist);
+    this.logger.log('createNewPostPic >>> generate playlist ' + JSON.stringify(playlist));    
+    this.postService.generateUserPlaylist(playlist);
 
     var res = new CreatePostResponse();
     res.response_code = 202;
