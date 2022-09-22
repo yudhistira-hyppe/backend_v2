@@ -40,9 +40,10 @@ export class ScheduleUserPlaylistService {
                     hour12: false
                 });
                 var DateStringLocaleToDate = new Date(DateStringLocale.split(' ')[0] + 'T' + DateStringLocale.split(' ')[1] + ".000Z");
+                var DateStringLocaleToDate2 = new Date(DateStringLocale.split(' ')[0] + 'T' + DateStringLocale.split(' ')[1] + ".000Z");
 
-                var date_1 = new Date(DateStringLocaleToDate.setDate(DateStringLocaleToDate.getDate() + 1));
-                var nowDateTime = date_1.toISOString();
+                var date_1 = DateStringLocaleToDate2.setDate(DateStringLocaleToDate2.getDate() + 1);
+                var nowDateTime = new Date(date_1).toISOString();
                 var nowDate = nowDateTime.split('T')[0];
                 //var hms = convertToTime;
                 var hms = "23:15:00";
@@ -69,7 +70,7 @@ export class ScheduleUserPlaylistService {
                 console.log("stop status", stop);
                 console.log("------------------------------------------");
                 if (!stop) {
-                    var postType = GetPost[i].postType;
+                    var postType  = GetPost[i].postType;
                     var data_media = null;
                     var postID = GetPost[i].postID.toString();
 
