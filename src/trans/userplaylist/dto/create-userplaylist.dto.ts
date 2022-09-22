@@ -5,11 +5,7 @@ import mongoose from "mongoose";
 export class CreateUserplaylistDto {
   _id: mongoose.Types.ObjectId;
   userId: mongoose.Types.ObjectId;
-  interestId: [{
-    $ref: String;
-    $id: ObjectId;
-    $db: String;
-  }];
+  interestId: any[];
   interestIdCount: number;
   userPostId: mongoose.Types.ObjectId;
   postType: String;

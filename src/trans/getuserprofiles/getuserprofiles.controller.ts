@@ -100,7 +100,8 @@ export class GetuserprofilesController {
     var countrow = null;
     var startdate = null;
     var enddate = null;
-
+    var limit = null;
+    var totalfilter = null;
     const messages = {
       "info": ["The process successful"],
     };
@@ -112,19 +113,25 @@ export class GetuserprofilesController {
     interest = request_json["interest"];
     startdate = request_json["startdate"];
     enddate = request_json["enddate"];
+
     if (request_json["skip"] !== undefined) {
       skip = request_json["skip"];
     } else {
       throw new BadRequestException("Unabled to proceed");
     }
+    if (request_json["limit"] !== undefined) {
+      limit = request_json["limit"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
 
-
-    data = await this.getuserprofilesService.findataNew(username, gender, roles, age, startdate, enddate, interest, skip);
+    data = await this.getuserprofilesService.findataNew(username, gender, roles, age, startdate, enddate, interest, skip, limit);
+    totalfilter = await (await this.getuserprofilesService.findataNewCount(username, gender, roles, age, startdate, enddate, interest, skip, limit)).length;
 
     var allrow = await this.getuserprofilesService.totalcount();
     var totalallrow = allrow[0].countrow;
     var totalrow = data.length;
-    return { response_code: 202, data, skip, totalrow, totalallrow, messages };
+    return { response_code: 202, data, skip, limit, totalrow, totalfilter, totalallrow, messages };
   }
 
   @Post('api/getuserprofiles/search')

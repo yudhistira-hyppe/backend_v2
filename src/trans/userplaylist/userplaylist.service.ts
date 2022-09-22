@@ -184,16 +184,13 @@ export class UserplaylistService {
       var interest_db = [];
       if (Count_compare_interest > 0) {
         for (var i = 0; i < Count_compare_interest; i++) {
-          interest_db.push({
-            $ref: "interests_repo",
-            $id: Object(compare_interest[i]),
-            $db: "hyppe_infra_db"
-          })
+          var objintr = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(compare_interest[i]), "$db": "hyppe_infra_db" }
+          interest_db.push(objintr)
         }
       }
       var CreateUserplaylistDto_ = new CreateUserplaylistDto();
       CreateUserplaylistDto_.userId = Object(element._id);
-      CreateUserplaylistDto_.interestId = Object(interest_db);
+      CreateUserplaylistDto_.interestId = interest_db;
       CreateUserplaylistDto_.interestIdCount = Count_compare_interest;
       CreateUserplaylistDto_.userPostId = Object(data_userbasic._id);
       CreateUserplaylistDto_.postType = postType;
