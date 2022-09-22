@@ -5,12 +5,14 @@ import { Userbankaccounts } from './schemas/userbankaccounts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserbasicsService } from '../userbasics/userbasics.service';
 import { BanksService } from '../banks/banks.service';
-
+import { MediaproofpictsService } from '../../content/mediaproofpicts/mediaproofpicts.service';
+import { isLowercase } from 'class-validator';
 @Controller('api/userbankaccounts')
 export class UserbankaccountsController {
     constructor(private readonly userbankaccountsService: UserbankaccountsService,
         private readonly userbasicsService: UserbasicsService,
-        private readonly banksService: BanksService,) { }
+        private readonly banksService: BanksService,
+        private readonly mediaproofpictsService: MediaproofpictsService,) { }
 
     @UseGuards(JwtAuthGuard)
     @Post()
@@ -27,12 +29,24 @@ export class UserbankaccountsController {
         var bankcode = null;
         var nama = null;
         var idbank = null;
+        var datamediaprof = null;
+        var datarekkembar = null;
+        var namamediaprof = null;
+        var language = null;
+        var messageRespon = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+
+        if (request_json["language"] !== undefined) {
+            language = request_json["language"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
 
         if (request_json["noRek"] !== undefined) {
             noRek = request_json["noRek"];
@@ -50,18 +64,33 @@ export class UserbankaccountsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+
+        if (language === "id") {
+            messageRespon = "Nama yang Anda masukkan salah, pastikan nama yang Anda masukkan sesuai dengan ID yang terdaftar di hyppe";
+        }
+        else if (language === "en") {
+            messageRespon = "The name you entered is wrong, make sure the name you enter matches the ID registered on hyppe"
+        }
         var ubasic = await this.userbasicsService.findOne(email);
 
         var iduser = ubasic._id;
+        var proofPict_json = JSON.parse(JSON.stringify(ubasic.proofPict));
+        var id_mediaproofpicts = proofPict_json.$id;
+        try {
+            datamediaprof = await this.mediaproofpictsService.findOne(id_mediaproofpicts);
+            namamediaprof = datamediaprof.nama.toLowerCase();
+        } catch (e) {
+            datamediaprof = null;
+            namamediaprof = "";
+        }
 
-        var datarekkembar = null;
 
         try {
             datarekkembar = await this.userbankaccountsService.findnorekkembar(noRek);
         } catch (e) {
             datarekkembar = null;
         }
-
+        var lownama = nama.toLowerCase();
 
         var databank = null;
         var namabank = "";
@@ -74,25 +103,34 @@ export class UserbankaccountsController {
             throw new BadRequestException("Banks not found...!");
         }
         if (datarekkembar === null) {
-            try {
-                CreateUserbankaccountsDto.userId = iduser;
-                CreateUserbankaccountsDto.noRek = noRek;
-                CreateUserbankaccountsDto.idBank = idbank;
-                CreateUserbankaccountsDto.statusInquiry = false;
-                CreateUserbankaccountsDto.active=true;
 
-                let data = await this.userbankaccountsService.create(CreateUserbankaccountsDto);
+            if (lownama === namamediaprof) {
+                try {
+                    CreateUserbankaccountsDto.userId = iduser;
+                    CreateUserbankaccountsDto.noRek = noRek;
+                    CreateUserbankaccountsDto.idBank = idbank;
+                    CreateUserbankaccountsDto.statusInquiry = false;
+                    CreateUserbankaccountsDto.active = true;
+
+                    let data = await this.userbankaccountsService.create(CreateUserbankaccountsDto);
+                    res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": messages
+                    });
+                } catch (e) {
+                    res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "message": messagesEror
+                    });
+                }
+            } else {
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
-                    "data": data,
-                    "message": messages
-                });
-            } catch (e) {
-                res.status(HttpStatus.BAD_REQUEST).json({
-
-                    "message": messagesEror
+                    "message": messageRespon
                 });
             }
+
         } else {
             throw new BadRequestException("account number already exists..!");
         }
@@ -173,7 +211,7 @@ export class UserbankaccountsController {
             "info": ["The delete successful"],
         };
 
-       var  _id = mongoose.Types.ObjectId(id);
+        var _id = mongoose.Types.ObjectId(id);
         let data = await this.userbankaccountsService.updateactive(_id);
 
         return { response_code: 202, messages };

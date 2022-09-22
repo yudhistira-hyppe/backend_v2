@@ -6,10 +6,11 @@ import { ConfigModule } from '@nestjs/config';
 import { Userbankaccounts, UserbankaccountsSchema } from './schemas/userbankaccounts.schema';
 import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { BanksModule } from '../banks/banks.module';
+import { MediaproofpictsModule } from '../../content/mediaproofpicts/mediaproofpicts.module';
 @Module({
     imports: [
 
-        ConfigModule.forRoot(), UserbasicsModule, BanksModule,
+        ConfigModule.forRoot(), UserbasicsModule, BanksModule, MediaproofpictsModule,
         MongooseModule.forFeature([{ name: Userbankaccounts.name, schema: UserbankaccountsSchema }], 'SERVER_TRANS')
     ],
     controllers: [UserbankaccountsController],

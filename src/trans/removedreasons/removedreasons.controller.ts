@@ -18,4 +18,35 @@ export class RemovedreasonsController {
 
         return { response_code: 202, data, messages };
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post()
+    async create(@Res() res, @Body() CreateRemovedreasonsDto: CreateRemovedreasonsDto, @Request() request) {
+        const messages = {
+            "info": ["The create successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+
+        try {
+
+            let data = await this.removedreasonsService.create(CreateRemovedreasonsDto);
+            res.status(HttpStatus.OK).json({
+                response_code: 202,
+                "data": data,
+                "message": messages
+            });
+        } catch (e) {
+            res.status(HttpStatus.BAD_REQUEST).json({
+
+                "message": messagesEror
+            });
+        }
+
+
+    }
+
 }

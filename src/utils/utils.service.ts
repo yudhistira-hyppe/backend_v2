@@ -483,16 +483,17 @@ export class UtilsService {
     return now.getTime();
   }  
 
-  generateExpiration(date: Date, day: number): number {
-    if (date == undefined) {
-      return undefined;
-    }
-    let epoch = date.getTime();
-    console.log(epoch);
-    epoch += ((1000 * 60 * 60 *24) * day);
-    console.log(epoch);
-    return date.getTime();
+  generateExpirationFromToday(day: number): number {
+    let epoch = new Date().getTime();
+    epoch -= ((1000 * 60 * 60 *24) * day);
+    return epoch;
   }    
+
+  generateAddExpirationFromToday(day: number): number {
+    let epoch = new Date().getTime();
+    epoch += ((1000 * 60 * 60 *24) * day);
+    return epoch;
+  }      
 
   async validasiEmail(email: string): Promise<boolean> {
     var valid_email = false;

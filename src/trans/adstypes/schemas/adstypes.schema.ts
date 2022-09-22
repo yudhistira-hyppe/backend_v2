@@ -21,8 +21,25 @@ export class Adstypes {
     @Prop()
     AdsSkip: number;
     @Prop()
-    rewards: number;  
-
+    rewards: number;
+    @Prop()
+    conterImpression: number;
+    @Prop()
+    descriptionMax: number;
+    @Prop()
+    durationMax: number;
+    @Prop()
+    durationMin: number;
+    @Prop()
+    sizeMax: number;
+    @Prop()
+    titleMax: number;
+    @Prop()
+    distanceArea: number;
+    @Prop()
+    intervalAds: number;
+    @Prop()
+    servingMultiplier: number;
 
 }
 
