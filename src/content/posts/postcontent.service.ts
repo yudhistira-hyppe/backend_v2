@@ -390,7 +390,7 @@ export class PostContentService {
     playlist.userPostId =  Object(post.postID);
     playlist.postType = post.postType;
     playlist.mediaId = Object(mediaId);
-    this.logger.log('createNewPostVideo >>> generate playlist ' + playlist);    
+    this.logger.log('createNewPostVideo >>> generate playlist ' + JSON.stringify(playlist));    
     this.postService.generateUserPlaylist(playlist);
 
     var res = new CreatePostResponse();
@@ -483,7 +483,7 @@ export class PostContentService {
     playlist.userPostId =  Object(post.postID);
     playlist.postType = post.postType;
     playlist.mediaId = Object(mediaId);
-    this.logger.log('createNewPostVideo >>> generate playlist ' + playlist);    
+    this.logger.log('createNewPostPic >>> generate playlist ' + JSON.stringify(playlist));    
     this.postService.generateUserPlaylist(playlist);
 
     var res = new CreatePostResponse();
