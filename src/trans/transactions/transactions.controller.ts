@@ -2804,15 +2804,20 @@ export class TransactionsController {
         var iduser = null;
         var email = null;
         var datasell = null;
+        var datasellcount = null;
         var skip = null;
         var limit = null;
         var databuy = null;
+        var databuycount = null;
         var datawithdraw = null;
+        var datawithdrawcount = null;
         var sell = null;
         var buy = null;
         var withdrawal = null;
         var data = null;
-
+        var datacount = null;
+        var dtcount = null;
+        var status = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
@@ -2823,7 +2828,7 @@ export class TransactionsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-
+        status = request_json["status"];
         startdate = request_json["startdate"];
         enddate = request_json["enddate"];
 
@@ -2863,100 +2868,157 @@ export class TransactionsController {
         var idadmin = mongoose.Types.ObjectId(iduser);
 
         if (sell === true && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
             data = datasell;
-            return { response_code: 202, data, skip, limit, messages };
+            datacount = datasellcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === false && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
             data = datasell;
-            return { response_code: 202, data, skip, limit, messages };
+            datacount = datasellcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === true && withdrawal === false && startdate === undefined && enddate === undefined) {
-            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
             data = databuy;
-            return { response_code: 202, data, skip, limit, messages };
+            datacount = databuycount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === true && withdrawal === false && startdate !== undefined && enddate !== undefined) {
 
-            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
             data = databuy;
-            return { response_code: 202, data, skip, limit, messages };
+            datacount = databuycount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === false && withdrawal === true && startdate === undefined && enddate === undefined) {
-            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
             data = datawithdraw;
-            return { response_code: 202, data, skip, limit, messages };
+            datacount = datawithdrawcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+
         }
         else if (sell === false && buy === false && withdrawal === true && startdate !== undefined && enddate !== undefined) {
-            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
             data = datawithdraw;
-            return { response_code: 202, data, skip, limit, messages };
+            datacount = datawithdrawcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
 
         else if (sell === true && buy === true && withdrawal === false && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
-            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
             data = datasell.concat(databuy);
-            return { response_code: 202, data, skip, limit, messages };
+            dtcount = datasellcount.concat(databuycount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === true && withdrawal === false && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
-            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
             data = datasell.concat(databuy);
-            return { response_code: 202, data, skip, limit, messages };
+            dtcount = datasellcount.concat(databuycount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === true && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
-            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
             data = datasell.concat(datawithdraw);
-            return { response_code: 202, data, skip, limit, messages };
+            dtcount = datasellcount.concat(datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === true && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
-            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
             data = datasell.concat(datawithdraw);
-            return { response_code: 202, data, skip, limit, messages };
+            dtcount = datasellcount.concat(datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === true && withdrawal === true && startdate === undefined && enddate === undefined) {
-            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
-            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
             data = databuy.concat(datawithdraw);
-            return { response_code: 202, data, skip, limit, messages };
+            dtcount = databuycount.concat(datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === true && withdrawal === true && startdate !== undefined && enddate !== undefined) {
-            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
-            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
             data = databuy.concat(datawithdraw);
-            return { response_code: 202, data, skip, limit, messages };
+            dtcount = databuycount.concat(datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === false && withdrawal === false && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
-            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
-            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
-            return { response_code: 202, data, skip, limit, messages };
+            dtcount = datasellcount.concat(databuycount, datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === true && withdrawal === true && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
-            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
-            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
-            return { response_code: 202, data, skip, limit, messages };
+            dtcount = datasellcount.concat(databuycount, datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === true && withdrawal === true && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
-            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
-            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
-            return { response_code: 202, data, skip, limit, messages };
+            dtcount = datasellcount.concat(databuycount, datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySell(idadmin, startdate, enddate, skip, limit);
-            databuy = await this.transactionsService.findhistoryBuy(idadmin, startdate, enddate, skip, limit);
-            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
-            return { response_code: 202, data, skip, limit, messages };
+            dtcount = datasellcount.concat(databuycount, datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
         }
 
 
