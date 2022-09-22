@@ -32,6 +32,7 @@ import { Long } from 'mongodb';
 import * as fs from 'fs';
 import { ContenteventsService } from '../content/contentevents/contentevents.service';
 import { CreateContenteventsDto } from '../content/contentevents/dto/create-contentevents.dto';
+import { CreateGetcontenteventsDto } from 'src/trans/getusercontents/getcontentevents/dto/create-getcontentevents.dto';
 
 @Injectable()
 export class AuthService {
@@ -5611,10 +5612,19 @@ export class AuthService {
       );
     }
 
+    var CreateGetcontenteventsDto_ = new CreateGetcontenteventsDto();
+    CreateGetcontenteventsDto_.email = emailView;
+    CreateGetcontenteventsDto_.eventType = "VIEW_PROFILE";
+    CreateGetcontenteventsDto_.event = "ACCEPT";
+    CreateGetcontenteventsDto_.senderParty = emailView;
+    CreateGetcontenteventsDto_.receiverParty = emailViewed;
+    var CountUser = await this.contenteventsService.findAllCategory(CreateGetcontenteventsDto_);
     //Count View Profile
     try {
       if (emailViewed != emailView) {
-        await this.insightsService.updateViewProfile(emailViewed);
+        if (await this.utilsService.ceckData(CountUser)) {
+          await this.insightsService.updateViewProfile(emailViewed);
+        }
       }
     } catch (error) {
       await this.errorHandler.generateNotAcceptableException(
