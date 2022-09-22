@@ -28,7 +28,6 @@ import { MediapictsService } from '../mediapicts/mediapicts.service';
 import { MediadiariesService } from '../mediadiaries/mediadiaries.service';
 import { MediaprofilepictsService } from '../mediaprofilepicts/mediaprofilepicts.service';
 import { IsDefined } from 'class-validator';
-import { UserplaylistService } from 'src/trans/userplaylist/userplaylist.service';
 import { CreateUserplaylistDto } from 'src/trans/userplaylist/dto/create-userplaylist.dto';
 
 
@@ -51,7 +50,6 @@ export class PostContentService {
     private insightService: InsightsService,
     private contentEventService: ContenteventsService,
     private profilePictService: MediaprofilepictsService,
-    private playService: UserplaylistService,
     private readonly configService: ConfigService,
   ) { }
 
@@ -393,7 +391,7 @@ export class PostContentService {
     playlist.postType = post.postType;
     playlist.mediaId = Object(mediaId);
     this.logger.log('createNewPostVideo >>> generate playlist ' + playlist);    
-    this.playService.generateUserPlaylist(playlist);
+    //this.playService.generateUserPlaylist(playlist);
 
     var res = new CreatePostResponse();
     res.response_code = 202;
@@ -486,7 +484,7 @@ export class PostContentService {
     playlist.postType = post.postType;
     playlist.mediaId = Object(mediaId);
     this.logger.log('createNewPostVideo >>> generate playlist ' + playlist);    
-    this.playService.generateUserPlaylist(playlist);
+    //this.playService.generateUserPlaylist(playlist);
 
     var res = new CreatePostResponse();
     res.response_code = 202;
