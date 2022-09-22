@@ -191,7 +191,6 @@ export class UserplaylistService {
           })
         }
       }
-      console.log(Count_compare_interest);
       var CreateUserplaylistDto_ = new CreateUserplaylistDto();
       CreateUserplaylistDto_.userId = Object(element._id);
       CreateUserplaylistDto_.interestId = Object(interest_db);

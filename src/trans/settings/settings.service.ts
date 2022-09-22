@@ -22,4 +22,10 @@ export class SettingsService {
     async findOneByJenis(jenis: string): Promise<Settings> {
         return this.settingsModel.findOne({ jenis: jenis }).exec();
     }
+
+    async findOneAndUpdate(jenis_: string, value_: any): Promise<Settings> {
+        return this.settingsModel.findOneAndUpdate({ jenis: jenis_ }, { value: value_ },{
+            new: true
+        }).exec();
+    }
 }

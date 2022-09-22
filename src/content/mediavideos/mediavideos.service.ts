@@ -33,12 +33,17 @@ export class MediavideosService {
     return this.MediavideosModel.findOne({ _id: id }).exec();
   }
 
+  async findOnepostID(id: string): Promise<Mediavideos> {
+    return this.MediavideosModel.findOne({ postID: id }).exec();
+  }
+
   async delete(id: string) {
     const deletedCat = await this.MediavideosModel.findByIdAndRemove({
       _id: id,
     }).exec();
     return deletedCat;
   }
+  
   async findvideo() {
     const query = await this.MediavideosModel.aggregate([
 

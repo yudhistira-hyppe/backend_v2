@@ -28,6 +28,10 @@ export class MediastoriesService {
     return this.MediastoriesModel.findOne({ _id: id }).exec();
   }
 
+  async findOnepostID(id: string): Promise<Mediastories> {
+    return this.MediastoriesModel.findOne({ postID: id }).exec();
+  }
+
   async delete(id: string) {
     const deletedCat = await this.MediastoriesModel.findByIdAndRemove({
       _id: id,

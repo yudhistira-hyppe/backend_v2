@@ -26,6 +26,10 @@ export class MediapictsService {
     return this.MediapictsModel.findOne({ _id: id }).exec();
   }
 
+  async findOnepostID(id: string): Promise<Mediapicts> {
+    return this.MediapictsModel.findOne({ postID: id }).exec();
+  }
+
   async delete(id: string) {
     const deletedCat = await this.MediapictsModel.findByIdAndRemove({
       _id: id,
