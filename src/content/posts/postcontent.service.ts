@@ -28,6 +28,8 @@ import { MediapictsService } from '../mediapicts/mediapicts.service';
 import { MediadiariesService } from '../mediadiaries/mediadiaries.service';
 import { MediaprofilepictsService } from '../mediaprofilepicts/mediaprofilepicts.service';
 import { IsDefined } from 'class-validator';
+import { UserplaylistService } from 'src/trans/userplaylist/userplaylist.service';
+import { CreateUserplaylistDto } from 'src/trans/userplaylist/dto/create-userplaylist.dto';
 
 
 @Injectable()
@@ -49,6 +51,7 @@ export class PostContentService {
     private insightService: InsightsService,
     private contentEventService: ContenteventsService,
     private profilePictService: MediaprofilepictsService,
+    private playService: UserplaylistService,
     private readonly configService: ConfigService,
   ) { }
 
@@ -283,6 +286,7 @@ export class PostContentService {
     let postType = body.postType;
     var cm = [];
 
+    let mediaId = "";
     if (postType == 'vid') {
       let metadata = {postType : 'vid', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
       post.metadata = metadata;
@@ -307,6 +311,7 @@ export class PostContentService {
 
       var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
       cm.push(vids);      
+      mediaId = String(retd.mediaID);
 
     } else if (postType == 'advertise') {
 
@@ -339,6 +344,8 @@ export class PostContentService {
       var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
       cm.push(stories);  
 
+      mediaId = String(rets.mediaID);
+
     } else if (postType == 'diary') {
 
       let metadata = {postType : 'diary', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
@@ -364,6 +371,8 @@ export class PostContentService {
 
       var diaries = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
       cm.push(diaries);      
+
+      mediaId = String(retr.mediaID);
     }
 
     post.contentMedias = cm;
@@ -379,6 +388,13 @@ export class PostContentService {
     let payload = {'file' : nm, 'postId' : apost._id};
     axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: {'Content-Type': 'application/json'}});
     
+    let playlist = new CreateUserplaylistDto();
+    playlist.userPostId =  Object(post.postID);
+    playlist.postType = post.postType;
+    playlist.mediaId = Object(mediaId);
+    this.logger.log('createNewPostVideo >>> generate playlist ' + playlist);    
+    this.playService.generateUserPlaylist(playlist);
+
     var res = new CreatePostResponse();
     res.response_code = 202;
     let msg = new Messages();
@@ -399,6 +415,7 @@ export class PostContentService {
     let post = await this.buildPost(body, headers);
     let postType = body.postType;
     var cm = [];
+    let mediaId = "";
 
     if (postType == 'pict') {
       var med = new Mediapicts();
@@ -422,6 +439,7 @@ export class PostContentService {
       var vids = { "$ref": "mediapicts", "$id": retm.mediaID, "$db": "hyppe_content_db" };
       cm.push(vids);
 
+      mediaId = String(retm.mediaID);
     } else if (postType == 'story') {
       let metadata = {postType : 'story', duration: 0, postID : post._id, email: auth.email, postRoll : 0, midRoll : 0, preRoll: 0};
       post.metadata = metadata;
@@ -447,6 +465,8 @@ export class PostContentService {
       var stories = { "$ref": "mediastories", "$id": rets.mediaID, "$db": "hyppe_content_db" };
       cm.push(stories);  
 
+      mediaId = String(rets.mediaID);      
+
     }
     post.contentMedias = cm;
     let apost = await this.PostsModel.create(post);
@@ -460,6 +480,13 @@ export class PostContentService {
 
     let payload = {'file' : nm, 'postId' : apost._id};
     axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: {'Content-Type': 'application/json'}});
+
+    let playlist = new CreateUserplaylistDto();
+    playlist.userPostId =  Object(post.postID);
+    playlist.postType = post.postType;
+    playlist.mediaId = Object(mediaId);
+    this.logger.log('createNewPostVideo >>> generate playlist ' + playlist);    
+    this.playService.generateUserPlaylist(playlist);
 
     var res = new CreatePostResponse();
     res.response_code = 202;
