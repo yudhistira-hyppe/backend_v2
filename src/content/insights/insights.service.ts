@@ -181,6 +181,7 @@ export class InsightsService {
     ]);
     return query;
   }
+
   async getinsight(email: string) {
     const query = await this.InsightsModel.aggregate([
 
@@ -189,6 +190,22 @@ export class InsightsService {
     ]).exec();
 
     return query;
+  }
+
+  async updateViewProfile(emailViewed: string){
+    this.InsightsModel.updateOne(
+      {
+        email: emailViewed,
+      },
+      { $inc: { views_profile: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
   }
 
 }

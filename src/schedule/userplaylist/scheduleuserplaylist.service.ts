@@ -89,7 +89,7 @@ export class ScheduleUserPlaylistService {
                             CreateUserplaylistDto_.userPostId = Object(data_userbasic._id);
                             CreateUserplaylistDto_.mediaId = data_media._id.toString();
                             CreateUserplaylistDto_.postType = GetPost[i].postType;
-                            await this.userplaylistService.generateUserPlaylist(CreateUserplaylistDto_);
+                            await this.postsService.generateUserPlaylist(CreateUserplaylistDto_);
                         }
                     }
                     await this.utilsService.updateSetting("EngineUserPlaylistIndex", i);

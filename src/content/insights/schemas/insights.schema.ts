@@ -29,6 +29,8 @@ export class Insights {
   @Prop()
   views: Long;
   @Prop()
+  views_profile: Long;
+  @Prop()
   comments: Long;
   @Prop()
   posts: Long;

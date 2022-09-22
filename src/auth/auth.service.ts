@@ -30,6 +30,8 @@ import { SeaweedfsService } from '../stream/seaweedfs/seaweedfs.service';
 import { AdsUserCompareService } from '../trans/ads/adsusercompare/adsusercompare.service';
 import { Long } from 'mongodb';
 import * as fs from 'fs';
+import { ContenteventsService } from '../content/contentevents/contentevents.service';
+import { CreateContenteventsDto } from '../content/contentevents/dto/create-contentevents.dto';
 
 @Injectable()
 export class AuthService {
@@ -53,6 +55,7 @@ export class AuthService {
     private referralService: ReferralService,
     private seaweedfsService: SeaweedfsService, 
     private adsUserCompareService: AdsUserCompareService,
+    private contenteventsService: ContenteventsService,
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -5574,6 +5577,49 @@ export class AuthService {
     } else {
       await this.errorHandler.generateNotAcceptableException(
         'User basics and jwt not found',
+      );
+    }
+  }
+
+  async viewProfile(emailViewed: string, emailView: string) {
+    var current_date = await this.utilsService.getDateTimeString();
+    var _id_CreateContentevents = (await this.utilsService.generateId()).toLowerCase();
+
+    //Create ContentEvent
+    try {
+      var CreateContenteventsDto_ = new CreateContenteventsDto();
+      CreateContenteventsDto_._id = _id_CreateContentevents;
+      CreateContenteventsDto_.contentEventID = _id_CreateContentevents;
+      CreateContenteventsDto_.email = emailView;
+      CreateContenteventsDto_.eventType = "VIEW_PROFILE";
+      CreateContenteventsDto_.active = true;
+      CreateContenteventsDto_.event = "ACCEPT";
+      CreateContenteventsDto_.createdAt = current_date;
+      CreateContenteventsDto_.updatedAt = current_date;
+      CreateContenteventsDto_.sequenceNumber = 0;
+      CreateContenteventsDto_.flowIsDone = true;
+      CreateContenteventsDto_.senderParty = emailView;
+      CreateContenteventsDto_.receiverParty = emailViewed;
+      CreateContenteventsDto_._class = "io.melody.hyppe.content.domain.ContentEvent";
+
+      //Insert ContentEvent
+      await this.contenteventsService.create(CreateContenteventsDto_);
+    } catch (error) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed Create Content Activity. Error:' +
+        error,
+      );
+    }
+
+    //Count View Profile
+    try {
+      if (emailViewed != emailView) {
+        await this.insightsService.updateViewProfile(emailViewed);
+      }
+    } catch (error) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed Create Content Activity. Error:' +
+        error,
       );
     }
   }

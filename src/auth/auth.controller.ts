@@ -991,6 +991,9 @@ export class AuthController {
       //Ceck User Userbasics
       const data_userbasics = await this.userbasicsService.findOne(SearchUserbasicDto_.search.toString());
       if (await this.utilsService.ceckData(data_userbasics)) {
+
+        var user_view = headers['x-auth-user'];
+        await this.authService.viewProfile(SearchUserbasicDto_.search.toString(), user_view);
         var Data = await this.utilsService.generateProfile(SearchUserbasicDto_.search.toString(), 'PROFILE');
         return {
           "response_code": 202,

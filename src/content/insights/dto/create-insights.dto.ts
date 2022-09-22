@@ -12,6 +12,7 @@ export class CreateInsightsDto {
   unfollows: Long;
   likes: Long;
   views: Long;
+  views_profile: Long;
   comments: Long;
   posts: Long;
   shares: Long;
