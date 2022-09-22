@@ -1364,6 +1364,25 @@ export class PostsService {
           interest_db.push(objintr)
         }
       }
+      var isHidden_ = false;
+      if (data_post.visibility!=undefined){
+        if (data_post.visibility == "FRIEND"){
+          if (type == data_post.visibility) {
+            isHidden_ = false;
+          } else {
+            isHidden_ = true;
+          }
+        } else if (data_post.visibility == "PRIVATE") {
+          if (element._id.toString() == data_userbasic._id.toString()) {
+            isHidden_ = false;
+          } else {
+            isHidden_ = true;
+          }
+        } else {
+          isHidden_ = false;
+        }
+      }
+
       var CreateUserplaylistDto_ = new CreateUserplaylistDto();
       CreateUserplaylistDto_.userId = Object(element._id);
       CreateUserplaylistDto_.interestId = interest_db;
@@ -1375,7 +1394,7 @@ export class PostsService {
       CreateUserplaylistDto_.createAt = current_date;
       CreateUserplaylistDto_.updatedAt = current_date;
       CreateUserplaylistDto_.isWatched = false;
-      CreateUserplaylistDto_.isHidden = false;
+      CreateUserplaylistDto_.isHidden = isHidden_;
 
       // const userId = element._id.toString();
       // const userIdPost = data_userbasic._id.toString();
