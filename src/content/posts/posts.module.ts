@@ -18,6 +18,7 @@ import { MediadiariesModule } from '../mediadiaries/mediadiaries.module';
 import { MediastoriesModule } from '../mediastories/mediastories.module';
 import { MediapictsModule } from '../mediapicts/mediapicts.module';
 import { MediaprofilepictsModule } from '../mediaprofilepicts/mediaprofilepicts.module';
+import { UserplaylistModule } from 'src/trans/userplaylist/userplaylist.module';
 @Module({
 
     imports: [
@@ -25,7 +26,7 @@ import { MediaprofilepictsModule } from '../mediaprofilepicts/mediaprofilepicts.
         UtilsModule,
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
         UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
-        MediapictsModule,MediadiariesModule,MediaprofilepictsModule,
+        MediapictsModule,MediadiariesModule,MediaprofilepictsModule,UserplaylistModule,
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [PostsController],
