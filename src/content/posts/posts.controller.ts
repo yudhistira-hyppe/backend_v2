@@ -22,7 +22,7 @@ import { GroupModuleService } from '../../trans/usermanagement/groupmodule/group
 import { FileInterceptor } from '@nestjs/platform-express';
 import { GlobalResponse } from '../../utils/data/globalResponse';
 import { PostContentService } from './postcontent.service';
-import { CreateUserplaylistDto } from 'src/trans/userplaylist/dto/create-userplaylist.dto';
+import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userplaylist.dto';
 
 @Controller()
 export class PostsController {

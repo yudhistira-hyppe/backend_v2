@@ -44,7 +44,7 @@ export class UserplaylistService {
   }
 
   async updateOne(_id: string, CreateUserplaylistDto_: CreateUserplaylistDto) {
-    return this.userplaylistModel.findOne(
+    return this.userplaylistModel.updateOne(
       { _id: new Types.ObjectId(_id) },
       CreateUserplaylistDto_,
       function (err, docs) {

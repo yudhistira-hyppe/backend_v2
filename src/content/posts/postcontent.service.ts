@@ -28,7 +28,7 @@ import { MediapictsService } from '../mediapicts/mediapicts.service';
 import { MediadiariesService } from '../mediadiaries/mediadiaries.service';
 import { MediaprofilepictsService } from '../mediaprofilepicts/mediaprofilepicts.service';
 import { IsDefined } from 'class-validator';
-import { CreateUserplaylistDto } from 'src/trans/userplaylist/dto/create-userplaylist.dto';
+import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userplaylist.dto';
 
 
 @Injectable()
