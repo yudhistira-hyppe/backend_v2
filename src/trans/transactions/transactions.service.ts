@@ -115,7 +115,7 @@ export class TransactionsService {
             const query = await this.transactionsModel.aggregate([
                 {
                     $match: {
-                        status: "Success",
+
                         iduserbuyer: iduser,
                         timestamp: { $gte: startdate, $lte: dateend }
                     }
@@ -623,7 +623,7 @@ export class TransactionsService {
             const query = await this.transactionsModel.aggregate([
                 {
                     $match: {
-                        status: "Success",
+
                         iduserbuyer: iduser
                     }
                 },
@@ -1143,7 +1143,7 @@ export class TransactionsService {
             const query = await this.transactionsModel.aggregate([
                 {
                     $match: {
-                        status: "Success",
+
                         idusersell: iduser,
                         timestamp: { $gte: startdate, $lte: dateend }
 
@@ -1652,7 +1652,7 @@ export class TransactionsService {
             const query = await this.transactionsModel.aggregate([
                 {
                     $match: {
-                        status: "Success",
+
                         idusersell: iduser
 
                     }
