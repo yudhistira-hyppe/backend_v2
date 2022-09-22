@@ -278,6 +278,7 @@ export class PostContentService {
     this.logger.log('createNewPostVideo >>> start: ' + JSON.stringify(body));
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);    
 
     let post = await this.buildPost(body, headers);
 
@@ -387,7 +388,7 @@ export class PostContentService {
     axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: {'Content-Type': 'application/json'}});
     
     let playlist = new CreateUserplaylistDto();
-    playlist.userPostId =  Object(post.postID);
+    playlist.userPostId =  Object(profile._id);
     playlist.postType = post.postType;
     playlist.mediaId = Object(mediaId);
     this.logger.log('createNewPostVideo >>> generate playlist ' + JSON.stringify(playlist));    
@@ -409,6 +410,7 @@ export class PostContentService {
 
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);        
 
     let post = await this.buildPost(body, headers);
     let postType = body.postType;
@@ -480,7 +482,7 @@ export class PostContentService {
     axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: {'Content-Type': 'application/json'}});
 
     let playlist = new CreateUserplaylistDto();
-    playlist.userPostId =  Object(post.postID);
+    playlist.userPostId =  Object(profile._id);
     playlist.postType = post.postType;
     playlist.mediaId = Object(mediaId);
     this.logger.log('createNewPostPic >>> generate playlist ' + JSON.stringify(playlist));    
