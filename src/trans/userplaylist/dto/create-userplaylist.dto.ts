@@ -8,7 +8,10 @@ export class CreateUserplaylistDto {
   interestId: any[];
   interestIdCount: number;
   userPostId: mongoose.Types.ObjectId;
-  postType: String;
+  postType: String; 
+  postID: String;
+  description: String; 
+  expiration: Number;
   mediaId: String;
   type: String;
   createAt: String;
