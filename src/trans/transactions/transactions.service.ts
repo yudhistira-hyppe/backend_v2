@@ -9681,6 +9681,74 @@ export class TransactionsService {
                             default: ""
                         }
                     },
+                    apsaraId: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediapicts"
+                                        ]
+                                    },
+                                    then: "$mediapict.apsaraId"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediadiaries"
+                                        ]
+                                    },
+                                    then: "$mediadiaries.apsaraId"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediavideos"
+                                        ]
+                                    },
+                                    then: "$mediavideos.apsaraId"
+                                }
+                            ],
+                            default: ""
+                        }
+                    },
+                    apsara: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediapicts"
+                                        ]
+                                    },
+                                    then: "$mediapict.apsara"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediadiaries"
+                                        ]
+                                    },
+                                    then: "$mediadiaries.apsara"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediavideos"
+                                        ]
+                                    },
+                                    then: "$mediavideos.apsara"
+                                }
+                            ],
+                            default: ""
+                        }
+                    },
                 }
             },
             {
@@ -10207,6 +10275,74 @@ export class TransactionsService {
                                         ]
                                     },
                                     then: "$mediavideos.mediaThumb"
+                                }
+                            ],
+                            default: ""
+                        }
+                    },
+                    apsaraId: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediapicts"
+                                        ]
+                                    },
+                                    then: "$mediapict.apsaraId"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediadiaries"
+                                        ]
+                                    },
+                                    then: "$mediadiaries.apsaraId"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediavideos"
+                                        ]
+                                    },
+                                    then: "$mediavideos.apsaraId"
+                                }
+                            ],
+                            default: ""
+                        }
+                    },
+                    apsara: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediapicts"
+                                        ]
+                                    },
+                                    then: "$mediapict.apsara"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediadiaries"
+                                        ]
+                                    },
+                                    then: "$mediadiaries.apsara"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediavideos"
+                                        ]
+                                    },
+                                    then: "$mediavideos.apsara"
                                 }
                             ],
                             default: ""

@@ -44,21 +44,21 @@ export class VouchersController {
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
 
-        var dtexpired = new Date(CreateVouchersDto.expiredAt);
-        var leng = 0;
-        try {
-            dataLast = await this.vouchersService.findExpired(CreateVouchersDto.expiredAt);
-            leng = dataLast.length;
+        // var dtexpired = new Date(CreateVouchersDto.expiredAt);
+        // var leng = 0;
+        // try {
+        //     dataLast = await this.vouchersService.findExpired(CreateVouchersDto.expiredAt);
+        //     leng = dataLast.length;
 
-            for (var i = 0; i < leng; i++) {
-                var id = dataLast[i]._id;
-                await this.vouchersService.updatestatusActive(id, dt.toISOString());
+        //     for (var i = 0; i < leng; i++) {
+        //         var id = dataLast[i]._id;
+        //         await this.vouchersService.updatestatusActive(id, dt.toISOString());
 
-            }
+        //     }
 
-        } catch (e) {
-            dataLast = null;
-        }
+        // } catch (e) {
+        //     dataLast = null;
+        // }
 
 
 
@@ -72,7 +72,7 @@ export class VouchersController {
             CreateVouchersDto.createdAt = dt.toISOString();
             CreateVouchersDto.userID = iduser;
             CreateVouchersDto.totalUsed = 0;
-            CreateVouchersDto.expiredAt = dtexpired.toISOString();
+            // CreateVouchersDto.expiredAt = dtexpired.toISOString();
             CreateVouchersDto.pendingUsed = 0;
             let data = await this.vouchersService.create(CreateVouchersDto);
 

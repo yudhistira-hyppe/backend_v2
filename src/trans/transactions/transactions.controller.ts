@@ -21,6 +21,7 @@ import { VouchersService } from '../vouchers/vouchers.service';
 import { post } from 'jquery';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
+import { PostContentService } from '../../content/posts/postcontent.service';
 @Controller()
 export class TransactionsController {
     constructor(private readonly transactionsService: TransactionsService,
@@ -40,6 +41,7 @@ export class TransactionsController {
         private readonly vouchersService: VouchersService,
         private readonly utilsService: UtilsService,
         private readonly errorHandler: ErrorHandler,
+        private readonly postContentService: PostContentService,
 
     ) { }
     @UseGuards(JwtAuthGuard)
@@ -1130,8 +1132,8 @@ export class TransactionsController {
                             datauservoucher.credit = total_creditValue_voucher;
                             datauservoucher.creditFree = total_creditPromo_voucher;
                             await this.uservouchersService.create(datauservoucher);
-                            await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml), (pendingUsed - jml));
-
+                            // await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml), (pendingUsed - jml));
+                            await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
                         }
 
                         res.status(HttpStatus.OK).json({
@@ -3168,8 +3170,13 @@ export class TransactionsController {
                 } catch (e) {
                     throw new BadRequestException("Data not found...!");
                 }
-
-
+                var dataapsara = null;
+                var arrdata = [];
+                let pict: String[] = [];
+                var objk = {};
+                var idapsara = databuy[0].apsaraId;
+                pict.push(idapsara);
+                dataapsara = await this.postContentService.getImageApsara(pict);
                 data = {
 
                     "_id": idtr,
@@ -3205,6 +3212,9 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
+                    "apsara": databuy[0].apsara,
+                    "apsaraId": databuy[0].apsaraId,
+                    "media": dataapsara
 
                 };
             }
@@ -3274,7 +3284,13 @@ export class TransactionsController {
                 } catch (e) {
                     throw new BadRequestException("Data not found...!");
                 }
-
+                var dataapsara = null;
+                var arrdata = [];
+                let pict: String[] = [];
+                var objk = {};
+                var idapsara = databuy[0].apsaraId;
+                pict.push(idapsara);
+                dataapsara = await this.postContentService.getImageApsara(pict);
                 data = {
 
                     "_id": idtr,
@@ -3306,6 +3322,9 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
+                    "apsara": databuy[0].apsara,
+                    "apsaraId": databuy[0].apsaraId,
+                    "media": dataapsara
 
                 };
             }
