@@ -115,6 +115,37 @@ export class VouchersController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Put('update/:id')
+    async updatedata(@Res() res, @Param('id') id: string, @Body() CreateVouchersDto: CreateVouchersDto) {
+
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        try {
+            CreateVouchersDto.updatedAt = dt.toISOString();
+            let data = await this.vouchersService.update(id, CreateVouchersDto);
+
+            res.status(HttpStatus.OK).json({
+                response_code: 202,
+                "message": messages
+            });
+        } catch (e) {
+            res.status(HttpStatus.BAD_REQUEST).json({
+
+                "message": messagesEror
+            });
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post('detail')
     async finddetail(@Res() res, @Req() request: Request): Promise<any> {
 
