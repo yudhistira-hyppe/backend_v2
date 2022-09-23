@@ -33,6 +33,12 @@ export class Userplaylist {
   isWatched: boolean;
   @Prop()
   isHidden: boolean;
+  @Prop()
+  postID: String;
+  @Prop()
+  description: String;
+  @Prop()
+  expiration: Number;
 }
 
 export const UserplaylistSchema = SchemaFactory.createForClass(Userplaylist);

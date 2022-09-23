@@ -1375,6 +1375,7 @@ export class PostsService {
             isHidden_ = true;
           }
         } else if (data_post.visibility == "PRIVATE") {
+          type = "PRIVATE";
           if (element._id.toString() == data_userbasic._id.toString()) {
             isHidden_ = false;
           } else {
@@ -1397,11 +1398,14 @@ export class PostsService {
       CreateUserplaylistDto_.updatedAt = current_date;
       CreateUserplaylistDto_.isWatched = false;
       CreateUserplaylistDto_.isHidden = isHidden_;
+      CreateUserplaylistDto_.postID = (data_post.postID != undefined) ? data_post.postID :"";
+      CreateUserplaylistDto_.expiration = (data_post.expiration != undefined) ? Number(data_post.expiration) : 0;
+      CreateUserplaylistDto_.description = (data_post.description != undefined) ? data_post.description : "";
 
       // const userId = element._id.toString();
       // const userIdPost = data_userbasic._id.toString();
       // const mediaId_ = mediaId.toString();
-      //var ceckDataUser_ = await this.userplaylistModel.findOne({ userId: new Types.ObjectId(userId), userPostId: new Types.ObjectId(userIdPost), mediaId: mediaId_ }).clone().exec();
+      // var ceckDataUser_ = await this.userplaylistModel.findOne({ userId: new Types.ObjectId(userId), userPostId: new Types.ObjectId(userIdPost), mediaId: mediaId_ }).clone().exec();
 
       var ceckDataUser_ = await this.userplaylistService.findData(element._id.toString(), data_userbasic._id.toString(), mediaId.toString());
 
@@ -1413,5 +1417,4 @@ export class PostsService {
       }
     });
   }
-
 }
