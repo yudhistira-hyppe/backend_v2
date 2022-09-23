@@ -72,6 +72,10 @@ export class ContenteventsService {
   //    async findOne(id: string): Promise<Contentevents> {
   //     return this.ContenteventsModel.findOne({ _id: id }).exec();
   //   }
+  async findAllCategory(CreateGetcontenteventsDto_: CreateGetcontenteventsDto): Promise<Contentevents> {
+    return this.ContenteventsModel.findOne(CreateGetcontenteventsDto_).exec();
+  }
+
   async findOne(email: string): Promise<Contentevents> {
     return this.ContenteventsModel.findOne({ email: email }).exec();
   }

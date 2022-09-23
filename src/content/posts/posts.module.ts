@@ -18,9 +18,11 @@ import { MediadiariesModule } from '../mediadiaries/mediadiaries.module';
 import { MediastoriesModule } from '../mediastories/mediastories.module';
 import { MediapictsModule } from '../mediapicts/mediapicts.module';
 import { MediaprofilepictsModule } from '../mediaprofilepicts/mediaprofilepicts.module';
+import { UserplaylistModule } from '../../trans/userplaylist/userplaylist.module';
 @Module({
 
     imports: [
+        UserplaylistModule,
         GroupModuleModule,
         UtilsModule,
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,

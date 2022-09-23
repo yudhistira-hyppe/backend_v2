@@ -20,8 +20,9 @@ import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import { GroupModuleService } from '../../trans/usermanagement/groupmodule/groupmodule.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { GlobalResponse } from 'src/utils/data/globalResponse';
+import { GlobalResponse } from '../../utils/data/globalResponse';
 import { PostContentService } from './postcontent.service';
+import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userplaylist.dto';
 
 @Controller()
 export class PostsController {
@@ -301,5 +302,11 @@ export class PostsController {
   async getVideo(@Body() body, @Headers() headers) {
     this.logger.log("getVideo >>> start: " + JSON.stringify(body));
     return this.postContentService.getVideoApsaraSingle(String(body.apsaraId));
-  }    
+  }
+
+  @Post('api/userplaylist/generate')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async generateUserPlaylist(@Body() CreateUserplaylistDto_: CreateUserplaylistDto) {
+    return await this.PostsService.generateUserPlaylist(CreateUserplaylistDto_);
+  }  
 }

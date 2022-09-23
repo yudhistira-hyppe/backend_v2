@@ -25,10 +25,4 @@ export class UserplaylistController {
   async delete(@Param('id') id: string) {
     return this.userplaylistService.delete(id);
   }
-
-  @Post('api/userplaylist/generate')
-  @HttpCode(HttpStatus.ACCEPTED)
-  async generateUserPlaylist(@Body() CreateUserplaylistDto_: CreateUserplaylistDto) {
-    return await this.userplaylistService.generateUserPlaylist(CreateUserplaylistDto_);
-  }
 }
