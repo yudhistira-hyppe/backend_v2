@@ -95,6 +95,42 @@ export class VouchersController {
     async findAll(): Promise<Vouchers[]> {
         return this.vouchersService.findAll();
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('list')
+    async finddata(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var key = null;
+        var skip = null;
+
+        var limit = null;
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        key = request_json["key"];
+
+        let data = await this.vouchersService.finddata(key, skip, limit);
+        var total = data.length;
+        let datasearch = await this.vouchersService.finddataCount(key);
+        var total = data.length;
+        var totalsearch = datasearch.length;
+        var allrow = await this.vouchersService.totalcount();
+        var totalallrow = allrow[0].countrow;
+
+        return { response_code: 202, data, skip, limit, total, totalsearch, totalallrow, messages };
+    }
+
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     async findid(@Param('id') id: string): Promise<Vouchers> {

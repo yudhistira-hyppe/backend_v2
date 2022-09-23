@@ -26,6 +26,82 @@ export class VouchersService {
         return this.vouchersModel.find().exec();
     }
 
+    async finddata(key: string, skip: number, limit: number) {
+        var query = null;
+        if (key !== undefined) {
+            query = await this.vouchersModel.aggregate([
+                {
+                    $match: {
+                        codeVoucher: {
+                            $regex: key,
+                            $options: 'i'
+                        }
+                    }
+                },
+                {
+                    $sort: {
+                        createdAt: - 1
+                    }
+                }, {
+                    $skip: skip
+                }, {
+                    $limit: limit
+                }
+            ]);
+
+
+        }
+        else {
+            query = await this.vouchersModel.aggregate([
+
+                {
+                    $sort: {
+                        createdAt: - 1
+                    }
+                }, {
+                    $skip: skip
+                }, {
+                    $limit: limit
+                }
+            ]);
+
+        }
+        return query;
+    }
+    async finddataCount(key: string) {
+        var query = null;
+        if (key !== undefined) {
+            query = await this.vouchersModel.aggregate([
+                {
+                    $match: {
+                        codeVoucher: {
+                            $regex: key,
+                            $options: 'i'
+                        }
+                    }
+                },
+                {
+                    $sort: {
+                        createdAt: - 1
+                    }
+                },
+            ]);
+
+
+        }
+        else {
+            query = await this.vouchersModel.aggregate([
+
+                {
+                    $sort: {
+                        createdAt: - 1
+                    }
+                },
+            ]);
+
+        }
+        return query;
+    }
     async findLatest(): Promise<Vouchers[]> {
         return this.vouchersModel.find().sort({ "_id": -1 }).limit(1);
     }
@@ -96,5 +172,20 @@ export class VouchersService {
         }
         return data;
     }
-
+    async totalcount() {
+        const query = await this.vouchersModel.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    countrow: {
+                        $sum: 1
+                    }
+                }
+            }, {
+                $project: {
+                    _id: 0
+                }
+            }]);
+        return query;
+    }
 }
