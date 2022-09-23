@@ -43,7 +43,7 @@ export class VouchersService {
                         createdAt: - 1
                     }
                 }, {
-                    $skip: skip
+                    $skip: (skip * limit)
                 }, {
                     $limit: limit
                 }
@@ -59,7 +59,7 @@ export class VouchersService {
                         createdAt: - 1
                     }
                 }, {
-                    $skip: skip
+                    $skip: (skip * limit)
                 }, {
                     $limit: limit
                 }

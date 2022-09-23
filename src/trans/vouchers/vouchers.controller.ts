@@ -105,7 +105,7 @@ export class VouchersController {
 
         var request_json = JSON.parse(JSON.stringify(request.body));
         var key = null;
-        var skip = null;
+        var page = null;
 
         var limit = null;
         if (request_json["limit"] !== undefined) {
@@ -113,22 +113,23 @@ export class VouchersController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-        if (request_json["skip"] !== undefined) {
-            skip = request_json["skip"];
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
         key = request_json["key"];
 
-        let data = await this.vouchersService.finddata(key, skip, limit);
+        let data = await this.vouchersService.finddata(key, page, limit);
         var total = data.length;
         let datasearch = await this.vouchersService.finddataCount(key);
         var total = data.length;
         var totalsearch = datasearch.length;
         var allrow = await this.vouchersService.totalcount();
         var totalallrow = allrow[0].countrow;
+        var totalpage = totalallrow / limit;
 
-        return { response_code: 202, data, skip, limit, total, totalsearch, totalallrow, messages };
+        return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };
     }
 
     @UseGuards(JwtAuthGuard)
