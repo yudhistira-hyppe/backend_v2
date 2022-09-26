@@ -81,7 +81,7 @@ export class UserplaylistService {
   }
 
   public async doGetUserPostPlaylist(body: any, headers: any, whoami: Userbasic): Promise<String[]> {
-    this.logger.log('doGetUserPostPlaylist >>> start: ' + body);
+    this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
     let query = this.userplaylistModel.find();
     if (body.visibility != undefined) {
       query.where('type', body.visibility);
