@@ -4,11 +4,13 @@ import { ConfigModule } from '@nestjs/config';
 import { Userplaylist, UserplaylistSchema } from './schemas/userplaylist.schema';
 import { UserplaylistController } from './userplaylist.controller';
 import { UserplaylistService } from './userplaylist.service';
+import { UtilsModule } from 'src/utils/utils.module';
 
 @Module({
 
     imports: [
         ConfigModule.forRoot(),
+        UtilsModule, 
         MongooseModule.forFeature([{ name: Userplaylist.name, schema: UserplaylistSchema }], 'SERVER_TRANS')
     ],
     controllers: [UserplaylistController],
