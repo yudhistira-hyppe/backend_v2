@@ -98,10 +98,10 @@ export class UserplaylistService {
     }
 
     if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
-      query.where('isHidden', true);
+      query.where('isHidden', false);
     }
 
-    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
+    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true) && body.postType == 'story') {
       this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
       query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
     }
@@ -126,7 +126,7 @@ export class UserplaylistService {
       let pid = tmp.postID;
       pids.push(pid);
     }
-
+    this.logger.log('doGetUserPostPlaylist >>> end: ' + JSON.stringify(pids));
     return pids;
 
   }    
