@@ -617,9 +617,17 @@ export class PostContentService {
     let res = new PostResponseApps();
     res.response_code = 202;
 
+    let row = 20;
+    let page = 0;
+    if (body.pageNumber != undefined) {
+      page = body.pageNumber;
+    }
+    if (body.pageRow != undefined) {
+      row = body.pageRow;
+    }
     let postId = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
     //let posts = await this.doGetUserPost(body, headers, profile);
-    let posts = await this.loadBulk(postId);
+    let posts = await this.loadBulk(postId, page, row);
     let pd = await this.loadPostData(posts, body, profile);
     res.data = pd;
 
@@ -825,11 +833,28 @@ export class PostContentService {
     return res;
   }
 
-  private async loadBulk(ids: String[]): Promise<Posts[]> {
-    return this.PostsModel.where('postId').in(ids).exec();
+  private async loadBulk(ids: String[], page, row): Promise<Posts[]> {
+    this.logger.log('loadBulk >>> start: ' + JSON.stringify(ids));
+    let p: Posts[] = [];
+    //let query =  this.PostsModel.find();
+    //query.where('_id').in(['babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767']);
+    //let skip = this.paging(page, row);
+    //query.skip(skip);
+    //query.limit(row);         
+    //query.sort({'postType': 1, 'createdAt': -1});
+    //let res = await query.exec();  
+    //return res;  
+    for (let i = 0; i < ids.length; i++) {
+      let po = await this.PostsModel.findOne({ _id: ids[i] }).exec();
+      if (po != undefined) {
+        p.push(po);
+      }
+    }
+    return p;
   }
 
   private async loadPostData(posts: Posts[], body: any, iam: Userbasic): Promise<PostData[]> {
+    this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(posts));
     let pd = Array<PostData>();
     if (posts != undefined) {
 

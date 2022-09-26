@@ -12,6 +12,7 @@ export class PostPlaylistService {
   ) { }
 
   public async doGetUserPostPlaylist(body: any, headers: any, whoami: Userbasic): Promise<String[]> {
+    this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
     return this.playlistService.doGetUserPostPlaylist(body, headers, whoami);
   }
 
