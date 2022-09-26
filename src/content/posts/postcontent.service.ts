@@ -39,8 +39,6 @@ export class PostContentService {
   constructor(
     @InjectModel(Posts.name, 'SERVER_CONTENT')
     private readonly PostsModel: Model<PostsDocument>,
-    @InjectModel(Userplaylist.name, 'SERVER_TRANS')
-    private readonly playlistModel: Model<UserplaylistDocument>,    
     private postService: PostsService,
     private userService: UserbasicsService,
     private utilService: UtilsService,
@@ -616,7 +614,7 @@ export class PostContentService {
 
     let res = new PostResponseApps();
     res.response_code = 202;
-    let posts = await this.doGetUserPostPlaylist(body, headers, profile);
+    let posts = await this.doGetUserPost(body, headers, profile);
     let pd = await this.loadPostData(posts, body, profile);
     res.data = pd;
 
@@ -748,6 +746,7 @@ export class PostContentService {
     return res;
   }
 
+  /*
   private async doGetUserPostPlaylist(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
     this.logger.log('doGetUserPostPlaylist >>> start: ' + body);
     let query = this.playlistModel.find();
@@ -799,7 +798,7 @@ export class PostContentService {
     return queryp.where('postId').in(pids);
 
   }  
-
+*/
   private async doGetUserPostMy(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     let query = this.PostsModel.find();
