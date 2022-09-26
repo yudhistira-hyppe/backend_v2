@@ -12220,6 +12220,104 @@ export class TransactionsService {
 
 
     }
+
+    async findtransactiondetailvoucher(id: ObjectId) {
+
+        const query = await this.transactionsModel.aggregate([
+
+            {
+                $match: {
+
+                    type: "VOUCHER",
+                    _id: id
+                }
+            },
+            {
+                $lookup: {
+                    from: "vouchers",
+                    localField: "detail.id",
+                    foreignField: "_id",
+                    as: "voucher_data"
+                }
+            },
+            {
+                $addFields: {
+                    type: 'Buy',
+                    jenis: "$type",
+
+                },
+
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "iduserbuyer",
+                    foreignField: "_id",
+                    as: "userbasics_data"
+                }
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "iduserbuyer",
+                    foreignField: "_id",
+                    as: "userbasics_data"
+                }
+            },
+            {
+                $project: {
+                    iduser: "$iduserbuyer",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    description: "$description",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    voucher_data: "$voucher_data",
+                    user: {
+                        $arrayElemAt: [
+                            "$userbasics_data",
+                            0
+                        ]
+                    },
+
+                }
+            },
+            {
+                $project: {
+
+                    iduser: "$iduser",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    description: "$description",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    fullName: "$user.fullName",
+                    email: "$user.email",
+                    voucher_data: "$voucher_data",
+                }
+            },
+
+        ]);
+
+        return query;
+
+    }
     async totalcountVoucher() {
         const query = await this.transactionsModel.aggregate([
 
