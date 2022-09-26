@@ -790,8 +790,8 @@ export class PostContentService {
     
     let pids:String[] = [];
     for (let x = 0; x < res.length; x++) {
-      let tmp = pids[x];
-      let pid = tmp.postId;
+      let tmp = res[x];
+      let pid = tmp.postID;
       pids.push(pid);
     }
 
