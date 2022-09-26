@@ -8,6 +8,7 @@ import { PostsService } from '../../content/posts/posts.service';
 import { MediavideosService } from '../../content/mediavideos/mediavideos.service';
 import { MediapictsService } from '../../content/mediapicts/mediapicts.service';
 import { MediadiariesService } from '../../content/mediadiaries/mediadiaries.service';
+import { PostContentService } from '../../content/posts/postcontent.service';
 import { type } from 'os';
 
 @Injectable()
@@ -19,6 +20,7 @@ export class TransactionsService {
         private readonly mediavideosService: MediavideosService,
         private readonly mediapictsService: MediapictsService,
         private readonly mediadiariesService: MediadiariesService,
+        private readonly postContentService: PostContentService,
 
     ) { }
 
@@ -236,6 +238,7 @@ export class TransactionsService {
                         mediapict: "$mediapict",
                         mediadiaries: "$mediadiaries",
                         mediavideos: "$mediavideos",
+
                         mediapictPath: "$mediapict.mediaBasePath",
                         mediadiariPath: "$mediadiaries.mediaBasePath",
                         mediavideoPath: "$mediavideos.mediaBasePath"
@@ -609,6 +612,74 @@ export class TransactionsService {
                                 default: ""
                             }
                         },
+                        apsaraId: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsaraId"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
+                        apsara: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsara"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
                     }
                 },
                 { $sort: { timestamp: 1 }, },
@@ -618,7 +689,78 @@ export class TransactionsService {
                     $limit: limit
                 }
             ]);
-            return query;
+
+            var data = null;
+            var arrdata = [];
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            for (var i = 0; i < query.length; i++) {
+                var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
+                pict.push(idapsara);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                objk = {
+                    "_id": query[i]._id,
+                    "iduser": query[i].iduser,
+                    "type": query[i].type,
+                    "jenis": query[i].jenis,
+                    "timestamp": query[i].timestamp,
+                    "description": query[i].description,
+                    "noinvoice": query[i].noinvoice,
+                    "nova": query[i].nova,
+                    "expiredtimeva": query[i].expiredtimeva,
+                    "salelike": query[i].salelike,
+                    "saleview": query[i].saleview,
+                    "bank": query[i].bank,
+                    "amount": query[i].amount,
+                    "totalamount": query[i].totalamount,
+                    "status": query[i].status,
+                    "fullName": query[i].fullName,
+                    "email": query[i].email,
+                    "postID": query[i].postID,
+                    "postType": query[i].postType,
+                    "descriptionContent": query[i].descriptionContent,
+                    "title": query[i].title,
+                    "mediaType": query[i].mediaType,
+                    "mediaEndpoint": query[i].mediaEndpoint,
+                    "apsaraId": query[i].apsaraId,
+                    "apsara": query[i].apsara,
+                    "media": data
+                };
+
+                arrdata.push(objk);
+            }
+            return arrdata;
         }
         else if (startdate !== undefined && enddate !== undefined && status === undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -1121,6 +1263,75 @@ export class TransactionsService {
                                 default: ""
                             }
                         },
+                        apsaraId: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsaraId"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
+                        apsara: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsara"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
+
                     }
                 },
                 { $sort: { timestamp: 1 }, },
@@ -1130,7 +1341,77 @@ export class TransactionsService {
                     $limit: limit
                 }
             ]);
-            return query;
+            var data = null;
+            var arrdata = [];
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            for (var i = 0; i < query.length; i++) {
+                var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
+                pict.push(idapsara);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                objk = {
+                    "_id": query[i]._id,
+                    "iduser": query[i].iduser,
+                    "type": query[i].type,
+                    "jenis": query[i].jenis,
+                    "timestamp": query[i].timestamp,
+                    "description": query[i].description,
+                    "noinvoice": query[i].noinvoice,
+                    "nova": query[i].nova,
+                    "expiredtimeva": query[i].expiredtimeva,
+                    "salelike": query[i].salelike,
+                    "saleview": query[i].saleview,
+                    "bank": query[i].bank,
+                    "amount": query[i].amount,
+                    "totalamount": query[i].totalamount,
+                    "status": query[i].status,
+                    "fullName": query[i].fullName,
+                    "email": query[i].email,
+                    "postID": query[i].postID,
+                    "postType": query[i].postType,
+                    "descriptionContent": query[i].descriptionContent,
+                    "title": query[i].title,
+                    "mediaType": query[i].mediaType,
+                    "mediaEndpoint": query[i].mediaEndpoint,
+                    "apsaraId": query[i].apsaraId,
+                    "apsara": query[i].apsara,
+                    "media": data
+                };
+
+                arrdata.push(objk);
+            }
+            return arrdata;
         }
         else if (startdate === undefined && enddate === undefined && status !== undefined) {
             // var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -1633,6 +1914,75 @@ export class TransactionsService {
                                 default: ""
                             }
                         },
+                        apsaraId: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsaraId"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
+                        apsara: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsara"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
+
                     }
                 },
                 { $sort: { timestamp: 1 }, },
@@ -1642,7 +1992,77 @@ export class TransactionsService {
                     $limit: limit
                 }
             ]);
-            return query;
+            var data = null;
+            var arrdata = [];
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            for (var i = 0; i < query.length; i++) {
+                var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
+                pict.push(idapsara);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                objk = {
+                    "_id": query[i]._id,
+                    "iduser": query[i].iduser,
+                    "type": query[i].type,
+                    "jenis": query[i].jenis,
+                    "timestamp": query[i].timestamp,
+                    "description": query[i].description,
+                    "noinvoice": query[i].noinvoice,
+                    "nova": query[i].nova,
+                    "expiredtimeva": query[i].expiredtimeva,
+                    "salelike": query[i].salelike,
+                    "saleview": query[i].saleview,
+                    "bank": query[i].bank,
+                    "amount": query[i].amount,
+                    "totalamount": query[i].totalamount,
+                    "status": query[i].status,
+                    "fullName": query[i].fullName,
+                    "email": query[i].email,
+                    "postID": query[i].postID,
+                    "postType": query[i].postType,
+                    "descriptionContent": query[i].descriptionContent,
+                    "title": query[i].title,
+                    "mediaType": query[i].mediaType,
+                    "mediaEndpoint": query[i].mediaEndpoint,
+                    "apsaraId": query[i].apsaraId,
+                    "apsara": query[i].apsara,
+                    "media": data
+                };
+
+                arrdata.push(objk);
+            }
+            return arrdata;
         }
         else {
             const query = await this.transactionsModel.aggregate([
@@ -2141,6 +2561,74 @@ export class TransactionsService {
                                 default: ""
                             }
                         },
+                        apsaraId: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsaraId"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
+                        apsara: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsara"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
                     }
                 },
                 { $sort: { timestamp: 1 }, },
@@ -2150,7 +2638,77 @@ export class TransactionsService {
                     $limit: limit
                 }
             ]);
-            return query;
+            var data = null;
+            var arrdata = [];
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            for (var i = 0; i < query.length; i++) {
+                var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
+                pict.push(idapsara);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                objk = {
+                    "_id": query[i]._id,
+                    "iduser": query[i].iduser,
+                    "type": query[i].type,
+                    "jenis": query[i].jenis,
+                    "timestamp": query[i].timestamp,
+                    "description": query[i].description,
+                    "noinvoice": query[i].noinvoice,
+                    "nova": query[i].nova,
+                    "expiredtimeva": query[i].expiredtimeva,
+                    "salelike": query[i].salelike,
+                    "saleview": query[i].saleview,
+                    "bank": query[i].bank,
+                    "amount": query[i].amount,
+                    "totalamount": query[i].totalamount,
+                    "status": query[i].status,
+                    "fullName": query[i].fullName,
+                    "email": query[i].email,
+                    "postID": query[i].postID,
+                    "postType": query[i].postType,
+                    "descriptionContent": query[i].descriptionContent,
+                    "title": query[i].title,
+                    "mediaType": query[i].mediaType,
+                    "mediaEndpoint": query[i].mediaEndpoint,
+                    "apsaraId": query[i].apsaraId,
+                    "apsara": query[i].apsara,
+                    "media": data
+                };
+
+                arrdata.push(objk);
+            }
+            return arrdata;
         }
 
     }
@@ -4198,6 +4756,7 @@ export class TransactionsService {
         const pict = await this.mediapictsService.findpict();
         const diaries = await this.mediadiariesService.finddiaries();
 
+
         if (startdate !== undefined && enddate !== undefined && status !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -4700,6 +5259,74 @@ export class TransactionsService {
                                 default: ""
                             }
                         },
+                        apsaraId: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsaraId"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
+                        apsara: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsara"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
                     }
                 },
                 { $sort: { timestamp: 1 }, },
@@ -4709,7 +5336,77 @@ export class TransactionsService {
                     $limit: limit
                 }
             ]);
-            return query;
+            var data = null;
+            var arrdata = [];
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            for (var i = 0; i < query.length; i++) {
+                var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
+                pict.push(idapsara);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                objk = {
+                    "_id": query[i]._id,
+                    "iduser": query[i].iduser,
+                    "type": query[i].type,
+                    "jenis": query[i].jenis,
+                    "timestamp": query[i].timestamp,
+                    "description": query[i].description,
+                    "noinvoice": query[i].noinvoice,
+                    "nova": query[i].nova,
+                    "expiredtimeva": query[i].expiredtimeva,
+                    "salelike": query[i].salelike,
+                    "saleview": query[i].saleview,
+                    "bank": query[i].bank,
+                    "amount": query[i].amount,
+                    "totalamount": query[i].totalamount,
+                    "status": query[i].status,
+                    "fullName": query[i].fullName,
+                    "email": query[i].email,
+                    "postID": query[i].postID,
+                    "postType": query[i].postType,
+                    "descriptionContent": query[i].descriptionContent,
+                    "title": query[i].title,
+                    "mediaType": query[i].mediaType,
+                    "mediaEndpoint": query[i].mediaEndpoint,
+                    "apsaraId": query[i].apsaraId,
+                    "apsara": query[i].apsara,
+                    "media": data
+                };
+
+                arrdata.push(objk);
+            }
+            return arrdata;
         }
         else if (startdate !== undefined && enddate !== undefined && status === undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -5213,6 +5910,74 @@ export class TransactionsService {
                                 default: ""
                             }
                         },
+                        apsaraId: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsaraId"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
+                        apsara: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsara"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
                     }
                 },
                 { $sort: { timestamp: 1 }, },
@@ -5222,7 +5987,78 @@ export class TransactionsService {
                     $limit: limit
                 }
             ]);
-            return query;
+            var data = null;
+            var arrdata = [];
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            for (var i = 0; i < query.length; i++) {
+                var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
+                pict.push(idapsara);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                objk = {
+                    "_id": query[i]._id,
+                    "iduser": query[i].iduser,
+                    "type": query[i].type,
+                    "jenis": query[i].jenis,
+                    "timestamp": query[i].timestamp,
+                    "description": query[i].description,
+                    "noinvoice": query[i].noinvoice,
+                    "nova": query[i].nova,
+                    "expiredtimeva": query[i].expiredtimeva,
+                    "salelike": query[i].salelike,
+                    "saleview": query[i].saleview,
+                    "bank": query[i].bank,
+                    "amount": query[i].amount,
+                    "totalamount": query[i].totalamount,
+                    "status": query[i].status,
+                    "fullName": query[i].fullName,
+                    "email": query[i].email,
+                    "postID": query[i].postID,
+                    "postType": query[i].postType,
+                    "descriptionContent": query[i].descriptionContent,
+                    "title": query[i].title,
+                    "mediaType": query[i].mediaType,
+                    "mediaEndpoint": query[i].mediaEndpoint,
+                    "apsaraId": query[i].apsaraId,
+                    "apsara": query[i].apsara,
+                    "media": data
+                };
+
+                arrdata.push(objk);
+            }
+            return arrdata;
+
         }
         else if (startdate === undefined && enddate === undefined && status !== undefined) {
             // var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -5724,6 +6560,74 @@ export class TransactionsService {
                                 default: ""
                             }
                         },
+                        apsaraId: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsaraId"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
+                        apsara: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsara"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
                     }
                 },
                 { $sort: { timestamp: 1 }, },
@@ -5733,7 +6637,79 @@ export class TransactionsService {
                     $limit: limit
                 }
             ]);
-            return query;
+
+
+            var data = null;
+            var arrdata = [];
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            for (var i = 0; i < query.length; i++) {
+                var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
+                pict.push(idapsara);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                objk = {
+                    "_id": query[i]._id,
+                    "iduser": query[i].iduser,
+                    "type": query[i].type,
+                    "jenis": query[i].jenis,
+                    "timestamp": query[i].timestamp,
+                    "description": query[i].description,
+                    "noinvoice": query[i].noinvoice,
+                    "nova": query[i].nova,
+                    "expiredtimeva": query[i].expiredtimeva,
+                    "salelike": query[i].salelike,
+                    "saleview": query[i].saleview,
+                    "bank": query[i].bank,
+                    "amount": query[i].amount,
+                    "totalamount": query[i].totalamount,
+                    "status": query[i].status,
+                    "fullName": query[i].fullName,
+                    "email": query[i].email,
+                    "postID": query[i].postID,
+                    "postType": query[i].postType,
+                    "descriptionContent": query[i].descriptionContent,
+                    "title": query[i].title,
+                    "mediaType": query[i].mediaType,
+                    "mediaEndpoint": query[i].mediaEndpoint,
+                    "apsaraId": query[i].apsaraId,
+                    "apsara": query[i].apsara,
+                    "media": data
+                };
+
+                arrdata.push(objk);
+            }
+            return arrdata;
         }
         else {
             const query = await this.transactionsModel.aggregate([
@@ -6233,6 +7209,74 @@ export class TransactionsService {
                                 default: ""
                             }
                         },
+                        apsaraId: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsaraId"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsaraId"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
+                        apsara: {
+                            $switch: {
+                                branches: [
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediapicts"
+                                            ]
+                                        },
+                                        then: "$mediapict.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediadiaries"
+                                            ]
+                                        },
+                                        then: "$mediadiaries.apsara"
+                                    },
+                                    {
+                                        case: {
+                                            $eq: [
+                                                "$refs",
+                                                "mediavideos"
+                                            ]
+                                        },
+                                        then: "$mediavideos.apsara"
+                                    }
+                                ],
+                                default: ""
+                            }
+                        },
                     }
                 },
                 { $sort: { timestamp: 1 }, },
@@ -6242,7 +7286,78 @@ export class TransactionsService {
                     $limit: limit
                 }
             ]);
-            return query;
+
+            var data = null;
+            var arrdata = [];
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            for (var i = 0; i < query.length; i++) {
+                var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
+                pict.push(idapsara);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                objk = {
+                    "_id": query[i]._id,
+                    "iduser": query[i].iduser,
+                    "type": query[i].type,
+                    "jenis": query[i].jenis,
+                    "timestamp": query[i].timestamp,
+                    "description": query[i].description,
+                    "noinvoice": query[i].noinvoice,
+                    "nova": query[i].nova,
+                    "expiredtimeva": query[i].expiredtimeva,
+                    "salelike": query[i].salelike,
+                    "saleview": query[i].saleview,
+                    "bank": query[i].bank,
+                    "amount": query[i].amount,
+                    "totalamount": query[i].totalamount,
+                    "status": query[i].status,
+                    "fullName": query[i].fullName,
+                    "email": query[i].email,
+                    "postID": query[i].postID,
+                    "postType": query[i].postType,
+                    "descriptionContent": query[i].descriptionContent,
+                    "title": query[i].title,
+                    "mediaType": query[i].mediaType,
+                    "mediaEndpoint": query[i].mediaEndpoint,
+                    "apsaraId": query[i].apsaraId,
+                    "apsara": query[i].apsara,
+                    "media": data
+                };
+
+                arrdata.push(objk);
+            }
+            return arrdata;
         }
     }
     async findhistorySellCount(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
@@ -8801,6 +9916,74 @@ export class TransactionsService {
                             default: ""
                         }
                     },
+                    apsaraId: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediapicts"
+                                        ]
+                                    },
+                                    then: "$mediapict.apsaraId"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediadiaries"
+                                        ]
+                                    },
+                                    then: "$mediadiaries.apsaraId"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediavideos"
+                                        ]
+                                    },
+                                    then: "$mediavideos.apsaraId"
+                                }
+                            ],
+                            default: ""
+                        }
+                    },
+                    apsara: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediapicts"
+                                        ]
+                                    },
+                                    then: "$mediapict.apsara"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediadiaries"
+                                        ]
+                                    },
+                                    then: "$mediadiaries.apsara"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediavideos"
+                                        ]
+                                    },
+                                    then: "$mediavideos.apsara"
+                                }
+                            ],
+                            default: ""
+                        }
+                    },
                 }
             },
             {
@@ -9327,6 +10510,74 @@ export class TransactionsService {
                                         ]
                                     },
                                     then: "$mediavideos.mediaThumb"
+                                }
+                            ],
+                            default: ""
+                        }
+                    },
+                    apsaraId: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediapicts"
+                                        ]
+                                    },
+                                    then: "$mediapict.apsaraId"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediadiaries"
+                                        ]
+                                    },
+                                    then: "$mediadiaries.apsaraId"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediavideos"
+                                        ]
+                                    },
+                                    then: "$mediavideos.apsaraId"
+                                }
+                            ],
+                            default: ""
+                        }
+                    },
+                    apsara: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediapicts"
+                                        ]
+                                    },
+                                    then: "$mediapict.apsara"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediadiaries"
+                                        ]
+                                    },
+                                    then: "$mediadiaries.apsara"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediavideos"
+                                        ]
+                                    },
+                                    then: "$mediavideos.apsara"
                                 }
                             ],
                             default: ""

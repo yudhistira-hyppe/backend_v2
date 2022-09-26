@@ -17,4 +17,5 @@ export class CreateVouchersDto {
     description: string;
     qty: number;
     pendingUsed: number;
+    expiredDay: number;
 }

@@ -49,7 +49,7 @@ export class UserplaylistService {
       CreateUserplaylistDto_,
       function (err, docs) {
         if (err) {
-          console.log(err)
+          console.log("Updated Error : ", err)
         } else {
           console.log("Updated Docs : ", docs);
         }
