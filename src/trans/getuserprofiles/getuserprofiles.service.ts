@@ -12492,7 +12492,7 @@ export class GetuserprofilesService {
     if (username !== undefined && regender === undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        { $sort: { _id: -1 } },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -12706,12 +12706,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -12959,7 +12959,7 @@ export class GetuserprofilesService {
     }
     else if (username === undefined && regender !== undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
-        { $sort: { _id: -1 } },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -13173,12 +13173,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -13430,7 +13430,7 @@ export class GetuserprofilesService {
     else if (username === undefined && regender === undefined && roles !== undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        { $sort: { _id: -1 } },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -13644,12 +13644,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -13900,7 +13900,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -14114,12 +14114,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -14358,7 +14358,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -14572,12 +14572,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -14816,7 +14816,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -15030,12 +15030,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -15273,7 +15273,7 @@ export class GetuserprofilesService {
       } else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -15487,12 +15487,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -15731,7 +15731,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -15945,12 +15945,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -16190,11 +16190,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender !== undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -16408,12 +16404,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -16661,11 +16657,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender === undefined && roles !== undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -16879,12 +16871,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -17132,11 +17124,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender !== undefined && roles !== undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -17350,12 +17338,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -17606,7 +17594,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -17820,12 +17808,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -18064,7 +18052,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -18278,12 +18266,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -18522,7 +18510,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -18736,12 +18724,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -18980,7 +18968,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -19194,12 +19182,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -19438,7 +19426,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -19652,12 +19640,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -19897,7 +19885,7 @@ export class GetuserprofilesService {
     else if (username === undefined && regender !== undefined && roles !== undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        { $sort: { _id: -1 } },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -20111,12 +20099,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -20364,11 +20352,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -20582,12 +20566,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -20838,11 +20822,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -21056,12 +21036,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -21310,11 +21290,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -21528,12 +21504,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -21782,11 +21758,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -22000,12 +21972,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -22254,11 +22226,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -22472,12 +22440,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -22728,11 +22696,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -22946,12 +22910,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -23199,11 +23163,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -23417,12 +23377,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -23669,12 +23629,7 @@ export class GetuserprofilesService {
       }
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
-
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -23888,12 +23843,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -24141,11 +24096,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -24359,12 +24310,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -24612,11 +24563,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -24830,12 +24777,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -25085,11 +25032,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -25303,12 +25246,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -25558,11 +25501,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -25776,12 +25715,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -26031,11 +25970,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -26249,12 +26184,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -26504,11 +26439,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -26722,12 +26653,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -26977,11 +26908,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -27195,12 +27122,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -27452,11 +27379,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -27670,12 +27593,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -27925,11 +27848,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -28143,12 +28062,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -28398,11 +28317,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -28616,12 +28531,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -28870,12 +28785,7 @@ export class GetuserprofilesService {
       }
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
-
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -29089,12 +28999,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -29344,11 +29254,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -29562,12 +29468,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -29819,11 +29725,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -30037,12 +29939,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -30290,11 +30192,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -30508,12 +30406,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -30761,11 +30659,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -30979,12 +30873,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -31232,11 +31126,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -31450,12 +31340,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -31703,11 +31593,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -31921,12 +31807,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -32175,11 +32061,7 @@ export class GetuserprofilesService {
     else if (username === undefined && regender === undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest !== undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -32393,12 +32275,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -32640,11 +32522,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender === undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest !== undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -32858,12 +32736,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -33111,11 +32989,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender !== undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest !== undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -33329,12 +33203,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -33582,11 +33456,7 @@ export class GetuserprofilesService {
     else if (username === undefined && regender !== undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest !== undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -33800,12 +33670,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -34051,11 +33921,7 @@ export class GetuserprofilesService {
     else if (username === undefined && regender === undefined && roles !== undefined && age === undefined && startdate === undefined && enddate === undefined && interest !== undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -34269,12 +34135,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -34520,11 +34386,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender !== undefined && roles !== undefined && age === undefined && startdate === undefined && enddate === undefined && interest !== undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -34738,12 +34600,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -34992,11 +34854,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -35210,12 +35068,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -35457,11 +35315,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -35675,12 +35529,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -35922,11 +35776,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -36140,12 +35990,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -36387,11 +36237,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -36605,12 +36451,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -36852,11 +36698,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -37070,12 +36912,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -37319,11 +37161,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -37537,12 +37375,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -37784,11 +37622,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -38002,12 +37836,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -38248,12 +38082,7 @@ export class GetuserprofilesService {
       }
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
-
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -38467,12 +38296,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -38714,11 +38543,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -38932,12 +38757,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -39179,11 +39004,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -39397,12 +39218,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -39646,11 +39467,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -39864,12 +39681,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -40111,11 +39928,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -40329,12 +40142,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -40575,12 +40388,7 @@ export class GetuserprofilesService {
       }
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
-
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -40794,12 +40602,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -41041,11 +40849,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -41259,12 +41063,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -41505,12 +41309,7 @@ export class GetuserprofilesService {
       }
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
-
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -41724,12 +41523,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -41973,11 +41772,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -42191,12 +41986,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -42438,11 +42233,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -42656,12 +42447,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -42903,11 +42694,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -43121,12 +42908,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -43367,12 +43154,7 @@ export class GetuserprofilesService {
       }
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
-
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -43586,12 +43368,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -43833,11 +43615,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -44051,12 +43829,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -44299,11 +44077,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender === undefined && roles === undefined && age === undefined && startdate !== undefined && enddate !== undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -44521,12 +44295,12 @@ export class GetuserprofilesService {
             }
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -44774,11 +44548,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender !== undefined && roles === undefined && age === undefined && startdate !== undefined && enddate !== undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -44996,12 +44766,12 @@ export class GetuserprofilesService {
             }
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -45249,11 +45019,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender !== undefined && roles !== undefined && age === undefined && startdate !== undefined && enddate !== undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -45471,12 +45237,12 @@ export class GetuserprofilesService {
             }
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -45725,11 +45491,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -45947,12 +45709,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -46194,11 +45956,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -46416,12 +46174,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -46663,11 +46421,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -46885,12 +46639,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -47132,11 +46886,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -47354,12 +47104,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -47600,12 +47350,7 @@ export class GetuserprofilesService {
       }
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
-
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -47823,12 +47568,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -48072,11 +47817,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -48294,12 +48035,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -48541,11 +48282,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -48763,12 +48500,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -49010,11 +48747,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -49232,12 +48965,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -49479,11 +49212,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -49701,12 +49430,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -49948,11 +49677,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -50170,12 +49895,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -50418,11 +50143,7 @@ export class GetuserprofilesService {
 
     else {
       const query = await this.getuserprofilesModel.aggregate([
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -50637,12 +50358,12 @@ export class GetuserprofilesService {
 
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -50924,7 +50645,7 @@ export class GetuserprofilesService {
     if (username !== undefined && regender === undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        { $sort: { _id: -1 } },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -51138,12 +50859,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -51391,7 +51112,7 @@ export class GetuserprofilesService {
     }
     else if (username === undefined && regender !== undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
-        { $sort: { _id: -1 } },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -51605,12 +51326,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -51862,7 +51583,7 @@ export class GetuserprofilesService {
     else if (username === undefined && regender === undefined && roles !== undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        { $sort: { _id: -1 } },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -52076,12 +51797,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -52332,7 +52053,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -52546,12 +52267,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -52790,7 +52511,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -53004,12 +52725,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -53248,7 +52969,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -53462,12 +53183,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -53705,7 +53426,7 @@ export class GetuserprofilesService {
       } else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -53919,12 +53640,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -54163,7 +53884,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -54377,12 +54098,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -54622,11 +54343,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender !== undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -54840,12 +54557,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -55093,11 +54810,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender === undefined && roles !== undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -55311,12 +55024,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -55564,11 +55277,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender !== undefined && roles !== undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -55782,12 +55491,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -56038,7 +55747,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -56252,12 +55961,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -56496,7 +56205,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -56710,12 +56419,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -56954,7 +56663,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -57168,12 +56877,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -57412,7 +57121,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -57626,12 +57335,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -57870,7 +57579,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          { $sort: { _id: -1 } },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -58084,12 +57793,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -58329,7 +58038,7 @@ export class GetuserprofilesService {
     else if (username === undefined && regender !== undefined && roles !== undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        { $sort: { _id: -1 } },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -58543,12 +58252,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -58796,11 +58505,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -59014,12 +58719,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -59270,11 +58975,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -59488,12 +59189,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -59742,11 +59443,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -59960,12 +59657,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -60214,11 +59911,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -60432,12 +60125,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -60686,11 +60379,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -60904,12 +60593,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -61160,11 +60849,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -61378,12 +61063,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -61631,11 +61316,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -61849,12 +61530,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -62102,11 +61783,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -62320,12 +61997,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -62573,11 +62250,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -62791,12 +62464,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -63044,11 +62717,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -63262,12 +62931,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -63517,11 +63186,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -63735,12 +63400,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -63990,11 +63655,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -64208,12 +63869,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -64463,11 +64124,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -64681,12 +64338,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -64936,11 +64593,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -65154,12 +64807,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -65409,11 +65062,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -65627,12 +65276,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -65884,11 +65533,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -66102,12 +65747,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -66357,11 +66002,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -66575,12 +66216,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -66830,11 +66471,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -67048,12 +66685,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -67303,11 +66940,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -67521,12 +67154,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -67776,11 +67409,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -67994,12 +67623,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -68251,11 +67880,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -68469,12 +68094,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -68721,12 +68346,7 @@ export class GetuserprofilesService {
       }
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
-
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -68940,12 +68560,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -69193,11 +68813,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -69411,12 +69027,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -69664,11 +69280,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -69882,12 +69494,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -70135,11 +69747,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -70353,12 +69961,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -70607,11 +70215,7 @@ export class GetuserprofilesService {
     else if (username === undefined && regender === undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest !== undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -70825,12 +70429,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -71072,11 +70676,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender === undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest !== undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -71290,12 +70890,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -71543,11 +71143,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender !== undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest !== undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -71761,12 +71357,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -72014,11 +71610,7 @@ export class GetuserprofilesService {
     else if (username === undefined && regender !== undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest !== undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -72232,12 +71824,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -72483,11 +72075,7 @@ export class GetuserprofilesService {
     else if (username === undefined && regender === undefined && roles !== undefined && age === undefined && startdate === undefined && enddate === undefined && interest !== undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -72701,12 +72289,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -72952,11 +72540,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender !== undefined && roles !== undefined && age === undefined && startdate === undefined && enddate === undefined && interest !== undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -73170,12 +72754,12 @@ export class GetuserprofilesService {
             "activity_data.event": "AWAKE"
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -73424,11 +73008,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -73642,12 +73222,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -73889,11 +73469,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -74107,12 +73683,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -74354,11 +73930,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -74572,12 +74144,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -74819,11 +74391,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -75037,12 +74605,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -75284,11 +74852,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -75502,12 +75066,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -75751,11 +75315,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -75969,12 +75529,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -76215,12 +75775,7 @@ export class GetuserprofilesService {
       }
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
-
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -76434,12 +75989,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -76681,11 +76236,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -76899,12 +76450,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -77146,11 +76697,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -77364,12 +76911,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -77611,11 +77158,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -77829,12 +77372,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -78078,11 +77621,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -78296,12 +77835,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -78543,11 +78082,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -78761,12 +78296,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -79008,11 +78543,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -79226,12 +78757,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -79473,11 +79004,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -79691,12 +79218,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -79938,11 +79465,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -80156,12 +79679,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -80405,11 +79928,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -80623,12 +80142,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -80870,11 +80389,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -81088,12 +80603,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -81335,11 +80850,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -81553,12 +81064,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -81800,11 +81311,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -82018,12 +81525,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -82265,11 +81772,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -82483,12 +81986,12 @@ export class GetuserprofilesService {
               "activity_data.event": "AWAKE"
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -82731,11 +82234,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender === undefined && roles === undefined && age === undefined && startdate !== undefined && enddate !== undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -82953,12 +82452,12 @@ export class GetuserprofilesService {
             }
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -83206,11 +82705,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender !== undefined && roles === undefined && age === undefined && startdate !== undefined && enddate !== undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -83428,12 +82923,12 @@ export class GetuserprofilesService {
             }
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -83681,11 +83176,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender !== undefined && roles !== undefined && age === undefined && startdate !== undefined && enddate !== undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
 
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -83903,12 +83394,12 @@ export class GetuserprofilesService {
             }
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -84156,12 +83647,7 @@ export class GetuserprofilesService {
     else if (username !== undefined && regender !== undefined && roles !== undefined && age !== undefined && startdate !== undefined && enddate !== undefined && interest === undefined) {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
-
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -84379,12 +83865,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -84626,11 +84112,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -84848,12 +84330,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -85095,11 +84577,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -85317,12 +84795,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -85564,11 +85042,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -85786,12 +85260,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -86033,11 +85507,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -86255,12 +85725,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -86504,11 +85974,7 @@ export class GetuserprofilesService {
       if (age == "<15") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -86726,12 +86192,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -86973,11 +86439,7 @@ export class GetuserprofilesService {
       else if (age == "15-25") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -87195,12 +86657,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -87442,11 +86904,7 @@ export class GetuserprofilesService {
       else if (age == "26-35") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -87664,12 +87122,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -87911,11 +87369,7 @@ export class GetuserprofilesService {
       else if (age == "36-50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -88133,12 +87587,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -88380,11 +87834,7 @@ export class GetuserprofilesService {
       else if (age == ">50") {
         const query = await this.getuserprofilesModel.aggregate([
 
-          {
-            $sort: {
-              _id: - 1
-            }
-          },
+          { $sort: { createdAt: -1 } },
           {
             $addFields: {
               userAuth_id: '$userAuth.$id',
@@ -88602,12 +88052,12 @@ export class GetuserprofilesService {
               }
             }
           },
-          {
-            "$sort": {
-              "activity_data.createdAt": - 1
-            },
+          // {
+          //   "$sort": {
+          //     "activity_data.createdAt": - 1
+          //   },
 
-          },
+          // },
           {
             "$group": {
               "_id": "$_id",
@@ -88849,11 +88299,7 @@ export class GetuserprofilesService {
     }
     else if (username === undefined && regender === undefined && roles === undefined && age !== undefined && startdate === undefined && enddate === undefined && interest === undefined) {
       const query = await this.getuserprofilesModel.aggregate([
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -89068,12 +88514,12 @@ export class GetuserprofilesService {
 
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",
@@ -89313,11 +88759,7 @@ export class GetuserprofilesService {
     }
     else {
       const query = await this.getuserprofilesModel.aggregate([
-        {
-          $sort: {
-            _id: - 1
-          }
-        },
+        { $sort: { createdAt: -1 } },
         {
           $addFields: {
             userAuth_id: '$userAuth.$id',
@@ -89532,12 +88974,12 @@ export class GetuserprofilesService {
 
           }
         },
-        {
-          "$sort": {
-            "activity_data.createdAt": - 1
-          },
+        // {
+        //   "$sort": {
+        //     "activity_data.createdAt": - 1
+        //   },
 
-        },
+        // },
         {
           "$group": {
             "_id": "$_id",

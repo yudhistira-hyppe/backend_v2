@@ -32,7 +32,7 @@ import { Long } from 'mongodb';
 import * as fs from 'fs';
 import { ContenteventsService } from '../content/contentevents/contentevents.service';
 import { CreateContenteventsDto } from '../content/contentevents/dto/create-contentevents.dto';
-import { CreateGetcontenteventsDto } from 'src/trans/getusercontents/getcontentevents/dto/create-getcontentevents.dto';
+import { CreateGetcontenteventsDto } from '../trans/getusercontents/getcontentevents/dto/create-getcontentevents.dto';
 
 @Injectable()
 export class AuthService {
