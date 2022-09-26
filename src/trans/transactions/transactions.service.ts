@@ -10636,4 +10636,1612 @@ export class TransactionsService {
 
     }
 
+    async findhistoryBuyVoucher(key: string, status: any[], startdate: string, enddate: string, page: number, limit: number) {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+        if (key !== undefined && status === undefined && startdate === undefined && enddate === undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        noinvoice: {
+                            $regex: key, $options: 'i'
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                }
+            ]);
+
+            return query;
+        }
+        else if (key === undefined && status === undefined && startdate !== undefined && enddate !== undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        timestamp: {
+                            $gte: startdate,
+                            $lte: dateend
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                }
+            ]);
+
+            return query;
+        }
+        else if (key === undefined && status !== undefined && startdate === undefined && enddate === undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        status: {
+                            $in: status
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                }
+            ]);
+
+            return query;
+        }
+        else if (key !== undefined && status !== undefined && startdate === undefined && enddate === undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        noinvoice: {
+                            $regex: key, $options: 'i'
+                        },
+                        status: {
+                            $in: status
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                }
+            ]);
+
+            return query;
+        }
+        else if (key !== undefined && status === undefined && startdate !== undefined && enddate !== undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        noinvoice: {
+                            $regex: key, $options: 'i'
+                        },
+                        timestamp: {
+                            $gte: startdate,
+                            $lte: dateend
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                }
+            ]);
+
+            return query;
+        }
+        else if (key === undefined && status !== undefined && startdate !== undefined && enddate !== undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        status: {
+                            $in: status
+                        },
+                        timestamp: {
+                            $gte: startdate,
+                            $lte: dateend
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                }
+            ]);
+
+            return query;
+        }
+        else if (key !== undefined && status !== undefined && startdate !== undefined && enddate !== undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        noinvoice: {
+                            $regex: key, $options: 'i'
+                        },
+                        status: {
+                            $in: status
+                        },
+                        timestamp: {
+                            $gte: startdate,
+                            $lte: dateend
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                }
+            ]);
+
+            return query;
+        }
+        else {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER"
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                }
+            ]);
+
+            return query;
+        }
+
+
+
+    }
+    async findhistoryBuyVoucherCount(key: string, status: string, startdate: string, enddate: string) {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+        if (key !== undefined && status === undefined && startdate === undefined && enddate === undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        noinvoice: {
+                            $regex: key, $options: 'i'
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+
+            ]);
+
+            return query;
+        }
+        else if (key === undefined && status === undefined && startdate !== undefined && enddate !== undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        timestamp: {
+                            $gte: startdate,
+                            $lte: dateend
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+
+            ]);
+
+            return query;
+        }
+        else if (key === undefined && status !== undefined && startdate === undefined && enddate === undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        status: {
+                            $in: status
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+
+            ]);
+
+            return query;
+        }
+        else if (key !== undefined && status !== undefined && startdate === undefined && enddate === undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        noinvoice: {
+                            $regex: key, $options: 'i'
+                        },
+                        status: {
+                            $in: status
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+
+            ]);
+
+            return query;
+        }
+        else if (key !== undefined && status === undefined && startdate !== undefined && enddate !== undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        noinvoice: {
+                            $regex: key, $options: 'i'
+                        },
+                        timestamp: {
+                            $gte: startdate,
+                            $lte: dateend
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+
+            ]);
+
+            return query;
+        }
+        else if (key === undefined && status !== undefined && startdate !== undefined && enddate !== undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        status: {
+                            $in: status
+                        },
+                        timestamp: {
+                            $gte: startdate,
+                            $lte: dateend
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+
+            ]);
+
+            return query;
+        }
+        else if (key !== undefined && status !== undefined && startdate !== undefined && enddate !== undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+                        noinvoice: {
+                            $regex: key, $options: 'i'
+                        },
+                        status: {
+                            $in: status
+                        },
+                        timestamp: {
+                            $gte: startdate,
+                            $lte: dateend
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+
+            ]);
+
+            return query;
+        }
+        else {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER"
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: -1
+                    },
+
+                },
+
+            ]);
+
+            return query;
+        }
+
+
+
+    }
+    async totalcountVoucher() {
+        const query = await this.transactionsModel.aggregate([
+
+            {
+                $match: {
+
+                    type: "VOUCHER"
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    countrow: {
+                        $sum: 1
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 0
+                }
+            }]);
+        return query;
+    }
 }
