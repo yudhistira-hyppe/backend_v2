@@ -44,21 +44,21 @@ export class VouchersController {
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
 
-        var dtexpired = new Date(CreateVouchersDto.expiredAt);
-        var leng = 0;
-        try {
-            dataLast = await this.vouchersService.findExpired(CreateVouchersDto.expiredAt);
-            leng = dataLast.length;
+        // var dtexpired = new Date(CreateVouchersDto.expiredAt);
+        // var leng = 0;
+        // try {
+        //     dataLast = await this.vouchersService.findExpired(CreateVouchersDto.expiredAt);
+        //     leng = dataLast.length;
 
-            for (var i = 0; i < leng; i++) {
-                var id = dataLast[i]._id;
-                await this.vouchersService.updatestatusActive(id, dt.toISOString());
+        //     for (var i = 0; i < leng; i++) {
+        //         var id = dataLast[i]._id;
+        //         await this.vouchersService.updatestatusActive(id, dt.toISOString());
 
-            }
+        //     }
 
-        } catch (e) {
-            dataLast = null;
-        }
+        // } catch (e) {
+        //     dataLast = null;
+        // }
 
 
 
@@ -72,7 +72,7 @@ export class VouchersController {
             CreateVouchersDto.createdAt = dt.toISOString();
             CreateVouchersDto.userID = iduser;
             CreateVouchersDto.totalUsed = 0;
-            CreateVouchersDto.expiredAt = dtexpired.toISOString();
+            // CreateVouchersDto.expiredAt = dtexpired.toISOString();
             CreateVouchersDto.pendingUsed = 0;
             let data = await this.vouchersService.create(CreateVouchersDto);
 
@@ -95,6 +95,43 @@ export class VouchersController {
     async findAll(): Promise<Vouchers[]> {
         return this.vouchersService.findAll();
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('list')
+    async finddata(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var key = null;
+        var page = null;
+
+        var limit = null;
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        key = request_json["key"];
+
+        let data = await this.vouchersService.finddata(key, page, limit);
+        var total = data.length;
+        let datasearch = await this.vouchersService.finddataCount(key);
+        var total = data.length;
+        var totalsearch = datasearch.length;
+        var allrow = await this.vouchersService.totalcount();
+        var totalallrow = allrow[0].countrow;
+        var totalpage = totalallrow / limit;
+
+        return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };
+    }
+
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     async findid(@Param('id') id: string): Promise<Vouchers> {
@@ -112,6 +149,37 @@ export class VouchersController {
             throw new BadRequestException("Unabled to proceed");
         }
         return this.vouchersService.findExpirednactive(expiredAt);
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Put('update/:id')
+    async updatedata(@Res() res, @Param('id') id: string, @Body() CreateVouchersDto: CreateVouchersDto) {
+
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        try {
+            CreateVouchersDto.updatedAt = dt.toISOString();
+            let data = await this.vouchersService.update(id, CreateVouchersDto);
+
+            res.status(HttpStatus.OK).json({
+                response_code: 202,
+                "message": messages
+            });
+        } catch (e) {
+            res.status(HttpStatus.BAD_REQUEST).json({
+
+                "message": messagesEror
+            });
+        }
     }
 
     @UseGuards(JwtAuthGuard)

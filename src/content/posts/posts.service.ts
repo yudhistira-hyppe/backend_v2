@@ -16,7 +16,7 @@ import { InsightsService } from '../insights/insights.service';
 import { Insights } from '../insights/schemas/insights.schema';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
-import {createWriteStream, unlink} from 'fs'
+import { createWriteStream, unlink } from 'fs'
 import { QueryDiscusDto } from '../disqus/dto/create-disqus.dto';
 import { Userbasic } from '../../trans/userbasics/schemas/userbasic.schema';
 import { ContenteventsService } from '../contentevents/contentevents.service';
@@ -75,7 +75,7 @@ export class PostsService {
   async findOnepostID(postID: string): Promise<Object> {
     var datacontent = null;
     var CreatePostsDto_ = await this.PostsModel.findOne({ postID: postID }).exec();
-    if (CreatePostsDto_.postType =='vid'){
+    if (CreatePostsDto_.postType == 'vid') {
       datacontent = 'mediavideos';
     } else if (CreatePostsDto_.postType == 'pict') {
       datacontent = 'mediapicts';
@@ -84,12 +84,12 @@ export class PostsService {
     } else if (CreatePostsDto_.postType == 'story') {
       datacontent = 'mediastories';
     }
-    
+
     //Ceck User Userbasics
     const datauserbasicsService = await this.getuserprofilesService.findUserDetailbyEmail(
       CreatePostsDto_.email.toString()
     );
-    
+
     const query = await this.PostsModel.aggregate([
       {
         $match: {
@@ -104,7 +104,7 @@ export class PostsService {
           as: "datacontent"
         }
       },
-    ]); 
+    ]);
     Object.assign(query[0], { datauser: datauserbasicsService });
     return query;
   }
@@ -129,7 +129,8 @@ export class PostsService {
     let data = await this.PostsModel.updateOne({ "_id": id },
       {
         $set: {
-          "salelike": 0
+          "salelike": false,
+          "saleAmount": 0
         }
       });
     return data;
@@ -139,7 +140,8 @@ export class PostsService {
     let data = await this.PostsModel.updateOne({ "_id": id },
       {
         $set: {
-          "saleview": 0
+          "saleview": false,
+          "saleAmount": 0
         }
       });
     return data;
@@ -171,11 +173,11 @@ export class PostsService {
       {
         email: email,
       },
-      { 
-        $set: { 
+      {
+        $set: {
           "active": false,
           "email": email + '_noneactive'
-        } 
+        }
       },
       function (err, docs) {
         if (err) {
@@ -1365,8 +1367,8 @@ export class PostsService {
         }
       }
       var isHidden_ = false;
-      if (data_post.visibility!=undefined){
-        if (data_post.visibility == "FRIEND"){
+      if (data_post.visibility != undefined) {
+        if (data_post.visibility == "FRIEND") {
           if (type == data_post.visibility) {
             isHidden_ = false;
           } else {

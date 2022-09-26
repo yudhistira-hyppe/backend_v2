@@ -21,6 +21,7 @@ import { VouchersService } from '../vouchers/vouchers.service';
 import { post } from 'jquery';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
+import { PostContentService } from '../../content/posts/postcontent.service';
 @Controller()
 export class TransactionsController {
     constructor(private readonly transactionsService: TransactionsService,
@@ -40,6 +41,7 @@ export class TransactionsController {
         private readonly vouchersService: VouchersService,
         private readonly utilsService: UtilsService,
         private readonly errorHandler: ErrorHandler,
+        private readonly postContentService: PostContentService,
 
     ) { }
     @UseGuards(JwtAuthGuard)
@@ -1130,8 +1132,8 @@ export class TransactionsController {
                             datauservoucher.credit = total_creditValue_voucher;
                             datauservoucher.creditFree = total_creditPromo_voucher;
                             await this.uservouchersService.create(datauservoucher);
-                            await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml), (pendingUsed - jml));
-
+                            // await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml), (pendingUsed - jml));
+                            await this.vouchersService.updatestatuTotalUsed(voucherID, (totalUsed + jml));
                         }
 
                         res.status(HttpStatus.OK).json({
@@ -2869,21 +2871,21 @@ export class TransactionsController {
 
         if (sell === true && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell;
             datacount = datasellcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === false && startdate !== undefined && enddate !== undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell;
             datacount = datasellcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === true && withdrawal === false && startdate === undefined && enddate === undefined) {
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = databuy;
             datacount = databuycount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
@@ -2891,14 +2893,14 @@ export class TransactionsController {
         else if (sell === false && buy === true && withdrawal === false && startdate !== undefined && enddate !== undefined) {
 
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = databuy;
             datacount = databuycount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === false && withdrawal === true && startdate === undefined && enddate === undefined) {
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datawithdraw;
             datacount = datawithdrawcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
@@ -2906,7 +2908,7 @@ export class TransactionsController {
         }
         else if (sell === false && buy === false && withdrawal === true && startdate !== undefined && enddate !== undefined) {
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datawithdraw;
             datacount = datawithdrawcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
@@ -2914,9 +2916,9 @@ export class TransactionsController {
 
         else if (sell === true && buy === true && withdrawal === false && startdate === undefined && enddate === undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(databuy);
             dtcount = datasellcount.concat(databuycount);
             datacount = dtcount.length;
@@ -2924,9 +2926,9 @@ export class TransactionsController {
         }
         else if (sell === true && buy === true && withdrawal === false && startdate !== undefined && enddate !== undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(databuy);
             dtcount = datasellcount.concat(databuycount);
             datacount = dtcount.length;
@@ -2934,9 +2936,9 @@ export class TransactionsController {
         }
         else if (sell === true && buy === false && withdrawal === true && startdate === undefined && enddate === undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(datawithdraw);
             dtcount = datasellcount.concat(datawithdrawcount);
             datacount = dtcount.length;
@@ -2944,9 +2946,9 @@ export class TransactionsController {
         }
         else if (sell === true && buy === false && withdrawal === true && startdate !== undefined && enddate !== undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(datawithdraw);
             dtcount = datasellcount.concat(datawithdrawcount);
             datacount = dtcount.length;
@@ -2954,9 +2956,9 @@ export class TransactionsController {
         }
         else if (sell === false && buy === true && withdrawal === true && startdate === undefined && enddate === undefined) {
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = databuy.concat(datawithdraw);
             dtcount = databuycount.concat(datawithdrawcount);
             datacount = dtcount.length;
@@ -2964,9 +2966,9 @@ export class TransactionsController {
         }
         else if (sell === false && buy === true && withdrawal === true && startdate !== undefined && enddate !== undefined) {
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = databuy.concat(datawithdraw);
             dtcount = databuycount.concat(datawithdrawcount);
             datacount = dtcount.length;
@@ -2974,11 +2976,11 @@ export class TransactionsController {
         }
         else if (sell === false && buy === false && withdrawal === false && startdate !== undefined && enddate !== undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
             dtcount = datasellcount.concat(databuycount, datawithdrawcount);
             datacount = dtcount.length;
@@ -2986,11 +2988,11 @@ export class TransactionsController {
         }
         else if (sell === true && buy === true && withdrawal === true && startdate === undefined && enddate === undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
             dtcount = datasellcount.concat(databuycount, datawithdrawcount);
             datacount = dtcount.length;
@@ -2998,11 +3000,11 @@ export class TransactionsController {
         }
         else if (sell === true && buy === true && withdrawal === true && startdate !== undefined && enddate !== undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
             dtcount = datasellcount.concat(databuycount, datawithdrawcount);
             datacount = dtcount.length;
@@ -3010,11 +3012,11 @@ export class TransactionsController {
         }
         else if (sell === false && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
             dtcount = datasellcount.concat(databuycount, datawithdrawcount);
             datacount = dtcount.length;
@@ -3168,7 +3170,43 @@ export class TransactionsController {
                 } catch (e) {
                     throw new BadRequestException("Data not found...!");
                 }
+                var dataapsara = null;
+                var arrdata = [];
+                let pict: String[] = [];
+                var objk = {};
+                var idapsara = databuy[0].apsaraId;
+                var type = databuy[0].postType;
+                pict.push(idapsara);
+                if (type === "pict") {
 
+                    try {
+                        dataapsara = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        dataapsara = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        dataapsara = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        dataapsara = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+                }
 
                 data = {
 
@@ -3205,6 +3243,9 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
+                    "apsara": databuy[0].apsara,
+                    "apsaraId": databuy[0].apsaraId,
+                    "media": dataapsara
 
                 };
             }
@@ -3274,7 +3315,43 @@ export class TransactionsController {
                 } catch (e) {
                     throw new BadRequestException("Data not found...!");
                 }
+                var dataapsara = null;
+                var arrdata = [];
+                let pict: String[] = [];
+                var objk = {};
+                var idapsara = databuy[0].apsaraId;
+                var type = databuy[0].postType;
+                pict.push(idapsara);
+                if (type === "pict") {
 
+                    try {
+                        dataapsara = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        dataapsara = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        dataapsara = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        dataapsara = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+                }
                 data = {
 
                     "_id": idtr,
@@ -3306,6 +3383,9 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
+                    "apsara": databuy[0].apsara,
+                    "apsaraId": databuy[0].apsaraId,
+                    "media": dataapsara
 
                 };
             }

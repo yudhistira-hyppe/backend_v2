@@ -40,6 +40,8 @@ export class Vouchers {
     qty: number;
     @Prop()
     pendingUsed: number;
+    @Prop()
+    expiredDay: number;
 
 }
 

@@ -694,10 +694,41 @@ export class TransactionsService {
             var arrdata = [];
             let pict: String[] = [];
             var objk = {};
+            var type = null;
             for (var i = 0; i < query.length; i++) {
                 var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
                 pict.push(idapsara);
-                data = await this.postContentService.getImageApsara(pict);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
                 objk = {
                     "_id": query[i]._id,
                     "iduser": query[i].iduser,
@@ -1314,10 +1345,41 @@ export class TransactionsService {
             var arrdata = [];
             let pict: String[] = [];
             var objk = {};
+            var type = null;
             for (var i = 0; i < query.length; i++) {
                 var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
                 pict.push(idapsara);
-                data = await this.postContentService.getImageApsara(pict);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
                 objk = {
                     "_id": query[i]._id,
                     "iduser": query[i].iduser,
@@ -1934,10 +1996,41 @@ export class TransactionsService {
             var arrdata = [];
             let pict: String[] = [];
             var objk = {};
+            var type = null;
             for (var i = 0; i < query.length; i++) {
                 var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
                 pict.push(idapsara);
-                data = await this.postContentService.getImageApsara(pict);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
                 objk = {
                     "_id": query[i]._id,
                     "iduser": query[i].iduser,
@@ -2549,10 +2642,41 @@ export class TransactionsService {
             var arrdata = [];
             let pict: String[] = [];
             var objk = {};
+            var type = null;
             for (var i = 0; i < query.length; i++) {
                 var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
                 pict.push(idapsara);
-                data = await this.postContentService.getImageApsara(pict);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
                 objk = {
                     "_id": query[i]._id,
                     "iduser": query[i].iduser,
@@ -5216,10 +5340,41 @@ export class TransactionsService {
             var arrdata = [];
             let pict: String[] = [];
             var objk = {};
+            var type = null;
             for (var i = 0; i < query.length; i++) {
                 var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
                 pict.push(idapsara);
-                data = await this.postContentService.getImageApsara(pict);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
                 objk = {
                     "_id": query[i]._id,
                     "iduser": query[i].iduser,
@@ -5836,10 +5991,41 @@ export class TransactionsService {
             var arrdata = [];
             let pict: String[] = [];
             var objk = {};
+            var type = null;
             for (var i = 0; i < query.length; i++) {
                 var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
                 pict.push(idapsara);
-                data = await this.postContentService.getImageApsara(pict);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
                 objk = {
                     "_id": query[i]._id,
                     "iduser": query[i].iduser,
@@ -6463,16 +6649,34 @@ export class TransactionsService {
                 var type = query[i].postType;
                 pict.push(idapsara);
                 if (type === "pict") {
-                    data = await this.postContentService.getImageApsara(pict);
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
                 }
                 else if (type === "vid") {
-                    data = await this.postContentService.getVideoApsara(pict);
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
                 }
                 else if (type === "story") {
-                    data = await this.postContentService.getVideoApsara(pict);
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
                 }
                 else if (type === "diary") {
-                    data = await this.postContentService.getVideoApsara(pict);
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
                 }
                 objk = {
                     "_id": query[i]._id,
@@ -7087,10 +7291,41 @@ export class TransactionsService {
             var arrdata = [];
             let pict: String[] = [];
             var objk = {};
+            var type = null;
             for (var i = 0; i < query.length; i++) {
                 var idapsara = query[i].apsaraId;
+                var type = query[i].postType;
                 pict.push(idapsara);
-                data = await this.postContentService.getImageApsara(pict);
+                if (type === "pict") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
                 objk = {
                     "_id": query[i]._id,
                     "iduser": query[i].iduser,
@@ -9681,6 +9916,74 @@ export class TransactionsService {
                             default: ""
                         }
                     },
+                    apsaraId: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediapicts"
+                                        ]
+                                    },
+                                    then: "$mediapict.apsaraId"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediadiaries"
+                                        ]
+                                    },
+                                    then: "$mediadiaries.apsaraId"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediavideos"
+                                        ]
+                                    },
+                                    then: "$mediavideos.apsaraId"
+                                }
+                            ],
+                            default: ""
+                        }
+                    },
+                    apsara: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediapicts"
+                                        ]
+                                    },
+                                    then: "$mediapict.apsara"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediadiaries"
+                                        ]
+                                    },
+                                    then: "$mediadiaries.apsara"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediavideos"
+                                        ]
+                                    },
+                                    then: "$mediavideos.apsara"
+                                }
+                            ],
+                            default: ""
+                        }
+                    },
                 }
             },
             {
@@ -10207,6 +10510,74 @@ export class TransactionsService {
                                         ]
                                     },
                                     then: "$mediavideos.mediaThumb"
+                                }
+                            ],
+                            default: ""
+                        }
+                    },
+                    apsaraId: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediapicts"
+                                        ]
+                                    },
+                                    then: "$mediapict.apsaraId"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediadiaries"
+                                        ]
+                                    },
+                                    then: "$mediadiaries.apsaraId"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediavideos"
+                                        ]
+                                    },
+                                    then: "$mediavideos.apsaraId"
+                                }
+                            ],
+                            default: ""
+                        }
+                    },
+                    apsara: {
+                        $switch: {
+                            branches: [
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediapicts"
+                                        ]
+                                    },
+                                    then: "$mediapict.apsara"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediadiaries"
+                                        ]
+                                    },
+                                    then: "$mediadiaries.apsara"
+                                },
+                                {
+                                    case: {
+                                        $eq: [
+                                            "$refs",
+                                            "mediavideos"
+                                        ]
+                                    },
+                                    then: "$mediavideos.apsara"
                                 }
                             ],
                             default: ""
