@@ -3175,8 +3175,39 @@ export class TransactionsController {
                 let pict: String[] = [];
                 var objk = {};
                 var idapsara = databuy[0].apsaraId;
+                var type = databuy[0].postType;
                 pict.push(idapsara);
-                dataapsara = await this.postContentService.getImageApsara(pict);
+                if (type === "pict") {
+
+                    try {
+                        dataapsara = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        dataapsara = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        dataapsara = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        dataapsara = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+                }
+
                 data = {
 
                     "_id": idtr,
@@ -3289,8 +3320,38 @@ export class TransactionsController {
                 let pict: String[] = [];
                 var objk = {};
                 var idapsara = databuy[0].apsaraId;
+                var type = databuy[0].postType;
                 pict.push(idapsara);
-                dataapsara = await this.postContentService.getImageApsara(pict);
+                if (type === "pict") {
+
+                    try {
+                        dataapsara = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+                }
+                else if (type === "vid") {
+                    try {
+                        dataapsara = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+
+                }
+                else if (type === "story") {
+                    try {
+                        dataapsara = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+                }
+                else if (type === "diary") {
+                    try {
+                        dataapsara = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        dataapsara = [];
+                    }
+                }
                 data = {
 
                     "_id": idtr,
