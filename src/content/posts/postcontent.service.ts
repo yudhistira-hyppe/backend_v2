@@ -30,6 +30,7 @@ import { MediaprofilepictsService } from '../mediaprofilepicts/mediaprofilepicts
 import { IsDefined } from 'class-validator';
 import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userplaylist.dto';
 import { Userplaylist, UserplaylistDocument } from 'src/trans/userplaylist/schemas/userplaylist.schema';
+import { PostPlaylistService } from '../postplaylist/postplaylist.service';
 
 
 @Injectable()
@@ -51,6 +52,7 @@ export class PostContentService {
     private insightService: InsightsService,
     private contentEventService: ContenteventsService,
     private profilePictService: MediaprofilepictsService,
+    private postPlaylistService: PostPlaylistService,
     private readonly configService: ConfigService,
   ) { }
 
@@ -614,7 +616,10 @@ export class PostContentService {
 
     let res = new PostResponseApps();
     res.response_code = 202;
-    let posts = await this.doGetUserPost(body, headers, profile);
+
+    let postId = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
+    //let posts = await this.doGetUserPost(body, headers, profile);
+    let posts = await this.loadBulk(postId);
     let pd = await this.loadPostData(posts, body, profile);
     res.data = pd;
 
@@ -746,59 +751,6 @@ export class PostContentService {
     return res;
   }
 
-  /*
-  private async doGetUserPostPlaylist(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
-    this.logger.log('doGetUserPostPlaylist >>> start: ' + body);
-    let query = this.playlistModel.find();
-    if (body.visibility != undefined) {
-      query.where('type', body.visibility);
-    }
-
-    if (body.postID != undefined) {
-      query.where('postID', body.postID);
-    }
-
-    if (body.postType != undefined) {
-      query.where('postType', body.postType);
-    } else {
-      query.where('postType').ne('advertise');
-    }
-
-    if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
-      query.where('isHidden', true);
-    }
-
-    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
-      this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
-      query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
-    }
-
-    let row = 20;
-    let page = 0;
-    if (body.pageNumber != undefined) {
-      page = body.pageNumber;
-    }
-    if (body.pageRow != undefined) {
-      row = body.pageRow;      
-    }
-    let skip = this.paging(page, row);
-    query.skip(skip);
-    query.limit(row);         
-    query.sort({'postType': 1, 'createdAt': -1});
-    let res = await query.exec();
-    
-    let pids:String[] = [];
-    for (let x = 0; x < res.length; x++) {
-      let tmp = res[x];
-      let pid = tmp.postID;
-      pids.push(pid);
-    }
-
-    let queryp = this.PostsModel.find();
-    return queryp.where('postId').in(pids);
-
-  }  
-*/
   private async doGetUserPostMy(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     let query = this.PostsModel.find();
@@ -871,6 +823,10 @@ export class PostContentService {
     query.sort({ 'postType': 1, 'createdAt': -1 });
     let res = await query.exec();
     return res;
+  }
+
+  private async loadBulk(ids: String[]): Promise<Posts[]> {
+    return this.PostsModel.where('postId').in(ids).exec();
   }
 
   private async loadPostData(posts: Posts[], body: any, iam: Userbasic): Promise<PostData[]> {
