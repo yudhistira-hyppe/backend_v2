@@ -968,6 +968,7 @@ export class AuthController {
     return await this.authService.signsosmed(request);
   }
 
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/getuserprofile')
   @FormDataRequest()
@@ -1016,6 +1017,7 @@ export class AuthController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/profileinterest')
   async profileinterest(@Req() request: any, @Headers() headers) {
@@ -1113,6 +1115,7 @@ export class AuthController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/pin/')
   async createorupdatdePin(@Body() body_, @Headers() headers) {

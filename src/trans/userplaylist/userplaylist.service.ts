@@ -81,7 +81,7 @@ export class UserplaylistService {
   }
 
   public async doGetUserPostPlaylist(body: any, headers: any, whoami: Userbasic): Promise<String[]> {
-    this.logger.log('doGetUserPostPlaylist >>> start: ' + body);
+    this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
     let query = this.userplaylistModel.find();
     if (body.visibility != undefined) {
       query.where('type', body.visibility);
@@ -98,10 +98,10 @@ export class UserplaylistService {
     }
 
     if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
-      query.where('isHidden', true);
+      query.where('isHidden', false);
     }
 
-    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
+    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true) && body.postType == 'story') {
       this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
       query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
     }
@@ -126,7 +126,7 @@ export class UserplaylistService {
       let pid = tmp.postID;
       pids.push(pid);
     }
-
+    this.logger.log('doGetUserPostPlaylist >>> end: ' + JSON.stringify(pids));
     return pids;
 
   }    
