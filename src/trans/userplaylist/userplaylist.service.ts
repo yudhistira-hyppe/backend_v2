@@ -101,7 +101,7 @@ export class UserplaylistService {
       query.where('isHidden', false);
     }
 
-    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true) && body.postType == 'story') {
+    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
       this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
       query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
     }
@@ -117,7 +117,7 @@ export class UserplaylistService {
     let skip = this.paging(page, row);
     query.skip(skip);
     query.limit(row);         
-    query.sort({'postType': 1, 'createAt': 1});
+    query.sort({'postType': 1, 'createAt': -1});
     let res = await query.exec();
     
     let pids:String[] = [];
