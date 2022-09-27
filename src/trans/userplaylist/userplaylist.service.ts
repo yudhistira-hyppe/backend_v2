@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, ObjectId, Types } from 'mongoose';
-import { UtilsService } from 'src/utils/utils.service';
+import { UtilsService } from '../../utils/utils.service';
 import { Userbasic } from '../userbasics/schemas/userbasic.schema';
 import { CreateUserplaylistDto } from './dto/create-userplaylist.dto';
 import { Userplaylist, UserplaylistDocument } from './schemas/userplaylist.schema';
@@ -101,7 +101,7 @@ export class UserplaylistService {
       query.where('isHidden', false);
     }
 
-    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true) && body.postType == 'story') {
+    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
       this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
       query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
     }
@@ -117,7 +117,7 @@ export class UserplaylistService {
     let skip = this.paging(page, row);
     query.skip(skip);
     query.limit(row);         
-    query.sort({'postType': 1, 'createdAt': -1});
+    query.sort({'postType': 1, 'createAt': -1});
     let res = await query.exec();
     
     let pids:String[] = [];

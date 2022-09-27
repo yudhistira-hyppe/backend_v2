@@ -15,9 +15,11 @@ import { AccountbalancesModule } from '../../accountbalances/accountbalances.mod
 import { AdsplacesModule } from '../../adsplaces/adsplaces.module';
 import { UservouchersModule } from '../../uservouchers/uservouchers.module';
 import { VouchersModule } from '../../vouchers/vouchers.module';
+import { MediaprofilepictsModule } from '../../../content/mediaprofilepicts/mediaprofilepicts.module';
 
 @Module({
     imports: [
+        MediaprofilepictsModule,
         VouchersModule,
         UservouchersModule,
         AdsplacesModule,

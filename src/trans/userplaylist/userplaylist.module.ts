@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Userplaylist, UserplaylistSchema } from './schemas/userplaylist.schema';
 import { UserplaylistController } from './userplaylist.controller';
 import { UserplaylistService } from './userplaylist.service';
-import { UtilsModule } from 'src/utils/utils.module';
+import { UtilsModule } from '../../utils/utils.module';
 
 @Module({
 
