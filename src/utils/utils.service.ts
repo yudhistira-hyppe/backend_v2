@@ -771,10 +771,14 @@ export class UtilsService {
     if (get_userbasic.pin!=undefined){
       if (get_userbasic.pin != null) {
         if (get_userbasic.pin != "") {
-          pin_create = true;
+          if (get_userbasic.otppinVerified != undefined) {
+            if (get_userbasic.otppinVerified) {
+              pin_create = true;
+            }
+          }
         }
       }
-    } 
+    }
 
     if (get_userbasic.otppinVerified != undefined) {
       otppinVerified = get_userbasic.otppinVerified;
