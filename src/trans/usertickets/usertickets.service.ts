@@ -1016,6 +1016,7 @@ export class UserticketsService {
 
 
   async filterdata(search: string, sumber: any[], kategori: any[], level: any[], status: any[], startdate: string, enddate: string, skip: number, limit: number) {
+    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
     var lenghtkategori = 0;
     var lenghtsumber = 0;
     var lenghtlevel = 0;
@@ -16618,7 +16619,290 @@ export class UserticketsService {
     }
   }
 
+  async detail(id: object): Promise<object> {
+    const query = await this.userticketsModel.aggregate([
+      {
+        $lookup: {
+          from: "userticketdetails",
+          localField: "_id",
+          foreignField: "IdUserticket",
+          as: "detail"
+        },
 
+      },
+      {
+        $lookup: {
+          from: "userbasics",
+          localField: "IdUser",
+          foreignField: '_id',
+          as: 'userbasics_data'
+        }
+      },
+      {
+        $lookup: {
+          from: "categorytickets",
+          localField: "categoryTicket",
+          foreignField: '_id',
+          as: 'category_data'
+        }
+      },
+      {
+        $lookup: {
+          from: "leveltickets",
+          localField: "levelTicket",
+          foreignField: '_id',
+          as: 'level_data'
+        }
+      },
+      {
+        $lookup: {
+          from: "sourcetickets",
+          localField: "sourceTicket",
+          foreignField: '_id',
+          as: 'source_data'
+        }
+      },
+      {
+        $lookup: {
+          from: 'userbasics',
+          localField: 'assignTo',
+          foreignField: '_id',
+          as: 'asignto_data',
+
+        },
+
+      },
+      {
+        $project: {
+          user: {
+            $arrayElemAt: ['$userbasics_data', 0]
+          },
+          userasign: {
+            $arrayElemAt: ['$asignto_data', 0]
+          },
+          category: {
+            $arrayElemAt: ['$category_data', 0]
+          },
+          level: {
+            $arrayElemAt: ['$level_data', 0]
+          },
+          source: {
+            $arrayElemAt: ['$source_data', 0]
+          },
+          nomortiket: '$nomortiket',
+          subject: '$subject',
+          body: '$body',
+          status: '$status',
+          isRead: '$isRead',
+          active: '$active',
+          datetime: '$datetime',
+          sourceTicket: '$sourceTicket',
+          levelTicket: '$levelTicket',
+          categoryTicket: '$categoryTicket',
+          mediaBasePath: '$mediaBasePath',
+          mediaMime: '$mediaMime',
+          mediaType: '$mediaType',
+          mediaUri: '$mediaUri',
+          originalName: '$originalName',
+          fsSourceUri: '$fsSourceUri',
+          fsSourceName: '$fsSourceName',
+          fsTargetUri: '$fsTargetUri',
+          detail: '$detail'
+        }
+      },
+      {
+        $project: {
+          userAuth_id: '$user.userAuth.$id',
+          nomortiket: '$nomortiket',
+          pengirim: '$user.email',
+          penerima: '$userasign.email',
+          profilpictid: '$userasign.profilePict.$id',
+          subject: '$subject',
+          body: '$body',
+          status: '$status',
+          isRead: '$isRead',
+          active: '$active',
+          datetime: '$datetime',
+          nameCategory: '$category.nameCategory',
+          nameLevel: '$level.nameLevel',
+          sourceName: '$source.sourceName',
+          sourceTicket: '$sourceTicket',
+          levelTicket: '$levelTicket',
+          categoryTicket: '$categoryTicket',
+          mediaBasePath: '$mediaBasePath',
+          mediaMime: '$mediaMime',
+          mediaType: '$mediaType',
+          mediaUri: '$mediaUri',
+          originalName: '$originalName',
+          fsSourceUri: '$fsSourceUri',
+          fsSourceName: '$fsSourceName',
+          fsTargetUri: '$fsTargetUri',
+          detail: '$detail'
+        }
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts2',
+          localField: 'profilpictid',
+          foreignField: '_id',
+          as: 'profilePict_data',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+
+        },
+
+      },
+      {
+        $project: {
+          profilpict: {
+            $arrayElemAt: ['$profilePict_data', 0]
+          },
+          userauth: {
+            $arrayElemAt: ['$userAuth_data', 0]
+          },
+          nomortiket: '$nomortiket',
+          pengirim: '$pengirim',
+          penerima: '$penerima',
+          subject: '$subject',
+          body: '$body',
+          status: '$status',
+          isRead: '$isRead',
+          active: '$active',
+          datetime: '$datetime',
+          nameCategory: '$nameCategory',
+          nameLevel: '$nameLevel',
+          sourceName: '$sourceName',
+          sourceTicket: '$sourceTicket',
+          levelTicket: '$levelTicket',
+          categoryTicket: '$categoryTicket',
+          mediaBasePath: '$mediaBasePath',
+          mediaMime: '$mediaMime',
+          mediaType: '$mediaType',
+          mediaUri: '$mediaUri',
+          originalName: '$originalName',
+          fsSourceUri: '$fsSourceUri',
+          fsSourceName: '$fsSourceName',
+          fsTargetUri: '$fsTargetUri',
+          detail: '$detail'
+        }
+      },
+      {
+        $project: {
+          username: '$userauth.username',
+          nomortiket: '$nomortiket',
+          pengirim: '$pengirim',
+          penerima: '$penerima',
+          subject: '$subject',
+          body: '$body',
+          status: '$status',
+          isRead: '$isRead',
+          active: '$active',
+          datetime: '$datetime',
+          nameCategory: '$nameCategory',
+          nameLevel: '$nameLevel',
+          sourceName: '$sourceName',
+          sourceTicket: '$sourceTicket',
+          levelTicket: '$levelTicket',
+          categoryTicket: '$categoryTicket',
+          mediaBasePath: '$mediaBasePath',
+          mediaMime: '$mediaMime',
+          mediaType: '$mediaType',
+          mediaUri: '$mediaUri',
+          originalName: '$originalName',
+          fsSourceUri: '$fsSourceUri',
+          fsSourceName: '$fsSourceName',
+          fsTargetUri: '$fsTargetUri',
+          detail: '$detail',
+          concats: '/profilepict',
+          pict: {
+            $replaceOne: {
+              input: "$profilpict.mediaUri",
+              find: "_0001.jpeg",
+              replacement: ""
+            }
+          },
+          avatar: {
+            mediaBasePath: '$profilpict.mediaBasePath',
+            mediaUri: '$profilpict.mediaUri',
+            mediaType: '$profilpict.mediaType',
+            mediaEndpoint: '$profilpict.fsTargetUri',
+            medreplace: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+          },
+
+        }
+      },
+      {
+        $project: {
+          username: '$userauth.username',
+          nomortiket: '$nomortiket',
+          pengirim: '$pengirim',
+          penerima: '$penerima',
+          subject: '$subject',
+          body: '$body',
+          status: '$status',
+          isRead: '$isRead',
+          active: '$active',
+          datetime: '$datetime',
+          nameCategory: '$nameCategory',
+          nameLevel: '$nameLevel',
+          sourceName: '$sourceName',
+          sourceTicket: '$sourceTicket',
+          levelTicket: '$levelTicket',
+          categoryTicket: '$categoryTicket',
+          mediaBasePath: '$mediaBasePath',
+          mediaMime: '$mediaMime',
+          mediaType: '$mediaType',
+          mediaUri: '$mediaUri',
+          originalName: '$originalName',
+          fsSourceUri: '$fsSourceUri',
+          fsSourceName: '$fsSourceName',
+          fsTargetUri: '$fsTargetUri',
+          detail: '$detail',
+          concats: '/profilepict',
+          pict: {
+            $replaceOne: {
+              input: "$profilpict.mediaUri",
+              find: "_0001.jpeg",
+              replacement: ""
+            }
+          },
+          avatar: {
+            mediaBasePath: '$avatar.mediaBasePath',
+            mediaUri: '$avatar.mediaUri',
+            mediaType: '$avatar.mediaType',
+            mediaEndpoint: {
+              $concat: ["$concats", "/", "$pict"]
+            },
+
+          },
+
+        }
+      },
+      {
+        $match: {
+          "_id": id
+        }
+      }
+    ]);
+
+
+    return query;
+  }
   // async dateRange(startDate, endDate, steps = 1) {
   //   const dateArray = [];
   //   let currentDate = new Date(startDate);
