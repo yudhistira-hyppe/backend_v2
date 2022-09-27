@@ -107,6 +107,8 @@ export class UserplaylistService {
       query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
     }
 
+    query.where('userId', whoami._id);
+
     let row = 20;
     let page = 0;
     if (body.pageNumber != undefined) {
