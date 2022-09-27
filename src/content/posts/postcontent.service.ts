@@ -314,6 +314,7 @@ export class PostContentService {
       var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
       cm.push(vids);
 
+      mediaId = String(retd.mediaID);
     } else if (postType == 'advertise') {
 
     } else if (postType == 'story') {
@@ -372,6 +373,8 @@ export class PostContentService {
 
       var diaries = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
       cm.push(diaries);
+
+      mediaId = String(retr.mediaID);
     }
 
     post.contentMedias = cm;
