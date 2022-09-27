@@ -314,6 +314,7 @@ export class PostContentService {
       var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
       cm.push(vids);
 
+      mediaId = String(retd.mediaID);
     } else if (postType == 'advertise') {
 
     } else if (postType == 'story') {
@@ -372,6 +373,8 @@ export class PostContentService {
 
       var diaries = { "$ref": "mediadiaries", "$id": retr.mediaID, "$db": "hyppe_content_db" };
       cm.push(diaries);
+
+      mediaId = String(retr.mediaID);
     }
 
     post.contentMedias = cm;
@@ -386,6 +389,13 @@ export class PostContentService {
 
     let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+
+    let playlist = new CreateUserplaylistDto();
+    playlist.userPostId = Object(profile._id);
+    playlist.postType = post.postType;
+    playlist.mediaId = Object(mediaId);
+    this.logger.log('createNewPostVideo >>> generate playlist ' + JSON.stringify(playlist));
+    this.postService.generateUserPlaylist(playlist);    
 
     var res = new CreatePostResponse();
     res.response_code = 202;

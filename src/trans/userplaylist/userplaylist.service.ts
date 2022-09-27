@@ -106,6 +106,8 @@ export class UserplaylistService {
       query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
     }
 
+    query.where('userId', whoami._id);
+
     let row = 20;
     let page = 0;
     if (body.pageNumber != undefined) {
@@ -117,7 +119,7 @@ export class UserplaylistService {
     let skip = this.paging(page, row);
     query.skip(skip);
     query.limit(row);         
-    query.sort({'postType': 1, 'createAt': -1});
+    query.sort({'createAt': -1});
     let res = await query.exec();
     
     let pids:String[] = [];
