@@ -616,7 +616,8 @@ export class UserticketsController {
     var totalallrow = allrow[0].countrow;
     var totalrow = data.length;
     var totalpage = (totalallrow / limit).toFixed(0);
-    return { response_code: 202, data, page, limit, totalrow, totalsearch, totalallrow, totalpage, messages };
+    var totalpagesearch = (totalsearch / limit).toFixed(0);
+    return { response_code: 202, data, page, limit, totalrow, totalsearch, totalallrow, totalpage, totalpagesearch, messages };
   }
 
   @Post('api/usertickets/count')

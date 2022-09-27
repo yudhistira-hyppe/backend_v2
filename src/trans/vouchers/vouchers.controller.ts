@@ -44,6 +44,13 @@ export class VouchersController {
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
 
+
+        var exday = CreateVouchersDto.expiredDay;
+
+        var d = new Date();
+        d.setDate(d.getDate() + exday);
+        d = new Date(d);
+
         // var dtexpired = new Date(CreateVouchersDto.expiredAt);
         // var leng = 0;
         // try {
@@ -72,7 +79,7 @@ export class VouchersController {
             CreateVouchersDto.createdAt = dt.toISOString();
             CreateVouchersDto.userID = iduser;
             CreateVouchersDto.totalUsed = 0;
-            // CreateVouchersDto.expiredAt = dtexpired.toISOString();
+            CreateVouchersDto.expiredAt = d.toISOString();
             CreateVouchersDto.pendingUsed = 0;
             let data = await this.vouchersService.create(CreateVouchersDto);
 
