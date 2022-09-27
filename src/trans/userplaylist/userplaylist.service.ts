@@ -117,7 +117,7 @@ export class UserplaylistService {
     let skip = this.paging(page, row);
     query.skip(skip);
     query.limit(row);         
-    query.sort({'postType': 1, 'createdAt': -1});
+    query.sort({'postType': 1, 'createAt': 1});
     let res = await query.exec();
     
     let pids:String[] = [];
