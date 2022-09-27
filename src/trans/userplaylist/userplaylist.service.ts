@@ -91,6 +91,7 @@ export class UserplaylistService {
       query.where('postID', body.postID);
     }
 
+    console.log(body.postType);
     if (body.postType != undefined) {
       query.where('postType', body.postType);
     } else {
@@ -117,8 +118,10 @@ export class UserplaylistService {
     let skip = this.paging(page, row);
     query.skip(skip);
     query.limit(row);         
-    query.sort({'postType': 1, 'createAt': -1});
+    query.sort({'createAt': -1});
     let res = await query.exec();
+
+    console.log(JSON.stringify(res));
     
     let pids:String[] = [];
     for (let x = 0; x < res.length; x++) {
