@@ -15,6 +15,7 @@ import { CreateAccountbalancesDto } from '../../../trans/accountbalances/dto/cre
 import { AdsplacesService } from '../../../trans/adsplaces/adsplaces.service';
 import { UservouchersService } from '../../../trans/uservouchers/uservouchers.service';
 import { VouchersService } from '../../../trans/vouchers/vouchers.service';
+import { MediaprofilepictsService } from '../../../content/mediaprofilepicts/mediaprofilepicts.service';
 import mongoose from 'mongoose';
 import { MongoServerClosedError } from 'mongodb';
 
@@ -33,6 +34,7 @@ export class AdsUserCompareController {
         private adsplacesService: AdsplacesService,
         private readonly uservouchersService: UservouchersService,
         private readonly vouchersService: VouchersService,
+        private mediaprofilepictsService: MediaprofilepictsService,
         private errorHandler: ErrorHandler,) { }
 
 
@@ -95,84 +97,74 @@ export class AdsUserCompareController {
         // }
     }
 
-    // @UseGuards(JwtAuthGuard)
-    // @Get('/getads/')
-    // @HttpCode(HttpStatus.ACCEPTED)
-    // async getads(@Headers() headers): Promise<any> {
-    //     if (!(await this.utilsService.validasiTokenEmail(headers))) {
-    //         await this.errorHandler.generateNotAcceptableException(
-    //             'Unabled to proceed token and email not match',
-    //         );
-    //     }
-    //     const data_userbasic = await this.userbasicsService.findOne(headers['x-auth-user']);
-    //     if (!(await this.utilsService.ceckData(data_userbasic))) {
-    //         await this.errorHandler.generateNotAcceptableException(
-    //             'Unabled to proceed User not found'
-    //         );
-    //     }
+    @UseGuards(JwtAuthGuard)
+    @Get('/getads/user/')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async getads(@Headers() headers): Promise<any> {
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed token and email not match',
+            );
+        }
+        const data_userbasic = await this.userbasicsService.findOne(headers['x-auth-user']);
+        if (!(await this.utilsService.ceckData(data_userbasic))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed User not found'
+            );
+        }
 
-    //     const data_userads = await this.userAdsService.findOneByuserID(data_userbasic._id.toString());
-    //     if (!(await this.utilsService.ceckData(data_userads))) {
-    //         return {
-    //             "response_code": 202,
-    //             "data": null,
-    //             "messages": {
-    //                 "info": [
-    //                     "The process successfuly"
-    //                 ]
-    //             }
-    //         };
-    //     }
+        const data_userads = await this.userAdsService.findOneByuserID(data_userbasic._id.toString());
+        if (!(await this.utilsService.ceckData(data_userads))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed User not found'
+            );
+        }
 
-    //     const data_ads = await this.adsService.findOne(data_userads[0].adsID.toString());
-    //     if (!(await this.utilsService.ceckData(data_ads))) {
-    //         await this.errorHandler.generateNotAcceptableException(
-    //             'Unabled to proceed Ads not found'
-    //         );
-    //     }
+        const data_ads = await this.adsService.findOne(data_userads[0].adsID.toString());
+        if (!(await this.utilsService.ceckData(data_ads))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Ads not found'
+            );
+        }
 
-    //     const data_media = await this.mediavideosadsService.findOne(data_ads.mediaAds.toString());
-    //     if (!(await this.utilsService.ceckData(data_media))) {
-    //         await this.errorHandler.generateNotAcceptableException(
-    //             'Unabled to proceed Ads media not found'
-    //         );
-    //     }
+        const data_media = await this.mediavideosadsService.findOne(data_ads.mediaAds.toString());
+        if (!(await this.utilsService.ceckData(data_media))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Ads media not found'
+            );
+        }
+        
+        var get_profilePict = null;
+        const data_userbasic_ads = await this.userbasicsService.findbyid(data_ads.userID.toString());
+        if (data_userbasic_ads.profilePict != undefined) {
+            if (data_userbasic_ads.profilePict != null) {
+                var mediaprofilepicts_json = JSON.parse(JSON.stringify(data_userbasic_ads.profilePict));
+                get_profilePict = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
+            }
+        }
+        var data_response = {};
+        data_response['userID'] = data_ads.userID;
+        data_response['avartar'] = {
+            mediaBasePath: get_profilePict.mediaBasePath,
+            mediaUri: get_profilePict.mediaUri,
+            mediaType: get_profilePict.mediaType,
+            mediaEndpoint: '/profilepict/' + get_profilePict.mediaUri.replace('_0001.jpeg', '')
+        }
+        data_response['adsPlace'] = (await this.adsplacesService.findOne(data_ads.placingID.toString())).namePlace;
+        data_response['adsType'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).nameType;
+        data_response['adsSkip'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).AdsSkip;
+        data_response['videoId'] = data_media.videoId;
 
-    //     var data_response = {};
-    //     data_response['adsId'] = data_ads._id;
-    //     data_response['useradsId'] = data_userads[0]._id;
-    //     data_response['adsPlace'] = (await this.adsplacesService.findOne(data_ads.placingID.toString())).namePlace;
-    //     data_response['adsType'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).nameType;
-    //     data_response['adsSkip'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).AdsSkip;
-    //     let adsMedia = {}
-    //     if (await this.utilsService.ceckData(data_media)) {
-    //         if (data_media.mediaBasePath!=undefined){
-    //             adsMedia['mediaBasePath'] = data_media.mediaBasePath;
-    //         }
-    //         if (data_media.mediaUri != undefined) {
-    //             adsMedia['mediaUri'] = data_media.mediaUri;
-    //         }
-    //         if (data_media.mediaType != undefined) {
-    //             adsMedia['mediaType'] = data_media.mediaType;
-    //         }
-    //         if (data_media.mediaThumb != undefined) {
-    //             adsMedia['mediaThumbEndpoint'] = data_media.mediaThumb;
-    //         }
-    //         data_response['adsMedia'] = adsMedia;
-    //     } else {
-    //         data_response['adsMedia'] = null;
-    //     }
-
-    //     return {
-    //         "response_code": 202,
-    //         "data": data_response,
-    //         "messages": {
-    //             "info": [
-    //                 "The process successfuly"
-    //             ]
-    //         }
-    //     };
-    // }
+        return {
+            "response_code": 202,
+            "data": data_response,
+            "messages": {
+                "info": [
+                    "The process successfuly"
+                ]
+            }
+        };
+    }
 
     @Get('/getads/stream/:id')
     @HttpCode(HttpStatus.ACCEPTED)

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, ObjectId, Types } from 'mongoose';
-import { UtilsService } from 'src/utils/utils.service';
+import { UtilsService } from '../../utils/utils.service';
 import { Userbasic } from '../userbasics/schemas/userbasic.schema';
 import { CreateUserplaylistDto } from './dto/create-userplaylist.dto';
 import { Userplaylist, UserplaylistDocument } from './schemas/userplaylist.schema';
