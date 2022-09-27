@@ -12232,14 +12232,14 @@ export class TransactionsService {
                     _id: id
                 }
             },
-            {
-                $lookup: {
-                    from: "vouchers",
-                    localField: "detail.id",
-                    foreignField: "_id",
-                    as: "voucher_data"
-                }
-            },
+            // {
+            //     $lookup: {
+            //         from: "vouchers",
+            //         localField: "detail.id",
+            //         foreignField: "_id",
+            //         as: "voucher_data"
+            //     }
+            // },
             {
                 $addFields: {
                     type: 'Buy',
@@ -12280,7 +12280,8 @@ export class TransactionsService {
                     amount: "$amount",
                     totalamount: "$totalamount",
                     status: "$status",
-                    voucher_data: "$voucher_data",
+                    detail: "$detail",
+                    // voucher_data: "$voucher_data",
                     user: {
                         $arrayElemAt: [
                             "$userbasics_data",
@@ -12309,7 +12310,8 @@ export class TransactionsService {
                     status: "$status",
                     fullName: "$user.fullName",
                     email: "$user.email",
-                    voucher_data: "$voucher_data",
+                    detail: "$detail",
+                    //  voucher_data: "$voucher_data",
                 }
             },
 
