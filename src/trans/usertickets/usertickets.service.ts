@@ -1067,9 +1067,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -1098,7 +1111,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -1106,6 +1118,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1130,6 +1144,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -1140,11 +1164,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1172,6 +1200,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1191,7 +1220,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -1264,9 +1363,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -1295,7 +1407,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -1303,6 +1414,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1315,7 +1428,25 @@ export class UserticketsService {
             sourceTicket: '$sourceTicket',
             levelTicket: '$levelTicket',
             categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri'
           }
+        },
+        {
+          $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
         },
         {
           $lookup: {
@@ -1329,11 +1460,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1361,6 +1496,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1380,7 +1516,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -1447,9 +1653,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -1478,8 +1697,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
-
           }
         },
         {
@@ -1487,6 +1704,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1511,6 +1730,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -1521,11 +1750,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1553,6 +1786,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1572,7 +1806,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -1639,9 +1943,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -1670,8 +1987,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
-
           }
         },
         {
@@ -1679,6 +1994,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1703,6 +2020,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -1713,11 +2040,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1745,6 +2076,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1764,7 +2096,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -1825,9 +2227,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -1856,8 +2271,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
-
           }
         },
         {
@@ -1865,6 +2278,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1889,6 +2304,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -1899,11 +2324,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1931,6 +2360,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -1950,7 +2380,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -2011,9 +2511,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -2042,8 +2555,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
-
           }
         },
         {
@@ -2051,6 +2562,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2075,6 +2588,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -2085,11 +2608,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2117,6 +2644,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2136,7 +2664,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -2196,9 +2794,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -2227,8 +2838,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
-
           }
         },
         {
@@ -2236,6 +2845,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2260,6 +2871,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -2270,11 +2891,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2302,6 +2927,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2321,7 +2947,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -2397,9 +3093,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -2428,8 +3137,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
-
           }
         },
         {
@@ -2437,6 +3144,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2461,6 +3170,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -2471,11 +3190,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2503,6 +3226,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2522,7 +3246,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -2598,9 +3392,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -2629,8 +3436,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
-
           }
         },
         {
@@ -2638,6 +3443,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2662,6 +3469,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -2672,11 +3489,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2704,6 +3525,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2723,7 +3545,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -2793,9 +3685,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -2824,8 +3729,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
-
           }
         },
         {
@@ -2833,6 +3736,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2857,6 +3762,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -2867,11 +3782,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2899,6 +3818,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -2918,7 +3838,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -2987,9 +3977,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -3018,8 +4021,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
-
           }
         },
         {
@@ -3027,6 +4028,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3051,6 +4054,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -3061,11 +4074,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3093,6 +4110,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3112,7 +4130,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -3186,9 +4274,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -3217,8 +4318,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
-
           }
         },
         {
@@ -3226,6 +4325,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3250,6 +4351,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -3260,11 +4371,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3292,6 +4407,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3311,7 +4427,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -3378,9 +4564,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -3409,8 +4608,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
-
           }
         },
         {
@@ -3418,6 +4615,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3442,6 +4641,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -3452,11 +4661,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3484,6 +4697,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3503,7 +4717,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -3570,9 +4854,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -3608,6 +4905,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3632,6 +4931,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -3642,11 +4951,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3674,6 +4987,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3693,7 +5007,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -3754,9 +5138,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -3785,7 +5182,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -3793,6 +5189,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3817,6 +5215,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -3827,11 +5235,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3859,6 +5271,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -3878,7 +5291,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -3953,9 +5436,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -3984,7 +5480,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -3992,6 +5487,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4016,6 +5513,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -4026,11 +5533,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4058,6 +5569,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4077,7 +5589,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -4153,9 +5735,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -4184,8 +5779,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
-
           }
         },
         {
@@ -4193,6 +5786,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4217,6 +5812,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -4227,11 +5832,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4259,6 +5868,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4278,7 +5888,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -4348,9 +6028,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -4379,7 +6072,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -4387,6 +6079,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4411,6 +6105,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -4421,11 +6125,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4453,6 +6161,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4472,7 +6181,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -4542,9 +6321,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -4573,7 +6365,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -4581,6 +6372,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4605,6 +6398,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -4615,11 +6418,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4647,6 +6454,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4666,7 +6474,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -4740,9 +6618,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -4771,7 +6662,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -4779,6 +6669,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4803,6 +6695,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -4813,11 +6715,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4845,6 +6751,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4864,7 +6771,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -4934,9 +6911,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -4965,7 +6955,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -4973,6 +6962,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -4997,6 +6988,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -5007,11 +7008,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5039,6 +7044,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5058,7 +7064,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -5128,9 +7204,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -5159,7 +7248,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -5167,6 +7255,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5191,6 +7281,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -5201,11 +7301,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5233,6 +7337,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5252,7 +7357,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -5318,9 +7493,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -5349,7 +7537,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -5357,6 +7544,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5381,6 +7570,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -5391,11 +7590,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5423,6 +7626,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5442,7 +7646,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -5508,9 +7782,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -5539,7 +7826,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -5547,6 +7833,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5571,6 +7859,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -5581,11 +7879,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5613,6 +7915,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5632,7 +7935,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -5696,9 +8069,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -5727,7 +8113,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -5735,6 +8120,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5759,6 +8146,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -5769,11 +8166,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5801,6 +8202,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5820,7 +8222,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -5894,9 +8366,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -5925,7 +8410,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -5933,6 +8417,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5957,6 +8443,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -5967,11 +8463,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -5999,6 +8499,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -6018,7 +8519,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -6103,9 +8674,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -6141,6 +8725,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -6165,6 +8751,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -6175,11 +8771,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -6207,6 +8807,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -6226,7 +8827,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -6314,9 +8985,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -6345,7 +9029,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -6353,6 +9036,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -6377,6 +9062,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -6387,11 +9082,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -6419,6 +9118,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -6438,7 +9138,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -6539,9 +9309,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -6570,7 +9353,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -6578,6 +9360,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -6602,6 +9386,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -6612,11 +9406,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -6644,6 +9442,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -6663,7 +9462,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -6763,9 +9632,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -6794,7 +9676,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -6802,6 +9683,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -6826,6 +9709,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -6836,11 +9729,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -6868,6 +9765,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -6887,7 +9785,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -6978,9 +9946,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -7009,7 +9990,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -7017,6 +9997,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -7041,6 +10023,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -7051,11 +10043,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -7083,6 +10079,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -7102,7 +10099,77 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
           }
         },
         {
@@ -7174,9 +10241,22 @@ export class UserticketsService {
           }
         },
         {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'assignTo',
+            foreignField: '_id',
+            as: 'asignto_data',
+
+          },
+
+        },
+        {
           $project: {
             user: {
               $arrayElemAt: ['$userbasics_data', 0]
+            },
+            userasign: {
+              $arrayElemAt: ['$asignto_data', 0]
             },
             category: {
               $arrayElemAt: ['$category_data', 0]
@@ -7205,7 +10285,6 @@ export class UserticketsService {
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
             fsTargetUri: '$fsTargetUri'
-
           }
         },
         {
@@ -7213,6 +10292,8 @@ export class UserticketsService {
             userAuth_id: '$user.userAuth.$id',
             nomortiket: '$nomortiket',
             pengirim: '$user.email',
+            penerima: '$userasign.email',
+            profilpictid: '$userasign.profilePict.$id',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -7237,6 +10318,16 @@ export class UserticketsService {
         },
         {
           $lookup: {
+            from: 'mediaprofilepicts2',
+            localField: 'profilpictid',
+            foreignField: '_id',
+            as: 'profilePict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
             from: 'userauths',
             localField: 'userAuth_id',
             foreignField: '_id',
@@ -7247,11 +10338,15 @@ export class UserticketsService {
         },
         {
           $project: {
+            profilpict: {
+              $arrayElemAt: ['$profilePict_data', 0]
+            },
             userauth: {
               $arrayElemAt: ['$userAuth_data', 0]
             },
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -7279,6 +10374,7 @@ export class UserticketsService {
             username: '$userauth.username',
             nomortiket: '$nomortiket',
             pengirim: '$pengirim',
+            penerima: '$penerima',
             subject: '$subject',
             body: '$body',
             status: '$status',
@@ -7298,10 +10394,79 @@ export class UserticketsService {
             originalName: '$originalName',
             fsSourceUri: '$fsSourceUri',
             fsSourceName: '$fsSourceName',
-            fsTargetUri: '$fsTargetUri'
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+            avatar: {
+              mediaBasePath: '$profilpict.mediaBasePath',
+              mediaUri: '$profilpict.mediaUri',
+              mediaType: '$profilpict.mediaType',
+              mediaEndpoint: '$profilpict.fsTargetUri',
+              medreplace: {
+                $replaceOne: {
+                  input: "$profilpict.mediaUri",
+                  find: "_0001.jpeg",
+                  replacement: ""
+                }
+              },
+
+            },
+
           }
         },
+        {
+          $project: {
+            username: '$userauth.username',
+            nomortiket: '$nomortiket',
+            pengirim: '$pengirim',
+            penerima: '$penerima',
+            subject: '$subject',
+            body: '$body',
+            status: '$status',
+            isRead: '$isRead',
+            active: '$active',
+            datetime: '$datetime',
+            nameCategory: '$nameCategory',
+            nameLevel: '$nameLevel',
+            sourceName: '$sourceName',
+            sourceTicket: '$sourceTicket',
+            levelTicket: '$levelTicket',
+            categoryTicket: '$categoryTicket',
+            mediaBasePath: '$mediaBasePath',
+            mediaMime: '$mediaMime',
+            mediaType: '$mediaType',
+            mediaUri: '$mediaUri',
+            originalName: '$originalName',
+            fsSourceUri: '$fsSourceUri',
+            fsSourceName: '$fsSourceName',
+            fsTargetUri: '$fsTargetUri',
+            concats: '/profilepict',
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
 
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
+
+
+            },
+
+          }
+        },
         {
           $skip: (skip * limit)
         },
