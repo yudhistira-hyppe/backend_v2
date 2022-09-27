@@ -308,5 +308,19 @@ export class PostsController {
   @HttpCode(HttpStatus.ACCEPTED)
   async generateUserPlaylist(@Body() CreateUserplaylistDto_: CreateUserplaylistDto) {
     return await this.PostsService.generateUserPlaylist(CreateUserplaylistDto_);
-  }  
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/getinteractives')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async getinteractives(
+    @Query('eventType') eventType: string,
+    @Query('withDetail') withDetail: boolean,
+    @Query('withEvents') withEvents: string,
+    @Query('postID') postID: string,
+    @Query('pageRow') pageRow: number,
+    @Query('pageNumber') pageNumber: number,
+    @Query('senderOrReceiver') senderOrReceiver: string) {
+
+  }
 }

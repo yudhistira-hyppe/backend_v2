@@ -571,7 +571,7 @@ export class UserticketsController {
     var request_json = JSON.parse(JSON.stringify(request.body));
     var search = null;
     var data = null;
-    var skip = null;
+    var page = null;
     var limit = null;
     var countrow = null;
     var startdate = null;
@@ -597,8 +597,8 @@ export class UserticketsController {
     status = request_json["status"];
     startdate = request_json["startdate"];
     enddate = request_json["enddate"];
-    if (request_json["skip"] !== undefined) {
-      skip = request_json["skip"];
+    if (request_json["page"] !== undefined) {
+      page = request_json["page"];
     } else {
       throw new BadRequestException("Unabled to proceed");
     }
@@ -609,12 +609,14 @@ export class UserticketsController {
       throw new BadRequestException("Unabled to proceed");
     }
 
-    data = await this.userticketsService.filterdata(search, sumber, kategori, level, status, startdate, enddate, skip, limit);
-
+    data = await this.userticketsService.filterdata(search, sumber, kategori, level, status, startdate, enddate, page, limit);
+    let datasearch = await this.userticketsService.filterdataCount(search, sumber, kategori, level, status, startdate, enddate);
+    var totalsearch = datasearch.length;
     var allrow = await this.userticketsService.totalcount();
     var totalallrow = allrow[0].countrow;
     var totalrow = data.length;
-    return { response_code: 202, data, skip, limit, totalrow, totalallrow, messages };
+    var totalpage = (totalallrow / limit).toFixed(0);
+    return { response_code: 202, data, page, limit, totalrow, totalsearch, totalallrow, totalpage, messages };
   }
 
   @Post('api/usertickets/count')

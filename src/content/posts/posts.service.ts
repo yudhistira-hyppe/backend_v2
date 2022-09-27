@@ -1394,8 +1394,8 @@ export class PostsService {
       CreateUserplaylistDto_.postType = postType;
       CreateUserplaylistDto_.mediaId = mediaId.toString();
       CreateUserplaylistDto_.type = type;
-      CreateUserplaylistDto_.createAt = current_date;
-      CreateUserplaylistDto_.updatedAt = current_date;
+      CreateUserplaylistDto_.createAt = data_post.createdAt;
+      CreateUserplaylistDto_.updatedAt = data_post.updatedAt;
       CreateUserplaylistDto_.isWatched = false;
       CreateUserplaylistDto_.isHidden = isHidden_;
       CreateUserplaylistDto_.postID = (data_post.postID != undefined) ? data_post.postID :"";

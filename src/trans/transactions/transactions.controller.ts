@@ -3608,6 +3608,85 @@ export class TransactionsController {
 
         return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };
     }
+    @UseGuards(JwtAuthGuard)
+    @Post('api/transactions/historys/voucher/detail')
+    async finddatadetail(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var id = null;
+        var arrdata = [];
+        var objdata = {};
+
+        if (request_json["id"] !== undefined) {
+            id = request_json["id"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var idtr = mongoose.Types.ObjectId(id);
+        let datatr = await this.transactionsService.findtransactiondetailvoucher(idtr);
+        var detail = datatr[0].detail;
+        var lenghdetail = detail.length;
+        var data = [];
+
+        for (var i = 0; i < lenghdetail; i++) {
+            var idvc = detail[i].id.toString();
+            var qty = detail[i].qty;
+            var totalAmount = detail[i].totalAmount;
+            let dtvoucher = await this.vouchersService.findOne(idvc);
+
+            objdata = {
+                "_id": dtvoucher._id,
+                "noVoucher": dtvoucher.noVoucher,
+                "codeVoucher": dtvoucher.codeVoucher,
+                "userID": dtvoucher.userID,
+                "nameAds": dtvoucher.nameAds,
+                "creditValue": dtvoucher.creditValue,
+                "creditPromo": dtvoucher.creditPromo,
+                "creditTotal": dtvoucher.creditTotal,
+                "createdAt": dtvoucher.createdAt,
+                "expiredAt": dtvoucher.expiredAt,
+                "amount": dtvoucher.amount,
+                "qty": qty,
+                "totalUsed": dtvoucher.totalUsed,
+                "pendingUsed": dtvoucher.pendingUsed,
+                "expiredDay": dtvoucher.expiredDay,
+                "isActive": dtvoucher.isActive,
+                "description": dtvoucher.description,
+                "updatedAt": dtvoucher.updatedAt,
+                "totalAmount": totalAmount
+            }
+            arrdata.push(objdata);
+        }
+
+        data = [
+            {
+                "_id": datatr[0]._id,
+                "iduser": datatr[0].iduser,
+                "type": datatr[0].type,
+                "jenis": datatr[0].jenis,
+                "timestamp": datatr[0].timestamp,
+                "description": datatr[0].description,
+                "noinvoice": datatr[0].noinvoice,
+                "nova": datatr[0].nova,
+                "expiredtimeva": datatr[0].expiredtimeva,
+                "bank": datatr[0].bank,
+                "amount": datatr[0].amount,
+                "totalamount": datatr[0].totalamount,
+                "status": datatr[0].status,
+                "fullName": datatr[0].fullName,
+                "email": datatr[0].email,
+                "voucher_data": arrdata
+            }
+        ];
+
+        return { response_code: 202, data, messages };
+    }
+
     async generateNumber() {
         const getRandomId = (min = 0, max = 500000) => {
             min = Math.ceil(min);
