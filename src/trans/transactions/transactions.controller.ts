@@ -3567,6 +3567,69 @@ export class TransactionsController {
         return { response_code: 202, data, messages };
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post('api/transactions/historys/voucher')
+    async finddata(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var key = null;
+        var page = null;
+        var status = null;
+        var countrow = null;
+        var startdate = null;
+        var enddate = null;
+        var limit = null;
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        key = request_json["key"];
+        status = request_json["status"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        let data = await this.transactionsService.findhistoryBuyVoucher(key, status, startdate, enddate, page, limit);
+        var total = data.length;
+        let datasearch = await this.transactionsService.findhistoryBuyVoucherCount(key, status, startdate, enddate);
+        var total = data.length;
+        var totalsearch = datasearch.length;
+        var allrow = await this.transactionsService.totalcountVoucher();
+        var totalallrow = allrow[0].countrow;
+        var totalpage = (totalallrow / limit).toFixed(0);
+
+
+        return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };
+    }
+    @UseGuards(JwtAuthGuard)
+    @Post('api/transactions/historys/voucher/detail')
+    async finddatadetail(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var id = null;
+
+        if (request_json["id"] !== undefined) {
+            id = request_json["id"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var idtr = mongoose.Types.ObjectId(id);
+        let data = await this.transactionsService.findtransactiondetailvoucher(idtr);
+        return { response_code: 202, data, messages };
+    }
+
     async generateNumber() {
         const getRandomId = (min = 0, max = 500000) => {
             min = Math.ceil(min);

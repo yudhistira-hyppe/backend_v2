@@ -1,14 +1,20 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, ObjectId, Types } from 'mongoose';
+import { UtilsService } from 'src/utils/utils.service';
+import { Userbasic } from '../userbasics/schemas/userbasic.schema';
 import { CreateUserplaylistDto } from './dto/create-userplaylist.dto';
 import { Userplaylist, UserplaylistDocument } from './schemas/userplaylist.schema';
 
 @Injectable()
 export class UserplaylistService {
+
+  private readonly logger = new Logger(UserplaylistService.name);  
+
   constructor(
     @InjectModel(Userplaylist.name, 'SERVER_TRANS')
     private readonly userplaylistModel: Model<UserplaylistDocument>,
+    private utilService: UtilsService,
   ) { }
 
   async create(CreateUserplaylistDto_: CreateUserplaylistDto): Promise<Userplaylist> {
@@ -73,6 +79,65 @@ export class UserplaylistService {
       .exec();
     return deletedCat;
   }
+
+  public async doGetUserPostPlaylist(body: any, headers: any, whoami: Userbasic): Promise<String[]> {
+    this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
+    let query = this.userplaylistModel.find();
+    if (body.visibility != undefined) {
+      query.where('type', body.visibility);
+    }
+
+    if (body.postID != undefined) {
+      query.where('postID', body.postID);
+    }
+
+    if (body.postType != undefined) {
+      query.where('postType', body.postType);
+    } else {
+      query.where('postType').ne('advertise');
+    }
+
+    if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
+      query.where('isHidden', false);
+    }
+
+    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true) && body.postType == 'story') {
+      this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
+      query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
+    }
+
+    let row = 20;
+    let page = 0;
+    if (body.pageNumber != undefined) {
+      page = body.pageNumber;
+    }
+    if (body.pageRow != undefined) {
+      row = body.pageRow;      
+    }
+    let skip = this.paging(page, row);
+    query.skip(skip);
+    query.limit(row);         
+    query.sort({'postType': 1, 'createdAt': -1});
+    let res = await query.exec();
+    
+    let pids:String[] = [];
+    for (let x = 0; x < res.length; x++) {
+      let tmp = res[x];
+      let pid = tmp.postID;
+      pids.push(pid);
+    }
+    this.logger.log('doGetUserPostPlaylist >>> end: ' + JSON.stringify(pids));
+    return pids;
+
+  }    
+
+  private paging(page: number, row: number) {
+    if (page == 0 || page == 1) {
+      return 0;
+    }
+    let num = ((page - 1) * row);
+    return num;
+  }  
 
   // async generateUserPlaylist(CreateUserplaylistDto_: CreateUserplaylistDto){
   //   if (CreateUserplaylistDto_.userPostId == undefined) {
