@@ -90,17 +90,14 @@ export class AdsUserCompareController {
                 ]
             }
         };
-        // }catch(e){
-        //     await this.errorHandler.generateNotAcceptableException(
-        //         'Unabled to proceed, ' + e,
-        //     );
-        // }
     }
 
     @UseGuards(JwtAuthGuard)
     @Get('/getads/user/')
     @HttpCode(HttpStatus.ACCEPTED)
-    async getads(@Headers() headers): Promise<any> {
+    async getads(@Headers() headers,
+        @Query('type') type: string): Promise<any> {
+        let type_ = "";
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed token and email not match',
@@ -113,10 +110,18 @@ export class AdsUserCompareController {
             );
         }
 
-        const data_userads = await this.userAdsService.findOneByuserID(data_userbasic._id.toString());
+        if (type != undefined) {
+            type_ = type;
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Type Ads is required'
+            );
+        }
+
+        const data_userads = await this.userAdsService.findOneByuserID(data_userbasic._id.toString(), type_);
         if (!(await this.utilsService.ceckData(data_userads))) {
             await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed User not found'
+                'Unabled to proceed User Ads Playlist not found'
             );
         }
 
@@ -126,7 +131,7 @@ export class AdsUserCompareController {
                 'Unabled to proceed Ads not found'
             );
         }
-
+        console.log(data_ads._id);
         const data_media = await this.mediavideosadsService.findOne(data_ads.mediaAds.toString());
         if (!(await this.utilsService.ceckData(data_media))) {
             await this.errorHandler.generateNotAcceptableException(

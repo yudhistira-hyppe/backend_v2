@@ -30,8 +30,8 @@ export class UserAdsService {
         return this.userAdsModel.findOne({ _id: new ObjectId(id) }).exec();
     }
 
-    async findOneByuserID(userID: string): Promise<UserAds[]> {
-        return this.userAdsModel.find({ userID: userID, statusView: false }).sort({ priorityNumber:-1, createdAt: -1 }).exec();
+    async findOneByuserID(userID: string, nameType: string): Promise<UserAds[]> {
+        return this.userAdsModel.find({ userID: userID, nameType: nameType, statusView: false }).sort({ priorityNumber:-1, createdAt: -1 }).exec();
     }
 
     async findOneByuserIDAds(userID: string, adsId: string): Promise<UserAds> {

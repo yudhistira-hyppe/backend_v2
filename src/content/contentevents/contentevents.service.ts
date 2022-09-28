@@ -656,4 +656,34 @@ export class ContenteventsService {
     ]);
     return query;
   }
+
+  async findByCriteria(email: string, PostID: string, EventType: string, Events: string[], pageRow: number, pageNumber: number): Promise<Contentevents[]> {
+    var Where = {}
+    var Or = []
+    Object.assign(Where, { email: email });
+    if (PostID != "") {
+      Object.assign(Where, { postID: PostID });
+    }
+    if (EventType != "") {
+      Object.assign(Where, { eventType: EventType });
+    }
+    if (Events.length >0) {
+      for (let i = 0; i < Events.length; i++) {
+        if (Events[i] == "INITIAL") {
+          Or.push({ event: Events[i] }, { $and: [{ flowIsDone :false}] })
+        } else if (Events[i] == "REQUEST") {
+          Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
+        }else{
+          Or.push({ event: Events[i] }, { $and: [{ flowIsDone: true }] })
+        }
+      }
+    }
+    if (Object.keys(Or).length>0) {
+      Object.assign(Where, { $or: Or });
+    } else {
+      Object.assign(Where);
+    }
+    const query = this.ContenteventsModel.find(Where);
+    return query;
+  }
 }
