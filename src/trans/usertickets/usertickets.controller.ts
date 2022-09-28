@@ -512,7 +512,7 @@ export class UserticketsController {
 
   @UseGuards(JwtAuthGuard)
   @Put('api/usertickets/update/:id')
-  async updatedata(@Res() res, @Param('id') id: string, @Headers() headers, @Body() CreateUserticketsDto: CreateUserticketsDto) {
+  async updatedata(@Res() res, @Param('id') id: string, @Req() request: Request, @Headers() headers, @Body() CreateUserticketsDto: CreateUserticketsDto) {
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
     const messages = {
@@ -531,19 +531,48 @@ export class UserticketsController {
     var dt = new Date(Date.now());
     dt.setHours(dt.getHours() + 7); // timestamp
     dt = new Date(dt);
-    try {
 
-      var idcategory = mongoose.Types.ObjectId(CreateUserticketsDto.categoryTicket);
-      var idsource = mongoose.Types.ObjectId(CreateUserticketsDto.sourceTicket);
-      var idlevel = mongoose.Types.ObjectId(CreateUserticketsDto.levelTicket);
-      var assignto = mongoose.Types.ObjectId(CreateUserticketsDto.assignTo);
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var categoryTicket = null;
+    var sourceTicket = null;
+    var levelTicket = null;
+    var assignTo = null;
+    var idcategory = null;
+    var idsource = null;
+    var idlevel = null;
+    var assignto = null;
+    var idusertiket = null;
+    var status = CreateUserticketsDto.status;
+    try {
+      if (request_json["categoryTicket"] !== undefined) {
+        idcategory = mongoose.Types.ObjectId(categoryTicket);
+        CreateUserticketsDto.categoryTicket = idcategory;
+      } else {
+
+      }
+      if (request_json["sourceTicket"] !== undefined) {
+        idsource = mongoose.Types.ObjectId(sourceTicket);
+        CreateUserticketsDto.sourceTicket = idsource;
+      } else {
+
+      }
+
+      if (request_json["levelTicket"] !== undefined) {
+        idlevel = mongoose.Types.ObjectId(levelTicket);
+        CreateUserticketsDto.levelTicket = idlevel;
+      } else {
+
+      }
+
+      if (request_json["assignTo"] !== undefined) {
+        assignto = mongoose.Types.ObjectId(assignTo);
+        CreateUserticketsDto.assignTo = assignto;
+      } else {
+
+      }
+
       var idusertiket = mongoose.Types.ObjectId(id);
       var status = CreateUserticketsDto.status;
-      CreateUserticketsDto.active = true;
-      CreateUserticketsDto.categoryTicket = idcategory;
-      CreateUserticketsDto.sourceTicket = idsource;
-      CreateUserticketsDto.levelTicket = idlevel;
-      CreateUserticketsDto.assignTo = assignto;
       let data = await this.userticketsService.updatedata(id, CreateUserticketsDto);
 
       let datalogticket = new CreateLogticketsDto();

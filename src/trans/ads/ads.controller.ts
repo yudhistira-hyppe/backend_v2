@@ -629,8 +629,9 @@ export class AdsController {
             mediaAdsFile?: Express.Multer.File[], mediaVidFile?: Express.Multer.File[]
         },
         @Body() CreateAdsDto: CreateAdsDto,
-        @Headers() headers, @Res() res) {
+        @Headers() headers, @Res() res, @Req() request: Request) {
 
+        var duration = null;
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed token and email not match',
@@ -649,7 +650,14 @@ export class AdsController {
         const messagesEror = {
             "info": ["Todo is not found!"],
         };
+
         if (CreateAdsDto.liveTypeAds === undefined) {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["duration"] !== undefined) {
+            duration = request_json["duration"];
+        } else {
             throw new BadRequestException("Unabled to proceed");
         }
         var startAge = CreateAdsDto.startAge;
@@ -657,6 +665,9 @@ export class AdsController {
         var typeadsId = CreateAdsDto.typeAdsID;
         var tayang = Number(CreateAdsDto.tayang);
         var datatypesAds = null;
+
+        var durationMin = null;
+        var durationMax = null;
         var creditValue = 0;
         var datavoucher = null;
         var uservoucherdata = null;
@@ -675,6 +686,7 @@ export class AdsController {
         var size = null;
         nama = CreateAdsDto.name;
         description = CreateAdsDto.description;
+
         var lengname = nama.length;
         var lengdesc = description.length;
         try {
@@ -685,6 +697,8 @@ export class AdsController {
             titleMax = datatypesAds._doc.titleMax;
             descriptionMax = datatypesAds._doc.descriptionMax;
             sizeMax = datatypesAds._doc.sizeMax;
+            durationMin = datatypesAds._doc.durationMin;
+            durationMax = datatypesAds._doc.durationMax;
 
         } catch (e) {
             datatypesAds = null;
@@ -693,6 +707,8 @@ export class AdsController {
             titleMax = 0;
             descriptionMax = 0;
             sizeMax = 0;
+            durationMin = 0;
+            durationMax = 0;
         }
 
         if (lengname > titleMax) {
@@ -707,7 +723,17 @@ export class AdsController {
                 "message": "Maksimal jumlah karakter deskripsi iklan konten " + descriptionMax
             });
         }
+        if (duration > durationMax) {
+            res.status(HttpStatus.BAD_REQUEST).json({
 
+                "message": "Maksimal duration iklan konten " + durationMax + " detik"
+            });
+        } else if (duration < durationMin) {
+            res.status(HttpStatus.BAD_REQUEST).json({
+
+                "message": "Minimal duration iklan konten " + durationMin + " detik"
+            });
+        }
         var mongoose_gen_meida = uuidv4();
 
         const ubasic = await this.userbasicsService.findOne(
@@ -950,6 +976,7 @@ export class AdsController {
                                     "message": "Maksimal ukuran media " + sizeMax
                                 });
                             }
+
                             else {
                                 cardVid_mimetype = files.mediaVidFile[0].mimetype;
                                 cardVid_filename = files.mediaVidFile[0].originalname;
