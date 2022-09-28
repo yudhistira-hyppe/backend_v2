@@ -801,7 +801,7 @@ export class PostContentService {
   private async doGetUserPostTheir(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     let query = this.PostsModel.find();
-    query.where('email', whoami.email);
+    //query.where('email', whoami.email);
     let friend = [];
     let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
     if (check != undefined) {
@@ -817,6 +817,7 @@ export class PostContentService {
       query.where('email').in(friend);
     } else {
       query.where('visibility', 'PUBLIC');
+      query.where('email', whoami.email);
     }
     if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
       query.where('active', true);
