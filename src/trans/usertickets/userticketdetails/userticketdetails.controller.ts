@@ -388,7 +388,7 @@ export class UserticketdetailsController {
 
 
         let dataticket = await this.userticketsService.detail(idticket);
-        var datadetail = await this.userticketdetailsService.findOneType(idticket, type);
+        var datadetail = await this.userticketdetailsService.detailKomentarChat(idticket, type);
         var lenghdetail = datadetail.length;
         for (var i = 0; i < lenghdetail; i++) {
 
@@ -407,6 +407,7 @@ export class UserticketdetailsController {
                 "mediaBasePath": datadetail[i].mediaBasePath,
                 "mediaMime": datadetail[i].mediaMime,
                 "mediaType": datadetail[i].mediaType,
+                "avatar": datadetail[i].avatar,
             }
 
             arrdata.push(objdata);
