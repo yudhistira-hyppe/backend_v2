@@ -367,6 +367,9 @@ export class UserticketdetailsController {
         const mongoose = require('mongoose');
         var id = null;
         var type = null;
+        var objdata = {};
+        var arrdata = [];
+        var data = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["id"] !== undefined) {
             id = request_json["id"];
@@ -383,7 +386,58 @@ export class UserticketdetailsController {
             "info": ["The process successful"],
         };
 
-        let data = await this.userticketdetailsService.detailKomentar(idticket, type);
+
+        let dataticket = await this.userticketsService.detail(idticket);
+        var datadetail = await this.userticketdetailsService.findOneType(idticket, type);
+        var lenghdetail = datadetail.length;
+        for (var i = 0; i < lenghdetail; i++) {
+
+            objdata = {
+                "_id": datadetail[i]._id,
+                "type": datadetail[i].type,
+                "body": datadetail[i].body,
+                "datetime": datadetail[i].datetime,
+                "IdUser": datadetail[i].IdUser,
+                "status": datadetail[i].status,
+                "mediaUri": datadetail[i].mediaUri,
+                "originalName": datadetail[i].originalName,
+                "fsSourceUri": datadetail[i].fsSourceUri,
+                "fsSourceName": datadetail[i].fsSourceName,
+                "fsTargetUri": datadetail[i].fsTargetUri,
+                "mediaBasePath": datadetail[i].mediaBasePath,
+                "mediaMime": datadetail[i].mediaMime,
+                "mediaType": datadetail[i].mediaType,
+            }
+
+            arrdata.push(objdata);
+        }
+
+        data = [{
+            "_id": dataticket[0]._id,
+            "nomortiket": dataticket[0].nomortiket,
+            "pengirim": dataticket[0].pengirim,
+            "penerima": dataticket[0].penerima,
+            "subject": dataticket[0].subject,
+            "body": dataticket[0].body,
+            "status": dataticket[0].status,
+            "isRead": dataticket[0].isRead,
+            "active": dataticket[0].active,
+            "datetime": dataticket[0].datetime,
+            "nameCategory": dataticket[0].nameCategory,
+            "nameLevel": dataticket[0].nameLevel,
+            "sourceName": dataticket[0].sourceName,
+            "sourceTicket": dataticket[0].sourceTicket,
+            "mediaBasePath": dataticket[0].mediaBasePath,
+            "mediaMime": dataticket[0].mediaMime,
+            "mediaType": dataticket[0].mediaType,
+            "mediaUri": dataticket[0].mediaUri,
+            "originalName": dataticket[0].originalName,
+            "fsSourceUri": dataticket[0].fsSourceUri,
+            "fsSourceName": dataticket[0].fsSourceName,
+            "fsTargetUri": dataticket[0].fsTargetUri,
+            "avatar": dataticket[0].avatar,
+            "detail": arrdata
+        }]
 
         return { response_code: 202, data, messages };
     }

@@ -24,7 +24,9 @@ export class UserticketdetailsService {
     async findOne(id: ObjectId): Promise<Userticketdetails[]> {
         return this.userticketsModel.find({ _id: id }).exec();
     }
-
+    async findOneType(id: ObjectId, type: string): Promise<Userticketdetails[]> {
+        return this.userticketsModel.find({ IdUserticket: id, type: type }).exec();
+    }
     async detailKomentar(id: object, type: string): Promise<object> {
         const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
         const query = await this.userticketsModel.aggregate([
