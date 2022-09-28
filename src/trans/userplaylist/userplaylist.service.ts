@@ -84,7 +84,13 @@ export class UserplaylistService {
     this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
     let query = this.userplaylistModel.find();
     if (body.visibility != undefined) {
-      query.where('type', body.visibility);
+      if (body.visibility == 'PRIVATE') {
+        query.where('userId', whoami._id);
+        query.where('userPostId', whoami._id);
+      } else {
+        query.where('type', body.visibility);
+      }
+
     }
 
     if (body.postID != undefined) {
