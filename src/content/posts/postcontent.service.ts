@@ -802,22 +802,23 @@ export class PostContentService {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     let query = this.PostsModel.find();
     query.where('email', whoami.email);
-    let friend = [];
-    let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
-    if (check != undefined) {
-      for (let i = 0; i < check.length; i++) {
-        var cex = check[i];
-        friend.push(cex.friend);
-      }
-    }
+    //let friend = [];
+    //let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
+    //if (check != undefined) {
+    //  for (let i = 0; i < check.length; i++) {
+    //    var cex = check[i];
+    //    friend.push(cex.friend);
+    //  }
+    //}
 
-    if (friend.length > 0) {
-      friend.push(whoami.email);
-      query.where('visibility').in(['FRIEND', 'PUBLIC']);
-      query.where('email').in(friend);
-    } else {
-      query.where('visibility', 'PUBLIC');
-    }
+    //if (friend.length > 0) {
+    //  friend.push(whoami.email);
+    //  query.where('visibility').in(['FRIEND', 'PUBLIC']);
+    //  query.where('email').in(friend);
+    //} else {
+    //  query.where('visibility', 'PUBLIC');
+    //  query.where('email', whoami.email);
+   // }
     if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
       query.where('active', true);
     }
