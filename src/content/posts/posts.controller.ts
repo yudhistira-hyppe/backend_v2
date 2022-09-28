@@ -23,6 +23,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { GlobalResponse } from '../../utils/data/globalResponse';
 import { PostContentService } from './postcontent.service';
 import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userplaylist.dto';
+import { ContenteventsService } from '../contentevents/contentevents.service';
+import { InsightsService } from '../insights/insights.service';
 
 @Controller()
 export class PostsController {
@@ -33,6 +35,8 @@ export class PostsController {
     private readonly userauthsService: UserauthsService,
     private readonly utilsService: UtilsService,
     private readonly errorHandler: ErrorHandler,
+    private readonly contenteventsService: ContenteventsService,
+    private readonly insightsService: InsightsService,
     private readonly groupModuleService: GroupModuleService) { }
 
   @Post()
@@ -314,6 +318,7 @@ export class PostsController {
   @Post('api/posts/getinteractives')
   @HttpCode(HttpStatus.ACCEPTED)
   async getinteractives(
+    @Headers() headers,
     @Query('eventType') eventType: string,
     @Query('withDetail') withDetail: boolean,
     @Query('withEvents') withEvents: string,
@@ -321,6 +326,59 @@ export class PostsController {
     @Query('pageRow') pageRow: number,
     @Query('pageNumber') pageNumber: number,
     @Query('senderOrReceiver') senderOrReceiver: string) {
+    if (headers['x-auth-user'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+    let postID_ = "";
+    let eventType_ = "";
+    let withEvents_ = [];
+    let withDetail_ = false;
+    let pageRow_ = 10;
+    let pageNumber_ = 0;
+    if (postID!=undefined){
+      postID_ = postID;
+    }
+    if (eventType != undefined) {
+      eventType_ = eventType;
+    }
+    if (withEvents != undefined) {
+      const Array_withEvents = withEvents.split(",");
+      for (let i = 0; i < Array_withEvents.length; i++) {
+        withEvents_.push(Array_withEvents[i]);
+      }
+    }
+    const insightsService_data = await this.insightsService.findemail(headers['x-auth-user']);
+    console.log(insightsService_data);
 
+    const contenteventsService_data = await this.contenteventsService.findByCriteria(headers['x-auth-user'],postID_, eventType_, withEvents_, pageRow_, pageNumber_);
+    console.log(contenteventsService_data);
+    let data_response = [];
+    for (let i = 0; i < contenteventsService_data.length; i++) {
+      var datas = {}
+      Object.assign(datas, {
+        "flowIsDone": contenteventsService_data[i].flowIsDone,
+        "eventType": contenteventsService_data[i].eventType,
+        "event": contenteventsService_data[i].event,
+        "senderOrReceiver": (contenteventsService_data[i].senderParty!=undefined) ? contenteventsService_data[i].senderParty : contenteventsService_data[i].receiverParty,
+        "email": contenteventsService_data[i].email
+       });
+      data_response.push(datas);
+    }
+    return {
+      "response_code": 202,
+      "data": data_response,
+      "messages": {
+        "info": [
+          "The process successful"
+        ]
+      }
+    }
   }
 }
