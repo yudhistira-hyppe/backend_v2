@@ -248,7 +248,18 @@ export class UserticketdetailsController {
                     datalogticket.type = "comment";
                     datalogticket.remark = "comment on " + body;
                     await this.logticketsService.create(datalogticket);
-                } else {
+                }
+                if (type === "chat") {
+
+                    let datalogticket = new CreateLogticketsDto();
+                    datalogticket.userId = iduser;
+                    datalogticket.createdAt = dt.toISOString();
+                    datalogticket.ticketId = idusertiket;
+                    datalogticket.type = "chat";
+                    datalogticket.remark = "chat on " + body;
+                    await this.logticketsService.create(datalogticket);
+                }
+                else {
                     await this.userticketsService.update(idusertiket, status);
                     let datalogticket = new CreateLogticketsDto();
                     datalogticket.userId = iduser;
@@ -407,6 +418,8 @@ export class UserticketdetailsController {
                 "mediaBasePath": datadetail[i].mediaBasePath,
                 "mediaMime": datadetail[i].mediaMime,
                 "mediaType": datadetail[i].mediaType,
+                "fullName": datadetail[i].fullName,
+                "email": datadetail[i].email,
                 "avatar": datadetail[i].avatar,
             }
 
