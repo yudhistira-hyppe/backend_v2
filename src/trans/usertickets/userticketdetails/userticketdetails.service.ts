@@ -271,7 +271,8 @@ export class UserticketdetailsService {
                 $match: {
                     "type": type, "IdUserticket": id
                 }
-            }
+            },
+            { $sort: { datetime: 1 }, },
         ]);
 
 
