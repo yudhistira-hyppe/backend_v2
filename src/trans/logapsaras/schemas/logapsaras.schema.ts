@@ -7,22 +7,13 @@ export type LogapsarasDocument = Logapsaras & Document;
 export class Logapsaras {
     _id: mongoose.Types.ObjectId;
     @Prop([])
-    idapsara: any[]
-
+    idapsara: any[];
+    @Prop({ type: Object })
+    idMedia: { oid: String; };
     @Prop()
-    idMedia: string
-
+    timestamp: string;
     @Prop()
-    bankIcon: string
-    @Prop()
-    urlEbanking: string
-    @Prop()
-    atm: string
-    @Prop()
-    internetBanking: string
-    @Prop()
-    mobileBanking: string
-
+    type: string;
 
 
 

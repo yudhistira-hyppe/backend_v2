@@ -252,7 +252,7 @@ export class TransactionsController {
             try {
 
                 datatrpending = await this.transactionsService.findpostidpending(postid[0].id);
-                console.log(datatrpending);
+
 
             } catch (e) {
                 datatrpending = null;
@@ -965,7 +965,7 @@ export class TransactionsController {
 
                         datamradmin = await this.settingsService.findOne(idmdradmin);
                         var valuemradmin = datamradmin._doc.value;
-                        nominalmradmin = saleAmount * valuemradmin / 100;
+                        nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
 
                     } catch (e) {
                         nominalmradmin = 0;
@@ -1076,7 +1076,7 @@ export class TransactionsController {
 
                         datamradmin = await this.settingsService.findOne(idmdradmin);
                         var valuemradmin = datamradmin._doc.value;
-                        nominalmradmin = saleAmountVoucher * valuemradmin / 100;
+                        nominalmradmin = Math.ceil(saleAmountVoucher * valuemradmin / 100);
 
                     } catch (e) {
                         nominalmradmin = 0;
@@ -2868,6 +2868,36 @@ export class TransactionsController {
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         var idadmin = mongoose.Types.ObjectId(iduser);
+        var datatrpending = null;
+
+        try {
+
+            datatrpending = await this.transactionsService.findExpired();
+
+
+        } catch (e) {
+            datatrpending = null;
+
+        }
+
+        if (datatrpending !== null) {
+
+            var lengdatatr = datatrpending.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpending[i].idva;
+                var idtransaction = datatrpending[i]._id;
+
+                let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                    await this.transactionsService.updatestatuscancel(idtransaction);
+                }
+
+            }
+
+        }
 
         if (sell === true && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
@@ -3137,7 +3167,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = saleAmount * valuemradmin / 100;
+                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
 
 
 
@@ -3284,7 +3314,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = saleAmount * valuemradmin / 100;
+                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
 
 
 
