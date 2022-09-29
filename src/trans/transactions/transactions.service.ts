@@ -686,7 +686,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 }, {
@@ -1338,7 +1338,7 @@ export class TransactionsService {
 
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 }, {
@@ -1989,7 +1989,7 @@ export class TransactionsService {
 
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 }, {
@@ -2635,7 +2635,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 }, {
@@ -3226,7 +3226,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
 
             ]);
             return query;
@@ -3734,8 +3734,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
-
+                { $sort: { timestamp: -1 }, },
             ]);
             return query;
         }
@@ -4242,7 +4241,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
 
             ]);
             return query;
@@ -4746,7 +4745,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
 
             ]);
             return query;
