@@ -542,15 +542,20 @@ export class UserticketsController {
     var idlevel = null;
     var assignto = null;
     var idusertiket = null;
+    var remark = null;
+    var userasign = null;
+    var emailassign = null;
     var status = CreateUserticketsDto.status;
     try {
       if (request_json["categoryTicket"] !== undefined) {
+        categoryTicket = request_json["categoryTicket"];
         idcategory = mongoose.Types.ObjectId(categoryTicket);
         CreateUserticketsDto.categoryTicket = idcategory;
       } else {
 
       }
       if (request_json["sourceTicket"] !== undefined) {
+        sourceTicket = request_json["sourceTicket"];
         idsource = mongoose.Types.ObjectId(sourceTicket);
         CreateUserticketsDto.sourceTicket = idsource;
       } else {
@@ -558,6 +563,7 @@ export class UserticketsController {
       }
 
       if (request_json["levelTicket"] !== undefined) {
+        levelTicket = request_json["levelTicket"];
         idlevel = mongoose.Types.ObjectId(levelTicket);
         CreateUserticketsDto.levelTicket = idlevel;
       } else {
@@ -565,10 +571,14 @@ export class UserticketsController {
       }
 
       if (request_json["assignTo"] !== undefined) {
+        assignTo = request_json["assignTo"];
         assignto = mongoose.Types.ObjectId(assignTo);
         CreateUserticketsDto.assignTo = assignto;
+        userasign = await this.userbasicsService.findbyid(assignTo);
+        emailassign = userasign.email;
+        remark = "change status to " + status + " and change assign to " + emailassign;
       } else {
-
+        remark = "change status to " + status;
       }
 
       var idusertiket = mongoose.Types.ObjectId(id);
@@ -580,7 +590,7 @@ export class UserticketsController {
       datalogticket.createdAt = dt.toISOString();
       datalogticket.ticketId = idusertiket;
       datalogticket.type = "change status";
-      datalogticket.remark = "change status to " + status + " and change assign to " + assignto;
+      datalogticket.remark = remark;
       await this.logticketsService.create(datalogticket);
       res.status(HttpStatus.OK).json({
         response_code: 202,

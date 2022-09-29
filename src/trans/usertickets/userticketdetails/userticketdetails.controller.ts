@@ -449,6 +449,8 @@ export class UserticketdetailsController {
             "fsSourceUri": dataticket[0].fsSourceUri,
             "fsSourceName": dataticket[0].fsSourceName,
             "fsTargetUri": dataticket[0].fsTargetUri,
+            "version": dataticket[0].version,
+            "OS": dataticket[0].OS,
             "avatar": dataticket[0].avatar,
             "detail": arrdata
         }]
