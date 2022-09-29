@@ -7,5 +7,6 @@ export class CreateLogticketsDto {
     type: string;
     remark: string;
     createdAt: string;
+    email: string;
 
 }

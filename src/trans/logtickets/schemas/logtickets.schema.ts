@@ -18,6 +18,8 @@ export class Logtickets {
     remark: string;
     @Prop()
     createdAt: string;
+    @Prop()
+    email: string;
 
 }
 
