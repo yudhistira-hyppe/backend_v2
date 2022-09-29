@@ -149,6 +149,8 @@ export class AdsUserCompareController {
         }
         var data_response = {};
         data_response['adsId'] = data_ads._id.toString();
+        data_response['adsUrlLink'] = data_ads.urlLink;
+        data_response['adsDescription'] = data_ads.description;
         data_response['useradsId'] = data_userads[0]._id.toString();
         data_response['idUser'] = data_userbasic_ads._id.toString();
         data_response['fullName'] = data_userbasic_ads.fullName;
