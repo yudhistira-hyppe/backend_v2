@@ -145,6 +145,7 @@ export class UserticketdetailsService {
         return query;
     }
 
+
     async detailKomentarChat(id: object, type: string): Promise<any[]> {
         const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
         const query = await this.userticketsModel.aggregate([
@@ -270,6 +271,140 @@ export class UserticketdetailsService {
             {
                 $match: {
                     "type": type, "IdUserticket": id
+                }
+            },
+            { $sort: { datetime: 1 }, },
+        ]);
+
+
+        return query;
+    }
+
+    async detailKomentarChatNew(id: object): Promise<any[]> {
+        const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+        const query = await this.userticketsModel.aggregate([
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "IdUser",
+                    foreignField: "_id",
+                    as: "userdata"
+                }
+            },
+
+
+            {
+                $project: {
+                    userdata: {
+                        $arrayElemAt: ['$userdata', 0]
+                    },
+                    tiketdata: {
+                        $arrayElemAt: ['$tiketdata', 0]
+                    },
+                    "profilpictid": '$userdata.profilePict.$id',
+                    "IdUserticket": "$IdUserticket",
+                    "type": "$type",
+                    "body": "$body",
+                    "datetime": "$datetime",
+                    "IdUser": "$IdUser",
+                    "status": "$status",
+                    "mediaUri": '$mediaUri',
+                    "originalName": '$originalName',
+                    "fsSourceUri": '$fsSourceUri',
+                    "fsSourceName": '$fsSourceName',
+                    "fsTargetUri": '$fsTargetUri',
+                    "mediaBasePath": '$mediaBasePath',
+                    "mediaMime": '$mediaMime',
+                    "mediaType": '$mediaType',
+
+
+                }
+            },
+            {
+                $lookup: {
+                    from: 'mediaprofilepicts2',
+                    localField: 'profilpictid',
+                    foreignField: '_id',
+                    as: 'profilePict_data',
+
+                },
+
+            },
+            {
+                $project: {
+
+                    profilpict: {
+                        $arrayElemAt: ['$profilePict_data', 0]
+                    },
+                    "fullName": "$userdata.fullName",
+                    "email": "$userdata.email",
+                    "IdUserticket": "$IdUserticket",
+                    "type": "$type",
+                    "body": "$body",
+                    "datetime": "$datetime",
+                    "IdUser": "$IdUser",
+                    "status": "$status",
+                    "mediaUri": '$mediaUri',
+                    "originalName": '$originalName',
+                    "fsSourceUri": '$fsSourceUri',
+                    "fsSourceName": '$fsSourceName',
+                    "fsTargetUri": '$fsTargetUri',
+                    "mediaBasePath": '$mediaBasePath',
+                    "mediaMime": '$mediaMime',
+                    "mediaType": '$mediaType',
+                }
+            },
+
+            {
+                $addFields: {
+
+                    concats: '/profilepict',
+                    pict: {
+                        $replaceOne: {
+                            input: "$profilpict.mediaUri",
+                            find: "_0001.jpeg",
+                            replacement: ""
+                        }
+                    },
+
+                },
+
+            },
+            {
+                $project: {
+
+
+                    "fullName": "$fullName",
+                    "email": "$email",
+                    "IdUserticket": "$IdUserticket",
+                    "type": "$type",
+                    "body": "$body",
+                    "datetime": "$datetime",
+                    "IdUser": "$IdUser",
+                    "status": "$status",
+                    "mediaUri": '$mediaUri',
+                    "originalName": '$originalName',
+                    "fsSourceUri": '$fsSourceUri',
+                    "fsSourceName": '$fsSourceName',
+                    "fsTargetUri": '$fsTargetUri',
+                    "mediaBasePath": '$mediaBasePath',
+                    "mediaMime": '$mediaMime',
+                    "mediaType": '$mediaType',
+                    avatar: {
+                        mediaBasePath: '$profilpict.mediaBasePath',
+                        mediaUri: '$profilpict.mediaUri',
+                        mediaType: '$profilpict.mediaType',
+                        mediaEndpoint: {
+                            $concat: ["$concats", "/", "$pict"]
+                        },
+
+                    },
+                }
+            },
+
+            {
+                $match: {
+                    "IdUserticket": id
                 }
             },
             { $sort: { datetime: 1 }, },

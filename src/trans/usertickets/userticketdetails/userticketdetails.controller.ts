@@ -400,6 +400,7 @@ export class UserticketdetailsController {
 
         let dataticket = await this.userticketsService.detail(idticket);
         var datadetail = await this.userticketdetailsService.detailKomentarChat(idticket, type);
+        var datadetailnew = await this.userticketdetailsService.detailKomentarChatNew(idticket);
         var lenghdetail = datadetail.length;
         for (var i = 0; i < lenghdetail; i++) {
 
@@ -430,7 +431,7 @@ export class UserticketdetailsController {
             "_id": dataticket[0]._id,
             "nomortiket": dataticket[0].nomortiket,
             "pengirim": dataticket[0].pengirim,
-            "penerima": datadetail[0].fullName,
+            "penerima": datadetailnew[0].fullName,
             "asignTo": dataticket[0].penerima,
             "subject": dataticket[0].subject,
             "body": dataticket[0].body,
