@@ -414,7 +414,7 @@ export class PostContentService {
     playlist.postType = post.postType;
     playlist.mediaId = Object(mediaId);
     this.logger.log('createNewPostVideo >>> generate playlist ' + JSON.stringify(playlist));
-    this.postService.generateUserPlaylist(playlist);    
+    //this.postService.generateUserPlaylist(playlist);    
 
     var res = new CreatePostResponse();
     res.response_code = 202;
