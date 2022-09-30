@@ -585,14 +585,13 @@ export class MediaController {
                     //Face comparing
                     face_detect_selfiepict = await this.awsService.comparing(data_comparing);
                     if (face_detect_selfiepict.FaceMatches.length > 0) {
-                        iduserbasic = datauserbasicsService._id;
                         emailuserbasic = datauserbasicsService.email;
                         var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                         _CreateMediaproofpictsDto.status = 'FINISH';
                         _CreateMediaproofpictsDto.valid = true;
                         await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                         iduserbasic = datauserbasicsService._id;
-                        await this.userbasicsService.updateIdVerified(iduserbasic);
+                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic, 'verified');
                         await this.userauthsService.update(emailuserbasic, 'ROLE_PREMIUM');
                         await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
@@ -612,6 +611,8 @@ export class MediaController {
                         var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                         _CreateMediaproofpictsDto.status = 'FAILED';
                         _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict dan Selfie Pict';
+                        iduserbasic = datauserbasicsService._id;
+                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic, 'review');
                         await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                         await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                         await this.errorHandler.generateCustomNotAcceptableException(

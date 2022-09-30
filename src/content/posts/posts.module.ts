@@ -20,9 +20,11 @@ import { MediapictsModule } from '../mediapicts/mediapicts.module';
 import { MediaprofilepictsModule } from '../mediaprofilepicts/mediaprofilepicts.module';
 import { UserplaylistModule } from '../../trans/userplaylist/userplaylist.module';
 import { PostPlayModule } from '../postplaylist/postplaylist.module';
+import { SeaweedfsModule } from '../../stream/seaweedfs/seaweedfs.module';
 @Module({
 
     imports: [
+        SeaweedfsModule,
         UserplaylistModule,
         GroupModuleModule,
         UtilsModule,
