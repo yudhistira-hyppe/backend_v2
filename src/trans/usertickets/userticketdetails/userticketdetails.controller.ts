@@ -399,32 +399,48 @@ export class UserticketdetailsController {
 
 
         let dataticket = await this.userticketsService.detail(idticket);
-        var datadetail = await this.userticketdetailsService.detailKomentarChat(idticket, type);
-        var datadetailnew = await this.userticketdetailsService.detailKomentarChatNew(idticket);
-        var lenghdetail = datadetail.length;
-        for (var i = 0; i < lenghdetail; i++) {
+        var datadetail = null;
+        var datadetailnew = null;
+        try {
+            datadetail = await this.userticketdetailsService.detailKomentarChat(idticket, type);
+        } catch (e) {
+            datadetail = null;
+        }
+        try {
+            datadetailnew = await this.userticketdetailsService.detailKomentarChatNew(idticket);
+        } catch (e) {
+            datadetailnew = null;
+        }
 
-            objdata = {
-                "_id": datadetail[i]._id,
-                "type": datadetail[i].type,
-                "body": datadetail[i].body,
-                "datetime": datadetail[i].datetime,
-                "IdUser": datadetail[i].IdUser,
-                "status": datadetail[i].status,
-                "mediaUri": datadetail[i].mediaUri,
-                "originalName": datadetail[i].originalName,
-                "fsSourceUri": datadetail[i].fsSourceUri,
-                "fsSourceName": datadetail[i].fsSourceName,
-                "fsTargetUri": datadetail[i].fsTargetUri,
-                "mediaBasePath": datadetail[i].mediaBasePath,
-                "mediaMime": datadetail[i].mediaMime,
-                "mediaType": datadetail[i].mediaType,
-                "fullName": datadetail[i].fullName,
-                "email": datadetail[i].email,
-                "avatar": datadetail[i].avatar,
+        if (datadetail !== null) {
+            var lenghdetail = datadetail.length;
+            for (var i = 0; i < lenghdetail; i++) {
+
+                objdata = {
+                    "_id": datadetail[i]._id,
+                    "type": datadetail[i].type,
+                    "body": datadetail[i].body,
+                    "datetime": datadetail[i].datetime,
+                    "IdUser": datadetail[i].IdUser,
+                    "status": datadetail[i].status,
+                    "mediaUri": datadetail[i].mediaUri,
+                    "originalName": datadetail[i].originalName,
+                    "fsSourceUri": datadetail[i].fsSourceUri,
+                    "fsSourceName": datadetail[i].fsSourceName,
+                    "fsTargetUri": datadetail[i].fsTargetUri,
+                    "mediaBasePath": datadetail[i].mediaBasePath,
+                    "mediaMime": datadetail[i].mediaMime,
+                    "mediaType": datadetail[i].mediaType,
+                    "fullName": datadetail[i].fullName,
+                    "email": datadetail[i].email,
+                    "avatar": datadetail[i].avatar,
+                }
+
+                arrdata.push(objdata);
             }
 
-            arrdata.push(objdata);
+        } else {
+            arrdata = [];
         }
 
         data = [{
