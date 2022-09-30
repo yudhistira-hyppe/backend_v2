@@ -31,13 +31,7 @@ import { IsDefined } from 'class-validator';
 import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userplaylist.dto';
 import { Userplaylist, UserplaylistDocument } from 'src/trans/userplaylist/schemas/userplaylist.schema';
 import { PostPlaylistService } from '../postplaylist/postplaylist.service';
-import { SeaweedfsService } from '../../stream/seaweedfs/seaweedfs.service';
-import { ErrorHandler } from '../../utils/error.handler';
-import * as fs from 'fs';
 
-
-//import FormData from "form-data";
-var FormData = require('form-data');
 
 @Injectable()
 export class PostContentService {
@@ -59,9 +53,7 @@ export class PostContentService {
     private contentEventService: ContenteventsService,
     private profilePictService: MediaprofilepictsService,
     private postPlaylistService: PostPlaylistService,
-    private readonly configService: ConfigService, 
-    private seaweedfsService: SeaweedfsService,
-    private errorHandler: ErrorHandler,
+    private readonly configService: ConfigService,
   ) { }
 
   async createNewPost(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
@@ -395,18 +387,7 @@ export class PostContentService {
     ws.write(file.buffer);
     ws.close();
 
-    //Upload Seaweedfs
-    const seaweedfs_path = '/' + post._id + '/' + postType + '/';
-    try {
-      var FormData_ = new FormData();
-      FormData_.append(postType, fs.createReadStream(nm));
-      const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
-      this.logger.log('dataupload >>> ' + dataupload);
-    } catch (err) {
-      this.logger.log('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
-    }
-    let payload = { 'file': '/localrepo/' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
-    //let payload = { 'file': nm, 'postId': apost._id };
+    let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
     let playlist = new CreateUserplaylistDto();
@@ -414,7 +395,7 @@ export class PostContentService {
     playlist.postType = post.postType;
     playlist.mediaId = Object(mediaId);
     this.logger.log('createNewPostVideo >>> generate playlist ' + JSON.stringify(playlist));
-    //this.postService.generateUserPlaylist(playlist);    
+    this.postService.generateUserPlaylist(playlist);    
 
     var res = new CreatePostResponse();
     res.response_code = 202;
@@ -500,19 +481,7 @@ export class PostContentService {
     ws.write(file.buffer);
     ws.close();
 
-    //Upload Seaweedfs
-    const seaweedfs_path = '/' + post._id + '/' + postType + '/';
-    try {
-      var FormData_ = new FormData();
-      FormData_.append(postType, fs.createReadStream(nm));
-      const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
-      this.logger.log('dataupload >>> ' + dataupload);
-    } catch (err) {
-      this.logger.log('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
-    }
-    let payload = { 'file': '/localrepo/' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
-
-    //let payload = { 'file': nm, 'postId': apost._id };
+    let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
     let playlist = new CreateUserplaylistDto();
