@@ -381,6 +381,7 @@ export class UserticketdetailsController {
         var objdata = {};
         var arrdata = [];
         var data = null;
+        var penerimatugas = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["id"] !== undefined) {
             id = request_json["id"];
@@ -392,7 +393,7 @@ export class UserticketdetailsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-        var idticket = mongoose.Types.ObjectId(request_json["id"]);
+        var idticket = mongoose.Types.ObjectId(id);
         const messages = {
             "info": ["The process successful"],
         };
@@ -408,11 +409,13 @@ export class UserticketdetailsController {
         }
         try {
             datadetailnew = await this.userticketdetailsService.detailKomentarChatNew(idticket);
+            penerimatugas = datadetailnew[0].fullName;
         } catch (e) {
             datadetailnew = null;
+            penerimatugas = "";
         }
 
-        if (datadetail !== null) {
+        if (datadetail !== null || datadetailnew !== null) {
             var lenghdetail = datadetail.length;
             for (var i = 0; i < lenghdetail; i++) {
 
@@ -438,40 +441,69 @@ export class UserticketdetailsController {
 
                 arrdata.push(objdata);
             }
+            data = [{
+                "_id": dataticket[0]._id,
+                "nomortiket": dataticket[0].nomortiket,
+                "pengirim": dataticket[0].pengirim,
+                "penerima": penerimatugas,
+                "asignTo": dataticket[0].penerima,
+                "subject": dataticket[0].subject,
+                "body": dataticket[0].body,
+                "status": dataticket[0].status,
+                "isRead": dataticket[0].isRead,
+                "active": dataticket[0].active,
+                "datetime": dataticket[0].datetime,
+                "nameCategory": dataticket[0].nameCategory,
+                "nameLevel": dataticket[0].nameLevel,
+                "sourceName": dataticket[0].sourceName,
+                "sourceTicket": dataticket[0].sourceTicket,
+                "mediaBasePath": dataticket[0].mediaBasePath,
+                "mediaMime": dataticket[0].mediaMime,
+                "mediaType": dataticket[0].mediaType,
+                "mediaUri": dataticket[0].mediaUri,
+                "originalName": dataticket[0].originalName,
+                "fsSourceUri": dataticket[0].fsSourceUri,
+                "fsSourceName": dataticket[0].fsSourceName,
+                "fsTargetUri": dataticket[0].fsTargetUri,
+                "version": dataticket[0].version,
+                "OS": dataticket[0].OS,
+                "avatar": dataticket[0].avatar,
+                "detail": arrdata
+            }]
 
         } else {
-            arrdata = [];
+            data = [{
+                "_id": dataticket[0]._id,
+                "nomortiket": dataticket[0].nomortiket,
+                "pengirim": dataticket[0].pengirim,
+                "penerima": datadetailnew[0].fullName,
+                "asignTo": dataticket[0].penerima,
+                "subject": dataticket[0].subject,
+                "body": dataticket[0].body,
+                "status": dataticket[0].status,
+                "isRead": dataticket[0].isRead,
+                "active": dataticket[0].active,
+                "datetime": dataticket[0].datetime,
+                "nameCategory": dataticket[0].nameCategory,
+                "nameLevel": dataticket[0].nameLevel,
+                "sourceName": dataticket[0].sourceName,
+                "sourceTicket": dataticket[0].sourceTicket,
+                "mediaBasePath": dataticket[0].mediaBasePath,
+                "mediaMime": dataticket[0].mediaMime,
+                "mediaType": dataticket[0].mediaType,
+                "mediaUri": dataticket[0].mediaUri,
+                "originalName": dataticket[0].originalName,
+                "fsSourceUri": dataticket[0].fsSourceUri,
+                "fsSourceName": dataticket[0].fsSourceName,
+                "fsTargetUri": dataticket[0].fsTargetUri,
+                "version": dataticket[0].version,
+                "OS": dataticket[0].OS,
+                "avatar": dataticket[0].avatar,
+                "detail": []
+            }]
         }
 
-        data = [{
-            "_id": dataticket[0]._id,
-            "nomortiket": dataticket[0].nomortiket,
-            "pengirim": dataticket[0].pengirim,
-            "penerima": datadetailnew[0].fullName,
-            "asignTo": dataticket[0].penerima,
-            "subject": dataticket[0].subject,
-            "body": dataticket[0].body,
-            "status": dataticket[0].status,
-            "isRead": dataticket[0].isRead,
-            "active": dataticket[0].active,
-            "datetime": dataticket[0].datetime,
-            "nameCategory": dataticket[0].nameCategory,
-            "nameLevel": dataticket[0].nameLevel,
-            "sourceName": dataticket[0].sourceName,
-            "sourceTicket": dataticket[0].sourceTicket,
-            "mediaBasePath": dataticket[0].mediaBasePath,
-            "mediaMime": dataticket[0].mediaMime,
-            "mediaType": dataticket[0].mediaType,
-            "mediaUri": dataticket[0].mediaUri,
-            "originalName": dataticket[0].originalName,
-            "fsSourceUri": dataticket[0].fsSourceUri,
-            "fsSourceName": dataticket[0].fsSourceName,
-            "fsTargetUri": dataticket[0].fsTargetUri,
-            "version": dataticket[0].version,
-            "OS": dataticket[0].OS,
-            "avatar": dataticket[0].avatar,
-            "detail": arrdata
-        }]
+
 
         return { response_code: 202, data, messages };
     }
