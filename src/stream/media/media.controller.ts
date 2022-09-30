@@ -634,6 +634,8 @@ export class MediaController {
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.status = 'FAILED';
                     _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict';
+                    iduserbasic = datauserbasicsService._id;
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, 'review');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
@@ -657,6 +659,8 @@ export class MediaController {
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.status = 'FAILED';
                     _CreateMediaproofpictsDto.state = 'Kesalahan Selfie Pict';
+                    iduserbasic = datauserbasicsService._id;
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, 'review');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
@@ -677,6 +681,8 @@ export class MediaController {
                 if (face_detect_cardPict.FaceDetails.length == 0) {
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.state = 'KTP Pict';
+                    iduserbasic = datauserbasicsService._id;
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, 'review');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
