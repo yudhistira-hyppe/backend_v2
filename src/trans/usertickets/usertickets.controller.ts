@@ -623,6 +623,8 @@ export class UserticketsController {
     var kategori = null;
     var startdate = null;
     var enddate = null;
+    var assignto = null;
+    var descending = null;
 
     const messages = {
       "info": ["The process successful"],
@@ -636,6 +638,8 @@ export class UserticketsController {
     status = request_json["status"];
     startdate = request_json["startdate"];
     enddate = request_json["enddate"];
+    assignto = request_json["assignto"];
+    descending = request_json["descending"];
     if (request_json["page"] !== undefined) {
       page = request_json["page"];
     } else {
@@ -648,8 +652,8 @@ export class UserticketsController {
       throw new BadRequestException("Unabled to proceed");
     }
 
-    data = await this.userticketsService.filterdata(search, sumber, kategori, level, status, startdate, enddate, page, limit);
-    let datasearch = await this.userticketsService.filterdataCount(search, sumber, kategori, level, status, startdate, enddate);
+    data = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, page, limit, descending);
+    let datasearch = await this.userticketsService.filterdataCount(search, assignto, sumber, kategori, level, status, startdate, enddate, descending);
     var totalsearch = datasearch.length;
     var allrow = await this.userticketsService.totalcount();
     var totalallrow = allrow[0].countrow;
