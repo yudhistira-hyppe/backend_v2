@@ -405,8 +405,8 @@ export class PostContentService {
     // } catch (err) {
     //   this.logger.log('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
     // }
-
-    let payload = { 'file': seaweedfs_path, 'postId': apost._id };
+    //let payload = { 'file': seaweedfs_path, 'postId': apost._id };
+    let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
     let playlist = new CreateUserplaylistDto();
@@ -510,7 +510,7 @@ export class PostContentService {
     // } catch (err) {
     //   this.logger.log('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
     // }
-
+    //let payload = { 'file': seaweedfs_path, 'postId': apost._id };
     let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
