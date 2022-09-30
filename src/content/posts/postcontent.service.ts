@@ -500,6 +500,17 @@ export class PostContentService {
     ws.write(file.buffer);
     ws.close();
 
+    //Upload Seaweedfs
+    const seaweedfs_path = '/' + post._id + '/' + postType + '/';
+    try {
+      var FormData_ = new FormData();
+      FormData_.append(postType, fs.createReadStream(nm));
+      const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
+      this.logger.log('dataupload >>> ' + dataupload);
+    } catch (err) {
+      this.logger.log('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
+    }
+
     let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
