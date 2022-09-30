@@ -16707,6 +16707,8 @@ export class UserticketsService {
           fsSourceUri: '$fsSourceUri',
           fsSourceName: '$fsSourceName',
           fsTargetUri: '$fsTargetUri',
+          version: '$version',
+          OS: '$OS',
           detail: '$detail'
         }
       },
@@ -16737,6 +16739,8 @@ export class UserticketsService {
           fsSourceUri: '$fsSourceUri',
           fsSourceName: '$fsSourceName',
           fsTargetUri: '$fsTargetUri',
+          version: '$version',
+          OS: '$OS',
           detail: '$detail'
         }
       },
@@ -16791,6 +16795,8 @@ export class UserticketsService {
           fsSourceUri: '$fsSourceUri',
           fsSourceName: '$fsSourceName',
           fsTargetUri: '$fsTargetUri',
+          version: '$version',
+          OS: '$OS',
           detail: '$detail'
         }
       },
@@ -16820,6 +16826,8 @@ export class UserticketsService {
           fsSourceUri: '$fsSourceUri',
           fsSourceName: '$fsSourceName',
           fsTargetUri: '$fsTargetUri',
+          version: '$version',
+          OS: '$OS',
           detail: '$detail',
           concats: '/profilepict',
           pict: {
@@ -16872,6 +16880,8 @@ export class UserticketsService {
           fsSourceUri: '$fsSourceUri',
           fsSourceName: '$fsSourceName',
           fsTargetUri: '$fsTargetUri',
+          version: '$version',
+          OS: '$OS',
           detail: '$detail',
           concats: '/profilepict',
           pict: {

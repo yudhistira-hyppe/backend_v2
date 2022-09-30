@@ -44,6 +44,10 @@ export class TransactionsService {
         return this.transactionsModel.findOne({ postid: postid, status: "WAITING_PAYMENT" }).exec();
     }
 
+    async findExpired(): Promise<Transactions[]> {
+        return this.transactionsModel.find({ status: "WAITING_PAYMENT" }).exec();
+    }
+
     // async findpostidpendingVoucer(postid: any[]): Promise<Transactions> {
     //     return this.transactionsModel.findOne({ detail: postid, status: "WAITING_PAYMENT" }).exec();
     // }
@@ -682,7 +686,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 }, {
@@ -1334,7 +1338,7 @@ export class TransactionsService {
 
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 }, {
@@ -1985,7 +1989,7 @@ export class TransactionsService {
 
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 }, {
@@ -2631,7 +2635,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 }, {
@@ -3222,7 +3226,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
 
             ]);
             return query;
@@ -3730,8 +3734,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
-
+                { $sort: { timestamp: -1 }, },
             ]);
             return query;
         }
@@ -4238,7 +4241,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
 
             ]);
             return query;
@@ -4742,7 +4745,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
 
             ]);
             return query;
@@ -5329,7 +5332,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 }, {
@@ -5980,7 +5983,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 }, {
@@ -6630,7 +6633,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 }, {
@@ -7279,7 +7282,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 }, {
@@ -7870,7 +7873,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
 
             ]);
             return query;
@@ -8379,7 +8382,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
 
             ]);
             return query;
@@ -8886,7 +8889,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
 
             ]);
             return query;
@@ -9391,7 +9394,7 @@ export class TransactionsService {
                         },
                     }
                 },
-                { $sort: { timestamp: 1 }, },
+                { $sort: { timestamp: -1 }, },
 
             ]);
             return query;

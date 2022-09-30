@@ -252,7 +252,7 @@ export class TransactionsController {
             try {
 
                 datatrpending = await this.transactionsService.findpostidpending(postid[0].id);
-                console.log(datatrpending);
+
 
             } catch (e) {
                 datatrpending = null;
@@ -965,7 +965,7 @@ export class TransactionsController {
 
                         datamradmin = await this.settingsService.findOne(idmdradmin);
                         var valuemradmin = datamradmin._doc.value;
-                        nominalmradmin = saleAmount * valuemradmin / 100;
+                        nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
 
                     } catch (e) {
                         nominalmradmin = 0;
@@ -1076,7 +1076,7 @@ export class TransactionsController {
 
                         datamradmin = await this.settingsService.findOne(idmdradmin);
                         var valuemradmin = datamradmin._doc.value;
-                        nominalmradmin = saleAmountVoucher * valuemradmin / 100;
+                        nominalmradmin = Math.ceil(saleAmountVoucher * valuemradmin / 100);
 
                     } catch (e) {
                         nominalmradmin = 0;
@@ -2868,11 +2868,46 @@ export class TransactionsController {
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         var idadmin = mongoose.Types.ObjectId(iduser);
+        var datatrpending = null;
+
+        try {
+
+            datatrpending = await this.transactionsService.findExpired();
+
+
+        } catch (e) {
+            datatrpending = null;
+
+        }
+
+        if (datatrpending !== null) {
+
+            var lengdatatr = datatrpending.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpending[i].idva;
+                var idtransaction = datatrpending[i]._id;
+
+                let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                    await this.transactionsService.updatestatuscancel(idtransaction);
+                }
+
+            }
+
+        }
 
         if (sell === true && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
             datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             datacount = datasellcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
         }
@@ -2880,6 +2915,11 @@ export class TransactionsController {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
             datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             datacount = datasellcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
         }
@@ -2887,6 +2927,11 @@ export class TransactionsController {
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
             databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = databuy;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             datacount = databuycount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
         }
@@ -2895,6 +2940,11 @@ export class TransactionsController {
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
             databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = databuy;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             datacount = databuycount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
         }
@@ -2902,6 +2952,11 @@ export class TransactionsController {
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datawithdraw;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             datacount = datawithdrawcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
 
@@ -2910,6 +2965,11 @@ export class TransactionsController {
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datawithdraw;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             datacount = datawithdrawcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
         }
@@ -2920,6 +2980,11 @@ export class TransactionsController {
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
             databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(databuy);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             dtcount = datasellcount.concat(databuycount);
             datacount = dtcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
@@ -2930,6 +2995,11 @@ export class TransactionsController {
             databuy = await this.transactionsService.findhistoryBuy(idadmin, status, startdate, enddate, skip, limit);
             databuycount = await this.transactionsService.findhistoryBuyCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(databuy);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             dtcount = datasellcount.concat(databuycount);
             datacount = dtcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
@@ -2940,6 +3010,11 @@ export class TransactionsController {
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             dtcount = datasellcount.concat(datawithdrawcount);
             datacount = dtcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
@@ -2950,6 +3025,11 @@ export class TransactionsController {
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             dtcount = datasellcount.concat(datawithdrawcount);
             datacount = dtcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
@@ -2960,6 +3040,11 @@ export class TransactionsController {
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = databuy.concat(datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             dtcount = databuycount.concat(datawithdrawcount);
             datacount = dtcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
@@ -2970,6 +3055,11 @@ export class TransactionsController {
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = databuy.concat(datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             dtcount = databuycount.concat(datawithdrawcount);
             datacount = dtcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
@@ -2982,6 +3072,11 @@ export class TransactionsController {
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             dtcount = datasellcount.concat(databuycount, datawithdrawcount);
             datacount = dtcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
@@ -2994,6 +3089,11 @@ export class TransactionsController {
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             dtcount = datasellcount.concat(databuycount, datawithdrawcount);
             datacount = dtcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
@@ -3006,6 +3106,11 @@ export class TransactionsController {
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             dtcount = datasellcount.concat(databuycount, datawithdrawcount);
             datacount = dtcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
@@ -3018,6 +3123,12 @@ export class TransactionsController {
             datawithdraw = await this.withdrawsService.findhistoryWithdraw(idadmin, status, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
+
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
             dtcount = datasellcount.concat(databuycount, datawithdrawcount);
             datacount = dtcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
@@ -3137,7 +3248,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = saleAmount * valuemradmin / 100;
+                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
 
 
 
@@ -3284,7 +3395,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = saleAmount * valuemradmin / 100;
+                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
 
 
 

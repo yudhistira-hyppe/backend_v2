@@ -400,6 +400,7 @@ export class UserticketdetailsController {
 
         let dataticket = await this.userticketsService.detail(idticket);
         var datadetail = await this.userticketdetailsService.detailKomentarChat(idticket, type);
+        var datadetailnew = await this.userticketdetailsService.detailKomentarChatNew(idticket);
         var lenghdetail = datadetail.length;
         for (var i = 0; i < lenghdetail; i++) {
 
@@ -430,7 +431,8 @@ export class UserticketdetailsController {
             "_id": dataticket[0]._id,
             "nomortiket": dataticket[0].nomortiket,
             "pengirim": dataticket[0].pengirim,
-            "penerima": dataticket[0].penerima,
+            "penerima": datadetailnew[0].fullName,
+            "asignTo": dataticket[0].penerima,
             "subject": dataticket[0].subject,
             "body": dataticket[0].body,
             "status": dataticket[0].status,
@@ -449,6 +451,8 @@ export class UserticketdetailsController {
             "fsSourceUri": dataticket[0].fsSourceUri,
             "fsSourceName": dataticket[0].fsSourceName,
             "fsTargetUri": dataticket[0].fsTargetUri,
+            "version": dataticket[0].version,
+            "OS": dataticket[0].OS,
             "avatar": dataticket[0].avatar,
             "detail": arrdata
         }]
