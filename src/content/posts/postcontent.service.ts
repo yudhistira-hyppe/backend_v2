@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar } from './dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar, PostLandingResponseApps, PostLandingData } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -692,6 +692,43 @@ export class PostContentService {
     return res;
   }
 
+  async getUserPostLandingPage(body: any, headers: any): Promise<PostLandingResponseApps> {
+
+    let type = 'GET_POST';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+    this.logger.log('getUserPost >>> profile: ' + profile);
+
+    let res = new PostLandingResponseApps();
+    let data = new PostLandingData();
+    res.response_code = 202;
+
+    body.postType = 'vid';
+    let pv = await this.doGetUserPostMy(body, headers, profile);
+    let pdv = await this.loadPostData(pv, body, profile);
+    data.video = pdv;
+
+    body.postType = 'pict';
+    let pp = await this.doGetUserPostMy(body, headers, profile);
+    let pdp = await this.loadPostData(pp, body, profile);
+    data.pict = pdp;    
+
+    body.postType = 'diary';
+    let pd = await this.doGetUserPostMy(body, headers, profile);
+    let pdd = await this.loadPostData(pd, body, profile);
+    data.diary = pdd;        
+
+    body.postType = 'story';
+    let ps = await this.doGetUserPostMy(body, headers, profile);
+    let pds = await this.loadPostData(ps, body, profile);
+    data.story = pds;            
+
+    res.data = data;
+
+    return res;
+  }  
+
   async getUserPostByProfile(body: any, headers: any): Promise<PostResponseApps> {
 
     let type = 'GET_POST';
@@ -1278,6 +1315,7 @@ export class PostContentService {
   }
 
   async getVideoApsaraSingle(ids: String): Promise<ApsaraPlayResponse> {
+    this.logger.log('getVideoApsaraSingle >>> start: ' + ids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
     let client = new RPCClient({
@@ -1296,9 +1334,9 @@ export class PostContentService {
       method: 'POST'
     };
 
-    let dto = new ApsaraVideoResponse();
     let result = await client.request('GetPlayInfo', params, requestOption);
     let xres = new ApsaraPlayResponse();
+    this.logger.log('getVideoApsaraSingle >>> response: ' + JSON.stringify(result));
     if (result != null && result.PlayInfoList != null && result.PlayInfoList.PlayInfo && result.PlayInfoList.PlayInfo.length > 0) {
       xres.PlayUrl = result.PlayInfoList.PlayInfo[0].PlayURL;
     }

@@ -204,3 +204,16 @@ export class InsightPost {
     reactions: number;
 }
 
+export class PostLandingData {
+    video: PostData[];
+    pict: PostData[];
+    story: PostData[];
+    diary: PostData[];            
+}
+
+export class PostLandingResponseApps {
+    response_code: number;
+    data: PostLandingData;
+    messages: Messages;
+    version: string;
+}
