@@ -5,7 +5,7 @@ import { UserbasicsModule } from './trans/userbasics/userbasics.module';
 import { UserauthsModule } from './trans/userauths/userauths.module';
 import { UserticketsModule } from './trans/usertickets/usertickets.module';
 import { JwtrefreshtokenModule } from './trans/jwtrefreshtoken/jwtrefreshtoken.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SnapshoteventsModule } from './trans/snapshotevents/snapshotevents.module';
 import { SagasModule } from './trans/sagas/sagas.module';
 import { AdrolesModule } from './trans/adroles/adroles.module';
@@ -83,8 +83,19 @@ import { ScheduleUserPlaylistModule } from './schedule/userplaylist/scheduleuser
 import { RemovedreasonsModule } from './trans/removedreasons/removedreasons.module';
 import { ReportreasonsModule } from './trans/reportreasons/reportreasons.module';
 import { ReportuserModule } from './trans/reportuser/reportuser.module';
+import { BullModule } from '@nestjs/bull';
 @Module({
   imports: [
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: process.env.REDIS_HOST,
+          port: Number(process.env.REDIS_PORT),
+        },
+      }),
+      inject: [ConfigService],
+    }),
     ScheduleUserPlaylistModule,
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRoot(process.env.SERVER_TRANS, {
