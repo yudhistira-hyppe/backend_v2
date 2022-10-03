@@ -12,7 +12,7 @@ import {
   BadRequestException, HttpStatus, Put, Res, HttpCode, Query, UseInterceptors, UploadedFile
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { CreatePostResponse, CreatePostsDto, PostResponseApps } from './dto/create-posts.dto';
+import { CreatePostResponse, CreatePostsDto, PostLandingResponseApps, PostResponseApps } from './dto/create-posts.dto';
 import { Posts } from './schemas/posts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
@@ -273,6 +273,14 @@ export class PostsController {
     this.logger.log("getUserPost >>> start: " + JSON.stringify(body));
     return this.postContentService.getUserPost(body, headers);
   }  
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/getuserposts/landing-page')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async getUserPostLandingPage(@Body() body, @Headers() headers): Promise<PostLandingResponseApps> {
+    this.logger.log("getUserPostLandingPage >>> start: " + JSON.stringify(body));
+    return this.postContentService.getUserPostLandingPage(body, headers);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts/my')
