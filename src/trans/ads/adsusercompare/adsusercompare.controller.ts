@@ -131,6 +131,14 @@ export class AdsUserCompareController {
                 'Unabled to proceed Ads not found'
             );
         }
+
+        const type_data_ads = await this.adsService.findOne(data_userads[0].adsID.toString());
+        if (!(await this.utilsService.ceckData(data_ads))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Ads not found'
+            );
+        }
+        
         console.log(data_ads._id);
         const data_media = await this.mediavideosadsService.findOne(data_ads.mediaAds.toString());
         if (!(await this.utilsService.ceckData(data_media))) {
@@ -164,6 +172,7 @@ export class AdsUserCompareController {
         data_response['adsPlace'] = (await this.adsplacesService.findOne(data_ads.placingID.toString())).namePlace;
         data_response['adsType'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).nameType;
         data_response['adsSkip'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).AdsSkip;
+        data_response['mediaType'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).mediaType;
         data_response['videoId'] = data_media.videoId;
 
         return {

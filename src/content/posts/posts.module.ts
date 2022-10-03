@@ -21,6 +21,7 @@ import { MediaprofilepictsModule } from '../mediaprofilepicts/mediaprofilepicts.
 import { UserplaylistModule } from '../../trans/userplaylist/userplaylist.module';
 import { PostPlayModule } from '../postplaylist/postplaylist.module';
 import { SeaweedfsModule } from '../../stream/seaweedfs/seaweedfs.module';
+import { BullModule } from '@nestjs/bull';
 @Module({
 
     imports: [
