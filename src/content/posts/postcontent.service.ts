@@ -704,23 +704,36 @@ export class PostContentService {
     let data = new PostLandingData();
     res.response_code = 202;
 
+    let row = 20;
+    let page = 0;
+    if (body.pageNumber != undefined) {
+      page = body.pageNumber;
+    }
+    if (body.pageRow != undefined) {
+      row = body.pageRow;
+    }    
+
     body.postType = 'vid';
-    let pv = await this.doGetUserPostMy(body, headers, profile);
+    let postVid = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);;
+    let pv = await this.loadBulk(postVid, page, row);
     let pdv = await this.loadPostData(pv, body, profile);
     data.video = pdv;
 
     body.postType = 'pict';
-    let pp = await this.doGetUserPostMy(body, headers, profile);
+    let postPid = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
+    let pp = await this.loadBulk(postPid, page, row);
     let pdp = await this.loadPostData(pp, body, profile);
     data.pict = pdp;    
 
     body.postType = 'diary';
-    let pd = await this.doGetUserPostMy(body, headers, profile);
+    let postDid = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
+    let pd = await this.loadBulk(postDid, page, row);
     let pdd = await this.loadPostData(pd, body, profile);
     data.diary = pdd;        
 
     body.postType = 'story';
-    let ps = await this.doGetUserPostMy(body, headers, profile);
+    let postSid = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
+    let ps = await this.loadBulk(postSid, page, row);
     let pds = await this.loadPostData(ps, body, profile);
     data.story = pds;            
 
