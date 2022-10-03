@@ -512,7 +512,7 @@ export class UserticketsController {
 
   @UseGuards(JwtAuthGuard)
   @Put('api/usertickets/update/:id')
-  async updatedata(@Res() res, @Param('id') id: string, @Headers() headers, @Body() CreateUserticketsDto: CreateUserticketsDto) {
+  async updatedata(@Res() res, @Param('id') id: string, @Req() request: Request, @Headers() headers, @Body() CreateUserticketsDto: CreateUserticketsDto) {
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
     const messages = {
@@ -531,19 +531,58 @@ export class UserticketsController {
     var dt = new Date(Date.now());
     dt.setHours(dt.getHours() + 7); // timestamp
     dt = new Date(dt);
-    try {
 
-      var idcategory = mongoose.Types.ObjectId(CreateUserticketsDto.categoryTicket);
-      var idsource = mongoose.Types.ObjectId(CreateUserticketsDto.sourceTicket);
-      var idlevel = mongoose.Types.ObjectId(CreateUserticketsDto.levelTicket);
-      var assignto = mongoose.Types.ObjectId(CreateUserticketsDto.assignTo);
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var categoryTicket = null;
+    var sourceTicket = null;
+    var levelTicket = null;
+    var assignTo = null;
+    var idcategory = null;
+    var idsource = null;
+    var idlevel = null;
+    var assignto = null;
+    var idusertiket = null;
+    var remark = null;
+    var userasign = null;
+    var emailassign = null;
+    var status = CreateUserticketsDto.status;
+    try {
+      if (request_json["categoryTicket"] !== undefined) {
+        categoryTicket = request_json["categoryTicket"];
+        idcategory = mongoose.Types.ObjectId(categoryTicket);
+        CreateUserticketsDto.categoryTicket = idcategory;
+      } else {
+
+      }
+      if (request_json["sourceTicket"] !== undefined) {
+        sourceTicket = request_json["sourceTicket"];
+        idsource = mongoose.Types.ObjectId(sourceTicket);
+        CreateUserticketsDto.sourceTicket = idsource;
+      } else {
+
+      }
+
+      if (request_json["levelTicket"] !== undefined) {
+        levelTicket = request_json["levelTicket"];
+        idlevel = mongoose.Types.ObjectId(levelTicket);
+        CreateUserticketsDto.levelTicket = idlevel;
+      } else {
+
+      }
+
+      if (request_json["assignTo"] !== undefined) {
+        assignTo = request_json["assignTo"];
+        assignto = mongoose.Types.ObjectId(assignTo);
+        CreateUserticketsDto.assignTo = assignto;
+        userasign = await this.userbasicsService.findbyid(assignTo);
+        emailassign = userasign.email;
+        remark = "change status to " + status + " and change assign to " + emailassign;
+      } else {
+        remark = "change status to " + status;
+      }
+
       var idusertiket = mongoose.Types.ObjectId(id);
       var status = CreateUserticketsDto.status;
-      CreateUserticketsDto.active = true;
-      CreateUserticketsDto.categoryTicket = idcategory;
-      CreateUserticketsDto.sourceTicket = idsource;
-      CreateUserticketsDto.levelTicket = idlevel;
-      CreateUserticketsDto.assignTo = assignto;
       let data = await this.userticketsService.updatedata(id, CreateUserticketsDto);
 
       let datalogticket = new CreateLogticketsDto();
@@ -551,7 +590,7 @@ export class UserticketsController {
       datalogticket.createdAt = dt.toISOString();
       datalogticket.ticketId = idusertiket;
       datalogticket.type = "change status";
-      datalogticket.remark = "change status to " + status + " and change assign to " + assignto;
+      datalogticket.remark = remark;
       await this.logticketsService.create(datalogticket);
       res.status(HttpStatus.OK).json({
         response_code: 202,
@@ -584,6 +623,8 @@ export class UserticketsController {
     var kategori = null;
     var startdate = null;
     var enddate = null;
+    var assignto = null;
+    var descending = null;
 
     const messages = {
       "info": ["The process successful"],
@@ -597,6 +638,8 @@ export class UserticketsController {
     status = request_json["status"];
     startdate = request_json["startdate"];
     enddate = request_json["enddate"];
+    assignto = request_json["assignto"];
+    descending = request_json["descending"];
     if (request_json["page"] !== undefined) {
       page = request_json["page"];
     } else {
@@ -609,14 +652,15 @@ export class UserticketsController {
       throw new BadRequestException("Unabled to proceed");
     }
 
-    data = await this.userticketsService.filterdata(search, sumber, kategori, level, status, startdate, enddate, page, limit);
-    let datasearch = await this.userticketsService.filterdataCount(search, sumber, kategori, level, status, startdate, enddate);
+    data = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, page, limit, descending);
+    let datasearch = await this.userticketsService.filterdataCount(search, assignto, sumber, kategori, level, status, startdate, enddate, descending);
     var totalsearch = datasearch.length;
     var allrow = await this.userticketsService.totalcount();
     var totalallrow = allrow[0].countrow;
     var totalrow = data.length;
     var totalpage = (totalallrow / limit).toFixed(0);
-    return { response_code: 202, data, page, limit, totalrow, totalsearch, totalallrow, totalpage, messages };
+    var totalpagesearch = (totalsearch / limit).toFixed(0);
+    return { response_code: 202, data, page, limit, totalrow, totalsearch, totalallrow, totalpage, totalpagesearch, messages };
   }
 
   @Post('api/usertickets/count')
@@ -694,6 +738,7 @@ export class UserticketsController {
 
     return { response_code: 202, data, messages };
   }
+
 
   async romawi(num: number) {
     if (typeof num !== 'number')

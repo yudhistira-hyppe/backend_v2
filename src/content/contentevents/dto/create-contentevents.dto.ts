@@ -14,4 +14,5 @@ export class CreateContenteventsDto {
     senderParty: String;
     receiverParty: String;
     _class: String;
+    postID: String;
   }

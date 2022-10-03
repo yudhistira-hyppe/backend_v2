@@ -796,20 +796,31 @@ export class GetusercontentsController {
         var saleAmount = databuy[0].saleAmount;
         var totalamount = 0;
         var idmdradmin = "62bd413ff37a00001a004369";
+        var idvacharege = "62bd40e0f37a00001a004366";
         var datamradmin = null;
-
+        var datavacharge = null;
+        var valuecharge = null;
         try {
 
             datamradmin = await this.settingsService.findOne(idmdradmin);
             var valuemradmin = datamradmin._doc.value;
             var nominalmradmin = saleAmount * valuemradmin / 100;
 
-            totalamount = saleAmount + nominalmradmin;
+            totalamount = saleAmount + Math.ceil(nominalmradmin);
 
 
 
         } catch (e) {
             totalamount = saleAmount + 0;
+        }
+
+        try {
+
+            datavacharge = await this.settingsService.findOne(idvacharege);
+            valuecharge = datavacharge._doc.value;
+
+        } catch (e) {
+            valuecharge = 0;
         }
 
         if (saleAmount > 0) {
@@ -840,7 +851,8 @@ export class GetusercontentsController {
                 "isCertified": databuy[0].isCertified,
                 "saleLike": databuy[0].saleLike,
                 "saleView": databuy[0].saleView,
-                "adminFee": nominalmradmin,
+                "adminFee": Math.ceil(nominalmradmin),
+                "serviceFee": valuecharge,
                 "prosentaseAdminFee": valuemradmin + " %",
                 "price": databuy[0].saleAmount,
                 "totalAmount": totalamount,
@@ -1111,6 +1123,11 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
+
+    // async roundUp(num, precision) {
+    //     precision = Math.pow(10, precision)
+    //     return Math.ceil(num * precision) / precision
+    // }
 
 
 

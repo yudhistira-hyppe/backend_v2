@@ -97,8 +97,8 @@ export class LogticketsService {
                 $project: {
 
 
-                    "fullName": "$userdata.fullName",
-                    "email": "$userdata.email",
+                    "fullName": "$fullName",
+                    "email": "$email",
                     "ticketId": "$ticketId",
                     "createdAt": "$createdAt",
                     "remark": "$remark",

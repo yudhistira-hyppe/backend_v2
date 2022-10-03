@@ -7,7 +7,7 @@ export type UserticketdetailsDocument = Userticketdetails & Document;
 export class Userticketdetails {
     //  @Prop({type: mongoose.Schema.Types.ObjectId})
     // _id: { oid:string  }
-
+    _id: mongoose.Types.ObjectId;
     @Prop({ type: Object })
     IdUserticket: { oid: string; }
     @Prop()

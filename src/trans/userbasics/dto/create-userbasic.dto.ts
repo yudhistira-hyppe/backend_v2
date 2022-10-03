@@ -16,7 +16,7 @@ export class CreateUserbasicDto {
   idProofStatus: String;
   isComplete: boolean;
   isCelebrity: boolean;
-  isIdVerified: boolean;
+  isIdVerified: String;
   isPrivate: boolean;
   isFollowPrivate: boolean;
   isPostPrivate: boolean;

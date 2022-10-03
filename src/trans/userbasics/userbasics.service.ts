@@ -134,7 +134,18 @@ export class UserbasicsService {
     let data = await this.userbasicModel.updateOne({ "_id": id },
       {
         $set: {
-          "isIdVerified": true
+          "isIdVerified": 'verified'
+        }
+      });
+
+    return data;
+  }
+
+  async updateIdVerifiedUser(id: ObjectId,status:string): Promise<Object> {
+    let data = await this.userbasicModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "isIdVerified": status
         }
       });
 

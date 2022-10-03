@@ -34,7 +34,7 @@ export class Userbasic {
   @Prop()
   isCelebrity: boolean;
   @Prop()
-  isIdVerified: boolean;
+  isIdVerified: String;
   @Prop()
   isPrivate: boolean;
   @Prop()

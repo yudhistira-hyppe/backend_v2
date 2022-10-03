@@ -538,7 +538,7 @@ export class MediaController {
                     CreateMediaproofpictsDto_.SelfiefsSourceName = cardPict_filename_new.replace(cardPict_etx, 'jpg').replace('_0001', '');
                     CreateMediaproofpictsDto_.SelfiefsTargetUri = '/localrepo/' + mongoose_gen_meida + '/selfiepict/' + cardPict_filename_new;
                     CreateMediaproofpictsDto_._class = "io.melody.hyppe.content.domain.MediaProofPict";
-                    CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype; 
+                    CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype;
                     CreateMediaproofpictsDto_.userId = {
                         $ref: "userbasics",
                         $id: Object(datauserbasicsService._id.toString()),
@@ -585,14 +585,13 @@ export class MediaController {
                     //Face comparing
                     face_detect_selfiepict = await this.awsService.comparing(data_comparing);
                     if (face_detect_selfiepict.FaceMatches.length > 0) {
-                        iduserbasic = datauserbasicsService._id;
                         emailuserbasic = datauserbasicsService.email;
                         var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                         _CreateMediaproofpictsDto.status = 'FINISH';
                         _CreateMediaproofpictsDto.valid = true;
                         await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                         iduserbasic = datauserbasicsService._id;
-                        await this.userbasicsService.updateIdVerified(iduserbasic);
+                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic, 'verified');
                         await this.userauthsService.update(emailuserbasic, 'ROLE_PREMIUM');
                         await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
@@ -612,6 +611,8 @@ export class MediaController {
                         var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                         _CreateMediaproofpictsDto.status = 'FAILED';
                         _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict dan Selfie Pict';
+                        iduserbasic = datauserbasicsService._id;
+                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic, 'review');
                         await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                         await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                         await this.errorHandler.generateCustomNotAcceptableException(
@@ -633,6 +634,8 @@ export class MediaController {
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.status = 'FAILED';
                     _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict';
+                    iduserbasic = datauserbasicsService._id;
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, 'review');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
@@ -656,6 +659,8 @@ export class MediaController {
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.status = 'FAILED';
                     _CreateMediaproofpictsDto.state = 'Kesalahan Selfie Pict';
+                    iduserbasic = datauserbasicsService._id;
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, 'review');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
@@ -676,6 +681,8 @@ export class MediaController {
                 if (face_detect_cardPict.FaceDetails.length == 0) {
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.state = 'KTP Pict';
+                    iduserbasic = datauserbasicsService._id;
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, 'review');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
@@ -909,17 +916,7 @@ export class MediaController {
         @Headers() headers) {
         //  var idmediaproofpict = CreateMediaproofpictsDto_._id.toString();
 
-        var titleingagal = "Verifikasi Gagal";
-        var titleengagal = "Verification Failed";
-        var bodyingagal = "Maaf! verifikasi ID Anda ditolak karena data yang diterima tidak cocok, silahkan coba unggah lagi dengan data asli.";
-        var bodyengagal = "Sorry! your ID verification is denied because the data received did not match, please upload it again with the genuine data.";
 
-        var titleinsukses = "Dalam Proses Verifikasi";
-        var titleensukses = "Verification On Progress";
-        var bodyinsukses = "Hai Stephany! Kami sedang meninjau data yang Anda kirimkan. ini akan memakan waktu 3x24 jam proses";
-        var bodyensukses = "Hi Stephany! We are currently reviewing the data you submitted. this will take a 3x24 hour process";
-        var eventType = "SUPPORTFILE";
-        var event = "REQUEST";
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed token and email not match',
@@ -983,8 +980,21 @@ export class MediaController {
             headers['x-auth-user'],
         );
 
+        var titleinsukses = null;
+        var titleensukses = null;
+        var bodyinsukses = null;
+        var bodyensukses = null;
+        var eventType = null;
+        var event = null;
         if (await this.utilsService.ceckData(datauserbasicsService)) {
             // var mongoose_gen_meida = new mongoose.Types.ObjectId();
+            titleinsukses = "Dalam Proses Verifikasi";
+            titleensukses = "Verification On Progress";
+            bodyinsukses = "Hai " + datauserbasicsService.fullName + "! Kami sedang meninjau data yang Anda kirimkan. ini akan memakan waktu 3x24 jam proses";
+            bodyensukses = "Hi " + datauserbasicsService.fullName + "! We are currently reviewing the data you submitted. this will take a 3x24 hour process";
+            eventType = "SUPPORTFILE";
+            event = "REQUEST";
+
             emailuserbasic = datauserbasicsService.email;
 
 

@@ -208,4 +208,8 @@ export class InsightsService {
     );
   }
 
+  async getInteractivesQuery(emailViewed: string) {
+    let Query = this.InsightsModel
+  }
+
 }

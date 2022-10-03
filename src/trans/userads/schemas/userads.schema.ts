@@ -36,5 +36,9 @@ export class UserAds {
     viewed: number;
     @Prop()
     liveTypeuserads: boolean;
+    @Prop()
+    adstypesId: mongoose.Types.ObjectId;
+    @Prop()
+    nameType: string;
 }
 export const UserAdsSchema = SchemaFactory.createForClass(UserAds);

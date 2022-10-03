@@ -148,7 +148,7 @@ export class UtilsService {
       );
 
       var mediaprofilepicts = await this.mediaprofilepictsService.findOne(idprofilepict);
-      console.log(mediaprofilepicts);
+
       var mediaUri = null;
       var mediaBasePath = null;
       var mediaType = null;
@@ -261,7 +261,7 @@ export class UtilsService {
     return (await this.settingsService.findOneByJenis(jenis)).value;
   }
 
-  async updateSetting(jenis: string, value:any) {
+  async updateSetting(jenis: string, value: any) {
     return await this.settingsService.findOneAndUpdate(jenis, value);
   }
 
@@ -271,7 +271,7 @@ export class UtilsService {
 
   async convertToTime(time: string) {
     let timeString = "";
-    if (time.length==2){
+    if (time.length == 2) {
       timeString = timeString.concat(time);
     } else if (time.length == 1) {
       timeString = timeString.concat("0" + time);
@@ -481,19 +481,19 @@ export class UtilsService {
   now(): number {
     let now = new Date();
     return now.getTime();
-  }  
+  }
 
   generateExpirationFromToday(day: number): number {
     let epoch = new Date().getTime();
-    epoch -= ((1000 * 60 * 60 *24) * day);
+    epoch -= ((1000 * 60 * 60 * 24) * day);
     return epoch;
-  }    
+  }
 
   generateAddExpirationFromToday(day: number): number {
     let epoch = new Date().getTime();
-    epoch += ((1000 * 60 * 60 *24) * day);
+    epoch += ((1000 * 60 * 60 * 24) * day);
     return epoch;
-  }      
+  }
 
   async validasiEmail(email: string): Promise<boolean> {
     var valid_email = false;
@@ -768,13 +768,13 @@ export class UtilsService {
       //ProfileDTO_.children = 
     }
 
-    if (get_userbasic.pin!=undefined){
+    if (get_userbasic.pin != undefined) {
       if (get_userbasic.pin != null) {
         if (get_userbasic.pin != "") {
           pin_create = true;
         }
       }
-    } 
+    }
 
     if (get_userbasic.otppinVerified != undefined) {
       otppinVerified = get_userbasic.otppinVerified;

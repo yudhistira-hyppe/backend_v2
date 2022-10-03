@@ -101,7 +101,7 @@ export class WithdrawsService {
                         totalamount: "$totalamount",
                     }
                 },
-
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 },
@@ -165,7 +165,7 @@ export class WithdrawsService {
                         totalamount: "$totalamount",
                     }
                 },
-
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 },
@@ -225,7 +225,7 @@ export class WithdrawsService {
                         totalamount: "$totalamount",
                     }
                 },
-
+                { $sort: { timestamp: -1 }, },
                 {
                     $skip: skip
                 },

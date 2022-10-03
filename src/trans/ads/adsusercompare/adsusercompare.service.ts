@@ -11,7 +11,8 @@ import { UtilsService } from '../../../utils/utils.service';
 import { AdsService } from '../ads.service';
 import { UserAdsService } from '../../../trans/userads/userads.service';
 import { CreateAdsDto } from '../dto/create-ads.dto';
-import { UserAds } from 'src/trans/userads/schemas/userads.schema';
+import { UserAds } from '../../../trans/userads/schemas/userads.schema';
+import { AdstypesService } from '../../../trans/adstypes/adstypes.service';
 
 @Injectable()
 export class AdsUserCompareService {
@@ -23,6 +24,7 @@ export class AdsUserCompareService {
         private readonly userauthsService: UserauthsService,
         private readonly areasService: AreasService,
         private readonly userAdsService: UserAdsService,
+        private readonly adstypesService: AdstypesService,
     ) { }
 
     async createUserAds(_CreateAdsDto_: CreateAdsDto): Promise<any> {
@@ -33,12 +35,14 @@ export class AdsUserCompareService {
         }
         var ads_location_long = null;
         var ads_location_lat = null;
+        var ads_typeAdsID = null;
 
         var current_date = await this.utilsService.getDateTimeString();
         var data_user = await this.userbasicsService.findAll();
         var data_ads = await this.adsService.findOne(_CreateAdsDto_._id.toString());
         if (await this.utilsService.ceckData(data_ads)) {
             var data_area = await this.areasService.findOneid(JSON.parse(JSON.stringify(data_ads.demografisID)).$id);
+            ads_typeAdsID = data_ads.typeAdsID.toString(); 
             if (await this.utilsService.ceckData(data_area)) {
                 if (data_area.location != undefined) {
                     if (data_area.location.longtitude != undefined) {
@@ -221,6 +225,7 @@ export class AdsUserCompareService {
                 console.log("ads priority", priority);
                 console.log("----------------------------------------------------------");
 
+                const typeAds = await this.adstypesService.findOne(Object(ads_typeAdsID));
                 var CreateUserAdsDto_ = new CreateUserAdsDto();
                 try {
                     CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
@@ -237,6 +242,8 @@ export class AdsUserCompareService {
                     CreateUserAdsDto_.viewed = 0;
                     CreateUserAdsDto_.liveAt = _CreateAdsDto_.liveAt;
                     CreateUserAdsDto_.liveTypeuserads = data_ads.liveTypeAds;
+                    CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(ads_typeAdsID);
+                    CreateUserAdsDto_.nameType = typeAds.nameType;
                     const createUserAdsDto = await this.userAdsService.create(CreateUserAdsDto_);
                 } catch (s) {
                     await this.errorHandler.generateNotAcceptableException(

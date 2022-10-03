@@ -7,7 +7,6 @@ import { CreateAdsDto } from '../dto/create-ads.dto';
 import { AdsService } from '../ads.service';
 import { UserAdsService } from '../../../trans/userads/userads.service';
 import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
-import { MediavideosadsService } from '../../../stream/mediavideosads/mediavideosads.service';
 import { AdstypesService } from '../../../trans/adstypes/adstypes.service';
 import { CreateUserAdsDto } from '../../../trans/userads/dto/create-userads.dto';
 import { AccountbalancesService } from '../../../trans/accountbalances/accountbalances.service';
@@ -16,6 +15,7 @@ import { AdsplacesService } from '../../../trans/adsplaces/adsplaces.service';
 import { UservouchersService } from '../../../trans/uservouchers/uservouchers.service';
 import { VouchersService } from '../../../trans/vouchers/vouchers.service';
 import { MediaprofilepictsService } from '../../../content/mediaprofilepicts/mediaprofilepicts.service';
+//import { MediaimageadsService } from '../../../stream/mediaimageads/mediaimageads.service;
 import mongoose from 'mongoose';
 import { MongoServerClosedError } from 'mongodb';
 
@@ -28,7 +28,6 @@ export class AdsUserCompareController {
         private adsService: AdsService,
         private userbasicsService: UserbasicsService,
         private utilsService: UtilsService,
-        private mediavideosadsService: MediavideosadsService,
         private adstypesService: AdstypesService,
         private accountbalancesService: AccountbalancesService,
         private adsplacesService: AdsplacesService,
@@ -90,17 +89,14 @@ export class AdsUserCompareController {
                 ]
             }
         };
-        // }catch(e){
-        //     await this.errorHandler.generateNotAcceptableException(
-        //         'Unabled to proceed, ' + e,
-        //     );
-        // }
     }
 
     @UseGuards(JwtAuthGuard)
     @Get('/getads/user/')
     @HttpCode(HttpStatus.ACCEPTED)
-    async getads(@Headers() headers): Promise<any> {
+    async getads(@Headers() headers,
+        @Query('type') type: string): Promise<any> {
+        let type_ = "";
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed token and email not match',
@@ -113,10 +109,18 @@ export class AdsUserCompareController {
             );
         }
 
-        const data_userads = await this.userAdsService.findOneByuserID(data_userbasic._id.toString());
+        if (type != undefined) {
+            type_ = type;
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Type Ads is required'
+            );
+        }
+
+        const data_userads = await this.userAdsService.findOneByuserID(data_userbasic._id.toString(), type_);
         if (!(await this.utilsService.ceckData(data_userads))) {
             await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed User not found'
+                'Unabled to proceed User Ads Playlist not found'
             );
         }
 
@@ -124,13 +128,6 @@ export class AdsUserCompareController {
         if (!(await this.utilsService.ceckData(data_ads))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Ads not found'
-            );
-        }
-
-        const data_media = await this.mediavideosadsService.findOne(data_ads.mediaAds.toString());
-        if (!(await this.utilsService.ceckData(data_media))) {
-            await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed Ads media not found'
             );
         }
         
@@ -144,6 +141,8 @@ export class AdsUserCompareController {
         }
         var data_response = {};
         data_response['adsId'] = data_ads._id.toString();
+        data_response['adsUrlLink'] = data_ads.urlLink;
+        data_response['adsDescription'] = data_ads.description;
         data_response['useradsId'] = data_userads[0]._id.toString();
         data_response['idUser'] = data_userbasic_ads._id.toString();
         data_response['fullName'] = data_userbasic_ads.fullName;
@@ -157,7 +156,9 @@ export class AdsUserCompareController {
         data_response['adsPlace'] = (await this.adsplacesService.findOne(data_ads.placingID.toString())).namePlace;
         data_response['adsType'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).nameType;
         data_response['adsSkip'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).AdsSkip;
-        data_response['videoId'] = data_media.videoId;
+        data_response['mediaType'] = data_ads.type;
+        data_response['videoId'] = data_ads.idApsara;
+        data_response['duration'] = data_ads.duration;
 
         return {
             "response_code": 202,
@@ -177,20 +178,6 @@ export class AdsUserCompareController {
         @Query('x-auth-token') token: string,
         @Query('x-auth-user') email: string, @Res({ passthrough: true }) response) {
         var ads_data = await this.adsService.findOne(id);
-        var ads_media = null;
-        if (await this.utilsService.ceckData(ads_data)) {
-            ads_media = await this.mediavideosadsService.findOne(ads_data.mediaAds.toString());
-        }
-        if (ads_media != null) {
-            var data = await this.mediavideosadsService.seaweedfsRead(ads_media.fsSourceUri);
-            response.set("Content-Type", ads_media.mediaMime);
-            response.send(data);
-
-        } else {
-            await this.errorHandler.generateNotFoundException(
-                'Unabled to proceed File not found'
-            );
-        }
     }
 
     @UseGuards(JwtAuthGuard)
@@ -246,13 +233,6 @@ export class AdsUserCompareController {
             if (!(await this.utilsService.ceckData(data_adsService))) {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed Ads not found',
-                );
-            }
-
-            var data_mediavideosadsService = await this.mediavideosadsService.findOne(data_adsService.mediaAds.toString());
-            if (!(await this.utilsService.ceckData(data_mediavideosadsService))) {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Ads media not found',
                 );
             }
 
