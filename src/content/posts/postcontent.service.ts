@@ -928,21 +928,21 @@ export class PostContentService {
   private async loadBulk(ids: String[], page, row): Promise<Posts[]> {
     this.logger.log('loadBulk >>> start: ' + JSON.stringify(ids));
     let p: Posts[] = [];
-    //let query =  this.PostsModel.find();
-    //query.where('_id').in(['babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767','babc1f48-3b2d-4fd3-97b6-22bfbafe4767']);
-    //let skip = this.paging(page, row);
-    //query.skip(skip);
-    //query.limit(row);         
-    //query.sort({'postType': 1, 'createdAt': -1});
-    //let res = await query.exec();  
-    //return res;  
-    for (let i = 0; i < ids.length; i++) {
-      let po = await this.PostsModel.findOne({ _id: ids[i] }).exec();
-      if (po != undefined) {
-        p.push(po);
-      }
-    }
-    return p;
+    let query =  this.PostsModel.find();
+    query.where('_id').in(ids);
+    let skip = this.paging(page, row);
+    query.skip(skip);
+    query.limit(row);         
+    query.sort({'postType': 1, 'createdAt': -1});
+    let res = await query.exec();  
+    return res;  
+    //for (let i = 0; i < ids.length; i++) {
+    //  let po = await this.PostsModel.findOne({ _id: ids[i] }).exec();
+    //  if (po != undefined) {
+    //    p.push(po);
+    //  }
+    //}
+    //return p;
   }
 
   private async loadPostData(posts: Posts[], body: any, iam: Userbasic): Promise<PostData[]> {
