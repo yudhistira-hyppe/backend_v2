@@ -1339,26 +1339,25 @@ export class PostsService {
         Count_compare_interest = compare_interest.length;
       }
 
-      var type = "PUBLIC";
-      // var type = null;
-      // var ceckFriendFollowingFollower = await this.contentEventService.ceckFriendFollowingFollower(data_userbasic.email.toString(), element.email.toString());
-      // if (await this.utilsService.ceckData(ceckFriendFollowingFollower)) {
-      //   if (ceckFriendFollowingFollower.length == 2) {
-      //     type = "FRIEND";
-      //   } else {
-      //     if (ceckFriendFollowingFollower[0].email == data_userbasic.email.toString()) {
-      //       type = "FOLLOWER";
-      //     } else {
-      //       if (ceckFriendFollowingFollower[0].email == element.email.toString()) {
-      //         type = "FOLLOWING";
-      //       } else {
-      //         type = "PUBLIC";
-      //       }
-      //     }
-      //   }
-      // } else {
-      //   type = "PUBLIC";
-      // }
+      var type = null;
+      var ceckFriendFollowingFollower = await this.contentEventService.ceckFriendFollowingFollower(data_userbasic.email.toString(), element.email.toString());
+      if (await this.utilsService.ceckData(ceckFriendFollowingFollower)) {
+        if (ceckFriendFollowingFollower.length == 2) {
+          type = "FRIEND";
+        } else {
+          if (ceckFriendFollowingFollower[0].email == data_userbasic.email.toString()) {
+            type = "FOLLOWER";
+          } else {
+            if (ceckFriendFollowingFollower[0].email == element.email.toString()) {
+              type = "FOLLOWING";
+            } else {
+              type = "PUBLIC";
+            }
+          }
+        }
+      } else {
+        type = "PUBLIC";
+      }
 
       var interest_db = [];
       if (Count_compare_interest > 0) {
@@ -1413,9 +1412,11 @@ export class PostsService {
       // if (await this.utilsService.ceckData(ceckDataUser_)) {
       //   await this.userplaylistService.updateOne(ceckDataUser_[0]._id, CreateUserplaylistDto_);
       // } else {
-        CreateUserplaylistDto_._id = new mongoose.Types.ObjectId();
-        await this.userplaylistService.create(CreateUserplaylistDto_);
+      //   CreateUserplaylistDto_._id = new mongoose.Types.ObjectId();
+      //   await this.userplaylistService.create(CreateUserplaylistDto_);
       // }
+      CreateUserplaylistDto_._id = new mongoose.Types.ObjectId();
+      await this.userplaylistService.create(CreateUserplaylistDto_);
     });
   }
 }
