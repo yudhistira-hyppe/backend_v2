@@ -1257,6 +1257,8 @@ export class PostsService {
     await this.generateUserPlaylistqueue.add('generate', {
       CreateUserplaylistDto_
     });
+
+    return "ok";
   }
 
   // async generateUserPlaylist_(CreateUserplaylistDto_: CreateUserplaylistDto) {
