@@ -9,7 +9,6 @@ import { UtilsModule } from '../../../utils/utils.module';
 import { AreasModule } from '../../../infra/areas/areas.module';
 import { UserauthsModule } from '../../userauths/userauths.module';
 import { UserbasicsModule } from '../../userbasics/userbasics.module';
-import { MediavideosadsModule } from '../../../stream/mediavideosads/mediavideosads.module';
 import { AdstypesModule } from '../../adstypes/adstypes.module';
 import { AccountbalancesModule } from '../../accountbalances/accountbalances.module';
 import { AdsplacesModule } from '../../adsplaces/adsplaces.module';
@@ -25,7 +24,6 @@ import { MediaprofilepictsModule } from '../../../content/mediaprofilepicts/medi
         AdsplacesModule,
         AccountbalancesModule,
         AdstypesModule,
-        MediavideosadsModule,
         AreasModule,
         UserauthsModule,
         UserbasicsModule,
