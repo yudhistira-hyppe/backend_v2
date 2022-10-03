@@ -65,6 +65,15 @@ export class TransactionsController {
         var arrayPostId = [];
         var postidTR = null;
         var qty = null;
+
+
+        var titleinsukses = "Selamat";
+        var titleensukses = "Congratulations";
+        var bodyinsukses = "Silakan selesaikan pembayaran Anda Klik Di Sini untuk Melihat";
+        var bodyensukses = "Please complete your payment Click Here to View";
+        var eventType = "TRANSACTION";
+        var event = "TRANSACTION";
+
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["postid"] !== undefined) {
             postid = request_json["postid"];
@@ -224,6 +233,7 @@ export class TransactionsController {
 
         var userbuy = iduser;
         var name = ubasic.fullName;
+        var emailbuy = ubasic.email;
         var stringId = (await this.generateNumber()).toString();
 
 
@@ -352,7 +362,7 @@ export class TransactionsController {
                             CreateTransactionsDto.detail = arrayDetail;
                             CreateTransactionsDto.postid = postidTR.toString();
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
-
+                            await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                             await this.transactionsService.updatestatuscancel(idtransaction);
 
 
@@ -469,6 +479,7 @@ export class TransactionsController {
                         CreateTransactionsDto.detail = arrayDetail;
                         CreateTransactionsDto.postid = postidTR.toString();
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
+                        await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
                         var data = {
                             "noinvoice": datatr.noinvoice,
@@ -803,6 +814,7 @@ export class TransactionsController {
                         CreateTransactionsDto.detail = arrayDetail;
                         CreateTransactionsDto.postid = postidTR.toString();
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
+                        await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                         var lengArrDetail = arrayDetail.length;
 
                         for (var i = 0; i < lengArrDetail; i++) {
@@ -2820,6 +2832,12 @@ export class TransactionsController {
         var datacount = null;
         var dtcount = null;
         var status = null;
+        var titleinsukses = "Pembayaran Diajukan!";
+        var titleensukses = "Payment Filed!";
+        var bodyinsukses = "Periode pembayaran telah berlalu waktu kadaluarsa. konten Anda terdaftar tidak akan diposting";
+        var bodyensukses = "The payment period has passed the expiration time. The content you registered will not posted";
+        var eventType = "TRANSACTION";
+        var event = "TRANSACTION";
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
@@ -2865,6 +2883,8 @@ export class TransactionsController {
         const messages = {
             "info": ["The process successful"],
         };
+
+
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         var idadmin = mongoose.Types.ObjectId(iduser);
@@ -2872,7 +2892,7 @@ export class TransactionsController {
 
         try {
 
-            datatrpending = await this.transactionsService.findExpired();
+            datatrpending = await this.transactionsService.findExpired(iduser);
 
 
         } catch (e) {
@@ -2893,6 +2913,7 @@ export class TransactionsController {
 
                 if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
                     await this.transactionsService.updatestatuscancel(idtransaction);
+                    await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                 }
 
             }
