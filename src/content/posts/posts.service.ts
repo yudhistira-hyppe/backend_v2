@@ -1408,14 +1408,14 @@ export class PostsService {
       // const mediaId_ = mediaId.toString();
       // var ceckDataUser_ = await this.userplaylistModel.findOne({ userId: new Types.ObjectId(userId), userPostId: new Types.ObjectId(userIdPost), mediaId: mediaId_ }).clone().exec();
 
-      var ceckDataUser_ = await this.userplaylistService.findData(element._id.toString(), data_userbasic._id.toString(), mediaId.toString());
+      //var ceckDataUser_ = await this.userplaylistService.findData(element._id.toString(), data_userbasic._id.toString(), mediaId.toString());
 
-      if (await this.utilsService.ceckData(ceckDataUser_)) {
-        await this.userplaylistService.updateOne(ceckDataUser_[0]._id, CreateUserplaylistDto_);
-      } else {
+      // if (await this.utilsService.ceckData(ceckDataUser_)) {
+      //   await this.userplaylistService.updateOne(ceckDataUser_[0]._id, CreateUserplaylistDto_);
+      // } else {
         CreateUserplaylistDto_._id = new mongoose.Types.ObjectId();
         await this.userplaylistService.create(CreateUserplaylistDto_);
-      }
+      // }
     });
   }
 }
