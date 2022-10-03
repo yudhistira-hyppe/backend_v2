@@ -106,6 +106,7 @@ export class UservouchersController {
         var email = null;
         var iduser = null;
         var startdate = null;
+        var datatrue = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
@@ -137,7 +138,26 @@ export class UservouchersController {
         var substrtanggal = beforedate.substring(10, 8);
         var numtanggal = parseInt(substrtanggal);
         var date = substrtahun + "-" + substrbulan + "-" + substrtanggal;
+
+        try {
+            datatrue = await this.uservouchersService.findUserVoucherTrue(iduser);
+            var datenow = new Date(Date.now());
+            var lenghttrue = datatrue.length;
+            for (var i = 0; i < lenghttrue; i++) {
+                var id = datatrue[i]._id;
+                var objid = mongoose.Types.ObjectId(id);
+                var dtexp = new Date(datatrue[i].expiredAt);
+                dtexp.setHours(dtexp.getHours() + 24);
+                dtexp = new Date(dtexp);
+                if (datenow > dtexp) {
+                    await this.uservouchersService.updatefalse(objid);
+                }
+            }
+        } catch (e) {
+            datatrue = null;
+        }
         let data = await this.uservouchersService.findUserVoucher(iduser, date);
+
 
         return { response_code: 202, data, messages };
     }

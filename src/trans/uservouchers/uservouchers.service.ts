@@ -73,10 +73,58 @@ export class UservouchersService {
             {
                 $match: {
                     "userID": userID,
-                    "field.isActive": true,
-                    "field.expiredAt": {
+                    "isActive": true,
+                    "expiredAt": {
                         $gte: date
                     }
+                }
+            },
+            {
+                "$sort": {
+                    "_id": 1
+                },
+
+            },
+            {
+                $project: {
+                    noVoucher: "$field.noVoucher",
+                    codeVoucher: "$field.codeVoucher",
+                    nameAds: "$field.nameAds",
+                    expiredAt: "$field.expiredAt",
+                    creditTotal: "$totalCredit",
+                    totalUsed: "$field.totalUsed",
+                    isActive: "$field.isActive",
+                    description: "$field.description",
+                    jmlVoucher: "$jmlVoucher"
+                }
+            }
+        ]);
+        return query;
+    }
+
+    async findUserVoucherTrue(userID: ObjectId): Promise<Object> {
+
+        const query = this.uservouchersModel.aggregate([
+
+            {
+                $lookup: {
+                    from: "vouchers",
+                    localField: "voucherID",
+                    foreignField: "_id",
+                    as: "field"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$field",
+                    preserveNullAndEmptyArrays: false
+                }
+            },
+            {
+                $match: {
+                    "userID": userID,
+                    "isActive": true,
+
                 }
             },
             {
@@ -124,8 +172,8 @@ export class UservouchersService {
                 $match: {
                     "userID": userID,
                     "field.codeVoucher": codeVoucher,
-                    "field.isActive": true,
-                    "field.expiredAt": {
+                    "isActive": true,
+                    "expiredAt": {
                         $gte: date
                     }
                 }
@@ -141,10 +189,10 @@ export class UservouchersService {
                     noVoucher: "$field.noVoucher",
                     codeVoucher: "$field.codeVoucher",
                     nameAds: "$field.nameAds",
-                    expiredAt: "$field.expiredAt",
+                    expiredAt: "$expiredAt",
                     creditTotal: "$totalCredit",
                     totalUsed: "$field.totalUsed",
-                    isActive: "$field.isActive",
+                    isActive: "$isActive",
                     description: "$field.description",
                     jmlVoucher: "$jmlVoucher"
                 }
@@ -175,8 +223,8 @@ export class UservouchersService {
                 $match: {
                     "userID": userID,
                     "voucherID": voucherID,
-                    "field.isActive": true,
-                    "field.expiredAt": {
+                    "isActive": true,
+                    "expiredAt": {
                         $gte: date
                     }
                 }
@@ -192,10 +240,10 @@ export class UservouchersService {
                     noVoucher: "$field.noVoucher",
                     codeVoucher: "$field.codeVoucher",
                     nameAds: "$field.nameAds",
-                    expiredAt: "$field.expiredAt",
+                    expiredAt: "$expiredAt",
                     creditTotal: "$totalCredit",
                     totalUsed: "$field.totalUsed",
-                    isActive: "$field.isActive",
+                    isActive: "$isActive",
                     description: "$field.description",
                     jmlVoucher: "$jmlVoucher"
                 }
@@ -210,6 +258,12 @@ export class UservouchersService {
             .findByIdAndRemove({ _id: id })
             .exec();
         return deletedCat;
+    }
+
+    async updatefalse(id: Types.ObjectId): Promise<Object> {
+        let data = await this.uservouchersModel.updateOne({ "_id": id },
+            { $set: { "isActive": false } });
+        return data;
     }
 
     async update(

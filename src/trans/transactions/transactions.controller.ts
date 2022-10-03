@@ -917,6 +917,13 @@ export class TransactionsController {
         var databank = null;
         var amontVA = null;
 
+        var titleinsukses = "Selamat!";
+        var titleensukses = "Congratulation!";
+        var bodyinsukses = "Konten Anda Telah Terjual Saldo akan diteruskan ke akun hype Anda.";
+        var bodyensukses = "Your Content Has Been Sold The balance will be forwarded to your Hyppe Account.";
+        var eventType = "TRANSACTION";
+        var event = "TRANSACTION";
+
         try {
 
             datavabankbca = await this.settingsService.findOne(idbankvachargeBCA);
@@ -1015,7 +1022,7 @@ export class TransactionsController {
 
 
                         await this.transactionsService.updateone(idtransaction, idbalance, payload);
-
+                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
 
                         await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy);
@@ -1061,6 +1068,9 @@ export class TransactionsController {
                     var price = null;
                     var totalPrice = null;
                     var arraymount = [];
+                    var expiredday = null;
+
+
 
                     var sum = 0;
                     for (var i = 0; i < lengtvoucherid; i++) {
@@ -1115,12 +1125,16 @@ export class TransactionsController {
 
                         var idbalance = databalance._id;
                         await this.transactionsService.updateoneVoucher(idtransaction, idbalance, payload);
-
+                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                         for (var i = 0; i < lengtvoucherid; i++) {
                             var postvcid = detail[i].id.toString();
                             var jml = detail[i].qty;
                             datavoucher = await this.vouchersService.findOne(postvcid);
+                            expiredday = datavoucher.expiredDay;
 
+                            var dex = new Date();
+                            dex.setDate(dex.getDate() + expiredday);
+                            dex = new Date(dex);
                             voucherID = datavoucher._id;
                             expiredAt = datavoucher.expiredAt;
                             totalUsed = datavoucher.totalUsed;
@@ -1140,7 +1154,7 @@ export class TransactionsController {
                             datauservoucher.voucherCredit = totalCredit;
                             datauservoucher.totalCredit = totalCredit * jml;
                             datauservoucher.jmlVoucher = jml;
-                            datauservoucher.expiredAt = expiredAt;
+                            datauservoucher.expiredAt = dex.toISOString();
                             datauservoucher.credit = total_creditValue_voucher;
                             datauservoucher.creditFree = total_creditPromo_voucher;
                             await this.uservouchersService.create(datauservoucher);
@@ -2901,6 +2915,8 @@ export class TransactionsController {
         }
 
         if (datatrpending !== null) {
+            var datenow = new Date(Date.now());
+
 
             var lengdatatr = datatrpending.length;
 
@@ -2908,6 +2924,7 @@ export class TransactionsController {
 
                 var idva = datatrpending[i].idva;
                 var idtransaction = datatrpending[i]._id;
+
 
                 let cekstatusva = await this.oyPgService.staticVaInfo(idva);
 

@@ -1240,7 +1240,7 @@ export class AdsController {
                 try {
                     var reqdemografisID = mongoose.Types.ObjectId(CreateAdsDto.demografisID);
 
-                    var demografisIDs = { "$ref": "cities", "$id": reqdemografisID, "$db": "hyppe_infra_db" };
+                    var demografisIDs = { "$ref": "areas", "$id": reqdemografisID, "$db": "hyppe_infra_db" };
 
                     var reqinterestID = CreateAdsDto.interestID;
                     var splitreq = reqinterestID.toString();
