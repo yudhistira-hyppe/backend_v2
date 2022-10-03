@@ -44,8 +44,8 @@ export class TransactionsService {
         return this.transactionsModel.findOne({ postid: postid, status: "WAITING_PAYMENT" }).exec();
     }
 
-    async findExpired(): Promise<Transactions[]> {
-        return this.transactionsModel.find({ status: "WAITING_PAYMENT" }).exec();
+    async findExpired(iduserbuyer: ObjectId): Promise<Transactions[]> {
+        return this.transactionsModel.find({ status: "WAITING_PAYMENT", iduserbuyer: iduserbuyer }).exec();
     }
 
     // async findpostidpendingVoucer(postid: any[]): Promise<Transactions> {

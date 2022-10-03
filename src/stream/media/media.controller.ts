@@ -538,7 +538,7 @@ export class MediaController {
                     CreateMediaproofpictsDto_.SelfiefsSourceName = cardPict_filename_new.replace(cardPict_etx, 'jpg').replace('_0001', '');
                     CreateMediaproofpictsDto_.SelfiefsTargetUri = '/localrepo/' + mongoose_gen_meida + '/selfiepict/' + cardPict_filename_new;
                     CreateMediaproofpictsDto_._class = "io.melody.hyppe.content.domain.MediaProofPict";
-                    CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype; 
+                    CreateMediaproofpictsDto_.SelfiemediaMime = selfiepict_mimetype;
                     CreateMediaproofpictsDto_.userId = {
                         $ref: "userbasics",
                         $id: Object(datauserbasicsService._id.toString()),
@@ -916,17 +916,7 @@ export class MediaController {
         @Headers() headers) {
         //  var idmediaproofpict = CreateMediaproofpictsDto_._id.toString();
 
-        var titleingagal = "Verifikasi Gagal";
-        var titleengagal = "Verification Failed";
-        var bodyingagal = "Maaf! verifikasi ID Anda ditolak karena data yang diterima tidak cocok, silahkan coba unggah lagi dengan data asli.";
-        var bodyengagal = "Sorry! your ID verification is denied because the data received did not match, please upload it again with the genuine data.";
 
-        var titleinsukses = "Dalam Proses Verifikasi";
-        var titleensukses = "Verification On Progress";
-        var bodyinsukses = "Hai Stephany! Kami sedang meninjau data yang Anda kirimkan. ini akan memakan waktu 3x24 jam proses";
-        var bodyensukses = "Hi Stephany! We are currently reviewing the data you submitted. this will take a 3x24 hour process";
-        var eventType = "SUPPORTFILE";
-        var event = "REQUEST";
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed token and email not match',
@@ -990,8 +980,21 @@ export class MediaController {
             headers['x-auth-user'],
         );
 
+        var titleinsukses = null;
+        var titleensukses = null;
+        var bodyinsukses = null;
+        var bodyensukses = null;
+        var eventType = null;
+        var event = null;
         if (await this.utilsService.ceckData(datauserbasicsService)) {
             // var mongoose_gen_meida = new mongoose.Types.ObjectId();
+            titleinsukses = "Dalam Proses Verifikasi";
+            titleensukses = "Verification On Progress";
+            bodyinsukses = "Hai " + datauserbasicsService.fullName + "! Kami sedang meninjau data yang Anda kirimkan. ini akan memakan waktu 3x24 jam proses";
+            bodyensukses = "Hi " + datauserbasicsService.fullName + "! We are currently reviewing the data you submitted. this will take a 3x24 hour process";
+            eventType = "SUPPORTFILE";
+            event = "REQUEST";
+
             emailuserbasic = datauserbasicsService.email;
 
 
