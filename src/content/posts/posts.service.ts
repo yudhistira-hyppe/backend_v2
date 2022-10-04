@@ -1415,6 +1415,15 @@ export class PostsService {
       CreateUserplaylistDto_.postID = (data_post.postID != undefined) ? data_post.postID :"";
       CreateUserplaylistDto_.expiration = (data_post.expiration != undefined) ? Number(data_post.expiration) : 0;
       CreateUserplaylistDto_.description = (data_post.description != undefined) ? data_post.description : "";
+      if (await this.utilsService.ceckData(data_media)){
+        if (data_media.apsara!=undefined){
+          if (data_media.apsara) {
+            CreateUserplaylistDto_.mediaEndpoint = data_media;
+            CreateUserplaylistDto_.mediaThumbEndpoint = data_post.updatedAt;
+            CreateUserplaylistDto_.mediaType = postType;
+          }
+        }
+      }
 
       // const userId = element._id.toString();
       // const userIdPost = data_userbasic._id.toString();

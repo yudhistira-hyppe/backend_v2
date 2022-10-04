@@ -18,4 +18,7 @@ export class CreateUserplaylistDto {
   updatedAt: String;
   isWatched: boolean;
   isHidden: boolean;
+  mediaEndpoint: String;
+  mediaThumbEndpoint: String;
+  mediaType: String;
 }

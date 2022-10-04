@@ -683,7 +683,20 @@ export class ContenteventsService {
     } else {
       Object.assign(Where);
     }
-    const query = this.ContenteventsModel.find(Where);
+
+    var sort = null;
+    if (EventType != "") {
+      if (EventType == "FOLLOWING" || EventType == "FOLLOWER") {
+        sort = { sequenceNumber: 1, updatedAt: -1 }
+      }else{
+        sort = { postType: 1, updatedAt: -1 }
+      }
+    } else {
+      sort = { postType: 1, updatedAt: -1 }
+    }
+    const query = this.ContenteventsModel.find(Where)
+      .limit(pageRow)
+      .skip(pageRow * pageNumber).sort(sort);
     return query;
   }
 }

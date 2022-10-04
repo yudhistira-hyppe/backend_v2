@@ -39,6 +39,12 @@ export class Userplaylist {
   description: String;
   @Prop()
   expiration: Number;
+  @Prop()
+  mediaEndpoint: String;
+  @Prop()
+  mediaThumbEndpoint: String;
+  @Prop()
+  mediaType: String;
 }
 
 export const UserplaylistSchema = SchemaFactory.createForClass(Userplaylist);

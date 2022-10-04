@@ -141,11 +141,12 @@ export class UserbasicsService {
     return data;
   }
 
-  async updateIdVerifiedUser(id: ObjectId,status:string): Promise<Object> {
+  async updateIdVerifiedUser(id: ObjectId, isIdVerified: boolean, statusKyc: string): Promise<Object> {
     let data = await this.userbasicModel.updateOne({ "_id": id },
       {
         $set: {
-          "isIdVerified": status
+          "isIdVerified": isIdVerified,
+          "statusKyc": statusKyc
         }
       });
 

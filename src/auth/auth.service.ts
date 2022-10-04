@@ -1538,12 +1538,13 @@ export class AuthService {
             data_CreateUserbasicDto.event = 'NOTIFY_OTP';
             data_CreateUserbasicDto.isComplete = false;
             data_CreateUserbasicDto.isCelebrity = false;
-            data_CreateUserbasicDto.isIdVerified = 'unverified';
+            data_CreateUserbasicDto.isIdVerified = false;
             data_CreateUserbasicDto.isPrivate = false;
             data_CreateUserbasicDto.isFollowPrivate = false;
             data_CreateUserbasicDto.isPostPrivate = false;
             data_CreateUserbasicDto.createdAt = current_date;
             data_CreateUserbasicDto.updatedAt = current_date;
+            data_CreateUserbasicDto.statusKyc = 'unverified';
             data_CreateUserbasicDto.insight = {
               $ref: 'insights',
               $id: Object(ID_insights),
@@ -4812,12 +4813,13 @@ export class AuthService {
           data_CreateUserbasicDto.event = CurrentEvent;
           data_CreateUserbasicDto.isComplete = false;
           data_CreateUserbasicDto.isCelebrity = false;
-          data_CreateUserbasicDto.isIdVerified = 'unverified';
+          data_CreateUserbasicDto.isIdVerified = false;
           data_CreateUserbasicDto.isPrivate = false;
           data_CreateUserbasicDto.isFollowPrivate = false;
           data_CreateUserbasicDto.isPostPrivate = false;
           data_CreateUserbasicDto.createdAt = current_date;
           data_CreateUserbasicDto.updatedAt = current_date;
+          data_CreateUserbasicDto.statusKyc = 'unverified';
           data_CreateUserbasicDto.insight = {
             $ref: 'insights',
             $id: ID_insights,
