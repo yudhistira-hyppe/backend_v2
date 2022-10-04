@@ -184,7 +184,7 @@ export class TransactionsController {
 
             //var prosentase = valueppn + valuemradmin;
             // var calculate = amount * prosentase / 100;
-            totalamount = amount + valuevacharge;
+            totalamount = amount;
 
 
 
@@ -2924,15 +2924,20 @@ export class TransactionsController {
 
                 var idva = datatrpending[i].idva;
                 var idtransaction = datatrpending[i]._id;
+                var expiredva = new Date(datatrpending[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        await this.transactionsService.updatestatuscancel(idtransaction);
+                        await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                    }
 
 
-
-                let cekstatusva = await this.oyPgService.staticVaInfo(idva);
-
-                if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
-                    await this.transactionsService.updatestatuscancel(idtransaction);
-                    //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                 }
+
 
             }
 
