@@ -74,9 +74,9 @@ export class UservouchersService {
                 $match: {
                     "userID": userID,
                     "isActive": true,
-                    "expiredAt": {
-                        $gte: date
-                    }
+                    // "expiredAt": {
+                    //     $gte: date
+                    // }
                 }
             },
             {

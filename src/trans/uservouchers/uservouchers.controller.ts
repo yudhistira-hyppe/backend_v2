@@ -139,23 +139,23 @@ export class UservouchersController {
         var numtanggal = parseInt(substrtanggal);
         var date = substrtahun + "-" + substrbulan + "-" + substrtanggal;
 
-        try {
-            datatrue = await this.uservouchersService.findUserVoucherTrue(iduser);
-            var datenow = new Date(Date.now());
-            var lenghttrue = datatrue.length;
-            for (var i = 0; i < lenghttrue; i++) {
-                var id = datatrue[i]._id;
-                var objid = mongoose.Types.ObjectId(id);
-                var dtexp = new Date(datatrue[i].expiredAt);
-                dtexp.setHours(dtexp.getHours() + 24);
-                dtexp = new Date(dtexp);
-                if (datenow > dtexp) {
-                    await this.uservouchersService.updatefalse(objid);
-                }
-            }
-        } catch (e) {
-            datatrue = null;
-        }
+        // try {
+        //     datatrue = await this.uservouchersService.findUserVoucherTrue(iduser);
+        //     var datenow = new Date(Date.now());
+        //     var lenghttrue = datatrue.length;
+        //     for (var i = 0; i < lenghttrue; i++) {
+        //         var id = datatrue[i]._id;
+        //         var objid = mongoose.Types.ObjectId(id);
+        //         var dtexp = new Date(datatrue[i].expiredAt);
+        //         dtexp.setHours(dtexp.getHours() + 24);
+        //         dtexp = new Date(dtexp);
+        //         if (datenow > dtexp) {
+        //             await this.uservouchersService.updatefalse(objid);
+        //         }
+        //     }
+        // } catch (e) {
+        //     datatrue = null;
+        // }
         let data = await this.uservouchersService.findUserVoucher(iduser, date);
 
 
