@@ -66,7 +66,7 @@ export class PostsService {
   }
 
   async findAllSort(): Promise<Posts[]> {
-    return this.PostsModel.find().sort({ createdAt: 1 }).exec();
+    return this.PostsModel.find().sort({ createdAt: -1 }).exec();
   }
 
   async findid(id: string): Promise<Posts> {
