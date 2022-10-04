@@ -45,6 +45,8 @@ export class Userplaylist {
   mediaThumbEndpoint: String;
   @Prop()
   mediaType: String;
+  @Prop()
+  mediaThumbUri: String;
 }
 
 export const UserplaylistSchema = SchemaFactory.createForClass(Userplaylist);

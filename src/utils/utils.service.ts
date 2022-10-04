@@ -829,6 +829,19 @@ export class UtilsService {
       }
       ProfileDTO_.pin_create = pin_create;
       ProfileDTO_.pin_verified = otppinVerified;
+      if (get_userbasic.statusKyc!=undefined){
+        ProfileDTO_.statusKyc = get_userbasic.statusKyc;
+      }else{
+        if (get_userbasic.isIdVerified != undefined) {
+          if (get_userbasic.isIdVerified) {
+            ProfileDTO_.statusKyc = "unverified";
+          }else{
+            ProfileDTO_.statusKyc = "review";
+          }
+        } else {
+          ProfileDTO_.statusKyc = "unverified";
+        }
+      }
     }
 
     return ProfileDTO_;

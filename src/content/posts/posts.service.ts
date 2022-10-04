@@ -1418,9 +1418,28 @@ export class PostsService {
       if (await this.utilsService.ceckData(data_media)){
         if (data_media.apsara!=undefined){
           if (data_media.apsara) {
-            CreateUserplaylistDto_.mediaEndpoint = data_media;
-            CreateUserplaylistDto_.mediaThumbEndpoint = data_post.updatedAt;
-            CreateUserplaylistDto_.mediaType = postType;
+            if (data_media.mediaType!=undefined){
+              if (data_media.mediaType == "video") {
+                if (data_media.mediaThumb != undefined) {
+                  CreateUserplaylistDto_.mediaThumbUri = data_media.mediaThumb;
+                }
+                if (data_media.mediaUri != undefined) {
+                  CreateUserplaylistDto_.mediaEndpoint = "/stream/" + data_media.mediaUri;
+                }
+                if (data_media.postID != undefined) {
+                  CreateUserplaylistDto_.mediaThumbEndpoint = "/thumb/" + data_media.postID;
+                } 
+                CreateUserplaylistDto_.mediaType = data_media.mediaType;
+              } else if (data_media.mediaType == "image") {
+                if (data_media.mediaUri != undefined) {
+                  CreateUserplaylistDto_.mediaEndpoint = "/pict" + data_media.mediaUri;
+                }
+                if (data_media.mediaUri != undefined) {
+                  CreateUserplaylistDto_.mediaThumbEndpoint = "/thumb/" + data_media.postID;
+                }
+                CreateUserplaylistDto_.mediaType = data_media.mediaType;
+              }
+            }
           }
         }
       }
