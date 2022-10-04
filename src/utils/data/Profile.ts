@@ -54,6 +54,7 @@ export class ProfileDTO {
     listSetting: any[];
     pin_verified: boolean; 
     pin_create: boolean;
+    statusKyc: String;
 }
 
 export class LocationDTO {

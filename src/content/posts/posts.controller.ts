@@ -11,6 +11,7 @@ import {
   Request, Logger,
   BadRequestException, HttpStatus, Put, Res, HttpCode, Query, UseInterceptors, UploadedFile
 } from '@nestjs/common';
+import { FormDataRequest } from 'nestjs-form-data';
 import { PostsService } from './posts.service';
 import { CreatePostResponse, CreatePostsDto, PostLandingResponseApps, PostResponseApps } from './dto/create-posts.dto';
 import { Posts } from './schemas/posts.schema';
@@ -25,6 +26,7 @@ import { PostContentService } from './postcontent.service';
 import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userplaylist.dto';
 import { ContenteventsService } from '../contentevents/contentevents.service';
 import { InsightsService } from '../insights/insights.service';
+import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 
 @Controller()
 export class PostsController {
@@ -37,6 +39,7 @@ export class PostsController {
     private readonly errorHandler: ErrorHandler,
     private readonly contenteventsService: ContenteventsService,
     private readonly insightsService: InsightsService,
+    private readonly userbasicsService: UserbasicsService,
     private readonly groupModuleService: GroupModuleService) { }
 
   @Post()
@@ -325,15 +328,18 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getinteractives')
   @HttpCode(HttpStatus.ACCEPTED)
+  @FormDataRequest()
   async getinteractives(
     @Headers() headers,
-    @Query('eventType') eventType: string,
-    @Query('withDetail') withDetail: boolean,
-    @Query('withEvents') withEvents: string,
-    @Query('postID') postID: string,
-    @Query('pageRow') pageRow: number,
-    @Query('pageNumber') pageNumber: number,
-    @Query('senderOrReceiver') senderOrReceiver: string) {
+    @Body() body,
+    // @Query('eventType') eventType: string,
+    // @Query('withDetail') withDetail: boolean,
+    // @Query('withEvents') withEvents: string,
+    // @Query('postID') postID: string,
+    // @Query('pageRow') pageRow: number,
+    // @Query('pageNumber') pageNumber: number,
+    // @Query('senderOrReceiver') senderOrReceiver: string
+    ) {
     if (headers['x-auth-user'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
@@ -344,40 +350,155 @@ export class PostsController {
         'Unabled to proceed email header dan token not match',
       );
     }
+    
     let postID_ = "";
     let eventType_ = "";
     let withEvents_ = [];
     let withDetail_ = false;
     let pageRow_ = 10;
-    let pageNumber_ = 0;
-    if (postID!=undefined){
-      postID_ = postID;
+    let pageNumber_ = 1;
+    let senderOrReceiver_ = "";
+
+    if (body.pageRow != undefined) {
+      pageRow_ = body.pageRow;
     }
-    if (eventType != undefined) {
-      eventType_ = eventType;
+    if (body.pageNumber != undefined) {
+      pageNumber_ = body.pageNumber;
     }
-    if (withEvents != undefined) {
-      const Array_withEvents = withEvents.split(",");
+    if (body.postID!=undefined){
+      postID_ = body.postID;
+    }
+    if (body.eventType != undefined) {
+      eventType_ = body.eventType;
+    }
+    if (body.withDetail != undefined) {
+      withDetail_ = body.withDetail;
+    }
+    if (body.withEvents != undefined) {
+      const Array_withEvents = body.withEvents.split(",");
       for (let i = 0; i < Array_withEvents.length; i++) {
         withEvents_.push(Array_withEvents[i]);
       }
     }
+    if (body.senderOrReceiver != undefined) {
+      senderOrReceiver_ = body.senderOrReceiver;
+    }
     const insightsService_data = await this.insightsService.findemail(headers['x-auth-user']);
-    console.log(insightsService_data);
-
+    const userbasicsService_data = await this.userbasicsService.findOne(headers['x-auth-user']);
     const contenteventsService_data = await this.contenteventsService.findByCriteria(headers['x-auth-user'],postID_, eventType_, withEvents_, pageRow_, pageNumber_);
-    console.log(contenteventsService_data);
+    var getProfile_ = await this.utilsService.generateProfile(headers['x-auth-user'], 'PROFILE');
+    var avatar_ = {}
+    if (getProfile_ != null || getProfile_ != undefined) {
+      if (getProfile_.avatar != null || getProfile_.avatar != undefined) {
+        if (getProfile_.avatar.mediaBasePath != null || getProfile_.avatar.mediaBasePath != undefined) {
+          Object.assign(avatar_, {
+            "mediaBasePath": getProfile_.avatar.mediaBasePath,
+          });
+        }
+        if (getProfile_.avatar.mediaUri != null || getProfile_.avatar.mediaUri != undefined) {
+          Object.assign(avatar_, {
+            "mediaUri": getProfile_.avatar.mediaUri,
+          });
+        }
+        if (getProfile_.avatar.mediaType != null || getProfile_.avatar.mediaType != undefined) {
+          Object.assign(avatar_, {
+            "mediaType": getProfile_.avatar.mediaType,
+          });
+        }
+        if (getProfile_.avatar.mediaEndpoint != null || getProfile_.avatar.mediaEndpoint != undefined) {
+          Object.assign(avatar_, {
+            "mediaEndpoint": getProfile_.avatar.mediaEndpoint,
+          });
+        }
+      }
+    }
+
     let data_response = [];
     for (let i = 0; i < contenteventsService_data.length; i++) {
+      var emailSenderorreceiver = (contenteventsService_data[i].senderParty != undefined) ? contenteventsService_data[i].senderParty : (contenteventsService_data[i].receiverParty != undefined) ? contenteventsService_data[i].receiverParty : null;
+      
+      if (emailSenderorreceiver != null) {
+        var getProfile = await this.utilsService.generateProfile(emailSenderorreceiver.toString(), 'PROFILE');
+      }
+
       var datas = {}
+      var senderOrReceiverInfo = {}
+      var avatar = {}
+      if (getProfile != null || getProfile != undefined) {
+        if (getProfile.avatar != null || getProfile.avatar != undefined) {
+          if (getProfile.avatar.mediaBasePath != null || getProfile.avatar.mediaBasePath != undefined) {
+            Object.assign(avatar, {
+              "mediaBasePath": getProfile.avatar.mediaBasePath,
+            });
+          }
+          if (getProfile.avatar.mediaUri != null || getProfile.avatar.mediaUri != undefined) {
+            Object.assign(avatar, {
+              "mediaUri": getProfile.avatar.mediaUri,
+            });
+          }
+          if (getProfile.avatar.mediaType != null || getProfile.avatar.mediaType != undefined) {
+            Object.assign(avatar, {
+              "mediaType": getProfile.avatar.mediaType,
+            });
+          }
+          if (getProfile.avatar.mediaEndpoint != null || getProfile.avatar.mediaEndpoint != undefined) {
+            Object.assign(avatar, {
+              "mediaEndpoint": getProfile.avatar.mediaEndpoint,
+            });
+          }
+        }
+      }
+
+      if (getProfile != null || getProfile != undefined){
+        Object.assign(senderOrReceiverInfo, {
+          "fullName": (getProfile != null) ? (getProfile.fullName != undefined) ? getProfile.fullName : "" : "",
+          avatar,
+          "email": getProfile.email,
+          "username": getProfile.username,
+        });
+      }
+      if (withDetail_) {
+        Object.assign(datas, {
+          "createdAt": contenteventsService_data[i].createdAt,
+        });
+        Object.assign(datas, {
+          "profileInsight": {
+            "follower": insightsService_data.followers,
+            "following": insightsService_data.followings,
+          },
+        });
+        Object.assign(datas, {
+          senderOrReceiverInfo,
+        });
+        Object.assign(datas, {
+          "fullName": userbasicsService_data.fullName,
+        });
+      }
+      var avatar = avatar_;
       Object.assign(datas, {
         "flowIsDone": contenteventsService_data[i].flowIsDone,
         "eventType": contenteventsService_data[i].eventType,
+        avatar,
         "event": contenteventsService_data[i].event,
         "senderOrReceiver": (contenteventsService_data[i].senderParty!=undefined) ? contenteventsService_data[i].senderParty : contenteventsService_data[i].receiverParty,
         "email": contenteventsService_data[i].email
        });
+      if (getProfile_ != null || getProfile_ != undefined) {
+        if (withDetail_) {
+          Object.assign(datas, {
+            "username": getProfile_.username,
+          });
+        }
+      }
       data_response.push(datas);
+    }
+    let data_filter = [];
+    console.log("senderOrReceiver_",senderOrReceiver_);
+    if (senderOrReceiver_!=""){
+      data_filter = data_response.filter(function (data_response_) {
+        return data_response_.senderOrReceiver == senderOrReceiver_;
+      });
+      data_response = data_filter;
     }
     return {
       "response_code": 202,

@@ -22,12 +22,14 @@ import { UserplaylistModule } from '../../trans/userplaylist/userplaylist.module
 import { PostPlayModule } from '../postplaylist/postplaylist.module';
 import { SeaweedfsModule } from '../../stream/seaweedfs/seaweedfs.module';
 import { BullModule } from '@nestjs/bull';
+import { NestjsFormDataModule } from 'nestjs-form-data';
 @Module({
 
     imports: [
         BullModule.registerQueue({
             name: 'post-user-playlist',
         }),
+        NestjsFormDataModule,
         SeaweedfsModule,
         UserplaylistModule,
         GroupModuleModule,

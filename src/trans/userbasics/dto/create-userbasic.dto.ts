@@ -16,7 +16,7 @@ export class CreateUserbasicDto {
   idProofStatus: String;
   isComplete: boolean;
   isCelebrity: boolean;
-  isIdVerified: String;
+  isIdVerified: boolean;
   isPrivate: boolean;
   isFollowPrivate: boolean;
   isPostPrivate: boolean;
@@ -74,7 +74,8 @@ export class CreateUserbasicDto {
   otp_request_time: Long;
   otp_expired_time: Long;
   otppinVerified: Boolean;
-  otp_attemp:number;
+  otp_attemp: number;
+  statusKyc: string;
 }
 
 export class SearchUserbasicDto {

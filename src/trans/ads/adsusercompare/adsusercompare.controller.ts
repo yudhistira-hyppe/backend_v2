@@ -463,6 +463,155 @@ export class AdsUserCompareController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Post('/clickads/')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async clickads(@Headers() headers, @Body() body): Promise<any> {
+        if (await this.utilsService.validasiTokenEmail(headers)) {
+
+            var user_email = null;
+            var watching_time = null;
+            var ads_id = null;
+            var userads_id = null;
+            var current_date = await this.utilsService.getDateTimeString();
+
+            if (body.watchingTime == undefined) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed param watchingTime is reqired',
+                );
+            }
+            if (body.adsId == undefined) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed param adsId is reqired',
+                );
+            }
+            if (body.useradsId == undefined) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed param body.watchingTime is reqired',
+                );
+            }
+            if (typeof body.watchingTime != 'number') {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed param watchingTime invalid format ' + typeof body.watchingTime,
+                );
+            }
+
+            user_email = headers['x-auth-user'];
+            watching_time = body.watchingTime;
+            ads_id = body.adsId;
+            userads_id = body.useradsId;
+
+            const data_userbasicsService = await this.userbasicsService.findOne(user_email);
+            if (!(await this.utilsService.ceckData(data_userbasicsService))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed User not found',
+                );
+            }
+
+            const data_adsService = await this.adsService.findOneActive(ads_id.toString());
+            if (!(await this.utilsService.ceckData(data_adsService))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Ads not found',
+                );
+            }
+
+            var data_adstypesService = await this.adstypesService.findOne(data_adsService.typeAdsID.toString());
+            if (!(await this.utilsService.ceckData(data_adstypesService))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Ads types not found',
+                );
+            }
+            var ads_rewards = data_adstypesService.rewards;
+
+            //Update userads
+            var data_userAdsService = null;
+            try{
+                data_userAdsService = await this.userAdsService.findOneByuserIDAds(data_userbasicsService._id.toString(), ads_id.toString());
+                if (await this.utilsService.ceckData(data_userAdsService)) {
+                    //Update userads
+                    try {
+                        var CreateUserAdsDto_ = new CreateUserAdsDto();
+                        CreateUserAdsDto_.statusView = true;
+                        CreateUserAdsDto_.statusClick = true;
+                        CreateUserAdsDto_.clickAt = current_date;
+                        CreateUserAdsDto_.viewed = 1;
+                        await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
+                    } catch (e) {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Unabled to proceed, ' + e,
+                        );
+                    }
+
+                    if (data_userAdsService.liveTypeuserads) {
+                        //Insert userads
+                        try {
+                            var _CreateUserAdsDto_ = new CreateUserAdsDto();
+                            _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
+                            _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
+                            _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
+                            _CreateUserAdsDto_.createdAt = data_userAdsService.createdAt;
+                            _CreateUserAdsDto_.description = data_userAdsService.description;
+                            _CreateUserAdsDto_.priority = data_userAdsService.priority;
+                            _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
+                            _CreateUserAdsDto_.statusClick = data_userAdsService.statusClick;
+                            _CreateUserAdsDto_.statusView = data_userAdsService.statusView;
+                            _CreateUserAdsDto_.updatedAt = data_userAdsService.updatedAt;
+                            _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
+                            _CreateUserAdsDto_.userID = data_userAdsService.userID;
+                            _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
+                            _CreateUserAdsDto_.viewed = 0;
+                            _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
+                            await this.userAdsService.create(_CreateUserAdsDto_);
+                        } catch (e) {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed, Insert userAds liveTypeuserads' + e,
+                            );
+                        }
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed User Ads not found',
+                    );
+                }
+
+            } catch (e) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Update userads, ' + e,
+                );
+            }
+
+            //Update accountbalace
+            try {
+                var CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
+                CreateAccountbalancesDto_.iduser = data_userbasicsService._id;
+                CreateAccountbalancesDto_.debet = 0;
+                CreateAccountbalancesDto_.kredit = ads_rewards;
+                CreateAccountbalancesDto_.type = "rewards";
+                CreateAccountbalancesDto_.timestamp = current_date;
+                CreateAccountbalancesDto_.description = "rewards form ads click";
+                await this.accountbalancesService.create(CreateAccountbalancesDto_);
+            } catch (e) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, ' + e,
+                );
+            }
+
+            return {
+                response_code: 202,
+                data: {
+                    userAds_id: data_userAdsService._id.toString()
+                },
+                messages: {
+                    info: ['successfully'],
+                },
+            };
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed token and email not match',
+            );
+        }
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post('/update/')
     @HttpCode(HttpStatus.ACCEPTED)
     async update(@Body() body): Promise<any> {

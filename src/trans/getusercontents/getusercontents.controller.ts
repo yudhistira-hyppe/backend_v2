@@ -802,11 +802,19 @@ export class GetusercontentsController {
         var valuecharge = null;
         try {
 
+            datavacharge = await this.settingsService.findOne(idvacharege);
+            valuecharge = datavacharge._doc.value;
+
+        } catch (e) {
+            valuecharge = 0;
+        }
+        try {
+
             datamradmin = await this.settingsService.findOne(idmdradmin);
             var valuemradmin = datamradmin._doc.value;
             var nominalmradmin = saleAmount * valuemradmin / 100;
 
-            totalamount = saleAmount + Math.ceil(nominalmradmin);
+            totalamount = saleAmount + Math.ceil(nominalmradmin) + valuecharge;
 
 
 
@@ -814,14 +822,7 @@ export class GetusercontentsController {
             totalamount = saleAmount + 0;
         }
 
-        try {
 
-            datavacharge = await this.settingsService.findOne(idvacharege);
-            valuecharge = datavacharge._doc.value;
-
-        } catch (e) {
-            valuecharge = 0;
-        }
 
         if (saleAmount > 0) {
             data = {
