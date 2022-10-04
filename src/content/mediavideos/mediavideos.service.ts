@@ -33,6 +33,10 @@ export class MediavideosService {
     return this.MediavideosModel.findOne({ _id: id }).exec();
   }
 
+  async findByIds(ids: string[]): Promise<Mediavideos[]> {
+    return this.MediavideosModel.find().where('_id').in(ids).exec();
+  }  
+
   async findOnepostID(id: string): Promise<Mediavideos> {
     return this.MediavideosModel.findOne({ postID: id }).exec();
   }

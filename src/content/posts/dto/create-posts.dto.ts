@@ -217,3 +217,10 @@ export class PostLandingResponseApps {
     messages: Messages;
     version: string;
 }
+
+export class PostBuildData {
+    vids: string[];
+    picts: string[];
+    user: string[];
+    interest: string[];
+}

@@ -134,7 +134,7 @@ export class UserplaylistService {
       let pid = tmp.postID;
       pids.push(pid);
     }
-    this.logger.log('doGetUserPostPlaylist >>> end: ' + JSON.stringify(pids));
+    //this.logger.log('doGetUserPostPlaylist >>> end: ' + JSON.stringify(pids));
     return pids;
 
   }    
