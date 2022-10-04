@@ -23,6 +23,8 @@ export class CreateUserplaylistDto {
   mediaEndpoint: String;
   mediaThumbEndpoint: String;
   mediaType: String;
+  viewers: any[];
   userBasicData: Object;
   postData: Object;
+  mediaData: Object;
 }

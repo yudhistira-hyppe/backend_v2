@@ -53,6 +53,14 @@ export class Userplaylist {
   userBasicData: Object;
   @Prop({ type: Object })
   postData: Object;
+  @Prop({ type: Object })
+  mediaData: Object;
+  @Prop([{ type: Object }])
+  viewers: [{
+    $ref: String;
+    $id: { oid: String };
+    $db: String;
+  }];
 }
 
 export const UserplaylistSchema = SchemaFactory.createForClass(Userplaylist);

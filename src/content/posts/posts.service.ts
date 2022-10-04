@@ -1417,6 +1417,10 @@ export class PostsService {
       CreateUserplaylistDto_.description = (data_post.description != undefined) ? data_post.description : "";
       CreateUserplaylistDto_.userBasicData = Object(data_userbasic);
       CreateUserplaylistDto_.postData = Object(data_post);
+      CreateUserplaylistDto_.mediaData = Object(data_media);
+      if (data_media.viewers!=undefined) {
+        CreateUserplaylistDto_.viewers = data_media.viewers;
+      }
       if (await this.utilsService.ceckData(data_media)){
         if (data_media.apsara != undefined) {
           CreateUserplaylistDto_.isApsara = data_media.apsara;
