@@ -47,6 +47,8 @@ export class Userplaylist {
   mediaType: String;
   @Prop()
   mediaThumbUri: String;
+  @Prop()
+  apsara: boolean;
 }
 
 export const UserplaylistSchema = SchemaFactory.createForClass(Userplaylist);

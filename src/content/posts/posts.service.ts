@@ -1416,7 +1416,8 @@ export class PostsService {
       CreateUserplaylistDto_.expiration = (data_post.expiration != undefined) ? Number(data_post.expiration) : 0;
       CreateUserplaylistDto_.description = (data_post.description != undefined) ? data_post.description : "";
       if (await this.utilsService.ceckData(data_media)){
-        if (data_media.apsara!=undefined){
+        if (data_media.apsara != undefined) {
+          CreateUserplaylistDto_.apsara = data_media.apsara;
           if (data_media.apsara) {
             if (data_media.mediaType!=undefined){
               if (data_media.mediaType == "video") {
@@ -1441,6 +1442,8 @@ export class PostsService {
               }
             }
           }
+        }else{
+          CreateUserplaylistDto_.apsara = false;
         }
       }
 
