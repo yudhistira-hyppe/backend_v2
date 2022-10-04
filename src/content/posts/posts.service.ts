@@ -1415,9 +1415,11 @@ export class PostsService {
       CreateUserplaylistDto_.postID = (data_post.postID != undefined) ? data_post.postID :"";
       CreateUserplaylistDto_.expiration = (data_post.expiration != undefined) ? Number(data_post.expiration) : 0;
       CreateUserplaylistDto_.description = (data_post.description != undefined) ? data_post.description : "";
+      CreateUserplaylistDto_.userBasicData = Object(data_userbasic);
+      CreateUserplaylistDto_.postData = Object(data_post);
       if (await this.utilsService.ceckData(data_media)){
         if (data_media.apsara != undefined) {
-          CreateUserplaylistDto_.apsara = data_media.apsara;
+          CreateUserplaylistDto_.isApsara = data_media.apsara;
           if (!data_media.apsara) {
             if (data_media.mediaType!=undefined){
               if (data_media.mediaType == "video") {
@@ -1443,7 +1445,7 @@ export class PostsService {
             }
           }
         }else{
-          CreateUserplaylistDto_.apsara = false;
+          CreateUserplaylistDto_.isApsara = false;
           if (data_media.mediaType != undefined) {
             if (data_media.mediaType == "video") {
               if (data_media.mediaThumb != undefined) {

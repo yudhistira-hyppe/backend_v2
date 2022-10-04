@@ -48,7 +48,11 @@ export class Userplaylist {
   @Prop()
   mediaThumbUri: String;
   @Prop()
-  apsara: boolean;
+  isApsara: boolean;
+  @Prop({ type: Object })
+  userBasicData: Object;
+  @Prop({ type: Object })
+  postData: Object;
 }
 
 export const UserplaylistSchema = SchemaFactory.createForClass(Userplaylist);
