@@ -397,13 +397,14 @@ export class PostContentService {
 
     //Upload Seaweedfs
     const seaweedfs_path = '/' + post._id + '/' + postType + '/';
+    this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);    
     try {
       var FormData_ = new FormData();
       FormData_.append(postType, fs.createReadStream(nm));
       const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
-      this.logger.log('dataupload >>> ' + dataupload);
+      this.logger.log('uploadSeaweedfs >>> ' + dataupload);
     } catch (err) {
-      this.logger.log('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
+      this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
     }
     let payload = { 'file': '/localrepo/' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
     //let payload = { 'file': nm, 'postId': apost._id };
@@ -502,13 +503,14 @@ export class PostContentService {
 
     //Upload Seaweedfs
     const seaweedfs_path = '/' + post._id + '/' + postType + '/';
+    this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);    
     try {
       var FormData_ = new FormData();
       FormData_.append(postType, fs.createReadStream(nm));
       const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
-      this.logger.log('dataupload >>> ' + dataupload);
+      this.logger.log('uploadSeaweedfs >>> ' + dataupload);
     } catch (err) {
-      this.logger.log('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
+      this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
     }
     let payload = { 'file': '/localrepo/' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
 
