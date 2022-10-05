@@ -565,6 +565,7 @@ export class AdsUserCompareController {
                     'Unabled to proceed data setting Ads Skip not found',
                 );
             }
+
             if (data_adstypesService.creditValue == undefined) {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed data setting Ads Credit not found',
@@ -620,7 +621,6 @@ export class AdsUserCompareController {
                     CreateUserAdsDto_.clickAt = current_date;
                     CreateUserAdsDto_.viewed = 1;
                     await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
-
                 } catch (e) {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed, ' + e,
