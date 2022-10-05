@@ -804,7 +804,7 @@ export class UtilsService {
       if (await this.ceckData(get_userbasic)) {
         if (get_userbasic.idProofNumber != undefined) { ProfileDTO_.idProofNumber = get_userbasic.idProofNumber; }
       }
-      if (get_userauth.roles != undefined || get_userauth.roles != null) {
+      if (get_userauth.roles != undefined) {
         ProfileDTO_.roles = get_userauth.roles;
       }
       if (await this.ceckData(get_userbasic)) {
