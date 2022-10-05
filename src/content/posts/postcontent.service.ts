@@ -405,7 +405,7 @@ export class PostContentService {
     } catch (err) {
       this.logger.log('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
     }
-    let payload = { 'file': '/localrepo/' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
+    let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
     //let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
@@ -510,7 +510,7 @@ export class PostContentService {
     } catch (err) {
       this.logger.log('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
     }
-    let payload = { 'file': '/localrepo/' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
+    let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
 
     //let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
