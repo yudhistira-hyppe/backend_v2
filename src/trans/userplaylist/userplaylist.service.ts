@@ -137,7 +137,57 @@ export class UserplaylistService {
     //this.logger.log('doGetUserPostPlaylist >>> end: ' + JSON.stringify(pids));
     return pids;
 
-  }    
+  }
+  
+  public async doGetUserPostPlaylistV2(body: any, headers: any, whoami: Userbasic): Promise<Userplaylist[]> {
+    this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
+    let query = this.userplaylistModel.find();
+    if (body.visibility != undefined) {
+      if (body.visibility == 'PRIVATE') {
+        query.where('userId', whoami._id);
+        query.where('userPostId', whoami._id);
+      } else {
+        query.where('type', body.visibility);
+      }
+
+    }
+
+    if (body.postID != undefined) {
+      query.where('postID', body.postID);
+    }
+
+    if (body.postType != undefined) {
+      query.where('postType', body.postType);
+    } else {
+      query.where('postType').ne('advertise');
+    }
+
+    if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
+      query.where('isHidden', false);
+    }
+
+    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
+      this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
+      query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
+    }
+
+    query.where('userId', whoami._id);
+
+    let row = 20;
+    let page = 0;
+    if (body.pageNumber != undefined) {
+      page = body.pageNumber;
+    }
+    if (body.pageRow != undefined) {
+      row = body.pageRow;      
+    }
+    let skip = this.paging(page, row);
+    query.skip(skip);
+    query.limit(row);         
+    query.sort({'createAt': -1});
+    return await query.exec();
+
+  }  
 
   private paging(page: number, row: number) {
     if (page == 0 || page == 1) {
