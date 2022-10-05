@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar, PostLandingResponseApps, PostLandingData } from './dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar, PostLandingResponseApps, PostLandingData, PostBuildData } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -28,7 +28,7 @@ import { MediapictsService } from '../mediapicts/mediapicts.service';
 import { MediadiariesService } from '../mediadiaries/mediadiaries.service';
 import { MediaprofilepictsService } from '../mediaprofilepicts/mediaprofilepicts.service';
 import { IsDefined } from 'class-validator';
-import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userplaylist.dto';
+import { CreateUserplaylistDto, MediaData } from '../../trans/userplaylist/dto/create-userplaylist.dto';
 import { Userplaylist, UserplaylistDocument } from 'src/trans/userplaylist/schemas/userplaylist.schema';
 import { PostPlaylistService } from '../postplaylist/postplaylist.service';
 import { SeaweedfsService } from '../../stream/seaweedfs/seaweedfs.service';
@@ -397,24 +397,18 @@ export class PostContentService {
 
     //Upload Seaweedfs
     const seaweedfs_path = '/' + post._id + '/' + postType + '/';
+    this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);    
     try {
       var FormData_ = new FormData();
       FormData_.append(postType, fs.createReadStream(nm));
       const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
-      this.logger.log('dataupload >>> ' + dataupload);
+      this.logger.log('uploadSeaweedfs >>> ' + dataupload);
     } catch (err) {
-      this.logger.log('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
+      this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
     }
-    let payload = { 'file': '/localrepo/' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
+    let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
     //let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
-
-    let playlist = new CreateUserplaylistDto();
-    playlist.userPostId = Object(profile._id);
-    playlist.postType = post.postType;
-    playlist.mediaId = Object(mediaId);
-    this.logger.log('createNewPostVideo >>> generate playlist ' + JSON.stringify(playlist));
-    this.postService.generateUserPlaylist(playlist);    
 
     var res = new CreatePostResponse();
     res.response_code = 202;
@@ -502,25 +496,28 @@ export class PostContentService {
 
     //Upload Seaweedfs
     const seaweedfs_path = '/' + post._id + '/' + postType + '/';
+    this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);    
     try {
       var FormData_ = new FormData();
       FormData_.append(postType, fs.createReadStream(nm));
       const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
-      this.logger.log('dataupload >>> ' + dataupload);
+      this.logger.log('uploadSeaweedfs >>> ' + dataupload);
     } catch (err) {
-      this.logger.log('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
+      this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
     }
-    let payload = { 'file': '/localrepo/' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
+    let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
 
     //let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
+    /*
     let playlist = new CreateUserplaylistDto();
     playlist.userPostId = Object(profile._id);
     playlist.postType = post.postType;
     playlist.mediaId = Object(mediaId);
     this.logger.log('createNewPostPic >>> generate playlist ' + JSON.stringify(playlist));
     this.postService.generateUserPlaylist(playlist);
+    */
 
     var res = new CreatePostResponse();
     res.response_code = 202;
@@ -542,6 +539,8 @@ export class PostContentService {
     if (post == undefined) {
       return;
     }
+    var profile = await this.userService.findOne(String(post.email));
+
     let cm = post.contentMedias[0];
     let ns = cm.namespace;
     this.logger.log('updateNewPost >>> namespace: ' + ns);
@@ -636,7 +635,12 @@ export class PostContentService {
       });
     }
 
-
+    let playlist = new CreateUserplaylistDto();
+    playlist.userPostId = Object(profile._id);
+    playlist.postType = post.postType;
+    playlist.mediaId = Object(cm.oid);
+    this.logger.log('createNewPostVideo >>> generate playlist ' + JSON.stringify(playlist));
+    this.postService.generateUserPlaylist(playlist);    
   }
 
   async getUserPost(body: any, headers: any): Promise<PostResponseApps> {
@@ -692,55 +696,6 @@ export class PostContentService {
     return res;
   }
 
-  async getUserPostLandingPage(body: any, headers: any): Promise<PostLandingResponseApps> {
-
-    let type = 'GET_POST';
-    var token = headers['x-auth-token'];
-    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
-    var profile = await this.userService.findOne(auth.email);
-    this.logger.log('getUserPost >>> profile: ' + profile);
-
-    let res = new PostLandingResponseApps();
-    let data = new PostLandingData();
-    res.response_code = 202;
-
-    let row = 20;
-    let page = 0;
-    if (body.pageNumber != undefined) {
-      page = body.pageNumber;
-    }
-    if (body.pageRow != undefined) {
-      row = body.pageRow;
-    }    
-
-    body.postType = 'vid';
-    let postVid = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);;
-    let pv = await this.loadBulk(postVid, page, row);
-    let pdv = await this.loadPostData(pv, body, profile);
-    data.video = pdv;
-
-    body.postType = 'pict';
-    let postPid = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
-    let pp = await this.loadBulk(postPid, page, row);
-    let pdp = await this.loadPostData(pp, body, profile);
-    data.pict = pdp;    
-
-    body.postType = 'diary';
-    let postDid = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
-    let pd = await this.loadBulk(postDid, page, row);
-    let pdd = await this.loadPostData(pd, body, profile);
-    data.diary = pdd;        
-
-    body.postType = 'story';
-    let postSid = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
-    let ps = await this.loadBulk(postSid, page, row);
-    let pds = await this.loadPostData(ps, body, profile);
-    data.story = pds;            
-
-    res.data = data;
-
-    return res;
-  }  
 
   async getUserPostByProfile(body: any, headers: any): Promise<PostResponseApps> {
 
@@ -946,7 +901,7 @@ export class PostContentService {
   }
 
   private async loadPostData(posts: Posts[], body: any, iam: Userbasic): Promise<PostData[]> {
-    this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(posts));
+    //this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(posts));
     let pd = Array<PostData>();
     if (posts != undefined) {
 
@@ -1275,8 +1230,368 @@ export class PostContentService {
     return pd;
   }
 
+  private async loadPostDataBulk(posts: Posts[], body: any, iam: Userbasic, xvids: string[], xpics: string[]): Promise<PostData[]> {
+    //this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(posts));
+    let pd = Array<PostData>();
+    if (posts != undefined) {
+
+      for (let i = 0; i < posts.length; i++) {
+        let ps = posts[i];
+        let pa = new PostData();
+
+        pa.active = ps.active;
+        pa.allowComments = ps.allowComments;
+        pa.certified = ps.certified;
+        pa.createdAt = String(ps.createdAt);
+        pa.updatedAt = String(ps.updatedAt);
+        pa.description = String(ps.description);
+        pa.email = String(ps.email);
+
+        let following = await this.contentEventService.findFollowing(pa.email);
+
+        if (ps.userProfile != undefined) {
+          if (ps.userProfile?.namespace) {
+            let oid = String(ps.userProfile.oid);
+            let ua = await this.userService.findbyid(oid.toString());
+            if (ua != undefined) {
+              let ub = await this.userAuthService.findOneByEmail(ua.email);
+              if (ub != undefined) {
+                pa.username = ub.username;
+              }
+
+              pa.avatar = await this.getProfileAvatar(ua);
+            } else {
+              this.logger.log('oid: ' + oid + ' error');
+            }
+          }
+        }
+
+        pa.isApsara = false;
+        pa.location = ps.location;
+        pa.visibility = String(ps.visibility);
+
+        if (ps.metadata != undefined) {
+          let md = ps.metadata;
+          let md1 = new Metadata();
+          md1.duration = Number(md.duration);
+          md1.email = String(md.email);
+          md1.midRoll = Number(md.midRoll);
+          md1.postID = String(md.postID);
+          md1.postRoll = Number(md.postRoll);
+          md1.postType = String(md.postType);
+          md1.preRoll = Number(md.preRoll);
+          pa.metadata = md1;
+        }
+
+
+        pa.postID = String(ps.postID);
+        pa.postType = String(ps.postType);
+        pa.saleAmount = ps.saleAmount;
+        pa.saleLike = ps.saleLike;
+        pa.saleView = ps.saleView;
+
+        if (ps.tagPeople != undefined && ps.tagPeople.length > 0) {
+          let atp = ps.tagPeople;
+          let atp1 = Array<TagPeople>();
+
+          for (let x = 0; x < atp.length; x++) {
+            let tp = atp[i];
+            if (tp?.namespace) {
+              let oid = tp.oid;
+              let ua = await this.userAuthService.findById(oid.toString());
+              if (ua != undefined) {
+                let tp1 = new TagPeople();
+                tp1.email = String(ua.email);
+                tp1.username = String(ua.username);
+
+                let ub = await this.userService.findOne(String(ua.email));
+                if (ub != undefined) {
+                  tp1.avatar = await this.getProfileAvatar(ub);
+                }
+
+                tp1.status = 'TOFOLLOW';
+                if (tp1.email == pa.email) {
+                  tp1.status = "UNLINK";
+                } else {
+                  for (let i = 0; i < following.length; i++) {
+                    let fol = following[i];
+                    if (fol.email == tp1.email) {
+                      tp1.status = "FOLLOWING";
+                    }
+                  }
+                }
+                atp1.push(tp1);
+              }
+            }
+          }
+
+          pa.tagPeople = atp1;
+        }
+
+        if (ps.category != undefined && ps.category.length > 0) {
+          let atp = ps.category;
+          let atp1 = Array<Cat>();
+
+          for (let x = 0; x < atp.length; x++) {
+            let tp = atp[i];
+            if (tp?.namespace) {
+              let oid = tp.oid;
+              let ua = await this.interestService.findOne(oid.toString());
+              if (ua != undefined) {
+                let tp1 = new Cat();
+                tp1._id = String(ua._id);
+                tp1.interestName = String(ua.interestName);
+                tp1.langIso = String(ua.langIso);
+                tp1.icon = String(ua.icon);
+                tp1.createdAt = String(ua.createdAt);
+                tp1.updatedAt = String(ua.updatedAt);
+
+                atp1.push(tp1);
+              }
+            }
+          }
+          pa.cats = atp1;
+        }
+
+        let privacy = new Privacy();
+        privacy.isPostPrivate = false;
+        privacy.isPrivate = false;
+        privacy.isCelebrity = false;
+        pa.privacy = privacy;
+
+        pa.tags = ps.tags;
+
+        //Insight
+
+        if ((body.withInsight != undefined && (body.withInsight == true || body.withInsight == 'true'))) {
+          let insight = await this.insightService.findemail(String(ps.email));
+          if (insight == undefined) {
+            continue;
+          }
+
+          let tmp = new InsightPost();
+          tmp.follower = Number(insight.followers);
+          tmp.following = Number(insight.followings);
+          tmp.likes = Number(insight.likes);
+          tmp.views = Number(insight.views);
+          tmp.shares = Number(insight.shares);
+          tmp.comments = Number(insight.comments);
+          tmp.reactions = Number(insight.reactions);
+          pa.insight = tmp;
+
+        }
+
+        //MEDIA
+        let meds = ps.contentMedias;
+        if (meds != undefined) {
+          for (let i = 0; i < meds.length; i++) {
+            let med = meds[i];
+            let ns = med.namespace;
+            if (ns == 'mediavideos') {
+              let video = await this.videoService.findOne(String(med.oid));
+              if (video.apsara == true) {
+                xvids.push(String(video.apsaraId));
+                pa.apsaraId = String(video.apsaraId);
+                pa.isApsara = true;
+              } else {
+                pa.mediaThumbUri = video.mediaThumb;
+                pa.mediaEndpoint = '/stream/' + video.mediaUri;
+                pa.mediaThumbEndpoint = '/thumb/' + video.postID;
+              }
+
+              //mediatype
+              pa.mediaType = 'video';
+
+              //isview
+              pa.isViewed = false;
+              if (video.viewers != undefined && video.viewers.length > 0) {
+                for (let i = 0; i < video.viewers.length; i++) {
+                  let vwt = video.viewers[i];
+                  let vwns = vwt.namespace;
+                  if (vwns == 'userbasics') {
+                    let vw = await this.userService.findbyid(vwns.oid);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }
+
+            } else if (ns == 'mediapicts') {
+              let pic = await this.picService.findOne(String(med.oid));
+              if (pic.apsara == true) {
+                xpics.push(String(pic.apsaraId));
+                pa.apsaraId = String(pic.apsaraId);
+                pa.isApsara = true;
+              } else {
+                pa.mediaEndpoint = '/pict/' + pic.postID;
+                pa.mediaUri = pic.mediaUri;
+              }
+
+              pa.mediaType = 'image';
+
+              //isview
+              pa.isViewed = false;
+              if (pic.viewers != undefined && pic.viewers.length > 0) {
+                for (let i = 0; i < pic.viewers.length; i++) {
+                  let pct = pic.viewers[i];
+                  let pcns = pct.namespace;
+                  if (pcns == 'userbasics') {
+                    let vw = await this.userService.findbyid(pcns.oid);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }
+            } else if (ns == 'mediadiaries') {
+              let diary = await this.diaryService.findOne(String(med.oid));
+              if (diary.apsara == true) {
+                xvids.push(String(diary.apsaraId));
+                pa.apsaraId = String(diary.apsaraId);
+                pa.isApsara = true;
+              } else {
+                pa.mediaThumbUri = diary.mediaThumb;
+                pa.mediaEndpoint = '/stream/' + diary.mediaUri;
+                pa.mediaThumbEndpoint = '/thumb/' + diary.postID;
+              }
+
+              pa.mediaType = 'video';
+
+              //isview
+              pa.isViewed = false;
+              if (diary.viewers != undefined && diary.viewers.length > 0) {
+                for (let i = 0; i < diary.viewers.length; i++) {
+                  let drt = diary.viewers[i];
+                  let drns = drt.namespace;
+                  if (drns == 'userbasics') {
+                    let vw = await this.userService.findbyid(drns.oid);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }
+            } else if (ns == 'mediastories') {
+              let story = await this.storyService.findOne(String(med.oid));
+
+              if (story.mediaType == 'video') {
+                if (story.apsara == true) {
+                  xvids.push(String(story.apsaraId));
+                  pa.apsaraId = String(story.apsaraId);
+                  pa.isApsara = true;
+                } else {
+                  pa.mediaThumbUri = story.mediaThumb;
+                  pa.mediaEndpoint = '/stream/' + story.mediaUri;
+                  pa.mediaThumbEndpoint = '/thumb/' + story.postID;
+                }
+                pa.mediaType = 'video';
+              } else {
+                if (story.apsara == true) {
+                  xpics.push(String(story.apsaraId));
+                  pa.apsaraId = String(story.apsaraId);
+                  pa.isApsara = true;
+                } else {
+                  pa.mediaThumbUri = story.mediaThumb;
+                  pa.mediaEndpoint = '/pict/' + story.mediaUri;
+                  pa.mediaThumbEndpoint = '/thumb/' + story.postID;
+                }
+                pa.mediaType = 'image';
+              }
+
+              //isview
+              pa.isViewed = false;
+              if (story.viewers != undefined && story.viewers.length > 0) {
+                for (let i = 0; i < story.viewers.length; i++) {
+                  let drt = story.viewers[i];
+                  let drns = drt.namespace;
+                  if (drns == 'userbasics') {
+                    let vw = await this.userService.findbyid(drns.oid);
+                    if (vw != undefined && vw.email == iam.email) {
+                      pa.isViewed = true;
+                      break;
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        pd.push(pa);
+      }
+    }
+    return pd;
+  }
+  
+  private async buildDataRef(posts: Posts[], body: any, iam: Userbasic): Promise<PostBuildData> {
+    let res = new PostBuildData();
+    let xvids = new Map();
+    let xpics = new Map();
+    let xdiary = new Map();
+    let xstory = new Map();
+    let xuser = new Map();
+    let ins = new Map();
+
+    if (posts != undefined) {
+
+      for (let i = 0; i < posts.length; i++) {
+        let ps = posts[i];
+        
+        if (ps.userProfile != undefined) {
+          if (ps.userProfile?.namespace) {
+            let oid = String(ps.userProfile.oid);
+            xuser.set(oid, oid);
+          }
+        }        
+
+        if (ps.tagPeople != undefined && ps.tagPeople.length > 0) {
+          let atp = ps.tagPeople;
+
+          for (let x = 0; x < atp.length; x++) {
+            let tp = atp[i];
+            if (tp?.namespace) {
+              let oid = tp.oid;
+              xuser.set(oid, oid);
+            }
+          }
+        }  
+        
+        ins.set(String(ps.email), String(ps.email));
+
+        let meds = ps.contentMedias;
+        if (meds != undefined) {
+          for (let i = 0; i < meds.length; i++) {
+            let med = meds[i];
+            let ns = med.namespace;
+            if (ns == 'mediavideos') {
+              xvids.set(String(med.oid), String(med.oid));
+            } else if (ns == 'mediapicts') {
+              xpics.set(String(med.oid), String(med.oid));
+            } else if (ns == 'mediadiaries') {
+              xdiary.set(String(med.oid), String(med.oid));              
+            } else if (ns == 'mediastories') {
+              xstory.set(String(med.oid), String(med.oid));              
+            }
+          }
+        }
+      }
+
+      let tmpvid = Array.from(xvids.values());      
+      if (tmpvid.length > 0) {
+        let vids = await this.videoService.findByIds(tmpvid);
+        console.log(vids);
+      }
+    }
+
+    return res;
+  }
+
   public async getVideoApsara(ids: String[]): Promise<ApsaraVideoResponse> {
     let vids = ids.join(',');
+    this.logger.log("getVideoApsara >>> video id: " + vids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
     let client = new RPCClient({
@@ -1303,6 +1618,7 @@ export class PostContentService {
 
   public async getImageApsara(ids: String[]): Promise<ApsaraImageResponse> {
     let vids = ids.join(',');
+    this.logger.log("getImageApsara >>> video id: " + vids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
     let client = new RPCClient({
@@ -1327,7 +1643,7 @@ export class PostContentService {
     return tx;
   }
 
-  async getVideoApsaraSingle(ids: String): Promise<ApsaraPlayResponse> {
+  public async getVideoApsaraSingle(ids: String): Promise<ApsaraPlayResponse> {
     this.logger.log('getVideoApsaraSingle >>> start: ' + ids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
@@ -1364,7 +1680,7 @@ export class PostContentService {
     return num;
   }
 
-  private async getProfileAvatar(profile: Userbasic) {
+  public async getProfileAvatar(profile: Userbasic) {
     if (profile == undefined || profile.profilePict == undefined) {
       return undefined;
     }

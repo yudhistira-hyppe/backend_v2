@@ -2643,7 +2643,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Post('api/user/kyc/stat')
-  async kycUpdateStatus(@Headers() headers,
+  async kycUpdateStatus(
     @Query('status') status: string,
     @Query('email') email: string): Promise<Object> {
     if (email == undefined) {

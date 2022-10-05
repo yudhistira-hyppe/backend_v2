@@ -28,4 +28,10 @@ export class SettingsService {
             new: true
         }).exec();
     }
+
+    async findOneAndUpdate_(_id_setting: string, value_: any): Promise<Settings> {
+        return this.settingsModel.findOneAndUpdate({ _id: _id_setting }, { value: value_ }, {
+            new: true
+        }).exec();
+    }
 }

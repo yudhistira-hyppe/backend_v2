@@ -28,3 +28,18 @@ export class CreateUserplaylistDto {
   postData: Object;
   mediaData: Object;
 }
+
+export class MediaData {
+  _id: string;
+  mediaID: string;
+  postID: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  mediaType: string;
+  originalName: string;
+  mediaMime: string;
+  _class: string;
+  apsara: boolean;  
+  apsaraId: string;  
+}
