@@ -834,9 +834,9 @@ export class UtilsService {
       }else{
         if (get_userbasic.isIdVerified != undefined) {
           if (get_userbasic.isIdVerified) {
-            ProfileDTO_.statusKyc = "unverified";
-          }else{
             ProfileDTO_.statusKyc = "review";
+          } else {
+            ProfileDTO_.statusKyc = "unverified";
           }
         } else {
           ProfileDTO_.statusKyc = "unverified";

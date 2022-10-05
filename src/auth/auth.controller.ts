@@ -2641,6 +2641,27 @@ export class AuthController {
     // }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('api/user/kyc/stat')
+  async kycUpdateStatus(
+    @Query('status') status: string,
+    @Query('email') email: string): Promise<Object> {
+    if (email == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed param email required',
+      );
+    }
+    let isIdVerified = false;
+    if (status == "unverified") {
+      isIdVerified = false;
+    } else if (status == "verified") {
+      isIdVerified = true;
+    } else if (status == "review") {
+      isIdVerified = false;
+    }
+    return this.userbasicsService.updateStatusKyc(email, isIdVerified, status);
+  }
+
   // @HttpCode(HttpStatus.ACCEPTED)
   // @Get('api/user/getpin?')
   // async getPin(@Query('email') email: string) {
