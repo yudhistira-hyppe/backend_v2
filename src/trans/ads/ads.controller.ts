@@ -1213,7 +1213,7 @@ export class AdsController {
             var dt = new Date(Date.now());
             dt.setHours(dt.getHours() + 7); // timestamp
             dt = new Date(dt);
-            var dtexpired = new Date(CreateAdsDto.expiredAt);
+            // var dtexpired = new Date(CreateAdsDto.expiredAt);
 
             var dataUservoucher = null;
             var arrObjinterest = [];
@@ -1336,7 +1336,7 @@ export class AdsController {
 
 
                     CreateAdsDto.timestamp = dt.toISOString();
-                    CreateAdsDto.expiredAt = dtexpired.toISOString();
+                    //  CreateAdsDto.expiredAt = dtexpired.toISOString();
                     CreateAdsDto.userID = iduser;
                     CreateAdsDto.status = "DRAFT";
                     CreateAdsDto.isActive = false;
