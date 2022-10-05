@@ -178,17 +178,22 @@ export class PostContentPlaylistService {
       }
     }    
 
-    st = await this.utilService.getDateTimeDate();
-    await this.postContentService.getVideoApsara(xvids);
-    ed = await this.utilService.getDateTimeDate();
-    gap = ed.getTime() - st.getTime();
-    this.logger.log('getUserPostLandingPage >>> apsara video with : ' + xvids.length + " item is: " + gap);
+    if (xvids.length > 0) {
+      st = await this.utilService.getDateTimeDate();
+      await this.postContentService.getVideoApsara(xvids);
+      ed = await this.utilService.getDateTimeDate();
+      gap = ed.getTime() - st.getTime();
+      this.logger.log('getUserPostLandingPage >>> apsara video with : ' + xvids.length + " item is: " + gap);
+    }
 
-    st = await this.utilService.getDateTimeDate();    
-    await this.postContentService.getImageApsara(xvids);  
-    ed = await this.utilService.getDateTimeDate();
-    gap = ed.getTime() - st.getTime();      
-    this.logger.log('getUserPostLandingPage >>> apsara image with : ' + xpics.length + " item is: " + gap);
+    if (xpics.length > 0) {
+      st = await this.utilService.getDateTimeDate();    
+      await this.postContentService.getImageApsara(xpics);  
+      ed = await this.utilService.getDateTimeDate();
+      gap = ed.getTime() - st.getTime();      
+      this.logger.log('getUserPostLandingPage >>> apsara image with : ' + xpics.length + " item is: " + gap);
+    }
+
     return res;
   }    
 
