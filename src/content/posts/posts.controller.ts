@@ -27,6 +27,7 @@ import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userp
 import { ContenteventsService } from '../contentevents/contentevents.service';
 import { InsightsService } from '../insights/insights.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
+import { PostContentPlaylistService } from './postcontentplaylist.service';
 
 @Controller()
 export class PostsController {
@@ -40,6 +41,7 @@ export class PostsController {
     private readonly contenteventsService: ContenteventsService,
     private readonly insightsService: InsightsService,
     private readonly userbasicsService: UserbasicsService,
+    private readonly postPlayListService: PostContentPlaylistService,    
     private readonly groupModuleService: GroupModuleService) { }
 
   @Post()
@@ -286,7 +288,7 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('postContent'))
   async getUserPostLandingPage(@Body() body, @Headers() headers): Promise<PostLandingResponseApps> {
     this.logger.log("getUserPostLandingPage >>> start: " + JSON.stringify(body));
-    return this.postContentService.getUserPostLandingPage(body, headers);
+    return this.postPlayListService.getUserPostLandingPage(body, headers);
   }
 
   @UseGuards(JwtAuthGuard)

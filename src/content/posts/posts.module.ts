@@ -23,6 +23,7 @@ import { PostPlayModule } from '../postplaylist/postplaylist.module';
 import { SeaweedfsModule } from '../../stream/seaweedfs/seaweedfs.module';
 import { BullModule } from '@nestjs/bull';
 import { NestjsFormDataModule } from 'nestjs-form-data';
+import { PostContentPlaylistService } from './postcontentplaylist.service';
 @Module({
 
     imports: [
@@ -40,7 +41,7 @@ import { NestjsFormDataModule } from 'nestjs-form-data';
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [PostsController],
-    providers: [PostsService, PostContentService],
-    exports: [PostsService, PostContentService],
+    providers: [PostsService, PostContentService, PostContentPlaylistService],
+    exports: [PostsService, PostContentService, PostContentPlaylistService],
 })
 export class PostsModule { }
