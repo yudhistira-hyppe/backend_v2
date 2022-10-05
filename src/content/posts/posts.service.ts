@@ -66,7 +66,7 @@ export class PostsService {
   }
 
   async findAllSort(): Promise<Posts[]> {
-    return this.PostsModel.find().sort({ createdAt: 1 }).exec();
+    return this.PostsModel.find().sort({ createdAt: -1 }).exec();
   }
 
   async findid(id: string): Promise<Posts> {
@@ -1415,6 +1415,65 @@ export class PostsService {
       CreateUserplaylistDto_.postID = (data_post.postID != undefined) ? data_post.postID :"";
       CreateUserplaylistDto_.expiration = (data_post.expiration != undefined) ? Number(data_post.expiration) : 0;
       CreateUserplaylistDto_.description = (data_post.description != undefined) ? data_post.description : "";
+      CreateUserplaylistDto_.userBasicData = Object(data_userbasic);
+      CreateUserplaylistDto_.postData = Object(data_post);
+      CreateUserplaylistDto_.mediaData = Object(data_media);
+      if (data_media.viewers!=undefined) {
+        CreateUserplaylistDto_.viewers = data_media.viewers;
+      }
+      if (await this.utilsService.ceckData(data_media)){
+        if (data_media.apsara != undefined) {
+          CreateUserplaylistDto_.isApsara = data_media.apsara;
+          if (!data_media.apsara) {
+            if (data_media.mediaType!=undefined){
+              if (data_media.mediaType == "video") {
+                if (data_media.mediaThumb != undefined) {
+                  CreateUserplaylistDto_.mediaThumbUri = data_media.mediaThumb;
+                }
+                if (data_media.mediaUri != undefined) {
+                  CreateUserplaylistDto_.mediaEndpoint = "/stream/" + data_media.mediaUri;
+                }
+                if (data_media.postID != undefined) {
+                  CreateUserplaylistDto_.mediaThumbEndpoint = "/thumb/" + data_media.postID;
+                } 
+                CreateUserplaylistDto_.mediaType = data_media.mediaType;
+              } else if (data_media.mediaType == "image") {
+                if (data_media.mediaUri != undefined) {
+                  CreateUserplaylistDto_.mediaEndpoint = "/pict" + data_media.mediaUri;
+                }
+                if (data_media.mediaUri != undefined) {
+                  CreateUserplaylistDto_.mediaThumbEndpoint = "/thumb/" + data_media.postID;
+                }
+                CreateUserplaylistDto_.mediaType = data_media.mediaType;
+              }
+            }
+          }
+        }else{
+          CreateUserplaylistDto_.isApsara = false;
+          if (data_media.mediaType != undefined) {
+            if (data_media.mediaType == "video") {
+              if (data_media.mediaThumb != undefined) {
+                CreateUserplaylistDto_.mediaThumbUri = data_media.mediaThumb;
+              }
+              if (data_media.mediaUri != undefined) {
+                CreateUserplaylistDto_.mediaEndpoint = "/stream/" + data_media.mediaUri;
+              }
+              if (data_media.postID != undefined) {
+                CreateUserplaylistDto_.mediaThumbEndpoint = "/thumb/" + data_media.postID;
+              }
+              CreateUserplaylistDto_.mediaType = data_media.mediaType;
+            } else if (data_media.mediaType == "image") {
+              if (data_media.mediaUri != undefined) {
+                CreateUserplaylistDto_.mediaEndpoint = "/pict" + data_media.mediaUri;
+              }
+              if (data_media.mediaUri != undefined) {
+                CreateUserplaylistDto_.mediaThumbEndpoint = "/thumb/" + data_media.postID;
+              }
+              CreateUserplaylistDto_.mediaType = data_media.mediaType;
+            }
+          }
+        }
+      }
 
       // const userId = element._id.toString();
       // const userIdPost = data_userbasic._id.toString();

@@ -39,6 +39,28 @@ export class Userplaylist {
   description: String;
   @Prop()
   expiration: Number;
+  @Prop()
+  mediaEndpoint: String;
+  @Prop()
+  mediaThumbEndpoint: String;
+  @Prop()
+  mediaType: String;
+  @Prop()
+  mediaThumbUri: String;
+  @Prop()
+  isApsara: boolean;
+  @Prop({ type: Object })
+  userBasicData: Object;
+  @Prop({ type: Object })
+  postData: Object;
+  @Prop({ type: Object })
+  mediaData: Object;
+  @Prop([{ type: Object }])
+  viewers: [{
+    $ref: String;
+    $id: { oid: String };
+    $db: String;
+  }];
 }
 
 export const UserplaylistSchema = SchemaFactory.createForClass(Userplaylist);

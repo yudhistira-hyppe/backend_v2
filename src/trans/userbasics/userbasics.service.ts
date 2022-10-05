@@ -80,6 +80,18 @@ export class UserbasicsService {
     return data;
   }
 
+  async updateStatusKyc(email: string, status: Boolean, statusKyc: string): Promise<Object> {
+    let data = await this.userbasicModel.updateOne({ "email": email },
+      {
+        $set: {
+          "isIdVerified": status,
+          "statusKyc": statusKyc
+        }
+      },
+    );
+    return data;
+  }
+
   async update(
     id: string,
     createUserbasicDto: CreateUserbasicDto,
@@ -141,11 +153,12 @@ export class UserbasicsService {
     return data;
   }
 
-  async updateIdVerifiedUser(id: ObjectId,status:string): Promise<Object> {
+  async updateIdVerifiedUser(id: ObjectId, isIdVerified: boolean, statusKyc: string): Promise<Object> {
     let data = await this.userbasicModel.updateOne({ "_id": id },
       {
         $set: {
-          "isIdVerified": status
+          "isIdVerified": isIdVerified,
+          "statusKyc": statusKyc
         }
       });
 

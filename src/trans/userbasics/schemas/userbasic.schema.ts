@@ -34,7 +34,7 @@ export class Userbasic {
   @Prop()
   isCelebrity: boolean;
   @Prop()
-  isIdVerified: String;
+  isIdVerified: boolean;
   @Prop()
   isPrivate: boolean;
   @Prop()
@@ -128,6 +128,8 @@ export class Userbasic {
   otppinVerified: boolean;
   @Prop()
   otp_attemp: number;
+  @Prop()
+  statusKyc: string;
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);
