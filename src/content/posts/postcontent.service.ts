@@ -80,7 +80,7 @@ export class PostContentService {
     }
 
     if (body.certified && body.certified == "true") {
-      if (profile.isIdVerified != false) {
+      if (profile.isIdVerified != true) {
         let msg = new Messages();
         msg.info = ["The user ID has not been verified"];
         res.messages = msg;
@@ -410,13 +410,6 @@ export class PostContentService {
     //let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
-    let playlist = new CreateUserplaylistDto();
-    playlist.userPostId = Object(profile._id);
-    playlist.postType = post.postType;
-    playlist.mediaId = Object(mediaId);
-    this.logger.log('createNewPostVideo >>> generate playlist ' + JSON.stringify(playlist));
-    this.postService.generateUserPlaylist(playlist);    
-
     var res = new CreatePostResponse();
     res.response_code = 202;
     let msg = new Messages();
@@ -517,12 +510,14 @@ export class PostContentService {
     //let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
+    /*
     let playlist = new CreateUserplaylistDto();
     playlist.userPostId = Object(profile._id);
     playlist.postType = post.postType;
     playlist.mediaId = Object(mediaId);
     this.logger.log('createNewPostPic >>> generate playlist ' + JSON.stringify(playlist));
     this.postService.generateUserPlaylist(playlist);
+    */
 
     var res = new CreatePostResponse();
     res.response_code = 202;
@@ -544,6 +539,8 @@ export class PostContentService {
     if (post == undefined) {
       return;
     }
+    var profile = await this.userService.findOne(String(post.email));
+
     let cm = post.contentMedias[0];
     let ns = cm.namespace;
     this.logger.log('updateNewPost >>> namespace: ' + ns);
@@ -638,7 +635,12 @@ export class PostContentService {
       });
     }
 
-
+    let playlist = new CreateUserplaylistDto();
+    playlist.userPostId = Object(profile._id);
+    playlist.postType = post.postType;
+    playlist.mediaId = Object(cm.oid);
+    this.logger.log('createNewPostVideo >>> generate playlist ' + JSON.stringify(playlist));
+    this.postService.generateUserPlaylist(playlist);    
   }
 
   async getUserPost(body: any, headers: any): Promise<PostResponseApps> {
