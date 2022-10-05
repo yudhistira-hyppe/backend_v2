@@ -19,5 +19,6 @@ export class CreateUserAdsDto {
     liveAt: string;
     adstypesId: mongoose.Types.ObjectId;
     nameType: string;
+    timeViewSecond: number;
 
 }

@@ -40,5 +40,7 @@ export class UserAds {
     adstypesId: mongoose.Types.ObjectId;
     @Prop()
     nameType: string;
+    @Prop()
+    timeViewSecond: number;
 }
 export const UserAdsSchema = SchemaFactory.createForClass(UserAds);
