@@ -125,6 +125,7 @@ export class PostsService {
             "$id": iduser,
             "$db": "hyppe_trans_db"
           },
+          "certified": true,
           "metadata.email": email
         }
       });
@@ -1412,20 +1413,20 @@ export class PostsService {
       CreateUserplaylistDto_.updatedAt = data_post.updatedAt;
       CreateUserplaylistDto_.isWatched = false;
       CreateUserplaylistDto_.isHidden = isHidden_;
-      CreateUserplaylistDto_.postID = (data_post.postID != undefined) ? data_post.postID :"";
+      CreateUserplaylistDto_.postID = (data_post.postID != undefined) ? data_post.postID : "";
       CreateUserplaylistDto_.expiration = (data_post.expiration != undefined) ? Number(data_post.expiration) : 0;
       CreateUserplaylistDto_.description = (data_post.description != undefined) ? data_post.description : "";
       CreateUserplaylistDto_.userBasicData = Object(data_userbasic);
       CreateUserplaylistDto_.postData = Object(data_post);
       CreateUserplaylistDto_.mediaData = Object(data_media);
-      if (data_media.viewers!=undefined) {
+      if (data_media.viewers != undefined) {
         CreateUserplaylistDto_.viewers = data_media.viewers;
       }
-      if (await this.utilsService.ceckData(data_media)){
+      if (await this.utilsService.ceckData(data_media)) {
         if (data_media.apsara != undefined) {
           CreateUserplaylistDto_.isApsara = data_media.apsara;
           if (!data_media.apsara) {
-            if (data_media.mediaType!=undefined){
+            if (data_media.mediaType != undefined) {
               if (data_media.mediaType == "video") {
                 if (data_media.mediaThumb != undefined) {
                   CreateUserplaylistDto_.mediaThumbUri = data_media.mediaThumb;
@@ -1435,7 +1436,7 @@ export class PostsService {
                 }
                 if (data_media.postID != undefined) {
                   CreateUserplaylistDto_.mediaThumbEndpoint = "/thumb/" + data_media.postID;
-                } 
+                }
                 CreateUserplaylistDto_.mediaType = data_media.mediaType;
               } else if (data_media.mediaType == "image") {
                 if (data_media.mediaUri != undefined) {
@@ -1448,7 +1449,7 @@ export class PostsService {
               }
             }
           }
-        }else{
+        } else {
           CreateUserplaylistDto_.isApsara = false;
           if (data_media.mediaType != undefined) {
             if (data_media.mediaType == "video") {

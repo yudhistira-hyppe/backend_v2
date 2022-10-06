@@ -39,7 +39,7 @@ export class AdstypesService {
                 $project: {
                     _id: "$_id",
                     nameType: "$nameType",
-                    nameAds: "$field.nameAds",
+                    creditValue: "$creditValue",
                     adsplaces: "$adsplaces"
                 }
             }
