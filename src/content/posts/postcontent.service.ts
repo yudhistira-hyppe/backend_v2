@@ -1769,20 +1769,24 @@ export class PostContentService {
 
   public async generateCertificate(postId: string, lang: string): Promise<string> {
 
+    this.logger.log('generateCertificate >>> post: ' + postId + ', lang: ' + lang);
     const cheerio = require('cheerio');
     const QRCode = require('qrcode');
     const pdfWriter = require('html-pdf-node');
 
     let post = await this.PostsModel.findOne({ postID: postId }).exec();
     if (post == undefined) {
+      this.logger.error('generateCertificate >>> get post: undefined');
       return undefined;
     }
     if (post.certified == false) {
+      this.logger.error('generateCertificate >>> get post certified: ' + post.certified);
       return undefined;
     }
 
     let profile = await this.userService.findOne(String(post.email));
     if (profile == undefined) {
+      this.logger.error('generateCertificate >>> validate profile: ' + post.email);
       return undefined;
     }
     
