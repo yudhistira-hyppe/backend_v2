@@ -188,7 +188,7 @@ export class PostContentService {
     }
 
     if (body.certified != undefined) {
-      post.certified = body.certified;
+      post.certified = <boolean> body.certified;
     } else {
       post.certified = false;
     }
@@ -284,11 +284,7 @@ export class PostContentService {
     ce.sequenceNumber = 0;
     ce._class = 'io.melody.hyppe.content.domain.ContentEvent';
     this.contentEventService.create(ce);
-
-    if (post.certified) {
-      this.generateCertificate(String(post.postID), 'id');
-    }
-
+    
     return post;
   }
 
@@ -417,6 +413,13 @@ export class PostContentService {
     //let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
+    this.logger.log('createNewPostVideo >>> check certified. ' + post.certified);
+
+    if (post.certified) {
+      this.generateCertificate(String(post.postID), 'id');
+    }
+
+    
     var res = new CreatePostResponse();
     res.response_code = 202;
     let msg = new Messages();
@@ -517,14 +520,12 @@ export class PostContentService {
     //let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
-    /*
-    let playlist = new CreateUserplaylistDto();
-    playlist.userPostId = Object(profile._id);
-    playlist.postType = post.postType;
-    playlist.mediaId = Object(mediaId);
-    this.logger.log('createNewPostPic >>> generate playlist ' + JSON.stringify(playlist));
-    this.postService.generateUserPlaylist(playlist);
-    */
+    this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
+    if (post.certified) {
+      this.generateCertificate(String(post.postID), 'id');
+    } else {
+      this.logger.error('createNewPostPict >>> post is not certified');
+    }
 
     var res = new CreatePostResponse();
     res.response_code = 202;
@@ -1769,20 +1770,24 @@ export class PostContentService {
 
   public async generateCertificate(postId: string, lang: string): Promise<string> {
 
+    this.logger.log('generateCertificate >>> post: ' + postId + ', lang: ' + lang);
     const cheerio = require('cheerio');
     const QRCode = require('qrcode');
     const pdfWriter = require('html-pdf-node');
 
     let post = await this.PostsModel.findOne({ postID: postId }).exec();
     if (post == undefined) {
+      this.logger.error('generateCertificate >>> get post: undefined');
       return undefined;
     }
     if (post.certified == false) {
+      this.logger.error('generateCertificate >>> get post certified: ' + post.certified);
       return undefined;
     }
 
     let profile = await this.userService.findOne(String(post.email));
     if (profile == undefined) {
+      this.logger.error('generateCertificate >>> validate profile: ' + post.email);
       return undefined;
     }
     
