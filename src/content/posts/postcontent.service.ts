@@ -524,6 +524,8 @@ export class PostContentService {
 
     if (post.certified == true) {
       this.generateCertificate(String(post.postID), 'id');
+    } else {
+      this.logger.error('createNewPostPict >>> post is not certified');
     }
 
     var res = new CreatePostResponse();
