@@ -287,9 +287,9 @@ export class UservouchersService {
                     "userID": userID,
                     "voucherID": voucherID,
                     "isActive": true,
-                    "expiredAt": {
-                        $gte: date
-                    }
+                    // "expiredAt": {
+                    //     $gte: date
+                    // }
                 }
             },
             {
@@ -305,6 +305,8 @@ export class UservouchersService {
                     nameAds: "$field.nameAds",
                     expiredAt: "$expiredAt",
                     creditTotal: "$totalCredit",
+                    credit: "$credit",
+                    creditFree: "$creditFree",
                     totalUsed: "$field.totalUsed",
                     isActive: "$isActive",
                     description: "$field.description",
