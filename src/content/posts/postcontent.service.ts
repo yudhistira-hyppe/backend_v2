@@ -1598,7 +1598,14 @@ export class PostContentService {
   }
 
   public async getVideoApsara(ids: String[]): Promise<ApsaraVideoResponse> {
-    let vids = ids.join(',');
+    let san : String[] = [];
+    for (let i = 0; i < ids.length; i++) {
+      let obj = ids[i];
+      if (obj != undefined) {
+        san.push(obj);
+      }
+    }
+    let vids = san.join(',');
     this.logger.log("getVideoApsara >>> video id: " + vids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
@@ -1625,7 +1632,14 @@ export class PostContentService {
   }
 
   public async getImageApsara(ids: String[]): Promise<ApsaraImageResponse> {
-    let vids = ids.join(',');
+    let san : String[] = [];
+    for (let i = 0; i < ids.length; i++) {
+      let obj = ids[i];
+      if (obj != undefined) {
+        san.push(obj);
+      }
+    }
+    let vids = san.join(',');
     this.logger.log("getImageApsara >>> video id: " + vids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
