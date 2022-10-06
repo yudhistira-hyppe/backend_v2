@@ -285,7 +285,7 @@ export class PostContentService {
     ce._class = 'io.melody.hyppe.content.domain.ContentEvent';
     this.contentEventService.create(ce);
 
-    if (post.certified) {
+    if (post.certified == true || post.certified == 'true') {
       this.generateCertificate(String(post.postID), 'id');
     }
 
