@@ -106,7 +106,7 @@ export class PostContentPlaylistService {
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPage >>> video stopwatch 3: ' + gap);
-    //data.video = pdv;
+    data.video = pdv;
 
     body.postType = 'pict';
     body.withExp = false;
@@ -121,13 +121,13 @@ export class PostContentPlaylistService {
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPage >>> pict stopwatch 3: ' + gap);    
-    //data.pict = pdp;    
+    data.pict = pdp;    
 
     body.postType = 'diary';
     let postDid = await this.postPlaylistService.doGetUserPostPlaylistV2(body, headers, profile);
     //let pd = await this.loadBulk(postDid, page, row);
     let pdd = await this.loadPostDataBulkV2(postDid, body, profile, vids, pics);
-    //data.diary = pdd;        
+    data.diary = pdd;        
 
     body.postType = 'story';
     body.withExp = false;
@@ -142,7 +142,7 @@ export class PostContentPlaylistService {
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPage >>> story stopwatch 3: ' + gap);    
-   //data.story = pds;            
+    data.story = pds;            
 
 
     //check apsara
@@ -257,13 +257,37 @@ export class PostContentPlaylistService {
           }
           resStory.push(pddd);
         }
-      }      
+      }
+      if (pdp.length > 0) {
+        for(let i = 0; i < pdp.length; i++) {
+          let pdpp = pdd[i];
+          for (let i = 0; i < papsara.VideoList.length; i++) {
+            let vi = papsara.VideoList[i];
+            if (pdpp.apsaraId == vi.VideoId) {
+              pdpp.mediaThumbEndpoint = vi.CoverURL;
+            }
+          }
+          resPic.push(pdpp);
+        }
+      }            
     }
 
-    data.video = resVideo;
-    data.pict = resPic;
-    data.story = resStory;
-    data.diary = resDiary;
+    if (resVideo.length > 0) {
+      data.video = resVideo;
+    }
+
+    if (resPic.length > 0) {
+      data.pict = resPic;
+    }
+
+    if (resStory.length > 0) {
+      data.story = resStory;
+    }
+
+    if (resDiary.length > 0) {
+      data.diary = resDiary;
+    }
+
     
     res.data = data;
 
