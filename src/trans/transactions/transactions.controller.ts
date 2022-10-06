@@ -1046,7 +1046,7 @@ export class TransactionsController {
                         var like = datapost.likes;
                         var view = datapost.views;
 
-                        /// var datapph = await this.pph(idtransaction, idusersell, amount, postid);
+                        //// var datapph = await this.pph(idtransaction, idusersell, amount, postid);
 
 
                         await this.transactionsService.updateone(idtransaction, idbalance, payload);
