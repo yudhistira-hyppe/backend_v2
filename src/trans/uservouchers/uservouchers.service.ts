@@ -197,10 +197,12 @@ export class UservouchersService {
                     noVoucher: "$field.noVoucher",
                     codeVoucher: "$field.codeVoucher",
                     nameAds: "$field.nameAds",
-                    expiredAt: "$field.expiredAt",
+                    expiredAt: "$expiredAt",
                     creditTotal: "$totalCredit",
+                    credit: "$credit",
+                    creditFree: "$creditFree",
                     totalUsed: "$field.totalUsed",
-                    isActive: "$field.isActive",
+                    isActive: "$isActive",
                     description: "$field.description",
                     jmlVoucher: "$jmlVoucher"
                 }
@@ -209,7 +211,7 @@ export class UservouchersService {
         return query;
     }
 
-    async findUserKodeVoucher(userID: ObjectId, date: string, codeVoucher: string): Promise<Object> {
+    async findUserKodeVoucher(userID: ObjectId, codeVoucher: string): Promise<Object> {
 
         const query = this.uservouchersModel.aggregate([
 
@@ -232,9 +234,9 @@ export class UservouchersService {
                     "userID": userID,
                     "field.codeVoucher": codeVoucher,
                     "isActive": true,
-                    "expiredAt": {
-                        $gte: date
-                    }
+                    // "expiredAt": {
+                    //     $gte: date
+                    // }
                 }
             },
             {
@@ -250,6 +252,8 @@ export class UservouchersService {
                     nameAds: "$field.nameAds",
                     expiredAt: "$expiredAt",
                     creditTotal: "$totalCredit",
+                    credit: "$credit",
+                    creditFree: "$creditFree",
                     totalUsed: "$field.totalUsed",
                     isActive: "$isActive",
                     description: "$field.description",
@@ -283,9 +287,9 @@ export class UservouchersService {
                     "userID": userID,
                     "voucherID": voucherID,
                     "isActive": true,
-                    "expiredAt": {
-                        $gte: date
-                    }
+                    // "expiredAt": {
+                    //     $gte: date
+                    // }
                 }
             },
             {
@@ -301,6 +305,8 @@ export class UservouchersService {
                     nameAds: "$field.nameAds",
                     expiredAt: "$expiredAt",
                     creditTotal: "$totalCredit",
+                    credit: "$credit",
+                    creditFree: "$creditFree",
                     totalUsed: "$field.totalUsed",
                     isActive: "$isActive",
                     description: "$field.description",
