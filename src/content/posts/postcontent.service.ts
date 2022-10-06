@@ -188,7 +188,7 @@ export class PostContentService {
     }
 
     if (body.certified != undefined) {
-      post.certified = body.certified;
+      post.certified = <boolean> body.certified;
     } else {
       post.certified = false;
     }
@@ -415,7 +415,7 @@ export class PostContentService {
 
     this.logger.log('createNewPostVideo >>> check certified. ' + post.certified);
 
-    if (post.certified == true) {
+    if (post.certified) {
       this.generateCertificate(String(post.postID), 'id');
     }
 
@@ -520,9 +520,8 @@ export class PostContentService {
     //let payload = { 'file': nm, 'postId': apost._id };
     axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
-    this.logger.log('createNewPostPict >>> check certified. ' + post.certified);
-
-    if (post.certified == true) {
+    this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
+    if (post.certified) {
       this.generateCertificate(String(post.postID), 'id');
     } else {
       this.logger.error('createNewPostPict >>> post is not certified');
