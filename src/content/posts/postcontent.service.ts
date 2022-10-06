@@ -29,13 +29,13 @@ import { MediadiariesService } from '../mediadiaries/mediadiaries.service';
 import { MediaprofilepictsService } from '../mediaprofilepicts/mediaprofilepicts.service';
 import { IsDefined } from 'class-validator';
 import { CreateUserplaylistDto, MediaData } from '../../trans/userplaylist/dto/create-userplaylist.dto';
-import { Userplaylist, UserplaylistDocument } from 'src/trans/userplaylist/schemas/userplaylist.schema';
+import { Userplaylist, UserplaylistDocument } from '../../trans/userplaylist/schemas/userplaylist.schema';
 import { PostPlaylistService } from '../postplaylist/postplaylist.service';
 import { SeaweedfsService } from '../../stream/seaweedfs/seaweedfs.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import * as fs from 'fs';
 import { post } from 'jquery';
-import { TemplatesRepoService } from 'src/infra/templates_repo/templates_repo.service';
+import { TemplatesRepoService } from '../../infra/templates_repo/templates_repo.service';
 
 
 //import FormData from "form-data";

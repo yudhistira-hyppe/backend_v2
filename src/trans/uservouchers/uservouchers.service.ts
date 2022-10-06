@@ -52,54 +52,113 @@ export class UservouchersService {
         return query;
     }
 
-    async findUserVoucher(userID: ObjectId, date: string): Promise<Object> {
+    async findUserVoucher(userID: ObjectId, key: string): Promise<Object> {
 
-        const query = this.uservouchersModel.aggregate([
+        if (key !== undefined) {
+            const query = this.uservouchersModel.aggregate([
 
-            {
-                $lookup: {
-                    from: "vouchers",
-                    localField: "voucherID",
-                    foreignField: "_id",
-                    as: "field"
-                }
-            },
-            {
-                $unwind: {
-                    path: "$field",
-                    preserveNullAndEmptyArrays: false
-                }
-            },
-            {
-                $match: {
-                    "userID": userID,
-                    "isActive": true,
-                    // "expiredAt": {
-                    //     $gte: date
-                    // }
-                }
-            },
-            {
-                "$sort": {
-                    "_id": 1
+                {
+                    $lookup: {
+                        from: "vouchers",
+                        localField: "voucherID",
+                        foreignField: "_id",
+                        as: "field"
+                    }
                 },
+                {
+                    $unwind: {
+                        path: "$field",
+                        preserveNullAndEmptyArrays: false
+                    }
+                },
+                {
+                    $match: {
+                        "userID": userID,
+                        "$or": [{
+                            "field.nameAds": {
+                                $regex: key,
+                                $options: 'i'
+                            }
+                        }, {
+                            "field.codeVoucher": {
+                                $regex: key,
+                                $options: 'i'
+                            }
+                        }],
+                        "isActive": true
+                    }
+                },
+                {
+                    "$sort": {
+                        "_id": 1
+                    },
 
-            },
-            {
-                $project: {
-                    noVoucher: "$field.noVoucher",
-                    codeVoucher: "$field.codeVoucher",
-                    nameAds: "$field.nameAds",
-                    expiredAt: "$field.expiredAt",
-                    creditTotal: "$totalCredit",
-                    totalUsed: "$field.totalUsed",
-                    isActive: "$field.isActive",
-                    description: "$field.description",
-                    jmlVoucher: "$jmlVoucher"
+                },
+                {
+                    $project: {
+                        noVoucher: "$field.noVoucher",
+                        codeVoucher: "$field.codeVoucher",
+                        nameAds: "$field.nameAds",
+                        expiredAt: "$expiredAt",
+                        creditTotal: "$totalCredit",
+                        credit: "$credit",
+                        creditFree: "$creditFree",
+                        totalUsed: "$field.totalUsed",
+                        isActive: "$isActive",
+                        description: "$field.description",
+                        jmlVoucher: "$jmlVoucher"
+                    }
                 }
-            }
-        ]);
-        return query;
+            ]);
+            return query;
+        } else {
+            const query = this.uservouchersModel.aggregate([
+
+                {
+                    $lookup: {
+                        from: "vouchers",
+                        localField: "voucherID",
+                        foreignField: "_id",
+                        as: "field"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$field",
+                        preserveNullAndEmptyArrays: false
+                    }
+                },
+                {
+                    $match: {
+                        "userID": userID,
+                        "isActive": true
+                    }
+                },
+                {
+                    "$sort": {
+                        "_id": 1
+                    },
+
+                },
+                {
+                    $project: {
+                        noVoucher: "$field.noVoucher",
+                        codeVoucher: "$field.codeVoucher",
+                        nameAds: "$field.nameAds",
+                        expiredAt: "$expiredAt",
+                        creditTotal: "$totalCredit",
+                        credit: "$credit",
+                        creditFree: "$creditFree",
+                        totalUsed: "$field.totalUsed",
+                        isActive: "$isActive",
+                        description: "$field.description",
+                        jmlVoucher: "$jmlVoucher"
+                    }
+                }
+            ]);
+            return query;
+        }
+
     }
 
     async findUserVoucherTrue(userID: ObjectId): Promise<Object> {

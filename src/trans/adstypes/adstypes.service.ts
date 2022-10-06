@@ -24,7 +24,30 @@ export class AdstypesService {
     async findAll(): Promise<Adstypes[]> {
         return this.adstypesModel.find().exec();
     }
+    async findPlaces(): Promise<Adstypes[]> {
+        let query = await this.adstypesModel.aggregate([
 
+            {
+                $lookup: {
+                    from: "adsplaces",
+                    localField: "_id",
+                    foreignField: "adsType",
+                    as: "adsplaces"
+                }
+            },
+            {
+                $project: {
+                    _id: "$_id",
+                    nameType: "$nameType",
+                    creditValue: "$creditValue",
+                    adsplaces: "$adsplaces"
+                }
+            }
+
+        ]);
+
+        return query;
+    }
     async findOne(id: Object): Promise<Adstypes> {
         return this.adstypesModel.findOne({ _id: id }).exec();
     }

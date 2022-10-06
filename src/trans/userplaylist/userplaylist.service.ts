@@ -50,7 +50,7 @@ export class UserplaylistService {
   }
 
   async updateOne(_id: string, CreateUserplaylistDto_: CreateUserplaylistDto) {
-    return this.userplaylistModel.updateOne(
+    return await this.userplaylistModel.updateOne(
       { _id: new Types.ObjectId(_id) },
       CreateUserplaylistDto_,
       function (err, docs) {
@@ -71,6 +71,16 @@ export class UserplaylistService {
 
   async findOneUsername(username: string): Promise<Userplaylist> {
     return this.userplaylistModel.findOne({ username: username }).exec();
+  }
+
+  async findOneAndUpdate(CreateUserplaylistDto_old: CreateUserplaylistDto, CreateUserplaylistDto_new: CreateUserplaylistDto) {
+    return await this.userplaylistModel.updateOne(CreateUserplaylistDto_old, { $set: CreateUserplaylistDto_new }, function (err, docs) {
+      if (err) {
+        console.log("Updated Error : ", err)
+      } else {
+        console.log("Updated Docs : ", docs);
+      }
+    }).clone().exec();
   }
 
   async delete(id: string) {

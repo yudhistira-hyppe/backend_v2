@@ -107,12 +107,14 @@ export class UservouchersController {
         var iduser = null;
         var startdate = null;
         var datatrue = null;
+        var key = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+        key = request_json["key"];
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         const messages = {
@@ -138,7 +140,7 @@ export class UservouchersController {
         var substrtanggal = beforedate.substring(10, 8);
         var numtanggal = parseInt(substrtanggal);
         var date = substrtahun + "-" + substrbulan + "-" + substrtanggal;
-
+        var data = null;
         // try {
         //     datatrue = await this.uservouchersService.findUserVoucherTrue(iduser);
         //     var datenow = new Date(Date.now());
@@ -151,13 +153,15 @@ export class UservouchersController {
         //         dtexp = new Date(dtexp);
         //         if (datenow > dtexp) {
         //             await this.uservouchersService.updatefalse(objid);
+        //         } else {
+        //             data = await this.uservouchersService.findUserVoucher(iduser, key);
         //         }
         //     }
         // } catch (e) {
         //     datatrue = null;
         // }
-        let data = await this.uservouchersService.findUserVoucher(iduser, date);
 
+        data = await this.uservouchersService.findUserVoucher(iduser, key);
 
         return { response_code: 202, data, messages };
     }
