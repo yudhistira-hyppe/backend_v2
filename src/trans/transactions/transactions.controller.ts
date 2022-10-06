@@ -22,6 +22,12 @@ import { post } from 'jquery';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import { PostContentService } from '../../content/posts/postcontent.service';
+import { MediadiariesService } from '../../content/mediadiaries/mediadiaries.service';
+import { MediastoriesService } from '../../content/mediastories/mediastories.service';
+import { MediapictsService } from '../../content/mediapicts/mediapicts.service';
+import { MediavideosService } from '../../content/mediavideos/mediavideos.service';
+import { CreateUserplaylistDto } from '../userplaylist/dto/create-userplaylist.dto';
+import { LanguagesService } from '../../infra/languages/languages.service';
 @Controller()
 export class TransactionsController {
     constructor(private readonly transactionsService: TransactionsService,
@@ -42,7 +48,11 @@ export class TransactionsController {
         private readonly utilsService: UtilsService,
         private readonly errorHandler: ErrorHandler,
         private readonly postContentService: PostContentService,
-
+        private readonly mediadiariesService: MediadiariesService,
+        private readonly mediastoriesService: MediastoriesService,
+        private readonly mediavideosService: MediavideosService,
+        private readonly mediapictsService: MediapictsService,
+        private readonly languagesService: LanguagesService,
     ) { }
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions')
@@ -894,7 +904,7 @@ export class TransactionsController {
         var datatransaksi = null;
         var datapost = null;
         var datainsight = null;
-
+        var data_media = null;
         var iduseradmin = "61d9c847548ae516042f0b13";
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
@@ -916,7 +926,10 @@ export class TransactionsController {
         var valuevalainya = null;
         var databank = null;
         var amontVA = null;
-
+        var languages = null;
+        var idlanguages = null;
+        var datalanguage = null;
+        var langIso = null;
         var titleinsukses = "Selamat!";
         var titleensukses = "Congratulation!";
         var bodyinsukses = "Konten Anda Telah Terjual Saldo akan diteruskan ke akun hype Anda.";
@@ -1003,6 +1016,20 @@ export class TransactionsController {
                         var ubasic = await this.userbasicsService.findid(iduserbuy);
                         var emailbuyer = ubasic.email;
 
+                        try {
+                            languages = ubasic.languages;
+                            idlanguages = languages.oid.toString();
+                            datalanguage = await this.languagesService.findOne(idlanguages)
+                            langIso = datalanguage.langIso;
+
+                            console.log(idlanguages)
+                        } catch (e) {
+                            languages = null;
+                            idlanguages = "";
+                            datalanguage = null;
+                            langIso = "";
+                        }
+
 
                         var createbalance = await this.accontbalance(postid, idusersell, saleAmount);
                         var createbalanceadmin = await this.accontbalanceAdmin("Admin", idadmin, idusersell, nominalmradmin);
@@ -1015,10 +1042,11 @@ export class TransactionsController {
                         var likeinsig = datainsight.likes;
                         var viewinsigh = datainsight.views;
                         datapost = await this.postsService.findid(postid);
+                        var postType = datapost.postType;
                         var like = datapost.likes;
                         var view = datapost.views;
 
-                        // var datapph = await this.pph(idtransaction, idusersell, amount, postid);
+                        /// var datapph = await this.pph(idtransaction, idusersell, amount, postid);
 
 
                         await this.transactionsService.updateone(idtransaction, idbalance, payload);
@@ -1042,6 +1070,28 @@ export class TransactionsController {
                             var totalview = view + viewinsigh;
                             await this.insightsService.updatesaleview(idinsight, totalview);
                         }
+
+
+                        if (postType == "vid") {
+                            data_media = await this.mediavideosService.findOnepostID(postid);
+                        } else if (postType == "pict") {
+                            data_media = await this.mediapictsService.findOnepostID(postid);
+                        } else if (postType == "diary") {
+                            data_media = await this.mediadiariesService.findOnepostID(postid);
+                        } else if (postType == "story") {
+                            data_media = await this.mediastoriesService.findOnepostID(postid);
+                        }
+
+                        var mediaId = data_media.mediaID;
+
+                        let CreateUserplaylistDto_ = new CreateUserplaylistDto();
+                        CreateUserplaylistDto_.mediaId = mediaId;
+                        CreateUserplaylistDto_.userPostId = idusersell;
+                        CreateUserplaylistDto_.postType = postType;
+                        console.log(langIso);
+
+                        await this.postsService.generateUserPlaylist(CreateUserplaylistDto_);
+                        await this.postContentService.generateCertificate(postid, langIso);
 
                         res.status(HttpStatus.OK).json({
                             response_code: 202,

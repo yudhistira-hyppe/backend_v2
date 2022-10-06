@@ -129,17 +129,17 @@ export class UservouchersController {
             throw new BadRequestException("user not found");
         }
 
-        var curdate = new Date(Date.now());
-        var beforedate = curdate.toISOString();
+        // var curdate = new Date(Date.now());
+        // var beforedate = curdate.toISOString();
 
-        var substrtahun = beforedate.substring(0, 4);
-        var numtahun = parseInt(substrtahun);
+        // var substrtahun = beforedate.substring(0, 4);
+        // var numtahun = parseInt(substrtahun);
 
-        var substrbulan = beforedate.substring(7, 5);
-        var numbulan = parseInt(substrbulan);
-        var substrtanggal = beforedate.substring(10, 8);
-        var numtanggal = parseInt(substrtanggal);
-        var date = substrtahun + "-" + substrbulan + "-" + substrtanggal;
+        // var substrbulan = beforedate.substring(7, 5);
+        // var numbulan = parseInt(substrbulan);
+        // var substrtanggal = beforedate.substring(10, 8);
+        // var numtanggal = parseInt(substrtanggal);
+        // var date = substrtahun + "-" + substrbulan + "-" + substrtanggal;
         var data = null;
         // try {
         //     datatrue = await this.uservouchersService.findUserVoucherTrue(iduser);
@@ -199,18 +199,18 @@ export class UservouchersController {
             throw new BadRequestException("user not found");
         }
 
-        var curdate = new Date(Date.now());
-        var beforedate = curdate.toISOString();
+        // var curdate = new Date(Date.now());
+        // var beforedate = curdate.toISOString();
 
-        var substrtahun = beforedate.substring(0, 4);
-        var numtahun = parseInt(substrtahun);
+        // var substrtahun = beforedate.substring(0, 4);
+        // var numtahun = parseInt(substrtahun);
 
-        var substrbulan = beforedate.substring(7, 5);
-        var numbulan = parseInt(substrbulan);
-        var substrtanggal = beforedate.substring(10, 8);
-        var numtanggal = parseInt(substrtanggal);
-        var date = substrtahun + "-" + substrbulan + "-" + substrtanggal;
-        let data = await this.uservouchersService.findUserKodeVoucher(iduser, date, codeVoucher);
+        // var substrbulan = beforedate.substring(7, 5);
+        // var numbulan = parseInt(substrbulan);
+        // var substrtanggal = beforedate.substring(10, 8);
+        // var numtanggal = parseInt(substrtanggal);
+        // var date = substrtahun + "-" + substrbulan + "-" + substrtanggal;
+        let data = await this.uservouchersService.findUserKodeVoucher(iduser, codeVoucher);
 
         return { response_code: 202, data, messages };
     }
