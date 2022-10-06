@@ -125,6 +125,7 @@ export class PostsService {
             "$id": iduser,
             "$db": "hyppe_trans_db"
           },
+          "saleAmount": 0,
           "certified": true,
           "metadata.email": email
         }
@@ -1494,7 +1495,7 @@ export class PostsService {
     });
   }
 
-  async updateGenerateUserPlaylist(oldUserPostID: mongoose.Types.ObjectId, CreateUserplaylistDto_: CreateUserplaylistDto){
+  async updateGenerateUserPlaylist(oldUserPostID: mongoose.Types.ObjectId, CreateUserplaylistDto_: CreateUserplaylistDto) {
     if (CreateUserplaylistDto_.userPostId == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, param userPostId is required',
