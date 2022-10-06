@@ -677,6 +677,7 @@ export class PostContentService {
     if (body.pageRow != undefined) {
       row = body.pageRow;
     }
+    
     let postId = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
     //let posts = await this.doGetUserPost(body, headers, profile);
     let posts = await this.loadBulk(postId, page, row);
