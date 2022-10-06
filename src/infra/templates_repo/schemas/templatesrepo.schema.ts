@@ -28,6 +28,8 @@ export class TemplatesRepo {
  langIso: String
  @Prop()
  category:String
+ @Prop()
+ body_detail_id: String 
 }
 
 export const TemplatesRepoSchema = SchemaFactory.createForClass(TemplatesRepo);

@@ -24,6 +24,7 @@ import { SeaweedfsModule } from '../../stream/seaweedfs/seaweedfs.module';
 import { BullModule } from '@nestjs/bull';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { PostContentPlaylistService } from './postcontentplaylist.service';
+import { TemplatesRepoModule } from 'src/infra/templates_repo/templates_repo.module';
 @Module({
 
     imports: [
@@ -37,7 +38,7 @@ import { PostContentPlaylistService } from './postcontentplaylist.service';
         UtilsModule,
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
         UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
-        MediapictsModule,MediadiariesModule,MediaprofilepictsModule,PostPlayModule,
+        MediapictsModule,MediadiariesModule,MediaprofilepictsModule,PostPlayModule,TemplatesRepoModule,
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [PostsController],

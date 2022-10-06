@@ -84,6 +84,19 @@ export class UtilsService {
     return sendEmail_;
   }
 
+  async sendEmailWithAttachment(to: string, from: string, subject: string, html: string, att: any,): Promise<boolean> {
+    var sendEmail_ = false;
+    await this.mailerService.sendMail({to: to,from: from,subject: subject,html: html,attachments: [att]})
+    .then((success) => {
+      sendEmail_ = true;
+      //console.log(success);
+    }).catch((err) => {
+      sendEmail_ = false;
+      //console.log(err);
+    });
+    return sendEmail_;
+  }  
+
   async ceckDistance(
     lat1: double,
     lon1: double,

@@ -28,6 +28,22 @@ export class TemplatesRepoService {
     return this.TemplatesRepoModel.findOne({ _id: id }).exec();
   }
 
+  async findTemplateCreatePost(): Promise<TemplatesRepo> {
+    let res = await this.TemplatesRepoModel.find().where('event', 'NOTIFY_POST').where('type', 'CREATE_POST').where('category', 'EMAIL').exec();
+    if (res != undefined && res.length > 0) {
+      return res[0];
+    }
+    return undefined;
+  }  
+
+  async findTemplateCreatePostPdf(): Promise<TemplatesRepo> {
+    let res = await this.TemplatesRepoModel.find().where('event', 'NOTIFY_POST').where('type', 'CREATE_POST').where('category', 'EMAIL_PDF').exec();
+    if (res != undefined && res.length > 0) {
+      return res[0];
+    }
+    return undefined;
+  }    
+
   async delete(id: string) {
     const deletedCat = await this.TemplatesRepoModel.findByIdAndRemove({
       _id: id,
