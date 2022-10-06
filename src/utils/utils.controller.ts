@@ -50,8 +50,8 @@ export class UtilsController {
         @Query('pageRow') pageRow: number,
         @Query('search') search: string) {
         var langIso_ = langIso;
-        var pageNumber_ = pageNumber;
-        var pageRow_ = pageRow;
+        var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
+        var pageRow_ = (pageRow != undefined) ? pageRow : 3;
         var search_ = search;
 
         var data = await this.interestsRepoService.findCriteria(langIso_, pageNumber_, pageRow_, search_);
@@ -87,8 +87,8 @@ export class UtilsController {
         @Query('pageRow') pageRow: number,
         @Query('search') search: string) {
         var countryID_ = countryID;
-        var pageNumber_ = pageNumber;
-        var pageRow_ = pageRow;
+        var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
+        var pageRow_ = (pageRow != undefined) ? pageRow : 3;
         var search_ = search;
 
         var data = await this.areasService.findCriteria(countryID_, pageNumber_, pageRow_, search_);
@@ -121,8 +121,8 @@ export class UtilsController {
         @Query('pageRow') pageRow: number,
         @Query('search') search: string) {
         var stateID_ = stateID;
-        var pageNumber_ = pageNumber;
-        var pageRow_ = pageRow;
+        var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
+        var pageRow_ = (pageRow != undefined) ? pageRow : 3;
         var search_ = search;
 
         var data = await this.citiesService.findCriteria(stateID_, pageNumber_, pageRow_, search_);
@@ -153,8 +153,8 @@ export class UtilsController {
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
         @Query('search') search: string) {
-        var pageNumber_ = pageNumber;
-        var pageRow_ = pageRow;
+        var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
+        var pageRow_ = (pageRow != undefined) ? pageRow : 3;
         var search_ = search;
 
         var data = await this.countriesService.findCriteria(pageNumber_, pageRow_, search_);
@@ -185,8 +185,8 @@ export class UtilsController {
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
         @Query('langIso') langIso: string) {
-        var pageNumber_ = pageNumber;
-        var pageRow_ = pageRow;
+        var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
+        var pageRow_ = (pageRow != undefined) ? pageRow : 3;
         var langIso_ = langIso;
 
         var data = await this.eulasService.findCriteria(pageNumber_, pageRow_, langIso_);
@@ -222,8 +222,8 @@ export class UtilsController {
         @Query('pageRow') pageRow: number) {
         var langIso_ = langIso;
         var countryCode_ = countryCode;
-        var pageNumber_ = pageNumber;
-        var pageRow_ = pageRow;
+        var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
+        var pageRow_ = (pageRow != undefined) ? pageRow : 3;
 
         var data = await this.welcomenotesService.findCriteria(langIso_, countryCode_, pageNumber_, pageRow_);
         var data_ = data.map(item => {
@@ -285,8 +285,8 @@ export class UtilsController {
         @Query('pageNumber') pageNumber: number,
         @Query('pageRow') pageRow: number,
         @Query('search') search: string) {
-        var pageNumber_ = pageNumber;
-        var pageRow_ = pageRow;
+        var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
+        var pageRow_ = (pageRow != undefined) ? pageRow : 3;
         var search_ = search;
 
         var data = await this.reactionsRepoService.findCriteria(pageNumber_, pageRow_, search_);
@@ -326,8 +326,8 @@ export class UtilsController {
         @Query('pageRow') pageRow: number,
         @Query('search') search: string) {
         var langIso_ = langIso;
-        var pageNumber_ = pageNumber;
-        var pageRow_ = pageRow;
+        var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
+        var pageRow_ = (pageRow != undefined) ? pageRow : 3;
         var search_ = search;
 
         var data = await this.documentsService.findCriteria(langIso_, pageNumber_, pageRow_, search_);
@@ -369,8 +369,8 @@ export class UtilsController {
         var langIso_ = langIso;
         var reportType_ = reportType;
         var action_ = action;
-        var pageNumber_ = pageNumber;
-        var pageRow_ = pageRow;
+        var pageNumber_ = (pageNumber != undefined) ? pageNumber :0;
+        var pageRow_ = (pageRow != undefined) ? pageRow : 3;
         var search_ = search;
 
         var data = await this.reportsService.findCriteria(langIso_, reportType_, action_, pageNumber_, pageRow_, search_);
