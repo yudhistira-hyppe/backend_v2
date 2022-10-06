@@ -1601,12 +1601,12 @@ export class PostContentService {
     let san : String[] = [];
     for (let i = 0; i < ids.length; i++) {
       let obj = ids[i];
-      if (obj != undefined) {
+      if (obj != undefined && obj != 'undefined') {
         san.push(obj);
       }
     }
     let vids = san.join(',');
-    this.logger.log("getVideoApsara >>> video id: " + san);
+    this.logger.log("getVideoApsara >>> video id: " + vids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
     let client = new RPCClient({
@@ -1618,7 +1618,7 @@ export class PostContentService {
 
     let params = {
       "RegionId": this.configService.get("APSARA_REGION_ID"),
-      "VideoIds": san
+      "VideoIds": vids
     }
 
     let requestOption = {
@@ -1635,12 +1635,12 @@ export class PostContentService {
     let san : String[] = [];
     for (let i = 0; i < ids.length; i++) {
       let obj = ids[i];
-      if (obj != undefined) {
+      if (obj != undefined && obj != 'undefined') {
         san.push(obj);
       }
     }
     let vids = san.join(',');
-    this.logger.log("getImageApsara >>> video id: " + san);
+    this.logger.log("getImageApsara >>> video id: " + vids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
     let client = new RPCClient({
@@ -1652,7 +1652,7 @@ export class PostContentService {
 
     let params = {
       "RegionId": this.configService.get("APSARA_REGION_ID"),
-      "ImageIds": san
+      "ImageIds": vids
     }
 
     let requestOption = {
