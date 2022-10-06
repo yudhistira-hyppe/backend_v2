@@ -143,7 +143,7 @@ export class AdsUserCompareService {
                         priority_age = false;
                     }
                 }else{
-                    priority_age = true;
+                    priority_age = false;
                 }
 
                 //Compare Gender

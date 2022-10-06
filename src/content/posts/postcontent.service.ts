@@ -80,7 +80,7 @@ export class PostContentService {
     }
 
     if (body.certified && body.certified == "true") {
-      if (profile.isIdVerified != false) {
+      if (profile.isIdVerified != true) {
         let msg = new Messages();
         msg.info = ["The user ID has not been verified"];
         res.messages = msg;
