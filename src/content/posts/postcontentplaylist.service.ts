@@ -182,12 +182,12 @@ export class PostContentPlaylistService {
       this.logger.log('getUserPostLandingPage >>> apsara image with : ' + xpics.length + " item is: " + gap);
     }
 
-    if (papsara != undefined) {
+    if (vapsara != undefined) {
       if (pdv.length > 0) {
         for(let i = 0; i < pdv.length; i++) {
           let pdvv = pdv[i];
-          for (let i = 0; i < papsara.VideoList.length; i++) {
-            let vi = papsara.VideoList[i];
+          for (let i = 0; i < vapsara.VideoList.length; i++) {
+            let vi = vapsara.VideoList[i];
             if (pdvv.apsaraId == vi.VideoId) {
               pdvv.mediaThumbEndpoint = vi.CoverURL;
             }
@@ -198,8 +198,8 @@ export class PostContentPlaylistService {
       if (pds.length > 0) {
         for(let i = 0; i < pds.length; i++) {
           let pdss = pds[i];
-          for (let i = 0; i < papsara.VideoList.length; i++) {
-            let vi = papsara.VideoList[i];
+          for (let i = 0; i < vapsara.VideoList.length; i++) {
+            let vi = vapsara.VideoList[i];
             if (pdss.apsaraId == vi.VideoId) {
               pdss.mediaThumbEndpoint = vi.CoverURL;
             }
@@ -210,8 +210,8 @@ export class PostContentPlaylistService {
       if (pdd.length > 0) {
         for(let i = 0; i < pdd.length; i++) {
           let pddd = pdd[i];
-          for (let i = 0; i < papsara.VideoList.length; i++) {
-            let vi = papsara.VideoList[i];
+          for (let i = 0; i < vapsara.VideoList.length; i++) {
+            let vi = vapsara.VideoList[i];
             if (pddd.apsaraId == vi.VideoId) {
               pddd.mediaThumbEndpoint = vi.CoverURL;
             }
@@ -414,7 +414,7 @@ export class PostContentPlaylistService {
 
         //MEDIA
         let meds = <MediaData> ps.mediaData;
-        if (ps.postType == 'video') {
+        if (ps.postType == 'vid') {
           if (meds.apsara == true) {
             xvids.push(String(meds.apsaraId));
             pa.apsaraId = String(meds.apsaraId);
