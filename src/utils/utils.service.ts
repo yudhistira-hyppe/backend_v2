@@ -865,10 +865,10 @@ export class UtilsService {
   }
 
   async encrypt(text: string) {
-    return await cryptr.encrypt(text);;
+    return await cryptr.encrypt(text);
   }
 
   async decrypt(text: string) {
-    return cryptr.decrypt(text);;
+    return cryptr.decrypt(text);
   }
 }

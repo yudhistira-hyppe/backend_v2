@@ -28,6 +28,7 @@ import { ContenteventsService } from '../contentevents/contentevents.service';
 import { InsightsService } from '../insights/insights.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import { PostContentPlaylistService } from './postcontentplaylist.service';
+import mongoose from 'mongoose';
 
 @Controller()
 export class PostsController {
@@ -325,6 +326,16 @@ export class PostsController {
   @HttpCode(HttpStatus.ACCEPTED)
   async generateUserPlaylist(@Body() CreateUserplaylistDto_: CreateUserplaylistDto) {
     return await this.PostsService.generateUserPlaylist(CreateUserplaylistDto_);
+  }
+
+  @Post('api/userplaylist/updategenerate')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async updategenerateUserPlaylist(@Body() body) {
+    var CreateUserplaylistDto_ = new CreateUserplaylistDto();
+    CreateUserplaylistDto_.userPostId = new mongoose.Types.ObjectId(body.userPostId);
+    CreateUserplaylistDto_.mediaId = body.mediaId;
+    CreateUserplaylistDto_.postType = body.postType;
+    return await this.PostsService.updateGenerateUserPlaylist(new mongoose.Types.ObjectId(body.oldUserPostID), CreateUserplaylistDto_);
   }
 
   @UseGuards(JwtAuthGuard)
