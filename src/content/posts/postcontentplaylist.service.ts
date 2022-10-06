@@ -88,6 +88,11 @@ export class PostContentPlaylistService {
     let pics: string[] = [];
     let user: string[] = [];    
 
+    let resVideo: PostData[] = [];        
+    let resPic: PostData[] = [];        
+    let resDiary: PostData[] = [];        
+    let resStory: PostData[] = [];        
+
     body.postType = 'vid';
     body.withExp = false;
     let st = await this.utilService.getDateTimeDate();
@@ -95,20 +100,13 @@ export class PostContentPlaylistService {
     let ed = await this.utilService.getDateTimeDate();
     let gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPage >>> video stopwatch 1: ' + gap);
-
-    //st = await this.utilService.getDateTimeDate(); 
-    //let pv = await this.loadBulk(postVid, page, row);
-    //ed = await this.utilService.getDateTimeDate();
-    //gap = ed.getTime() - st.getTime();
-    //this.logger.log('getUserPostLandingPage >>> video stopwatch 2: ' + gap);
-
     
     st = await this.utilService.getDateTimeDate();
     let pdv = await this.loadPostDataBulkV2(postVid, body, profile, vids, pics);
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPage >>> video stopwatch 3: ' + gap);
-    data.video = pdv;
+    //data.video = pdv;
 
     body.postType = 'pict';
     body.withExp = false;
@@ -118,24 +116,18 @@ export class PostContentPlaylistService {
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPage >>> pict stopwatch 1: ' + gap);
 
-    //st = await this.utilService.getDateTimeDate();
-    //let pp = await this.loadBulk(postPid, page, row);
-    //ed = await this.utilService.getDateTimeDate();
-    //gap = ed.getTime() - st.getTime();
-    //this.logger.log('getUserPostLandingPage >>> pict stopwatch 2: ' + gap);
-
     st = await this.utilService.getDateTimeDate();    
     let pdp = await this.loadPostDataBulkV2(postPid, body, profile, vids, pics);
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPage >>> pict stopwatch 3: ' + gap);    
-    data.pict = pdp;    
+    //data.pict = pdp;    
 
     body.postType = 'diary';
     let postDid = await this.postPlaylistService.doGetUserPostPlaylistV2(body, headers, profile);
     //let pd = await this.loadBulk(postDid, page, row);
     let pdd = await this.loadPostDataBulkV2(postDid, body, profile, vids, pics);
-    data.diary = pdd;        
+    //data.diary = pdd;        
 
     body.postType = 'story';
     body.withExp = false;
@@ -145,19 +137,12 @@ export class PostContentPlaylistService {
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPage >>> story stopwatch 1: ' + gap);
 
-    //st = await this.utilService.getDateTimeDate();        
-    //let ps = await this.loadBulk(postSid, page, row);
-    //ed = await this.utilService.getDateTimeDate();
-    //gap = ed.getTime() - st.getTime();
-    //this.logger.log('getUserPostLandingPage >>> story stopwatch 2: ' + gap);
-
     st = await this.utilService.getDateTimeDate();            
     let pds = await this.loadPostDataBulkV2(postSid, body, profile, vids, pics);
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPage >>> story stopwatch 3: ' + gap);    
-    data.story = pds;            
-    res.data = data;
+   //data.story = pds;            
 
 
     //check apsara
@@ -178,9 +163,12 @@ export class PostContentPlaylistService {
       }
     }    
 
+    let vapsara = undefined;
+    let papsara = undefined;
+
     if (xvids.length > 0) {
       st = await this.utilService.getDateTimeDate();
-      await this.postContentService.getVideoApsara(xvids);
+      vapsara = await this.postContentService.getVideoApsara(xvids);
       ed = await this.utilService.getDateTimeDate();
       gap = ed.getTime() - st.getTime();
       this.logger.log('getUserPostLandingPage >>> apsara video with : ' + xvids.length + " item is: " + gap);
@@ -188,11 +176,96 @@ export class PostContentPlaylistService {
 
     if (xpics.length > 0) {
       st = await this.utilService.getDateTimeDate();    
-      await this.postContentService.getImageApsara(xpics);  
+      papsara = await this.postContentService.getImageApsara(xpics);  
       ed = await this.utilService.getDateTimeDate();
       gap = ed.getTime() - st.getTime();      
       this.logger.log('getUserPostLandingPage >>> apsara image with : ' + xpics.length + " item is: " + gap);
     }
+
+    if (papsara != undefined) {
+      if (pdv.length > 0) {
+        for(let i = 0; i < pdv.length; i++) {
+          let pdvv = pdv[i];
+          for (let i = 0; i < papsara.VideoList.length; i++) {
+            let vi = papsara.VideoList[i];
+            if (pdvv.apsaraId == vi.VideoId) {
+              pdvv.mediaThumbEndpoint = vi.CoverURL;
+            }
+          }
+          resVideo.push(pdvv);
+        }
+      }
+      if (pds.length > 0) {
+        for(let i = 0; i < pds.length; i++) {
+          let pdss = pds[i];
+          for (let i = 0; i < papsara.VideoList.length; i++) {
+            let vi = papsara.VideoList[i];
+            if (pdss.apsaraId == vi.VideoId) {
+              pdss.mediaThumbEndpoint = vi.CoverURL;
+            }
+          }
+          resStory.push(pdss);
+        }
+      }      
+      if (pdd.length > 0) {
+        for(let i = 0; i < pdd.length; i++) {
+          let pddd = pdd[i];
+          for (let i = 0; i < papsara.VideoList.length; i++) {
+            let vi = papsara.VideoList[i];
+            if (pddd.apsaraId == vi.VideoId) {
+              pddd.mediaThumbEndpoint = vi.CoverURL;
+            }
+          }
+          resStory.push(pddd);
+        }
+      }
+    }
+
+    if (papsara != undefined) {
+      if (pdv.length > 0) {
+        for(let i = 0; i < pdv.length; i++) {
+          let pdvv = pdv[i];
+          for (let i = 0; i < papsara.VideoList.length; i++) {
+            let vi = papsara.VideoList[i];
+            if (pdvv.apsaraId == vi.VideoId) {
+              pdvv.mediaThumbEndpoint = vi.CoverURL;
+            }
+          }
+          resVideo.push(pdvv);
+        }
+      }
+      if (pds.length > 0) {
+        for(let i = 0; i < pds.length; i++) {
+          let pdss = pds[i];
+          for (let i = 0; i < papsara.VideoList.length; i++) {
+            let vi = papsara.VideoList[i];
+            if (pdss.apsaraId == vi.VideoId) {
+              pdss.mediaThumbEndpoint = vi.CoverURL;
+            }
+          }
+          resStory.push(pdss);
+        }
+      }      
+      if (pdd.length > 0) {
+        for(let i = 0; i < pdd.length; i++) {
+          let pddd = pdd[i];
+          for (let i = 0; i < papsara.VideoList.length; i++) {
+            let vi = papsara.VideoList[i];
+            if (pddd.apsaraId == vi.VideoId) {
+              pddd.mediaThumbEndpoint = vi.CoverURL;
+            }
+          }
+          resStory.push(pddd);
+        }
+      }      
+    }
+
+    data.video = resVideo;
+    data.pict = resPic;
+    data.story = resStory;
+    data.diary = resDiary;
+    
+    res.data = data;
 
     return res;
   }    

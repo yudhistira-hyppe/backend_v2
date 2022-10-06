@@ -93,6 +93,12 @@ export class PostsController {
     return this.PostsService.findOne(email);
   }
 
+  @Get('api/posts/test')
+  async test(): Promise<string> {
+    console.log('sdfds');
+    return this.postContentService.generateCertificate('da65f057-288f-49cf-9f43-f83251b2b098', 'id');
+  }  
+
   @Delete(':id')
   async delete(@Param('id') id: string) {
     return this.PostsService.delete(id);

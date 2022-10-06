@@ -34,6 +34,8 @@ import { PostPlaylistService } from '../postplaylist/postplaylist.service';
 import { SeaweedfsService } from '../../stream/seaweedfs/seaweedfs.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import * as fs from 'fs';
+import { post } from 'jquery';
+import { TemplatesRepoService } from 'src/infra/templates_repo/templates_repo.service';
 
 
 //import FormData from "form-data";
@@ -61,6 +63,7 @@ export class PostContentService {
     private postPlaylistService: PostPlaylistService,
     private readonly configService: ConfigService, 
     private seaweedfsService: SeaweedfsService,
+    private templateService: TemplatesRepoService,
     private errorHandler: ErrorHandler,
   ) { }
 
@@ -281,6 +284,10 @@ export class PostContentService {
     ce.sequenceNumber = 0;
     ce._class = 'io.melody.hyppe.content.domain.ContentEvent';
     this.contentEventService.create(ce);
+
+    if (post.certified) {
+      this.generateCertificate(String(post.postID), 'id');
+    }
 
     return post;
   }
@@ -1702,4 +1709,113 @@ export class PostContentService {
     }
     return undefined;
   }
+
+  public async generateCertificate(postId: string, lang: string): Promise<string> {
+
+    const cheerio = require('cheerio');
+    const QRCode = require('qrcode');
+    const pdfWriter = require('html-pdf-node');
+
+    let post = await this.PostsModel.findOne({ postID: postId }).exec();
+    if (post == undefined) {
+      return undefined;
+    }
+    if (post.certified == false) {
+      return undefined;
+    }
+
+    let profile = await this.userService.findOne(String(post.email));
+    if (profile == undefined) {
+      return undefined;
+    }
+    
+    let fileName = post.postID + ".pdf";
+
+		let postType = 'HyppeVid';
+
+		if (post.postType == 'vid') {
+			postType = "HyppeVid";
+		} else if (post.postType == 'diary') {
+			postType = "HyppeDiary";
+		} else if (post.postType == 'pict') {
+			postType = "HyppePic";
+		}
+
+    let template = await this.templateService.findTemplateCreatePost();
+    let body = template.body_detail;
+    if (lang == 'id' && template.body_detail_id != undefined) {
+      body = template.body_detail_id;
+    }
+
+    const $_ = cheerio.load(body);
+
+    $_('#fullname').text(profile.fullName);
+    $_('#email').text(profile.email);
+    $_('#postType').text(postType);
+    $_('#createdAt').text(post.createdAt);
+    $_('#contentID').text(post.postID);
+
+    let qr = await this.utilService.generateQRCode('https://sertifikat.hyppe.id/' + post.postID);
+    $_('#qrcode').attr('src', qr);    
+
+    let meta = post.metadata; 
+    if (meta != undefined && meta.duration != undefined) {
+      $_('#duration').text(this.formatTime(meta.duration));
+    } else {
+      $_('#duration').text('-');
+    }
+
+    var html = $_.html().toString();
+
+    template = await this.templateService.findTemplateCreatePostPdf();
+    body = template.body_detail;
+    if (lang == 'id' && template.body_detail_id != undefined) {
+      body = template.body_detail_id;
+    }
+
+    let pdf = cheerio.load(body);    
+    pdf('#fullname').text(profile.fullName);
+    pdf('#email').text(profile.email);
+    pdf('#postType').text(postType);
+    pdf('#createdAt').text(post.createdAt);
+    pdf('#contentID').text(post.postID);    
+    pdf('#title').text(post.description);    
+    pdf('#postID').text(post.postID);    
+    
+    let tg = "";
+    let tgs = post.tags;
+    for(let i = 0; i < tgs.length; i++) {
+      let obj = tgs[i];
+      tg += '#' + obj + ',';
+    }
+    pdf('#tag').text(tg);
+
+    if (meta != undefined && meta.duration != undefined) {
+      pdf('#duration').text(this.formatTime(meta.duration));
+    } else {
+      pdf('#duration').text('-');
+    }    
+
+    pdf('#qrcode').attr('src', qr);    
+
+    let htmlPdf = pdf.html().toString();
+    let file = { content: htmlPdf};
+    let options = { format: 'A4' };
+    pdfWriter.generatePdf(file, options).then(pdfBuffer => {
+      this.utilService.sendEmailWithAttachment('siyose@gmail.com', 'no-reply@hyppe.app', 'testing', html, {filename: fileName, content: pdfBuffer});
+    });
+
+
+    return htmlPdf;
+  }
+
+  private formatTime(seconds) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.round(seconds % 60);
+    return [
+      m > 9 ? m : (h ? '0' + m : m || '0'),
+      s > 9 ? s : '0' + s
+    ].filter(Boolean).join(':');
+  }  
 }
