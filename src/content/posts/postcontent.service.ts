@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar, PostLandingResponseApps, PostLandingData, PostBuildData, VideoList } from './dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar, PostLandingResponseApps, PostLandingData, PostBuildData, VideoList, ImageInfo } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -1657,29 +1657,44 @@ export class PostContentService {
       }
     }
 
-    let vids = san.join(',');
-    this.logger.log("getImageApsara >>> video id: " + vids);
-    var RPCClient = require('@alicloud/pop-core').RPCClient;
+    let tx = new ApsaraImageResponse();
+    let vl: ImageInfo[] = [];
+    let chunk = this.chunkify(san, 15);
+    for(let i = 0; i < chunk.length; i++) {
+      let c = chunk[i];
 
-    let client = new RPCClient({
-      accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
-      accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
-      endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
-      apiVersion: '2017-03-21'
-    });
-
-    let params = {
-      "RegionId": this.configService.get("APSARA_REGION_ID"),
-      "ImageIds": vids
+      let vids = c.join(',');
+      this.logger.log("getImageApsara >>> video id: " + vids);
+      var RPCClient = require('@alicloud/pop-core').RPCClient;
+  
+      let client = new RPCClient({
+        accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+        accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+        endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+        apiVersion: '2017-03-21'
+      });
+  
+      let params = {
+        "RegionId": this.configService.get("APSARA_REGION_ID"),
+        "ImageIds": vids
+      }
+  
+      let requestOption = {
+        method: 'POST'
+      };
+  
+      let dto = new ApsaraImageResponse();
+      let result = await client.request('GetImageInfos', params, requestOption);
+      let ty: ApsaraImageResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));     
+      
+      if (ty.ImageInfo.length > 0) {
+        for (let x = 0; x < ty.ImageInfo.length; x++) {
+          let vv = ty.ImageInfo[x];
+          vl.push(vv);
+        }
+      }
     }
-
-    let requestOption = {
-      method: 'POST'
-    };
-
-    let dto = new ApsaraImageResponse();
-    let result = await client.request('GetImageInfos', params, requestOption);
-    let tx: ApsaraImageResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
+    tx.ImageInfo = vl;
     return tx;
   }
 
@@ -1844,6 +1859,7 @@ export class PostContentService {
     let file = { content: htmlPdf};
     let options = { format: 'A4' };
     pdfWriter.generatePdf(file, options).then(pdfBuffer => {
+      this.logger.log('generateCertificate >>> sending email to: ' + String(post.email) + ', with subject: ' + String(template.subject));
       this.utilService.sendEmailWithAttachment(String(post.email), 'no-reply@hyppe.app', String(template.subject), html, {filename: fileName, content: pdfBuffer});
     });
 
