@@ -24,7 +24,7 @@ import { SeaweedfsModule } from '../../stream/seaweedfs/seaweedfs.module';
 import { BullModule } from '@nestjs/bull';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { PostContentPlaylistService } from './postcontentplaylist.service';
-import { TemplatesRepoModule } from 'src/infra/templates_repo/templates_repo.module';
+import { TemplatesRepoModule } from '../../infra/templates_repo/templates_repo.module';
 @Module({
 
     imports: [
