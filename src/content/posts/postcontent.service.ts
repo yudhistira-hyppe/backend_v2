@@ -1844,7 +1844,7 @@ export class PostContentService {
     let file = { content: htmlPdf};
     let options = { format: 'A4' };
     pdfWriter.generatePdf(file, options).then(pdfBuffer => {
-      this.utilService.sendEmailWithAttachment(String(post.email), 'no-reply@hyppe.app', template.subject, html, {filename: fileName, content: pdfBuffer});
+      this.utilService.sendEmailWithAttachment(String(post.email), 'no-reply@hyppe.app', String(template.subject), html, {filename: fileName, content: pdfBuffer});
     });
 
 
