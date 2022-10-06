@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar, PostLandingResponseApps, PostLandingData, PostBuildData } from './dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar, PostLandingResponseApps, PostLandingData, PostBuildData, VideoList } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -1605,29 +1605,46 @@ export class PostContentService {
         san.push(obj);
       }
     }
-    let vids = san.join(',');
-    this.logger.log("getVideoApsara >>> video id: " + vids);
-    var RPCClient = require('@alicloud/pop-core').RPCClient;
 
-    let client = new RPCClient({
-      accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
-      accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
-      endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
-      apiVersion: '2017-03-21'
-    });
+    let tx = new ApsaraVideoResponse();
+    let vl: VideoList[] = [];
+    let chunk = this.chunkify(san, 15);
+    for(let i = 0; i < chunk.length; i++) {
+      let c = chunk[i];
 
-    let params = {
-      "RegionId": this.configService.get("APSARA_REGION_ID"),
-      "VideoIds": vids
+      let vids = c.join(',');
+      this.logger.log("getVideoApsara >>> video id: " + vids);
+      var RPCClient = require('@alicloud/pop-core').RPCClient;
+  
+      let client = new RPCClient({
+        accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+        accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+        endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+        apiVersion: '2017-03-21'
+      });
+  
+      let params = {
+        "RegionId": this.configService.get("APSARA_REGION_ID"),
+        "VideoIds": vids
+      }
+  
+      let requestOption = {
+        method: 'POST'
+      };
+  
+      let dto = new ApsaraVideoResponse();
+      let result = await client.request('GetVideoInfos', params, requestOption);
+      let ty: ApsaraVideoResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));  
+      if (ty.VideoList.length > 0) {
+        for (let x = 0; x < ty.VideoList.length; x++) {
+          let vv = ty.VideoList[x];
+          vl.push(vv);
+        }
+      }
+
     }
+    tx.VideoList = vl;
 
-    let requestOption = {
-      method: 'POST'
-    };
-
-    let dto = new ApsaraVideoResponse();
-    let result = await client.request('GetVideoInfos', params, requestOption);
-    let tx: ApsaraVideoResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
     return tx;
   }
 
@@ -1639,6 +1656,7 @@ export class PostContentService {
         san.push(obj);
       }
     }
+
     let vids = san.join(',');
     this.logger.log("getImageApsara >>> video id: " + vids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
@@ -1700,6 +1718,15 @@ export class PostContentService {
     }
     let num = ((page - 1) * row);
     return num;
+  }
+
+  private chunkify(arr, chunkSize) {
+    const res = [];
+    for (let i = 0; i < arr.length; i += chunkSize) {
+        const chunk = arr.slice(i, i + chunkSize);
+        res.push(chunk);
+    }
+    return res;
   }
 
   public async getProfileAvatar(profile: Userbasic) {
@@ -1817,7 +1844,7 @@ export class PostContentService {
     let file = { content: htmlPdf};
     let options = { format: 'A4' };
     pdfWriter.generatePdf(file, options).then(pdfBuffer => {
-      this.utilService.sendEmailWithAttachment('siyose@gmail.com', 'no-reply@hyppe.app', 'testing', html, {filename: fileName, content: pdfBuffer});
+      this.utilService.sendEmailWithAttachment(String(post.email), 'no-reply@hyppe.app', 'testing', html, {filename: fileName, content: pdfBuffer});
     });
 
 
