@@ -122,6 +122,15 @@ export class UserplaylistService {
       query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
     }
 
+    if (body.endDate != undefined) {
+      if (body.startDate != undefined) {
+        query.where('createAt').gte(body.startDate);
+        query.where('createAt').lte(body.endDate);
+      } else {
+        query.where('createAt').lte(body.endDate);
+      }      
+    }    
+
     query.where('userId', whoami._id);
 
     let row = 20;
@@ -181,6 +190,16 @@ export class UserplaylistService {
       query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
     }
 
+    if (body.endDate != undefined) {
+      if (body.startDate != undefined) {
+        query.where('createAt').gte(body.startDate);
+        query.where('createAt').lte(body.endDate);
+      } else {
+        query.where('createAt').lte(body.endDate);
+      }      
+    }
+
+    
     query.where('userId', whoami._id);
 
     let row = 20;

@@ -29,13 +29,13 @@ import { MediadiariesService } from '../mediadiaries/mediadiaries.service';
 import { MediaprofilepictsService } from '../mediaprofilepicts/mediaprofilepicts.service';
 import { IsDefined } from 'class-validator';
 import { CreateUserplaylistDto, MediaData } from '../../trans/userplaylist/dto/create-userplaylist.dto';
-import { Userplaylist, UserplaylistDocument } from 'src/trans/userplaylist/schemas/userplaylist.schema';
+import { Userplaylist, UserplaylistDocument } from '../../trans/userplaylist/schemas/userplaylist.schema';
 import { PostPlaylistService } from '../postplaylist/postplaylist.service';
 import { SeaweedfsService } from '../../stream/seaweedfs/seaweedfs.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import * as fs from 'fs';
 import { post } from 'jquery';
-import { TemplatesRepoService } from 'src/infra/templates_repo/templates_repo.service';
+import { TemplatesRepoService } from '../../infra/templates_repo/templates_repo.service';
 
 
 //import FormData from "form-data";
@@ -677,6 +677,7 @@ export class PostContentService {
     if (body.pageRow != undefined) {
       row = body.pageRow;
     }
+    
     let postId = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
     //let posts = await this.doGetUserPost(body, headers, profile);
     let posts = await this.loadBulk(postId, page, row);
@@ -1597,7 +1598,14 @@ export class PostContentService {
   }
 
   public async getVideoApsara(ids: String[]): Promise<ApsaraVideoResponse> {
-    let vids = ids.join(',');
+    let san : String[] = [];
+    for (let i = 0; i < ids.length; i++) {
+      let obj = ids[i];
+      if (obj != undefined && obj != 'undefined') {
+        san.push(obj);
+      }
+    }
+    let vids = san.join(',');
     this.logger.log("getVideoApsara >>> video id: " + vids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
@@ -1624,7 +1632,14 @@ export class PostContentService {
   }
 
   public async getImageApsara(ids: String[]): Promise<ApsaraImageResponse> {
-    let vids = ids.join(',');
+    let san : String[] = [];
+    for (let i = 0; i < ids.length; i++) {
+      let obj = ids[i];
+      if (obj != undefined && obj != 'undefined') {
+        san.push(obj);
+      }
+    }
+    let vids = san.join(',');
     this.logger.log("getImageApsara >>> video id: " + vids);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 

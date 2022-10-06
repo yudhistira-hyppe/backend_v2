@@ -803,64 +803,65 @@ export class UtilsService {
         otppinVerified = get_userbasic.otppinVerified;
       }
     }
-
-    if (datafor == 'LOGIN' || datafor == 'FULL' || datafor == 'PROFILE') {
-      if (get_states != null) { ProfileDTO_.area = get_states.stateName; }
-      if (get_countries != null) { ProfileDTO_.country = get_countries.country; }
-      if (await this.ceckData(get_userbasic)) {
-        if (get_userbasic.gender != undefined) { ProfileDTO_.gender = get_userbasic.gender; }
-      }
-      if (get_cities != null) { ProfileDTO_.city = get_cities.cityName; }
-      if (await this.ceckData(get_userbasic)) {
-        ProfileDTO_.mobileNumber = get_userbasic.mobileNumber;
-      }
-      if (await this.ceckData(get_userbasic)) {
-        if (get_userbasic.idProofNumber != undefined) { ProfileDTO_.idProofNumber = get_userbasic.idProofNumber; }
-      }
-      if (get_userauth.roles != undefined) {
-        if (get_userauth.roles != null) {
-          ProfileDTO_.roles = get_userauth.roles;
+    if (await this.ceckData(get_userbasic) && await this.ceckData(get_userauth)) {
+      if (datafor == 'LOGIN' || datafor == 'FULL' || datafor == 'PROFILE') {
+        if (get_states != null) { ProfileDTO_.area = get_states.stateName; }
+        if (get_countries != null) { ProfileDTO_.country = get_countries.country; }
+        if (await this.ceckData(get_userbasic)) {
+          if (get_userbasic.gender != undefined) { ProfileDTO_.gender = get_userbasic.gender; }
         }
-      }
-      if (await this.ceckData(get_userbasic)) {
-        if (get_userbasic.fullName != undefined) { ProfileDTO_.fullName = get_userbasic.fullName; }
-        if (get_userbasic.bio != undefined) { ProfileDTO_.bio = get_userbasic.bio; }
-      }
-      if (await this.ceckData(get_profilePict)) {
-        ProfileDTO_.avatar = AvatarDTO_;
-      }
-      if (await this.ceckData(get_userbasic)) {
-        ProfileDTO_.isIdVerified = get_userbasic.isIdVerified.toString();
-      }
-      ProfileDTO_.isEmailVerified = get_userauth.isEmailVerified.toString();
-      if (await this.ceckData(get_userbasic)) {
-        if (get_userbasic.idProofStatus != undefined) { ProfileDTO_.idProofStatus = get_userbasic.idProofStatus; }
-      }
-      ProfileDTO_.insight = CreateInsightsDto_;
-      if (get_languages != null) { ProfileDTO_.langIso = get_languages.langIso; }
-      ProfileDTO_.interest = interests_array;
-      if (await this.ceckData(get_userbasic)) {
-        ProfileDTO_.event = get_userbasic.event;
-        if (get_userbasic.email != undefined) { ProfileDTO_.email = get_userbasic.email; }
-      }
-      if (get_userauth.username != undefined) { ProfileDTO_.username = get_userauth.username; }
-      if (await this.ceckData(get_userbasic)) {
-        ProfileDTO_.isComplete = get_userbasic.isComplete.toString();
-        ProfileDTO_.status = get_userbasic.status;
-      }
-      ProfileDTO_.pin_create = pin_create;
-      ProfileDTO_.pin_verified = otppinVerified;
-      if (get_userbasic.statusKyc!=undefined){
-        ProfileDTO_.statusKyc = get_userbasic.statusKyc;
-      }else{
-        if (get_userbasic.isIdVerified != undefined) {
-          if (get_userbasic.isIdVerified) {
-            ProfileDTO_.statusKyc = "review";
+        if (get_cities != null) { ProfileDTO_.city = get_cities.cityName; }
+        if (await this.ceckData(get_userbasic)) {
+          ProfileDTO_.mobileNumber = get_userbasic.mobileNumber;
+        }
+        if (await this.ceckData(get_userbasic)) {
+          if (get_userbasic.idProofNumber != undefined) { ProfileDTO_.idProofNumber = get_userbasic.idProofNumber; }
+        }
+        if (get_userauth.roles != undefined) {
+          if (get_userauth.roles != null) {
+            ProfileDTO_.roles = get_userauth.roles;
+          }
+        }
+        if (await this.ceckData(get_userbasic)) {
+          if (get_userbasic.fullName != undefined) { ProfileDTO_.fullName = get_userbasic.fullName; }
+          if (get_userbasic.bio != undefined) { ProfileDTO_.bio = get_userbasic.bio; }
+        }
+        if (await this.ceckData(get_profilePict)) {
+          ProfileDTO_.avatar = AvatarDTO_;
+        }
+        if (await this.ceckData(get_userbasic)) {
+          ProfileDTO_.isIdVerified = get_userbasic.isIdVerified.toString();
+        }
+        ProfileDTO_.isEmailVerified = get_userauth.isEmailVerified.toString();
+        if (await this.ceckData(get_userbasic)) {
+          if (get_userbasic.idProofStatus != undefined) { ProfileDTO_.idProofStatus = get_userbasic.idProofStatus; }
+        }
+        ProfileDTO_.insight = CreateInsightsDto_;
+        if (get_languages != null) { ProfileDTO_.langIso = get_languages.langIso; }
+        ProfileDTO_.interest = interests_array;
+        if (await this.ceckData(get_userbasic)) {
+          ProfileDTO_.event = get_userbasic.event;
+          if (get_userbasic.email != undefined) { ProfileDTO_.email = get_userbasic.email; }
+        }
+        if (get_userauth.username != undefined) { ProfileDTO_.username = get_userauth.username; }
+        if (await this.ceckData(get_userbasic)) {
+          ProfileDTO_.isComplete = get_userbasic.isComplete.toString();
+          ProfileDTO_.status = get_userbasic.status;
+        }
+        ProfileDTO_.pin_create = pin_create;
+        ProfileDTO_.pin_verified = otppinVerified;
+        if (get_userbasic.statusKyc!=undefined){
+          ProfileDTO_.statusKyc = get_userbasic.statusKyc;
+        }else{
+          if (get_userbasic.isIdVerified != undefined) {
+            if (get_userbasic.isIdVerified) {
+              ProfileDTO_.statusKyc = "review";
+            } else {
+              ProfileDTO_.statusKyc = "unverified";
+            }
           } else {
             ProfileDTO_.statusKyc = "unverified";
           }
-        } else {
-          ProfileDTO_.statusKyc = "unverified";
         }
       }
     }
