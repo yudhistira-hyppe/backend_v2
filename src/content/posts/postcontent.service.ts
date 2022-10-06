@@ -1606,7 +1606,7 @@ export class PostContentService {
       }
     }
     let vids = san.join(',');
-    this.logger.log("getVideoApsara >>> video id: " + vids);
+    this.logger.log("getVideoApsara >>> video id: " + san);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
     let client = new RPCClient({
@@ -1618,7 +1618,7 @@ export class PostContentService {
 
     let params = {
       "RegionId": this.configService.get("APSARA_REGION_ID"),
-      "VideoIds": vids
+      "VideoIds": san
     }
 
     let requestOption = {
@@ -1640,7 +1640,7 @@ export class PostContentService {
       }
     }
     let vids = san.join(',');
-    this.logger.log("getImageApsara >>> video id: " + vids);
+    this.logger.log("getImageApsara >>> video id: " + san);
     var RPCClient = require('@alicloud/pop-core').RPCClient;
 
     let client = new RPCClient({
@@ -1652,7 +1652,7 @@ export class PostContentService {
 
     let params = {
       "RegionId": this.configService.get("APSARA_REGION_ID"),
-      "ImageIds": vids
+      "ImageIds": san
     }
 
     let requestOption = {
