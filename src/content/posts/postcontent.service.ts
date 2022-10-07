@@ -2,7 +2,7 @@ import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { DBRef, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
-import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar, PostLandingResponseApps, PostLandingData, PostBuildData, VideoList } from './dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar, PostLandingResponseApps, PostLandingData, PostBuildData, VideoList, ImageInfo } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
 import { GetuserprofilesService } from '../../trans/getuserprofiles/getuserprofiles.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -188,7 +188,7 @@ export class PostContentService {
     }
 
     if (body.certified != undefined) {
-      post.certified = body.certified;
+      post.certified = <boolean> body.certified;
     } else {
       post.certified = false;
     }
@@ -284,11 +284,7 @@ export class PostContentService {
     ce.sequenceNumber = 0;
     ce._class = 'io.melody.hyppe.content.domain.ContentEvent';
     this.contentEventService.create(ce);
-
-    if (post.certified) {
-      this.generateCertificate(String(post.postID), 'id');
-    }
-
+    
     return post;
   }
 
@@ -419,6 +415,13 @@ export class PostContentService {
       axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
     });
 
+    this.logger.log('createNewPostVideo >>> check certified. ' + post.certified);
+
+    if (post.certified) {
+      this.generateCertificate(String(post.postID), 'id');
+    }
+
+    
     var res = new CreatePostResponse();
     res.response_code = 202;
     let msg = new Messages();
@@ -528,6 +531,12 @@ export class PostContentService {
     this.logger.log('createNewPostPic >>> generate playlist ' + JSON.stringify(playlist));
     this.postService.generateUserPlaylist(playlist);
     */
+    this.logger.log('createNewPostPict >>> check certified. ' + JSON.stringify(post));
+    if (post.certified) {
+      this.generateCertificate(String(post.postID), 'id');
+    } else {
+      this.logger.error('createNewPostPict >>> post is not certified');
+    }
 
     var res = new CreatePostResponse();
     res.response_code = 202;
@@ -1660,29 +1669,44 @@ export class PostContentService {
       }
     }
 
-    let vids = san.join(',');
-    this.logger.log("getImageApsara >>> video id: " + vids);
-    var RPCClient = require('@alicloud/pop-core').RPCClient;
+    let tx = new ApsaraImageResponse();
+    let vl: ImageInfo[] = [];
+    let chunk = this.chunkify(san, 15);
+    for(let i = 0; i < chunk.length; i++) {
+      let c = chunk[i];
 
-    let client = new RPCClient({
-      accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
-      accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
-      endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
-      apiVersion: '2017-03-21'
-    });
-
-    let params = {
-      "RegionId": this.configService.get("APSARA_REGION_ID"),
-      "ImageIds": vids
+      let vids = c.join(',');
+      this.logger.log("getImageApsara >>> video id: " + vids);
+      var RPCClient = require('@alicloud/pop-core').RPCClient;
+  
+      let client = new RPCClient({
+        accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+        accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+        endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+        apiVersion: '2017-03-21'
+      });
+  
+      let params = {
+        "RegionId": this.configService.get("APSARA_REGION_ID"),
+        "ImageIds": vids
+      }
+  
+      let requestOption = {
+        method: 'POST'
+      };
+  
+      let dto = new ApsaraImageResponse();
+      let result = await client.request('GetImageInfos', params, requestOption);
+      let ty: ApsaraImageResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));     
+      
+      if (ty.ImageInfo.length > 0) {
+        for (let x = 0; x < ty.ImageInfo.length; x++) {
+          let vv = ty.ImageInfo[x];
+          vl.push(vv);
+        }
+      }
     }
-
-    let requestOption = {
-      method: 'POST'
-    };
-
-    let dto = new ApsaraImageResponse();
-    let result = await client.request('GetImageInfos', params, requestOption);
-    let tx: ApsaraImageResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
+    tx.ImageInfo = vl;
     return tx;
   }
 
@@ -1757,20 +1781,24 @@ export class PostContentService {
 
   public async generateCertificate(postId: string, lang: string): Promise<string> {
 
+    this.logger.log('generateCertificate >>> post: ' + postId + ', lang: ' + lang);
     const cheerio = require('cheerio');
     const QRCode = require('qrcode');
     const pdfWriter = require('html-pdf-node');
 
     let post = await this.PostsModel.findOne({ postID: postId }).exec();
     if (post == undefined) {
+      this.logger.error('generateCertificate >>> get post: undefined');
       return undefined;
     }
     if (post.certified == false) {
+      this.logger.error('generateCertificate >>> get post certified: ' + post.certified);
       return undefined;
     }
 
     let profile = await this.userService.findOne(String(post.email));
     if (profile == undefined) {
+      this.logger.error('generateCertificate >>> validate profile: ' + post.email);
       return undefined;
     }
     
@@ -1847,6 +1875,7 @@ export class PostContentService {
     let file = { content: htmlPdf};
     let options = { format: 'A4' };
     pdfWriter.generatePdf(file, options).then(pdfBuffer => {
+      this.logger.log('generateCertificate >>> sending email to: ' + String(post.email) + ', with subject: ' + String(template.subject));
       this.utilService.sendEmailWithAttachment(String(post.email), 'no-reply@hyppe.app', String(template.subject), html, {filename: fileName, content: pdfBuffer});
     });
 
