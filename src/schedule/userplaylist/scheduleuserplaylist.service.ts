@@ -97,11 +97,15 @@ export class ScheduleUserPlaylistService {
                             await this.postsService.generateUserPlaylist(CreateUserplaylistDto_);
                         }
                     }
-                    await this.utilsService.updateSetting("EngineUserPlaylistIndex", i);
-                    await this.utilsService.updateSetting("EngineUserPlaylistDone", done);
+                    // await this.utilsService.updateSetting("EngineUserPlaylistIndex", i);
+                    // await this.utilsService.updateSetting("EngineUserPlaylistDone", done);
+                    await this.utilsService.updateSetting_("6323d7e83325000002003f73", i);
+                    await this.utilsService.updateSetting_("6323d8233325000002003f74", done);
                 } else {
-                    await this.utilsService.updateSetting("EngineUserPlaylistIndex", i-1);
-                    await this.utilsService.updateSetting("EngineUserPlaylistDone", done);
+                    // await this.utilsService.updateSetting("EngineUserPlaylistIndex", i-1);
+                    // await this.utilsService.updateSetting("EngineUserPlaylistDone", done);
+                    await this.utilsService.updateSetting_("6323d7e83325000002003f73", i - 1);
+                    await this.utilsService.updateSetting_("6323d8233325000002003f74", done);
                     console.log("-------------------break------------------");
                     break;
                 }
