@@ -61,6 +61,8 @@ export class Userplaylist {
     $id: { oid: String };
     $db: String;
   }];
+  @Prop({ type: Object })
+  username: Object;  
 }
 
 export const UserplaylistSchema = SchemaFactory.createForClass(Userplaylist);
@@ -125,6 +127,8 @@ export class VPlay {
     $id: { oid: String };
     $db: String;
   }];
+  @Prop({ type: Object })
+  username: Object;  
 }
 
 export const VPlaySchema = SchemaFactory.createForClass(VPlay);
