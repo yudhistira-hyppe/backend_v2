@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
-import { Userplaylist, UserplaylistSchema } from './schemas/userplaylist.schema';
+import { Userplaylist, UserplaylistSchema, VPlay, VPlaySchema } from './schemas/userplaylist.schema';
 import { UserplaylistController } from './userplaylist.controller';
 import { UserplaylistService } from './userplaylist.service';
 import { UtilsModule } from '../../utils/utils.module';
@@ -11,7 +11,8 @@ import { UtilsModule } from '../../utils/utils.module';
     imports: [
         ConfigModule.forRoot(),
         UtilsModule, 
-        MongooseModule.forFeature([{ name: Userplaylist.name, schema: UserplaylistSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Userplaylist.name, schema: UserplaylistSchema }], 'SERVER_TRANS'),
+        MongooseModule.forFeature([{ name: VPlay.name, schema: VPlaySchema }], 'SERVER_TRANS')
     ],
     controllers: [UserplaylistController],
     exports: [UserplaylistService],
