@@ -1265,6 +1265,7 @@ export class PostsService {
   // }
 
   async generateUserPlaylist(CreateUserplaylistDto_: CreateUserplaylistDto) {
+    console.log("----------------------------------------" + new Date().toString() +"----------------------------------------");
     if (CreateUserplaylistDto_.userPostId == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed, param userPostId is required',
@@ -1493,6 +1494,7 @@ export class PostsService {
       CreateUserplaylistDto_._id = new mongoose.Types.ObjectId();
       await this.userplaylistService.create(CreateUserplaylistDto_);
     });
+    console.log("----------------------------------------" + new Date().toString() + "----------------------------------------");
   }
 
   async updateGenerateUserPlaylist(oldUserPostID: mongoose.Types.ObjectId, CreateUserplaylistDto_: CreateUserplaylistDto) {
