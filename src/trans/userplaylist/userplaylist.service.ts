@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, ObjectId, Types } from 'mongoose';
 import { UtilsService } from '../../utils/utils.service';
 import { Userbasic } from '../userbasics/schemas/userbasic.schema';
-import { CreateUserplaylistDto } from './dto/create-userplaylist.dto';
+import { CreateUserplaylistDto, V3PlayList } from './dto/create-userplaylist.dto';
 import { Userplaylist, UserplaylistDocument, VPlay } from './schemas/userplaylist.schema';
 
 @Injectable()
@@ -286,7 +286,53 @@ export class UserplaylistService {
     query.sort({'createAt': -1});
     return await query.exec();
 
-  }    
+  } 
+  
+  public async doGetUserPostPlaylistV3(body: any, headers: any, whoami: Userbasic, yesterday: number): Promise<V3PlayList> {
+    this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
+
+    let row = 12;
+    let query = await this.userplaylistModel.aggregate([
+      {$facet: {
+        "video": [	{ $match :{$and: [{postType: "vid"},{type:body.visibility},{userId: whoami._id},{isWatched: false},{isHidden: false}]}}, {$limit:row}
+        ,{$lookup:{							
+                    from: "userauths",
+                    localField: "userBasicData.profileID",
+                    foreignField: "userID",
+                    as: "userauth"
+                    }
+        }
+        ],
+        "stories": 		[{ $match :{$and: [{postType: "story"},{type:body.visibility},{userId: whoami._id},{isWatched: false},{isHidden: false}]}}, {$limit:row},{$lookup:{							
+                    from: "userauths",
+                    localField: "userBasicData.profileID",
+                    foreignField: "userID",
+                    as: "userauth"
+                    }
+        }
+        ],
+        "picture": 		[	{ $match :{$and: [{postType: "pict"},{type:body.visibility},{userId: whoami._id},{isWatched: false},{isHidden: false}]}}, {$limit:row},{$lookup:{							
+                    from: "userauths",
+                    localField: "userBasicData.profileID",
+                    foreignField: "userID",
+                    as: "userauth"
+                    }
+        }
+        ],
+        "diaries": [	{ $match :{$and: [{postType: "diary"},{type:body.visibility},{expiration: {$gt: yesterday}},{userId: whoami._id},{isWatched: false},{isHidden: false}]}}, {$limit:row},{$lookup:{							
+                    from: "userauths",
+                    localField: "userBasicData.profileID",
+                    foreignField: "userID",
+                    as: "userauth"
+                    }
+        }
+        ],
+}}      
+    ]).exec();
+
+    let xxx = <V3PlayList[]> query;
+    return xxx[0];
+  }   
 
   private paging(page: number, row: number) {
     if (page == 0 || page == 1) {
