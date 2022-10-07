@@ -784,6 +784,7 @@ export class PostContentPlaylistService {
             pa.mediaEndpoint = String(ps.mediaEndpoint);
             pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);
           }
+          pa.mediaType = 'video';
         } else if (ps.postType == 'pict') {
           if (meds.apsara == true) {
             xpics.push(String(meds.apsaraId));
@@ -794,6 +795,7 @@ export class PostContentPlaylistService {
             pa.mediaEndpoint = String(ps.mediaEndpoint);
             pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);            
           }
+          pa.mediaType = 'image';
         } else if (ps.postType == 'diary') {
           if (meds.apsara == true) {
             xvids.push(String(meds.apsaraId));
@@ -804,6 +806,7 @@ export class PostContentPlaylistService {
             pa.mediaEndpoint = String(ps.mediaEndpoint);
             pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);
           }
+          pa.mediaType = 'video';
         } else if (ps.postType == 'story') {
           if (meds.mediaType == 'video') {
             if (meds.apsara == true) {
@@ -814,7 +817,8 @@ export class PostContentPlaylistService {
               pa.mediaThumbUri = ps.mediaThumbUri;
               pa.mediaEndpoint = String(ps.mediaEndpoint);
               pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);
-            }            
+            }  
+            pa.mediaType = 'video';          
           } else {
             if (meds.apsara == true) {
               xpics.push(String(meds.apsaraId));
@@ -824,7 +828,8 @@ export class PostContentPlaylistService {
               pa.mediaThumbUri = ps.mediaThumbUri;
               pa.mediaEndpoint = String(ps.mediaEndpoint);
               pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);            
-            }            
+            }      
+            pa.mediaType = 'image';      
           }
         }
 
