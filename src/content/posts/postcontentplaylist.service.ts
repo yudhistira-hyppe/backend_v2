@@ -229,6 +229,7 @@ export class PostContentPlaylistService {
             let vi = papsara.ImageInfo[i];
             if (pdvv.apsaraId == vi.ImageId) {
               pdvv.mediaThumbEndpoint = vi.URL;
+              pdvv.mediaThumbUri = vi.URL;
             }
           }
           resVideo.push(pdvv);
@@ -241,6 +242,7 @@ export class PostContentPlaylistService {
             let vi = papsara.ImageInfo[i];
             if (pdss.apsaraId == vi.ImageId) {
               pdss.mediaThumbEndpoint = vi.URL;
+              pdss.mediaThumbUri = vi.URL;
             }
           }
           resStory.push(pdss);
@@ -253,6 +255,7 @@ export class PostContentPlaylistService {
             let vi = papsara.ImageInfo[i];
             if (pddd.apsaraId == vi.ImageId) {
               pddd.mediaThumbEndpoint = vi.URL;
+              pddd.mediaThumbUri = vi.URL;
             }
           }
           resStory.push(pddd);
@@ -265,6 +268,7 @@ export class PostContentPlaylistService {
             let vi = papsara.ImageInfo[i];
             if (pdpp.apsaraId == vi.ImageId) {
               pdpp.mediaThumbEndpoint = vi.URL;
+              pdpp.mediaThumbUri = vi.URL;
             }
           }
           resPic.push(pdpp);
