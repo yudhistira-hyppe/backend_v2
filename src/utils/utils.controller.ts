@@ -504,4 +504,41 @@ export class UtilsController {
     async generateProfile(@Req() request: any) {
         return await this.utilsService.generateProfile(request.body.email, 'LOGIN');
     }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Get('getSetting')
+    async getSettingMarketPlace(
+        @Headers() headers) {
+        let settingMarketPlace = false;
+        if (headers['x-auth-user'] == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unauthorized',
+            );
+        }
+        if (!(await this.utilsService.validasiTokenEmail(headers))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed email header dan token not match',
+            );
+        }
+        var getsetting = await this.utilsService.getSetting_("633f8e57ce76000009000512");
+        if (getsetting == undefined) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, Setting not found',
+            );
+        }
+        settingMarketPlace = Boolean(Number(getsetting));
+        var Response = {
+            response_code: 202,
+            data: {
+                settingMP: settingMarketPlace
+            },
+            messages: {
+                info: [
+                    "Succesfull"
+                ]
+            }
+        }
+        return Response;
+    }
 }

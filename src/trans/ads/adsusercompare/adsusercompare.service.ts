@@ -55,7 +55,8 @@ export class AdsUserCompareService {
             }
         }
         var UserSelfInsert = 0;
-        UserSelfInsert = await this.utilsService.getSetting("UserSelfInsert");
+        //UserSelfInsert = await this.utilsService.getSetting("UserSelfInsert");
+        UserSelfInsert = await this.utilsService.getSetting_("63073c4d0c50000088000d1a");
         
         data_user.forEach(async element => {
             //if (element._id == _CreateAdsDto_.userID) {
@@ -82,7 +83,8 @@ export class AdsUserCompareService {
                 var user_array_interest = element.userInterests;
 
                 var priority = "Very Lowest";
-                var priority_number = await this.utilsService.getSetting("VeryLowest");
+                //var priority_number = await this.utilsService.getSetting("VeryLowest");
+                var priority_number = await this.utilsService.getSetting_("63073c4e0c50000088000d20");
                 var priority_interest = false;
                 var priority_gender = false;
                 var priority_location = false;
@@ -182,7 +184,8 @@ export class AdsUserCompareService {
                     var distance_m = haversine(a, b);
                     var distance_km = distance_m / 1000;
 
-                    var setting = await this.utilsService.getSetting('Distance');
+                    //var setting = await this.utilsService.getSetting('Distance');
+                    var setting = await this.utilsService.getSetting_('63073c4d0c50000088000d19');
                     if (distance_km <= setting) {
                         priority_location = true;
                     }
@@ -197,26 +200,32 @@ export class AdsUserCompareService {
 
                 if (priority_interest && priority_gender && priority_location && priority_age) {
                     priority = "Highest";
-                    priority_number = await this.utilsService.getSetting("Highest");
+                    //priority_number = await this.utilsService.getSetting("Highest");
+                    priority_number = await this.utilsService.getSetting_("63073c4d0c50000088000d1b");
                 } else {
                     if (priority_interest && priority_gender && priority_age) {
                         priority = "High";
-                        priority_number = await this.utilsService.getSetting("High"); 
+                        //priority_number = await this.utilsService.getSetting("High");
+                        priority_number = await this.utilsService.getSetting_("63073c4d0c50000088000d1c"); 
                     } else {
                         if (priority_interest && priority_location && priority_age) {
                             priority = "Medium";
-                            priority_number = await this.utilsService.getSetting("Medium"); 
+                            //priority_number = await this.utilsService.getSetting("Medium");
+                            priority_number = await this.utilsService.getSetting_("63073c4d0c50000088000d1d"); 
                         } else {
                             if (priority_interest && priority_age) {
                                 priority = "Low";
-                                priority_number = await this.utilsService.getSetting("Low"); 
+                                //priority_number = await this.utilsService.getSetting("Low");
+                                priority_number = await this.utilsService.getSetting_("63073c4e0c50000088000d20"); 
                             } else {
                                 if (priority_gender && priority_age) {
                                     priority = "Very Low";
-                                    priority_number = await this.utilsService.getSetting("VeryLow"); 
+                                    //priority_number = await this.utilsService.getSetting("VeryLow");
+                                    priority_number = await this.utilsService.getSetting_("63073c4e0c50000088000d20"); 
                                 }else{
                                     priority = "Very Lowest";
-                                    priority_number = await this.utilsService.getSetting("VeryLowest");
+                                    //priority_number = await this.utilsService.getSetting("VeryLowest");
+                                    priority_number = await this.utilsService.getSetting_("63073c4e0c50000088000d20");
                                 }
                             }
                         }
@@ -300,7 +309,8 @@ export class AdsUserCompareService {
 
         for (var i = 0; i < data_ads.length; i++) {
             var priority = "Very Lowest";
-            var priority_number = await this.utilsService.getSetting("VeryLowest");
+            //var priority_number = await this.utilsService.getSetting("VeryLowest");
+            var priority_number = await this.utilsService.getSetting_("63073c4e0c50000088000d20");
             var priority_interest = false;
             var priority_gender = false;
             var priority_location = false;
@@ -343,7 +353,8 @@ export class AdsUserCompareService {
                 var distance_m = haversine(a, b);
                 var distance_km = distance_m / 1000;
 
-                var setting = await this.utilsService.getSetting('Distance');
+                //var setting = await this.utilsService.getSetting('Distance');
+                var setting = await this.utilsService.getSetting_('63073c4d0c50000088000d19');
                 if (distance_km <= setting) {
                     priority_location = true;
                 }
@@ -423,26 +434,32 @@ export class AdsUserCompareService {
 
             if (priority_interest && priority_gender && priority_location && priority_age) {
                 priority = "Highest";
-                priority_number = await this.utilsService.getSetting("Highest");
+                //priority_number = await this.utilsService.getSetting("Highest");
+                priority_number = await this.utilsService.getSetting_("63073c4d0c50000088000d1b");
             } else {
                 if (priority_interest && priority_gender && priority_age) {
                     priority = "High";
-                    priority_number = await this.utilsService.getSetting("High");
+                    //priority_number = await this.utilsService.getSetting("High");
+                    priority_number = await this.utilsService.getSetting_("63073c4d0c50000088000d1c");
                 } else {
                     if (priority_interest && priority_location && priority_age) {
                         priority = "Medium";
-                        priority_number = await this.utilsService.getSetting("Medium");
+                        //priority_number = await this.utilsService.getSetting("Medium");
+                        priority_number = await this.utilsService.getSetting_("63073c4d0c50000088000d1d");
                     } else {
                         if (priority_interest && priority_age) {
                             priority = "Low";
-                            priority_number = await this.utilsService.getSetting("Low");
+                            //priority_number = await this.utilsService.getSetting("Low");
+                            priority_number = await this.utilsService.getSetting_("63073c4e0c50000088000d1e");
                         } else {
                             if (priority_gender && priority_age) {
                                 priority = "Very Low";
-                                priority_number = await this.utilsService.getSetting("VeryLow");
+                                //priority_number = await this.utilsService.getSetting("VeryLow");
+                                priority_number = await this.utilsService.getSetting_("63073c4e0c50000088000d1f");
                             } else {
                                 priority = "Very Lowest";
-                                priority_number = await this.utilsService.getSetting("VeryLowest");
+                                //priority_number = await this.utilsService.getSetting("VeryLowest");
+                                priority_number = await this.utilsService.getSetting_("63073c4e0c50000088000d20");
                             }
                         }              
                     }

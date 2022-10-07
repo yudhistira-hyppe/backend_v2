@@ -35,7 +35,8 @@ export class ScheduleEmailService {
   async EmailRead() {
     var runEngine = String(process.env.ENGINE_EMAIL) == "true";
     if (runEngine) {
-      var filter = await this.utilsService.getSetting('EmailFilter');
+      //var filter = await this.utilsService.getSetting('EmailFilter');
+      var filter = await this.utilsService.getSetting_('62e88ef29d170000f4003cc3');
       try {
         var date_param = new Date();
         date_param.setMonth(date_param.getMonth() - 3);
