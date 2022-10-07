@@ -1150,8 +1150,10 @@ export class AuthController {
     var otp_attemp = null;
     var current_date_string = await this.utilsService.getDateTimeString();
     var current_date = new Date();
-    var setting_ExpiredTimeOTPPin = await this.utilsService.getSetting("ExpiredTimeOTPPin");
-    var setting_MaxWrongOTPPIN = await this.utilsService.getSetting("MaxWrongOTPPIN");
+    //var setting_ExpiredTimeOTPPin = await this.utilsService.getSetting("ExpiredTimeOTPPin");
+    //var setting_MaxWrongOTPPIN = await this.utilsService.getSetting("MaxWrongOTPPIN");
+    var setting_ExpiredTimeOTPPin = await this.utilsService.getSetting_("63183f5a1d4c0000c2000552");
+    var setting_MaxWrongOTPPIN = await this.utilsService.getSetting_("631eb8e421490000a1002533");
 
     var data_CreateActivityeventsDto_parent = new CreateActivityeventsDto();
     var data_CreateActivityeventsDto_child = new CreateActivityeventsDto();

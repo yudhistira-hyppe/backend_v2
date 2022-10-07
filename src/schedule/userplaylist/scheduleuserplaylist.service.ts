@@ -23,10 +23,13 @@ export class ScheduleUserPlaylistService {
     ) { }
 
     async runTask() {
-        var EngineUserPlaylistTimeEnd = String(await this.utilsService.getSetting("EngineUserPlaylistTimeEnd"));
+        //var EngineUserPlaylistTimeEnd = String(await this.utilsService.getSetting("EngineUserPlaylistTimeEnd"));
+        var EngineUserPlaylistTimeEnd = String(await this.utilsService.getSetting_("6323d7ca3325000002003f72"));
         var convertToTime = String(await this.utilsService.convertToTime(EngineUserPlaylistTimeEnd));
-        var EngineUserPlaylistIndex = Number(await this.utilsService.getSetting("EngineUserPlaylistIndex"));
-        var EngineUserPlaylistDone = Boolean(await this.utilsService.getSetting("EngineUserPlaylistDone"));
+        // var EngineUserPlaylistIndex = Number(await this.utilsService.getSetting("EngineUserPlaylistIndex"));
+        // var EngineUserPlaylistDone = Boolean(await this.utilsService.getSetting("EngineUserPlaylistDone"));
+        var EngineUserPlaylistIndex = Number(await this.utilsService.getSetting_("6323d7e83325000002003f73"));
+        var EngineUserPlaylistDone = Boolean(await this.utilsService.getSetting_("6323d8233325000002003f74"));
         console.log("Setting PlaylistIndex", EngineUserPlaylistIndex);
         console.log("Setting PlaylistDone", EngineUserPlaylistDone);
 
