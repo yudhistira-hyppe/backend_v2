@@ -33,7 +33,7 @@ import { PostPlaylistService } from '../postplaylist/postplaylist.service';
 import { SeaweedfsService } from '../../stream/seaweedfs/seaweedfs.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import * as fs from 'fs';
-import { Userplaylist } from 'src/trans/userplaylist/schemas/userplaylist.schema';
+import { Userplaylist, VPlay } from 'src/trans/userplaylist/schemas/userplaylist.schema';
 import { PostContentService } from './postcontent.service';
 
 @Injectable()
@@ -333,7 +333,7 @@ export class PostContentPlaylistService {
     this.logger.log('getUserPostLandingPageVPlay >>> video stopwatch 1: ' + gap);
     
     st = await this.utilService.getDateTimeDate();
-    let pdv = await this.loadPostDataBulkV2(postVid, body, profile, vids, pics);
+    let pdv = await this.loadPostDataBulkView(postVid, body, profile, vids, pics);
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPageVPlay >>> video stopwatch 3: ' + gap);
@@ -348,7 +348,7 @@ export class PostContentPlaylistService {
     this.logger.log('getUserPostLandingPageVPlay >>> pict stopwatch 1: ' + gap);
 
     st = await this.utilService.getDateTimeDate();    
-    let pdp = await this.loadPostDataBulkV2(postPid, body, profile, vids, pics);
+    let pdp = await this.loadPostDataBulkView(postPid, body, profile, vids, pics);
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPageVPlay >>> pict stopwatch 3: ' + gap);    
@@ -357,7 +357,7 @@ export class PostContentPlaylistService {
     body.postType = 'diary';
     let postDid = await this.postPlaylistService.doGetUserPostVPlaylist(body, headers, profile);
     //let pd = await this.loadBulk(postDid, page, row);
-    let pdd = await this.loadPostDataBulkV2(postDid, body, profile, vids, pics);
+    let pdd = await this.loadPostDataBulkView(postDid, body, profile, vids, pics);
     data.diary = pdd;        
 
     body.postType = 'story';
@@ -369,7 +369,7 @@ export class PostContentPlaylistService {
     this.logger.log('getUserPostLandingPageVPlay >>> story stopwatch 1: ' + gap);
 
     st = await this.utilService.getDateTimeDate();            
-    let pds = await this.loadPostDataBulkV2(postSid, body, profile, vids, pics);
+    let pds = await this.loadPostDataBulkView(postSid, body, profile, vids, pics);
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPageVPlay >>> story stopwatch 3: ' + gap);    
@@ -657,6 +657,11 @@ export class PostContentPlaylistService {
           pa.avatar = await this.postContentService.getProfileAvatar(ub);
         }
 
+        let pf = await this.userAuthService.findOneByEmail(pa.email);
+        if (pf != undefined) {
+          pa.username = pf.username;
+        }
+
         pa.isApsara = false;
         pa.location = post.location;
         pa.visibility = String(post.visibility);
@@ -869,5 +874,248 @@ export class PostContentPlaylistService {
       }
     }
     return pd;
-  }    
+  }
+  
+  private async loadPostDataBulkView(posts: VPlay[], body: any, iam: Userbasic, xvids: string[], xpics: string[]): Promise<PostData[]> {
+    //this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(posts));
+    let pd = Array<PostData>();
+    if (posts != undefined) {
+
+      for (let i = 0; i < posts.length; i++) {
+        let ps = posts[i];
+        let pa = new PostData();
+
+        let post = <Posts> ps.postData;
+
+        pa.active = (ps.isHidden == false);
+        pa.allowComments = post.allowComments;
+        pa.certified = post.certified;
+        pa.createdAt = String(post.createdAt);
+        pa.updatedAt = String(post.updatedAt);
+        pa.description = String(post.description);
+        pa.email = String(post.email);
+        pa.postType = String(ps.postType);
+        console.log(JSON.stringify(ps));
+        pa.username = String(ps.username[0].username);        
+
+        //let following = await this.contentEventService.findFollowing(pa.email);
+
+        if (ps.userBasicData != undefined) {
+          let ub = <Userbasic> ps.userBasicData;
+          pa.avatar = await this.postContentService.getProfileAvatar(ub);
+        }
+
+        pa.isApsara = false;
+        pa.location = post.location;
+        pa.visibility = String(post.visibility);
+
+        if (post.metadata != undefined) {
+          let md = post.metadata;
+          let md1 = new Metadata();
+          md1.duration = Number(md.duration);
+          md1.email = String(md.email);
+          md1.midRoll = Number(md.midRoll);
+          md1.postID = String(md.postID);
+          md1.postRoll = Number(md.postRoll);
+          md1.postType = String(md.postType);
+          md1.preRoll = Number(md.preRoll);
+          pa.metadata = md1;
+        }
+
+
+        pa.postID = String(post.postID);
+        pa.postType = String(post.postType);
+        pa.saleAmount = post.saleAmount;
+        pa.saleLike = post.saleLike;
+        pa.saleView = post.saleView;
+
+        if (post.tagPeople != undefined && post.tagPeople.length > 0) {
+          let atp = post.tagPeople;
+          let atp1 = Array<TagPeople>();
+
+          for (let x = 0; x < atp.length; x++) {
+            let tp = atp[i];
+            if (tp?.namespace) {
+              let oid = tp.oid;
+              let ua = await this.userAuthService.findById(oid.toString());
+              if (ua != undefined) {
+                let tp1 = new TagPeople();
+                tp1.email = String(ua.email);
+                tp1.username = String(ua.username);
+
+                let ub = await this.userService.findOne(String(ua.email));
+                if (ub != undefined) {
+                  tp1.avatar = await this.postContentService.getProfileAvatar(ub);
+                }
+
+                //tp1.status = 'TOFOLLOW';
+                //if (tp1.email == pa.email) {
+                //  tp1.status = "UNLINK";
+                //} else {
+                //  for (let i = 0; i < following.length; i++) {
+                //    let fol = following[i];
+                //    if (fol.email == tp1.email) {
+                //      tp1.status = "FOLLOWING";
+                //    }
+                //  }
+                //}
+                atp1.push(tp1);
+              }
+            }
+          }
+
+          pa.tagPeople = atp1;
+        }
+
+        if (post.category != undefined && post.category.length > 0) {
+          let atp = post.category;
+          let atp1 = Array<Cat>();
+
+          for (let x = 0; x < atp.length; x++) {
+            let tp = atp[i];
+            if (tp?.namespace) {
+              let oid = tp.oid;
+              let ua = await this.interestService.findOne(oid.toString());
+              if (ua != undefined) {
+                let tp1 = new Cat();
+                tp1._id = String(ua._id);
+                tp1.interestName = String(ua.interestName);
+                tp1.langIso = String(ua.langIso);
+                tp1.icon = String(ua.icon);
+                tp1.createdAt = String(ua.createdAt);
+                tp1.updatedAt = String(ua.updatedAt);
+
+                atp1.push(tp1);
+              }
+            }
+          }
+          pa.cats = atp1;
+        }
+
+        let privacy = new Privacy();
+        privacy.isPostPrivate = false;
+        privacy.isPrivate = false;
+        privacy.isCelebrity = false;
+        pa.privacy = privacy;
+
+        pa.tags = post.tags;
+
+        //Insight
+
+        if ((body.withInsight != undefined && (body.withInsight == true || body.withInsight == 'true'))) {
+          let insight = await this.insightService.findemail(String(post.email));
+          if (insight == undefined) {
+            continue;
+          }
+
+          let tmp = new InsightPost();
+          tmp.follower = Number(insight.followers);
+          tmp.following = Number(insight.followings);
+          tmp.likes = Number(insight.likes);
+          tmp.views = Number(insight.views);
+          tmp.shares = Number(insight.shares);
+          tmp.comments = Number(insight.comments);
+          tmp.reactions = Number(insight.reactions);
+          pa.insight = tmp;
+
+        }
+
+        //MEDIA
+        let meds = <MediaData> ps.mediaData;
+        if (ps.postType == 'vid') {
+          if (meds.apsara == true) {
+            xvids.push(String(meds.apsaraId));
+            pa.apsaraId = String(meds.apsaraId);
+            pa.isApsara = true;
+          } else {
+            pa.mediaThumbUri = ps.mediaThumbUri;
+            pa.mediaEndpoint = String(ps.mediaEndpoint);
+            pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);
+          }
+          pa.mediaType = 'video';
+        } else if (ps.postType == 'pict') {
+          if (meds.apsara == true) {
+            xpics.push(String(meds.apsaraId));
+            pa.apsaraId = String(meds.apsaraId);
+            pa.isApsara = true;
+          } else {
+            pa.mediaThumbUri = ps.mediaThumbUri;
+            pa.mediaEndpoint = String(ps.mediaEndpoint);
+            pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);            
+          }
+          pa.mediaType = 'image';
+        } else if (ps.postType == 'diary') {
+          if (meds.apsara == true) {
+            xvids.push(String(meds.apsaraId));
+            pa.apsaraId = String(meds.apsaraId);
+            pa.isApsara = true;
+          } else {
+            pa.mediaThumbUri = ps.mediaThumbUri;
+            pa.mediaEndpoint = String(ps.mediaEndpoint);
+            pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);
+          }
+          pa.mediaType = 'video';
+        } else if (ps.postType == 'story') {
+          if (meds.mediaType == 'video') {
+            if (meds.apsara == true) {
+              xvids.push(String(meds.apsaraId));
+              pa.apsaraId = String(meds.apsaraId);
+              pa.isApsara = true;
+            } else {
+              pa.mediaThumbUri = ps.mediaThumbUri;
+              pa.mediaEndpoint = String(ps.mediaEndpoint);
+              pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);
+            }  
+            pa.mediaType = 'video';          
+          } else {
+            if (meds.apsara == true) {
+              xpics.push(String(meds.apsaraId));
+              pa.apsaraId = String(meds.apsaraId);
+              pa.isApsara = true;
+            } else {
+              pa.mediaThumbUri = ps.mediaThumbUri;
+              pa.mediaEndpoint = String(ps.mediaEndpoint);
+              pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);            
+            }      
+            pa.mediaType = 'image';      
+          }
+        }
+
+        pa.isViewed = false;
+        /*
+        if (pa.viewers != undefined && pa.viewers.length > 0) {
+          for (let i = 0; i < video.viewers.length; i++) {
+            let vwt = video.viewers[i];
+            let vwns = vwt.namespace;
+            if (vwns == 'userbasics') {
+              let vw = await this.userService.findbyid(vwns.oid);
+              if (vw != undefined && vw.email == iam.email) {
+                pa.isViewed = true;
+                break;
+              }
+            }
+          }
+        }        
+        */
+
+        /*
+        if (diary.viewers != undefined && diary.viewers.length > 0) {
+          for (let i = 0; i < diary.viewers.length; i++) {
+            let drt = diary.viewers[i];
+            let drns = drt.namespace;
+            if (drns == 'userbasics') {
+              let vw = await this.userService.findbyid(drns.oid);
+              if (vw != undefined && vw.email == iam.email) {
+                pa.isViewed = true;
+                break;
+              }
+            }
+          }
+        }
+        */
+        pd.push(pa);
+      }
+    }
+    return pd;
+  }  
 }
