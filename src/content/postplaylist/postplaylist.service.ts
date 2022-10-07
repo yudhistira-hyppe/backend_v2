@@ -28,9 +28,5 @@ export class PostPlaylistService {
     return this.playlistService.doGetUserPostPlaylistV2(body, headers, whoami);
   }  
 
-  public async doGetUserPostPlaylistV3(body: any, headers: any, whoami: Userbasic, yesterday: number): Promise<V3PlayList> {
-    this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
-    return this.playlistService.doGetUserPostPlaylistV3(body, headers, whoami, yesterday);
-  }    
 
 }

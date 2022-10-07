@@ -14,6 +14,9 @@ export class UserplaylistService {
   constructor(
     @InjectModel(Userplaylist.name, 'SERVER_TRANS')
     private readonly userplaylistModel: Model<UserplaylistDocument>,
+    @InjectModel(VPlay.name, 'SERVER_TRANS')
+    private readonly vPlayModel: Model<VPlay>,
+
     private utilService: UtilsService,
   ) { }
 
@@ -170,7 +173,7 @@ export class UserplaylistService {
   
   public async doGetUserPostVPlaylist(body: any, headers: any, whoami: Userbasic): Promise<VPlay[]> {
     this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
-    let query = this.userplaylistModel.find();
+    let query = this.vPlayModel.find();
     if (body.visibility != undefined) {
       if (body.visibility == 'PRIVATE') {
         query.where('userId', whoami._id);
@@ -191,9 +194,8 @@ export class UserplaylistService {
       query.where('postType').ne('advertise');
     }
 
-    if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
-      query.where('isHidden', false);
-    }
+    query.where('isHidden', false);
+    query.where('isWatched', false);
 
     if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
       this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
@@ -287,52 +289,6 @@ export class UserplaylistService {
     return await query.exec();
 
   } 
-  
-  public async doGetUserPostPlaylistV3(body: any, headers: any, whoami: Userbasic, yesterday: number): Promise<V3PlayList> {
-    this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
-
-    let row = 12;
-    let query = await this.userplaylistModel.aggregate([
-      {$facet: {
-        "video": [	{ $match :{$and: [{postType: "vid"},{type:body.visibility},{userId: whoami._id},{isWatched: false},{isHidden: false}]}}, {$limit:row}
-        ,{$lookup:{							
-                    from: "userauths",
-                    localField: "userBasicData.profileID",
-                    foreignField: "userID",
-                    as: "userauth"
-                    }
-        }
-        ],
-        "stories": 		[{ $match :{$and: [{postType: "story"},{type:body.visibility},{userId: whoami._id},{isWatched: false},{isHidden: false}]}}, {$limit:row},{$lookup:{							
-                    from: "userauths",
-                    localField: "userBasicData.profileID",
-                    foreignField: "userID",
-                    as: "userauth"
-                    }
-        }
-        ],
-        "picture": 		[	{ $match :{$and: [{postType: "pict"},{type:body.visibility},{userId: whoami._id},{isWatched: false},{isHidden: false}]}}, {$limit:row},{$lookup:{							
-                    from: "userauths",
-                    localField: "userBasicData.profileID",
-                    foreignField: "userID",
-                    as: "userauth"
-                    }
-        }
-        ],
-        "diaries": [	{ $match :{$and: [{postType: "diary"},{type:body.visibility},{expiration: {$gt: yesterday}},{userId: whoami._id},{isWatched: false},{isHidden: false}]}}, {$limit:row},{$lookup:{							
-                    from: "userauths",
-                    localField: "userBasicData.profileID",
-                    foreignField: "userID",
-                    as: "userauth"
-                    }
-        }
-        ],
-}}      
-    ]).exec();
-
-    let xxx = <V3PlayList[]> query;
-    return xxx[0];
-  }   
 
   private paging(page: number, row: number) {
     if (page == 0 || page == 1) {
