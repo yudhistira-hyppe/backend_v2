@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString } from "class-validator";
 import { ObjectId } from "mongodb";
 import mongoose from "mongoose";
+import { Userplaylist } from "../schemas/userplaylist.schema";
 
 export class CreateUserplaylistDto {
   _id: mongoose.Types.ObjectId;
@@ -42,4 +43,12 @@ export class MediaData {
   _class: string;
   apsara: boolean;  
   apsaraId: string;  
+}
+
+
+export class V3PlayList {
+  video: Userplaylist[];
+  picture: Userplaylist[];
+  diaries: Userplaylist[];
+  stories: Userplaylist[];
 }

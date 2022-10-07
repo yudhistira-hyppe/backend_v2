@@ -93,55 +93,18 @@ export class PostContentPlaylistService {
     let resDiary: PostData[] = [];        
     let resStory: PostData[] = [];        
 
-    body.postType = 'vid';
-    body.withExp = false;
-    let st = await this.utilService.getDateTimeDate();
-    let postVid = await this.postPlaylistService.doGetUserPostPlaylistV2(body, headers, profile);
-    let ed = await this.utilService.getDateTimeDate();
-    let gap = ed.getTime() - st.getTime();
-    this.logger.log('getUserPostLandingPage >>> video stopwatch 1: ' + gap);
-    
-    st = await this.utilService.getDateTimeDate();
-    let pdv = await this.loadPostDataBulkV2(postVid, body, profile, vids, pics);
-    ed = await this.utilService.getDateTimeDate();
-    gap = ed.getTime() - st.getTime();
-    this.logger.log('getUserPostLandingPage >>> video stopwatch 3: ' + gap);
+    let yesterday = this.utilService.generateExpirationFromToday(1);
+    let v3p = await this.postPlaylistService.doGetUserPostPlaylistV3(body, headers, profile, yesterday);
+    let pdv = await this.loadPostDataBulkV2(v3p.video, body, profile, vids, pics);
     data.video = pdv;
 
-    body.postType = 'pict';
-    body.withExp = false;
-    st = await this.utilService.getDateTimeDate();
-    let postPid = await this.postPlaylistService.doGetUserPostPlaylistV2(body, headers, profile);
-    ed = await this.utilService.getDateTimeDate();
-    gap = ed.getTime() - st.getTime();
-    this.logger.log('getUserPostLandingPage >>> pict stopwatch 1: ' + gap);
-
-    st = await this.utilService.getDateTimeDate();    
-    let pdp = await this.loadPostDataBulkV2(postPid, body, profile, vids, pics);
-    ed = await this.utilService.getDateTimeDate();
-    gap = ed.getTime() - st.getTime();
-    this.logger.log('getUserPostLandingPage >>> pict stopwatch 3: ' + gap);    
+    let pdp = await this.loadPostDataBulkV2(v3p.picture, body, profile, vids, pics);
     data.pict = pdp;    
 
-    body.postType = 'diary';
-    let postDid = await this.postPlaylistService.doGetUserPostPlaylistV2(body, headers, profile);
-    //let pd = await this.loadBulk(postDid, page, row);
-    let pdd = await this.loadPostDataBulkV2(postDid, body, profile, vids, pics);
+    let pdd = await this.loadPostDataBulkV2(v3p.diaries, body, profile, vids, pics);
     data.diary = pdd;        
 
-    body.postType = 'story';
-    body.withExp = false;
-    st = await this.utilService.getDateTimeDate();    
-    let postSid = await this.postPlaylistService.doGetUserPostPlaylistV2(body, headers, profile);
-    ed = await this.utilService.getDateTimeDate();
-    gap = ed.getTime() - st.getTime();
-    this.logger.log('getUserPostLandingPage >>> story stopwatch 1: ' + gap);
-
-    st = await this.utilService.getDateTimeDate();            
-    let pds = await this.loadPostDataBulkV2(postSid, body, profile, vids, pics);
-    ed = await this.utilService.getDateTimeDate();
-    gap = ed.getTime() - st.getTime();
-    this.logger.log('getUserPostLandingPage >>> story stopwatch 3: ' + gap);    
+    let pds = await this.loadPostDataBulkV2(v3p.stories, body, profile, vids, pics);
     data.story = pds;            
 
 
@@ -167,19 +130,11 @@ export class PostContentPlaylistService {
     let papsara = undefined;
 
     if (xvids.length > 0) {
-      st = await this.utilService.getDateTimeDate();
       vapsara = await this.postContentService.getVideoApsara(xvids);
-      ed = await this.utilService.getDateTimeDate();
-      gap = ed.getTime() - st.getTime();
-      this.logger.log('getUserPostLandingPage >>> apsara video with : ' + xvids.length + " item is: " + gap);
     }
 
     if (xpics.length > 0) {
-      st = await this.utilService.getDateTimeDate();    
       papsara = await this.postContentService.getImageApsara(xpics);  
-      ed = await this.utilService.getDateTimeDate();
-      gap = ed.getTime() - st.getTime();      
-      this.logger.log('getUserPostLandingPage >>> apsara image with : ' + xpics.length + " item is: " + gap);
     }
 
     if (vapsara != undefined) {
@@ -528,6 +483,7 @@ export class PostContentPlaylistService {
 
     return res;
   }    
+
 
   async getUserPost(body: any, headers: any): Promise<PostResponseApps> {
 
