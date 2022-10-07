@@ -402,20 +402,22 @@ export class PostContentService {
     ws.write(file.buffer);
     ws.close();
 
-    //Upload Seaweedfs
-    const seaweedfs_path = '/' + post._id + '/' + postType + '/';
-    this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);    
-    try {
-      var FormData_ = new FormData();
-      FormData_.append(postType, fs.createReadStream(nm));
-      const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
-      this.logger.log('uploadSeaweedfs >>> ' + dataupload);
-    } catch (err) {
-      this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
-    }
-    let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
-    //let payload = { 'file': nm, 'postId': apost._id };
-    axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+    ws.on('finish', async () => {
+      //Upload Seaweedfs
+      const seaweedfs_path = '/' + post._id + '/' + postType + '/';
+      this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);
+      try {
+        var FormData_ = new FormData();
+        FormData_.append(postType, fs.createReadStream(nm));
+        const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
+        this.logger.log('uploadSeaweedfs >>> ' + dataupload);
+      } catch (err) {
+        this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
+      }
+      let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
+      //let payload = { 'file': nm, 'postId': apost._id };
+      axios.post(this.configService.get("APSARA_UPLOADER_VIDEO"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
+    });
 
     var res = new CreatePostResponse();
     res.response_code = 202;
@@ -501,22 +503,23 @@ export class PostContentService {
     ws.write(file.buffer);
     ws.close();
 
-    //Upload Seaweedfs
-    const seaweedfs_path = '/' + post._id + '/' + postType + '/';
-    this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);    
-    try {
-      var FormData_ = new FormData();
-      FormData_.append(postType, fs.createReadStream(nm));
-      const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
-      this.logger.log('uploadSeaweedfs >>> ' + dataupload);
-    } catch (err) {
-      this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
-    }
-    let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
+    ws.on('finish', async () => {
+      //Upload Seaweedfs
+      const seaweedfs_path = '/' + post._id + '/' + postType + '/';
+      this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);    
+      try {
+        var FormData_ = new FormData();
+        FormData_.append(postType, fs.createReadStream(nm));
+        const dataupload = await this.seaweedfsService.write(seaweedfs_path, FormData_);
+        this.logger.log('uploadSeaweedfs >>> ' + dataupload);
+      } catch (err) {
+        this.logger.error('uploadSeaweedfs >>> Unabled to proceed ' + postType + ' failed upload seaweedfs, ' + err);
+      }
+      let payload = { 'file': '/localrepo' + seaweedfs_path + post._id + "." + ext[1], 'postId': apost._id };
+      //let payload = { 'file': nm, 'postId': apost._id };
+      axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
 
-    //let payload = { 'file': nm, 'postId': apost._id };
-    axios.post(this.configService.get("APSARA_UPLOADER_PICTURE"), JSON.stringify(payload), { headers: { 'Content-Type': 'application/json' } });
-
+    });
     /*
     let playlist = new CreateUserplaylistDto();
     playlist.userPostId = Object(profile._id);
