@@ -30,6 +30,10 @@ export class UserAdsService {
         return this.userAdsModel.findOne({ _id: new ObjectId(id) }).exec();
     }
 
+    async findOnestatusView(id: string): Promise<UserAds> {
+        return this.userAdsModel.findOne({ _id: new ObjectId(id), statusView: false }).exec();
+    }
+
     async findOneByuserID(userID: string, nameType: string): Promise<UserAds[]> {
         return this.userAdsModel.find({ userID: userID, nameType: nameType, statusView: false }).sort({ priorityNumber:-1, createdAt: -1 }).exec();
     }
@@ -254,6 +258,17 @@ export class UserAdsService {
                     "viewed": createUserAdsDto.viewed,
                     "clickAt": createUserAdsDto.clickAt
                 }
+            });
+        return data;
+    }
+
+    async updatesdataUserId_(id: string, createUserAdsDto: CreateUserAdsDto): Promise<Object> {
+        let data = await this.userAdsModel.updateOne(
+            {
+                "_id": new ObjectId(id)
+            },
+            {
+                $set: createUserAdsDto
             });
         return data;
     }
