@@ -83,6 +83,16 @@ export class UserplaylistService {
     }).clone().exec();
   }
 
+  async findOneAndUpdate_(CreateUserplaylistDto_: CreateUserplaylistDto) {
+    return await this.userplaylistModel.updateOne(CreateUserplaylistDto_, { $set: CreateUserplaylistDto_ }, function (err, docs) {
+      if (err) {
+        console.log("Updated Error : ", err)
+      } else {
+        console.log("Updated Docs : ", docs);
+      }
+    }).clone().exec();
+  }
+
   async delete(id: string) {
     const deletedCat = await this.userplaylistModel
       .findByIdAndRemove({ _id: id })

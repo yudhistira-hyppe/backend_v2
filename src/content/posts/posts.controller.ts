@@ -344,6 +344,16 @@ export class PostsController {
     return await this.PostsService.updateGenerateUserPlaylist(new mongoose.Types.ObjectId(body.oldUserPostID), CreateUserplaylistDto_);
   }
 
+  @Post('api/userplaylist/updategenerate2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async updateGenerateUserPlaylist_(@Body() body) {
+    var CreateUserplaylistDto_ = new CreateUserplaylistDto();
+    CreateUserplaylistDto_.userPostId = new mongoose.Types.ObjectId(body.userPostId);
+    CreateUserplaylistDto_.mediaId = body.mediaId;
+    CreateUserplaylistDto_.postType = body.postType;
+    return await this.PostsService.updateGenerateUserPlaylist_(CreateUserplaylistDto_);
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getinteractives')
   @HttpCode(HttpStatus.ACCEPTED)
