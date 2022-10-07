@@ -1493,6 +1493,7 @@ export class PostsService {
       // }
       CreateUserplaylistDto_._id = new mongoose.Types.ObjectId();
       await this.userplaylistService.create(CreateUserplaylistDto_);
+      console.log("----------------------------------------" + new Date().toString() + "----------------------------------------");
     });
     console.log("----------------------------------------" + new Date().toString() + "----------------------------------------");
   }
