@@ -156,8 +156,8 @@ export class PostContentPlaylistService {
       }
     }
 
-    for (let i = 0; i < xpics.length; i++) {
-      let o = xpics[i];
+    for (let i = 0; i < pics.length; i++) {
+      let o = pics[i];
       if (o != undefined) {
         xpics.push(o);
       }
@@ -225,10 +225,10 @@ export class PostContentPlaylistService {
       if (pdv.length > 0) {
         for(let i = 0; i < pdv.length; i++) {
           let pdvv = pdv[i];
-          for (let i = 0; i < papsara.VideoList.length; i++) {
-            let vi = papsara.VideoList[i];
-            if (pdvv.apsaraId == vi.VideoId) {
-              pdvv.mediaThumbEndpoint = vi.CoverURL;
+          for (let i = 0; i < papsara.ImageInfo.length; i++) {
+            let vi = papsara.ImageInfo[i];
+            if (pdvv.apsaraId == vi.ImageId) {
+              pdvv.mediaThumbEndpoint = vi.URL;
             }
           }
           resVideo.push(pdvv);
@@ -237,10 +237,10 @@ export class PostContentPlaylistService {
       if (pds.length > 0) {
         for(let i = 0; i < pds.length; i++) {
           let pdss = pds[i];
-          for (let i = 0; i < papsara.VideoList.length; i++) {
-            let vi = papsara.VideoList[i];
-            if (pdss.apsaraId == vi.VideoId) {
-              pdss.mediaThumbEndpoint = vi.CoverURL;
+          for (let i = 0; i < papsara.ImageInfo.length; i++) {
+            let vi = papsara.ImageInfo[i];
+            if (pdss.apsaraId == vi.ImageId) {
+              pdss.mediaThumbEndpoint = vi.URL;
             }
           }
           resStory.push(pdss);
@@ -249,10 +249,10 @@ export class PostContentPlaylistService {
       if (pdd.length > 0) {
         for(let i = 0; i < pdd.length; i++) {
           let pddd = pdd[i];
-          for (let i = 0; i < papsara.VideoList.length; i++) {
-            let vi = papsara.VideoList[i];
-            if (pddd.apsaraId == vi.VideoId) {
-              pddd.mediaThumbEndpoint = vi.CoverURL;
+          for (let i = 0; i < papsara.ImageInfo.length; i++) {
+            let vi = papsara.ImageInfo[i];
+            if (pddd.apsaraId == vi.ImageId) {
+              pddd.mediaThumbEndpoint = vi.URL;
             }
           }
           resStory.push(pddd);
@@ -260,11 +260,11 @@ export class PostContentPlaylistService {
       }
       if (pdp.length > 0) {
         for(let i = 0; i < pdp.length; i++) {
-          let pdpp = pdd[i];
-          for (let i = 0; i < papsara.VideoList.length; i++) {
-            let vi = papsara.VideoList[i];
-            if (pdpp.apsaraId == vi.VideoId) {
-              pdpp.mediaThumbEndpoint = vi.CoverURL;
+          let pdpp = pdp[i];
+          for (let i = 0; i < papsara.ImageInfo.length; i++) {
+            let vi = papsara.ImageInfo[i];
+            if (pdpp.apsaraId == vi.ImageId) {
+              pdpp.mediaThumbEndpoint = vi.URL;
             }
           }
           resPic.push(pdpp);
