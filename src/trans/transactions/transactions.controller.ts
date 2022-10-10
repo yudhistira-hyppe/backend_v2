@@ -1090,7 +1090,7 @@ export class TransactionsController {
                         CreateUserplaylistDto_.postType = postType;
                         console.log(langIso);
 
-                        await this.postsService.generateUserPlaylist(CreateUserplaylistDto_);
+                        await this.postsService.updateGenerateUserPlaylist(idusersell, CreateUserplaylistDto_);
                         await this.postContentService.generateCertificate(postid, langIso);
 
                         res.status(HttpStatus.OK).json({

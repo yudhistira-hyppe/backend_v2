@@ -1916,7 +1916,7 @@ export class PostContentService {
     updatePl.postID = apost.postID;
     updatePl.mediaId = Object(cm.oid);
     updatePl.postType = apost.postType;
-    this.postService.generateUserPlaylist(updatePl);
+    this.postService.updateGenerateUserPlaylist_(updatePl);
 
     res.response_code = 202;
     let msg = new Messages();
@@ -1947,17 +1947,9 @@ export class PostContentService {
     }
 
     if (body.tags != undefined) {
-      if (body.tags != undefined) {
-        let txs : [] = [];
-        for(let i = 0; i < post.tags.length; i++) {
-          let oo = post.tags[i];
-          let oop = String(oo);
-          if (oop.length > 0) {
-            txs.push(oo);
-          }
-        }
-        post.tags = txs;
-      }
+      var obj = body.tags;
+      var tgs = obj.split(",");
+      post.tags = tgs;
     }
 
     if (body.visibility != undefined) {
