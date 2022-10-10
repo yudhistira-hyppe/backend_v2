@@ -760,7 +760,14 @@ export class PostContentPlaylistService {
         privacy.isCelebrity = false;
         pa.privacy = privacy;
 
-        pa.tags = post.tags;
+        let txs : string[] = [];
+        for(let i = 0; i < post.tags.length; i++) {
+          let oo = String(post.tags[i]);
+          if (oo.length > 0) {
+            txs.push(oo);
+          }
+        }
+        pa.tags = txs;
 
         //Insight
 
@@ -1003,7 +1010,14 @@ export class PostContentPlaylistService {
         privacy.isCelebrity = false;
         pa.privacy = privacy;
 
-        pa.tags = post.tags;
+        let txs : string[] = [];
+        for(let i = 0; i < post.tags.length; i++) {
+          let oo = String(post.tags[i]);
+          if (oo.length > 0) {
+            txs.push(oo);
+          }
+        }        
+        pa.tags = txs;
 
         //Insight
 
