@@ -276,6 +276,25 @@ export class ProfileController {
     }
     var datauserauthsService = await this.userauthsService.findOne(emails);
     var interest_json = JSON.parse(JSON.stringify(datauserbasicsService.userInterests));
+    var lenghtinteres = interest_json.length;
+    var objintetres = {};
+    var arrinterest = [];
+    var interests = null;
+    for (var i = 0; i < lenghtinteres; i++) {
+      var idinter = interest_json[i].$id;
+      interests = await this.interestsService.findOne(idinter);
+
+
+      objintetres = {
+        interestName: interests.interestName,
+        icon: interests.icon,
+        createdAt: interests.createdAt,
+        updatedAt: interests.updatedAt,
+        _class: interests._class,
+      }
+
+      arrinterest.push(objintetres);
+    }
     try {
       insights_json = JSON.parse(JSON.stringify(datauserbasicsService.insight));
       var insights = await this.insightsService.findOne(insights_json.$id);
@@ -319,7 +338,7 @@ export class ProfileController {
       citi = "";
     }
     const languages = await this.languagesService.findOne(languages_json.$id);
-    const interests = await this.interestsService.findOne(interest_json.$id);
+
     var datagroup = {};
     var datadivision = {};
 
@@ -345,13 +364,7 @@ export class ProfileController {
     }
 
     try {
-      interest = [{
-        interestName: interests.interestName,
-        icon: interests.icon,
-        createdAt: interests.createdAt,
-        updatedAt: interests.updatedAt,
-        _class: interests._class,
-      }];
+      interest = arrinterest;
     } catch (err) {
       interest = [];
     }
@@ -374,7 +387,7 @@ export class ProfileController {
       "isEmailVerified": datauserauthsService.isEmailVerified,
       "idProofStatus": datauserbasicsService.idProofStatus,
       "insight": insights_res,
-      "langIso": languages.langIso,
+      // "langIso": languages.langIso,
       "interest": interest,
       "dob": datauserbasicsService.dob,
       "event": datauserbasicsService.event,
