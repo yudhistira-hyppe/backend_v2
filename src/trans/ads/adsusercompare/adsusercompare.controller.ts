@@ -289,35 +289,35 @@ export class AdsUserCompareController {
                     );
                 }
 
-                if (userAds_liveTypeuserads) {
-                    //Insert userads
-                    try {
-                        var _CreateUserAdsDto_ = new CreateUserAdsDto();
-                        _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
-                        _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
-                        _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
-                        _CreateUserAdsDto_.createdAt = current_date;
-                        _CreateUserAdsDto_.description = data_userAdsService.description;
-                        _CreateUserAdsDto_.priority = data_userAdsService.priority;
-                        _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
-                        _CreateUserAdsDto_.statusClick = false;
-                        _CreateUserAdsDto_.statusView = false;
-                        _CreateUserAdsDto_.updatedAt = current_date;
-                        _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
-                        _CreateUserAdsDto_.userID = data_userAdsService.userID;
-                        _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
-                        _CreateUserAdsDto_.viewed = 0;
-                        _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
-                        _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
-                        _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
-                        _CreateUserAdsDto_.timeViewSecond = 0;
-                        await this.userAdsService.create(_CreateUserAdsDto_);
-                    } catch (e) {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed, Insert userAds liveTypeuserads' + e,
-                        );
-                    }
-                }
+                // if (userAds_liveTypeuserads) {
+                //     //Insert userads
+                //     try {
+                //         var _CreateUserAdsDto_ = new CreateUserAdsDto();
+                //         _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
+                //         _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
+                //         _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
+                //         _CreateUserAdsDto_.createdAt = current_date;
+                //         _CreateUserAdsDto_.description = data_userAdsService.description;
+                //         _CreateUserAdsDto_.priority = data_userAdsService.priority;
+                //         _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
+                //         _CreateUserAdsDto_.statusClick = false;
+                //         _CreateUserAdsDto_.statusView = false;
+                //         _CreateUserAdsDto_.updatedAt = current_date;
+                //         _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
+                //         _CreateUserAdsDto_.userID = data_userAdsService.userID;
+                //         _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
+                //         _CreateUserAdsDto_.viewed = 0;
+                //         _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
+                //         _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
+                //         _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
+                //         _CreateUserAdsDto_.timeViewSecond = 0;
+                //         await this.userAdsService.create(_CreateUserAdsDto_);
+                //     } catch (e) {
+                //         await this.errorHandler.generateNotAcceptableException(
+                //             'Unabled to proceed, Insert userAds liveTypeuserads' + e,
+                //         );
+                //     }
+                // }
 
                 return {
                     response_code: 202,
@@ -427,35 +427,35 @@ export class AdsUserCompareController {
                             }
                         }
 
-                        if (userAds_liveTypeuserads) {
-                            //Insert userads
-                            try {
-                                var _CreateUserAdsDto_ = new CreateUserAdsDto();
-                                _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
-                                _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
-                                _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
-                                _CreateUserAdsDto_.createdAt = current_date;
-                                _CreateUserAdsDto_.description = data_userAdsService.description;
-                                _CreateUserAdsDto_.priority = data_userAdsService.priority;
-                                _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
-                                _CreateUserAdsDto_.statusClick = false;
-                                _CreateUserAdsDto_.statusView = false;
-                                _CreateUserAdsDto_.updatedAt = current_date;
-                                _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
-                                _CreateUserAdsDto_.userID = data_userAdsService.userID;
-                                _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
-                                _CreateUserAdsDto_.viewed = 0;
-                                _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
-                                _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
-                                _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
-                                _CreateUserAdsDto_.timeViewSecond = 0;
-                                await this.userAdsService.create(_CreateUserAdsDto_);
-                            } catch (e) {
-                                await this.errorHandler.generateNotAcceptableException(
-                                    'Unabled to proceed, Insert userAds liveTypeuserads' + e,
-                                );
-                            }
-                        }
+                        // if (userAds_liveTypeuserads) {
+                        //     //Insert userads
+                        //     try {
+                        //         var _CreateUserAdsDto_ = new CreateUserAdsDto();
+                        //         _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
+                        //         _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
+                        //         _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
+                        //         _CreateUserAdsDto_.createdAt = current_date;
+                        //         _CreateUserAdsDto_.description = data_userAdsService.description;
+                        //         _CreateUserAdsDto_.priority = data_userAdsService.priority;
+                        //         _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
+                        //         _CreateUserAdsDto_.statusClick = false;
+                        //         _CreateUserAdsDto_.statusView = false;
+                        //         _CreateUserAdsDto_.updatedAt = current_date;
+                        //         _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
+                        //         _CreateUserAdsDto_.userID = data_userAdsService.userID;
+                        //         _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
+                        //         _CreateUserAdsDto_.viewed = 0;
+                        //         _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
+                        //         _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
+                        //         _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
+                        //         _CreateUserAdsDto_.timeViewSecond = 0;
+                        //         await this.userAdsService.create(_CreateUserAdsDto_);
+                        //     } catch (e) {
+                        //         await this.errorHandler.generateNotAcceptableException(
+                        //             'Unabled to proceed, Insert userAds liveTypeuserads' + e,
+                        //         );
+                        //     }
+                        // }
 
                         if (rewards) {
                             //Update accountbalace
@@ -667,35 +667,35 @@ export class AdsUserCompareController {
                     );
                 }
 
-                if (userAds_liveTypeuserads) {
-                    //Insert userads
-                    try {
-                        var _CreateUserAdsDto_ = new CreateUserAdsDto();
-                        _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
-                        _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
-                        _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
-                        _CreateUserAdsDto_.createdAt = current_date;
-                        _CreateUserAdsDto_.description = data_userAdsService.description;
-                        _CreateUserAdsDto_.priority = data_userAdsService.priority;
-                        _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
-                        _CreateUserAdsDto_.statusClick = false;
-                        _CreateUserAdsDto_.statusView = false;
-                        _CreateUserAdsDto_.updatedAt = current_date;
-                        _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
-                        _CreateUserAdsDto_.userID = data_userAdsService.userID;
-                        _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
-                        _CreateUserAdsDto_.viewed = 0;
-                        _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
-                        _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
-                        _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
-                        _CreateUserAdsDto_.timeViewSecond = 0;
-                        await this.userAdsService.create(_CreateUserAdsDto_);
-                    } catch (e) {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed, Insert userAds liveTypeuserads' + e,
-                        );
-                    }
-                }
+                // if (userAds_liveTypeuserads) {
+                //     //Insert userads
+                //     try {
+                //         var _CreateUserAdsDto_ = new CreateUserAdsDto();
+                //         _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
+                //         _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
+                //         _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
+                //         _CreateUserAdsDto_.createdAt = current_date;
+                //         _CreateUserAdsDto_.description = data_userAdsService.description;
+                //         _CreateUserAdsDto_.priority = data_userAdsService.priority;
+                //         _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
+                //         _CreateUserAdsDto_.statusClick = false;
+                //         _CreateUserAdsDto_.statusView = false;
+                //         _CreateUserAdsDto_.updatedAt = current_date;
+                //         _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
+                //         _CreateUserAdsDto_.userID = data_userAdsService.userID;
+                //         _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
+                //         _CreateUserAdsDto_.viewed = 0;
+                //         _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
+                //         _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
+                //         _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
+                //         _CreateUserAdsDto_.timeViewSecond = 0;
+                //         await this.userAdsService.create(_CreateUserAdsDto_);
+                //     } catch (e) {
+                //         await this.errorHandler.generateNotAcceptableException(
+                //             'Unabled to proceed, Insert userAds liveTypeuserads' + e,
+                //         );
+                //     }
+                // }
 
                 if (rewards) {
                     //Update accountbalace
