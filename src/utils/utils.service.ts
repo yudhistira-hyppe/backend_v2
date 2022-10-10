@@ -283,7 +283,7 @@ export class UtilsService {
   }
 
   async updateSetting_(_id_setting: string, value: any) {
-    return await this.settingsService.findOneAndUpdate(_id_setting, value);
+    return await this.settingsService.findOneAndUpdate_(_id_setting, value);
   }
 
   async convertToTime(time: string) {
