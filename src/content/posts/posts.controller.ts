@@ -310,8 +310,8 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('postContent'))
   async getUserPost(@Body() body, @Headers() headers): Promise<PostResponseApps> {
     this.logger.log("getUserPost >>> start: " + JSON.stringify(body));
-    return this.postContentService.getUserPost(body, headers);
-  }
+    return this.postPlayListService.getUserPost(body, headers);
+  }  
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts/landing-page')
