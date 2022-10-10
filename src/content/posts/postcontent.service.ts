@@ -1899,7 +1899,15 @@ export class PostContentService {
     }
 
     let post = await this.buildUpdatePost(body, headers);
-    let apost = await this.PostsModel.create(post);      
+    let apost = await this.PostsModel.create(post);    
+    
+    let cm = post.contentMedias[0];
+
+    let updatePl = new CreateUserplaylistDto();
+    updatePl.postID = apost.postID;
+    updatePl.mediaId = Object(cm.oid);
+    updatePl.postType = apost.postType;
+    this.postService.generateUserPlaylist(updatePl);
 
     res.response_code = 202;
     let msg = new Messages();
