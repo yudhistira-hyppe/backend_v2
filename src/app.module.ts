@@ -84,6 +84,7 @@ import { RemovedreasonsModule } from './trans/removedreasons/removedreasons.modu
 import { ReportreasonsModule } from './trans/reportreasons/reportreasons.module';
 import { ReportuserModule } from './trans/reportuser/reportuser.module';
 import { BullModule } from '@nestjs/bull';
+import { UserbasicsnewModule } from './trans/newuserbasic/userbasicsnew.module';
 @Module({
   imports: [
     BullModule.forRootAsync({
@@ -151,6 +152,7 @@ import { BullModule } from '@nestjs/bull';
     NotificationsModule,
     MediavideosModule,
     MediastoriesModule,
+    UserbasicsnewModule,
     // MediaproofpictsModule,
     MediaprofilepictsModule,
     MediapictsModule,

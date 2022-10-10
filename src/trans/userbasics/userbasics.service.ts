@@ -26,7 +26,7 @@ export class UserbasicsService {
   }
 
   async updatebyEmail(email: string, data: Object) {
-    console.log(email);
+    console.log(data);
     this.userbasicModel.updateOne(
       {
         email: email,
@@ -39,7 +39,30 @@ export class UserbasicsService {
           console.log(docs);
         }
       },
-    );
+    ).clone().exec();
+  }
+
+  async updateLanguage(email: string, language: string) {
+    console.log(language);
+    this.userbasicModel.updateOne(
+      {
+        email: email,
+      },
+      {
+        languages:{
+          $ref: 'languages',
+          $id: new Object(language),
+          $db: 'hyppe_infra_db',
+        }
+      },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    ).clone().exec();
   }
 
   async updatebyId(email: string,

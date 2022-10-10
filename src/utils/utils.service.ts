@@ -50,7 +50,7 @@ export class UtilsService {
     private countriesService: CountriesService,
     private areasService: AreasService,
     private interestsRepoService: InterestsRepoService,
-    private interestsService: InterestsService,
+    //private interestsService: InterestsService,
     private eulasService: EulasService,
     private mediaprofilepictsService: MediaprofilepictsService,
     private settingsService: SettingsService,
@@ -736,12 +736,12 @@ export class UtilsService {
               JSON.stringify(get_userbasic.userInterests[i]),
             );
             if (interests_json.ref == 'interests_repo') {
-              const interests = await this.interestsService.findOne(
+              const interests = await this.interestsRepoService.findOne(
                 interests_json.$id,
               );
               interests_array[i] = interests.interestName;
             } else {
-              const interests = await this.interestsService.findOne(
+              const interests = await this.interestsRepoService.findOne(
                 interests_json.$id,
               );
               interests_array[i] = interests.interestName;
