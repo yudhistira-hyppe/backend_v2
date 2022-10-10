@@ -234,11 +234,24 @@ export class UserplaylistService {
     this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
     let query = this.userplaylistModel.find();
     if (body.visibility != undefined) {
+      //
+      //if (body.visibility == 'PRIVATE') {
+      //  query.where('userId', whoami._id);
+      //  query.where('userPostId', whoami._id);
+      //} else {
+      //  query.where('type', body.visibility);
+      //}
+
       if (body.visibility == 'PRIVATE') {
-        query.where('userId', whoami._id);
-        query.where('userPostId', whoami._id);
-      } else {
-        query.where('type', body.visibility);
+        query.where('PRIVATE', true);
+      } else if (body.visibility == 'PUBLIC') {
+        query.where('PUBLIC', true);        
+      } else if (body.visibility == 'FRIEND') {
+        query.where('FRIEND', true);        
+      } else if (body.visibility == 'FOLLOWING') {
+        query.where('FOLLOWING', true);        
+      } else if (body.visibility == 'FOLLOWER') {
+        query.where('FOLLOWER', true);        
       }
 
     }
