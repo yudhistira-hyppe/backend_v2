@@ -1883,6 +1883,160 @@ export class PostContentService {
     return htmlPdf;
   }
 
+  async updatePost(body: any, headers: any): Promise<CreatePostResponse> {
+    this.logger.log('updatePost >>> start: ' + JSON.stringify(body));
+    var res = new CreatePostResponse();
+    res.response_code = 204;
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+    if (profile == undefined) {
+      let msg = new Messages();
+      msg.info = ["Email unknown"];
+      res.messages = msg;
+      return res;
+    }
+
+    let post = await this.buildUpdatePost(body, headers);
+    let apost = await this.PostsModel.create(post);      
+
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    var pd = new PostData();
+    pd.postID = String(apost.postID);
+    pd.email = String(apost.email);
+
+    return res;    
+  }
+
+  private async buildUpdatePost(body: any, headers: any): Promise<Posts> {
+    this.logger.log('buildPost >>> start');
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+    this.logger.log('buildPost >>> profile: ' + profile.email);
+
+    let post = await this.postService.findByPostId(body.postID);
+    post.updatedAt = await this.utilService.getDateTimeString();
+
+    if (body.description != undefined) {
+      post.description = body.description;
+    }
+
+    if (body.tags != undefined) {
+      var obj = body.tags;
+      var tgs = obj.split(",");
+      post.tags = tgs;
+    }
+
+    if (body.visibility != undefined) {
+      post.visibility = body.visibility;
+    } else {
+      post.visibility = 'PUBLIC';
+    }
+
+    if (body.location != undefined) {
+      post.location = body.location;
+    }
+
+    if (body.lat != undefined) {
+      post.lat = body.lat;
+    }
+
+    if (body.lon != undefined) {
+      post.lon = body.lon;
+    }
+
+    if (body.saleAmount != undefined) {
+      post.saleAmount = body.saleAmount;
+    } else {
+      post.saleAmount = null;
+    }
+
+    if (body.saleLike != undefined) {
+      post.saleLike = body.saleLike;
+    } else {
+      post.saleLike = false;
+    }
+
+    if (body.saleView != undefined) {
+      post.saleView = body.saleView;
+    } else {
+      post.saleView = false;
+    }
+
+    if (body.allowComments != undefined) {
+      post.allowComments = body.allowComments;
+    } else {
+      post.allowComments = true;
+    }
+
+    if (body.isSafe != undefined) {
+      post.isSafe = body.isSafe;
+    } else {
+      post.isSafe = false;
+    }
+
+    if (body.isOwned != undefined) {
+      post.isOwned = body.isOwned;
+    } else {
+      post.isOwned = false;
+    }
+
+    if (body.cats != undefined && body.cats.length > 1) {
+      var obj = body.cats;
+      var cats = obj.split(",");
+      var pcats = [];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        var cat = await this.interestService.findByName(tmp);
+        if (cat != undefined) {
+          var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(cat._id), "$db": "hyppe_infra_db" };
+          pcats.push(objintr);
+        }
+      }
+      post.category = pcats;
+    }
+
+    if (body.tagPeople != undefined && body.tagPeople.length > 1) {
+      var obj = body.tagPeople;
+      var cats = obj.split(",");
+      var pcats = [];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        var tp = await this.userAuthService.findOneUsername(tmp);
+        if (cat != undefined) {
+          var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
+          pcats.push(objintr);
+        }
+      }
+      post.tagPeople = pcats;
+    }
+
+    if (body.tagDescription != undefined && body.tagDescription.length > 0) {
+      var obj = body.tagDescription;
+      var cats = obj.split(",");
+      var pcats = [];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
+        var tp = await this.userAuthService.findOneUsername(tmp);
+        if (cat != undefined) {
+          var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+          pcats.push(objintrx);
+        }
+      }
+      post.tagDescription = pcats;
+    }
+
+    return post;
+  }
+
   private formatTime(seconds) {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
