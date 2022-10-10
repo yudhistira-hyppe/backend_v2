@@ -243,7 +243,8 @@ export class UserplaylistService {
       //}
 
       if (body.visibility == 'PRIVATE') {
-        query.where('PRIVATE', true);
+        query.where('userId', whoami._id);
+        query.where('userPostId', whoami._id);
       } else if (body.visibility == 'PUBLIC') {
         query.where('PUBLIC', true);        
       } else if (body.visibility == 'FRIEND') {
