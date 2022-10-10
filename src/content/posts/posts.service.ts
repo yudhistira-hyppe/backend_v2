@@ -1663,6 +1663,11 @@ export class PostsService {
       CreateUserplaylistDto_.userBasicData = Object(data_userbasic);
       CreateUserplaylistDto_.postData = Object(data_post);
       CreateUserplaylistDto_.mediaData = Object(data_media);
+      CreateUserplaylistDto_.FRIEND = (type == "FRIEND") ? true : false;
+      CreateUserplaylistDto_.FOLLOWER = (type == "FOLLOWER" || type == "FRIEND") ? true : false;;
+      CreateUserplaylistDto_.FOLLOWING = (type == "FOLLOWING" || type == "FRIEND") ? true : false;
+      CreateUserplaylistDto_.PUBLIC = (type == "PUBLIC" || type == "FRIEND" || type == "FOLLOWER" || type == "FOLLOWING") ? true : false;
+      CreateUserplaylistDto_.PRIVATE = (type == "PRIVATE") ? true : false;
       if (data_media.viewers != undefined) {
         CreateUserplaylistDto_.viewers = data_media.viewers;
       }
@@ -1889,6 +1894,11 @@ export class PostsService {
       CreateUserplaylistDto_.userBasicData = Object(data_userbasic);
       CreateUserplaylistDto_.postData = Object(data_post);
       CreateUserplaylistDto_.mediaData = Object(data_media);
+      CreateUserplaylistDto_.FRIEND = (type == "FRIEND") ? true : false;
+      CreateUserplaylistDto_.FOLLOWER = (type == "FOLLOWER" || type == "FRIEND") ? true : false;;
+      CreateUserplaylistDto_.FOLLOWING = (type == "FOLLOWING" || type == "FRIEND") ? true : false;
+      CreateUserplaylistDto_.PUBLIC = (type == "PUBLIC" || type == "FRIEND" || type == "FOLLOWER" || type == "FOLLOWING") ? true : false;
+      CreateUserplaylistDto_.PRIVATE = (type == "PRIVATE") ? true : false;
       if (data_media.viewers != undefined) {
         CreateUserplaylistDto_.viewers = data_media.viewers;
       }
