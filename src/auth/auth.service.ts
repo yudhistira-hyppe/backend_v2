@@ -34,7 +34,7 @@ import * as fs from 'fs';
 import { ContenteventsService } from '../content/contentevents/contentevents.service';
 import { CreateContenteventsDto } from '../content/contentevents/dto/create-contentevents.dto';
 import { CreateGetcontenteventsDto } from '../trans/getusercontents/getcontentevents/dto/create-getcontentevents.dto';
-import { CreateUserbasicnewDto } from 'src/trans/newuserbasic/dto/create-userbasicnew.dto';
+import { CreateUserbasicnewDto } from '../trans/newuserbasic/dto/create-userbasicnew.dto';
 
 @Injectable()
 export class AuthService {
