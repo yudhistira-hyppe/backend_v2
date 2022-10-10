@@ -153,7 +153,10 @@ export class AdsUserCompareController {
             mediaType: get_profilePict.mediaType,
             mediaEndpoint: '/profilepict/' + get_profilePict.mediaUri.replace('_0001.jpeg', '')
         }
-        data_response['adsPlace'] = (await this.adsplacesService.findOne(data_ads.placingID.toString())).namePlace;
+        var dataPlace = await this.adsplacesService.findOne(data_ads.placingID.toString());
+        if (await this.utilsService.ceckData(dataPlace)) {
+            data_response['adsPlace'] = dataPlace.namePlace;
+        }
         data_response['adsType'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).nameType;
         data_response['adsSkip'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).AdsSkip;
         data_response['mediaType'] = data_ads.type;

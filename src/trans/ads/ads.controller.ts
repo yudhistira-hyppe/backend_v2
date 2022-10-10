@@ -1336,18 +1336,19 @@ export class AdsController {
                         await this.uservouchersService.update(uservoucherdata._id.toString(), CreateUservouchersDto_);
                     }
 
-                    console.log("typeAdsID", CreateAdsDto.typeAdsID.toString());
-                    if (CreateAdsDto.placingID==undefined){
-                        var dataPlacing = await this.adsplacesService.findOneByType(CreateAdsDto.typeAdsID.toString());
-                        CreateAdsDto.placingID = mongoose.Types.ObjectId(dataPlacing._id);
-                        console.log("placingID Tidak Ada");
-                        console.log("dataPlacing", dataPlacing);
-                        console.log("placingID", CreateAdsDto.placingID);
-                    } else {
-                        CreateAdsDto.placingID = mongoose.Types.ObjectId(CreateAdsDto.placingID);
-                        console.log("placingID Ada");
-                        console.log("placingID", CreateAdsDto.placingID);
-                    }
+                    //     console.log("dataPlacing", dataPlacing);
+
+                    // if (CreateAdsDto.placingID==undefined){
+                    //     var dataPlacing = await this.adsplacesService.findOneByType(CreateAdsDto.typeAdsID.toString());
+                    //     CreateAdsDto.placingID = mongoose.Types.ObjectId(dataPlacing._id);
+                    //     console.log("placingID Tidak Ada");
+                    //     console.log("dataPlacing", dataPlacing);
+                    //     console.log("placingID", CreateAdsDto.placingID);
+                    // } else {
+                    //     CreateAdsDto.placingID = mongoose.Types.ObjectId(CreateAdsDto.placingID);
+                    //     console.log("placingID Ada");
+                    //     console.log("placingID", CreateAdsDto.placingID);
+                    // }
 
                     CreateAdsDto.timestamp = dt.toISOString();
                     //  CreateAdsDto.expiredAt = dtexpired.toISOString();
@@ -1358,6 +1359,7 @@ export class AdsController {
                     CreateAdsDto.totalUsedCredit = creditValue * tayang;
                     CreateAdsDto.userVoucherID = arrayUservoucher;
                     CreateAdsDto.typeAdsID = mongoose.Types.ObjectId(CreateAdsDto.typeAdsID);
+                    CreateAdsDto.placingID = mongoose.Types.ObjectId(CreateAdsDto.placingID);
                     CreateAdsDto.interestID = arrayInterest;
                     CreateAdsDto.type = tipe;
                     CreateAdsDto.usedCredit = 0;
