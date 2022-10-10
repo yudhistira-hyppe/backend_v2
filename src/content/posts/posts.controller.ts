@@ -315,7 +315,9 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts/landing-page')
+  @UseInterceptors(FileInterceptor('postContent'))
   async getUserPostLandingPage(@Body() body, @Headers() headers): Promise<PostLandingResponseApps> {
+    console.log(body);
     this.logger.log("getUserPostLandingPage >>> start: " + JSON.stringify(body));
     return this.postPlayListService.getUserPostLandingPage(body, headers);
   }
