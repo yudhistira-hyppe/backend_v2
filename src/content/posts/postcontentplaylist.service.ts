@@ -130,7 +130,7 @@ export class PostContentPlaylistService {
     data.diary = pdd;        
 
     body.postType = 'story';
-    body.withExp = false;
+    body.withExp = true;
     st = await this.utilService.getDateTimeDate();    
     let postSid = await this.postPlaylistService.doGetUserPostPlaylistV2(body, headers, profile);
     ed = await this.utilService.getDateTimeDate();
