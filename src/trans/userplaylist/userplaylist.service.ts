@@ -3,8 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model, ObjectId, Types } from 'mongoose';
 import { UtilsService } from '../../utils/utils.service';
 import { Userbasic } from '../userbasics/schemas/userbasic.schema';
-import { CreateUserplaylistDto } from './dto/create-userplaylist.dto';
-import { Userplaylist, UserplaylistDocument } from './schemas/userplaylist.schema';
+import { CreateUserplaylistDto, V3PlayList } from './dto/create-userplaylist.dto';
+import { Userplaylist, UserplaylistDocument, VPlay } from './schemas/userplaylist.schema';
 
 @Injectable()
 export class UserplaylistService {
@@ -14,6 +14,9 @@ export class UserplaylistService {
   constructor(
     @InjectModel(Userplaylist.name, 'SERVER_TRANS')
     private readonly userplaylistModel: Model<UserplaylistDocument>,
+    @InjectModel(VPlay.name, 'SERVER_TRANS')
+    private readonly vPlayModel: Model<VPlay>,
+
     private utilService: UtilsService,
   ) { }
 
@@ -75,6 +78,16 @@ export class UserplaylistService {
 
   async findOneAndUpdate(CreateUserplaylistDto_old: CreateUserplaylistDto, CreateUserplaylistDto_new: CreateUserplaylistDto) {
     return await this.userplaylistModel.updateOne(CreateUserplaylistDto_old, { $set: CreateUserplaylistDto_new }, function (err, docs) {
+      if (err) {
+        console.log("Updated Error : ", err)
+      } else {
+        console.log("Updated Docs : ", docs);
+      }
+    }).clone().exec();
+  }
+
+  async findOneAndUpdate_(CreateUserplaylistDto_: CreateUserplaylistDto) {
+    return await this.userplaylistModel.updateOne(CreateUserplaylistDto_, { $set: CreateUserplaylistDto_ }, function (err, docs) {
       if (err) {
         console.log("Updated Error : ", err)
       } else {
@@ -158,6 +171,65 @@ export class UserplaylistService {
 
   }
   
+  public async doGetUserPostVPlaylist(body: any, headers: any, whoami: Userbasic): Promise<VPlay[]> {
+    this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
+    let query = this.vPlayModel.find();
+    if (body.visibility != undefined) {
+      if (body.visibility == 'PRIVATE') {
+        query.where('userId', whoami._id);
+        query.where('userPostId', whoami._id);
+      } else {
+        query.where('type', body.visibility);
+      }
+
+    }
+
+    if (body.postID != undefined) {
+      query.where('postID', body.postID);
+    }
+
+    if (body.postType != undefined) {
+      query.where('postType', body.postType);
+    } else {
+      query.where('postType').ne('advertise');
+    }
+
+    query.where('isHidden', false);
+    query.where('isWatched', false);
+
+    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
+      this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
+      query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
+    }
+
+    if (body.endDate != undefined) {
+      if (body.startDate != undefined) {
+        query.where('createAt').gte(body.startDate);
+        query.where('createAt').lte(body.endDate);
+      } else {
+        query.where('createAt').lte(body.endDate);
+      }      
+    }
+
+    
+    query.where('userId', whoami._id);
+
+    let row = 20;
+    let page = 0;
+    if (body.pageNumber != undefined) {
+      page = body.pageNumber;
+    }
+    if (body.pageRow != undefined) {
+      row = body.pageRow;      
+    }
+    let skip = this.paging(page, row);
+    query.skip(skip);
+    query.limit(row);         
+    query.sort({'createAt': -1});
+    return await query.exec();
+
+  }  
+
   public async doGetUserPostPlaylistV2(body: any, headers: any, whoami: Userbasic): Promise<Userplaylist[]> {
     this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
     let query = this.userplaylistModel.find();
@@ -216,7 +288,7 @@ export class UserplaylistService {
     query.sort({'createAt': -1});
     return await query.exec();
 
-  }  
+  } 
 
   private paging(page: number, row: number) {
     if (page == 0 || page == 1) {

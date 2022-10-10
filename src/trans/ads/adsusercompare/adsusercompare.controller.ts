@@ -241,15 +241,43 @@ export class AdsUserCompareController {
                 );
             }
 
+            //const data_userAdsService = await this.userAdsService.findOneByuserIDAds(data_userbasicsService._id.toString(), ads_id.toString());
+            const data_userAdsService = await this.userAdsService.findOnestatusView(userads_id.toString());
+            if (!(await this.utilsService.ceckData(data_userAdsService))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed User ads not found',
+                );
+            }
+
+            var ads_rewards = 0;
+
+            if (data_adstypesService.rewards != undefined) {
+                ads_rewards = data_adstypesService.rewards;
+            }
+
+            if (data_adstypesService.AdsSkip == undefined) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed data setting Ads Skip not found',
+                );
+            }
+
+            if (data_adstypesService.creditValue == undefined) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed data setting Ads Credit not found',
+                );
+            }
+
             if (body.watchingTime == 0) {
-                const data_userAdsService = await this.userAdsService.findOneByuserIDAds(data_userbasicsService._id.toString(), ads_id.toString());
+                //const data_userAdsService = await this.userAdsService.findOneByuserIDAds(data_userbasicsService._id.toString(), ads_id.toString());
                 if (await this.utilsService.ceckData(data_userAdsService)) {
                     //Update userads
                     try {
                         var CreateUserAdsDto_ = new CreateUserAdsDto();
                         CreateUserAdsDto_.statusView = true;
+                        CreateUserAdsDto_.clickAt = current_date;
                         CreateUserAdsDto_.viewed = 1;
-                        await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
+                        CreateUserAdsDto_.timeViewSecond = watching_time;
+                        await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
                     } catch (e) {
                         await this.errorHandler.generateNotAcceptableException(
                             'Unabled to proceed, ' + e,
@@ -280,6 +308,9 @@ export class AdsUserCompareController {
                         _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
                         _CreateUserAdsDto_.viewed = 0;
                         _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
+                        _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
+                        _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
+                        _CreateUserAdsDto_.timeViewSecond = 0;
                         await this.userAdsService.create(_CreateUserAdsDto_);
                     } catch (e) {
                         await this.errorHandler.generateNotAcceptableException(
@@ -357,8 +388,10 @@ export class AdsUserCompareController {
                             try {
                                 var CreateUserAdsDto_ = new CreateUserAdsDto();
                                 CreateUserAdsDto_.statusView = true;
+                                CreateUserAdsDto_.clickAt = current_date;
                                 CreateUserAdsDto_.viewed = 1;
-                                await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
+                                CreateUserAdsDto_.timeViewSecond = watching_time;
+                                await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
                             } catch (e) {
                                 await this.errorHandler.generateNotAcceptableException(
                                     'Unabled to proceed, ' + e,
@@ -369,8 +402,10 @@ export class AdsUserCompareController {
                             try {
                                 var CreateUserAdsDto_ = new CreateUserAdsDto();
                                 CreateUserAdsDto_.statusView = true;
+                                CreateUserAdsDto_.clickAt = current_date;
                                 CreateUserAdsDto_.viewed = 1;
-                                await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
+                                CreateUserAdsDto_.timeViewSecond = watching_time;
+                                await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
 
                             } catch (e) {
                                 await this.errorHandler.generateNotAcceptableException(
@@ -411,6 +446,9 @@ export class AdsUserCompareController {
                                 _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
                                 _CreateUserAdsDto_.viewed = 0;
                                 _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
+                                _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
+                                _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
+                                _CreateUserAdsDto_.timeViewSecond = 0;
                                 await this.userAdsService.create(_CreateUserAdsDto_);
                             } catch (e) {
                                 await this.errorHandler.generateNotAcceptableException(
@@ -449,19 +487,6 @@ export class AdsUserCompareController {
                                     'Unabled to proceed, ' + e,
                                 );
                             }
-
-                            //Update ads
-                            // try {
-                            //     var CreateAdsDto_ = new CreateAdsDto();
-                            //     CreateAdsDto_.usedCredit = used_credit;
-                            //     CreateAdsDto_.usedCreditFree = used_credit_free;
-                            //     CreateAdsDto_.totalView = ads_totalView - 1;
-                            //     await this.adsService.update(data_adsService._id.toString(), CreateAdsDto_);
-                            // } catch (e) {
-                            //     await this.errorHandler.generateNotAcceptableException(
-                            //         'Unabled to proceed, ' + e,
-                            //     );
-                            // }
                         }
                     }
 
@@ -547,10 +572,11 @@ export class AdsUserCompareController {
                 );
             }
 
-            const data_userAdsService = await this.userAdsService.findOneByuserIDAds(data_userbasicsService._id.toString(), ads_id.toString());
-            if (!(await this.utilsService.ceckData(data_adstypesService))) {
+            //const data_userAdsService = await this.userAdsService.findOneByuserIDAds(data_userbasicsService._id.toString(), ads_id.toString());
+            const data_userAdsService = await this.userAdsService.findOnestatusView(userads_id.toString());
+            if (!(await this.utilsService.ceckData(data_userAdsService))) {
                 await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Ads types not found',
+                    'Unabled to proceed User ads not found',
                 );
             }
 
@@ -619,8 +645,9 @@ export class AdsUserCompareController {
                     CreateUserAdsDto_.statusView = true;
                     CreateUserAdsDto_.statusClick = true;
                     CreateUserAdsDto_.clickAt = current_date;
-                    CreateUserAdsDto_.viewed = 1;
-                    await this.userAdsService.updatesdataUserId(data_adsService._id.toString(), data_userbasicsService._id.toString(), CreateUserAdsDto_);
+                    CreateUserAdsDto_.viewed = 1; 
+                    CreateUserAdsDto_.timeViewSecond = watching_time;
+                    await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
                 } catch (e) {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed, ' + e,
@@ -659,6 +686,9 @@ export class AdsUserCompareController {
                         _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
                         _CreateUserAdsDto_.viewed = 0;
                         _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
+                        _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
+                        _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
+                        _CreateUserAdsDto_.timeViewSecond = 0;
                         await this.userAdsService.create(_CreateUserAdsDto_);
                     } catch (e) {
                         await this.errorHandler.generateNotAcceptableException(

@@ -283,11 +283,18 @@ export class PostsController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('api/posts/updatepost')
+  async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("updatePost >>> start");
+    return this.postContentService.updatePost(body, headers);
+  }  
+
+  @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts')
   @UseInterceptors(FileInterceptor('postContent'))
   async getUserPost(@Body() body, @Headers() headers): Promise<PostResponseApps> {
     this.logger.log("getUserPost >>> start: " + JSON.stringify(body));
-    return this.postPlayListService.getUserPost(body, headers);
+    return this.postContentService.getUserPost(body, headers);
   }  
 
   @UseGuards(JwtAuthGuard)
@@ -342,6 +349,16 @@ export class PostsController {
     CreateUserplaylistDto_.mediaId = body.mediaId;
     CreateUserplaylistDto_.postType = body.postType;
     return await this.PostsService.updateGenerateUserPlaylist(new mongoose.Types.ObjectId(body.oldUserPostID), CreateUserplaylistDto_);
+  }
+
+  @Post('api/userplaylist/updategenerate2')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async updateGenerateUserPlaylist_(@Body() body) {
+    var CreateUserplaylistDto_ = new CreateUserplaylistDto();
+    CreateUserplaylistDto_.userPostId = new mongoose.Types.ObjectId(body.userPostId);
+    CreateUserplaylistDto_.mediaId = body.mediaId;
+    CreateUserplaylistDto_.postType = body.postType;
+    return await this.PostsService.updateGenerateUserPlaylist_(CreateUserplaylistDto_);
   }
 
   @UseGuards(JwtAuthGuard)
