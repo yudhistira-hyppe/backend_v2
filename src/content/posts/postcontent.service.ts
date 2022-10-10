@@ -1947,17 +1947,9 @@ export class PostContentService {
     }
 
     if (body.tags != undefined) {
-      if (body.tags != undefined) {
-        let txs : [] = [];
-        for(let i = 0; i < post.tags.length; i++) {
-          let oo = post.tags[i];
-          let oop = String(oo);
-          if (oop.length > 0) {
-            txs.push(oo);
-          }
-        }
-        post.tags = txs;
-      }
+      var obj = body.tags;
+      var tgs = obj.split(",");
+      post.tags = tgs;
     }
 
     if (body.visibility != undefined) {
