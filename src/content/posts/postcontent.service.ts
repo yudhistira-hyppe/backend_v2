@@ -1059,15 +1059,14 @@ export class PostContentService {
         pa.privacy = privacy;
 
         if (body.tags != undefined) {
-          let txs : [] = [];
-          for(let i = 0; i < post.tags.length; i++) {
-            let oo = post.tags[i];
-            let oop = String(oo);
-            if (oop.length > 0) {
+          let txs : string[] = [];
+          for(let i = 0; i <body.tags.length; i++) {
+            let oo = String(body.tags[i]);
+            if (oo.length > 0) {
               txs.push(oo);
             }
           }
-          post.tags = txs;
+          pa.tags = txs;
         }
 
         //Insight
