@@ -1913,7 +1913,7 @@ export class PostContentService {
     let cm = post.contentMedias[0];
 
     let updatePl = new CreateUserplaylistDto();
-    updatePl.postID = apost.postID;
+    updatePl.userPostId = Object(profile._id);
     updatePl.mediaId = Object(cm.oid);
     updatePl.postType = apost.postType;
     this.postService.updateGenerateUserPlaylist_(updatePl);
