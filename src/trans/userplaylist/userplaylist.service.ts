@@ -231,7 +231,7 @@ export class UserplaylistService {
   }  
 
   public async doGetUserPostPlaylistV2(body: any, headers: any, whoami: Userbasic): Promise<Userplaylist[]> {
-    this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
+    this.logger.log('doGetUserPostPlaylistV2 >>> start: ' + JSON.stringify(body));
     let query = this.userplaylistModel.find();
     if (body.visibility != undefined) {
       //
@@ -243,8 +243,9 @@ export class UserplaylistService {
       //}
 
       if (body.visibility == 'PRIVATE') {
-        query.where('userId', whoami._id);
-        query.where('userPostId', whoami._id);
+        this.logger.log('doGetUserPostPlaylistV2 >>> private: ' + whoami._id);
+        query.where('userId', Object(whoami._id));
+        query.where('userPostId', Object(whoami._id));
       } else if (body.visibility == 'PUBLIC') {
         query.where('PUBLIC', true);        
       } else if (body.visibility == 'FRIEND') {

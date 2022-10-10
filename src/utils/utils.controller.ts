@@ -26,7 +26,7 @@ export class UtilsController {
 
     constructor(
         private readonly interestsRepoService: InterestsRepoService,
-        private readonly interestsService: InterestsService,
+        //private readonly interestsService: InterestsService,
         private readonly areasService: AreasService,
         private readonly citiesService: CitiesService,
         private readonly countriesService: CountriesService,
@@ -56,7 +56,7 @@ export class UtilsController {
         var pageRow_ = (pageRow != undefined) ? pageRow : 3;
         var search_ = search;
 
-        var data = await this.interestsService.findCriteria(langIso_, pageNumber_, pageRow_, search_);
+        var data = await this.interestsRepoService.findCriteria(langIso_, pageNumber_, pageRow_, search_);
         var data_ = data.map(item => {
             return {
                 _id: item._id,

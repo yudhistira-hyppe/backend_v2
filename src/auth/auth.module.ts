@@ -27,8 +27,10 @@ import { PostsModule } from '../content/posts/posts.module';
 import { SettingsModule } from '../trans/settings/settings.module';
 import { ContenteventsModule } from '../content/contentevents/contentevents.module';
 import { AdsUserCompareModule } from '../trans/ads/adsusercompare/adsusercompare.module';
+import { UserbasicsnewModule } from '../trans/newuserbasic/userbasicsnew.module';
 @Module({
   imports: [
+    UserbasicsnewModule,
     AdsUserCompareModule,
     ContenteventsModule,
     SettingsModule,

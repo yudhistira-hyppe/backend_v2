@@ -2,6 +2,7 @@ import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken.service';
 import { UserauthsService } from '../trans/userauths/userauths.service';
 import { UserbasicsService } from '../trans/userbasics/userbasics.service';
+import { UserbasicsnewService } from '../trans/newuserbasic/userbasicsnew.service';
 import { UserdevicesService } from '../trans/userdevices/userdevices.service';
 import { CountriesService } from '../infra/countries/countries.service';
 import { AreasService } from '../infra/areas/areas.service';
@@ -33,10 +34,12 @@ import * as fs from 'fs';
 import { ContenteventsService } from '../content/contentevents/contentevents.service';
 import { CreateContenteventsDto } from '../content/contentevents/dto/create-contentevents.dto';
 import { CreateGetcontenteventsDto } from '../trans/getusercontents/getcontentevents/dto/create-getcontentevents.dto';
+import { CreateUserbasicnewDto } from '../trans/newuserbasic/dto/create-userbasicnew.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
+    private userbasicsnewService: UserbasicsnewService,
     private userauthsService: UserauthsService,
     private jwtService: JwtService,
     private userbasicsService: UserbasicsService,
@@ -46,8 +49,8 @@ export class AuthService {
     private languagesService: LanguagesService,
     private mediaprofilepictsService: MediaprofilepictsService,
     private insightsService: InsightsService,
-    private interestsService: InterestsService,
-    //private interestsRepoService: InterestsRepoService,
+    //private interestsService: InterestsService,
+    private interestsRepoService: InterestsRepoService,
     private activityeventsService: ActivityeventsService,
     private areasService: AreasService,
     private utilsService: UtilsService,
@@ -443,12 +446,12 @@ export class AuthService {
               JSON.stringify(datauserbasicsService.userInterests[i]),
             );
             if (interests_json.ref == 'interests_repo') {
-              const interests = await this.interestsService.findOne(
+              const interests = await this.interestsRepoService.findOne(
                 interests_json.$id,
               );
               interests_array[i] = interests.interestName;
             } else {
-              const interests = await this.interestsService.findOne(
+              const interests = await this.interestsRepoService.findOne(
                 interests_json.$id,
               );
               interests_array[i] = interests.interestName;
@@ -910,12 +913,12 @@ export class AuthService {
                       JSON.stringify(datauserbasicsService.userInterests[i]),
                     );
                     if (interests_json.$ref == 'interests_repo') {
-                      const interests = await this.interestsService.findOne(
+                      const interests = await this.interestsRepoService.findOne(
                         interests_json.$id,
                       );
                       interests_array[i] = interests.interestName;
                     } else {
-                      const interests = await this.interestsService.findOne(
+                      const interests = await this.interestsRepoService.findOne(
                         interests_json.$id,
                       );
                       interests_array[i] = interests.interestName;
@@ -1397,7 +1400,7 @@ export class AuthService {
               if (user_interest.length > 0) {
                 for (var i = 0; i < user_interest.length; i++) {
                   var id_interest =
-                    await this.interestsService.findOneByInterestNameLangIso(
+                    await this.interestsRepoService.findOneByInterestNameLangIso(
                       user_interest[i], id_user_langIso
                     );
                   if (id_interest != undefined) {
@@ -2020,9 +2023,9 @@ export class AuthService {
                 if ((await this.utilsService.ceckData(languages))) {
                   var languages_id = (await languages)._id;
                   data_update_userbasict['languages'] = {
-                    ref: 'languages',
-                    id: languages_id,
-                    db: 'hyppe_infra_db',
+                    $ref: 'languages',
+                    $id: languages_id,
+                    $db: 'hyppe_infra_db',
                   };
                 }
               }
@@ -2214,9 +2217,9 @@ export class AuthService {
                 if ((await this.utilsService.ceckData(languages))) {
                   var languages_id = (await languages)._id;
                   data_update_userbasict['languages'] = {
-                    ref: 'languages',
-                    id: languages_id,
-                    db: 'hyppe_infra_db',
+                    $ref: 'languages',
+                    $id: languages_id,
+                    $db: 'hyppe_infra_db',
                   };
                 }
               }
@@ -3654,13 +3657,19 @@ export class AuthService {
         var languages = await this.languagesService.findOneLangiso(langIso);
         var data_update_userbasict = {};
         if ((await this.utilsService.ceckData(languages))) {
-          var languages_id = (await languages)._id;
-          data_update_userbasict['languages'] = {
-            ref: 'languages',
-            id: languages_id,
-            db: 'hyppe_infra_db',
-          };
-          await this.userbasicsService.updatebyEmail(head['x-auth-user'], data_update_userbasict);
+          var languages_id = (await languages)._id.toString();
+          // data_update_userbasict['languages'] = {
+          //   ref: 'languages',
+          //   id: new ObjectId(languages_id),
+          //   db: 'hyppe_infra_db',
+          // };
+          var CreateUserbasicnewDto_ = new CreateUserbasicnewDto();
+          CreateUserbasicnewDto_.languages = {
+            $ref: 'languages',
+            $id: new ObjectId(languages_id),
+            $db: 'hyppe_infra_db',
+          }
+          await this.userbasicsnewService.updateLanguage(head['x-auth-user'], CreateUserbasicnewDto_);
         }
 
         return {
@@ -5464,12 +5473,12 @@ export class AuthService {
               JSON.stringify(datauserbasicsService.userInterests[i]),
             );
             if (interests_json.ref == 'interests_repo') {
-              const interests = await this.interestsService.findOne(
+              const interests = await this.interestsRepoService.findOne(
                 interests_json.$id,
               );
               interests_array[i] = interests.interestName;
             } else {
-              const interests = await this.interestsService.findOne(
+              const interests = await this.interestsRepoService.findOne(
                 interests_json.$id,
               );
               interests_array[i] = interests.interestName;
