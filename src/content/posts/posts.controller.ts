@@ -33,7 +33,7 @@ import mongoose from 'mongoose';
 @Controller()
 export class PostsController {
   private readonly logger = new Logger(PostsController.name);
-  
+
   constructor(private readonly PostsService: PostsService,
     private readonly postContentService: PostContentService,
     private readonly userauthsService: UserauthsService,
@@ -42,7 +42,7 @@ export class PostsController {
     private readonly contenteventsService: ContenteventsService,
     private readonly insightsService: InsightsService,
     private readonly userbasicsService: UserbasicsService,
-    private readonly postPlayListService: PostContentPlaylistService,    
+    private readonly postPlayListService: PostContentPlaylistService,
     private readonly groupModuleService: GroupModuleService) { }
 
   @Post()
@@ -97,7 +97,7 @@ export class PostsController {
   async test(): Promise<string> {
     console.log('sdfds');
     return this.postContentService.generateCertificate('da65f057-288f-49cf-9f43-f83251b2b098', 'id');
-  }  
+  }
 
   @Delete(':id')
   async delete(@Param('id') id: string) {
@@ -221,8 +221,8 @@ export class PostsController {
         "email": dataquery[0].metadata.email,
       };
     }
-    data_post['mediaBasePath'] = dataquery[0].datacontent[0].mediaBasePath; 
-    data_post['postType'] = dataquery[0].postType; 
+    data_post['mediaBasePath'] = dataquery[0].datacontent[0].mediaBasePath;
+    data_post['postType'] = dataquery[0].postType;
     data_post['mediaUri'] = dataquery[0].datacontent[0].mediaUri;
     data_post['description'] = dataquery[0].description;
     data_post['active'] = dataquery[0].active;
@@ -269,7 +269,7 @@ export class PostsController {
     var response = {
       "response_code": 202,
       "data": data,
-        "messages": { },
+      "messages": {},
     }
     return dataquery;
   }
@@ -286,8 +286,24 @@ export class PostsController {
   @Post('api/posts/updatepost')
   async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("updatePost >>> start");
-    return this.postContentService.updatePost(body, headers);
-  }  
+    var titleinsukses = "Selamat";
+    var titleensukses = "Congratulations";
+    var bodyinsukses = "Konten Anda siap dijual";
+    var bodyensukses = "Your content is ready for sale";
+    var eventType = "POST";
+    var event = "POST";
+    var email = headers['x-auth-user'];
+    var saleAmount = body.saleAmount;
+    var data = null;
+
+    data = await this.postContentService.updatePost(body, headers);
+
+    if (saleAmount > 0) {
+      await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+    }
+
+    return data;
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts')
@@ -295,7 +311,7 @@ export class PostsController {
   async getUserPost(@Body() body, @Headers() headers): Promise<PostResponseApps> {
     this.logger.log("getUserPost >>> start: " + JSON.stringify(body));
     return this.postContentService.getUserPost(body, headers);
-  }  
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts/landing-page')
@@ -312,22 +328,22 @@ export class PostsController {
     this.logger.log("getUserPostMy >>> start: " + JSON.stringify(body));
     return this.postContentService.getUserPostMy(body, headers);
   }
-  
+
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts/byprofile')
   @UseInterceptors(FileInterceptor('postContent'))
   async getUserPostByProfile(@Body() body, @Headers() headers): Promise<PostResponseApps> {
     this.logger.log("getUserPostByProfile >>> start: " + JSON.stringify(body));
     return this.postContentService.getUserPostByProfile(body, headers);
-  }  
+  }
 
   @Post('api/posts/notifyapsara')
   async notifyApsara(@Body() body, @Headers() headers) {
     this.logger.log("notifyApsara >>> start: " + JSON.stringify(body));
     this.postContentService.updateNewPost(body, headers);
-    let t = {'response' : 'Done'};
+    let t = { 'response': 'Done' };
     return JSON.stringify(t);
-  }  
+  }
 
   @Post('api/posts/getvideo')
   async getVideo(@Body() body, @Headers() headers) {
@@ -375,7 +391,7 @@ export class PostsController {
     // @Query('pageRow') pageRow: number,
     // @Query('pageNumber') pageNumber: number,
     // @Query('senderOrReceiver') senderOrReceiver: string
-    ) {
+  ) {
     if (headers['x-auth-user'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unauthorized',
@@ -386,7 +402,7 @@ export class PostsController {
         'Unabled to proceed email header dan token not match',
       );
     }
-    
+
     let postID_ = "";
     let eventType_ = "";
     let withEvents_ = [];
@@ -401,7 +417,7 @@ export class PostsController {
     if (body.pageNumber != undefined) {
       pageNumber_ = body.pageNumber;
     }
-    if (body.postID!=undefined){
+    if (body.postID != undefined) {
       postID_ = body.postID;
     }
     if (body.eventType != undefined) {
@@ -421,7 +437,7 @@ export class PostsController {
     }
     const insightsService_data = await this.insightsService.findemail(headers['x-auth-user']);
     const userbasicsService_data = await this.userbasicsService.findOne(headers['x-auth-user']);
-    const contenteventsService_data = await this.contenteventsService.findByCriteria(headers['x-auth-user'],postID_, eventType_, withEvents_, pageRow_, pageNumber_);
+    const contenteventsService_data = await this.contenteventsService.findByCriteria(headers['x-auth-user'], postID_, eventType_, withEvents_, pageRow_, pageNumber_);
     var getProfile_ = await this.utilsService.generateProfile(headers['x-auth-user'], 'PROFILE');
     var avatar_ = {}
     if (getProfile_ != null || getProfile_ != undefined) {
@@ -452,7 +468,7 @@ export class PostsController {
     let data_response = [];
     for (let i = 0; i < contenteventsService_data.length; i++) {
       var emailSenderorreceiver = (contenteventsService_data[i].senderParty != undefined) ? contenteventsService_data[i].senderParty : (contenteventsService_data[i].receiverParty != undefined) ? contenteventsService_data[i].receiverParty : null;
-      
+
       if (emailSenderorreceiver != null) {
         var getProfile = await this.utilsService.generateProfile(emailSenderorreceiver.toString(), 'PROFILE');
       }
@@ -485,7 +501,7 @@ export class PostsController {
         }
       }
 
-      if (getProfile != null || getProfile != undefined){
+      if (getProfile != null || getProfile != undefined) {
         Object.assign(senderOrReceiverInfo, {
           "fullName": (getProfile != null) ? (getProfile.fullName != undefined) ? getProfile.fullName : "" : "",
           avatar,
@@ -516,9 +532,9 @@ export class PostsController {
         "eventType": contenteventsService_data[i].eventType,
         avatar,
         "event": contenteventsService_data[i].event,
-        "senderOrReceiver": (contenteventsService_data[i].senderParty!=undefined) ? contenteventsService_data[i].senderParty : contenteventsService_data[i].receiverParty,
+        "senderOrReceiver": (contenteventsService_data[i].senderParty != undefined) ? contenteventsService_data[i].senderParty : contenteventsService_data[i].receiverParty,
         "email": contenteventsService_data[i].email
-       });
+      });
       if (getProfile_ != null || getProfile_ != undefined) {
         if (withDetail_) {
           Object.assign(datas, {
@@ -529,8 +545,8 @@ export class PostsController {
       data_response.push(datas);
     }
     let data_filter = [];
-    console.log("senderOrReceiver_",senderOrReceiver_);
-    if (senderOrReceiver_!=""){
+    console.log("senderOrReceiver_", senderOrReceiver_);
+    if (senderOrReceiver_ != "") {
       data_filter = data_response.filter(function (data_response_) {
         return data_response_.senderOrReceiver == senderOrReceiver_;
       });
