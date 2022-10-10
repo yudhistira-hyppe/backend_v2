@@ -736,7 +736,7 @@ export class UtilsService {
               JSON.stringify(get_userbasic.userInterests[i]),
             );
             if (interests_json.ref == 'interests_repo') {
-              const interests = await this.interestsRepoService.findOne(
+              const interests = await this.interestsService.findOne(
                 interests_json.$id,
               );
               interests_array[i] = interests.interestName;

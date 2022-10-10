@@ -61,11 +61,15 @@ export class UserbasicsService {
   }
 
   async updateData(email: string, createUserbasicDto: CreateUserbasicDto): Promise<Object> {
-    let data = await this.userbasicModel.updateOne({ "email": email },
-      {
-        $set: createUserbasicDto
-      },
-    );
+    let data = await this.userbasicModel.updateOne({ email: email },
+      createUserbasicDto,
+      function (err, docs) {
+        if (err) {
+          console.log("Updated Error : ", err)
+        } else {
+          console.log("Updated Docs : ", docs);
+        }
+      }).clone().exec();
     return data;
   }
 

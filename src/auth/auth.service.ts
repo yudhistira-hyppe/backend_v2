@@ -3654,12 +3654,13 @@ export class AuthService {
         var languages = await this.languagesService.findOneLangiso(langIso);
         var data_update_userbasict = {};
         if ((await this.utilsService.ceckData(languages))) {
-          var languages_id = languages._id;
+          var languages_id = (await languages)._id;
           data_update_userbasict['languages'] = {
             ref: 'languages',
             id: languages_id,
             db: 'hyppe_infra_db',
           };
+          await this.userbasicsService.updatebyEmail(head['x-auth-user'], data_update_userbasict);
         }
 
         return {
