@@ -47,7 +47,7 @@ export class AuthService {
     private mediaprofilepictsService: MediaprofilepictsService,
     private insightsService: InsightsService,
     private interestsService: InterestsService,
-    private interestsRepoService: InterestsRepoService,
+    //private interestsRepoService: InterestsRepoService,
     private activityeventsService: ActivityeventsService,
     private areasService: AreasService,
     private utilsService: UtilsService,
@@ -443,7 +443,7 @@ export class AuthService {
               JSON.stringify(datauserbasicsService.userInterests[i]),
             );
             if (interests_json.ref == 'interests_repo') {
-              const interests = await this.interestsRepoService.findOne(
+              const interests = await this.interestsService.findOne(
                 interests_json.$id,
               );
               interests_array[i] = interests.interestName;
@@ -910,7 +910,7 @@ export class AuthService {
                       JSON.stringify(datauserbasicsService.userInterests[i]),
                     );
                     if (interests_json.$ref == 'interests_repo') {
-                      const interests = await this.interestsRepoService.findOne(
+                      const interests = await this.interestsService.findOne(
                         interests_json.$id,
                       );
                       interests_array[i] = interests.interestName;
@@ -1397,7 +1397,7 @@ export class AuthService {
               if (user_interest.length > 0) {
                 for (var i = 0; i < user_interest.length; i++) {
                   var id_interest =
-                    await this.interestsRepoService.findOneByInterestNameLangIso(
+                    await this.interestsService.findOneByInterestNameLangIso(
                       user_interest[i], id_user_langIso
                     );
                   if (id_interest != undefined) {
@@ -5464,7 +5464,7 @@ export class AuthService {
               JSON.stringify(datauserbasicsService.userInterests[i]),
             );
             if (interests_json.ref == 'interests_repo') {
-              const interests = await this.interestsRepoService.findOne(
+              const interests = await this.interestsService.findOne(
                 interests_json.$id,
               );
               interests_array[i] = interests.interestName;

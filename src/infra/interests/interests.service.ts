@@ -22,6 +22,32 @@ export class InterestsService {
     return this.interestsModel.find().exec();
   }
 
+  async findOneByInterestNameLangIso(interestName: string, langIso: string): Promise<Interests> {
+    return this.interestsModel
+      .findOne({ interestName: interestName, langIso: langIso })
+      .exec();
+  }
+
+  async findinterst() {
+    const query = await this.interestsModel.aggregate([
+      {
+        $lookup: {
+          from: 'interests_repo',
+          localField: 'interests_repo.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      },
+      {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'interests_repo2',
+        },
+      },
+    ]);
+    return query;
+  }
+
   async findOne(id: string): Promise<Interests> {
     return this.interestsModel.findOne({ _id: id }).exec();
   }
