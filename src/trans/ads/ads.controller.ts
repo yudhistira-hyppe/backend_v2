@@ -1336,12 +1336,17 @@ export class AdsController {
                         await this.uservouchersService.update(uservoucherdata._id.toString(), CreateUservouchersDto_);
                     }
 
-
+                    console.log("typeAdsID", CreateAdsDto.typeAdsID.toString());
                     if (CreateAdsDto.placingID==undefined){
                         var dataPlacing = await this.adsplacesService.findOneByType(CreateAdsDto.typeAdsID.toString());
-                        CreateAdsDto.placingID = mongoose.Types.ObjectId(dataPlacing._id)
+                        CreateAdsDto.placingID = mongoose.Types.ObjectId(dataPlacing._id);
+                        console.log("placingID Tidak Ada");
+                        console.log("dataPlacing", dataPlacing);
+                        console.log("placingID", CreateAdsDto.placingID);
                     } else {
                         CreateAdsDto.placingID = mongoose.Types.ObjectId(CreateAdsDto.placingID);
+                        console.log("placingID Ada");
+                        console.log("placingID", CreateAdsDto.placingID);
                     }
 
                     CreateAdsDto.timestamp = dt.toISOString();
