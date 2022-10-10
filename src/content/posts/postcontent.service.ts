@@ -128,15 +128,9 @@ export class PostContentService {
     }
 
     if (body.tags != undefined) {
-      let txs: [] = [];
-      for (let i = 0; i < post.tags.length; i++) {
-        let oo = post.tags[i];
-        let oop = String(oo);
-        if (oop.length > 0) {
-          txs.push(oo);
-        }
-      }
-      post.tags = txs;
+      var obj = body.tags;
+      var tgs = obj.split(",");
+      post.tags = tgs;
     }
 
     if (body.visibility != undefined) {
@@ -1954,8 +1948,8 @@ export class PostContentService {
 
     if (body.tags != undefined) {
       if (body.tags != undefined) {
-        let txs: [] = [];
-        for (let i = 0; i < post.tags.length; i++) {
+        let txs : [] = [];
+        for(let i = 0; i < post.tags.length; i++) {
           let oo = post.tags[i];
           let oop = String(oo);
           if (oop.length > 0) {
@@ -2020,11 +2014,13 @@ export class PostContentService {
       post.isOwned = false;
     }
 
+
     if (body.cats != undefined && body.cats.length > 1) {
-      var obj = <string[]>body.cats;
+      var obj = body.cats;
+      var cats = obj.split(",");
       var pcats = [];
-      for (var i = 0; i < obj.length; i++) {
-        var tmp = obj[i];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
         var cat = await this.interestService.findByName(tmp);
         if (cat != undefined) {
           var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(cat._id), "$db": "hyppe_infra_db" };
@@ -2035,10 +2031,11 @@ export class PostContentService {
     }
 
     if (body.tagPeople != undefined && body.tagPeople.length > 1) {
-      var obj = <string[]>body.tagPeople;
+      var obj = body.tagPeople;
+      var cats = obj.split(",");
       var pcats = [];
-      for (var i = 0; i < obj.length; i++) {
-        var tmp = obj[i];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
         if (cat != undefined) {
           var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
@@ -2049,10 +2046,11 @@ export class PostContentService {
     }
 
     if (body.tagDescription != undefined && body.tagDescription.length > 0) {
-      var obj = <string[]>body.tagDescription;
+      var obj = body.tagDescription;
+      var cats = obj.split(",");
       var pcats = [];
-      for (var i = 0; i < obj.length; i++) {
-        var tmp = obj[i];
+      for (var i = 0; i < cats.length; i++) {
+        var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
         if (cat != undefined) {
           var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
