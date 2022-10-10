@@ -1916,7 +1916,7 @@ export class PostContentService {
     updatePl.postID = apost.postID;
     updatePl.mediaId = Object(cm.oid);
     updatePl.postType = apost.postType;
-    this.postService.generateUserPlaylist(updatePl);
+    this.postService.updateGenerateUserPlaylist_(updatePl);
 
     res.response_code = 202;
     let msg = new Messages();
