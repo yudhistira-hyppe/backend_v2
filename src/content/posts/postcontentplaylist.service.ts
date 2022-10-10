@@ -64,7 +64,7 @@ export class PostContentPlaylistService {
 
 
   async getUserPostLandingPage(body: any, headers: any): Promise<PostLandingResponseApps> {
-
+    this.logger.log("getUserPostLandingPage >>> start: " + JSON.stringify(body));
     let type = 'GET_POST';
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
