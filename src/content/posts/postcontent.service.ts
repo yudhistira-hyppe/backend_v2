@@ -128,9 +128,15 @@ export class PostContentService {
     }
 
     if (body.tags != undefined) {
-      var obj = body.tags;
-      var tgs = obj.split(",");
-      post.tags = tgs;
+      let txs : [] = [];
+      for(let i = 0; i < post.tags.length; i++) {
+        let oo = post.tags[i];
+        let oop = String(oo);
+        if (oop.length > 0) {
+          txs.push(oo);
+        }
+      }
+      post.tags = txs;
     }
 
     if (body.visibility != undefined) {
@@ -1052,7 +1058,16 @@ export class PostContentService {
         privacy.isCelebrity = false;
         pa.privacy = privacy;
 
-        pa.tags = ps.tags;
+        if (body.tags != undefined) {
+          let txs : string[] = [];
+          for(let i = 0; i <body.tags.length; i++) {
+            let oo = String(body.tags[i]);
+            if (oo.length > 0) {
+              txs.push(oo);
+            }
+          }
+          pa.tags = txs;
+        }
 
         //Insight
 
@@ -1938,9 +1953,17 @@ export class PostContentService {
     }
 
     if (body.tags != undefined) {
-      var obj = body.tags;
-      var tgs = obj.split(",");
-      post.tags = tgs;
+      if (body.tags != undefined) {
+        let txs : [] = [];
+        for(let i = 0; i < post.tags.length; i++) {
+          let oo = post.tags[i];
+          let oop = String(oo);
+          if (oop.length > 0) {
+            txs.push(oo);
+          }
+        }
+        post.tags = txs;
+      }
     }
 
     if (body.visibility != undefined) {
@@ -1998,11 +2021,10 @@ export class PostContentService {
     }
 
     if (body.cats != undefined && body.cats.length > 1) {
-      var obj = body.cats;
-      var cats = obj.split(",");
+      var obj = <string[]> body.cats;
       var pcats = [];
-      for (var i = 0; i < cats.length; i++) {
-        var tmp = cats[i];
+      for (var i = 0; i < obj.length; i++) {
+        var tmp = obj[i];
         var cat = await this.interestService.findByName(tmp);
         if (cat != undefined) {
           var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(cat._id), "$db": "hyppe_infra_db" };
@@ -2013,11 +2035,10 @@ export class PostContentService {
     }
 
     if (body.tagPeople != undefined && body.tagPeople.length > 1) {
-      var obj = body.tagPeople;
-      var cats = obj.split(",");
+      var obj = <string[]> body.tagPeople;
       var pcats = [];
-      for (var i = 0; i < cats.length; i++) {
-        var tmp = cats[i];
+      for (var i = 0; i < obj.length; i++) {
+        var tmp = obj[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
         if (cat != undefined) {
           var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
@@ -2028,11 +2049,10 @@ export class PostContentService {
     }
 
     if (body.tagDescription != undefined && body.tagDescription.length > 0) {
-      var obj = body.tagDescription;
-      var cats = obj.split(",");
+      var obj = <string[]> body.tagDescription;
       var pcats = [];
-      for (var i = 0; i < cats.length; i++) {
-        var tmp = cats[i];
+      for (var i = 0; i < obj.length; i++) {
+        var tmp = obj[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
         if (cat != undefined) {
           var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
