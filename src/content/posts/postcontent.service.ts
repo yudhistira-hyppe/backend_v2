@@ -2021,11 +2021,10 @@ export class PostContentService {
     }
 
     if (body.cats != undefined && body.cats.length > 1) {
-      var obj = body.cats;
-      var cats = obj.split(",");
+      var obj = <string[]> body.cats;
       var pcats = [];
-      for (var i = 0; i < cats.length; i++) {
-        var tmp = cats[i];
+      for (var i = 0; i < obj.length; i++) {
+        var tmp = obj[i];
         var cat = await this.interestService.findByName(tmp);
         if (cat != undefined) {
           var objintr = { "$ref": "interests_repo", "$id": mongoose.Types.ObjectId(cat._id), "$db": "hyppe_infra_db" };
@@ -2036,11 +2035,10 @@ export class PostContentService {
     }
 
     if (body.tagPeople != undefined && body.tagPeople.length > 1) {
-      var obj = body.tagPeople;
-      var cats = obj.split(",");
+      var obj = <string[]> body.tagPeople;
       var pcats = [];
-      for (var i = 0; i < cats.length; i++) {
-        var tmp = cats[i];
+      for (var i = 0; i < obj.length; i++) {
+        var tmp = obj[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
         if (cat != undefined) {
           var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
@@ -2051,11 +2049,10 @@ export class PostContentService {
     }
 
     if (body.tagDescription != undefined && body.tagDescription.length > 0) {
-      var obj = body.tagDescription;
-      var cats = obj.split(",");
+      var obj = <string[]> body.tagDescription;
       var pcats = [];
-      for (var i = 0; i < cats.length; i++) {
-        var tmp = cats[i];
+      for (var i = 0; i < obj.length; i++) {
+        var tmp = obj[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
         if (cat != undefined) {
           var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
