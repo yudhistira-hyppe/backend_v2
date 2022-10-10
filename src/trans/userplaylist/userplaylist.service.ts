@@ -4,7 +4,7 @@ import mongoose, { Model, ObjectId, Types } from 'mongoose';
 import { UtilsService } from '../../utils/utils.service';
 import { Userbasic } from '../userbasics/schemas/userbasic.schema';
 import { CreateUserplaylistDto, V3PlayList } from './dto/create-userplaylist.dto';
-import { Userplaylist, UserplaylistDocument, VPlay } from './schemas/userplaylist.schema';
+import { Userplaylist, UserplaylistDocument, VPlay, VPlayDocument } from './schemas/userplaylist.schema';
 
 @Injectable()
 export class UserplaylistService {
@@ -15,7 +15,7 @@ export class UserplaylistService {
     @InjectModel(Userplaylist.name, 'SERVER_TRANS')
     private readonly userplaylistModel: Model<UserplaylistDocument>,
     @InjectModel(VPlay.name, 'SERVER_TRANS')
-    private readonly vPlayModel: Model<VPlay>,
+    private readonly vPlayModel: Model<VPlayDocument>,
 
     private utilService: UtilsService,
   ) { }
@@ -297,6 +297,10 @@ export class UserplaylistService {
     let num = ((page - 1) * row);
     return num;
   }  
+
+  public async dataView(): Promise<VPlay[]>{
+    return this.vPlayModel.find();
+  }
 
   // async generateUserPlaylist(CreateUserplaylistDto_: CreateUserplaylistDto){
   //   if (CreateUserplaylistDto_.userPostId == undefined) {

@@ -28,6 +28,11 @@ export class CreateUserplaylistDto {
   userBasicData: Object;
   postData: Object;
   mediaData: Object;
+  FRIEND: boolean;
+  FOLLOWER: boolean;
+  FOLLOWING: boolean;
+  PUBLIC: boolean;
+  PRIVATE: boolean;
 }
 
 export class MediaData {

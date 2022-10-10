@@ -25,4 +25,9 @@ export class UserplaylistController {
   async delete(@Param('id') id: string) {
     return this.userplaylistService.delete(id);
   }
+
+  @Get('api/userbasics/getView')
+  async getData() {
+    return this.userplaylistService.dataView();
+  }
 }
