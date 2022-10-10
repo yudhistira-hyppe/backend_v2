@@ -2,6 +2,7 @@ import { HttpCode, Controller, HttpStatus, Get, Req, Query, UseGuards, Headers, 
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UtilsService } from './utils.service';
 import { InterestsRepoService } from '../infra/interests_repo/interests_repo.service';
+import { InterestsService } from '../infra/interests/interests.service';
 import { AreasService } from '../infra/areas/areas.service';
 import { CitiesService } from '../infra/cities/cities.service';
 import { CountriesService } from '../infra/countries/countries.service';
@@ -25,6 +26,7 @@ export class UtilsController {
 
     constructor(
         private readonly interestsRepoService: InterestsRepoService,
+        //private readonly interestsService: InterestsService,
         private readonly areasService: AreasService,
         private readonly citiesService: CitiesService,
         private readonly countriesService: CountriesService,

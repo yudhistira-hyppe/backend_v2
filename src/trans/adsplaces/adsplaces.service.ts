@@ -28,6 +28,10 @@ export class AdsplacesService {
         return this.adsplacesModel.findOne({ _id: id }).exec();
     }
 
+    async findOneByType(adsType: string): Promise<Adsplaces> {
+        return this.adsplacesModel.findOne({ adsType: adsType }).exec();
+    }
+
     async delete(id: string) {
         const deletedCat = await this.adsplacesModel
             .findByIdAndRemove({ _id: id })

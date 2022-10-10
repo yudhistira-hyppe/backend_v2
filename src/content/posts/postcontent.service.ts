@@ -61,7 +61,7 @@ export class PostContentService {
     private contentEventService: ContenteventsService,
     private profilePictService: MediaprofilepictsService,
     private postPlaylistService: PostPlaylistService,
-    private readonly configService: ConfigService, 
+    private readonly configService: ConfigService,
     private seaweedfsService: SeaweedfsService,
     private templateService: TemplatesRepoService,
     private errorHandler: ErrorHandler,
@@ -188,7 +188,7 @@ export class PostContentService {
     }
 
     if (body.certified != undefined) {
-      post.certified = <boolean> body.certified;
+      post.certified = <boolean>body.certified;
     } else {
       post.certified = false;
     }
@@ -284,7 +284,7 @@ export class PostContentService {
     ce.sequenceNumber = 0;
     ce._class = 'io.melody.hyppe.content.domain.ContentEvent';
     this.contentEventService.create(ce);
-    
+
     return post;
   }
 
@@ -421,7 +421,7 @@ export class PostContentService {
       this.generateCertificate(String(post.postID), 'id');
     }
 
-    
+
     var res = new CreatePostResponse();
     res.response_code = 202;
     let msg = new Messages();
@@ -509,7 +509,7 @@ export class PostContentService {
     ws.on('finish', async () => {
       //Upload Seaweedfs
       const seaweedfs_path = '/' + post._id + '/' + postType + '/';
-      this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);    
+      this.logger.log('uploadSeaweedfs >>> ' + seaweedfs_path);
       try {
         var FormData_ = new FormData();
         FormData_.append(postType, fs.createReadStream(nm));
@@ -659,7 +659,7 @@ export class PostContentService {
     playlist.postType = post.postType;
     playlist.mediaId = Object(cm.oid);
     this.logger.log('createNewPostVideo >>> generate playlist ' + JSON.stringify(playlist));
-    this.postService.generateUserPlaylist(playlist);    
+    this.postService.generateUserPlaylist(playlist);
   }
 
   async getUserPost(body: any, headers: any): Promise<PostResponseApps> {
@@ -689,7 +689,7 @@ export class PostContentService {
     if (body.pageRow != undefined) {
       row = body.pageRow;
     }
-    
+
     let postId = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
     //let posts = await this.doGetUserPost(body, headers, profile);
     let posts = await this.loadBulk(postId, page, row);
@@ -874,7 +874,7 @@ export class PostContentService {
     //} else {
     //  query.where('visibility', 'PUBLIC');
     //  query.where('email', whoami.email);
-   // }
+    // }
     if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
       query.where('active', true);
     }
@@ -903,14 +903,14 @@ export class PostContentService {
   private async loadBulk(ids: String[], page, row): Promise<Posts[]> {
     this.logger.log('loadBulk >>> start: ' + JSON.stringify(ids));
     let p: Posts[] = [];
-    let query =  this.PostsModel.find();
+    let query = this.PostsModel.find();
     query.where('_id').in(ids);
     let skip = this.paging(page, row);
     query.skip(skip);
-    query.limit(row);         
-    query.sort({'postType': 1, 'createdAt': -1});
-    let res = await query.exec();  
-    return res;  
+    query.limit(row);
+    query.sort({ 'postType': 1, 'createdAt': -1 });
+    let res = await query.exec();
+    return res;
     //for (let i = 0; i < ids.length; i++) {
     //  let po = await this.PostsModel.findOne({ _id: ids[i] }).exec();
     //  if (po != undefined) {
@@ -1053,8 +1053,8 @@ export class PostContentService {
         pa.privacy = privacy;
 
         if (body.tags != undefined) {
-          let txs : string[] = [];
-          for(let i = 0; i <body.tags.length; i++) {
+          let txs: string[] = [];
+          for (let i = 0; i < body.tags.length; i++) {
             let oo = String(body.tags[i]);
             if (oo.length > 0) {
               txs.push(oo);
@@ -1554,7 +1554,7 @@ export class PostContentService {
     }
     return pd;
   }
-  
+
   private async buildDataRef(posts: Posts[], body: any, iam: Userbasic): Promise<PostBuildData> {
     let res = new PostBuildData();
     let xvids = new Map();
@@ -1568,13 +1568,13 @@ export class PostContentService {
 
       for (let i = 0; i < posts.length; i++) {
         let ps = posts[i];
-        
+
         if (ps.userProfile != undefined) {
           if (ps.userProfile?.namespace) {
             let oid = String(ps.userProfile.oid);
             xuser.set(oid, oid);
           }
-        }        
+        }
 
         if (ps.tagPeople != undefined && ps.tagPeople.length > 0) {
           let atp = ps.tagPeople;
@@ -1586,8 +1586,8 @@ export class PostContentService {
               xuser.set(oid, oid);
             }
           }
-        }  
-        
+        }
+
         ins.set(String(ps.email), String(ps.email));
 
         let meds = ps.contentMedias;
@@ -1600,15 +1600,15 @@ export class PostContentService {
             } else if (ns == 'mediapicts') {
               xpics.set(String(med.oid), String(med.oid));
             } else if (ns == 'mediadiaries') {
-              xdiary.set(String(med.oid), String(med.oid));              
+              xdiary.set(String(med.oid), String(med.oid));
             } else if (ns == 'mediastories') {
-              xstory.set(String(med.oid), String(med.oid));              
+              xstory.set(String(med.oid), String(med.oid));
             }
           }
         }
       }
 
-      let tmpvid = Array.from(xvids.values());      
+      let tmpvid = Array.from(xvids.values());
       if (tmpvid.length > 0) {
         let vids = await this.videoService.findByIds(tmpvid);
         console.log(vids);
@@ -1619,7 +1619,7 @@ export class PostContentService {
   }
 
   public async getVideoApsara(ids: String[]): Promise<ApsaraVideoResponse> {
-    let san : String[] = [];
+    let san: String[] = [];
     for (let i = 0; i < ids.length; i++) {
       let obj = ids[i];
       if (obj != undefined && obj != 'undefined') {
@@ -1630,32 +1630,32 @@ export class PostContentService {
     let tx = new ApsaraVideoResponse();
     let vl: VideoList[] = [];
     let chunk = this.chunkify(san, 15);
-    for(let i = 0; i < chunk.length; i++) {
+    for (let i = 0; i < chunk.length; i++) {
       let c = chunk[i];
 
       let vids = c.join(',');
       this.logger.log("getVideoApsara >>> video id: " + vids);
       var RPCClient = require('@alicloud/pop-core').RPCClient;
-  
+
       let client = new RPCClient({
         accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
         accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
         endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
         apiVersion: '2017-03-21'
       });
-  
+
       let params = {
         "RegionId": this.configService.get("APSARA_REGION_ID"),
         "VideoIds": vids
       }
-  
+
       let requestOption = {
         method: 'POST'
       };
-  
+
       let dto = new ApsaraVideoResponse();
       let result = await client.request('GetVideoInfos', params, requestOption);
-      let ty: ApsaraVideoResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));  
+      let ty: ApsaraVideoResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
       if (ty.VideoList.length > 0) {
         for (let x = 0; x < ty.VideoList.length; x++) {
           let vv = ty.VideoList[x];
@@ -1670,7 +1670,7 @@ export class PostContentService {
   }
 
   public async getImageApsara(ids: String[]): Promise<ApsaraImageResponse> {
-    let san : String[] = [];
+    let san: String[] = [];
     for (let i = 0; i < ids.length; i++) {
       let obj = ids[i];
       if (obj != undefined && obj != 'undefined') {
@@ -1681,33 +1681,33 @@ export class PostContentService {
     let tx = new ApsaraImageResponse();
     let vl: ImageInfo[] = [];
     let chunk = this.chunkify(san, 15);
-    for(let i = 0; i < chunk.length; i++) {
+    for (let i = 0; i < chunk.length; i++) {
       let c = chunk[i];
 
       let vids = c.join(',');
       this.logger.log("getImageApsara >>> video id: " + vids);
       var RPCClient = require('@alicloud/pop-core').RPCClient;
-  
+
       let client = new RPCClient({
         accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
         accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
         endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
         apiVersion: '2017-03-21'
       });
-  
+
       let params = {
         "RegionId": this.configService.get("APSARA_REGION_ID"),
         "ImageIds": vids
       }
-  
+
       let requestOption = {
         method: 'POST'
       };
-  
+
       let dto = new ApsaraImageResponse();
       let result = await client.request('GetImageInfos', params, requestOption);
-      let ty: ApsaraImageResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));     
-      
+      let ty: ApsaraImageResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
+
       if (ty.ImageInfo.length > 0) {
         for (let x = 0; x < ty.ImageInfo.length; x++) {
           let vv = ty.ImageInfo[x];
@@ -1759,8 +1759,8 @@ export class PostContentService {
   private chunkify(arr, chunkSize) {
     const res = [];
     for (let i = 0; i < arr.length; i += chunkSize) {
-        const chunk = arr.slice(i, i + chunkSize);
-        res.push(chunk);
+      const chunk = arr.slice(i, i + chunkSize);
+      res.push(chunk);
     }
     return res;
   }
@@ -1810,18 +1810,18 @@ export class PostContentService {
       this.logger.error('generateCertificate >>> validate profile: ' + post.email);
       return undefined;
     }
-    
+
     let fileName = post.postID + ".pdf";
 
-		let postType = 'HyppeVid';
+    let postType = 'HyppeVid';
 
-		if (post.postType == 'vid') {
-			postType = "HyppeVid";
-		} else if (post.postType == 'diary') {
-			postType = "HyppeDiary";
-		} else if (post.postType == 'pict') {
-			postType = "HyppePic";
-		}
+    if (post.postType == 'vid') {
+      postType = "HyppeVid";
+    } else if (post.postType == 'diary') {
+      postType = "HyppeDiary";
+    } else if (post.postType == 'pict') {
+      postType = "HyppePic";
+    }
 
     let template = await this.templateService.findTemplateCreatePost();
     let body = template.body_detail;
@@ -1838,9 +1838,9 @@ export class PostContentService {
     $_('#contentID').text(post.postID);
 
     let qr = await this.utilService.generateQRCode('https://sertifikat.hyppe.id/' + post.postID);
-    $_('#qrcode').attr('src', qr);    
+    $_('#qrcode').attr('src', qr);
 
-    let meta = post.metadata; 
+    let meta = post.metadata;
     if (meta != undefined && meta.duration != undefined) {
       $_('#duration').text(this.formatTime(meta.duration));
     } else {
@@ -1855,18 +1855,18 @@ export class PostContentService {
       body = template.body_detail_id;
     }
 
-    let pdf = cheerio.load(body);    
+    let pdf = cheerio.load(body);
     pdf('#fullname').text(profile.fullName);
     pdf('#email').text(profile.email);
     pdf('#postType').text(postType);
     pdf('#createdAt').text(post.createdAt);
-    pdf('#contentID').text(post.postID);    
-    pdf('#title').text(post.description);    
-    pdf('#postID').text(post.postID);    
-    
+    pdf('#contentID').text(post.postID);
+    pdf('#title').text(post.description);
+    pdf('#postID').text(post.postID);
+
     let tg = "";
     let tgs = post.tags;
-    for(let i = 0; i < tgs.length; i++) {
+    for (let i = 0; i < tgs.length; i++) {
       let obj = tgs[i];
       tg += '#' + obj + ',';
     }
@@ -1876,16 +1876,16 @@ export class PostContentService {
       pdf('#duration').text(this.formatTime(meta.duration));
     } else {
       pdf('#duration').text('-');
-    }    
+    }
 
-    pdf('#qrcode').attr('src', qr);    
+    pdf('#qrcode').attr('src', qr);
 
     let htmlPdf = pdf.html().toString();
-    let file = { content: htmlPdf};
+    let file = { content: htmlPdf };
     let options = { format: 'A4' };
     pdfWriter.generatePdf(file, options).then(pdfBuffer => {
       this.logger.log('generateCertificate >>> sending email to: ' + String(post.email) + ', with subject: ' + String(template.subject));
-      this.utilService.sendEmailWithAttachment(String(post.email), 'no-reply@hyppe.app', String(template.subject), html, {filename: fileName, content: pdfBuffer});
+      this.utilService.sendEmailWithAttachment(String(post.email), 'no-reply@hyppe.app', String(template.subject), html, { filename: fileName, content: pdfBuffer });
     });
 
 
@@ -1908,8 +1908,8 @@ export class PostContentService {
     }
 
     let post = await this.buildUpdatePost(body, headers);
-    let apost = await this.PostsModel.create(post);    
-    
+    let apost = await this.PostsModel.create(post);
+
     let cm = post.contentMedias[0];
 
     let updatePl = new CreateUserplaylistDto();
@@ -1926,7 +1926,7 @@ export class PostContentService {
     pd.postID = String(apost.postID);
     pd.email = String(apost.email);
 
-    return res;    
+    return res;
   }
 
   private async buildUpdatePost(body: any, headers: any): Promise<Posts> {
@@ -1947,9 +1947,17 @@ export class PostContentService {
     }
 
     if (body.tags != undefined) {
-      var obj = body.tags;
-      var tgs = obj.split(",");
-      post.tags = tgs;
+      if (body.tags != undefined) {
+        let txs : [] = [];
+        for(let i = 0; i < post.tags.length; i++) {
+          let oo = post.tags[i];
+          let oop = String(oo);
+          if (oop.length > 0) {
+            txs.push(oo);
+          }
+        }
+        post.tags = txs;
+      }
     }
 
     if (body.visibility != undefined) {
@@ -2005,6 +2013,7 @@ export class PostContentService {
     } else {
       post.isOwned = false;
     }
+
 
     if (body.cats != undefined && body.cats.length > 1) {
       var obj = body.cats;
@@ -2062,5 +2071,5 @@ export class PostContentService {
       m > 9 ? m : (h ? '0' + m : m || '0'),
       s > 9 ? s : '0' + s
     ].filter(Boolean).join(':');
-  }  
+  }
 }

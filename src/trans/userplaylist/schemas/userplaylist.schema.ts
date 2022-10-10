@@ -62,7 +62,17 @@ export class Userplaylist {
     $db: String;
   }];
   @Prop({ type: Object })
-  username: Object;  
+  username: Object;
+  @Prop()
+  FRIEND: boolean;
+  @Prop()
+  FOLLOWER: boolean;
+  @Prop()
+  FOLLOWING: boolean;
+  @Prop()
+  PUBLIC: boolean;
+  @Prop()
+  PRIVATE: boolean; 
 }
 
 export const UserplaylistSchema = SchemaFactory.createForClass(Userplaylist);

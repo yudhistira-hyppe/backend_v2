@@ -15,6 +15,7 @@ import { SeaweedfsService } from "../../stream/seaweedfs/seaweedfs.service";
 import { UtilsService } from "../../utils/utils.service";
 import { SettingsService } from '../settings/settings.service';
 import { VouchersService } from '../vouchers/vouchers.service';
+import { AdsplacesService } from '../adsplaces/adsplaces.service';
 //import { UserAdsService } from '../userads/userads.service';
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
@@ -74,7 +75,8 @@ export class AdsController {
         private readonly errorHandler: ErrorHandler,
         private readonly utilsService: UtilsService,
         private readonly seaweedfsService: SeaweedfsService,
-        private readonly settingsService: SettingsService,
+        private readonly settingsService: SettingsService, 
+        private readonly adsplacesService: AdsplacesService,
         private readonly vouchersService: VouchersService) { }
 
 
@@ -1335,6 +1337,13 @@ export class AdsController {
                     }
 
 
+                    if (CreateAdsDto.placingID==undefined){
+                        var dataPlacing = await this.adsplacesService.findOneByType(CreateAdsDto.typeAdsID.toString());
+                        CreateAdsDto.placingID = mongoose.Types.ObjectId(dataPlacing._id)
+                    } else {
+                        CreateAdsDto.placingID = mongoose.Types.ObjectId(CreateAdsDto.placingID);
+                    }
+
                     CreateAdsDto.timestamp = dt.toISOString();
                     //  CreateAdsDto.expiredAt = dtexpired.toISOString();
                     CreateAdsDto.userID = iduser;
@@ -1344,7 +1353,6 @@ export class AdsController {
                     CreateAdsDto.totalUsedCredit = creditValue * tayang;
                     CreateAdsDto.userVoucherID = arrayUservoucher;
                     CreateAdsDto.typeAdsID = mongoose.Types.ObjectId(CreateAdsDto.typeAdsID);
-                    CreateAdsDto.placingID = mongoose.Types.ObjectId(CreateAdsDto.placingID);
                     CreateAdsDto.interestID = arrayInterest;
                     CreateAdsDto.type = tipe;
                     CreateAdsDto.usedCredit = 0;
