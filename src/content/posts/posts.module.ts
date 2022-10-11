@@ -25,6 +25,9 @@ import { BullModule } from '@nestjs/bull';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { PostContentPlaylistService } from './postcontentplaylist.service';
 import { TemplatesRepoModule } from '../../infra/templates_repo/templates_repo.module';
+import { PostCommentService } from './postcomment.service';
+import { DisqusModule } from '../disqus/disqus.module';
+import { DisquslogsModule } from '../disquslogs/disquslogs.module';
 @Module({
 
     imports: [
@@ -38,11 +41,11 @@ import { TemplatesRepoModule } from '../../infra/templates_repo/templates_repo.m
         UtilsModule,
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
         UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
-        MediapictsModule,MediadiariesModule,MediaprofilepictsModule,PostPlayModule,TemplatesRepoModule,
+        MediapictsModule,MediadiariesModule,MediaprofilepictsModule,PostPlayModule,TemplatesRepoModule,DisqusModule,DisquslogsModule,
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [PostsController],
-    providers: [PostsService, PostContentService, PostContentPlaylistService],
-    exports: [PostsService, PostContentService, PostContentPlaylistService],
+    providers: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService],
+    exports: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService],
 })
 export class PostsModule { }

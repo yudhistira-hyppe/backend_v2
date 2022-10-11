@@ -263,7 +263,7 @@ export class UserplaylistService {
     }
 
     if (body.postType != undefined) {
-      query.where('postType', body.postType);
+      query.where('postType', String(body.postType));
     } else {
       query.where('postType').ne('advertise');
     }
