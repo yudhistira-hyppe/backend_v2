@@ -293,6 +293,14 @@ export class PostsController {
   }  
 
   @UseGuards(JwtAuthGuard)
+  @Post('api/posts/postviewer')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async postViewer(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("postViewer >>> start");
+    return this.postCommentService.removeComment(body, headers);
+  }    
+
+  @UseGuards(JwtAuthGuard)
   @Post('api/posts/updatepost')
   async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("updatePost >>> start");
