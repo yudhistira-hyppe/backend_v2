@@ -297,7 +297,7 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('postContent'))
   async postViewer(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("postViewer >>> start");
-    return this.postCommentService.removeComment(body, headers);
+    return this.postCommentService.postViewer(body, headers);
   }    
 
   @UseGuards(JwtAuthGuard)
