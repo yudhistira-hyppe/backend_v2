@@ -1086,7 +1086,7 @@ export class TransactionsController {
 
                         let CreateUserplaylistDto_ = new CreateUserplaylistDto();
                         CreateUserplaylistDto_.mediaId = mediaId;
-                        CreateUserplaylistDto_.userPostId = idusersell;
+                        CreateUserplaylistDto_.userPostId = iduserbuy;
                         CreateUserplaylistDto_.postType = postType;
                         console.log(langIso);
 
