@@ -300,8 +300,6 @@ export class PostsController {
 
     if (saleAmount > 0) {
       await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
-    } else {
-
     }
 
     return data;
