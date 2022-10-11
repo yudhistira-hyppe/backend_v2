@@ -297,11 +297,12 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('postContent'))
   async postViewer(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("postViewer >>> start");
-    return this.postCommentService.removeComment(body, headers);
+    return this.postCommentService.postViewer(body, headers);
   }    
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/updatepost')
+  @UseInterceptors(FileInterceptor('postContent'))  
   async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("updatePost >>> start");
     var titleinsukses = "Selamat";
