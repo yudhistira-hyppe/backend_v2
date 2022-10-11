@@ -29,6 +29,7 @@ import { InsightsService } from '../insights/insights.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import { PostContentPlaylistService } from './postcontentplaylist.service';
 import mongoose from 'mongoose';
+import { PostCommentService } from './postcomment.service';
 
 @Controller()
 export class PostsController {
@@ -42,6 +43,7 @@ export class PostsController {
     private readonly contenteventsService: ContenteventsService,
     private readonly insightsService: InsightsService,
     private readonly userbasicsService: UserbasicsService,
+    private readonly postCommentService: PostCommentService,    
     private readonly postPlayListService: PostContentPlaylistService,
     private readonly groupModuleService: GroupModuleService) { }
 
@@ -281,6 +283,22 @@ export class PostsController {
     this.logger.log("createPost >>> start");
     return this.postContentService.createNewPost(file, body, headers);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/removecomment')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async removeComment(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("removeComment >>> start");
+    return this.postCommentService.removeComment(body, headers);
+  }  
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/postviewer')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async postViewer(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("postViewer >>> start");
+    return this.postCommentService.removeComment(body, headers);
+  }    
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/updatepost')

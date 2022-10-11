@@ -337,7 +337,7 @@ export class ProfileController {
     } catch (e) {
       citi = "";
     }
-    const languages = await this.languagesService.findOne(languages_json.$id);
+    var languages = await this.languagesService.findOne(languages_json.$id);
 
     var datagroup = {};
     var datadivision = {};
@@ -387,7 +387,7 @@ export class ProfileController {
       "isEmailVerified": datauserauthsService.isEmailVerified,
       "idProofStatus": datauserbasicsService.idProofStatus,
       "insight": insights_res,
-      // "langIso": languages.langIso,
+      "langIso": languages.langIso,
       "interest": interest,
       "dob": datauserbasicsService.dob,
       "event": datauserbasicsService.event,

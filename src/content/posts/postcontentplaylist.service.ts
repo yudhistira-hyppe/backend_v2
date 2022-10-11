@@ -190,9 +190,9 @@ export class PostContentPlaylistService {
             let vi = vapsara.VideoList[i];
             if (pdvv.apsaraId == vi.VideoId) {
               pdvv.mediaThumbEndpoint = vi.CoverURL;
+              resVideo.push(pdvv);
             }
           }
-          resVideo.push(pdvv);
         }
       }
       if (pds.length > 0) {
@@ -202,9 +202,9 @@ export class PostContentPlaylistService {
             let vi = vapsara.VideoList[i];
             if (pdss.apsaraId == vi.VideoId) {
               pdss.mediaThumbEndpoint = vi.CoverURL;
+              resStory.push(pdss);
             }
           }
-          resStory.push(pdss);
         }
       }      
       if (pdd.length > 0) {
@@ -214,9 +214,9 @@ export class PostContentPlaylistService {
             let vi = vapsara.VideoList[i];
             if (pddd.apsaraId == vi.VideoId) {
               pddd.mediaThumbEndpoint = vi.CoverURL;
+              resDiary.push(pddd);
             }
           }
-          resStory.push(pddd);
         }
       }
     }
@@ -228,11 +228,12 @@ export class PostContentPlaylistService {
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
             if (pdvv.apsaraId == vi.ImageId) {
+              console.log(pdvv.apsaraId + ' ' + vi.ImageId + ' error!!!');
               pdvv.mediaThumbEndpoint = vi.URL;
               pdvv.mediaThumbUri = vi.URL;
+              resVideo.push(pdvv);
             }
           }
-          resVideo.push(pdvv);
         }
       }
       if (pds.length > 0) {
@@ -243,9 +244,9 @@ export class PostContentPlaylistService {
             if (pdss.apsaraId == vi.ImageId) {
               pdss.mediaThumbEndpoint = vi.URL;
               pdss.mediaThumbUri = vi.URL;
+              resStory.push(pdss);
             }
           }
-          resStory.push(pdss);
         }
       }      
       if (pdd.length > 0) {
@@ -256,9 +257,9 @@ export class PostContentPlaylistService {
             if (pddd.apsaraId == vi.ImageId) {
               pddd.mediaThumbEndpoint = vi.URL;
               pddd.mediaThumbUri = vi.URL;
+              resDiary.push(pddd);
             }
           }
-          resStory.push(pddd);
         }
       }
       if (pdp.length > 0) {
@@ -269,9 +270,9 @@ export class PostContentPlaylistService {
             if (pdpp.apsaraId == vi.ImageId) {
               pdpp.mediaThumbEndpoint = vi.URL;
               pdpp.mediaThumbUri = vi.URL;
+              resPic.push(pdpp);
             }
           }
-          resPic.push(pdpp);
         }
       }            
     }
@@ -771,23 +772,12 @@ export class PostContentPlaylistService {
 
         //Insight
 
-        if ((body.withInsight != undefined && (body.withInsight == true || body.withInsight == 'true'))) {
-          let insight = await this.insightService.findemail(String(post.email));
-          if (insight == undefined) {
-            continue;
-          }
-
-          let tmp = new InsightPost();
-          tmp.follower = Number(insight.followers);
-          tmp.following = Number(insight.followings);
-          tmp.likes = Number(insight.likes);
-          tmp.views = Number(insight.views);
-          tmp.shares = Number(insight.shares);
-          tmp.comments = Number(insight.comments);
-          tmp.reactions = Number(insight.reactions);
-          pa.insight = tmp;
-
-        }
+        let tmp = new InsightPost();
+        tmp.likes = Number(post.likes);
+        tmp.views = Number(post.views);
+        tmp.shares = Number(post.shares);
+        tmp.comments = Number(post.comments);
+        pa.insight = tmp;
 
         //MEDIA
         let meds = <MediaData> ps.mediaData;

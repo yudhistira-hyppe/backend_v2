@@ -1015,6 +1015,8 @@ export class TransactionsController {
                     if (status == "WAITING_PAYMENT") {
                         var ubasic = await this.userbasicsService.findid(iduserbuy);
                         var emailbuyer = ubasic.email;
+                        var ubasicsell = await this.userbasicsService.findid(idusersell);
+                        var emailseller = ubasicsell.email;
 
                         try {
                             languages = ubasic.languages;
@@ -1050,7 +1052,7 @@ export class TransactionsController {
 
 
                         await this.transactionsService.updateone(idtransaction, idbalance, payload);
-                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                        await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
 
                         await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy);
@@ -1166,7 +1168,8 @@ export class TransactionsController {
                     if (status == "WAITING_PAYMENT") {
                         var ubasic = await this.userbasicsService.findid(iduserbuy);
                         var emailbuyer = ubasic.email;
-
+                        var ubasicsell = await this.userbasicsService.findid(idusersell);
+                        var emailseller = ubasicsell.email;
 
                         var createbalance = await this.accontbalanceVoucher(postid, idusersell, saleAmountVoucher);
                         var createbalanceadmin = await this.accontbalanceAdmin("Admin", idadmin, idusersell, nominalmradmin);
@@ -1175,7 +1178,7 @@ export class TransactionsController {
 
                         var idbalance = databalance._id;
                         await this.transactionsService.updateoneVoucher(idtransaction, idbalance, payload);
-                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                        await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                         for (var i = 0; i < lengtvoucherid; i++) {
                             var postvcid = detail[i].id.toString();
                             var jml = detail[i].qty;
