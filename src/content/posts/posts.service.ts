@@ -1996,7 +1996,7 @@ export class PostsService {
       user_array_interest_string = JSON.parse("[" + user_array_interest_toString + "]");
     }
 
-    for (var i = 0; i < limit; i++) {
+    for (var loopData = 0; loopData < limit; loopData++) {
       var email_post_vid = null;
       var email_post_pict = null;
       var email_post_diary = null;
@@ -2022,15 +2022,15 @@ export class PostsService {
       var post_array_interest_diary_toString = null;
       var post_array_interest_story_toString = null;
 
-      var post_array_interest_vid = getPost_vid[i].category;
-      var post_array_interest_pict = getPost_pict[i].category;
-      var post_array_interest_diary = getPost_diary[i].category;
-      var post_array_interest_story = getPost_story[i].category;
+      var post_array_interest_vid = getPost_vid[loopData].category;
+      var post_array_interest_pict = getPost_pict[loopData].category;
+      var post_array_interest_diary = getPost_diary[loopData].category;
+      var post_array_interest_story = getPost_story[loopData].category;
 
-      email_post_vid = getPost_vid[i].email;
-      email_post_pict = getPost_vid[i].email;
-      email_post_diary = getPost_vid[i].email;
-      email_post_story = getPost_vid[i].email;
+      email_post_vid = getPost_vid[loopData].email;
+      email_post_pict = getPost_vid[loopData].email;
+      email_post_diary = getPost_vid[loopData].email;
+      email_post_story = getPost_vid[loopData].email;
 
       userbasic_post_vid = await this.userService.findOne(email_post_vid);
       userbasic_post_pict = await this.userService.findOne(email_post_vid);
@@ -2112,32 +2112,32 @@ export class PostsService {
 
       var interest_db_vid = [];
       if (Count_compare_interest_vid > 0) {
-        for (var i = 0; i < Count_compare_interest_vid; i++) {
-          var objintr = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(compare_interest_vid[i]), "$db": "hyppe_infra_db" }
+        for (var j = 0; j < Count_compare_interest_vid; j++) {
+          var objintr = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(compare_interest_vid[j]), "$db": "hyppe_infra_db" }
           interest_db_vid.push(objintr)
         }
       }
 
       var interest_db_pict = [];
       if (Count_compare_interest_pict > 0) {
-        for (var i = 0; i < Count_compare_interest_pict; i++) {
-          var objintr = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(compare_interest_pict[i]), "$db": "hyppe_infra_db" }
+        for (var k = 0; k < Count_compare_interest_pict; k++) {
+          var objintr = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(compare_interest_pict[k]), "$db": "hyppe_infra_db" }
           interest_db_pict.push(objintr)
         }
       }
 
       var interest_db_diary = [];
       if (Count_compare_interest_diary > 0) {
-        for (var i = 0; i < Count_compare_interest_diary; i++) {
-          var objintr = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(compare_interest_diary[i]), "$db": "hyppe_infra_db" }
+        for (var l = 0; l < Count_compare_interest_diary; l++) {
+          var objintr = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(compare_interest_diary[l]), "$db": "hyppe_infra_db" }
           interest_db_diary.push(objintr)
         }
       }
 
       var interest_db_story = [];
       if (Count_compare_interest_story > 0) {
-        for (var i = 0; i < Count_compare_interest_story; i++) {
-          var objintr = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(compare_interest_story[i]), "$db": "hyppe_infra_db" }
+        for (var m = 0; m < Count_compare_interest_story; m++) {
+          var objintr = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(compare_interest_story[m]), "$db": "hyppe_infra_db" }
           interest_db_story.push(objintr)
         }
       }
@@ -2146,7 +2146,7 @@ export class PostsService {
       console.log("-------------------------------------------INSERT VID");
 
       var type_vid = null;
-      var ceckFriendFollowingFollower_vid = await this.contentEventService.ceckFriendFollowingFollower(data_user.email.toString(), getPost_vid[i].email.toString());
+      var ceckFriendFollowingFollower_vid = await this.contentEventService.ceckFriendFollowingFollower(data_user.email.toString(), getPost_vid[loopData].email.toString());
       if (await this.utilsService.ceckData(ceckFriendFollowingFollower_vid)) {
         if (ceckFriendFollowingFollower_vid.length == 2) {
           type_vid = "FRIEND";
@@ -2154,7 +2154,7 @@ export class PostsService {
           if (ceckFriendFollowingFollower_vid[0].email == data_user.email.toString()) {
             type_vid = "FOLLOWER";
           } else {
-            if (ceckFriendFollowingFollower_vid[0].email == getPost_vid[i].email.toString()) {
+            if (ceckFriendFollowingFollower_vid[0].email == getPost_vid[loopData].email.toString()) {
               type_vid = "FOLLOWING";
             } else {
               type_vid = "PUBLIC";
@@ -2166,16 +2166,16 @@ export class PostsService {
       }
 
       var isHidden_vid = false;
-      if (getPost_vid[i].visibility != undefined) {
-        if (getPost_vid[i].visibility == "FRIEND") {
-          if (type_vid == getPost_vid[i].visibility) {
+      if (getPost_vid[loopData].visibility != undefined) {
+        if (getPost_vid[loopData].visibility == "FRIEND") {
+          if (type_vid == getPost_vid[loopData].visibility) {
             isHidden_vid = false;
           } else {
             isHidden_vid = true;
           }
-        } else if (getPost_vid[i].visibility == "PRIVATE") {
+        } else if (getPost_vid[loopData].visibility == "PRIVATE") {
           type_vid = "PRIVATE";
-          if (getPost_vid[i].email.toString() == data_user.email.toString()) {
+          if (getPost_vid[loopData].email.toString() == data_user.email.toString()) {
             isHidden_vid = false;
           } else {
             isHidden_vid = true;
@@ -2185,7 +2185,7 @@ export class PostsService {
         }
       }
 
-      var data_media_vid = await this.mediavideosService.findOnepostID(getPost_vid[i].postID.toString());
+      var data_media_vid = await this.mediavideosService.findOnepostID(getPost_vid[loopData].postID.toString());
       if (await this.utilsService.ceckData(data_media_vid)) {
         //Insert Playlist Type Vid
         var CreateUserplaylistDto_vid = new CreateUserplaylistDto();
@@ -2193,18 +2193,18 @@ export class PostsService {
         CreateUserplaylistDto_vid.interestId = interest_db_vid;
         CreateUserplaylistDto_vid.interestIdCount = Count_compare_interest_vid;
         CreateUserplaylistDto_vid.userPostId = Object(id_user_post_vid);
-        CreateUserplaylistDto_vid.postType = getPost_vid[i].postType;
+        CreateUserplaylistDto_vid.postType = getPost_vid[loopData].postType;
         CreateUserplaylistDto_vid.mediaId = data_media_vid.mediaID;
         CreateUserplaylistDto_vid.type = type_vid;
-        CreateUserplaylistDto_vid.createAt = getPost_vid[i].createdAt;
-        CreateUserplaylistDto_vid.updatedAt = getPost_vid[i].updatedAt;
+        CreateUserplaylistDto_vid.createAt = getPost_vid[loopData].createdAt;
+        CreateUserplaylistDto_vid.updatedAt = getPost_vid[loopData].updatedAt;
         CreateUserplaylistDto_vid.isWatched = false;
         CreateUserplaylistDto_vid.isHidden = isHidden_vid;
-        CreateUserplaylistDto_vid.postID = (getPost_vid[i].postID != undefined) ? getPost_vid[i].postID : "";
-        CreateUserplaylistDto_vid.expiration = (getPost_vid[i].expiration != undefined) ? Number(getPost_vid[i].expiration) : 0;
-        CreateUserplaylistDto_vid.description = (getPost_vid[i].description != undefined) ? getPost_vid[i].description : "";
+        CreateUserplaylistDto_vid.postID = (getPost_vid[loopData].postID != undefined) ? getPost_vid[loopData].postID : "";
+        CreateUserplaylistDto_vid.expiration = (getPost_vid[loopData].expiration != undefined) ? Number(getPost_vid[loopData].expiration) : 0;
+        CreateUserplaylistDto_vid.description = (getPost_vid[loopData].description != undefined) ? getPost_vid[loopData].description : "";
         CreateUserplaylistDto_vid.userBasicData = Object(userbasic_post_vid);
-        CreateUserplaylistDto_vid.postData = Object(getPost_vid[i]);
+        CreateUserplaylistDto_vid.postData = Object(getPost_vid[loopData]);
         CreateUserplaylistDto_vid.mediaData = Object(data_media_vid);
         CreateUserplaylistDto_vid.mediaData = Object(data_media_vid);
         CreateUserplaylistDto_vid.FRIEND = (type_vid == "FRIEND") ? true : false;
@@ -2276,7 +2276,7 @@ export class PostsService {
       console.log("-------------------------------------------INSERT PICT");
 
       var type_pict = null;
-      var ceckFriendFollowingFollower_pict = await this.contentEventService.ceckFriendFollowingFollower(data_user.email.toString(), getPost_pict[i].email.toString());
+      var ceckFriendFollowingFollower_pict = await this.contentEventService.ceckFriendFollowingFollower(data_user.email.toString(), getPost_pict[loopData].email.toString());
       if (await this.utilsService.ceckData(ceckFriendFollowingFollower_pict)) {
         if (ceckFriendFollowingFollower_pict.length == 2) {
           type_pict = "FRIEND";
@@ -2284,7 +2284,7 @@ export class PostsService {
           if (ceckFriendFollowingFollower_pict[0].email == data_user.email.toString()) {
             type_pict = "FOLLOWER";
           } else {
-            if (ceckFriendFollowingFollower_pict[0].email == getPost_pict[i].email.toString()) {
+            if (ceckFriendFollowingFollower_pict[0].email == getPost_pict[loopData].email.toString()) {
               type_pict = "FOLLOWING";
             } else {
               type_pict = "PUBLIC";
@@ -2296,16 +2296,16 @@ export class PostsService {
       }
 
       var isHidden_pict = false;
-      if (getPost_pict[i].visibility != undefined) {
-        if (getPost_pict[i].visibility == "FRIEND") {
-          if (type_pict == getPost_pict[i].visibility) {
+      if (getPost_pict[loopData].visibility != undefined) {
+        if (getPost_pict[loopData].visibility == "FRIEND") {
+          if (type_pict == getPost_pict[loopData].visibility) {
             isHidden_pict = false;
           } else {
             isHidden_pict = true;
           }
-        } else if (getPost_pict[i].visibility == "PRIVATE") {
+        } else if (getPost_pict[loopData].visibility == "PRIVATE") {
           type_pict = "PRIVATE";
-          if (getPost_pict[i].email.toString() == data_user.email.toString()) {
+          if (getPost_pict[loopData].email.toString() == data_user.email.toString()) {
             isHidden_pict = false;
           } else {
             isHidden_pict = true;
@@ -2315,7 +2315,7 @@ export class PostsService {
         }
       }
 
-      var data_media_pict = await this.mediavideosService.findOnepostID(getPost_pict[i].postID.toString());
+      var data_media_pict = await this.mediapictsService.findOnepostID(getPost_pict[loopData].postID.toString());
       if (await this.utilsService.ceckData(data_media_pict)){
         //Insert Playlist Type Vid
         var CreateUserplaylistDto_pict = new CreateUserplaylistDto();
@@ -2323,18 +2323,18 @@ export class PostsService {
         CreateUserplaylistDto_pict.interestId = interest_db_pict;
         CreateUserplaylistDto_pict.interestIdCount = Count_compare_interest_pict;
         CreateUserplaylistDto_pict.userPostId = Object(id_user_post_pict);
-        CreateUserplaylistDto_pict.postType = getPost_pict[i].postType;
+        CreateUserplaylistDto_pict.postType = getPost_pict[loopData].postType;
         CreateUserplaylistDto_pict.mediaId = data_media_pict.mediaID;
         CreateUserplaylistDto_pict.type = type_pict;
-        CreateUserplaylistDto_pict.createAt = getPost_pict[i].createdAt;
-        CreateUserplaylistDto_pict.updatedAt = getPost_pict[i].updatedAt;
+        CreateUserplaylistDto_pict.createAt = getPost_pict[loopData].createdAt;
+        CreateUserplaylistDto_pict.updatedAt = getPost_pict[loopData].updatedAt;
         CreateUserplaylistDto_pict.isWatched = false;
         CreateUserplaylistDto_pict.isHidden = isHidden_pict;
-        CreateUserplaylistDto_pict.postID = (getPost_pict[i].postID != undefined) ? getPost_pict[i].postID : "";
-        CreateUserplaylistDto_pict.expiration = (getPost_pict[i].expiration != undefined) ? Number(getPost_pict[i].expiration) : 0;
-        CreateUserplaylistDto_pict.description = (getPost_pict[i].description != undefined) ? getPost_pict[i].description : "";
+        CreateUserplaylistDto_pict.postID = (getPost_pict[loopData].postID != undefined) ? getPost_pict[loopData].postID : "";
+        CreateUserplaylistDto_pict.expiration = (getPost_pict[loopData].expiration != undefined) ? Number(getPost_pict[loopData].expiration) : 0;
+        CreateUserplaylistDto_pict.description = (getPost_pict[loopData].description != undefined) ? getPost_pict[loopData].description : "";
         CreateUserplaylistDto_pict.userBasicData = Object(userbasic_post_pict);
-        CreateUserplaylistDto_pict.postData = Object(getPost_pict[i]);
+        CreateUserplaylistDto_pict.postData = Object(getPost_pict[loopData]);
         CreateUserplaylistDto_pict.mediaData = Object(data_media_pict);
         CreateUserplaylistDto_pict.mediaData = Object(data_media_pict);
         CreateUserplaylistDto_pict.FRIEND = (type_pict == "FRIEND") ? true : false;
@@ -2351,9 +2351,6 @@ export class PostsService {
             if (!data_media_pict.apsara) {
               if (data_media_pict.mediaType != undefined) {
                 if (data_media_pict.mediaType == "video") {
-                  if (data_media_pict.mediaThumb != undefined) {
-                    CreateUserplaylistDto_pict.mediaThumbUri = data_media_pict.mediaThumb;
-                  }
                   if (data_media_pict.mediaUri != undefined) {
                     CreateUserplaylistDto_pict.mediaEndpoint = "/stream/" + data_media_pict.mediaUri;
                   }
@@ -2376,9 +2373,6 @@ export class PostsService {
             CreateUserplaylistDto_pict.isApsara = false;
             if (data_media_pict.mediaType != undefined) {
               if (data_media_pict.mediaType == "video") {
-                if (data_media_pict.mediaThumb != undefined) {
-                  CreateUserplaylistDto_pict.mediaThumbUri = data_media_pict.mediaThumb;
-                }
                 if (data_media_pict.mediaUri != undefined) {
                   CreateUserplaylistDto_pict.mediaEndpoint = "/stream/" + data_media_pict.mediaUri;
                 }
@@ -2407,7 +2401,7 @@ export class PostsService {
       console.log("-------------------------------------------INSERT DIARY");
 
       var type_diary = null;
-      var ceckFriendFollowingFollower_diary = await this.contentEventService.ceckFriendFollowingFollower(data_user.email.toString(), getPost_diary[i].email.toString());
+      var ceckFriendFollowingFollower_diary = await this.contentEventService.ceckFriendFollowingFollower(data_user.email.toString(), getPost_diary[loopData].email.toString());
       if (await this.utilsService.ceckData(ceckFriendFollowingFollower_diary)) {
         if (ceckFriendFollowingFollower_diary.length == 2) {
           type_diary = "FRIEND";
@@ -2415,7 +2409,7 @@ export class PostsService {
           if (ceckFriendFollowingFollower_diary[0].email == data_user.email.toString()) {
             type_diary = "FOLLOWER";
           } else {
-            if (ceckFriendFollowingFollower_diary[0].email == getPost_diary[i].email.toString()) {
+            if (ceckFriendFollowingFollower_diary[0].email == getPost_diary[loopData].email.toString()) {
               type_diary = "FOLLOWING";
             } else {
               type_diary = "PUBLIC";
@@ -2427,16 +2421,16 @@ export class PostsService {
       }
 
       var isHidden_diary = false;
-      if (getPost_diary[i].visibility != undefined) {
-        if (getPost_diary[i].visibility == "FRIEND") {
-          if (type_diary == getPost_diary[i].visibility) {
+      if (getPost_diary[loopData].visibility != undefined) {
+        if (getPost_diary[loopData].visibility == "FRIEND") {
+          if (type_diary == getPost_diary[loopData].visibility) {
             isHidden_diary = false;
           } else {
             isHidden_diary = true;
           }
-        } else if (getPost_diary[i].visibility == "PRIVATE") {
+        } else if (getPost_diary[loopData].visibility == "PRIVATE") {
           type_diary = "PRIVATE";
-          if (getPost_diary[i].email.toString() == data_user.email.toString()) {
+          if (getPost_diary[loopData].email.toString() == data_user.email.toString()) {
             isHidden_diary = false;
           } else {
             isHidden_diary = true;
@@ -2446,7 +2440,7 @@ export class PostsService {
         }
       }
 
-      var data_media_diary = await this.mediavideosService.findOnepostID(getPost_diary[i].postID.toString());
+      var data_media_diary = await this.mediadiariesService.findOnepostID(getPost_diary[loopData].postID.toString());
       if (await this.utilsService.ceckData(data_media_diary)) {
         //Insert Playlist Type Vid
         var CreateUserplaylistDto_diary = new CreateUserplaylistDto();
@@ -2454,18 +2448,18 @@ export class PostsService {
         CreateUserplaylistDto_diary.interestId = interest_db_diary;
         CreateUserplaylistDto_diary.interestIdCount = Count_compare_interest_diary;
         CreateUserplaylistDto_diary.userPostId = Object(id_user_post_diary);
-        CreateUserplaylistDto_diary.postType = getPost_diary[i].postType;
+        CreateUserplaylistDto_diary.postType = getPost_diary[loopData].postType;
         CreateUserplaylistDto_diary.mediaId = data_media_diary.mediaID;
         CreateUserplaylistDto_diary.type = type_diary;
-        CreateUserplaylistDto_diary.createAt = getPost_diary[i].createdAt;
-        CreateUserplaylistDto_diary.updatedAt = getPost_diary[i].updatedAt;
+        CreateUserplaylistDto_diary.createAt = getPost_diary[loopData].createdAt;
+        CreateUserplaylistDto_diary.updatedAt = getPost_diary[loopData].updatedAt;
         CreateUserplaylistDto_diary.isWatched = false;
         CreateUserplaylistDto_diary.isHidden = isHidden_diary;
-        CreateUserplaylistDto_diary.postID = (getPost_diary[i].postID != undefined) ? getPost_diary[i].postID : "";
-        CreateUserplaylistDto_diary.expiration = (getPost_diary[i].expiration != undefined) ? Number(getPost_diary[i].expiration) : 0;
-        CreateUserplaylistDto_diary.description = (getPost_diary[i].description != undefined) ? getPost_diary[i].description : "";
+        CreateUserplaylistDto_diary.postID = (getPost_diary[loopData].postID != undefined) ? getPost_diary[loopData].postID : "";
+        CreateUserplaylistDto_diary.expiration = (getPost_diary[loopData].expiration != undefined) ? Number(getPost_diary[loopData].expiration) : 0;
+        CreateUserplaylistDto_diary.description = (getPost_diary[loopData].description != undefined) ? getPost_diary[loopData].description : "";
         CreateUserplaylistDto_diary.userBasicData = Object(userbasic_post_diary);
-        CreateUserplaylistDto_diary.postData = Object(getPost_diary[i]);
+        CreateUserplaylistDto_diary.postData = Object(getPost_diary[loopData]);
         CreateUserplaylistDto_diary.mediaData = Object(data_media_diary);
         CreateUserplaylistDto_diary.mediaData = Object(data_media_diary);
         CreateUserplaylistDto_diary.FRIEND = (type_diary == "FRIEND") ? true : false;
@@ -2537,7 +2531,7 @@ export class PostsService {
       console.log("-------------------------------------------INSERT STORY");
 
       var type_story = null;
-      var ceckFriendFollowingFollower_story = await this.contentEventService.ceckFriendFollowingFollower(data_user.email.toString(), getPost_story[i].email.toString());
+      var ceckFriendFollowingFollower_story = await this.contentEventService.ceckFriendFollowingFollower(data_user.email.toString(), getPost_story[loopData].email.toString());
       if (await this.utilsService.ceckData(ceckFriendFollowingFollower_story)) {
         if (ceckFriendFollowingFollower_story.length == 2) {
           type_story = "FRIEND";
@@ -2545,7 +2539,7 @@ export class PostsService {
           if (ceckFriendFollowingFollower_story[0].email == data_user.email.toString()) {
             type_story = "FOLLOWER";
           } else {
-            if (ceckFriendFollowingFollower_story[0].email == getPost_story[i].email.toString()) {
+            if (ceckFriendFollowingFollower_story[0].email == getPost_story[loopData].email.toString()) {
               type_story = "FOLLOWING";
             } else {
               type_story = "PUBLIC";
@@ -2557,16 +2551,16 @@ export class PostsService {
       }
 
       var isHidden_story = false;
-      if (getPost_story[i].visibility != undefined) {
-        if (getPost_story[i].visibility == "FRIEND") {
-          if (type_story == getPost_story[i].visibility) {
+      if (getPost_story[loopData].visibility != undefined) {
+        if (getPost_story[loopData].visibility == "FRIEND") {
+          if (type_story == getPost_story[loopData].visibility) {
             isHidden_story = false;
           } else {
             isHidden_story = true;
           }
-        } else if (getPost_story[i].visibility == "PRIVATE") {
+        } else if (getPost_story[loopData].visibility == "PRIVATE") {
           type_story = "PRIVATE";
-          if (getPost_story[i].email.toString() == data_user.email.toString()) {
+          if (getPost_story[loopData].email.toString() == data_user.email.toString()) {
             isHidden_story = false;
           } else {
             isHidden_story = true;
@@ -2576,7 +2570,7 @@ export class PostsService {
         }
       }
 
-      var data_media_story = await this.mediavideosService.findOnepostID(getPost_story[i].postID.toString());
+      var data_media_story = await this.mediastoriesService.findOnepostID(getPost_story[loopData].postID.toString());
       if (await this.utilsService.ceckData(data_media_story)) {
         //Insert Playlist Type Vid
         var CreateUserplaylistDto_story = new CreateUserplaylistDto();
@@ -2584,18 +2578,18 @@ export class PostsService {
         CreateUserplaylistDto_story.interestId = interest_db_story;
         CreateUserplaylistDto_story.interestIdCount = Count_compare_interest_story;
         CreateUserplaylistDto_story.userPostId = Object(id_user_post_story);
-        CreateUserplaylistDto_story.postType = getPost_story[i].postType;
+        CreateUserplaylistDto_story.postType = getPost_story[loopData].postType;
         CreateUserplaylistDto_story.mediaId = data_media_story.mediaID;
         CreateUserplaylistDto_story.type = type_story;
-        CreateUserplaylistDto_story.createAt = getPost_story[i].createdAt;
-        CreateUserplaylistDto_story.updatedAt = getPost_story[i].updatedAt;
+        CreateUserplaylistDto_story.createAt = getPost_story[loopData].createdAt;
+        CreateUserplaylistDto_story.updatedAt = getPost_story[loopData].updatedAt;
         CreateUserplaylistDto_story.isWatched = false;
         CreateUserplaylistDto_story.isHidden = isHidden_story;
-        CreateUserplaylistDto_story.postID = (getPost_story[i].postID != undefined) ? getPost_story[i].postID : "";
-        CreateUserplaylistDto_story.expiration = (getPost_story[i].expiration != undefined) ? Number(getPost_story[i].expiration) : 0;
-        CreateUserplaylistDto_story.description = (getPost_story[i].description != undefined) ? getPost_story[i].description : "";
+        CreateUserplaylistDto_story.postID = (getPost_story[loopData].postID != undefined) ? getPost_story[loopData].postID : "";
+        CreateUserplaylistDto_story.expiration = (getPost_story[loopData].expiration != undefined) ? Number(getPost_story[loopData].expiration) : 0;
+        CreateUserplaylistDto_story.description = (getPost_story[loopData].description != undefined) ? getPost_story[loopData].description : "";
         CreateUserplaylistDto_story.userBasicData = Object(userbasic_post_story);
-        CreateUserplaylistDto_story.postData = Object(getPost_story[i]);
+        CreateUserplaylistDto_story.postData = Object(getPost_story[loopData]);
         CreateUserplaylistDto_story.mediaData = Object(data_media_story);
         CreateUserplaylistDto_story.mediaData = Object(data_media_story);
         CreateUserplaylistDto_story.FRIEND = (type_story == "FRIEND") ? true : false;

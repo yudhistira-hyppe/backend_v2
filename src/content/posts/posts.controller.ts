@@ -399,7 +399,7 @@ export class PostsController {
   @Get('api/userplaylist/generateNewUserPlaylist')
   @HttpCode(HttpStatus.ACCEPTED)
   async generateNewUserPlaylist() {;
-    return await this.PostsService.generateNewUserPlaylist("633d0c95c9dca3610d720a00");
+    return await this.PostsService.generateNewUserPlaylist("633d0c26c9dca3610d7209f9");
   }
 
   @UseGuards(JwtAuthGuard)

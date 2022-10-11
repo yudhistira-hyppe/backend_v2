@@ -1158,9 +1158,9 @@ export class AuthService {
 
                 //Create User Playlist
                 try {
-                  //await this.adsUserCompareService.createNewUserAds(datauserbasicsService._id.toString());
+                  await this.postsService.generateNewUserPlaylist(datauserbasicsService._id.toString());
                 } catch (e) {
-                  //console.log("Create User Ads", e);
+                  console.log("Create User Ads", e);
                 }
 
                 return {
