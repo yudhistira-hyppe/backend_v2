@@ -302,6 +302,7 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/updatepost')
+  @UseInterceptors(FileInterceptor('postContent'))  
   async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("updatePost >>> start");
     var titleinsukses = "Selamat";
