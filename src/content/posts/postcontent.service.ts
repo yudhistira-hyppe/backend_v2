@@ -1951,7 +1951,7 @@ export class PostContentService {
       post.description = body.description;
     }
 
-    if (body.tags != undefined) {
+    if (body.tags != undefined && (String(body.tags).length > 0)) {
       var obj = body.tags;
       var tgs = obj.split(",");
       post.tags = tgs;
