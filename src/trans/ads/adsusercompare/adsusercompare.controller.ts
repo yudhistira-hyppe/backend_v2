@@ -478,19 +478,19 @@ export class AdsUserCompareController {
                             }
                         }
 
-                        if (ads_tayang == (ads_totalView + 1)) {
-                            //Update userads
-                            try {
-                                var CreateUserAdsDto_ = new CreateUserAdsDto();
-                                CreateUserAdsDto_.statusView = false;
-                                await this.userAdsService.updatesdataAdsID(data_adsService._id.toString(), CreateUserAdsDto_);
+                        // if (ads_tayang == (ads_totalView + 1)) {
+                        //     //Update userads
+                        //     try {
+                        //         var CreateUserAdsDto_ = new CreateUserAdsDto();
+                        //         CreateUserAdsDto_.statusView = false;
+                        //         await this.userAdsService.updatesdataAdsID(data_adsService._id.toString(), CreateUserAdsDto_);
 
-                            } catch (e) {
-                                await this.errorHandler.generateNotAcceptableException(
-                                    'Unabled to proceed, ' + e,
-                                );
-                            }
-                        }
+                        //     } catch (e) {
+                        //         await this.errorHandler.generateNotAcceptableException(
+                        //             'Unabled to proceed, ' + e,
+                        //         );
+                        //     }
+                        // }
                     }
 
                     return {

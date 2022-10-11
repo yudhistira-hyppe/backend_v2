@@ -1969,6 +1969,701 @@ export class PostsService {
       //await this.userplaylistService.updateOne(ceckDataUser_[0]._id, CreateUserplaylistDto_);
     });
   }
+
+  async generateNewUserPlaylist(userId: string) {
+    const limit = 20;
+    const sort = -1;
+    const data_user = await this.userService.findbyid(userId);
+    const getPost_vid = await this.PostsModel.find({ postType: "vid" }).sort({ createdAt: sort }).limit(limit).exec();
+    const getPost_pict = await this.PostsModel.find({ postType: "pict" }).sort({ createdAt: sort }).limit(limit).exec();
+    const getPost_diary = await this.PostsModel.find({ postType: "diary" }).sort({ createdAt: sort }).limit(limit).exec();
+    const getPost_story = await this.PostsModel.find({ postType: "story" }).sort({ createdAt: sort }).limit(limit).exec();
+
+    var user_array_interest_string = null;
+    var user_array_interest_toString = null;
+
+    var user_array_interest = null;
+    if (data_user.userInterests!=undefined){
+      user_array_interest = data_user.userInterests;
+    }
+
+    if (user_array_interest.length > 0) {
+      user_array_interest_toString = user_array_interest.map(function (item) {
+        if ((JSON.parse(JSON.stringify(item)) != null)) {
+          return '"' + JSON.parse(JSON.stringify(item)).$id + '"'
+        }
+      }).join(",");
+      user_array_interest_string = JSON.parse("[" + user_array_interest_toString + "]");
+    }
+
+    for (var i = 0; i < limit; i++) {
+      var email_post_vid = null;
+      var email_post_pict = null;
+      var email_post_diary = null;
+      var email_post_story = null;
+
+      var userbasic_post_vid = null;
+      var userbasic_post_pict = null;
+      var userbasic_post_diary = null;
+      var userbasic_post_story = null;
+
+      var id_user_post_vid = null;
+      var id_user_post_pict = null;
+      var id_user_post_diary = null;
+      var id_user_post_story = null;
+
+      var post_array_interest_vid_string = null;
+      var post_array_interest_pict_string = null;
+      var post_array_interest_diary_string = null;
+      var post_array_interest_story_string = null;
+
+      var post_array_interest_vid_toString = null;
+      var post_array_interest_pict_toString = null;
+      var post_array_interest_diary_toString = null;
+      var post_array_interest_story_toString = null;
+
+      var post_array_interest_vid = getPost_vid[i].category;
+      var post_array_interest_pict = getPost_pict[i].category;
+      var post_array_interest_diary = getPost_diary[i].category;
+      var post_array_interest_story = getPost_story[i].category;
+
+      email_post_vid = getPost_vid[i].email;
+      email_post_pict = getPost_vid[i].email;
+      email_post_diary = getPost_vid[i].email;
+      email_post_story = getPost_vid[i].email;
+
+      userbasic_post_vid = await this.userService.findOne(email_post_vid);
+      userbasic_post_pict = await this.userService.findOne(email_post_vid);
+      userbasic_post_diary = await this.userService.findOne(email_post_vid);
+      userbasic_post_story = await this.userService.findOne(email_post_vid);
+
+      id_user_post_vid = userbasic_post_vid._id.toString();
+      id_user_post_pict = userbasic_post_pict._id.toString();
+      id_user_post_diary = userbasic_post_diary._id.toString();
+      id_user_post_story = userbasic_post_story._id.toString();
+
+      var compare_interest_vid = null;
+      var compare_interest_pict = null;
+      var compare_interest_diary = null;
+      var compare_interest_story = null;
+
+      var Count_compare_interest_vid = 0;
+      var Count_compare_interest_pict = 0;
+      var Count_compare_interest_diary = 0;
+      var Count_compare_interest_story = 0;
+
+      if (post_array_interest_vid.length > 0) {
+        post_array_interest_vid_toString = post_array_interest_vid.map(function (item) { return '"' + JSON.parse(JSON.stringify(item)).$id + '"' }).join(",");
+        post_array_interest_vid_string = JSON.parse("[" + post_array_interest_vid_toString + "]");
+      }
+
+      if (post_array_interest_vid_string != null && user_array_interest_string != null) {
+          compare_interest_vid = post_array_interest_vid_string.filter(function (obj) {
+          return user_array_interest_string.indexOf(obj) !== -1;
+        });
+      }
+
+      if (post_array_interest_pict.length > 0) {
+        post_array_interest_pict_toString = post_array_interest_pict.map(function (item) { return '"' + JSON.parse(JSON.stringify(item)).$id + '"' }).join(",");
+        post_array_interest_pict_string = JSON.parse("[" + post_array_interest_pict_toString + "]");
+      }
+
+      if (post_array_interest_pict_string != null && user_array_interest_string != null) {
+          compare_interest_pict = post_array_interest_pict_string.filter(function (obj) {
+          return user_array_interest_string.indexOf(obj) !== -1;
+        });
+      }
+
+      if (post_array_interest_diary.length > 0) {
+        post_array_interest_diary_toString = post_array_interest_diary.map(function (item) { return '"' + JSON.parse(JSON.stringify(item)).$id + '"' }).join(",");
+        post_array_interest_diary_string = JSON.parse("[" + post_array_interest_diary_toString + "]");
+      }
+
+      if (post_array_interest_diary_string != null && user_array_interest_string != null) {
+          compare_interest_diary = post_array_interest_diary_string.filter(function (obj) {
+          return user_array_interest_string.indexOf(obj) !== -1;
+        });
+      }
+
+      if (post_array_interest_story.length > 0) {
+        post_array_interest_story_toString = post_array_interest_story.map(function (item) { return '"' + JSON.parse(JSON.stringify(item)).$id + '"' }).join(",");
+        post_array_interest_story_string = JSON.parse("[" + post_array_interest_story_toString + "]");
+      }
+
+      if (post_array_interest_story_string != null && user_array_interest_string != null) {
+          compare_interest_story = post_array_interest_story_string.filter(function (obj) {
+          return user_array_interest_string.indexOf(obj) !== -1;
+        });
+      }
+
+      //Compare Get Interes
+      if (compare_interest_vid != null) {
+        Count_compare_interest_vid = compare_interest_vid.length;
+      }
+      if (compare_interest_pict != null) {
+        Count_compare_interest_pict = compare_interest_pict.length;
+      }
+      if (compare_interest_diary != null) {
+        Count_compare_interest_diary = compare_interest_diary.length;
+      }
+      if (compare_interest_story != null) {
+        Count_compare_interest_story = compare_interest_story.length;
+      }
+
+      var interest_db_vid = [];
+      if (Count_compare_interest_vid > 0) {
+        for (var i = 0; i < Count_compare_interest_vid; i++) {
+          var objintr = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(compare_interest_vid[i]), "$db": "hyppe_infra_db" }
+          interest_db_vid.push(objintr)
+        }
+      }
+
+      var interest_db_pict = [];
+      if (Count_compare_interest_pict > 0) {
+        for (var i = 0; i < Count_compare_interest_pict; i++) {
+          var objintr = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(compare_interest_pict[i]), "$db": "hyppe_infra_db" }
+          interest_db_pict.push(objintr)
+        }
+      }
+
+      var interest_db_diary = [];
+      if (Count_compare_interest_diary > 0) {
+        for (var i = 0; i < Count_compare_interest_diary; i++) {
+          var objintr = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(compare_interest_diary[i]), "$db": "hyppe_infra_db" }
+          interest_db_diary.push(objintr)
+        }
+      }
+
+      var interest_db_story = [];
+      if (Count_compare_interest_story > 0) {
+        for (var i = 0; i < Count_compare_interest_story; i++) {
+          var objintr = { "$ref": "interests_repo", "$id": new mongoose.Types.ObjectId(compare_interest_story[i]), "$db": "hyppe_infra_db" }
+          interest_db_story.push(objintr)
+        }
+      }
+
+      //-------------------------------------------INSERT VID
+      console.log("-------------------------------------------INSERT VID");
+
+      var type_vid = null;
+      var ceckFriendFollowingFollower_vid = await this.contentEventService.ceckFriendFollowingFollower(data_user.email.toString(), getPost_vid[i].email.toString());
+      if (await this.utilsService.ceckData(ceckFriendFollowingFollower_vid)) {
+        if (ceckFriendFollowingFollower_vid.length == 2) {
+          type_vid = "FRIEND";
+        } else {
+          if (ceckFriendFollowingFollower_vid[0].email == data_user.email.toString()) {
+            type_vid = "FOLLOWER";
+          } else {
+            if (ceckFriendFollowingFollower_vid[0].email == getPost_vid[i].email.toString()) {
+              type_vid = "FOLLOWING";
+            } else {
+              type_vid = "PUBLIC";
+            }
+          }
+        }
+      } else {
+        type_vid = "PUBLIC";
+      }
+
+      var isHidden_vid = false;
+      if (getPost_vid[i].visibility != undefined) {
+        if (getPost_vid[i].visibility == "FRIEND") {
+          if (type_vid == getPost_vid[i].visibility) {
+            isHidden_vid = false;
+          } else {
+            isHidden_vid = true;
+          }
+        } else if (getPost_vid[i].visibility == "PRIVATE") {
+          type_vid = "PRIVATE";
+          if (getPost_vid[i].email.toString() == data_user.email.toString()) {
+            isHidden_vid = false;
+          } else {
+            isHidden_vid = true;
+          }
+        } else {
+          isHidden_vid = false;
+        }
+      }
+
+      var data_media_vid = await this.mediavideosService.findOnepostID(getPost_vid[i].postID.toString());
+      if (await this.utilsService.ceckData(data_media_vid)) {
+        //Insert Playlist Type Vid
+        var CreateUserplaylistDto_vid = new CreateUserplaylistDto();
+        CreateUserplaylistDto_vid.userId = Object(data_user._id);
+        CreateUserplaylistDto_vid.interestId = interest_db_vid;
+        CreateUserplaylistDto_vid.interestIdCount = Count_compare_interest_vid;
+        CreateUserplaylistDto_vid.userPostId = Object(id_user_post_vid);
+        CreateUserplaylistDto_vid.postType = getPost_vid[i].postType;
+        CreateUserplaylistDto_vid.mediaId = data_media_vid.mediaID;
+        CreateUserplaylistDto_vid.type = type_vid;
+        CreateUserplaylistDto_vid.createAt = getPost_vid[i].createdAt;
+        CreateUserplaylistDto_vid.updatedAt = getPost_vid[i].updatedAt;
+        CreateUserplaylistDto_vid.isWatched = false;
+        CreateUserplaylistDto_vid.isHidden = isHidden_vid;
+        CreateUserplaylistDto_vid.postID = (getPost_vid[i].postID != undefined) ? getPost_vid[i].postID : "";
+        CreateUserplaylistDto_vid.expiration = (getPost_vid[i].expiration != undefined) ? Number(getPost_vid[i].expiration) : 0;
+        CreateUserplaylistDto_vid.description = (getPost_vid[i].description != undefined) ? getPost_vid[i].description : "";
+        CreateUserplaylistDto_vid.userBasicData = Object(userbasic_post_vid);
+        CreateUserplaylistDto_vid.postData = Object(getPost_vid[i]);
+        CreateUserplaylistDto_vid.mediaData = Object(data_media_vid);
+        CreateUserplaylistDto_vid.mediaData = Object(data_media_vid);
+        CreateUserplaylistDto_vid.FRIEND = (type_vid == "FRIEND") ? true : false;
+        CreateUserplaylistDto_vid.FOLLOWER = (type_vid == "FOLLOWER" || type_vid == "FRIEND") ? true : false;;
+        CreateUserplaylistDto_vid.FOLLOWING = (type_vid == "FOLLOWING" || type_vid == "FRIEND") ? true : false;
+        CreateUserplaylistDto_vid.PUBLIC = (type_vid == "PUBLIC" || type_vid == "FRIEND" || type_vid == "FOLLOWER" || type_vid == "FOLLOWING") ? true : false;
+        CreateUserplaylistDto_vid.PRIVATE = (type_vid == "PRIVATE") ? true : false;
+        if (data_media_vid.viewers != undefined) {
+          CreateUserplaylistDto_vid.viewers = data_media_vid.viewers;
+        }
+        if (await this.utilsService.ceckData(data_media_vid)) {
+          if (data_media_vid.apsara != undefined) {
+            CreateUserplaylistDto_vid.isApsara = data_media_vid.apsara;
+            if (!data_media_vid.apsara) {
+              if (data_media_vid.mediaType != undefined) {
+                if (data_media_vid.mediaType == "video") {
+                  if (data_media_vid.mediaThumb != undefined) {
+                    CreateUserplaylistDto_vid.mediaThumbUri = data_media_vid.mediaThumb;
+                  }
+                  if (data_media_vid.mediaUri != undefined) {
+                    CreateUserplaylistDto_vid.mediaEndpoint = "/stream/" + data_media_vid.mediaUri;
+                  }
+                  if (data_media_vid.postID != undefined) {
+                    CreateUserplaylistDto_vid.mediaThumbEndpoint = "/thumb/" + data_media_vid.postID;
+                  }
+                  CreateUserplaylistDto_vid.mediaType = data_media_vid.mediaType;
+                } else if (data_media_vid.mediaType == "image") {
+                  if (data_media_vid.mediaUri != undefined) {
+                    CreateUserplaylistDto_vid.mediaEndpoint = "/pict" + data_media_vid.mediaUri;
+                  }
+                  if (data_media_vid.mediaUri != undefined) {
+                    CreateUserplaylistDto_vid.mediaThumbEndpoint = "/thumb/" + data_media_vid.postID;
+                  }
+                  CreateUserplaylistDto_vid.mediaType = data_media_vid.mediaType;
+                }
+              }
+            }
+          } else {
+            CreateUserplaylistDto_vid.isApsara = false;
+            if (data_media_vid.mediaType != undefined) {
+              if (data_media_vid.mediaType == "video") {
+                if (data_media_vid.mediaThumb != undefined) {
+                  CreateUserplaylistDto_vid.mediaThumbUri = data_media_vid.mediaThumb;
+                }
+                if (data_media_vid.mediaUri != undefined) {
+                  CreateUserplaylistDto_vid.mediaEndpoint = "/stream/" + data_media_vid.mediaUri;
+                }
+                if (data_media_vid.postID != undefined) {
+                  CreateUserplaylistDto_vid.mediaThumbEndpoint = "/thumb/" + data_media_vid.postID;
+                }
+                CreateUserplaylistDto_vid.mediaType = data_media_vid.mediaType;
+              } else if (data_media_vid.mediaType == "image") {
+                if (data_media_vid.mediaUri != undefined) {
+                  CreateUserplaylistDto_vid.mediaEndpoint = "/pict" + data_media_vid.mediaUri;
+                }
+                if (data_media_vid.mediaUri != undefined) {
+                  CreateUserplaylistDto_vid.mediaThumbEndpoint = "/thumb/" + data_media_vid.postID;
+                }
+                CreateUserplaylistDto_vid.mediaType = data_media_vid.mediaType;
+              }
+            }
+          }
+        }
+        CreateUserplaylistDto_vid._id = new mongoose.Types.ObjectId();
+        await this.userplaylistService.create(CreateUserplaylistDto_vid);
+      }
+
+      //-------------------------------------------INSERT PICT
+      console.log("-------------------------------------------INSERT PICT");
+
+      var type_pict = null;
+      var ceckFriendFollowingFollower_pict = await this.contentEventService.ceckFriendFollowingFollower(data_user.email.toString(), getPost_pict[i].email.toString());
+      if (await this.utilsService.ceckData(ceckFriendFollowingFollower_pict)) {
+        if (ceckFriendFollowingFollower_pict.length == 2) {
+          type_pict = "FRIEND";
+        } else {
+          if (ceckFriendFollowingFollower_pict[0].email == data_user.email.toString()) {
+            type_pict = "FOLLOWER";
+          } else {
+            if (ceckFriendFollowingFollower_pict[0].email == getPost_pict[i].email.toString()) {
+              type_pict = "FOLLOWING";
+            } else {
+              type_pict = "PUBLIC";
+            }
+          }
+        }
+      } else {
+        type_pict = "PUBLIC";
+      }
+
+      var isHidden_pict = false;
+      if (getPost_pict[i].visibility != undefined) {
+        if (getPost_pict[i].visibility == "FRIEND") {
+          if (type_pict == getPost_pict[i].visibility) {
+            isHidden_pict = false;
+          } else {
+            isHidden_pict = true;
+          }
+        } else if (getPost_pict[i].visibility == "PRIVATE") {
+          type_pict = "PRIVATE";
+          if (getPost_pict[i].email.toString() == data_user.email.toString()) {
+            isHidden_pict = false;
+          } else {
+            isHidden_pict = true;
+          }
+        } else {
+          isHidden_pict = false;
+        }
+      }
+
+      var data_media_pict = await this.mediavideosService.findOnepostID(getPost_pict[i].postID.toString());
+      if (await this.utilsService.ceckData(data_media_pict)){
+        //Insert Playlist Type Vid
+        var CreateUserplaylistDto_pict = new CreateUserplaylistDto();
+        CreateUserplaylistDto_pict.userId = Object(data_user._id);
+        CreateUserplaylistDto_pict.interestId = interest_db_pict;
+        CreateUserplaylistDto_pict.interestIdCount = Count_compare_interest_pict;
+        CreateUserplaylistDto_pict.userPostId = Object(id_user_post_pict);
+        CreateUserplaylistDto_pict.postType = getPost_pict[i].postType;
+        CreateUserplaylistDto_pict.mediaId = data_media_pict.mediaID;
+        CreateUserplaylistDto_pict.type = type_pict;
+        CreateUserplaylistDto_pict.createAt = getPost_pict[i].createdAt;
+        CreateUserplaylistDto_pict.updatedAt = getPost_pict[i].updatedAt;
+        CreateUserplaylistDto_pict.isWatched = false;
+        CreateUserplaylistDto_pict.isHidden = isHidden_pict;
+        CreateUserplaylistDto_pict.postID = (getPost_pict[i].postID != undefined) ? getPost_pict[i].postID : "";
+        CreateUserplaylistDto_pict.expiration = (getPost_pict[i].expiration != undefined) ? Number(getPost_pict[i].expiration) : 0;
+        CreateUserplaylistDto_pict.description = (getPost_pict[i].description != undefined) ? getPost_pict[i].description : "";
+        CreateUserplaylistDto_pict.userBasicData = Object(userbasic_post_pict);
+        CreateUserplaylistDto_pict.postData = Object(getPost_pict[i]);
+        CreateUserplaylistDto_pict.mediaData = Object(data_media_pict);
+        CreateUserplaylistDto_pict.mediaData = Object(data_media_pict);
+        CreateUserplaylistDto_pict.FRIEND = (type_pict == "FRIEND") ? true : false;
+        CreateUserplaylistDto_pict.FOLLOWER = (type_pict == "FOLLOWER" || type_pict == "FRIEND") ? true : false;;
+        CreateUserplaylistDto_pict.FOLLOWING = (type_pict == "FOLLOWING" || type_pict == "FRIEND") ? true : false;
+        CreateUserplaylistDto_pict.PUBLIC = (type_pict == "PUBLIC" || type_pict == "FRIEND" || type_pict == "FOLLOWER" || type_pict == "FOLLOWING") ? true : false;
+        CreateUserplaylistDto_pict.PRIVATE = (type_pict == "PRIVATE") ? true : false;
+        if (data_media_pict.viewers != undefined) {
+          CreateUserplaylistDto_pict.viewers = data_media_pict.viewers;
+        }
+        if (await this.utilsService.ceckData(data_media_pict)) {
+          if (data_media_pict.apsara != undefined) {
+            CreateUserplaylistDto_pict.isApsara = data_media_pict.apsara;
+            if (!data_media_pict.apsara) {
+              if (data_media_pict.mediaType != undefined) {
+                if (data_media_pict.mediaType == "video") {
+                  if (data_media_pict.mediaThumb != undefined) {
+                    CreateUserplaylistDto_pict.mediaThumbUri = data_media_pict.mediaThumb;
+                  }
+                  if (data_media_pict.mediaUri != undefined) {
+                    CreateUserplaylistDto_pict.mediaEndpoint = "/stream/" + data_media_pict.mediaUri;
+                  }
+                  if (data_media_pict.postID != undefined) {
+                    CreateUserplaylistDto_pict.mediaThumbEndpoint = "/thumb/" + data_media_pict.postID;
+                  }
+                  CreateUserplaylistDto_pict.mediaType = data_media_pict.mediaType;
+                } else if (data_media_pict.mediaType == "image") {
+                  if (data_media_pict.mediaUri != undefined) {
+                    CreateUserplaylistDto_pict.mediaEndpoint = "/pict" + data_media_pict.mediaUri;
+                  }
+                  if (data_media_pict.mediaUri != undefined) {
+                    CreateUserplaylistDto_pict.mediaThumbEndpoint = "/thumb/" + data_media_pict.postID;
+                  }
+                  CreateUserplaylistDto_pict.mediaType = data_media_pict.mediaType;
+                }
+              }
+            }
+          } else {
+            CreateUserplaylistDto_pict.isApsara = false;
+            if (data_media_pict.mediaType != undefined) {
+              if (data_media_pict.mediaType == "video") {
+                if (data_media_pict.mediaThumb != undefined) {
+                  CreateUserplaylistDto_pict.mediaThumbUri = data_media_pict.mediaThumb;
+                }
+                if (data_media_pict.mediaUri != undefined) {
+                  CreateUserplaylistDto_pict.mediaEndpoint = "/stream/" + data_media_pict.mediaUri;
+                }
+                if (data_media_pict.postID != undefined) {
+                  CreateUserplaylistDto_pict.mediaThumbEndpoint = "/thumb/" + data_media_pict.postID;
+                }
+                CreateUserplaylistDto_pict.mediaType = data_media_pict.mediaType;
+              } else if (data_media_pict.mediaType == "image") {
+                if (data_media_pict.mediaUri != undefined) {
+                  CreateUserplaylistDto_pict.mediaEndpoint = "/pict" + data_media_pict.mediaUri;
+                }
+                if (data_media_pict.mediaUri != undefined) {
+                  CreateUserplaylistDto_pict.mediaThumbEndpoint = "/thumb/" + data_media_pict.postID;
+                }
+                CreateUserplaylistDto_pict.mediaType = data_media_pict.mediaType;
+              }
+            }
+          }
+        }
+        CreateUserplaylistDto_pict._id = new mongoose.Types.ObjectId();
+        await this.userplaylistService.create(CreateUserplaylistDto_pict);
+
+      }
+
+      //-------------------------------------------INSERT DIARY
+      console.log("-------------------------------------------INSERT DIARY");
+
+      var type_diary = null;
+      var ceckFriendFollowingFollower_diary = await this.contentEventService.ceckFriendFollowingFollower(data_user.email.toString(), getPost_diary[i].email.toString());
+      if (await this.utilsService.ceckData(ceckFriendFollowingFollower_diary)) {
+        if (ceckFriendFollowingFollower_diary.length == 2) {
+          type_diary = "FRIEND";
+        } else {
+          if (ceckFriendFollowingFollower_diary[0].email == data_user.email.toString()) {
+            type_diary = "FOLLOWER";
+          } else {
+            if (ceckFriendFollowingFollower_diary[0].email == getPost_diary[i].email.toString()) {
+              type_diary = "FOLLOWING";
+            } else {
+              type_diary = "PUBLIC";
+            }
+          }
+        }
+      } else {
+        type_diary = "PUBLIC";
+      }
+
+      var isHidden_diary = false;
+      if (getPost_diary[i].visibility != undefined) {
+        if (getPost_diary[i].visibility == "FRIEND") {
+          if (type_diary == getPost_diary[i].visibility) {
+            isHidden_diary = false;
+          } else {
+            isHidden_diary = true;
+          }
+        } else if (getPost_diary[i].visibility == "PRIVATE") {
+          type_diary = "PRIVATE";
+          if (getPost_diary[i].email.toString() == data_user.email.toString()) {
+            isHidden_diary = false;
+          } else {
+            isHidden_diary = true;
+          }
+        } else {
+          isHidden_diary = false;
+        }
+      }
+
+      var data_media_diary = await this.mediavideosService.findOnepostID(getPost_diary[i].postID.toString());
+      if (await this.utilsService.ceckData(data_media_diary)) {
+        //Insert Playlist Type Vid
+        var CreateUserplaylistDto_diary = new CreateUserplaylistDto();
+        CreateUserplaylistDto_diary.userId = Object(data_user._id);
+        CreateUserplaylistDto_diary.interestId = interest_db_diary;
+        CreateUserplaylistDto_diary.interestIdCount = Count_compare_interest_diary;
+        CreateUserplaylistDto_diary.userPostId = Object(id_user_post_diary);
+        CreateUserplaylistDto_diary.postType = getPost_diary[i].postType;
+        CreateUserplaylistDto_diary.mediaId = data_media_diary.mediaID;
+        CreateUserplaylistDto_diary.type = type_diary;
+        CreateUserplaylistDto_diary.createAt = getPost_diary[i].createdAt;
+        CreateUserplaylistDto_diary.updatedAt = getPost_diary[i].updatedAt;
+        CreateUserplaylistDto_diary.isWatched = false;
+        CreateUserplaylistDto_diary.isHidden = isHidden_diary;
+        CreateUserplaylistDto_diary.postID = (getPost_diary[i].postID != undefined) ? getPost_diary[i].postID : "";
+        CreateUserplaylistDto_diary.expiration = (getPost_diary[i].expiration != undefined) ? Number(getPost_diary[i].expiration) : 0;
+        CreateUserplaylistDto_diary.description = (getPost_diary[i].description != undefined) ? getPost_diary[i].description : "";
+        CreateUserplaylistDto_diary.userBasicData = Object(userbasic_post_diary);
+        CreateUserplaylistDto_diary.postData = Object(getPost_diary[i]);
+        CreateUserplaylistDto_diary.mediaData = Object(data_media_diary);
+        CreateUserplaylistDto_diary.mediaData = Object(data_media_diary);
+        CreateUserplaylistDto_diary.FRIEND = (type_diary == "FRIEND") ? true : false;
+        CreateUserplaylistDto_diary.FOLLOWER = (type_diary == "FOLLOWER" || type_diary == "FRIEND") ? true : false;;
+        CreateUserplaylistDto_diary.FOLLOWING = (type_diary == "FOLLOWING" || type_diary == "FRIEND") ? true : false;
+        CreateUserplaylistDto_diary.PUBLIC = (type_diary == "PUBLIC" || type_diary == "FRIEND" || type_diary == "FOLLOWER" || type_diary == "FOLLOWING") ? true : false;
+        CreateUserplaylistDto_diary.PRIVATE = (type_diary == "PRIVATE") ? true : false;
+        if (data_media_diary.viewers != undefined) {
+          CreateUserplaylistDto_diary.viewers = data_media_diary.viewers;
+        }
+        if (await this.utilsService.ceckData(data_media_diary)) {
+          if (data_media_diary.apsara != undefined) {
+            CreateUserplaylistDto_diary.isApsara = data_media_diary.apsara;
+            if (!data_media_diary.apsara) {
+              if (data_media_diary.mediaType != undefined) {
+                if (data_media_diary.mediaType == "video") {
+                  if (data_media_diary.mediaThumb != undefined) {
+                    CreateUserplaylistDto_diary.mediaThumbUri = data_media_diary.mediaThumb;
+                  }
+                  if (data_media_diary.mediaUri != undefined) {
+                    CreateUserplaylistDto_diary.mediaEndpoint = "/stream/" + data_media_diary.mediaUri;
+                  }
+                  if (data_media_diary.postID != undefined) {
+                    CreateUserplaylistDto_diary.mediaThumbEndpoint = "/thumb/" + data_media_diary.postID;
+                  }
+                  CreateUserplaylistDto_diary.mediaType = data_media_diary.mediaType;
+                } else if (data_media_diary.mediaType == "image") {
+                  if (data_media_diary.mediaUri != undefined) {
+                    CreateUserplaylistDto_diary.mediaEndpoint = "/pict" + data_media_diary.mediaUri;
+                  }
+                  if (data_media_diary.mediaUri != undefined) {
+                    CreateUserplaylistDto_diary.mediaThumbEndpoint = "/thumb/" + data_media_diary.postID;
+                  }
+                  CreateUserplaylistDto_diary.mediaType = data_media_diary.mediaType;
+                }
+              }
+            }
+          } else {
+            CreateUserplaylistDto_diary.isApsara = false;
+            if (data_media_diary.mediaType != undefined) {
+              if (data_media_diary.mediaType == "video") {
+                if (data_media_diary.mediaThumb != undefined) {
+                  CreateUserplaylistDto_diary.mediaThumbUri = data_media_diary.mediaThumb;
+                }
+                if (data_media_diary.mediaUri != undefined) {
+                  CreateUserplaylistDto_diary.mediaEndpoint = "/stream/" + data_media_diary.mediaUri;
+                }
+                if (data_media_diary.postID != undefined) {
+                  CreateUserplaylistDto_diary.mediaThumbEndpoint = "/thumb/" + data_media_diary.postID;
+                }
+                CreateUserplaylistDto_diary.mediaType = data_media_diary.mediaType;
+              } else if (data_media_diary.mediaType == "image") {
+                if (data_media_diary.mediaUri != undefined) {
+                  CreateUserplaylistDto_diary.mediaEndpoint = "/pict" + data_media_diary.mediaUri;
+                }
+                if (data_media_diary.mediaUri != undefined) {
+                  CreateUserplaylistDto_diary.mediaThumbEndpoint = "/thumb/" + data_media_diary.postID;
+                }
+                CreateUserplaylistDto_diary.mediaType = data_media_diary.mediaType;
+              }
+            }
+          }
+        }
+        CreateUserplaylistDto_diary._id = new mongoose.Types.ObjectId();
+        await this.userplaylistService.create(CreateUserplaylistDto_diary);
+      }
+
+      //-------------------------------------------INSERT STORY
+      console.log("-------------------------------------------INSERT STORY");
+
+      var type_story = null;
+      var ceckFriendFollowingFollower_story = await this.contentEventService.ceckFriendFollowingFollower(data_user.email.toString(), getPost_story[i].email.toString());
+      if (await this.utilsService.ceckData(ceckFriendFollowingFollower_story)) {
+        if (ceckFriendFollowingFollower_story.length == 2) {
+          type_story = "FRIEND";
+        } else {
+          if (ceckFriendFollowingFollower_story[0].email == data_user.email.toString()) {
+            type_story = "FOLLOWER";
+          } else {
+            if (ceckFriendFollowingFollower_story[0].email == getPost_story[i].email.toString()) {
+              type_story = "FOLLOWING";
+            } else {
+              type_story = "PUBLIC";
+            }
+          }
+        }
+      } else {
+        type_story = "PUBLIC";
+      }
+
+      var isHidden_story = false;
+      if (getPost_story[i].visibility != undefined) {
+        if (getPost_story[i].visibility == "FRIEND") {
+          if (type_story == getPost_story[i].visibility) {
+            isHidden_story = false;
+          } else {
+            isHidden_story = true;
+          }
+        } else if (getPost_story[i].visibility == "PRIVATE") {
+          type_story = "PRIVATE";
+          if (getPost_story[i].email.toString() == data_user.email.toString()) {
+            isHidden_story = false;
+          } else {
+            isHidden_story = true;
+          }
+        } else {
+          isHidden_story = false;
+        }
+      }
+
+      var data_media_story = await this.mediavideosService.findOnepostID(getPost_story[i].postID.toString());
+      if (await this.utilsService.ceckData(data_media_story)) {
+        //Insert Playlist Type Vid
+        var CreateUserplaylistDto_story = new CreateUserplaylistDto();
+        CreateUserplaylistDto_story.userId = Object(data_user._id);
+        CreateUserplaylistDto_story.interestId = interest_db_story;
+        CreateUserplaylistDto_story.interestIdCount = Count_compare_interest_story;
+        CreateUserplaylistDto_story.userPostId = Object(id_user_post_story);
+        CreateUserplaylistDto_story.postType = getPost_story[i].postType;
+        CreateUserplaylistDto_story.mediaId = data_media_story.mediaID;
+        CreateUserplaylistDto_story.type = type_story;
+        CreateUserplaylistDto_story.createAt = getPost_story[i].createdAt;
+        CreateUserplaylistDto_story.updatedAt = getPost_story[i].updatedAt;
+        CreateUserplaylistDto_story.isWatched = false;
+        CreateUserplaylistDto_story.isHidden = isHidden_story;
+        CreateUserplaylistDto_story.postID = (getPost_story[i].postID != undefined) ? getPost_story[i].postID : "";
+        CreateUserplaylistDto_story.expiration = (getPost_story[i].expiration != undefined) ? Number(getPost_story[i].expiration) : 0;
+        CreateUserplaylistDto_story.description = (getPost_story[i].description != undefined) ? getPost_story[i].description : "";
+        CreateUserplaylistDto_story.userBasicData = Object(userbasic_post_story);
+        CreateUserplaylistDto_story.postData = Object(getPost_story[i]);
+        CreateUserplaylistDto_story.mediaData = Object(data_media_story);
+        CreateUserplaylistDto_story.mediaData = Object(data_media_story);
+        CreateUserplaylistDto_story.FRIEND = (type_story == "FRIEND") ? true : false;
+        CreateUserplaylistDto_story.FOLLOWER = (type_story == "FOLLOWER" || type_story == "FRIEND") ? true : false;;
+        CreateUserplaylistDto_story.FOLLOWING = (type_story == "FOLLOWING" || type_story == "FRIEND") ? true : false;
+        CreateUserplaylistDto_story.PUBLIC = (type_story == "PUBLIC" || type_story == "FRIEND" || type_story == "FOLLOWER" || type_story == "FOLLOWING") ? true : false;
+        CreateUserplaylistDto_story.PRIVATE = (type_story == "PRIVATE") ? true : false;
+        if (data_media_story.viewers != undefined) {
+          CreateUserplaylistDto_story.viewers = data_media_story.viewers;
+        }
+        if (await this.utilsService.ceckData(data_media_story)) {
+          if (data_media_story.apsara != undefined) {
+            CreateUserplaylistDto_story.isApsara = data_media_story.apsara;
+            if (!data_media_story.apsara) {
+              if (data_media_story.mediaType != undefined) {
+                if (data_media_story.mediaType == "video") {
+                  if (data_media_story.mediaThumb != undefined) {
+                    CreateUserplaylistDto_story.mediaThumbUri = data_media_story.mediaThumb;
+                  }
+                  if (data_media_story.mediaUri != undefined) {
+                    CreateUserplaylistDto_story.mediaEndpoint = "/stream/" + data_media_story.mediaUri;
+                  }
+                  if (data_media_story.postID != undefined) {
+                    CreateUserplaylistDto_story.mediaThumbEndpoint = "/thumb/" + data_media_story.postID;
+                  }
+                  CreateUserplaylistDto_story.mediaType = data_media_story.mediaType;
+                } else if (data_media_story.mediaType == "image") {
+                  if (data_media_story.mediaUri != undefined) {
+                    CreateUserplaylistDto_story.mediaEndpoint = "/pict" + data_media_story.mediaUri;
+                  }
+                  if (data_media_story.mediaUri != undefined) {
+                    CreateUserplaylistDto_story.mediaThumbEndpoint = "/thumb/" + data_media_story.postID;
+                  }
+                  CreateUserplaylistDto_story.mediaType = data_media_story.mediaType;
+                }
+              }
+            }
+          } else {
+            CreateUserplaylistDto_story.isApsara = false;
+            if (data_media_story.mediaType != undefined) {
+              if (data_media_story.mediaType == "video") {
+                if (data_media_story.mediaThumb != undefined) {
+                  CreateUserplaylistDto_story.mediaThumbUri = data_media_story.mediaThumb;
+                }
+                if (data_media_story.mediaUri != undefined) {
+                  CreateUserplaylistDto_story.mediaEndpoint = "/stream/" + data_media_story.mediaUri;
+                }
+                if (data_media_story.postID != undefined) {
+                  CreateUserplaylistDto_story.mediaThumbEndpoint = "/thumb/" + data_media_story.postID;
+                }
+                CreateUserplaylistDto_story.mediaType = data_media_story.mediaType;
+              } else if (data_media_story.mediaType == "image") {
+                if (data_media_story.mediaUri != undefined) {
+                  CreateUserplaylistDto_story.mediaEndpoint = "/pict" + data_media_story.mediaUri;
+                }
+                if (data_media_story.mediaUri != undefined) {
+                  CreateUserplaylistDto_story.mediaThumbEndpoint = "/thumb/" + data_media_story.postID;
+                }
+                CreateUserplaylistDto_story.mediaType = data_media_story.mediaType;
+              }
+            }
+          }
+        }
+        CreateUserplaylistDto_story._id = new mongoose.Types.ObjectId();
+        await this.userplaylistService.create(CreateUserplaylistDto_story);
+      }
+    }
+  }
 }
 
 // @Processor('post-user-playlist')

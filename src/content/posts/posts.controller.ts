@@ -376,6 +376,12 @@ export class PostsController {
     CreateUserplaylistDto_.mediaId = body.mediaId;
     CreateUserplaylistDto_.postType = body.postType;
     return await this.PostsService.updateGenerateUserPlaylist_(CreateUserplaylistDto_);
+  } 
+
+  @Get('api/userplaylist/generateNewUserPlaylist')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async generateNewUserPlaylist() {;
+    return await this.PostsService.generateNewUserPlaylist("633d0c95c9dca3610d720a00");
   }
 
   @UseGuards(JwtAuthGuard)
