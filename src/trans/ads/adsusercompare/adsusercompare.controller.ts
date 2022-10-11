@@ -491,6 +491,20 @@ export class AdsUserCompareController {
                         //         );
                         //     }
                         // }
+                    }else{
+                        //Update userads
+                        try {
+                            var CreateUserAdsDto_ = new CreateUserAdsDto();
+                            CreateUserAdsDto_.statusView = true;
+                            CreateUserAdsDto_.clickAt = current_date;
+                            CreateUserAdsDto_.viewed = 1;
+                            CreateUserAdsDto_.timeViewSecond = watching_time;
+                            await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
+                        } catch (e) {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed, ' + e,
+                            );
+                        }
                     }
 
                     return {
