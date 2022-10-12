@@ -2093,7 +2093,7 @@ export class PostContentService {
   }
 
   async getUserPostLandingPage(body: any, headers: any): Promise<PostLandingResponseApps> {
-
+    let st = await this.utilService.getDateTimeDate();
     let type = 'GET_POST';
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
@@ -2134,7 +2134,7 @@ export class PostContentService {
 
     this.logger.log('getUserPostLandingPage >>> exec: story');
     body.postType = 'story';
-    body.withExp = false;
+    body.withExp = true;
     let ps = await this.doGetUserPost(body, headers, profile);
     let pds = await this.loadPostDataBulk(ps, body, profile, vids, pics, user);
     data.story = pds;            
@@ -2321,10 +2321,11 @@ export class PostContentService {
     if (resDiary.length > 0) {
       data.diary = resDiary;
     }
-
-
     res.data = data;
 
+    let ed = await this.utilService.getDateTimeDate();
+    let gap = ed.getTime() - st.getTime();
+    this.logger.log('getUserPostLandingPage >>> finexec: ' + gap);        
     return res;
   }    
 
