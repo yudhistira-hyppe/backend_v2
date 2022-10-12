@@ -1157,11 +1157,11 @@ export class AuthService {
                 }
 
                 //Create User Playlist
-                try {
-                  await this.postsService.generateNewUserPlaylist(datauserbasicsService._id.toString());
-                } catch (e) {
-                  console.log("Create User Ads", e);
-                }
+                // try {
+                //   await this.postsService.generateNewUserPlaylist(datauserbasicsService._id.toString());
+                // } catch (e) {
+                //   console.log("Create User Ads", e);
+                // }
 
                 return {
                   response_code: 202,
@@ -5597,9 +5597,12 @@ export class AuthService {
         );
       }
     } else {
-      await this.errorHandler.generateNotAcceptableException(
-        'User basics and jwt not found',
-      );
+
+      return this.signupsosmed(req);
+
+      //await this.errorHandler.generateNotAcceptableException(
+      //  'User basics and jwt not found',
+      //);
     }
   }
 
@@ -5653,5 +5656,9 @@ export class AuthService {
         error,
       );
     }
+  }
+
+  async loginSocmed(body: any) {
+
   }
 }

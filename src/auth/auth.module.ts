@@ -28,6 +28,7 @@ import { SettingsModule } from '../trans/settings/settings.module';
 import { ContenteventsModule } from '../content/contentevents/contentevents.module';
 import { AdsUserCompareModule } from '../trans/ads/adsusercompare/adsusercompare.module';
 import { UserbasicsnewModule } from '../trans/newuserbasic/userbasicsnew.module';
+import { OtpService } from './otp.service';
 @Module({
   imports: [
     UserbasicsnewModule,
@@ -58,6 +59,6 @@ import { UserbasicsnewModule } from '../trans/newuserbasic/userbasicsnew.module'
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy, OtpService],
 })
 export class AuthModule { }

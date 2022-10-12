@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateNotificationsDto } from './dto/create-notifications.dto';
+import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
+import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
+import { CreateNotificationsDto, Messages, NotifResponseApps } from './dto/create-notifications.dto';
 import { Notifications, NotificationsDocument } from './schemas/notifications.schema';
 
 @Injectable()
@@ -9,6 +11,8 @@ export class NotificationsService {
   constructor(
     @InjectModel(Notifications.name, 'SERVER_CONTENT')
     private readonly NotificationsModel: Model<NotificationsDocument>,
+
+    private userService: UserbasicsService,
   ) { }
 
   async create(
@@ -55,5 +59,61 @@ export class NotificationsService {
     return deletedCat;
   }
 
+  async getNotification(body: any, headers: any) : Promise<NotifResponseApps> {
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+    if (profile == null) {
+      let res = new NotifResponseApps();
+      let msg = new Messages;
+      msg.info = ["User tidak tedaftar"];
+      res.messages = msg;
+      res.response_code = 204;
+      return res;
+    }
 
+    let q = await this.getNotificationQuery(body, profile);
+
+    let res = new NotifResponseApps();
+    let msg = new Messages;
+    msg.info = ["User tidak tedaftar"];
+    res.messages = msg;
+    res.response_code = 202;    
+    return res;
+  }
+
+  private async getNotificationQuery(body: any, profile: Userbasic) : Promise<Notifications[]> {
+    let query = this.NotificationsModel.find();
+    query.where('email', profile.email);
+
+    if (body.postID != undefined) {
+			query.where('postID', body.postID);
+		}
+
+		if (body.eventType != undefined) {
+      query.where('eventType', body.eventType);
+		}
+
+    let row = 20;
+    let page = 0;
+    if (body.pageNumber != undefined) {
+      page = body.pageNumber;
+    }
+    if (body.pageRow != undefined) {
+      row = body.pageRow;      
+    }
+    let skip = this.paging(page, row);
+    query.skip(skip);
+    query.limit(row);         
+    query.sort({'createAt': -1});
+    return await query.exec();    
+  }
+
+  private paging(page: number, row: number) {
+    if (page == 0 || page == 1) {
+      return 0;
+    }
+    let num = ((page - 1) * row);
+    return num;
+  }    
 }

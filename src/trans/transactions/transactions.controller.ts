@@ -1086,13 +1086,13 @@ export class TransactionsController {
 
                         var mediaId = data_media.mediaID;
 
-                        let CreateUserplaylistDto_ = new CreateUserplaylistDto();
-                        CreateUserplaylistDto_.mediaId = mediaId;
-                        CreateUserplaylistDto_.userPostId = iduserbuy;
-                        CreateUserplaylistDto_.postType = postType;
-                        console.log(langIso);
+                        // let CreateUserplaylistDto_ = new CreateUserplaylistDto();
+                        // CreateUserplaylistDto_.mediaId = mediaId;
+                        // CreateUserplaylistDto_.userPostId = iduserbuy;
+                        // CreateUserplaylistDto_.postType = postType;
+                        // console.log(langIso);
 
-                        await this.postsService.updateGenerateUserPlaylist(idusersell, CreateUserplaylistDto_);
+                        // await this.postsService.updateGenerateUserPlaylist(idusersell, CreateUserplaylistDto_);
                         await this.postContentService.generateCertificate(postid, langIso);
 
                         res.status(HttpStatus.OK).json({

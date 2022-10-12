@@ -27,6 +27,15 @@ export class CreateNotificationsDto {
     contentEventID: String;
     devices: any[];
     actionButtons: String;
+}
 
+export class Messages {
+    info: string[];
+}
 
+export class NotifResponseApps {
+    response_code: number;
+    data: CreateNotificationsDto[];
+    messages: Messages;
+    version: string;
 }
