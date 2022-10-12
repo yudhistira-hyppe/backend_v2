@@ -562,53 +562,55 @@ export class ContenteventsService {
 
   async friend(email:string,head:any) {
     const query = await this.ContenteventsModel.aggregate([
-        { 
-            "$match" : { 
-                "$or" : [
-                    { 
-                        "eventType" : "FOLLOWER"
-                    }, 
-                    { 
-                        "eventType" : "FOLLOWING"
-                    }
-                ]
+      {
+        "$match" : {
+            "$or" : [
+                {
+                    "$and" : [
+                        {
+                            "eventType" : "FOLLOWING"
+                        },
+                        {
+                            "senderParty" : email
+                        }
+                    ]
+                },
+                {
+                    "$and" : [
+                        {
+                            "eventType" : "FOLLOWER"
+                        },
+                        {
+                            "receiverParty" : email
+                        }
+                    ]
+                }
+            ]
+        }
+      }, 
+      {
+        "$group" : {
+            "_id" : {
+                "email" : "$email"
+            },
+            "count" : {
+                "$sum" : 1.0
             }
-        }, 
-        { 
-            "$redact" : { 
-                "$cond" : [
-                    { 
-                        "$eq" : [
-                            "$senderParty", 
-                            "$receiveParty"
-                        ]
-                    }, 
-                    "$$KEEP", 
-                    "$$PRUNE"
-                ]
+        }
+      }, 
+      {
+        "$match" : {
+            "count" : {
+                "$gt" : 1.0
             }
-        }, 
-        { 
-            "$match" : { 
-                "event" : "ACCEPT"
-            }
-        }, 
-        { 
-            "$match" : { 
-                "email" : email
-            }
-        }, 
-        { 
-            "$group" : { 
-                "_id" : "$receiverParty",
-            }
-        },
-        {
-          $project: {
-            _id: 0,
-            friend: '$_id',
-          },
-        },
+        }
+      }, 
+      {
+        $project: {
+        _id: 0,
+        friend: '$_id',
+      },
+    }
     ]);
     return query;
   }
