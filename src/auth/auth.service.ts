@@ -1157,11 +1157,11 @@ export class AuthService {
                 }
 
                 //Create User Playlist
-                try {
-                  await this.postsService.generateNewUserPlaylist(datauserbasicsService._id.toString());
-                } catch (e) {
-                  console.log("Create User Ads", e);
-                }
+                // try {
+                //   await this.postsService.generateNewUserPlaylist(datauserbasicsService._id.toString());
+                // } catch (e) {
+                //   console.log("Create User Ads", e);
+                // }
 
                 return {
                   response_code: 202,

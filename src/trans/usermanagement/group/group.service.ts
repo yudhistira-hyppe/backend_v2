@@ -31,6 +31,9 @@ export class GroupService {
     async findAllnoSkip(): Promise<Group[]> {
         return this.groupModel.find().exec();
     }
+    async findbydiv(divisiId: ObjectId): Promise<Group[]> {
+        return this.groupModel.find({ divisionId: divisiId }).exec();
+    }
 
     async findOne(_id: String): Promise<Group> {
         return this.groupModel.findOne({ _id: _id }).exec();

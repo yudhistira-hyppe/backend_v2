@@ -17,6 +17,7 @@ import { GroupService } from '../usermanagement/group/group.service';
 import { DivisionService } from '../usermanagement/division/division.service';
 import { ProfileDTO } from '../../utils/data/Profile';
 import { UtilsService } from '../../utils/utils.service';
+import { UserbankaccountsService } from '../userbankaccounts/userbankaccounts.service';
 
 @Controller('api/profile')
 export class ProfileController {
@@ -33,6 +34,7 @@ export class ProfileController {
     private groupService: GroupService,
     private divisionService: DivisionService,
     private utilsService: UtilsService,
+    private userbankaccountsService: UserbankaccountsService,
   ) { }
 
 
@@ -256,8 +258,11 @@ export class ProfileController {
     var areas = null;
     var insights_json = null;
     var insights_res = null;
-
+    var iduser = null;
+    var dataakunbank = null;
     var datauserbasicsService = null;
+    var isIdVerified = null;
+    var statusUser = null;
 
     if (request_json["email"] !== undefined) {
       emails = request_json["email"];
@@ -269,139 +274,156 @@ export class ProfileController {
       "info": ["The process successful"],
     };
 
-    datauserbasicsService = await this.userbasicsService.findOne(emails);
-    var languages_json = null;
-    if (datauserbasicsService.languages != undefined) {
-      languages_json = JSON.parse(JSON.stringify(datauserbasicsService.languages));
+    try {
+      datauserbasicsService = await this.userbasicsService.findOne(emails);
+    } catch (e) {
+      datauserbasicsService = null;
     }
-    var datauserauthsService = await this.userauthsService.findOne(emails);
-    var interest_json = JSON.parse(JSON.stringify(datauserbasicsService.userInterests));
-    var lenghtinteres = interest_json.length;
-    var objintetres = {};
-    var arrinterest = [];
-    var interests = null;
-    for (var i = 0; i < lenghtinteres; i++) {
-      var idinter = interest_json[i].$id;
-      interests = await this.interestsService.findOne(idinter);
+
+    if (datauserbasicsService == null) {
+      throw new BadRequestException("User not found");
+    }
+    else {
+      iduser = datauserbasicsService._id;
+      isIdVerified = datauserbasicsService.isIdVerified;
+      if (isIdVerified == true) {
+        statusUser = "PREMIUM";
+      } else {
+        statusUser = "BASIC";
+      }
+      dataakunbank = await this.userbankaccountsService.findOneUser(iduser);
+      var languages_json = null;
+      if (datauserbasicsService.languages != undefined) {
+        languages_json = JSON.parse(JSON.stringify(datauserbasicsService.languages));
+      }
+      var datauserauthsService = await this.userauthsService.findOne(emails);
+      var interest_json = JSON.parse(JSON.stringify(datauserbasicsService.userInterests));
+      var lenghtinteres = interest_json.length;
+      var objintetres = {};
+      var arrinterest = [];
+      var interests = null;
+      for (var i = 0; i < lenghtinteres; i++) {
+        var idinter = interest_json[i].$id;
+        interests = await this.interestsService.findOne(idinter);
 
 
-      objintetres = {
-        interestName: interests.interestName,
-        icon: interests.icon,
-        createdAt: interests.createdAt,
-        updatedAt: interests.updatedAt,
-        _class: interests._class,
+        objintetres = {
+          interestName: interests.interestName,
+          icon: interests.icon,
+          createdAt: interests.createdAt,
+          updatedAt: interests.updatedAt,
+          _class: interests._class,
+        }
+
+        arrinterest.push(objintetres);
+      }
+      try {
+        insights_json = JSON.parse(JSON.stringify(datauserbasicsService.insight));
+        var insights = await this.insightsService.findOne(insights_json.$id);
+        insights_res = {
+          shares: insights.shares,
+          followers: insights.followers,
+          comments: insights.comments,
+          followings: insights.followings,
+          reactions: insights.reactions,
+          posts: insights.posts,
+          views: insights.views,
+          likes: insights.likes
+        };
+      } catch (e) {
+        insights_res = {
+          shares: 0,
+          followers: 0,
+          comments: 0,
+          followings: 0,
+          reactions: 0,
+          posts: 0,
+          views: 0,
+          likes: 0
+        };
+      }
+      try {
+        countries_json = JSON.parse(JSON.stringify(datauserbasicsService.countries));
+        countries = await this.countriesService.findOne(countries_json.$id);
+        areas = await this.areasService.findOne(countries.countryID);
+        countri = countries.country;
+      } catch (e) {
+        countri = "";
+        areas = "";
       }
 
-      arrinterest.push(objintetres);
-    }
-    try {
-      insights_json = JSON.parse(JSON.stringify(datauserbasicsService.insight));
-      var insights = await this.insightsService.findOne(insights_json.$id);
-      insights_res = {
-        shares: insights.shares,
-        followers: insights.followers,
-        comments: insights.comments,
-        followings: insights.followings,
-        reactions: insights.reactions,
-        posts: insights.posts,
-        views: insights.views,
-        likes: insights.likes
+      try {
+        cities_json = JSON.parse(JSON.stringify(datauserbasicsService.cities));
+        cities = await this.citiesService.findOne(cities_json.$id);
+        citi = cities.cityName;
+      } catch (e) {
+        citi = "";
+      }
+      var languages = await this.languagesService.findOne(languages_json.$id);
+
+      try {
+
+        mediaprofilepicts_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
+        mediaprofilepicts = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
+        var mediaUri = mediaprofilepicts.mediaUri;
+        let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+        mediaprofilepicts_res = {
+          mediaBasePath: mediaprofilepicts.mediaBasePath,
+          mediaUri: mediaprofilepicts.mediaUri,
+          mediaType: mediaprofilepicts.mediaType,
+          mediaEndpoint: result
+        };
+      } catch (e) {
+        mediaprofilepicts_res = {
+          mediaBasePath: "",
+          mediaUri: "",
+          mediaType: "",
+          mediaEndpoint: ""
+        };
+      }
+
+      try {
+        interest = arrinterest;
+      } catch (err) {
+        interest = [];
+      }
+
+      const data = [{
+        "createdAt": datauserbasicsService.createdAt,
+        "areas": areas,
+        // "group": datagroup,
+        // "division": datadivision,
+        "country": countri,
+        "gender": datauserbasicsService.gender,
+        "idProofNumber": datauserbasicsService.idProofNumber,
+        "city": citi,
+        "mobileNumber": datauserbasicsService.mobileNumber,
+        "roles": datauserauthsService.roles,
+        "fullName": datauserbasicsService.fullName,
+        "bio": datauserbasicsService.bio,
+        "avatar": mediaprofilepicts_res,
+        "isIdVerified": datauserbasicsService.isIdVerified,
+        "isEmailVerified": datauserauthsService.isEmailVerified,
+        "idProofStatus": datauserbasicsService.idProofStatus,
+        "insight": insights_res,
+        "langIso": languages.langIso,
+        "interest": interest,
+        "dob": datauserbasicsService.dob,
+        "event": datauserbasicsService.event,
+        "email": datauserbasicsService.email,
+        "username": datauserauthsService.username,
+        "isComplete": datauserbasicsService.isComplete,
+        "status": datauserbasicsService.status,
+        "statusUser": statusUser,
+        "databank": dataakunbank
+      }];
+
+      return {
+        response_code: 202,
+        data,
+        messages
       };
-    } catch (e) {
-      insights_res = {
-        shares: 0,
-        followers: 0,
-        comments: 0,
-        followings: 0,
-        reactions: 0,
-        posts: 0,
-        views: 0,
-        likes: 0
-      };
     }
-    try {
-      countries_json = JSON.parse(JSON.stringify(datauserbasicsService.countries));
-      countries = await this.countriesService.findOne(countries_json.$id);
-      areas = await this.areasService.findOne(countries.countryID);
-      countri = countries.country;
-    } catch (e) {
-      countri = "";
-      areas = "";
-    }
-
-    try {
-      cities_json = JSON.parse(JSON.stringify(datauserbasicsService.cities));
-      cities = await this.citiesService.findOne(cities_json.$id);
-      citi = cities.cityName;
-    } catch (e) {
-      citi = "";
-    }
-    var languages = await this.languagesService.findOne(languages_json.$id);
-
-    var datagroup = {};
-    var datadivision = {};
-
-    try {
-
-      mediaprofilepicts_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
-      mediaprofilepicts = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
-      var mediaUri = mediaprofilepicts.mediaUri;
-      let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
-      mediaprofilepicts_res = {
-        mediaBasePath: mediaprofilepicts.mediaBasePath,
-        mediaUri: mediaprofilepicts.mediaUri,
-        mediaType: mediaprofilepicts.mediaType,
-        mediaEndpoint: result
-      };
-    } catch (e) {
-      mediaprofilepicts_res = {
-        mediaBasePath: "",
-        mediaUri: "",
-        mediaType: "",
-        mediaEndpoint: ""
-      };
-    }
-
-    try {
-      interest = arrinterest;
-    } catch (err) {
-      interest = [];
-    }
-
-    const data = [{
-      "createdAt": datauserbasicsService.createdAt,
-      "areas": areas,
-      "group": datagroup,
-      "division": datadivision,
-      "country": countri,
-      "gender": datauserbasicsService.gender,
-      "idProofNumber": datauserbasicsService.idProofNumber,
-      "city": citi,
-      "mobileNumber": datauserbasicsService.mobileNumber,
-      "roles": datauserauthsService.roles,
-      "fullName": datauserbasicsService.fullName,
-      "bio": datauserbasicsService.bio,
-      "avatar": mediaprofilepicts_res,
-      "isIdVerified": datauserbasicsService.isIdVerified,
-      "isEmailVerified": datauserauthsService.isEmailVerified,
-      "idProofStatus": datauserbasicsService.idProofStatus,
-      "insight": insights_res,
-      "langIso": languages.langIso,
-      "interest": interest,
-      "dob": datauserbasicsService.dob,
-      "event": datauserbasicsService.event,
-      "email": datauserbasicsService.email,
-      "username": datauserauthsService.username,
-      "isComplete": datauserbasicsService.isComplete,
-      "status": datauserbasicsService.status,
-    }];
-
-    return {
-      response_code: 202,
-      data,
-      messages
-    };
   }
 }
 
