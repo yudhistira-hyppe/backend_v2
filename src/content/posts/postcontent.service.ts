@@ -211,6 +211,11 @@ export class PostContentService {
       post.category = pcats;
     }
 
+    post.likes = Long.fromInt(0);
+    post.views = Long.fromInt(0);
+    post.shares = Long.fromInt(0);
+    
+
     if (body.tagPeople != undefined && body.tagPeople.length > 1) {
       var obj = body.tagPeople;
       var cats = obj.split(",");
@@ -1946,7 +1951,7 @@ export class PostContentService {
       post.description = body.description;
     }
 
-    if (body.tags != undefined) {
+    if (body.tags != undefined && (String(body.tags).length > 0)) {
       var obj = body.tags;
       var tgs = obj.split(",");
       post.tags = tgs;

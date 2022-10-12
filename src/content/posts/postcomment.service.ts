@@ -63,6 +63,7 @@ export class PostCommentService {
     private readonly configService: ConfigService,
     private seaweedfsService: SeaweedfsService,
     private templateService: TemplatesRepoService,
+    private videoService: MediavideosService,
     private errorHandler: ErrorHandler,
   ) { }
 
@@ -100,4 +101,163 @@ export class PostCommentService {
     
     return res;
   }
+
+  async postViewer(body: any, headers: any): Promise<CreatePostResponse> {
+    this.logger.log('postViewer >>> start: ' + JSON.stringify(body));
+    var res = new CreatePostResponse();
+    res.response_code = 204;
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+    if (profile == undefined) {
+      let msg = new Messages();
+      msg.info = ["Email unknown"];
+      res.messages = msg;
+      return res;
+    }
+
+    let pst = await this.postService.findid(String(body.postID));
+    if (pst == undefined) {
+        let msg = new Messages();
+        msg.info = ["Post ID unknown"];
+        res.messages = msg;
+        return res;        
+    }
+
+    if (pst.contentMedias.length < 1) {
+      let msg = new Messages();
+      msg.info = ["Content Media unknown"];
+      res.messages = msg;
+      return res;        
+    }
+
+    let cm = pst.contentMedias[0];
+    let ns = cm.namespace;
+
+    if (ns == 'mediavideos') {
+      return await this.insertVideo(profile, cm);
+    } if (ns == 'mediapicts') {
+      return await this.insertPicture(profile, cm);      
+    } if (ns == 'mediastories') {
+      return await this.insertStory(profile, cm);            
+    }
+
+    let msg = new Messages();
+    msg.info = ["Unknown Error"];
+    res.messages = msg;
+    
+    return res;
+  }  
+
+  private async insertVideo(profile: Userbasic, cm: any) {
+    var res = new CreatePostResponse();
+    res.response_code = 204;
+
+    let vid = await this.videoService.findOne(cm.oid);
+    if (vid == undefined) {
+      let msg = new Messages();
+      msg.info = ["Media not found"];
+      res.messages = msg;
+      return res;        
+    }
+
+    let found = false;
+    let views = vid.viewers;
+    for(let i = 0; i < views.length; i++) {
+      let view = views[i];
+      let oid = String(view.oid);
+      if (oid == String(profile._id)) {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      var vids = { "$ref": "userbasics", "$id": profile._id, "$db": "hyppe_trans_db" };
+      vid.viewers.push(vids);
+      this.videoService.create(vid);        
+    }
+
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+
+    return res;
+  }
+
+  private async insertPicture(profile: Userbasic, cm: any) {
+    var res = new CreatePostResponse();
+    res.response_code = 204;
+
+    let vid = await this.picService.findOne(cm.oid);
+    if (vid == undefined) {
+      let msg = new Messages();
+      msg.info = ["Media not found"];
+      res.messages = msg;
+      return res;        
+    }
+
+    let found = false;
+    let views = vid.viewers;
+    for(let i = 0; i < views.length; i++) {
+      let view = views[i];
+      let oid = String(view.oid);
+      if (oid == String(profile._id)) {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      var vids = { "$ref": "userbasics", "$id": profile._id, "$db": "hyppe_trans_db" };
+      vid.viewers.push(vids);
+      this.picService.create(vid);        
+    }
+
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    
+    return res;
+  }  
+
+  private async insertStory(profile: Userbasic, cm: any) {
+    var res = new CreatePostResponse();
+    res.response_code = 204;
+
+    let vid = await this.storyService.findOne(cm.oid);
+    if (vid == undefined) {
+      let msg = new Messages();
+      msg.info = ["Media not found"];
+      res.messages = msg;
+      return res;        
+    }
+
+    let found = false;
+    let views = vid.viewers;
+    for(let i = 0; i < views.length; i++) {
+      let view = views[i];
+      let oid = String(view.oid);
+      if (oid == String(profile._id)) {
+        found = true;
+        break;
+      }
+    }
+
+    if (!found) {
+      var vids = { "$ref": "userbasics", "$id": profile._id, "$db": "hyppe_trans_db" };
+      vid.viewers.push(vids);
+      this.storyService.create(vid);        
+    }
+
+    res.response_code = 202;
+    let msg = new Messages();
+    msg.info = ["The process successful"];
+    res.messages = msg;
+    
+    return res;
+  }    
 }

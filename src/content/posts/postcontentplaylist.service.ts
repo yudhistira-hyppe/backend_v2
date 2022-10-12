@@ -772,23 +772,12 @@ export class PostContentPlaylistService {
 
         //Insight
 
-        if ((body.withInsight != undefined && (body.withInsight == true || body.withInsight == 'true'))) {
-          let insight = await this.insightService.findemail(String(post.email));
-          if (insight == undefined) {
-            continue;
-          }
-
-          let tmp = new InsightPost();
-          tmp.follower = Number(insight.followers);
-          tmp.following = Number(insight.followings);
-          tmp.likes = Number(insight.likes);
-          tmp.views = Number(insight.views);
-          tmp.shares = Number(insight.shares);
-          tmp.comments = Number(insight.comments);
-          tmp.reactions = Number(insight.reactions);
-          pa.insight = tmp;
-
-        }
+        let tmp = new InsightPost();
+        tmp.likes = Number(post.likes);
+        tmp.views = Number(post.views);
+        tmp.shares = Number(post.shares);
+        tmp.comments = Number(post.comments);
+        pa.insight = tmp;
 
         //MEDIA
         let meds = <MediaData> ps.mediaData;

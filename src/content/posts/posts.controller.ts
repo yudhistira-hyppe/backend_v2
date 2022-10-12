@@ -293,7 +293,16 @@ export class PostsController {
   }  
 
   @UseGuards(JwtAuthGuard)
+  @Post('api/posts/postviewer')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async postViewer(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+    this.logger.log("postViewer >>> start");
+    return this.postCommentService.postViewer(body, headers);
+  }    
+
+  @UseGuards(JwtAuthGuard)
   @Post('api/posts/updatepost')
+  @UseInterceptors(FileInterceptor('postContent'))  
   async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("updatePost >>> start");
     var titleinsukses = "Selamat";
@@ -386,6 +395,12 @@ export class PostsController {
     CreateUserplaylistDto_.mediaId = body.mediaId;
     CreateUserplaylistDto_.postType = body.postType;
     return await this.PostsService.updateGenerateUserPlaylist_(CreateUserplaylistDto_);
+  } 
+
+  @Get('api/userplaylist/generateNewUserPlaylist')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async generateNewUserPlaylist() {;
+    return await this.PostsService.generateNewUserPlaylist("633d0c26c9dca3610d7209f9");
   }
 
   @UseGuards(JwtAuthGuard)
