@@ -1227,7 +1227,8 @@ export class MediaController {
                     idProofName: CreateMediaproofpictsDto_.nama,
                     idProofNumber: CreateMediaproofpictsDto_.idcardnumber,
                     idProofStatus: 'COMPLETE',
-                    statusKyc: 'review',
+                    isIdVerified: true,
+                    statusKyc: 'verified',
                     proofPict: {
                         $ref: 'mediaproofpicts',
                         $id: new Object(IdMediaproofpictsDto),
