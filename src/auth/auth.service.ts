@@ -5588,9 +5588,12 @@ export class AuthService {
         );
       }
     } else {
-      await this.errorHandler.generateNotAcceptableException(
-        'User basics and jwt not found',
-      );
+
+      return this.signupsosmed(req);
+
+      //await this.errorHandler.generateNotAcceptableException(
+      //  'User basics and jwt not found',
+      //);
     }
   }
 
@@ -5644,5 +5647,9 @@ export class AuthService {
         error,
       );
     }
+  }
+
+  async loginSocmed(body: any) {
+
   }
 }
