@@ -7,6 +7,7 @@ import { Userbankaccounts, UserbankaccountsSchema } from './schemas/userbankacco
 import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { BanksModule } from '../banks/banks.module';
 import { MediaproofpictsModule } from '../../content/mediaproofpicts/mediaproofpicts.module';
+
 @Module({
     imports: [
 
