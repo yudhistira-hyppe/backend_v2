@@ -664,7 +664,7 @@ export class PostContentService {
     playlist.postType = post.postType;
     playlist.mediaId = Object(cm.oid);
     this.logger.log('createNewPostVideo >>> generate playlist ' + JSON.stringify(playlist));
-    this.postService.generateUserPlaylist(playlist);
+    //this.postService.generateUserPlaylist(playlist);
   }
 
   async getUserPost(body: any, headers: any): Promise<PostResponseApps> {
@@ -1921,7 +1921,7 @@ export class PostContentService {
     updatePl.userPostId = Object(profile._id);
     updatePl.mediaId = Object(cm.oid);
     updatePl.postType = apost.postType;
-    this.postService.updateGenerateUserPlaylist_(updatePl);
+    //this.postService.updateGenerateUserPlaylist_(updatePl);
 
     res.response_code = 202;
     let msg = new Messages();
