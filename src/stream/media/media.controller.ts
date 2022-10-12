@@ -1236,7 +1236,7 @@ export class MediaController {
                     }
                 });
 
-                await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                // await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
             } catch (err) {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed failed update Mediaproofpicts ' + err,
