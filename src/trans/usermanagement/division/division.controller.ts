@@ -2,18 +2,21 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Query, Post, UseGu
 import { DivisionService } from './division.service';
 import { DivisionDto } from './dto/division.dto';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
-import { Division } from './schemas/division.schema'; 
+import { Division } from './schemas/division.schema';
 import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
+import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
+
 
 @Controller('/api/division')
 export class DivisionController {
 
     constructor(
         private readonly divisionService: DivisionService,
-        private readonly utilsService: UtilsService, 
+        private readonly utilsService: UtilsService,
         private readonly errorHandler: ErrorHandler,
-        ) { }
+        private readonly userbasicsService: UserbasicsService,
+    ) { }
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
@@ -59,7 +62,7 @@ export class DivisionController {
             "response_code": 202,
             "totalRow": totalRow,
             "data": data,
-            skip: skip, 
+            skip: skip,
             limit: limit,
             "messages": {
                 "info": [
@@ -69,6 +72,88 @@ export class DivisionController {
         };
     }
 
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Get('/detail')
+    async findAlldetail() {
+        var objgroup = {};
+        var arrgroup = [];
+        var objuser = {};
+        var arruser = [];
+        var ubasic = null;
+        var iduser = null;
+        var objgroupuser = {};
+        var arrgroupuser = [];
+        var nameGroup = null;
+        var datadiv = await this.divisionService.listGroupUserAll();
+
+        for (var i = 0; i < datadiv.length; i++) {
+            var grouping = datadiv[i].group;
+
+            var lenggroup = grouping.length;
+
+            for (let x = 0; x < lenggroup; x++) {
+                // iduser = grouping[x].userbasics.toString();
+
+                // console.log(iduser);
+                // if (iduser != "") {
+                //     ubasic = await this.userbasicsService.findbyid(iduser);
+
+                //     objuser = {
+                //         "_id": ubasic._id,
+                //         "fullName": ubasic.fullName,
+                //     }
+                //     arruser.push(objuser);
+                // } else {
+                //     arruser = [];
+                // }
+
+                if (grouping[x].nameGroup != "") {
+                    nameGroup = grouping[x].nameGroup;;
+                } else {
+                    nameGroup = "";
+                }
+
+                objgroupuser = {
+                    // "_id": grouping[x]._id,
+                    // "divisionId": grouping[x].divisionId,
+                    "nameGroup": nameGroup,
+                    // "createAt": grouping[x].createAt,
+                    // "updateAt": grouping[x].updateAt,
+                    // "desc": grouping[x].desc,
+                    // "userbasics": arruser
+                };
+
+                arrgroupuser.push(objgroupuser);
+            }
+
+            objgroup = {
+
+                "_id": datadiv[i]._id,
+                "nameDivision": datadiv[i].nameDivision,
+                "createAt": datadiv[i].createAt,
+                "updateAt": datadiv[i].updateAt,
+                "desc": datadiv[i].desc,
+                "group": arrgroupuser
+            }
+            arrgroup.push(objgroup);
+
+
+
+        }
+
+        var data = arrgroup;
+        return {
+            "response_code": 202,
+            "data": data,
+            "messages": {
+                "info": [
+                    "Get list division successfully"
+                ]
+            },
+        };
+    }
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('/update')
@@ -104,7 +189,7 @@ export class DivisionController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Get('/:id')
-    async findOne(@Param('id') id: string){
+    async findOne(@Param('id') id: string) {
         return this.divisionService.findOne(id);
     }
 

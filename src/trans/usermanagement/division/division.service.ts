@@ -10,7 +10,7 @@ export class DivisionService {
     constructor(
         @InjectModel(Division.name, 'SERVER_TRANS')
         private readonly divisionModel: Model<DivisionDocument>
-    ) {}
+    ) { }
 
     async create(GroupDto: DivisionDto): Promise<Division> {
         let data = await this.divisionModel.create(GroupDto);
@@ -20,7 +20,7 @@ export class DivisionService {
         return data;
     }
 
-    async findAll(search:string, skip: number, limit: number): Promise<Division[]> {
+    async findAll(search: string, skip: number, limit: number): Promise<Division[]> {
         return this.divisionModel.find({ nameDivision: { $regex: search } }).skip(skip).limit(limit).exec();
     }
 
@@ -46,5 +46,21 @@ export class DivisionService {
 
     async delete(_id: String) {
         return await this.divisionModel.findByIdAndRemove({ _id: _id }).exec();
+    }
+
+    async listGroupUserAll() {
+        var query = await this.divisionModel.aggregate([
+            {
+                $lookup: {
+                    from: "group",
+                    localField: "_id",
+                    foreignField: "divisionId",
+                    as: "group"
+                }
+            },
+
+        ]);
+
+        return query;
     }
 }

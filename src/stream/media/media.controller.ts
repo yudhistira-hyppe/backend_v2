@@ -591,7 +591,7 @@ export class MediaController {
                         _CreateMediaproofpictsDto.valid = true;
                         await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                         iduserbasic = datauserbasicsService._id;
-                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic,true, 'verified');
+                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic, true, 'verified');
                         await this.userauthsService.update(emailuserbasic, 'ROLE_PREMIUM');
                         await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
@@ -612,7 +612,7 @@ export class MediaController {
                         _CreateMediaproofpictsDto.status = 'FAILED';
                         _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict dan Selfie Pict';
                         iduserbasic = datauserbasicsService._id;
-                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic,false, 'review');
+                        await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
                         await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                         await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                         await this.errorHandler.generateCustomNotAcceptableException(
@@ -635,7 +635,7 @@ export class MediaController {
                     _CreateMediaproofpictsDto.status = 'FAILED';
                     _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict';
                     iduserbasic = datauserbasicsService._id;
-                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic,false, 'review');
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
@@ -660,7 +660,7 @@ export class MediaController {
                     _CreateMediaproofpictsDto.status = 'FAILED';
                     _CreateMediaproofpictsDto.state = 'Kesalahan Selfie Pict';
                     iduserbasic = datauserbasicsService._id;
-                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic,false, 'review');
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
@@ -682,7 +682,7 @@ export class MediaController {
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.state = 'KTP Pict';
                     iduserbasic = datauserbasicsService._id;
-                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic,false, 'review');
+                    await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
                     await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
@@ -1227,6 +1227,7 @@ export class MediaController {
                     idProofName: CreateMediaproofpictsDto_.nama,
                     idProofNumber: CreateMediaproofpictsDto_.idcardnumber,
                     idProofStatus: 'COMPLETE',
+                    statusKyc: 'review',
                     proofPict: {
                         $ref: 'mediaproofpicts',
                         $id: new Object(IdMediaproofpictsDto),
