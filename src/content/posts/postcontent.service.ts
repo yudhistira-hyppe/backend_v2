@@ -695,9 +695,9 @@ export class PostContentService {
       row = body.pageRow;
     }
 
-    let postId = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
-    //let posts = await this.doGetUserPost(body, headers, profile);
-    let posts = await this.loadBulk(postId, page, row);
+    //let postId = await this.postPlaylistService.doGetUserPostPlaylist(body, headers, profile);
+    let posts = await this.doGetUserPost(body, headers, profile);
+    //let posts = await this.loadBulk(postId, page, row);
     let pd = await this.loadPostData(posts, body, profile);
     res.data = pd;
 
@@ -2059,6 +2059,192 @@ export class PostContentService {
 
     return post;
   }
+
+  async getUserPostLandingPage(body: any, headers: any): Promise<PostLandingResponseApps> {
+
+    let type = 'GET_POST';
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+    this.logger.log('getUserPost >>> profile: ' + profile);
+
+    let res = new PostLandingResponseApps();
+    let data = new PostLandingData();
+    res.response_code = 202;
+
+    let vids: string[] = [];
+    let pics: string[] = [];
+    let user: string[] = [];    
+
+    let resVideo: PostData[] = [];        
+    let resPic: PostData[] = [];        
+    let resDiary: PostData[] = [];        
+    let resStory: PostData[] = [];        
+
+    body.postType = 'vid';
+    body.withExp = false;
+    let pv = await this.doGetUserPost(body, headers, profile);
+    let pdv = await this.loadPostDataBulk(pv, body, profile, vids, pics);
+    data.video = pdv;
+
+    body.postType = 'pict';
+    let pp = await this.doGetUserPost(body, headers, profile);
+    let pdp = await this.loadPostDataBulk(pp, body, profile, vids, pics);
+    data.pict = pdp;    
+
+    body.postType = 'diary';
+    let pd = await this.doGetUserPost(body, headers, profile);
+    let pdd = await this.loadPostDataBulk(pd, body, profile, vids, pics);
+    data.diary = pdd;        
+
+    body.postType = 'story';
+    let ps = await this.doGetUserPost(body, headers, profile);
+    let pds = await this.loadPostDataBulk(ps, body, profile, vids, pics);
+    data.story = pds;            
+
+    let xvids: string[] = [];
+    let xpics: string[] = [];
+
+    for (let i = 0; i < vids.length; i++) {
+      let o = vids[i];
+      if (o != undefined) {
+        xvids.push(o);
+      }
+    }
+
+    for (let i = 0; i < pics.length; i++) {
+      let o = pics[i];
+      if (o != undefined) {
+        xpics.push(o);
+      }
+    }    
+
+    let vapsara = undefined;
+    let papsara = undefined;
+
+    if (xvids.length > 0) {
+      vapsara = await this.getVideoApsara(xvids);
+    }
+
+    if (xpics.length > 0) {
+      papsara = await this.getImageApsara(xpics);  
+    }
+
+    if (vapsara != undefined) {
+      if (pdv.length > 0) {
+        for(let i = 0; i < pdv.length; i++) {
+          let pdvv = pdv[i];
+          for (let i = 0; i < vapsara.VideoList.length; i++) {
+            let vi = vapsara.VideoList[i];
+            if (pdvv.apsaraId == vi.VideoId) {
+              pdvv.mediaThumbEndpoint = vi.CoverURL;
+              resVideo.push(pdvv);
+            }
+          }
+        }
+      }
+      if (pds.length > 0) {
+        for(let i = 0; i < pds.length; i++) {
+          let pdss = pds[i];
+          for (let i = 0; i < vapsara.VideoList.length; i++) {
+            let vi = vapsara.VideoList[i];
+            if (pdss.apsaraId == vi.VideoId) {
+              pdss.mediaThumbEndpoint = vi.CoverURL;
+              resStory.push(pdss);
+            }
+          }
+        }
+      }      
+      if (pdd.length > 0) {
+        for(let i = 0; i < pdd.length; i++) {
+          let pddd = pdd[i];
+          for (let i = 0; i < vapsara.VideoList.length; i++) {
+            let vi = vapsara.VideoList[i];
+            if (pddd.apsaraId == vi.VideoId) {
+              pddd.mediaThumbEndpoint = vi.CoverURL;
+              resDiary.push(pddd);
+            }
+          }
+        }
+      }
+    }
+
+    if (papsara != undefined) {
+      if (pdv.length > 0) {
+        for(let i = 0; i < pdv.length; i++) {
+          let pdvv = pdv[i];
+          for (let i = 0; i < papsara.ImageInfo.length; i++) {
+            let vi = papsara.ImageInfo[i];
+            if (pdvv.apsaraId == vi.ImageId) {
+              console.log(pdvv.apsaraId + ' ' + vi.ImageId + ' error!!!');
+              pdvv.mediaThumbEndpoint = vi.URL;
+              pdvv.mediaThumbUri = vi.URL;
+              resVideo.push(pdvv);
+            }
+          }
+        }
+      }
+      if (pds.length > 0) {
+        for(let i = 0; i < pds.length; i++) {
+          let pdss = pds[i];
+          for (let i = 0; i < papsara.ImageInfo.length; i++) {
+            let vi = papsara.ImageInfo[i];
+            if (pdss.apsaraId == vi.ImageId) {
+              pdss.mediaThumbEndpoint = vi.URL;
+              pdss.mediaThumbUri = vi.URL;
+              resStory.push(pdss);
+            }
+          }
+        }
+      }      
+      if (pdd.length > 0) {
+        for(let i = 0; i < pdd.length; i++) {
+          let pddd = pdd[i];
+          for (let i = 0; i < papsara.ImageInfo.length; i++) {
+            let vi = papsara.ImageInfo[i];
+            if (pddd.apsaraId == vi.ImageId) {
+              pddd.mediaThumbEndpoint = vi.URL;
+              pddd.mediaThumbUri = vi.URL;
+              resDiary.push(pddd);
+            }
+          }
+        }
+      }
+      if (pdp.length > 0) {
+        for(let i = 0; i < pdp.length; i++) {
+          let pdpp = pdp[i];
+          for (let i = 0; i < papsara.ImageInfo.length; i++) {
+            let vi = papsara.ImageInfo[i];
+            if (pdpp.apsaraId == vi.ImageId) {
+              pdpp.mediaThumbEndpoint = vi.URL;
+              pdpp.mediaThumbUri = vi.URL;
+              resPic.push(pdpp);
+            }
+          }
+        }
+      }            
+    }
+
+    if (resVideo.length > 0) {
+      data.video = resVideo;
+    }
+
+    if (resPic.length > 0) {
+      data.pict = resPic;
+    }
+
+    if (resStory.length > 0) {
+      data.story = resStory;
+    }
+
+    if (resDiary.length > 0) {
+      data.diary = resDiary;
+    }
+
+    res.data = data;
+
+    return res;
+  }    
 
   private formatTime(seconds) {
     const h = Math.floor(seconds / 3600);

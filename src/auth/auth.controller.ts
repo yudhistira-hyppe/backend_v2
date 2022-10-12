@@ -46,6 +46,7 @@ import { PostsService } from '../content/posts/posts.service';
 import { ContenteventsService } from '../content/contentevents/contentevents.service';
 import { InsightsService } from '../content/insights/insights.service';
 import { Long } from 'mongodb';
+import { OtpService } from './otp.service';
 
 @Controller()
 export class AuthController {
@@ -64,6 +65,7 @@ export class AuthController {
     private settingsService: SettingsService,
     private contenteventsService: ContenteventsService,
     private insightsService: InsightsService,
+    private otpService: OtpService,
   ) { }
 
   @UseGuards(LocalAuthGuard)
@@ -2669,4 +2671,5 @@ export class AuthController {
   // async getPin(@Query('email') email: string) {
   //   return await this.utilsService.getPin(email);
   // }
+
 }
