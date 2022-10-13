@@ -7,10 +7,14 @@ import { Disqus, DisqusSchema } from './schemas/disqus.schema';
 import { UtilsModule } from '../../utils/utils.module';
 import { NestjsFormDataModule } from 'nestjs-form-data';
 import { DisquslogsModule } from '../disquslogs/disquslogs.module';
+import { DisquscontactsModule } from '../disquscontacts/disquscontacts.module';
+import { PostDisqusModule } from './post/postdisqus.module';
 
 @Module({
 
     imports: [
+        PostDisqusModule,
+        DisquscontactsModule,
         DisquslogsModule,
         NestjsFormDataModule,
         UtilsModule,

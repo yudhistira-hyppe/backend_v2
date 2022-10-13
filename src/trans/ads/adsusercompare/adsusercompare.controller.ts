@@ -360,6 +360,7 @@ export class AdsUserCompareController {
                     var credit_free = data_adsService.creditFree;
                     var used_credit = data_adsService.usedCredit;
                     var used_credit_free = data_adsService.usedCreditFree;
+                    var adsStatus = true;
 
                     if ((ads_totalView + 1) <= ads_tayang) {
                         const sisa_credit = credit - (used_credit + credit_view);
@@ -384,6 +385,10 @@ export class AdsUserCompareController {
                             if (sisa_credit_free >= credit_view) {
                                 used_credit_free = used_credit_free + credit_view;
                             }
+                        }
+
+                        if (ads_totalView == ads_tayang){
+                            adsStatus = false;
                         }
 
                         if (watching_time > 0 && watching_time < AdsSkip) {
@@ -422,12 +427,19 @@ export class AdsUserCompareController {
                                 CreateAdsDto_.usedCredit = used_credit;
                                 CreateAdsDto_.usedCreditFree = used_credit_free;
                                 CreateAdsDto_.totalView = ads_totalView + 1;
+                                CreateAdsDto_.isActive = adsStatus;
                                 await this.adsService.update(data_adsService._id.toString(), CreateAdsDto_);
                             } catch (e) {
                                 await this.errorHandler.generateNotAcceptableException(
                                     'Unabled to proceed, ' + e,
                                 );
                             }
+                        }
+
+                        if (ads_totalView == ads_tayang) {
+                            var CreateUserAdsDto_ = new CreateUserAdsDto();
+                            CreateUserAdsDto_.isActive = adsStatus;
+                            await this.userAdsService.updatesAlladsNotActive(data_userAdsService.adsID.toString(), CreateUserAdsDto_);
                         }
 
                         // if (userAds_liveTypeuserads) {
@@ -630,6 +642,7 @@ export class AdsUserCompareController {
             var credit_free = data_adsService.creditFree;
             var used_credit = data_adsService.usedCredit;
             var used_credit_free = data_adsService.usedCreditFree;
+            var adsStatus = true;
 
             if ((ads_totalView + 1) <= ads_tayang) {
                 const sisa_credit = credit - (used_credit + credit_view);
@@ -654,6 +667,10 @@ export class AdsUserCompareController {
                     if (sisa_credit_free >= credit_view) {
                         used_credit_free = used_credit_free + credit_view;
                     }
+                }
+
+                if (ads_totalView == ads_tayang) {
+                    adsStatus = false;
                 }
 
                 //Update userads
@@ -682,6 +699,12 @@ export class AdsUserCompareController {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed, ' + e,
                     );
+                }
+
+                if (ads_totalView == ads_tayang) {
+                    var CreateUserAdsDto_ = new CreateUserAdsDto();
+                    CreateUserAdsDto_.isActive = adsStatus;
+                    await this.userAdsService.updatesAlladsNotActive(data_userAdsService.adsID.toString(), CreateUserAdsDto_);
                 }
 
                 // if (userAds_liveTypeuserads) {
