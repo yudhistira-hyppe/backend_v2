@@ -12,6 +12,7 @@ import { MediadiariesService } from '../../content/mediadiaries/mediadiaries.ser
 import { InsightsService } from '../../content/insights/insights.service';
 import { DisqusService } from '../../content/disqus/disqus.service';
 import { DisquslogsService } from '../../content/disquslogs/disquslogs.service';
+import { PostContentService } from '../../content/posts/postcontent.service';
 //import { CountriesService } from '../../infra/countries/countries.service';
 @Injectable()
 export class GetusercontentsService {
@@ -27,6 +28,7 @@ export class GetusercontentsService {
     private readonly insightsService: InsightsService,
     private readonly disqusService: DisqusService,
     private readonly disquslogsService: DisquslogsService,
+    private readonly postContentService: PostContentService,
     // private readonly mediastoriesService: MediastoriesService,
     // private readonly countriesService: CountriesService,
 
@@ -8099,7 +8101,6 @@ export class GetusercontentsService {
       dateend = "";
     }
 
-
     if (ownership === true && monetesisasi === false && buy === false && archived === false && startdate === undefined && enddate === undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
         { $match: { email: email, isOwned: true } },
@@ -8463,7 +8464,7 @@ export class GetusercontentsService {
                     then: "$mediavideos.apsara"
                   }
                 ],
-                default: ""
+                default: false
               }
             },
             fullName: '$fullName',
@@ -8517,7 +8518,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === false && monetesisasi === true && buy === false && archived === false && startdate === undefined && enddate === undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -8882,7 +8970,7 @@ export class GetusercontentsService {
                     then: "$mediavideos.apsara"
                   }
                 ],
-                default: ""
+                default: false
               }
             },
             fullName: '$fullName',
@@ -8936,7 +9024,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === false && monetesisasi === false && buy === true && archived === false && startdate === undefined && enddate === undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -9318,7 +9493,7 @@ export class GetusercontentsService {
                     then: "$mediavideos.apsara"
                   }
                 ],
-                default: ""
+                default: false
               }
             },
             fullName: '$fullName',
@@ -9374,7 +9549,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === false && monetesisasi === false && buy === false && archived === true && startdate === undefined && enddate === undefined && postType === undefined) {
 
@@ -9740,7 +10002,7 @@ export class GetusercontentsService {
                     then: "$mediavideos.apsara"
                   }
                 ],
-                default: ""
+                default: false
               }
             },
             fullName: '$fullName',
@@ -9794,7 +10056,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === false && monetesisasi === false && buy === false && archived === false && startdate !== undefined && enddate !== undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -10159,7 +10508,7 @@ export class GetusercontentsService {
                     then: "$mediavideos.apsara"
                   }
                 ],
-                default: ""
+                default: false
               }
             },
             fullName: '$fullName',
@@ -10213,7 +10562,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === false && monetesisasi === false && buy === false && archived === false && startdate === undefined && enddate === undefined && postType !== undefined) {
 
@@ -10579,7 +11015,7 @@ export class GetusercontentsService {
                     then: "$mediavideos.apsara"
                   }
                 ],
-                default: ""
+                default: false
               }
             },
             fullName: '$fullName',
@@ -10633,9 +11069,95 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
-    }
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
 
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
+    }
     else if (ownership === true && monetesisasi === true && buy === false && archived === false && startdate === undefined && enddate === undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
 
@@ -10999,7 +11521,7 @@ export class GetusercontentsService {
                     then: "$mediavideos.apsara"
                   }
                 ],
-                default: ""
+                default: false
               }
             },
             fullName: '$fullName',
@@ -11053,7 +11575,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === true && monetesisasi === true && buy === false && archived === true && startdate === undefined && enddate === undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -11418,7 +12027,7 @@ export class GetusercontentsService {
                     then: "$mediavideos.apsara"
                   }
                 ],
-                default: ""
+                default: false
               }
             },
             fullName: '$fullName',
@@ -11472,7 +12081,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === true && monetesisasi === true && buy === false && archived === true && startdate !== undefined && enddate !== undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -11837,7 +12533,7 @@ export class GetusercontentsService {
                     then: "$mediavideos.apsara"
                   }
                 ],
-                default: ""
+                default: false
               }
             },
             fullName: '$fullName',
@@ -11891,7 +12587,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === true && monetesisasi === true && buy === true && archived === false && startdate === undefined && enddate === undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -12273,7 +13056,7 @@ export class GetusercontentsService {
                     then: "$mediavideos.apsara"
                   }
                 ],
-                default: ""
+                default: false
               }
             },
             fullName: '$fullName',
@@ -12329,7 +13112,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === true && monetesisasi === true && buy === true && archived === true && startdate === undefined && enddate === undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -12711,7 +13581,7 @@ export class GetusercontentsService {
                     then: "$mediavideos.apsara"
                   }
                 ],
-                default: ""
+                default: false
               }
             },
             fullName: '$fullName',
@@ -12767,7 +13637,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === true && monetesisasi === true && buy === true && archived === true && startdate !== undefined && enddate !== undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -13084,7 +14041,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -13138,7 +14162,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === true && monetesisasi === true && buy === true && archived === true && startdate !== undefined && enddate !== undefined && postType !== undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -13455,7 +14566,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -13509,7 +14687,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === false && monetesisasi === true && buy === true && archived === true && startdate !== undefined && enddate !== undefined && postType !== undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -13826,7 +15091,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -13880,7 +15212,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === false && monetesisasi === false && buy === true && archived === true && startdate !== undefined && enddate !== undefined && postType !== undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -14197,7 +15616,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -14251,9 +15737,95 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
-    }
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
 
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
+    }
     else if (ownership === false && monetesisasi === false && buy === false && archived === true && startdate !== undefined && enddate !== undefined && postType !== undefined) {
       const query = await this.getusercontentsModel.aggregate([
 
@@ -14552,7 +16124,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -14604,7 +16243,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === false && monetesisasi === false && buy === false && archived === false && startdate !== undefined && enddate !== undefined && postType !== undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -14904,7 +16630,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -14956,7 +16749,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === false && monetesisasi === false && buy === false && archived === false && startdate === undefined && enddate === undefined && postType !== undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -15321,7 +17201,7 @@ export class GetusercontentsService {
                     then: "$mediavideos.apsara"
                   }
                 ],
-                default: ""
+                default: false
               }
             },
             fullName: '$fullName',
@@ -15375,9 +17255,95 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
-    }
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
 
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
+    }
     else if (ownership === true && monetesisasi === false && buy === true && archived === false && startdate === undefined && enddate === undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
         {
@@ -15693,7 +17659,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -15747,9 +17780,95 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
-    }
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
 
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
+    }
     else if (ownership === true && monetesisasi === false && buy === true && archived === false && startdate === undefined && enddate === undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
         {
@@ -16065,7 +18184,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -16119,7 +18305,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === true && monetesisasi === false && buy === false && archived === true && startdate === undefined && enddate === undefined && postType === undefined) {
 
@@ -16420,7 +18693,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -16472,7 +18812,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === true && monetesisasi === false && buy === false && archived === false && startdate !== undefined && enddate !== undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -16772,7 +19199,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -16824,7 +19318,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === true && monetesisasi === true && buy === false && archived === false && startdate !== undefined && enddate !== undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -17124,7 +19705,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -17176,7 +19824,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === true && monetesisasi === false && buy === false && archived === false && startdate === undefined && enddate === undefined && postType !== undefined) {
 
@@ -17477,7 +20212,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -17529,9 +20331,95 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
-    }
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
 
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
+    }
     else if (ownership === true && monetesisasi === false && buy === true && archived === false && startdate !== undefined && enddate !== undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
         {
@@ -17847,7 +20735,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -17901,9 +20856,95 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
-    }
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
 
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
+    }
     else if (ownership === true && monetesisasi === false && buy === true && archived === false && startdate !== undefined && enddate !== undefined && postType !== undefined) {
       const query = await this.getusercontentsModel.aggregate([
         {
@@ -18219,7 +21260,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -18273,7 +21381,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === true && monetesisasi === true && buy === true && archived === false && startdate !== undefined && enddate !== undefined && postType !== undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -18590,7 +21785,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -18644,7 +21906,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === true && monetesisasi === true && buy === false && archived === false && startdate !== undefined && enddate !== undefined && postType !== undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -18944,7 +22293,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -18996,7 +22412,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === false && monetesisasi === false && buy === false && archived === false && startdate === undefined && enddate === undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -19296,7 +22799,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -19348,7 +22918,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
     else if (ownership === false && monetesisasi === true && buy === true && archived === false && startdate === undefined && enddate === undefined && postType === undefined) {
       const query = await this.getusercontentsModel.aggregate([
@@ -19648,7 +23305,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -19700,7 +23424,94 @@ export class GetusercontentsService {
         { $limit: limit },
 
       ]);
-      return query;
+      var data = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          data = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              data = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              data = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              data = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "insight": query[i].insight,
+          "avatar": query[i].avatar,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": query[i].apsaraId,
+          "apsara": query[i].apsara,
+          "fullName": query[i].fullName,
+          "username": query[i].username,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "title": query[i].title,
+          "active": query[i].active,
+          "metadata": query[i].metadata,
+          "location": query[i].location,
+          "tags": query[i].tags,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "privacy": query[i].privacy,
+          "isViewed": query[i].isViewed,
+          "allowComments": query[i].allowComments,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "monetize": query[i].monetize,
+          "media": data
+        };
+
+        arrdata.push(objk);
+      }
+      return arrdata;
     }
 
   }
