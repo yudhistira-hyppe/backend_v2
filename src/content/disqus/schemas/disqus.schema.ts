@@ -37,7 +37,9 @@ lastestMessage: String
     db:String
 }]
  @Prop()
- _class:String
+_class: String
+@Prop()
+txtMessages: String
 } 
 
 export const DisqusSchema = SchemaFactory.createForClass(Disqus);

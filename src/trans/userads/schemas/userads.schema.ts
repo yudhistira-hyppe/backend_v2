@@ -42,5 +42,7 @@ export class UserAds {
     nameType: string;
     @Prop()
     timeViewSecond: number;
+    @Prop()
+    isActive: boolean;
 }
 export const UserAdsSchema = SchemaFactory.createForClass(UserAds);

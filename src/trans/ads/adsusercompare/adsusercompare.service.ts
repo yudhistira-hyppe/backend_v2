@@ -253,6 +253,7 @@ export class AdsUserCompareService {
                     CreateUserAdsDto_.liveTypeuserads = data_ads.liveTypeAds;
                     CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(ads_typeAdsID);
                     CreateUserAdsDto_.nameType = typeAds.nameType;
+                    CreateUserAdsDto_.isActive = true;
                     const createUserAdsDto = await this.userAdsService.create(CreateUserAdsDto_);
                 } catch (s) {
                     await this.errorHandler.generateNotAcceptableException(
