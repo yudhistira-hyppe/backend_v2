@@ -169,7 +169,16 @@ export class TransactionsService {
                         foreignField: "_id",
                         as: "mediavideos_data"
                     }
-                }, {
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idusersell",
+                        foreignField: "_id",
+                        as: "userbasics_sell"
+                    }
+                },
+                {
                     $project: {
                         iduser: "$iduserbuyer",
                         type: "$type",
@@ -188,6 +197,12 @@ export class TransactionsService {
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
+                                0
+                            ]
+                        },
+                        usersell: {
+                            $arrayElemAt: [
+                                "$userbasics_sell",
                                 0
                             ]
                         },
@@ -235,6 +250,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        penjual: "$usersell.fullName",
+                        emailpenjual: "$usersell.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
@@ -242,7 +259,6 @@ export class TransactionsService {
                         mediapict: "$mediapict",
                         mediadiaries: "$mediadiaries",
                         mediavideos: "$mediavideos",
-
                         mediapictPath: "$mediapict.mediaBasePath",
                         mediadiariPath: "$mediadiaries.mediaBasePath",
                         mediavideoPath: "$mediavideos.mediaBasePath"
@@ -271,6 +287,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -301,6 +319,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -331,6 +351,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -378,6 +400,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -761,6 +785,8 @@ export class TransactionsService {
                     "status": query[i].status,
                     "fullName": query[i].fullName,
                     "email": query[i].email,
+                    "penjual": query[i].penjual,
+                    "emailpenjual": query[i].emailpenjual,
                     "postID": query[i].postID,
                     "postType": query[i].postType,
                     "descriptionContent": query[i].descriptionContent,
@@ -831,7 +857,16 @@ export class TransactionsService {
                         foreignField: "_id",
                         as: "mediavideos_data"
                     }
-                }, {
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idusersell",
+                        foreignField: "_id",
+                        as: "userbasics_sell"
+                    }
+                },
+                {
                     $project: {
                         iduser: "$iduserbuyer",
                         type: "$type",
@@ -850,6 +885,12 @@ export class TransactionsService {
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
+                                0
+                            ]
+                        },
+                        usersell: {
+                            $arrayElemAt: [
+                                "$userbasics_sell",
                                 0
                             ]
                         },
@@ -897,6 +938,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        penjual: "$usersell.fullName",
+                        emailpenjual: "$usersell.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
@@ -932,6 +975,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -962,6 +1007,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -992,6 +1039,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -1039,6 +1088,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -1345,7 +1396,6 @@ export class TransactionsService {
                                 default: ""
                             }
                         },
-
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -1422,6 +1472,8 @@ export class TransactionsService {
                     "status": query[i].status,
                     "fullName": query[i].fullName,
                     "email": query[i].email,
+                    "penjual": query[i].penjual,
+                    "emailpenjual": query[i].emailpenjual,
                     "postID": query[i].postID,
                     "postType": query[i].postType,
                     "descriptionContent": query[i].descriptionContent,
@@ -1492,7 +1544,16 @@ export class TransactionsService {
                         foreignField: "_id",
                         as: "mediavideos_data"
                     }
-                }, {
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idusersell",
+                        foreignField: "_id",
+                        as: "userbasics_sell"
+                    }
+                },
+                {
                     $project: {
                         iduser: "$iduserbuyer",
                         type: "$type",
@@ -1511,6 +1572,12 @@ export class TransactionsService {
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
+                                0
+                            ]
+                        },
+                        usersell: {
+                            $arrayElemAt: [
+                                "$userbasics_sell",
                                 0
                             ]
                         },
@@ -1558,6 +1625,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        penjual: "$usersell.fullName",
+                        emailpenjual: "$usersell.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
@@ -1593,6 +1662,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -1623,6 +1694,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -1653,6 +1726,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -1700,6 +1775,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -2006,7 +2083,6 @@ export class TransactionsService {
                                 default: ""
                             }
                         },
-
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -2083,6 +2159,8 @@ export class TransactionsService {
                     "status": query[i].status,
                     "fullName": query[i].fullName,
                     "email": query[i].email,
+                    "penjual": query[i].penjual,
+                    "emailpenjual": query[i].emailpenjual,
                     "postID": query[i].postID,
                     "postType": query[i].postType,
                     "descriptionContent": query[i].descriptionContent,
@@ -2149,7 +2227,16 @@ export class TransactionsService {
                         foreignField: "_id",
                         as: "mediavideos_data"
                     }
-                }, {
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idusersell",
+                        foreignField: "_id",
+                        as: "userbasics_sell"
+                    }
+                },
+                {
                     $project: {
                         iduser: "$iduserbuyer",
                         type: "$type",
@@ -2168,6 +2255,12 @@ export class TransactionsService {
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
+                                0
+                            ]
+                        },
+                        usersell: {
+                            $arrayElemAt: [
+                                "$userbasics_sell",
                                 0
                             ]
                         },
@@ -2215,6 +2308,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        penjual: "$usersell.fullName",
+                        emailpenjual: "$usersell.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
@@ -2250,6 +2345,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -2280,6 +2377,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -2310,6 +2409,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -2357,6 +2458,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -2739,6 +2842,8 @@ export class TransactionsService {
                     "status": query[i].status,
                     "fullName": query[i].fullName,
                     "email": query[i].email,
+                    "penjual": query[i].penjual,
+                    "emailpenjual": query[i].emailpenjual,
                     "postID": query[i].postID,
                     "postType": query[i].postType,
                     "descriptionContent": query[i].descriptionContent,
@@ -4856,7 +4961,16 @@ export class TransactionsService {
                         foreignField: "_id",
                         as: "mediavideos_data"
                     }
-                }, {
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_buy"
+                    }
+                },
+                {
                     $project: {
                         iduser: "$idusersell",
                         type: "$type",
@@ -4875,6 +4989,12 @@ export class TransactionsService {
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
+                                0
+                            ]
+                        },
+                        userbuy: {
+                            $arrayElemAt: [
+                                "$userbasics_buy",
                                 0
                             ]
                         },
@@ -4922,6 +5042,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        pembeli: "$userbuy.fullName",
+                        emailpembeli: "$userbuy.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
@@ -4957,6 +5079,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -4987,6 +5111,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -5017,6 +5143,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -5064,6 +5192,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -5447,6 +5577,8 @@ export class TransactionsService {
                     "status": query[i].status,
                     "fullName": query[i].fullName,
                     "email": query[i].email,
+                    "pembeli": query[i].pembeli,
+                    "emailpembeli": query[i].emailpembeli,
                     "postID": query[i].postID,
                     "postType": query[i].postType,
                     "descriptionContent": query[i].descriptionContent,
@@ -5518,7 +5650,16 @@ export class TransactionsService {
                         foreignField: "_id",
                         as: "mediavideos_data"
                     }
-                }, {
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_buy"
+                    }
+                },
+                {
                     $project: {
                         iduser: "$idusersell",
                         type: "$type",
@@ -5537,6 +5678,12 @@ export class TransactionsService {
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
+                                0
+                            ]
+                        },
+                        userbuy: {
+                            $arrayElemAt: [
+                                "$userbasics_buy",
                                 0
                             ]
                         },
@@ -5584,6 +5731,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        pembeli: "$userbuy.fullName",
+                        emailpembeli: "$userbuy.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
@@ -5619,6 +5768,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -5649,6 +5800,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -5679,6 +5832,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -5726,6 +5881,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -6109,6 +6266,8 @@ export class TransactionsService {
                     "status": query[i].status,
                     "fullName": query[i].fullName,
                     "email": query[i].email,
+                    "pembeli": query[i].pembeli,
+                    "emailpembeli": query[i].emailpembeli,
                     "postID": query[i].postID,
                     "postType": query[i].postType,
                     "descriptionContent": query[i].descriptionContent,
@@ -6179,7 +6338,16 @@ export class TransactionsService {
                         foreignField: "_id",
                         as: "mediavideos_data"
                     }
-                }, {
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_buy"
+                    }
+                },
+                {
                     $project: {
                         iduser: "$idusersell",
                         type: "$type",
@@ -6198,6 +6366,12 @@ export class TransactionsService {
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
+                                0
+                            ]
+                        },
+                        userbuy: {
+                            $arrayElemAt: [
+                                "$userbasics_buy",
                                 0
                             ]
                         },
@@ -6245,6 +6419,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        pembeli: "$userbuy.fullName",
+                        emailpembeli: "$userbuy.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
@@ -6280,6 +6456,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -6310,6 +6488,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -6340,6 +6520,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -6387,6 +6569,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -6772,6 +6956,8 @@ export class TransactionsService {
                     "status": query[i].status,
                     "fullName": query[i].fullName,
                     "email": query[i].email,
+                    "pembeli": query[i].pembeli,
+                    "emailpembeli": query[i].emailpembeli,
                     "postID": query[i].postID,
                     "postType": query[i].postType,
                     "descriptionContent": query[i].descriptionContent,
@@ -6839,7 +7025,16 @@ export class TransactionsService {
                         foreignField: "_id",
                         as: "mediavideos_data"
                     }
-                }, {
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_buy"
+                    }
+                },
+                {
                     $project: {
                         iduser: "$idusersell",
                         type: "$type",
@@ -6858,6 +7053,12 @@ export class TransactionsService {
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
+                                0
+                            ]
+                        },
+                        userbuy: {
+                            $arrayElemAt: [
+                                "$userbasics_buy",
                                 0
                             ]
                         },
@@ -6905,6 +7106,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        pembeli: "$userbuy.fullName",
+                        emailpembeli: "$userbuy.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
@@ -6940,6 +7143,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -6970,6 +7175,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -7000,6 +7207,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -7047,6 +7256,8 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
@@ -7431,6 +7642,8 @@ export class TransactionsService {
                     "status": query[i].status,
                     "fullName": query[i].fullName,
                     "email": query[i].email,
+                    "pembeli": query[i].pembeli,
+                    "emailpembeli": query[i].emailpembeli,
                     "postID": query[i].postID,
                     "postType": query[i].postType,
                     "descriptionContent": query[i].descriptionContent,
