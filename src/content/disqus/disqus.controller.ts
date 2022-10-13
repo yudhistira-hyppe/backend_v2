@@ -17,7 +17,7 @@ export class DisqusController {
 
   constructor(private readonly DisqusService: DisqusService,
     private readonly disquscontactsService: DisquscontactsService,
-    private readonly reactionsService: ReactionsService,
+    //private readonly reactionsService: ReactionsService,
     private readonly utilsService: UtilsService,
     private readonly postDisqusService: PostDisqusService,
     private readonly errorHandler: ErrorHandler) { }
