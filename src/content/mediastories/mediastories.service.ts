@@ -92,4 +92,25 @@ export class MediastoriesService {
     ]);
     return query;
   }
+
+  async findstories() {
+    const query = await this.MediastoriesModel.aggregate([
+
+      {
+        $lookup: {
+          from: 'mediastories',
+          localField: 'mediastories.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'mediastories2'
+        }
+      },
+
+    ]);
+    return query;
+  }
 }

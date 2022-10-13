@@ -8,6 +8,7 @@ import { MediavideosService } from '../../content/mediavideos/mediavideos.servic
 import { MediapictsService } from '../../content/mediapicts/mediapicts.service';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { MediadiariesService } from '../../content/mediadiaries/mediadiaries.service';
+//import { MediastoriesService } from '../../content/mediastories/mediastories.service';
 import { InsightsService } from '../../content/insights/insights.service';
 import { DisqusService } from '../../content/disqus/disqus.service';
 import { DisquslogsService } from '../../content/disquslogs/disquslogs.service';
@@ -26,6 +27,7 @@ export class GetusercontentsService {
     private readonly insightsService: InsightsService,
     private readonly disqusService: DisqusService,
     private readonly disquslogsService: DisquslogsService,
+    // private readonly mediastoriesService: MediastoriesService,
     // private readonly countriesService: CountriesService,
 
   ) { }
@@ -8396,7 +8398,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: ""
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -8748,7 +8817,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: ""
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -9117,7 +9253,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: ""
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -9472,7 +9675,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: ""
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -9824,7 +10094,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: ""
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -10177,7 +10514,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: ""
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -10530,7 +10934,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: ""
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -10882,7 +11353,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: ""
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -11234,7 +11772,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: ""
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -11603,7 +12208,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: ""
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -11974,7 +12646,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: ""
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
@@ -14517,7 +15256,74 @@ export class GetusercontentsService {
                 default: ''
               }
             },
-
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  }
+                ],
+                default: ""
+              }
+            },
             fullName: '$fullName',
             username: '$auth.username',
             createdAt: '$createdAt',
