@@ -1,11 +1,11 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Query, Post, UseGuards, Param } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Query, Post, UseGuards, Param, Req, BadRequestException, Request } from '@nestjs/common';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
 import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
 import { GroupModuleService } from './groupmodule.service';
 import { GroupModuleDto, ValidasiGroupModuleDto } from './dto/groupmodule.dto';
 import { GroupService } from '../group/group.service';
-import { ModuleService } from '../module/module.service'; 
+import { ModuleService } from '../module/module.service';
 import { GroupDto } from '../group/dto/group.dto';
 import { Group as Group_ } from '../group/schemas/group.schema';
 import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
@@ -16,11 +16,11 @@ import { DivisionService } from '../division/division.service';
 export class GroupModuleController {
     constructor(
         private readonly groupModuleService: GroupModuleService,
-        private readonly utilsService: UtilsService, 
+        private readonly utilsService: UtilsService,
         private readonly errorHandler: ErrorHandler,
-        private readonly groupService: GroupService, 
+        private readonly groupService: GroupService,
         private readonly moduleService: ModuleService,
-        private readonly divisionService: DivisionService, 
+        private readonly divisionService: DivisionService,
         private readonly userbasicsService: UserbasicsService
     ) { }
 
@@ -33,12 +33,12 @@ export class GroupModuleController {
         var current_date = await this.utilsService.getDateTimeString();
         var param = JSON.parse(JSON.stringify(request));
 
-        if (param.length ==undefined){
+        if (param.length == undefined) {
             if (request.group == undefined) {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed Create groupmodule, param group is required',
                 );
-            }else{
+            } else {
                 var data_group = await this.groupService.findOne(request.group);
                 if (!(await this.utilsService.ceckData(data_group))) {
                     await this.errorHandler.generateNotAcceptableException(
@@ -50,7 +50,7 @@ export class GroupModuleController {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed Create groupmodule, param module is required',
                 );
-            }else{
+            } else {
                 var data_module = await this.moduleService.findOne(request.module);
                 if (!(await this.utilsService.ceckData(data_module))) {
                     await this.errorHandler.generateNotAcceptableException(
@@ -59,7 +59,7 @@ export class GroupModuleController {
                 }
             }
             var data_groupandmodule = await this.groupModuleService.findOnebygroupandmodule(request.group, request.module);
-            if (!(await this.utilsService.ceckData(data_groupandmodule))){
+            if (!(await this.utilsService.ceckData(data_groupandmodule))) {
                 insert = true;
             }
 
@@ -94,7 +94,7 @@ export class GroupModuleController {
                 GroupModuleDto_.createAt = current_date;
                 await this.groupModuleService.create(GroupModuleDto_);
             } else {
-                await this.groupModuleService.update(data_groupandmodule._id.toString(),GroupModuleDto_);
+                await this.groupModuleService.update(data_groupandmodule._id.toString(), GroupModuleDto_);
             }
         } else {
             for (var k = 0; k < param.length; k++) {
@@ -135,7 +135,7 @@ export class GroupModuleController {
                 GroupModuleDto_.module = param[i].module;
                 if (param[i].createAcces != undefined) {
                     GroupModuleDto_.createAcces = param[i].createAcces;
-                }else{
+                } else {
                     GroupModuleDto_.createAcces = false;
                 }
                 if (param[i].updateAcces != undefined) {
@@ -199,7 +199,7 @@ export class GroupModuleController {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed Create group param nameGroup is required',
             );
-        } 
+        }
 
         var GroupDto_ = new GroupDto();
         GroupDto_.nameGroup = request.nameGroup;
@@ -294,7 +294,7 @@ export class GroupModuleController {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed ceck permission, param module is required',
             );
-        }else{
+        } else {
             data_module = await this.moduleService.findOnebyName(ValidasiGroupModuleDto_.module.toString());
             if (!(await this.utilsService.ceckData(data_module))) {
                 await this.errorHandler.generateNotAcceptableException(
@@ -394,7 +394,7 @@ export class GroupModuleController {
         if (request.desc != undefined) {
             GroupDto_.desc = request.desc;
         }
-        await this.groupService.update(request._id,GroupDto_);
+        await this.groupService.update(request._id, GroupDto_);
         if (request.module != undefined) {
             var param = JSON.parse(JSON.stringify(request.module));
             if (param.length > 0) {
@@ -404,7 +404,7 @@ export class GroupModuleController {
                             'Unabled to proceed Create module param module is required',
                         );
                     }
-                } 
+                }
                 await this.groupModuleService.deleteByGroup(request._id);
                 for (var i = 0; i < param.length; i++) {
                     var data_module = await this.moduleService.findOne(param[i].module);
@@ -437,7 +437,7 @@ export class GroupModuleController {
                 }
             }
         }
-        
+
         return {
             "response_code": 202,
             "messages": {
@@ -459,6 +459,34 @@ export class GroupModuleController {
             "messages": {
                 "info": [
                     "Delete module successfully"
+                ]
+            },
+        };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Post('detail')
+    async findgroupdetail(@Req() request: Request) {
+        var divisionId = null;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["divisionId"] !== undefined) {
+            divisionId = request_json["divisionId"];
+
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var divid = mongoose.Types.ObjectId(divisionId);
+        var data = await this.groupService.listGroup(divid);
+        return {
+            "response_code": 202,
+            "data": data,
+            "messages": {
+                "info": [
+                    "Get list division successfully"
                 ]
             },
         };

@@ -1227,7 +1227,8 @@ export class MediaController {
                     idProofName: CreateMediaproofpictsDto_.nama,
                     idProofNumber: CreateMediaproofpictsDto_.idcardnumber,
                     idProofStatus: 'COMPLETE',
-                    statusKyc: 'review',
+                    isIdVerified: true,
+                    statusKyc: 'verified',
                     proofPict: {
                         $ref: 'mediaproofpicts',
                         $id: new Object(IdMediaproofpictsDto),
@@ -1235,7 +1236,7 @@ export class MediaController {
                     }
                 });
 
-                await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                // await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
             } catch (err) {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed failed update Mediaproofpicts ' + err,

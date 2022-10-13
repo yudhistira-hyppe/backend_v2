@@ -151,6 +151,10 @@ export class UserbasicsService {
     return this.userbasicModel.findOne({ username: username }).exec();
   }
 
+  async findIn(username: string[]): Promise<Userbasic[]> {
+    return this.userbasicModel.find().where('email').in(username).exec();
+  }  
+
   async delete(id: string) {
     const deletedCat = await this.userbasicModel
       .findByIdAndRemove({ _id: id })
