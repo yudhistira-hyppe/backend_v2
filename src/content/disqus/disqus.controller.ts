@@ -78,8 +78,12 @@ export class DisqusController {
     if ((type == "DIRECT_MSG") || (type == "COMMENT")) {
       var isValid = false;
       isQuery = QueryDiscusDto_.isQuery;
-      if (isQuery){
-
+      if (!isQuery){
+        if (type == "DIRECT_MSG") {
+          var disquscontacts = await this.disquscontactsService.findByEmailAndMate(QueryDiscusDto_.email.toString(), QueryDiscusDto_.receiverParty.toString());
+        } else if ((type == "COMMENT") && (QueryDiscusDto_.postID!=undefined)) {
+          
+        }
       }else{
         if (type == "DIRECT_MSG") {
           var aDisqusContacts = (QueryDiscusDto_.receiverParty != undefined) ? await this.disquscontactsService.findDisqusByEmail(QueryDiscusDto_.email.toString()) : await this.disquscontactsService.findByEmailAndMate(QueryDiscusDto_.email.toString(), QueryDiscusDto_.receiverParty.toString());
