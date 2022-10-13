@@ -481,12 +481,25 @@ export class AdsUserCompareController {
                                 CreateAccountbalancesDto_.kredit = ads_rewards;
                                 CreateAccountbalancesDto_.type = "rewards";
                                 CreateAccountbalancesDto_.timestamp = current_date;
-                                CreateAccountbalancesDto_.description = "rewards form ads";
+                                CreateAccountbalancesDto_.description = "rewards form ads view";
                                 await this.accountbalancesService.create(CreateAccountbalancesDto_);
                             } catch (e) {
-                                await this.errorHandler.generateNotAcceptableException(
-                                    'Unabled to proceed, ' + e,
-                                );
+                                console.log('Unabled to proceed, ' + e);
+                                // await this.errorHandler.generateNotAcceptableException(
+                                //     'Unabled to proceed, ' + e,
+                                // );
+                            }
+
+                            try{
+                                var titleinsukses = "Reward";
+                                var titleensukses = "Reward";
+                                var bodyinsukses = "Selamat kamu mendapatkan reward Rp.400";
+                                var bodyensukses = "Congratulation you've got a reward Rp.400";
+                                var eventType = "ADS VIEW";
+                                var event = "ADS VIEW";
+                                await this.utilsService.sendFcm(data_userbasicsService.email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                            } catch (e) {
+                                console.log('Unabled to proceed, ' + e);
                             }
                         }
 
@@ -746,12 +759,23 @@ export class AdsUserCompareController {
                         CreateAccountbalancesDto_.kredit = ads_rewards;
                         CreateAccountbalancesDto_.type = "rewards";
                         CreateAccountbalancesDto_.timestamp = current_date;
-                        CreateAccountbalancesDto_.description = "rewards form ads";
+                        CreateAccountbalancesDto_.description = "rewards form ads click";
                         await this.accountbalancesService.create(CreateAccountbalancesDto_);
                     } catch (e) {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed, ' + e,
-                        );
+                        console.log('Unabled to proceed, ' + e);
+                    }
+
+
+                    try {
+                        var titleinsukses = "Reward";
+                        var titleensukses = "Reward";
+                        var bodyinsukses = "Selamat kamu mendapatkan reward Rp.400";
+                        var bodyensukses = "Congratulation you've got a reward Rp.400";
+                        var eventType = "ADS CLICK";
+                        var event = "ADS CLICK";
+                        await this.utilsService.sendFcm(data_userbasicsService.email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                    } catch (e) {
+                        console.log('Unabled to proceed, ' + e);
                     }
                 }
 
