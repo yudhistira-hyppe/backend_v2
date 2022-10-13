@@ -1077,19 +1077,19 @@ export class PostContentService {
         //Insight
 
         if ((body.withInsight != undefined && (body.withInsight == true || body.withInsight == 'true'))) {
-          let insight = await this.insightService.findemail(String(ps.email));
-          if (insight == undefined) {
-            continue;
-          }
+          //let insight = await this.insightService.findemail(String(ps.email));
+          //if (insight == undefined) {
+          //  continue;
+          //}
 
           let tmp = new InsightPost();
-          tmp.follower = Number(insight.followers);
-          tmp.following = Number(insight.followings);
-          tmp.likes = Number(insight.likes);
-          tmp.views = Number(insight.views);
-          tmp.shares = Number(insight.shares);
-          tmp.comments = Number(insight.comments);
-          tmp.reactions = Number(insight.reactions);
+          //tmp.follower = Number(ps.followers);
+          //tmp.following = Number(insight.followings);
+          tmp.likes = Number(ps.likes);
+          tmp.views = Number(ps.views);
+          tmp.shares = Number(ps.shares);
+          tmp.comments = Number(ps.comments);
+          //tmp.reactions = Number(ps.reactions);
           pa.insight = tmp;
 
         }
