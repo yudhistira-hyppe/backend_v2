@@ -17,7 +17,7 @@ import { VouchersService } from '../../../trans/vouchers/vouchers.service';
 import { MediaprofilepictsService } from '../../../content/mediaprofilepicts/mediaprofilepicts.service';
 //import { MediaimageadsService } from '../../../stream/mediaimageads/mediaimageads.service;
 import mongoose from 'mongoose';
-import { Double, MongoServerClosedError } from 'mongodb';
+import { MongoServerClosedError } from 'mongodb';
 
 @Controller('api/ads')
 export class AdsUserCompareController {
@@ -161,7 +161,7 @@ export class AdsUserCompareController {
         data_response['adsSkip'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).AdsSkip;
         data_response['mediaType'] = data_ads.type;
         data_response['videoId'] = data_ads.idApsara;
-        data_response['duration'] = new Double(data_ads.duration);
+        data_response['duration'] = data_ads.duration;
 
         return {
             "response_code": 202,

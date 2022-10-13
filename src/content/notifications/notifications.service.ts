@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
-import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
+import { Userbasic } from '../../trans/userbasics/schemas/userbasic.schema';
+import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import { CreateNotificationsDto, Messages, NotifResponseApps } from './dto/create-notifications.dto';
 import { Notifications, NotificationsDocument } from './schemas/notifications.schema';
 
