@@ -302,7 +302,7 @@ export class TransactionsController {
                 dex = new Date(dex);
 
                 if (cekstatusva.va_status === "WAITING_PAYMENT") {
-                    throw new BadRequestException("This content is already in the process of being purchased");
+                    throw new BadRequestException("Tidak dapat melanjutkan. Konten ini sedang dalam proses pembelian");
                 }
                 else if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
 
@@ -532,10 +532,10 @@ export class TransactionsController {
                         });
                     }
                 } else if (statuscodeva == "217") {
-                    throw new BadRequestException("This content is already in the process of being purchased!");
+                    throw new BadRequestException("Tidak dapat melanjutkan. Konten ini sedang dalam proses pembelian");
                 }
                 else {
-                    throw new BadRequestException("This content is already in the process of being purchased");
+                    throw new BadRequestException("Tidak dapat melanjutkan. Konten ini sedang dalam proses pembelian");
                 }
             }
 
@@ -624,7 +624,7 @@ export class TransactionsController {
                 dex = new Date(dex);
 
                 if (cekstatusva.va_status === "WAITING_PAYMENT") {
-                    throw new BadRequestException("This content is already in the process of being purchased");
+                    throw new BadRequestException("Tidak dapat melanjutkan. Voucher ini sedang dalam proses pembelian");
                 }
                 else if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
                     var idtransaction = datatrpending._id;
@@ -877,10 +877,10 @@ export class TransactionsController {
                         });
                     }
                 } else if (statuscodeva == "217") {
-                    throw new BadRequestException("This content is already in the process of being purchased!");
+                    throw new BadRequestException("Tidak dapat melanjutkan. Voucher ini sedang dalam proses pembelian");
                 }
                 else {
-                    throw new BadRequestException("This content is already in the process of being purchased");
+                    throw new BadRequestException("Tidak dapat melanjutkan. Voucher ini sedang dalam proses pembelian");
                 }
             }
 
