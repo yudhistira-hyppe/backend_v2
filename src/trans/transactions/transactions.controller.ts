@@ -290,7 +290,7 @@ export class TransactionsController {
                 arrayDetail.push(arraydetailobj);
             }
             postidTR = postid[0].id;
-            arraypostids.push(postid[0].id);
+            // arraypostids.push(postid[0].id);
 
 
             if (datatrpending !== null) {
@@ -405,17 +405,19 @@ export class TransactionsController {
                                 "_id": datatr._id
                             };
 
-                            res.status(HttpStatus.OK).json({
-                                response_code: 202,
-                                "data": data,
-                                "message": messages
-                            });
+
                         } catch (e) {
                             res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror + " " + e.toString()
                             });
                         }
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": messages
+                        });
+                        setTimeout(res, 3000);
                     }
                     else if (statuscodeva == "208") {
                         throw new BadRequestException("Request is Rejected (API Key is not Valid)");
@@ -522,18 +524,18 @@ export class TransactionsController {
                             "timestamp": datatr.timestamp,
                             "_id": datatr._id
                         };
-
-                        res.status(HttpStatus.OK).json({
-                            response_code: 202,
-                            "data": data,
-                            "message": messages
-                        });
                     } catch (e) {
                         res.status(HttpStatus.BAD_REQUEST).json({
 
                             "message": messagesEror + " " + e.toString()
                         });
                     }
+                    res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": messages
+                    });
+                    setTimeout(res, 3000);
                 }
                 else if (statuscodeva == "208") {
                     throw new BadRequestException("Request is Rejected (API Key is not Valid)");
@@ -747,17 +749,19 @@ export class TransactionsController {
                                 "_id": datatr._id
                             };
 
-                            res.status(HttpStatus.OK).json({
-                                response_code: 202,
-                                "data": data,
-                                "message": messages
-                            });
+
                         } catch (e) {
                             res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror + " " + e.toString()
                             });
                         }
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": messages
+                        });
+                        setTimeout(res, 3000);
                     }
                     else if (statuscodeva == "208") {
                         throw new BadRequestException("Request is Rejected (API Key is not Valid)");
@@ -875,17 +879,19 @@ export class TransactionsController {
                             "_id": datatr._id
                         };
 
-                        res.status(HttpStatus.OK).json({
-                            response_code: 202,
-                            "data": data,
-                            "message": messages
-                        });
                     } catch (e) {
                         res.status(HttpStatus.BAD_REQUEST).json({
 
                             "message": messagesEror + " " + e.toString()
                         });
                     }
+
+                    res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": messages
+                    });
+                    setTimeout(res, 3000);
                 }
                 else if (statuscodeva == "208") {
                     throw new BadRequestException("Request is Rejected (API Key is not Valid)");
