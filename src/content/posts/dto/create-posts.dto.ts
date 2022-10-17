@@ -122,6 +122,7 @@ export class PostData {
     privacy?: Privacy;
     username: string;
     apsaraId: string;
+    apsaraThumbId: string;
     insight: InsightPost;
     isViewed: boolean;
     isLiked: boolean;

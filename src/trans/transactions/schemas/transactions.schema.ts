@@ -14,9 +14,9 @@ export class Transactions {
     postid: string;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId })
-    idusersell: { oid: string }
+    idusersell: { oid: String }
     @Prop({ type: mongoose.Schema.Types.ObjectId })
-    iduserbuyer: { oid: string }
+    iduserbuyer: { oid: String }
     @Prop()
     amount: number
     @Prop({ type: mongoose.Schema.Types.ObjectId })
@@ -57,6 +57,8 @@ export class Transactions {
     type: string
     @Prop([])
     detail: [];
+    @Prop({ type: Object })
+    response: {}
 
 
 }
