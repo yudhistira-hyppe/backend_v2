@@ -56,7 +56,7 @@ export class TransactionsController {
     ) { }
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions')
-    async create(@Res() res, @Headers('x-auth-token') auth: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Request() request) {
+    async create(@Res() res, @Headers('x-auth-token') auth: string, @Headers('x-auth-user') email: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Request() request) {
         const messages = {
             "info": ["The create successful"],
         };
@@ -130,7 +130,7 @@ export class TransactionsController {
         var ObjectId = require('mongodb').ObjectId;
 
         var totalamount = 0;
-        var email = x.email;
+        var email = email;
 
         var datatransaction = await this.transactionsService.findAll();
         var leng = datatransaction.length + 1;
