@@ -290,7 +290,7 @@ export class TransactionsController {
                 arrayDetail.push(arraydetailobj);
             }
             postidTR = postid[0].id;
-            // arraypostids.push(postid[0].id);
+            arraypostids.push(postid[0].id);
 
 
             if (datatrpending !== null) {
@@ -348,71 +348,71 @@ export class TransactionsController {
 
                     if (statuscodeva == "000") {
 
-                        try {
+                        // try {
 
-                            let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+                        let cekstatusva = await this.oyPgService.staticVaInfo(idva);
 
-                            CreateTransactionsDto.iduserbuyer = iduser;
-                            CreateTransactionsDto.idusersell = iduserseller;
-                            CreateTransactionsDto.timestamp = dt.toISOString();
-                            CreateTransactionsDto.noinvoice = no;
-                            CreateTransactionsDto.amount = saleAmount;
-                            CreateTransactionsDto.status = cekstatusva.va_status;
-                            CreateTransactionsDto.bank = idbank;
-                            CreateTransactionsDto.idva = idva;
-                            CreateTransactionsDto.nova = nova;
-                            CreateTransactionsDto.accountbalance = null;
-                            CreateTransactionsDto.paymentmethod = idmethode;
-                            // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
-                            CreateTransactionsDto.ppn = null;
-                            CreateTransactionsDto.totalamount = totalamount;
-                            CreateTransactionsDto.description = "buy " + type + " pending";
-                            CreateTransactionsDto.payload = null;
-                            CreateTransactionsDto.expiredtimeva = d1.toISOString();
-                            CreateTransactionsDto.detail = arrayDetail;
-                            CreateTransactionsDto.postid = postidTR.toString();
-                            CreateTransactionsDto.response = datareqva;
-                            let datatr = await this.transactionsService.create(CreateTransactionsDto);
-                            await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
-                            await this.transactionsService.updatestatuscancel(idtransaction);
-
-
-                            var data = {
-                                "noinvoice": datatr.noinvoice,
-                                "postid": postidTR.toString(),
-                                "idusersell": datatr.idusersell,
-                                "NamaPenjual": namapenjual,
-                                "iduserbuyer": datatr.iduserbuyer,
-                                "NamaPembeli": namapembeli,
-                                "amount": datatr.amount,
-                                "paymentmethod": namamethode,
-                                "status": datatr.status,
-                                "description": datatr.description,
-                                "idva": datatr.idva,
-                                "nova": datatr.nova,
-                                "expiredtimeva": datatr.expiredtimeva,
-                                "salelike": datatr.saleview,
-                                "saleview": datatr.salelike,
-                                "bank": namabank,
-                                // "ppn": valueppn + " %",
-                                // "nominalppn": nominalppn,
-                                "bankvacharge": valuevacharge,
-                                // "mdradmin": valuemradmin + " %",
-                                // "nominalmdradmin": nominalmradmin,
-                                "detail": arrayDetail,
-                                "totalamount": datatr.totalamount,
-                                "accountbalance": datatr.accountbalance,
-                                "timestamp": datatr.timestamp,
-                                "_id": datatr._id
-                            };
+                        CreateTransactionsDto.iduserbuyer = iduser;
+                        CreateTransactionsDto.idusersell = iduserseller;
+                        CreateTransactionsDto.timestamp = dt.toISOString();
+                        CreateTransactionsDto.noinvoice = no;
+                        CreateTransactionsDto.amount = saleAmount;
+                        CreateTransactionsDto.status = cekstatusva.va_status;
+                        CreateTransactionsDto.bank = idbank;
+                        CreateTransactionsDto.idva = idva;
+                        CreateTransactionsDto.nova = nova;
+                        CreateTransactionsDto.accountbalance = null;
+                        CreateTransactionsDto.paymentmethod = idmethode;
+                        // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                        CreateTransactionsDto.ppn = null;
+                        CreateTransactionsDto.totalamount = totalamount;
+                        CreateTransactionsDto.description = "buy " + type + " pending";
+                        CreateTransactionsDto.payload = null;
+                        CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                        CreateTransactionsDto.detail = arrayDetail;
+                        CreateTransactionsDto.postid = postidTR.toString();
+                        CreateTransactionsDto.response = datareqva;
+                        let datatr = await this.transactionsService.create(CreateTransactionsDto);
+                        await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                        await this.transactionsService.updatestatuscancel(idtransaction);
 
 
-                        } catch (e) {
-                            res.status(HttpStatus.BAD_REQUEST).json({
+                        var data = {
+                            "noinvoice": datatr.noinvoice,
+                            "postid": postidTR.toString(),
+                            "idusersell": datatr.idusersell,
+                            "NamaPenjual": namapenjual,
+                            "iduserbuyer": datatr.iduserbuyer,
+                            "NamaPembeli": namapembeli,
+                            "amount": datatr.amount,
+                            "paymentmethod": namamethode,
+                            "status": datatr.status,
+                            "description": datatr.description,
+                            "idva": datatr.idva,
+                            "nova": datatr.nova,
+                            "expiredtimeva": datatr.expiredtimeva,
+                            "salelike": datatr.saleview,
+                            "saleview": datatr.salelike,
+                            "bank": namabank,
+                            // "ppn": valueppn + " %",
+                            // "nominalppn": nominalppn,
+                            "bankvacharge": valuevacharge,
+                            // "mdradmin": valuemradmin + " %",
+                            // "nominalmdradmin": nominalmradmin,
+                            "detail": arrayDetail,
+                            "totalamount": datatr.totalamount,
+                            "accountbalance": datatr.accountbalance,
+                            "timestamp": datatr.timestamp,
+                            "_id": datatr._id
+                        };
 
-                                "message": messagesEror + " " + e.toString()
-                            });
-                        }
+
+                        // } catch (e) {
+                        //     res.status(HttpStatus.BAD_REQUEST).json({
+
+                        //         "message": messagesEror + " " + e.toString()
+                        //     });
+                        // }
                         res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "data": data,
@@ -471,67 +471,67 @@ export class TransactionsController {
                 if (statuscodeva == "000") {
 
 
-                    try {
+                    // try {
 
-                        let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
 
-                        CreateTransactionsDto.iduserbuyer = iduser;
-                        CreateTransactionsDto.idusersell = iduserseller;
-                        CreateTransactionsDto.timestamp = dt.toISOString();
-                        CreateTransactionsDto.noinvoice = no;
-                        CreateTransactionsDto.amount = saleAmount;
-                        CreateTransactionsDto.status = cekstatusva.va_status;
-                        CreateTransactionsDto.bank = idbank;
-                        CreateTransactionsDto.idva = idva;
-                        CreateTransactionsDto.nova = nova;
-                        CreateTransactionsDto.accountbalance = null;
-                        CreateTransactionsDto.paymentmethod = idmethode;
-                        // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
-                        CreateTransactionsDto.ppn = null;
-                        CreateTransactionsDto.totalamount = totalamount;
-                        CreateTransactionsDto.description = "buy " + type + " pending";
-                        CreateTransactionsDto.payload = null;
-                        CreateTransactionsDto.expiredtimeva = d1.toISOString();
-                        CreateTransactionsDto.detail = arrayDetail;
-                        CreateTransactionsDto.postid = postidTR.toString();
-                        CreateTransactionsDto.response = datareqva;
-                        let datatr = await this.transactionsService.create(CreateTransactionsDto);
-                        await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                    CreateTransactionsDto.iduserbuyer = iduser;
+                    CreateTransactionsDto.idusersell = iduserseller;
+                    CreateTransactionsDto.timestamp = dt.toISOString();
+                    CreateTransactionsDto.noinvoice = no;
+                    CreateTransactionsDto.amount = saleAmount;
+                    CreateTransactionsDto.status = cekstatusva.va_status;
+                    CreateTransactionsDto.bank = idbank;
+                    CreateTransactionsDto.idva = idva;
+                    CreateTransactionsDto.nova = nova;
+                    CreateTransactionsDto.accountbalance = null;
+                    CreateTransactionsDto.paymentmethod = idmethode;
+                    // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                    CreateTransactionsDto.ppn = null;
+                    CreateTransactionsDto.totalamount = totalamount;
+                    CreateTransactionsDto.description = "buy " + type + " pending";
+                    CreateTransactionsDto.payload = null;
+                    CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                    CreateTransactionsDto.detail = arrayDetail;
+                    CreateTransactionsDto.postid = postidTR.toString();
+                    CreateTransactionsDto.response = datareqva;
+                    let datatr = await this.transactionsService.create(CreateTransactionsDto);
+                    await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
-                        var data = {
-                            "noinvoice": datatr.noinvoice,
-                            "postid": postidTR.toString(),
-                            "idusersell": datatr.idusersell,
-                            "NamaPenjual": namapenjual,
-                            "iduserbuyer": datatr.iduserbuyer,
-                            "NamaPembeli": namapembeli,
-                            "amount": datatr.amount,
-                            "paymentmethod": namamethode,
-                            "status": datatr.status,
-                            "description": datatr.description,
-                            "idva": datatr.idva,
-                            "nova": datatr.nova,
-                            "expiredtimeva": datatr.expiredtimeva,
-                            "salelike": datatr.saleview,
-                            "saleview": datatr.salelike,
-                            "bank": namabank,
-                            // "ppn": valueppn + " %",
-                            // "nominalppn": nominalppn,
-                            "bankvacharge": valuevacharge,
-                            // "mdradmin": valuemradmin + " %",
-                            // "nominalmdradmin": nominalmradmin,
-                            "detail": arrayDetail,
-                            "totalamount": datatr.totalamount,
-                            "accountbalance": datatr.accountbalance,
-                            "timestamp": datatr.timestamp,
-                            "_id": datatr._id
-                        };
-                    } catch (e) {
-                        res.status(HttpStatus.BAD_REQUEST).json({
+                    var data = {
+                        "noinvoice": datatr.noinvoice,
+                        "postid": postidTR.toString(),
+                        "idusersell": datatr.idusersell,
+                        "NamaPenjual": namapenjual,
+                        "iduserbuyer": datatr.iduserbuyer,
+                        "NamaPembeli": namapembeli,
+                        "amount": datatr.amount,
+                        "paymentmethod": namamethode,
+                        "status": datatr.status,
+                        "description": datatr.description,
+                        "idva": datatr.idva,
+                        "nova": datatr.nova,
+                        "expiredtimeva": datatr.expiredtimeva,
+                        "salelike": datatr.saleview,
+                        "saleview": datatr.salelike,
+                        "bank": namabank,
+                        // "ppn": valueppn + " %",
+                        // "nominalppn": nominalppn,
+                        "bankvacharge": valuevacharge,
+                        // "mdradmin": valuemradmin + " %",
+                        // "nominalmdradmin": nominalmradmin,
+                        "detail": arrayDetail,
+                        "totalamount": datatr.totalamount,
+                        "accountbalance": datatr.accountbalance,
+                        "timestamp": datatr.timestamp,
+                        "_id": datatr._id
+                    };
+                    // } catch (e) {
+                    //     res.status(HttpStatus.BAD_REQUEST).json({
 
-                            "message": messagesEror + " " + e.toString()
-                        });
-                    }
+                    //         "message": messagesEror + " " + e.toString()
+                    //     });
+                    // }
                     res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
@@ -674,95 +674,95 @@ export class TransactionsController {
 
                     if (statuscodeva == "000") {
 
-                        try {
+                        // try {
 
-                            let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+                        let cekstatusva = await this.oyPgService.staticVaInfo(idva);
 
-                            CreateTransactionsDto.iduserbuyer = iduser;
-                            CreateTransactionsDto.idusersell = iduserseller;
-                            CreateTransactionsDto.timestamp = dt.toISOString();
-                            CreateTransactionsDto.noinvoice = no;
-                            CreateTransactionsDto.amount = saleAmount;
-                            CreateTransactionsDto.status = cekstatusva.va_status;
-                            CreateTransactionsDto.bank = idbank;
-                            CreateTransactionsDto.idva = idva;
-                            CreateTransactionsDto.nova = nova;
-                            CreateTransactionsDto.accountbalance = null;
-                            CreateTransactionsDto.paymentmethod = idmethode;
-                            // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
-                            CreateTransactionsDto.ppn = null;
-                            CreateTransactionsDto.totalamount = totalamount;
-                            CreateTransactionsDto.description = "buy " + type + " pending";
-                            CreateTransactionsDto.payload = null;
-                            CreateTransactionsDto.expiredtimeva = d1.toISOString();
-                            CreateTransactionsDto.detail = arrayDetail;
-                            CreateTransactionsDto.postid = postidTRvoucer.toString();
-                            CreateTransactionsDto.response = datareqva;
-                            let datatr = await this.transactionsService.create(CreateTransactionsDto);
+                        CreateTransactionsDto.iduserbuyer = iduser;
+                        CreateTransactionsDto.idusersell = iduserseller;
+                        CreateTransactionsDto.timestamp = dt.toISOString();
+                        CreateTransactionsDto.noinvoice = no;
+                        CreateTransactionsDto.amount = saleAmount;
+                        CreateTransactionsDto.status = cekstatusva.va_status;
+                        CreateTransactionsDto.bank = idbank;
+                        CreateTransactionsDto.idva = idva;
+                        CreateTransactionsDto.nova = nova;
+                        CreateTransactionsDto.accountbalance = null;
+                        CreateTransactionsDto.paymentmethod = idmethode;
+                        // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                        CreateTransactionsDto.ppn = null;
+                        CreateTransactionsDto.totalamount = totalamount;
+                        CreateTransactionsDto.description = "buy " + type + " pending";
+                        CreateTransactionsDto.payload = null;
+                        CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                        CreateTransactionsDto.detail = arrayDetail;
+                        CreateTransactionsDto.postid = postidTRvoucer.toString();
+                        CreateTransactionsDto.response = datareqva;
+                        let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
-                            var lengArrDetail = arrayDetail.length;
+                        var lengArrDetail = arrayDetail.length;
 
-                            for (var i = 0; i < lengArrDetail; i++) {
-                                var qtyDetail = arrayDetail[i].qty;
-                                var idvoucher = arrayDetail[i].id.toString();
-                                var idvcr = mongoose.Types.ObjectId(idvoucher);
-                                datavoucher = await this.vouchersService.findOne(idvoucher);
-                                var pendingUsed = datavoucher.pendingUsed;
-                                var totalPending = pendingUsed + qtyDetail;
-                                await this.vouchersService.updatesPendingUsed(idvcr, totalPending);
-                            }
-
-                            await this.transactionsService.updatestatuscancel(idtransaction);
-                            transactionVoucher = await this.transactionsService.findid(idtransaction.toString());
-
-
-                            var detailTr = transactionVoucher.detail;
-                            for (var a = 0; a < detailTr.length; a++) {
-                                var qtyDetail2 = detailTr[a].qty;
-                                var idvoucher2 = detailTr[a].id.toString();
-                                var idvcr2 = mongoose.Types.ObjectId(idvoucher2);
-                                datavoucher = await this.vouchersService.findOne(idvoucher2);
-                                var pendingUsed2 = datavoucher.pendingUsed;
-                                var totalPending2 = pendingUsed2 - qtyDetail2;
-                                await this.vouchersService.updatesPendingUsed(idvcr2, totalPending2);
-                            }
-
-                            var data = {
-                                "noinvoice": datatr.noinvoice,
-                                "postid": postidTRvoucer.toString(),
-                                "idusersell": datatr.idusersell,
-                                "NamaPenjual": namapenjual,
-                                "iduserbuyer": datatr.iduserbuyer,
-                                "NamaPembeli": namapembeli,
-                                "amount": datatr.amount,
-                                "paymentmethod": namamethode,
-                                "status": datatr.status,
-                                "description": datatr.description,
-                                "idva": datatr.idva,
-                                "nova": datatr.nova,
-                                "expiredtimeva": datatr.expiredtimeva,
-                                "salelike": datatr.saleview,
-                                "saleview": datatr.salelike,
-                                "bank": namabank,
-                                // "ppn": valueppn + " %",
-                                // "nominalppn": nominalppn,
-                                "bankvacharge": valuevacharge,
-                                // "mdradmin": valuemradmin + " %",
-                                // "nominalmdradmin": nominalmradmin,
-                                "detail": arrayDetail,
-                                "totalamount": datatr.totalamount,
-                                "accountbalance": datatr.accountbalance,
-                                "timestamp": datatr.timestamp,
-                                "_id": datatr._id
-                            };
-
-
-                        } catch (e) {
-                            res.status(HttpStatus.BAD_REQUEST).json({
-
-                                "message": messagesEror + " " + e.toString()
-                            });
+                        for (var i = 0; i < lengArrDetail; i++) {
+                            var qtyDetail = arrayDetail[i].qty;
+                            var idvoucher = arrayDetail[i].id.toString();
+                            var idvcr = mongoose.Types.ObjectId(idvoucher);
+                            datavoucher = await this.vouchersService.findOne(idvoucher);
+                            var pendingUsed = datavoucher.pendingUsed;
+                            var totalPending = pendingUsed + qtyDetail;
+                            await this.vouchersService.updatesPendingUsed(idvcr, totalPending);
                         }
+
+                        await this.transactionsService.updatestatuscancel(idtransaction);
+                        transactionVoucher = await this.transactionsService.findid(idtransaction.toString());
+
+
+                        var detailTr = transactionVoucher.detail;
+                        for (var a = 0; a < detailTr.length; a++) {
+                            var qtyDetail2 = detailTr[a].qty;
+                            var idvoucher2 = detailTr[a].id.toString();
+                            var idvcr2 = mongoose.Types.ObjectId(idvoucher2);
+                            datavoucher = await this.vouchersService.findOne(idvoucher2);
+                            var pendingUsed2 = datavoucher.pendingUsed;
+                            var totalPending2 = pendingUsed2 - qtyDetail2;
+                            await this.vouchersService.updatesPendingUsed(idvcr2, totalPending2);
+                        }
+
+                        var data = {
+                            "noinvoice": datatr.noinvoice,
+                            "postid": postidTRvoucer.toString(),
+                            "idusersell": datatr.idusersell,
+                            "NamaPenjual": namapenjual,
+                            "iduserbuyer": datatr.iduserbuyer,
+                            "NamaPembeli": namapembeli,
+                            "amount": datatr.amount,
+                            "paymentmethod": namamethode,
+                            "status": datatr.status,
+                            "description": datatr.description,
+                            "idva": datatr.idva,
+                            "nova": datatr.nova,
+                            "expiredtimeva": datatr.expiredtimeva,
+                            "salelike": datatr.saleview,
+                            "saleview": datatr.salelike,
+                            "bank": namabank,
+                            // "ppn": valueppn + " %",
+                            // "nominalppn": nominalppn,
+                            "bankvacharge": valuevacharge,
+                            // "mdradmin": valuemradmin + " %",
+                            // "nominalmdradmin": nominalmradmin,
+                            "detail": arrayDetail,
+                            "totalamount": datatr.totalamount,
+                            "accountbalance": datatr.accountbalance,
+                            "timestamp": datatr.timestamp,
+                            "_id": datatr._id
+                        };
+
+
+                        // } catch (e) {
+                        //     res.status(HttpStatus.BAD_REQUEST).json({
+
+                        //         "message": messagesEror + " " + e.toString()
+                        //     });
+                        // }
                         res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "data": data,
@@ -821,78 +821,78 @@ export class TransactionsController {
                 if (statuscodeva == "000") {
 
 
-                    try {
+                    // try {
 
-                        let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
 
-                        CreateTransactionsDto.iduserbuyer = iduser;
-                        CreateTransactionsDto.idusersell = iduserseller;
-                        CreateTransactionsDto.timestamp = dt.toISOString();
-                        CreateTransactionsDto.noinvoice = no;
-                        CreateTransactionsDto.amount = saleAmount;
-                        CreateTransactionsDto.status = cekstatusva.va_status;
-                        CreateTransactionsDto.bank = idbank;
-                        CreateTransactionsDto.idva = idva;
-                        CreateTransactionsDto.nova = nova;
-                        CreateTransactionsDto.accountbalance = null;
-                        CreateTransactionsDto.paymentmethod = idmethode;
-                        // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
-                        CreateTransactionsDto.ppn = null;
-                        CreateTransactionsDto.totalamount = totalamount;
-                        CreateTransactionsDto.description = "buy " + type + " pending";
-                        CreateTransactionsDto.payload = null;
-                        CreateTransactionsDto.expiredtimeva = d1.toISOString();
-                        CreateTransactionsDto.detail = arrayDetail;
-                        CreateTransactionsDto.postid = postidTRvoucer.toString();
-                        CreateTransactionsDto.response = datareqva;
-                        let datatr = await this.transactionsService.create(CreateTransactionsDto);
-                        await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
-                        var lengArrDetail = arrayDetail.length;
+                    CreateTransactionsDto.iduserbuyer = iduser;
+                    CreateTransactionsDto.idusersell = iduserseller;
+                    CreateTransactionsDto.timestamp = dt.toISOString();
+                    CreateTransactionsDto.noinvoice = no;
+                    CreateTransactionsDto.amount = saleAmount;
+                    CreateTransactionsDto.status = cekstatusva.va_status;
+                    CreateTransactionsDto.bank = idbank;
+                    CreateTransactionsDto.idva = idva;
+                    CreateTransactionsDto.nova = nova;
+                    CreateTransactionsDto.accountbalance = null;
+                    CreateTransactionsDto.paymentmethod = idmethode;
+                    // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                    CreateTransactionsDto.ppn = null;
+                    CreateTransactionsDto.totalamount = totalamount;
+                    CreateTransactionsDto.description = "buy " + type + " pending";
+                    CreateTransactionsDto.payload = null;
+                    CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                    CreateTransactionsDto.detail = arrayDetail;
+                    CreateTransactionsDto.postid = postidTRvoucer.toString();
+                    CreateTransactionsDto.response = datareqva;
+                    let datatr = await this.transactionsService.create(CreateTransactionsDto);
+                    await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                    var lengArrDetail = arrayDetail.length;
 
-                        for (var i = 0; i < lengArrDetail; i++) {
-                            var qtyDetail = arrayDetail[i].qty;
-                            var idvoucher = arrayDetail[i].id.toString();
-                            datavoucher = await this.vouchersService.findOne(idvoucher);
-                            var pendingUsed = datavoucher.pendingUsed;
-                            var totalPending = pendingUsed + qtyDetail;
-                            await this.vouchersService.updatesPendingUsed(idvoucher, totalPending);
-                        }
-
-                        var data = {
-                            "noinvoice": datatr.noinvoice,
-                            "postid": postidTRvoucer.toString(),
-                            "idusersell": datatr.idusersell,
-                            "NamaPenjual": namapenjual,
-                            "iduserbuyer": datatr.iduserbuyer,
-                            "NamaPembeli": namapembeli,
-                            "amount": datatr.amount,
-                            "paymentmethod": namamethode,
-                            "status": datatr.status,
-                            "description": datatr.description,
-                            "idva": datatr.idva,
-                            "nova": datatr.nova,
-                            "expiredtimeva": datatr.expiredtimeva,
-                            "salelike": datatr.saleview,
-                            "saleview": datatr.salelike,
-                            "bank": namabank,
-                            // "ppn": valueppn + " %",
-                            // "nominalppn": nominalppn,
-                            "bankvacharge": valuevacharge,
-                            // "mdradmin": valuemradmin + " %",
-                            // "nominalmdradmin": nominalmradmin,
-                            "detail": arrayDetail,
-                            "totalamount": datatr.totalamount,
-                            "accountbalance": datatr.accountbalance,
-                            "timestamp": datatr.timestamp,
-                            "_id": datatr._id
-                        };
-
-                    } catch (e) {
-                        res.status(HttpStatus.BAD_REQUEST).json({
-
-                            "message": messagesEror + " " + e.toString()
-                        });
+                    for (var i = 0; i < lengArrDetail; i++) {
+                        var qtyDetail = arrayDetail[i].qty;
+                        var idvoucher = arrayDetail[i].id.toString();
+                        datavoucher = await this.vouchersService.findOne(idvoucher);
+                        var pendingUsed = datavoucher.pendingUsed;
+                        var totalPending = pendingUsed + qtyDetail;
+                        await this.vouchersService.updatesPendingUsed(idvoucher, totalPending);
                     }
+
+                    var data = {
+                        "noinvoice": datatr.noinvoice,
+                        "postid": postidTRvoucer.toString(),
+                        "idusersell": datatr.idusersell,
+                        "NamaPenjual": namapenjual,
+                        "iduserbuyer": datatr.iduserbuyer,
+                        "NamaPembeli": namapembeli,
+                        "amount": datatr.amount,
+                        "paymentmethod": namamethode,
+                        "status": datatr.status,
+                        "description": datatr.description,
+                        "idva": datatr.idva,
+                        "nova": datatr.nova,
+                        "expiredtimeva": datatr.expiredtimeva,
+                        "salelike": datatr.saleview,
+                        "saleview": datatr.salelike,
+                        "bank": namabank,
+                        // "ppn": valueppn + " %",
+                        // "nominalppn": nominalppn,
+                        "bankvacharge": valuevacharge,
+                        // "mdradmin": valuemradmin + " %",
+                        // "nominalmdradmin": nominalmradmin,
+                        "detail": arrayDetail,
+                        "totalamount": datatr.totalamount,
+                        "accountbalance": datatr.accountbalance,
+                        "timestamp": datatr.timestamp,
+                        "_id": datatr._id
+                    };
+
+                    // } catch (e) {
+                    //     res.status(HttpStatus.BAD_REQUEST).json({
+
+                    //         "message": messagesEror + " " + e.toString()
+                    //     });
+                    // }
 
                     res.status(HttpStatus.OK).json({
                         response_code: 202,
