@@ -11,6 +11,7 @@ import { request } from 'https';
 import { CreateDisquslogsDto } from '../disquslogs/dto/create-disquslogs.dto';
 import { PostDisqusService } from './post/postdisqus.service';
 import { ReactionsService } from '../../infra/reactions/reactions.service';
+import { CreateDisquscontactsDto } from '../disquscontacts/dto/create-disquscontacts.dto';
 
 @Controller('api/')
 export class DisqusController {
@@ -67,6 +68,7 @@ export class DisqusController {
     let type = "";
     let isQuery = false;
     var retVal = {};
+
     if (QueryDiscusDto_.eventType == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed eventType is required',
@@ -80,7 +82,7 @@ export class DisqusController {
       isQuery = QueryDiscusDto_.isQuery;
       if (!isQuery){
         if (type == "DIRECT_MSG") {
-          var disquscontacts = await this.disquscontactsService.findByEmailAndMate(QueryDiscusDto_.email.toString(), QueryDiscusDto_.receiverParty.toString());
+          
         } else if ((type == "COMMENT") && (QueryDiscusDto_.postID!=undefined)) {
           
         }
@@ -223,6 +225,33 @@ export class DisqusController {
     // }
 
     return retVal;
+  }
+
+  private async buildDisqus(QueryDiscusDto_: QueryDiscusDto,buildInteractive:boolean){
+    var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
+    CreateDisquscontactsDto_ = await this.disquscontactsService.findByEmailAndMate(QueryDiscusDto_.email.toString(), QueryDiscusDto_.receiverParty.toString());
+    if (await this.utilsService.ceckData(CreateDisquscontactsDto_)){
+      var IdDisqus = CreateDisquscontactsDto_.disqus.id.toString();
+      var CreateDisqusDto_ = new CreateDisqusDto();
+      if (CreateDisquscontactsDto_.disqus != null) {
+        CreateDisqusDto_ = await this.DisqusService.findOne(IdDisqus);
+      } else {
+        //CreateDisqusDto_ = ContentDto;
+      }
+      if (QueryDiscusDto_.postID != undefined) {
+        var PostData = await this.postDisqusService.findid(QueryDiscusDto_.postID.toString());
+        if (await this.utilsService.ceckData(PostData)) {
+          QueryDiscusDto_.postContent = PostData;
+          QueryDiscusDto_.postType = PostData.postType;
+          if (buildInteractive){
+            QueryDiscusDto_.eventType = "REACTION";
+
+					// InsightDto insightDto = this.validationEvent(contentDto);
+          //   this.processInsightEvent(insightDto);
+          }
+        }
+      }
+    }
   }
 
   @Post('posts/disqus/deletedicuss')
