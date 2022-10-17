@@ -702,12 +702,12 @@ export class TransactionsController {
                             var lengArrDetail = arrayDetailvc.length;
 
                             for (var i = 0; i < lengArrDetail; i++) {
-                                var qtyDetail = arrayDetailvc[i].qty;
-                                var idvoucher = arrayDetailvc[i].id.toString();
-                                var idvcr = mongoose.Types.ObjectId(idvoucher);
+                                let qtyDetail = arrayDetailvc[i].qty;
+                                let idvoucher = arrayDetailvc[i].id.toString();
+                                let idvcr = mongoose.Types.ObjectId(idvoucher);
                                 datavoucher = await this.vouchersService.findOne(idvoucher);
-                                var pendingUsed = datavoucher.pendingUsed;
-                                var totalPending = pendingUsed + qtyDetail;
+                                let pendingUsed = datavoucher.pendingUsed;
+                                let totalPending = pendingUsed + qtyDetail;
                                 await this.vouchersService.updatesPendingUsed(idvcr, totalPending);
                             }
 
@@ -849,12 +849,12 @@ export class TransactionsController {
                         var lengArrDetail = arrayDetailvc.length;
 
                         for (var i = 0; i < lengArrDetail; i++) {
-                            var qtyDetail = arrayDetailvc[i].qty;
-                            var idvoucher = arrayDetailvc[i].id.toString();
-                            var idvcr2 = arrayDetailvc[i].id;
+                            let qtyDetail = arrayDetailvc[i].qty;
+                            let idvoucher = arrayDetailvc[i].id.toString();
+                            let idvcr2 = arrayDetailvc[i].id;
                             datavoucher = await this.vouchersService.findOne(idvoucher);
-                            var pendingUsed = datavoucher.pendingUsed;
-                            var totalPending = pendingUsed + qtyDetail;
+                            let pendingUsed = datavoucher.pendingUsed;
+                            let totalPending = pendingUsed + qtyDetail;
                             await this.vouchersService.updatesPendingUsed(idvcr2, totalPending);
                         }
 
