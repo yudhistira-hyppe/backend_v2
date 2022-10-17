@@ -1,7 +1,7 @@
 export class CreateTransactionsDto {
 
 
-    _id: { oid: String; };
+
     noinvoice: string;
     postid: string;
     idusersell: { oid: String; };

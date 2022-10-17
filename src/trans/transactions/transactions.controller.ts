@@ -495,7 +495,7 @@ export class TransactionsController {
                         CreateTransactionsDto.postid = postidTR;
                         CreateTransactionsDto.response = datareqva;
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
-                        await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                        // await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
                         var data = {
                             "noinvoice": datatr.noinvoice,
