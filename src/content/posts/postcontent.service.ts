@@ -2197,9 +2197,9 @@ export class PostContentService {
               let oid = pdvv.username;
               pdvv.username = this.getUserName(oid, cuser, ubs);
               pdvv.avatar = await this.getAvatar(oid, cuser, ubs);              
-              resVideo.push(pdvv);
             }
           }
+          resVideo.push(pdvv);          
         }
       }
       if (pds.length > 0) {
@@ -2213,9 +2213,9 @@ export class PostContentService {
               let oid = pdss.username;
               pdss.username = this.getUserName(oid, cuser, ubs);
               pdss.avatar = await this.getAvatar(oid, cuser, ubs);                            
-              resStory.push(pdss);
             }
           }
+          resStory.push(pdss);
         }
       }      
       if (pdd.length > 0) {
@@ -2229,9 +2229,9 @@ export class PostContentService {
               let oid = pddd.username;
               pddd.username = this.getUserName(oid, cuser, ubs);
               pddd.avatar = await this.getAvatar(oid, cuser, ubs);                                          
-              resDiary.push(pddd);
             }
           }
+          resDiary.push(pddd);
         }
       }
     }
@@ -2249,9 +2249,9 @@ export class PostContentService {
               let oid = pdvv.username;
               pdvv.username = this.getUserName(oid, cuser, ubs);
               pdvv.avatar = await this.getAvatar(oid, cuser, ubs);                                                        
-              resVideo.push(pdvv);
             }
           }
+          resVideo.push(pdvv);
         }
       }
       if (pds.length > 0) {
@@ -2266,10 +2266,9 @@ export class PostContentService {
               let oid = pdss.username;
               pdss.username = this.getUserName(oid, cuser, ubs);
               pdss.avatar = await this.getAvatar(oid, cuser, ubs);                                                        
-
-              resStory.push(pdss);
             }
           }
+          resStory.push(pdss);
         }
       }      
       if (pdd.length > 0) {
@@ -2284,14 +2283,15 @@ export class PostContentService {
               let oid = pddd.username;
               pddd.username = this.getUserName(oid, cuser, ubs);
               pddd.avatar = await this.getAvatar(oid, cuser, ubs);                                                                      
-              resDiary.push(pddd);
             }
           }
+          resDiary.push(pddd);
         }
       }
       if (pdp.length > 0) {
         for(let i = 0; i < pdp.length; i++) {
           let pdpp = pdp[i];
+          let found = false;
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
             if (pdpp.apsaraId == vi.ImageId) {
@@ -2300,18 +2300,16 @@ export class PostContentService {
 
               let oid = pdpp.username;
               pdpp.username = this.getUserName(oid, cuser, ubs);
-              pdpp.avatar = await this.getAvatar(oid, cuser, ubs);                                                                                    
+              pdpp.avatar = await this.getAvatar(oid, cuser, ubs);
+              found = true;
             }
             if (pdpp.apsaraThumbId == vi.ImageId) {
               pdpp.mediaThumbEndpoint = vi.URL;
               pdpp.mediaThumbUri = vi.URL;
 
-              let oid = pdpp.username;
-              pdpp.username = this.getUserName(oid, cuser, ubs);
-              pdpp.avatar = await this.getAvatar(oid, cuser, ubs);                                                                                    
             }            
-            resPic.push(pdpp);
           }
+          resPic.push(pdpp);
         }
       }            
     }
