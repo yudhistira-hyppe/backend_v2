@@ -418,7 +418,7 @@ export class TransactionsController {
                             "data": data,
                             "message": messages
                         });
-                        // setTimeout(res, 3000);
+                        setTimeout(res, 2000);
                     }
                     else if (statuscodeva == "208") {
                         throw new BadRequestException("Request is Rejected (API Key is not Valid)");
@@ -537,7 +537,7 @@ export class TransactionsController {
                         "data": data,
                         "message": messages
                     });
-                    // setTimeout(res, 3000);
+                    setTimeout(res, 2000);
                 }
                 else if (statuscodeva == "208") {
                     throw new BadRequestException("Request is Rejected (API Key is not Valid)");
@@ -768,7 +768,7 @@ export class TransactionsController {
                             "data": data,
                             "message": messages
                         });
-                        // setTimeout(res, 3000);
+                        setTimeout(res, 2000);
                     }
                     else if (statuscodeva == "208") {
                         throw new BadRequestException("Request is Rejected (API Key is not Valid)");
@@ -899,7 +899,7 @@ export class TransactionsController {
                         "data": data,
                         "message": messages
                     });
-                    //  setTimeout(res, 3000);
+                    setTimeout(res, 2000);
                 }
                 else if (statuscodeva == "208") {
                     throw new BadRequestException("Request is Rejected (API Key is not Valid)");
