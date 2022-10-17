@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards, Headers, BadRequestException, Res, HttpStatus, Query, Request, Req, HttpCode } from '@nestjs/common';
 import { DisqusService } from './disqus.service';
-import { CreateDisqusDto, QueryDiscusDto } from './dto/create-disqus.dto';
+import { CreateDisqusDto, ContentDto } from './dto/create-disqus.dto';
 import { Disqus } from './schemas/disqus.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { FormDataRequest } from 'nestjs-form-data';
@@ -50,7 +50,7 @@ export class DisqusController {
   @Post('posts/disqus')
   async disqus(
     @Headers() headers, 
-    @Body() QueryDiscusDto_: QueryDiscusDto, 
+    @Body() ContentDto_: ContentDto, 
   ) {
     // if (!(await this.utilsService.validasiTokenEmail(headers))) {
     //   await this.errorHandler.generateNotAcceptableException(
@@ -67,30 +67,36 @@ export class DisqusController {
     var email_header = headers['x-auth-token'];
     let type = "";
     let isQuery = false;
-    var retVal = {};
+    var retVal = [{}];
 
-    if (QueryDiscusDto_.eventType == undefined) {
+    if (ContentDto_.eventType == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed eventType is required',
       );
     }else{
-      type = QueryDiscusDto_.eventType.toString();
+      type = ContentDto_.eventType.toString();
     }
 
     if ((type == "DIRECT_MSG") || (type == "COMMENT")) {
       var isValid = false;
-      isQuery = QueryDiscusDto_.isQuery;
+      isQuery = ContentDto_.isQuery;
       if (!isQuery){
         if (type == "DIRECT_MSG") {
-          
-        } else if ((type == "COMMENT") && (QueryDiscusDto_.postID!=undefined)) {
+          var retVal = [{}];
+          retVal.push(this.buildDisqus(ContentDto_, true));
+          ContentDto_.disqus = retVal;
+          isValid = true;
+          for (var retValCount = 0; retValCount < retVal.length; retValCount++){
+            //var roomName = retVal[retValCount].room;
+          }
+        } else if ((type == "COMMENT") && (ContentDto_.postID!=undefined)) {
           
         }
       }else{
         if (type == "DIRECT_MSG") {
-          var aDisqusContacts = (QueryDiscusDto_.receiverParty != undefined) ? await this.disquscontactsService.findDisqusByEmail(QueryDiscusDto_.email.toString()) : await this.disquscontactsService.findByEmailAndMate(QueryDiscusDto_.email.toString(), QueryDiscusDto_.receiverParty.toString());
-          var withDetail = QueryDiscusDto_.withDetail;
-          var detailOnly = QueryDiscusDto_.detailOnly;
+          var aDisqusContacts = (ContentDto_.receiverParty != undefined) ? await this.disquscontactsService.findDisqusByEmail(ContentDto_.email.toString()) : await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
+          var withDetail = ContentDto_.withDetail;
+          var detailOnly = ContentDto_.detailOnly;
 
           retVal['disqusID'] = aDisqusContacts[0].disqus_data[0].disqusID;
           if ((aDisqusContacts[0].disqus_data[0].email != undefined) && (aDisqusContacts[0].disqus_data[0].mate != undefined)) {
@@ -130,7 +136,7 @@ export class DisqusController {
               retVal['mate'] = mateInfo;
 
               var senderReciverInfo = {};
-              var currentEmail = (QueryDiscusDto_.email) ? QueryDiscusDto_.email : email_header;
+              var currentEmail = (ContentDto_.email) ? ContentDto_.email : email_header;
               if ((profile_mate != null) && (profile != null) && (currentEmail == profile_mate.email)) {
                 senderReciverInfo['email'] = profile.fullName;
                 senderReciverInfo['username'] = profile.username;
@@ -148,9 +154,9 @@ export class DisqusController {
               }
               retVal['senderOrReceiverInfo'] = senderReciverInfo;
 
-              if ((QueryDiscusDto_.pageNumber != undefined) && (QueryDiscusDto_.pageRow != undefined)) {
-                var pageNumber = Number(QueryDiscusDto_.pageNumber);
-                var pageRow = Number(QueryDiscusDto_.pageRow);
+              if ((ContentDto_.pageNumber != undefined) && (ContentDto_.pageRow != undefined)) {
+                var pageNumber = Number(ContentDto_.pageNumber);
+                var pageRow = Number(ContentDto_.pageRow);
                 var offset = pageNumber * pageRow;
                 // retVal['disqusLogs'] = profile.avatar;
                 // retVal.put("disqusLogs",streamSupplier.get().skip(offset).limit(pageRow).collect(Collectors.toList()));
@@ -183,7 +189,7 @@ export class DisqusController {
       );
     }
 
-    return await this.disquscontactsService.findByEmailAndMate(QueryDiscusDto_.email.toString(), QueryDiscusDto_.receiverParty.toString());
+    return await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
   }
 
   private async aggrDisqusLog(eventType: string, DisqusLog: CreateDisquslogsDto){
@@ -227,24 +233,38 @@ export class DisqusController {
     return retVal;
   }
 
-  private async buildDisqus(QueryDiscusDto_: QueryDiscusDto,buildInteractive:boolean){
+  private async buildDisqus(ContentDto_: ContentDto,buildInteractive:boolean){
     var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
-    CreateDisquscontactsDto_ = await this.disquscontactsService.findByEmailAndMate(QueryDiscusDto_.email.toString(), QueryDiscusDto_.receiverParty.toString());
+    CreateDisquscontactsDto_ = await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
     if (await this.utilsService.ceckData(CreateDisquscontactsDto_)){
       var IdDisqus = CreateDisquscontactsDto_.disqus.id.toString();
       var CreateDisqusDto_ = new CreateDisqusDto();
       if (CreateDisquscontactsDto_.disqus != null) {
         CreateDisqusDto_ = await this.DisqusService.findOne(IdDisqus);
       } else {
-        //CreateDisqusDto_ = ContentDto;
+        var DataId = await this.utilsService.generateId();
+        CreateDisqusDto_._id = DataId;
+        CreateDisqusDto_.room = DataId;
+        CreateDisqusDto_.disqusID = ContentDto_.disqusID;
+        CreateDisqusDto_.eventType = ContentDto_.eventType;
+        CreateDisqusDto_.email = ContentDto_.email;
+        CreateDisqusDto_.mate = ContentDto_.mate;
+        CreateDisqusDto_.active = ContentDto_.active;
+        CreateDisqusDto_.createdAt = await this.utilsService.getDateTimeString();
+        CreateDisqusDto_.updatedAt = await this.utilsService.getDateTimeString();
       }
-      if (QueryDiscusDto_.postID != undefined) {
-        var PostData = await this.postDisqusService.findid(QueryDiscusDto_.postID.toString());
+      if (ContentDto_.postID != undefined) {
+        var PostData = await this.postDisqusService.findid(ContentDto_.postID.toString());
         if (await this.utilsService.ceckData(PostData)) {
-          QueryDiscusDto_.postContent = PostData;
-          QueryDiscusDto_.postType = PostData.postType;
+          ContentDto_.postContent = PostData;
+          ContentDto_.postType = PostData.postType;
           if (buildInteractive){
-            QueryDiscusDto_.eventType = "REACTION";
+            var _ContentDto_ = new ContentDto();
+            _ContentDto_ = ContentDto_;
+            ContentDto_.eventType = "REACTION";
+            ContentDto_.postType = PostData.postType;
+            ContentDto_.receiverParty = PostData.email;
+            ContentDto_.reactionUri = ContentDto_.reactionUri;
 
 					// InsightDto insightDto = this.validationEvent(contentDto);
           //   this.processInsightEvent(insightDto);
@@ -252,6 +272,12 @@ export class DisqusController {
         }
       }
     }
+  }
+
+  private async validationEvent(ContentDto_: ContentDto){
+    var post = await this.postDisqusService.findContentPost(ContentDto_.postID.toString());
+    var InsightsDto = new InsightsDto();
+    
   }
 
   @Post('posts/disqus/deletedicuss')
