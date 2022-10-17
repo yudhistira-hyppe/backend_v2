@@ -17,7 +17,7 @@ import { Insights } from '../insights/schemas/insights.schema';
 import axios from 'axios';
 import { ConfigService } from '@nestjs/config';
 import { createWriteStream, unlink } from 'fs'
-import { QueryDiscusDto } from '../disqus/dto/create-disqus.dto';
+import { ContentDto } from '../disqus/dto/create-disqus.dto';
 import { Userbasic } from '../../trans/userbasics/schemas/userbasic.schema';
 import { ContenteventsService } from '../contentevents/contentevents.service';
 import { Contentevents } from '../contentevents/schemas/contentevents.schema';

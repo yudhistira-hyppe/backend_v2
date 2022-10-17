@@ -1,4 +1,5 @@
 import { Long } from "mongodb";
+import { ContentDto } from "../../../content/disqus/dto/create-disqus.dto";
 
 export class CreateInsightsDto {
   _id: String;
@@ -18,4 +19,12 @@ export class CreateInsightsDto {
   shares: Long;
   reactions: Long;
   _class: String;
+}
+
+export class InsightsDto {
+  eventType: String;
+  contentDto: ContentDto;
+  validStep3: boolean;
+  validStep4: boolean;
+  prevPresent: boolean;
 }
