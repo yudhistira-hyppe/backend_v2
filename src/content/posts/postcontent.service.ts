@@ -599,6 +599,7 @@ export class PostContentService {
       }
 
       pic.apsaraId = body.videoId;
+      pic.apsaraThumbId = body.thId;
       pic.active = true;
       this.picService.create(pic);
 
@@ -1479,7 +1480,9 @@ export class PostContentService {
               let pic = await this.picService.findOne(String(med.oid));
               if (pic.apsara == true) {
                 xpics.push(String(pic.apsaraId));
+                xpics.push(String(pic.apsaraThumbId));
                 pa.apsaraId = String(pic.apsaraId);
+                pa.apsaraThumbId = String(pic.apsaraThumbId);
                 pa.isApsara = true;
               } else {
                 pa.mediaEndpoint = '/pict/' + pic.postID;
@@ -2292,6 +2295,15 @@ export class PostContentService {
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
             if (pdpp.apsaraId == vi.ImageId) {
+              pdpp.mediaEndpoint = vi.URL;
+              pdpp.mediaUri = vi.URL;
+
+              let oid = pdpp.username;
+              pdpp.username = this.getUserName(oid, cuser, ubs);
+              pdpp.avatar = await this.getAvatar(oid, cuser, ubs);                                                                                    
+              resPic.push(pdpp);
+            }
+            if (pdpp.apsaraThumbId == vi.ImageId) {
               pdpp.mediaThumbEndpoint = vi.URL;
               pdpp.mediaThumbUri = vi.URL;
 
@@ -2299,7 +2311,7 @@ export class PostContentService {
               pdpp.username = this.getUserName(oid, cuser, ubs);
               pdpp.avatar = await this.getAvatar(oid, cuser, ubs);                                                                                    
               resPic.push(pdpp);
-            }
+            }            
           }
         }
       }            
