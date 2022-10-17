@@ -38,7 +38,9 @@ export class Mediapicts {
  @Prop()
  apsara: boolean 
  @Prop()
- apsaraId: String     
+ apsaraId: String
+ @Prop()
+ apsaraThumbId: String      
  @Prop()
  viewers: any[]; 
 }
