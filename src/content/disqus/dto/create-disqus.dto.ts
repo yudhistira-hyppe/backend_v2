@@ -1,3 +1,5 @@
+import { CreatePostsDto } from "src/content/posts/dto/create-posts.dto";
+
 export class CreateDisqusDto {
   
 
@@ -21,14 +23,20 @@ export class CreateDisqusDto {
      _class:String;
   }
 
-export class QueryDiscusDto{
+export class QueryDiscusDto {
+  postID: String;
+  email: String;
+  postType: String;
+  postContent: CreatePostsDto; 
+  title: String;
+  description: String; 
+  active: boolean;
   isQuery: boolean;
   eventType: String;
-  email: String;
   receiverParty: String;
   withDetail: boolean;
   detailOnly: boolean;
   pageRow: String;
-  pageNumber: String;
-  postID: String;
+  pageNumber: String; 
+  reactionUri: String;
 }

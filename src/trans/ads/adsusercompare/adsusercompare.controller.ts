@@ -493,8 +493,8 @@ export class AdsUserCompareController {
                             try{
                                 var titleinsukses = "Reward";
                                 var titleensukses = "Reward";
-                                var bodyinsukses = "Selamat kamu mendapatkan reward Rp.400";
-                                var bodyensukses = "Congratulation you've got a reward Rp.400";
+                                var bodyinsukses = "Selamat kamu mendapatkan reward Rp." + ads_rewards;
+                                var bodyensukses = "Congratulation you've got a reward Rp." + ads_rewards;
                                 var eventType = "ADS VIEW";
                                 var event = "ADS VIEW";
                                 await this.utilsService.sendFcm(data_userbasicsService.email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
@@ -769,8 +769,8 @@ export class AdsUserCompareController {
                     try {
                         var titleinsukses = "Reward";
                         var titleensukses = "Reward";
-                        var bodyinsukses = "Selamat kamu mendapatkan reward Rp.400";
-                        var bodyensukses = "Congratulation you've got a reward Rp.400";
+                        var bodyinsukses = "Selamat kamu mendapatkan reward Rp." + ads_rewards;
+                        var bodyensukses = "Congratulation you've got a reward Rp." + ads_rewards;
                         var eventType = "ADS CLICK";
                         var event = "ADS CLICK";
                         await this.utilsService.sendFcm(data_userbasicsService.email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);

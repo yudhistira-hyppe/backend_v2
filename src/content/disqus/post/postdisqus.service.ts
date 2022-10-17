@@ -50,4 +50,8 @@ export class PostDisqusService {
     Object.assign(query[0], { datauser: datauserbasicsService });
     return query;
   }
+
+  async findid(id: string): Promise<Posts> {
+    return this.PostsModel.findOne({ _id: id }).exec();
+  }
 }
