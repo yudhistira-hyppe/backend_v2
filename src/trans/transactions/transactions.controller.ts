@@ -330,7 +330,7 @@ export class TransactionsController {
                     }
 
                     try {
-                        let datareqva = await this.oyPgService.generateStaticVa(datava);
+                        var datareqva = await this.oyPgService.generateStaticVa(datava);
                         var idva = datareqva.id;
                         var statuscodeva = datareqva.status.code;
                         var statusmessage = datareqva.status.message;
@@ -371,6 +371,7 @@ export class TransactionsController {
                             CreateTransactionsDto.expiredtimeva = d1.toISOString();
                             CreateTransactionsDto.detail = arrayDetail;
                             CreateTransactionsDto.postid = postidTR.toString();
+                            CreateTransactionsDto.response = datareqva;
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
                             await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                             await this.transactionsService.updatestatuscancel(idtransaction);
@@ -417,7 +418,7 @@ export class TransactionsController {
                             "data": data,
                             "message": messages
                         });
-                        setTimeout(res, 3000);
+                        // setTimeout(res, 3000);
                     }
                     else if (statuscodeva == "208") {
                         throw new BadRequestException("Request is Rejected (API Key is not Valid)");
@@ -451,7 +452,7 @@ export class TransactionsController {
                 }
 
                 try {
-                    let datareqva = await this.oyPgService.generateStaticVa(datava);
+                    var datareqva = await this.oyPgService.generateStaticVa(datava);
                     var idva = datareqva.id;
                     var statuscodeva = datareqva.status.code;
                     var statusmessage = datareqva.status.message;
@@ -493,6 +494,7 @@ export class TransactionsController {
                         CreateTransactionsDto.expiredtimeva = d1.toISOString();
                         CreateTransactionsDto.detail = arrayDetail;
                         CreateTransactionsDto.postid = postidTR.toString();
+                        CreateTransactionsDto.response = datareqva;
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
                         await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
@@ -535,7 +537,7 @@ export class TransactionsController {
                         "data": data,
                         "message": messages
                     });
-                    setTimeout(res, 3000);
+                    // setTimeout(res, 3000);
                 }
                 else if (statuscodeva == "208") {
                     throw new BadRequestException("Request is Rejected (API Key is not Valid)");
@@ -550,6 +552,11 @@ export class TransactionsController {
 
         }
         else if (type === "VOUCHER") {
+
+            var postidTRvoucer = null;
+            var arraymountvc = [];
+            var arraypostidsvc = [];
+
             try {
 
 
@@ -565,8 +572,6 @@ export class TransactionsController {
             try {
 
                 datatrpending = await this.transactionsService.findpostidpendingVoucer();
-                console.log(datatrpending);
-
 
             } catch (e) {
                 datatrpending = null;
@@ -604,16 +609,16 @@ export class TransactionsController {
                         process.exit(0);
                     } else {
                         var amountobj = dataconten.amount * qty;
-                        arraymount.push(amountobj);
-                        arraypostids.push(postIds);
+                        arraymountvc.push(amountobj);
+                        arraypostidsvc.push(postIds);
 
                         var arraydetailobj = { "id": objid, "qty": qty, "totalAmount": totalAmount };
                         arrayDetail.push(arraydetailobj);
                     }
                 }
 
-                for (var i = 0; i < arraymount.length; i++) {
-                    sum += arraymount[i];
+                for (var i = 0; i < arraymountvc.length; i++) {
+                    sum += arraymountvc[i];
                 }
 
                 saleAmount = sum;
@@ -622,7 +627,8 @@ export class TransactionsController {
                 saleAmount = 0;
             }
 
-            postidTR = arraypostids.toString();
+            postidTRvoucer = arraypostidsvc.toString();
+            console.log(postidTRvoucer)
 
             if (datatrpending !== null) {
 
@@ -650,7 +656,7 @@ export class TransactionsController {
                     }
 
                     try {
-                        let datareqva = await this.oyPgService.generateStaticVa(datava);
+                        var datareqva = await this.oyPgService.generateStaticVa(datava);
                         var idva = datareqva.id;
                         var statuscodeva = datareqva.status.code;
                         var statusmessage = datareqva.status.message;
@@ -690,7 +696,8 @@ export class TransactionsController {
                             CreateTransactionsDto.payload = null;
                             CreateTransactionsDto.expiredtimeva = d1.toISOString();
                             CreateTransactionsDto.detail = arrayDetail;
-                            CreateTransactionsDto.postid = postidTR.toString();
+                            CreateTransactionsDto.postid = postidTRvoucer.toString();
+                            CreateTransactionsDto.response = datareqva;
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
                             var lengArrDetail = arrayDetail.length;
@@ -722,7 +729,7 @@ export class TransactionsController {
 
                             var data = {
                                 "noinvoice": datatr.noinvoice,
-                                "postid": postidTR.toString(),
+                                "postid": postidTRvoucer.toString(),
                                 "idusersell": datatr.idusersell,
                                 "NamaPenjual": namapenjual,
                                 "iduserbuyer": datatr.iduserbuyer,
@@ -761,7 +768,7 @@ export class TransactionsController {
                             "data": data,
                             "message": messages
                         });
-                        setTimeout(res, 3000);
+                        // setTimeout(res, 3000);
                     }
                     else if (statuscodeva == "208") {
                         throw new BadRequestException("Request is Rejected (API Key is not Valid)");
@@ -795,7 +802,7 @@ export class TransactionsController {
                 }
 
                 try {
-                    let datareqva = await this.oyPgService.generateStaticVa(datava);
+                    var datareqva = await this.oyPgService.generateStaticVa(datava);
                     var idva = datareqva.id;
                     var statuscodeva = datareqva.status.code;
                     var statusmessage = datareqva.status.message;
@@ -836,7 +843,8 @@ export class TransactionsController {
                         CreateTransactionsDto.payload = null;
                         CreateTransactionsDto.expiredtimeva = d1.toISOString();
                         CreateTransactionsDto.detail = arrayDetail;
-                        CreateTransactionsDto.postid = postidTR.toString();
+                        CreateTransactionsDto.postid = postidTRvoucer.toString();
+                        CreateTransactionsDto.response = datareqva;
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
                         await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                         var lengArrDetail = arrayDetail.length;
@@ -852,7 +860,7 @@ export class TransactionsController {
 
                         var data = {
                             "noinvoice": datatr.noinvoice,
-                            "postid": postidTR.toString(),
+                            "postid": postidTRvoucer.toString(),
                             "idusersell": datatr.idusersell,
                             "NamaPenjual": namapenjual,
                             "iduserbuyer": datatr.iduserbuyer,
@@ -891,7 +899,7 @@ export class TransactionsController {
                         "data": data,
                         "message": messages
                     });
-                    setTimeout(res, 3000);
+                    //  setTimeout(res, 3000);
                 }
                 else if (statuscodeva == "208") {
                     throw new BadRequestException("Request is Rejected (API Key is not Valid)");

@@ -25,6 +25,7 @@ export class CreateTransactionsDto {
     idva: string;
     type: string;
     detail: any[];
+    response: {};
 
 }
 export class Uservoucher {

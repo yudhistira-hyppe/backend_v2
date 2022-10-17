@@ -57,6 +57,8 @@ export class Transactions {
     type: string
     @Prop([])
     detail: [];
+    @Prop({ type: Object })
+    response: {}
 
 
 }
