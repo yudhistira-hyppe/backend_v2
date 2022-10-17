@@ -2301,7 +2301,6 @@ export class PostContentService {
               let oid = pdpp.username;
               pdpp.username = this.getUserName(oid, cuser, ubs);
               pdpp.avatar = await this.getAvatar(oid, cuser, ubs);                                                                                    
-              resPic.push(pdpp);
             }
             if (pdpp.apsaraThumbId == vi.ImageId) {
               pdpp.mediaThumbEndpoint = vi.URL;
@@ -2310,8 +2309,8 @@ export class PostContentService {
               let oid = pdpp.username;
               pdpp.username = this.getUserName(oid, cuser, ubs);
               pdpp.avatar = await this.getAvatar(oid, cuser, ubs);                                                                                    
-              resPic.push(pdpp);
             }            
+            resPic.push(pdpp);
           }
         }
       }            
