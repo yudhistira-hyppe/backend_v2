@@ -58,6 +58,7 @@ export class Transactions {
     @Prop([])
     detail: [];
 
+
 }
 
 export const TransactionsSchema = SchemaFactory.createForClass(Transactions);

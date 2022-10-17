@@ -2902,28 +2902,16 @@ export class TransactionsService {
                         foreignField: "postID",
                         as: "post_data"
                     }
-                }, {
+                },
+                {
                     $lookup: {
-                        from: "mediapicts2",
-                        localField: "post_data.contentMedias.$id",
+                        from: "userbasics",
+                        localField: "idusersell",
                         foreignField: "_id",
-                        as: "mediaPict_data"
+                        as: "userbasics_sell"
                     }
-                }, {
-                    $lookup: {
-                        from: "mediadiaries2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediadiaries_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "mediavideos2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediavideos_data"
-                    }
-                }, {
+                },
+                {
                     $project: {
                         iduser: "$iduserbuyer",
                         type: "$type",
@@ -2945,30 +2933,19 @@ export class TransactionsService {
                                 0
                             ]
                         },
+                        usersell: {
+                            $arrayElemAt: [
+                                "$userbasics_sell",
+                                0
+                            ]
+                        },
                         postdata: {
                             $arrayElemAt: [
                                 "$post_data",
                                 0
                             ]
                         },
-                        mediapict: {
-                            $arrayElemAt: [
-                                "$mediaPict_data",
-                                0
-                            ]
-                        },
-                        mediadiaries: {
-                            $arrayElemAt: [
-                                "$mediadiaries_data",
-                                0
-                            ]
-                        },
-                        mediavideos: {
-                            $arrayElemAt: [
-                                "$mediavideos_data",
-                                0
-                            ]
-                        }
+
                     }
                 }, {
                     $project: {
@@ -2989,128 +2966,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        penjual: "$usersell.fullName",
+                        emailpenjual: "$usersell.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
                         title: '$postdata.description',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapict.mediaBasePath",
-                        mediadiariPath: "$mediadiaries.mediaBasePath",
-                        mediavideoPath: "$mediavideos.mediaBasePath"
-                    }
-                }, {
-                    $project: {
-                        refs: {
-                            $arrayElemAt: [
-                                "$contentMedias",
-                                0
-                            ]
-                        },
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs.$ref",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $addFields: {
-                        concatmediapict: "/pict",
-                        "media_pict": {
-                            $replaceOne: {
-                                input: "$mediapict.mediaUri",
-                                find: "_0001.jpeg",
-                                replacement: ""
-                            }
-                        },
-                        concatmediadiari: "/stream",
-                        concatthumbdiari: "/thumb",
-                        "media_diari": "$mediadiaries.mediaUri",
-                        concatmediavideo: "/stream",
-                        concatthumbvideo: "/thumb",
-                        "media_video": "$mediavideos.mediaUri"
+
                     }
                 }, {
                     $project: {
@@ -3131,244 +2993,94 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediaBasePath: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaBasePath"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaUri"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaType: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaType"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbdiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbvideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediapict",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediadiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediavideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaThumb"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -3410,28 +3122,16 @@ export class TransactionsService {
                         foreignField: "postID",
                         as: "post_data"
                     }
-                }, {
+                },
+                {
                     $lookup: {
-                        from: "mediapicts2",
-                        localField: "post_data.contentMedias.$id",
+                        from: "userbasics",
+                        localField: "idusersell",
                         foreignField: "_id",
-                        as: "mediaPict_data"
+                        as: "userbasics_sell"
                     }
-                }, {
-                    $lookup: {
-                        from: "mediadiaries2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediadiaries_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "mediavideos2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediavideos_data"
-                    }
-                }, {
+                },
+                {
                     $project: {
                         iduser: "$iduserbuyer",
                         type: "$type",
@@ -3453,30 +3153,19 @@ export class TransactionsService {
                                 0
                             ]
                         },
+                        usersell: {
+                            $arrayElemAt: [
+                                "$userbasics_sell",
+                                0
+                            ]
+                        },
                         postdata: {
                             $arrayElemAt: [
                                 "$post_data",
                                 0
                             ]
                         },
-                        mediapict: {
-                            $arrayElemAt: [
-                                "$mediaPict_data",
-                                0
-                            ]
-                        },
-                        mediadiaries: {
-                            $arrayElemAt: [
-                                "$mediadiaries_data",
-                                0
-                            ]
-                        },
-                        mediavideos: {
-                            $arrayElemAt: [
-                                "$mediavideos_data",
-                                0
-                            ]
-                        }
+
                     }
                 }, {
                     $project: {
@@ -3497,128 +3186,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        penjual: "$usersell.fullName",
+                        emailpenjual: "$usersell.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
                         title: '$postdata.description',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapict.mediaBasePath",
-                        mediadiariPath: "$mediadiaries.mediaBasePath",
-                        mediavideoPath: "$mediavideos.mediaBasePath"
-                    }
-                }, {
-                    $project: {
-                        refs: {
-                            $arrayElemAt: [
-                                "$contentMedias",
-                                0
-                            ]
-                        },
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs.$ref",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $addFields: {
-                        concatmediapict: "/pict",
-                        "media_pict": {
-                            $replaceOne: {
-                                input: "$mediapict.mediaUri",
-                                find: "_0001.jpeg",
-                                replacement: ""
-                            }
-                        },
-                        concatmediadiari: "/stream",
-                        concatthumbdiari: "/thumb",
-                        "media_diari": "$mediadiaries.mediaUri",
-                        concatmediavideo: "/stream",
-                        concatthumbvideo: "/thumb",
-                        "media_video": "$mediavideos.mediaUri"
+
                     }
                 }, {
                     $project: {
@@ -3639,244 +3213,94 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediaBasePath: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaBasePath"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaUri"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaType: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaType"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbdiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbvideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediapict",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediadiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediavideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaThumb"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -3917,28 +3341,16 @@ export class TransactionsService {
                         foreignField: "postID",
                         as: "post_data"
                     }
-                }, {
+                },
+                {
                     $lookup: {
-                        from: "mediapicts2",
-                        localField: "post_data.contentMedias.$id",
+                        from: "userbasics",
+                        localField: "idusersell",
                         foreignField: "_id",
-                        as: "mediaPict_data"
+                        as: "userbasics_sell"
                     }
-                }, {
-                    $lookup: {
-                        from: "mediadiaries2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediadiaries_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "mediavideos2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediavideos_data"
-                    }
-                }, {
+                },
+                {
                     $project: {
                         iduser: "$iduserbuyer",
                         type: "$type",
@@ -3960,30 +3372,19 @@ export class TransactionsService {
                                 0
                             ]
                         },
+                        usersell: {
+                            $arrayElemAt: [
+                                "$userbasics_sell",
+                                0
+                            ]
+                        },
                         postdata: {
                             $arrayElemAt: [
                                 "$post_data",
                                 0
                             ]
                         },
-                        mediapict: {
-                            $arrayElemAt: [
-                                "$mediaPict_data",
-                                0
-                            ]
-                        },
-                        mediadiaries: {
-                            $arrayElemAt: [
-                                "$mediadiaries_data",
-                                0
-                            ]
-                        },
-                        mediavideos: {
-                            $arrayElemAt: [
-                                "$mediavideos_data",
-                                0
-                            ]
-                        }
+
                     }
                 }, {
                     $project: {
@@ -4004,128 +3405,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        penjual: "$usersell.fullName",
+                        emailpenjual: "$usersell.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
                         title: '$postdata.description',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapict.mediaBasePath",
-                        mediadiariPath: "$mediadiaries.mediaBasePath",
-                        mediavideoPath: "$mediavideos.mediaBasePath"
-                    }
-                }, {
-                    $project: {
-                        refs: {
-                            $arrayElemAt: [
-                                "$contentMedias",
-                                0
-                            ]
-                        },
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs.$ref",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $addFields: {
-                        concatmediapict: "/pict",
-                        "media_pict": {
-                            $replaceOne: {
-                                input: "$mediapict.mediaUri",
-                                find: "_0001.jpeg",
-                                replacement: ""
-                            }
-                        },
-                        concatmediadiari: "/stream",
-                        concatthumbdiari: "/thumb",
-                        "media_diari": "$mediadiaries.mediaUri",
-                        concatmediavideo: "/stream",
-                        concatthumbvideo: "/thumb",
-                        "media_video": "$mediavideos.mediaUri"
+
                     }
                 }, {
                     $project: {
@@ -4146,244 +3432,94 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediaBasePath: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaBasePath"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaUri"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaType: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaType"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbdiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbvideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediapict",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediadiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediavideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaThumb"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -4421,28 +3557,16 @@ export class TransactionsService {
                         foreignField: "postID",
                         as: "post_data"
                     }
-                }, {
+                },
+                {
                     $lookup: {
-                        from: "mediapicts2",
-                        localField: "post_data.contentMedias.$id",
+                        from: "userbasics",
+                        localField: "idusersell",
                         foreignField: "_id",
-                        as: "mediaPict_data"
+                        as: "userbasics_sell"
                     }
-                }, {
-                    $lookup: {
-                        from: "mediadiaries2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediadiaries_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "mediavideos2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediavideos_data"
-                    }
-                }, {
+                },
+                {
                     $project: {
                         iduser: "$iduserbuyer",
                         type: "$type",
@@ -4464,30 +3588,19 @@ export class TransactionsService {
                                 0
                             ]
                         },
+                        usersell: {
+                            $arrayElemAt: [
+                                "$userbasics_sell",
+                                0
+                            ]
+                        },
                         postdata: {
                             $arrayElemAt: [
                                 "$post_data",
                                 0
                             ]
                         },
-                        mediapict: {
-                            $arrayElemAt: [
-                                "$mediaPict_data",
-                                0
-                            ]
-                        },
-                        mediadiaries: {
-                            $arrayElemAt: [
-                                "$mediadiaries_data",
-                                0
-                            ]
-                        },
-                        mediavideos: {
-                            $arrayElemAt: [
-                                "$mediavideos_data",
-                                0
-                            ]
-                        }
+
                     }
                 }, {
                     $project: {
@@ -4508,128 +3621,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        penjual: "$usersell.fullName",
+                        emailpenjual: "$usersell.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
                         title: '$postdata.description',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapict.mediaBasePath",
-                        mediadiariPath: "$mediadiaries.mediaBasePath",
-                        mediavideoPath: "$mediavideos.mediaBasePath"
-                    }
-                }, {
-                    $project: {
-                        refs: {
-                            $arrayElemAt: [
-                                "$contentMedias",
-                                0
-                            ]
-                        },
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs.$ref",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $addFields: {
-                        concatmediapict: "/pict",
-                        "media_pict": {
-                            $replaceOne: {
-                                input: "$mediapict.mediaUri",
-                                find: "_0001.jpeg",
-                                replacement: ""
-                            }
-                        },
-                        concatmediadiari: "/stream",
-                        concatthumbdiari: "/thumb",
-                        "media_diari": "$mediadiaries.mediaUri",
-                        concatmediavideo: "/stream",
-                        concatthumbvideo: "/thumb",
-                        "media_video": "$mediavideos.mediaUri"
+
                     }
                 }, {
                     $project: {
@@ -4650,244 +3648,94 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediaBasePath: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaBasePath"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaUri"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaType: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaType"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbdiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbvideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediapict",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediadiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediavideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaThumb"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -7701,28 +6549,16 @@ export class TransactionsService {
                         foreignField: "postID",
                         as: "post_data"
                     }
-                }, {
+                },
+                {
                     $lookup: {
-                        from: "mediapicts2",
-                        localField: "post_data.contentMedias.$id",
+                        from: "userbasics",
+                        localField: "iduserbuyer",
                         foreignField: "_id",
-                        as: "mediaPict_data"
+                        as: "userbasics_buy"
                     }
-                }, {
-                    $lookup: {
-                        from: "mediadiaries2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediadiaries_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "mediavideos2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediavideos_data"
-                    }
-                }, {
+                },
+                {
                     $project: {
                         iduser: "$idusersell",
                         type: "$type",
@@ -7744,30 +6580,19 @@ export class TransactionsService {
                                 0
                             ]
                         },
+                        userbuy: {
+                            $arrayElemAt: [
+                                "$userbasics_buy",
+                                0
+                            ]
+                        },
                         postdata: {
                             $arrayElemAt: [
                                 "$post_data",
                                 0
                             ]
                         },
-                        mediapict: {
-                            $arrayElemAt: [
-                                "$mediaPict_data",
-                                0
-                            ]
-                        },
-                        mediadiaries: {
-                            $arrayElemAt: [
-                                "$mediadiaries_data",
-                                0
-                            ]
-                        },
-                        mediavideos: {
-                            $arrayElemAt: [
-                                "$mediavideos_data",
-                                0
-                            ]
-                        }
+
                     }
                 }, {
                     $project: {
@@ -7788,16 +6613,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        pembeli: "$userbuy.fullName",
+                        emailpembeli: "$userbuy.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
                         title: '$postdata.description',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapict.mediaBasePath",
-                        mediadiariPath: "$mediadiaries.mediaBasePath",
-                        mediavideoPath: "$mediavideos.mediaBasePath"
+
                     }
                 }, {
                     $project: {
@@ -7823,16 +6645,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
+
                     }
                 }, {
                     $project: {
@@ -7853,16 +6672,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
+
                     }
                 }, {
                     $project: {
@@ -7883,33 +6699,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $addFields: {
-                        concatmediapict: "/pict",
-                        "media_pict": {
-                            $replaceOne: {
-                                input: "$mediapict.mediaUri",
-                                find: "_0001.jpeg",
-                                replacement: ""
-                            }
-                        },
-                        concatmediadiari: "/stream",
-                        concatthumbdiari: "/thumb",
-                        "media_diari": "$mediadiaries.mediaUri",
-                        concatmediavideo: "/stream",
-                        concatthumbvideo: "/thumb",
-                        "media_video": "$mediavideos.mediaUri"
+
                     }
                 }, {
                     $project: {
@@ -7930,244 +6726,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediaBasePath: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaBasePath"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaUri"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaType: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaType"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbdiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbvideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediapict",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediadiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediavideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaThumb"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
+
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -8210,28 +6775,16 @@ export class TransactionsService {
                         foreignField: "postID",
                         as: "post_data"
                     }
-                }, {
+                },
+                {
                     $lookup: {
-                        from: "mediapicts2",
-                        localField: "post_data.contentMedias.$id",
+                        from: "userbasics",
+                        localField: "iduserbuyer",
                         foreignField: "_id",
-                        as: "mediaPict_data"
+                        as: "userbasics_buy"
                     }
-                }, {
-                    $lookup: {
-                        from: "mediadiaries2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediadiaries_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "mediavideos2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediavideos_data"
-                    }
-                }, {
+                },
+                {
                     $project: {
                         iduser: "$idusersell",
                         type: "$type",
@@ -8253,30 +6806,19 @@ export class TransactionsService {
                                 0
                             ]
                         },
+                        userbuy: {
+                            $arrayElemAt: [
+                                "$userbasics_buy",
+                                0
+                            ]
+                        },
                         postdata: {
                             $arrayElemAt: [
                                 "$post_data",
                                 0
                             ]
                         },
-                        mediapict: {
-                            $arrayElemAt: [
-                                "$mediaPict_data",
-                                0
-                            ]
-                        },
-                        mediadiaries: {
-                            $arrayElemAt: [
-                                "$mediadiaries_data",
-                                0
-                            ]
-                        },
-                        mediavideos: {
-                            $arrayElemAt: [
-                                "$mediavideos_data",
-                                0
-                            ]
-                        }
+
                     }
                 }, {
                     $project: {
@@ -8297,16 +6839,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        pembeli: "$userbuy.fullName",
+                        emailpembeli: "$userbuy.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
                         title: '$postdata.description',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapict.mediaBasePath",
-                        mediadiariPath: "$mediadiaries.mediaBasePath",
-                        mediavideoPath: "$mediavideos.mediaBasePath"
+
                     }
                 }, {
                     $project: {
@@ -8332,16 +6871,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
+
                     }
                 }, {
                     $project: {
@@ -8362,16 +6898,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
+
                     }
                 }, {
                     $project: {
@@ -8392,33 +6925,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $addFields: {
-                        concatmediapict: "/pict",
-                        "media_pict": {
-                            $replaceOne: {
-                                input: "$mediapict.mediaUri",
-                                find: "_0001.jpeg",
-                                replacement: ""
-                            }
-                        },
-                        concatmediadiari: "/stream",
-                        concatthumbdiari: "/thumb",
-                        "media_diari": "$mediadiaries.mediaUri",
-                        concatmediavideo: "/stream",
-                        concatthumbvideo: "/thumb",
-                        "media_video": "$mediavideos.mediaUri"
+
                     }
                 }, {
                     $project: {
@@ -8439,244 +6952,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediaBasePath: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaBasePath"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaUri"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaType: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaType"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbdiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbvideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediapict",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediadiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediavideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaThumb"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
+
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -8717,28 +6999,16 @@ export class TransactionsService {
                         foreignField: "postID",
                         as: "post_data"
                     }
-                }, {
+                },
+                {
                     $lookup: {
-                        from: "mediapicts2",
-                        localField: "post_data.contentMedias.$id",
+                        from: "userbasics",
+                        localField: "iduserbuyer",
                         foreignField: "_id",
-                        as: "mediaPict_data"
+                        as: "userbasics_buy"
                     }
-                }, {
-                    $lookup: {
-                        from: "mediadiaries2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediadiaries_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "mediavideos2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediavideos_data"
-                    }
-                }, {
+                },
+                {
                     $project: {
                         iduser: "$idusersell",
                         type: "$type",
@@ -8760,30 +7030,19 @@ export class TransactionsService {
                                 0
                             ]
                         },
+                        userbuy: {
+                            $arrayElemAt: [
+                                "$userbasics_buy",
+                                0
+                            ]
+                        },
                         postdata: {
                             $arrayElemAt: [
                                 "$post_data",
                                 0
                             ]
                         },
-                        mediapict: {
-                            $arrayElemAt: [
-                                "$mediaPict_data",
-                                0
-                            ]
-                        },
-                        mediadiaries: {
-                            $arrayElemAt: [
-                                "$mediadiaries_data",
-                                0
-                            ]
-                        },
-                        mediavideos: {
-                            $arrayElemAt: [
-                                "$mediavideos_data",
-                                0
-                            ]
-                        }
+
                     }
                 }, {
                     $project: {
@@ -8804,16 +7063,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        pembeli: "$userbuy.fullName",
+                        emailpembeli: "$userbuy.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
                         title: '$postdata.description',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapict.mediaBasePath",
-                        mediadiariPath: "$mediadiaries.mediaBasePath",
-                        mediavideoPath: "$mediavideos.mediaBasePath"
+
                     }
                 }, {
                     $project: {
@@ -8839,16 +7095,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
+
                     }
                 }, {
                     $project: {
@@ -8869,16 +7122,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
+
                     }
                 }, {
                     $project: {
@@ -8899,33 +7149,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $addFields: {
-                        concatmediapict: "/pict",
-                        "media_pict": {
-                            $replaceOne: {
-                                input: "$mediapict.mediaUri",
-                                find: "_0001.jpeg",
-                                replacement: ""
-                            }
-                        },
-                        concatmediadiari: "/stream",
-                        concatthumbdiari: "/thumb",
-                        "media_diari": "$mediadiaries.mediaUri",
-                        concatmediavideo: "/stream",
-                        concatthumbvideo: "/thumb",
-                        "media_video": "$mediavideos.mediaUri"
+
                     }
                 }, {
                     $project: {
@@ -8946,244 +7176,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediaBasePath: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaBasePath"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaUri"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaType: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaType"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbdiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbvideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediapict",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediadiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediavideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaThumb"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
+
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -9222,28 +7221,16 @@ export class TransactionsService {
                         foreignField: "postID",
                         as: "post_data"
                     }
-                }, {
+                },
+                {
                     $lookup: {
-                        from: "mediapicts2",
-                        localField: "post_data.contentMedias.$id",
+                        from: "userbasics",
+                        localField: "iduserbuyer",
                         foreignField: "_id",
-                        as: "mediaPict_data"
+                        as: "userbasics_buy"
                     }
-                }, {
-                    $lookup: {
-                        from: "mediadiaries2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediadiaries_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "mediavideos2",
-                        localField: "post_data.contentMedias.$id",
-                        foreignField: "_id",
-                        as: "mediavideos_data"
-                    }
-                }, {
+                },
+                {
                     $project: {
                         iduser: "$idusersell",
                         type: "$type",
@@ -9265,30 +7252,19 @@ export class TransactionsService {
                                 0
                             ]
                         },
+                        userbuy: {
+                            $arrayElemAt: [
+                                "$userbasics_buy",
+                                0
+                            ]
+                        },
                         postdata: {
                             $arrayElemAt: [
                                 "$post_data",
                                 0
                             ]
                         },
-                        mediapict: {
-                            $arrayElemAt: [
-                                "$mediaPict_data",
-                                0
-                            ]
-                        },
-                        mediadiaries: {
-                            $arrayElemAt: [
-                                "$mediadiaries_data",
-                                0
-                            ]
-                        },
-                        mediavideos: {
-                            $arrayElemAt: [
-                                "$mediavideos_data",
-                                0
-                            ]
-                        }
+
                     }
                 }, {
                     $project: {
@@ -9309,16 +7285,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$user.fullName",
                         email: "$user.email",
+                        pembeli: "$userbuy.fullName",
+                        emailpembeli: "$userbuy.email",
                         postID: "$postdata.postID",
                         postType: "$postdata.postType",
                         descriptionContent: '$postdata.description',
                         title: '$postdata.description',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapict.mediaBasePath",
-                        mediadiariPath: "$mediadiaries.mediaBasePath",
-                        mediavideoPath: "$mediavideos.mediaBasePath"
+
                     }
                 }, {
                     $project: {
@@ -9344,16 +7317,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
+
                     }
                 }, {
                     $project: {
@@ -9374,16 +7344,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
+
                     }
                 }, {
                     $project: {
@@ -9404,33 +7371,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediapict: "$mediapict",
-                        mediadiaries: "$mediadiaries",
-                        mediavideos: "$mediavideos",
-                        mediapictPath: "$mediapictPath",
-                        mediadiariPath: "$mediadiariPath",
-                        mediavideoPath: "$mediavideoPath"
-                    }
-                }, {
-                    $addFields: {
-                        concatmediapict: "/pict",
-                        "media_pict": {
-                            $replaceOne: {
-                                input: "$mediapict.mediaUri",
-                                find: "_0001.jpeg",
-                                replacement: ""
-                            }
-                        },
-                        concatmediadiari: "/stream",
-                        concatthumbdiari: "/thumb",
-                        "media_diari": "$mediadiaries.mediaUri",
-                        concatmediavideo: "/stream",
-                        concatthumbvideo: "/thumb",
-                        "media_video": "$mediavideos.mediaUri"
+
                     }
                 }, {
                     $project: {
@@ -9451,244 +7398,13 @@ export class TransactionsService {
                         status: "$status",
                         fullName: "$fullName",
                         email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
                         postID: "$postID",
                         postType: "$postType",
                         descriptionContent: '$descriptionContent',
                         title: '$title',
-                        mediaBasePath: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaBasePath"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaBasePath"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaUri"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaUri"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaType: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediapict.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaType"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaType"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbdiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatthumbvideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaEndpoint: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediapict",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediadiari",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: {
-                                            $concat: [
-                                                "$concatmediavideo",
-                                                "/",
-                                                "$postID"
-                                            ]
-                                        }
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
-                        mediaThumbUri: {
-                            $switch: {
-                                branches: [
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediapicts"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediadiaries"
-                                            ]
-                                        },
-                                        then: "$mediadiaries.mediaThumb"
-                                    },
-                                    {
-                                        case: {
-                                            $eq: [
-                                                "$refs",
-                                                "mediavideos"
-                                            ]
-                                        },
-                                        then: "$mediavideos.mediaThumb"
-                                    }
-                                ],
-                                default: ""
-                            }
-                        },
+
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -12643,5 +10359,1841 @@ export class TransactionsService {
                 }
             }]);
         return query;
+    }
+
+    async findhistorySeller(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
+        const posts = await this.postsService.findpost();
+
+
+        if (startdate !== undefined && enddate !== undefined) {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+                        status: "Success",
+                        idusersell: iduser,
+                        timestamp: { $gte: startdate, $lte: dateend }
+
+                    }
+                },
+
+                {
+                    $addFields: {
+                        type: 'Sell',
+                        jenis: '$type'
+
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idusersell",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                }, {
+                    $lookup: {
+                        from: "posts2",
+                        localField: "postid",
+                        foreignField: "postID",
+                        as: "post_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_buy"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$idusersell",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+                        userbuy: {
+                            $arrayElemAt: [
+                                "$userbasics_buy",
+                                0
+                            ]
+                        },
+                        postdata: {
+                            $arrayElemAt: [
+                                "$post_data",
+                                0
+                            ]
+                        },
+
+                    }
+                }, {
+                    $project: {
+                        contentMedias: "$postdata.contentMedias",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+                        pembeli: "$userbuy.fullName",
+                        emailpembeli: "$userbuy.email",
+                        postID: "$postdata.postID",
+                        postType: "$postdata.postType",
+                        descriptionContent: '$postdata.description',
+                        title: '$postdata.description',
+
+                    }
+                }, {
+                    $project: {
+                        refs: {
+                            $arrayElemAt: [
+                                "$contentMedias",
+                                0
+                            ]
+                        },
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+                        refs: "$refs.$ref",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+                        refs: "$refs",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+                {
+                    $skip: skip
+                }, {
+                    $limit: limit
+                }
+            ]);
+
+            return query;
+        }
+        else {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        idusersell: iduser
+
+                    }
+                },
+
+                {
+                    $addFields: {
+                        type: 'Sell',
+                        jenis: '$type'
+
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idusersell",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                }, {
+                    $lookup: {
+                        from: "posts2",
+                        localField: "postid",
+                        foreignField: "postID",
+                        as: "post_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_buy"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$idusersell",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+                        userbuy: {
+                            $arrayElemAt: [
+                                "$userbasics_buy",
+                                0
+                            ]
+                        },
+                        postdata: {
+                            $arrayElemAt: [
+                                "$post_data",
+                                0
+                            ]
+                        },
+
+                    }
+                }, {
+                    $project: {
+                        contentMedias: "$postdata.contentMedias",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+                        pembeli: "$userbuy.fullName",
+                        emailpembeli: "$userbuy.email",
+                        postID: "$postdata.postID",
+                        postType: "$postdata.postType",
+                        descriptionContent: '$postdata.description',
+                        title: '$postdata.description',
+
+                    }
+                }, {
+                    $project: {
+                        refs: {
+                            $arrayElemAt: [
+                                "$contentMedias",
+                                0
+                            ]
+                        },
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+                        refs: "$refs.$ref",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+                        refs: "$refs",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+                {
+                    $skip: skip
+                }, {
+                    $limit: limit
+                }
+            ]);
+
+
+            return query;
+        }
+    }
+    async findhistorySellercount(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
+        const posts = await this.postsService.findpost();
+
+
+        if (startdate !== undefined && enddate !== undefined) {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+                        status: "Success",
+                        idusersell: iduser,
+                        timestamp: { $gte: startdate, $lte: dateend }
+
+                    }
+                },
+
+                {
+                    $addFields: {
+                        type: 'Sell',
+                        jenis: '$type'
+
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idusersell",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                }, {
+                    $lookup: {
+                        from: "posts2",
+                        localField: "postid",
+                        foreignField: "postID",
+                        as: "post_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_buy"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$idusersell",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+                        userbuy: {
+                            $arrayElemAt: [
+                                "$userbasics_buy",
+                                0
+                            ]
+                        },
+                        postdata: {
+                            $arrayElemAt: [
+                                "$post_data",
+                                0
+                            ]
+                        },
+
+                    }
+                }, {
+                    $project: {
+                        contentMedias: "$postdata.contentMedias",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+                        pembeli: "$userbuy.fullName",
+                        emailpembeli: "$userbuy.email",
+                        postID: "$postdata.postID",
+                        postType: "$postdata.postType",
+                        descriptionContent: '$postdata.description',
+                        title: '$postdata.description',
+
+                    }
+                }, {
+                    $project: {
+                        refs: {
+                            $arrayElemAt: [
+                                "$contentMedias",
+                                0
+                            ]
+                        },
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+                        refs: "$refs.$ref",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+                        refs: "$refs",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+                {
+                    $skip: skip
+                }, {
+                    $limit: limit
+                }
+            ]);
+
+            return query;
+        }
+        else {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+                        status: "Success",
+                        idusersell: iduser
+
+                    }
+                },
+
+                {
+                    $addFields: {
+                        type: 'Sell',
+                        jenis: '$type'
+
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idusersell",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                }, {
+                    $lookup: {
+                        from: "posts2",
+                        localField: "postid",
+                        foreignField: "postID",
+                        as: "post_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_buy"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$idusersell",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+                        userbuy: {
+                            $arrayElemAt: [
+                                "$userbasics_buy",
+                                0
+                            ]
+                        },
+                        postdata: {
+                            $arrayElemAt: [
+                                "$post_data",
+                                0
+                            ]
+                        },
+
+                    }
+                }, {
+                    $project: {
+                        contentMedias: "$postdata.contentMedias",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+                        pembeli: "$userbuy.fullName",
+                        emailpembeli: "$userbuy.email",
+                        postID: "$postdata.postID",
+                        postType: "$postdata.postType",
+                        descriptionContent: '$postdata.description',
+                        title: '$postdata.description',
+
+                    }
+                }, {
+                    $project: {
+                        refs: {
+                            $arrayElemAt: [
+                                "$contentMedias",
+                                0
+                            ]
+                        },
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+                        refs: "$refs.$ref",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+                        refs: "$refs",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        pembeli: "$pembeli",
+                        emailpembeli: "$emailpembeli",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+                {
+                    $skip: skip
+                }, {
+                    $limit: limit
+                }
+            ]);
+
+
+            return query;
+        }
+    }
+
+    async findhistoryBuyer(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
+        const posts = await this.postsService.findpost();
+
+
+        if (startdate !== undefined && enddate !== undefined) {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+                        status: "Success",
+                        iduserbuyer: iduser,
+                        timestamp: { $gte: startdate, $lte: dateend }
+                    }
+                },
+
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                }, {
+                    $lookup: {
+                        from: "posts2",
+                        localField: "postid",
+                        foreignField: "postID",
+                        as: "post_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idusersell",
+                        foreignField: "_id",
+                        as: "userbasics_sell"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+                        usersell: {
+                            $arrayElemAt: [
+                                "$userbasics_sell",
+                                0
+                            ]
+                        },
+                        postdata: {
+                            $arrayElemAt: [
+                                "$post_data",
+                                0
+                            ]
+                        },
+
+                    }
+                }, {
+                    $project: {
+                        contentMedias: "$postdata.contentMedias",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+                        penjual: "$usersell.fullName",
+                        emailpenjual: "$usersell.email",
+                        postID: "$postdata.postID",
+                        postType: "$postdata.postType",
+                        descriptionContent: '$postdata.description',
+                        title: '$postdata.description',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+                {
+                    $skip: skip
+                }, {
+                    $limit: limit
+                }
+            ]);
+
+
+            return query;
+        }
+        else {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+                        status: "Success",
+                        iduserbuyer: iduser
+                    }
+                },
+
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                }, {
+                    $lookup: {
+                        from: "posts2",
+                        localField: "postid",
+                        foreignField: "postID",
+                        as: "post_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idusersell",
+                        foreignField: "_id",
+                        as: "userbasics_sell"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+                        usersell: {
+                            $arrayElemAt: [
+                                "$userbasics_sell",
+                                0
+                            ]
+                        },
+                        postdata: {
+                            $arrayElemAt: [
+                                "$post_data",
+                                0
+                            ]
+                        },
+
+                    }
+                }, {
+                    $project: {
+                        contentMedias: "$postdata.contentMedias",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+                        penjual: "$usersell.fullName",
+                        emailpenjual: "$usersell.email",
+                        postID: "$postdata.postID",
+                        postType: "$postdata.postType",
+                        descriptionContent: '$postdata.description',
+                        title: '$postdata.description',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+                {
+                    $skip: skip
+                }, {
+                    $limit: limit
+                }
+            ]);
+
+            return query;
+        }
+
+    }
+    async findhistoryBuyerCount(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
+        const posts = await this.postsService.findpost();
+
+
+        if (startdate !== undefined && enddate !== undefined) {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+                        status: "Success",
+                        iduserbuyer: iduser,
+                        timestamp: { $gte: startdate, $lte: dateend }
+                    }
+                },
+
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                }, {
+                    $lookup: {
+                        from: "posts2",
+                        localField: "postid",
+                        foreignField: "postID",
+                        as: "post_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idusersell",
+                        foreignField: "_id",
+                        as: "userbasics_sell"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+                        usersell: {
+                            $arrayElemAt: [
+                                "$userbasics_sell",
+                                0
+                            ]
+                        },
+                        postdata: {
+                            $arrayElemAt: [
+                                "$post_data",
+                                0
+                            ]
+                        },
+
+                    }
+                }, {
+                    $project: {
+                        contentMedias: "$postdata.contentMedias",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+                        penjual: "$usersell.fullName",
+                        emailpenjual: "$usersell.email",
+                        postID: "$postdata.postID",
+                        postType: "$postdata.postType",
+                        descriptionContent: '$postdata.description',
+                        title: '$postdata.description',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+                {
+                    $skip: skip
+                }, {
+                    $limit: limit
+                }
+            ]);
+
+
+            return query;
+        }
+        else {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+                        status: "Success",
+                        iduserbuyer: iduser
+                    }
+                },
+
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                }, {
+                    $lookup: {
+                        from: "posts2",
+                        localField: "postid",
+                        foreignField: "postID",
+                        as: "post_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idusersell",
+                        foreignField: "_id",
+                        as: "userbasics_sell"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+                        usersell: {
+                            $arrayElemAt: [
+                                "$userbasics_sell",
+                                0
+                            ]
+                        },
+                        postdata: {
+                            $arrayElemAt: [
+                                "$post_data",
+                                0
+                            ]
+                        },
+
+                    }
+                }, {
+                    $project: {
+                        contentMedias: "$postdata.contentMedias",
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+                        penjual: "$usersell.fullName",
+                        emailpenjual: "$usersell.email",
+                        postID: "$postdata.postID",
+                        postType: "$postdata.postType",
+                        descriptionContent: '$postdata.description',
+                        title: '$postdata.description',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                }, {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$fullName",
+                        email: "$email",
+                        penjual: "$penjual",
+                        emailpenjual: "$emailpenjual",
+                        postID: "$postID",
+                        postType: "$postType",
+                        descriptionContent: '$descriptionContent',
+                        title: '$title',
+
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+                {
+                    $skip: skip
+                }, {
+                    $limit: limit
+                }
+            ]);
+
+            return query;
+        }
+
     }
 }
