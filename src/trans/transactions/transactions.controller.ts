@@ -842,7 +842,7 @@ export class TransactionsController {
                         CreateTransactionsDto.payload = null;
                         CreateTransactionsDto.expiredtimeva = d1.toISOString();
                         CreateTransactionsDto.detail = arrayDetailvc;
-                        CreateTransactionsDto.postid = postidTRvoucer.toString();
+                        CreateTransactionsDto.postid = postidTRvoucer;
                         CreateTransactionsDto.response = datareqva;
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
                         await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
@@ -860,7 +860,7 @@ export class TransactionsController {
 
                         var data = {
                             "noinvoice": datatr.noinvoice,
-                            "postid": postidTRvoucer.toString(),
+                            "postid": postidTRvoucer,
                             "idusersell": datatr.idusersell,
                             "NamaPenjual": namapenjual,
                             "iduserbuyer": datatr.iduserbuyer,
