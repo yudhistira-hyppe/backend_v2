@@ -53,6 +53,7 @@ import { OtpService } from './otp.service';
     AreasModule,
     CitiesModule,
     ReferralModule,
+    PostsModule,
     ActivityeventsModule, JwtModule.register({
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },

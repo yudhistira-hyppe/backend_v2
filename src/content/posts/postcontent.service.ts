@@ -1843,17 +1843,18 @@ export class PostContentService {
       this.logger.error('generateCertificate >>> get post: undefined');
       return undefined;
     }
+    this.logger.log('generateCertificate >>> post: ' + postId + ', post validated');
     if (post.certified == false) {
       this.logger.error('generateCertificate >>> get post certified: ' + post.certified);
       return undefined;
     }
-
+    this.logger.log('generateCertificate >>> post: ' + postId + ', post certified validated');
     let profile = await this.userService.findOne(String(post.email));
     if (profile == undefined) {
       this.logger.error('generateCertificate >>> validate profile: ' + post.email);
       return undefined;
     }
-
+    this.logger.log('generateCertificate >>> post: ' + postId + ', profile validated');
     let fileName = post.postID + ".pdf";
 
     let postType = 'HyppeVid';
@@ -1871,6 +1872,7 @@ export class PostContentService {
     if (lang == 'id' && template.body_detail_id != undefined) {
       body = template.body_detail_id;
     }
+    this.logger.log('generateCertificate >>> post: ' + postId + ', body: ' + body);
 
     const $_ = cheerio.load(body);
 
@@ -1897,6 +1899,7 @@ export class PostContentService {
     if (lang == 'id' && template.body_detail_id != undefined) {
       body = template.body_detail_id;
     }
+    this.logger.log('generateCertificate >>> post: ' + postId + ', post pdf validated');
 
     let pdf = cheerio.load(body);
     pdf('#fullname').text(profile.fullName);
