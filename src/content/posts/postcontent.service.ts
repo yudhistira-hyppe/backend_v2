@@ -763,12 +763,12 @@ export class PostContentService {
 
         query.where('visibility').in(['FRIEND', 'PUBLIC']).or(following);
       } else if (body.visibility == 'FRIEND') {
-        let friend = [];
+        let friend :String[] = [];
         let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
         if (check != undefined) {
           for (let i = 0; i < check.length; i++) {
             var cex = check[i];
-            friend.push(cex.friend);
+            friend.push(String(cex.friend));
           }
         }
 
@@ -780,12 +780,13 @@ export class PostContentService {
           query.where('visibility', 'PUBLIC');
         }
       } else {
-        let friend = [];
+        /*
+        let friend :String[] = [];
         let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
         if (check != undefined) {
           for (let i = 0; i < check.length; i++) {
             var cex = check[i];
-            friend.push(cex.friend);
+            friend.push(String(cex.friend));
           }
         }
 
@@ -796,6 +797,8 @@ export class PostContentService {
         } else {
           query.where('visibility', 'PUBLIC');
         }
+        */
+        query.where('visibility', 'PUBLIC');
       }
     }
 
