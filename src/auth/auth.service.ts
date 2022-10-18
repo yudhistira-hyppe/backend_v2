@@ -61,11 +61,7 @@ export class AuthService {
     private seaweedfsService: SeaweedfsService, 
     private adsUserCompareService: AdsUserCompareService,
     private contenteventsService: ContenteventsService,
-<<<<<<< HEAD
-    private postService: PostsService,
-=======
     private postsService: PostsService,  
->>>>>>> master
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
