@@ -1574,7 +1574,9 @@ export class PostContentService {
                   let drt = story.viewers[i];
                   let drns = drt.namespace;
                   if (drns == 'userbasics') {
-                    if (String(drt.oid) == String(iam._id.oid)) {
+                    let a = String(drt.oid);
+                    let b = String(iam._id);
+                    if (a == b) {
                       pa.isViewed = true;
                       break;
                     }
