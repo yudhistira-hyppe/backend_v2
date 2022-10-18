@@ -663,5 +663,81 @@ export class AccountbalancesService {
         return query;
     }
 
+    async findreward(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
+        if (startdate !== undefined && enddate !== undefined) {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+            let query = await this.accountbalancesModel.aggregate([
+
+                {
+                    $match: {
+                        iduser: iduser, type: "rewards", timestamp: { $gte: startdate, $lte: dateend }
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+                {
+                    $skip: skip
+                },
+                {
+                    $limit: limit
+                }
+            ]);
+            return query;
+
+        } else {
+            let query = await this.accountbalancesModel.aggregate([
+
+                {
+                    $match: {
+                        iduser: iduser, type: "rewards"
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+                {
+                    $skip: skip
+                },
+                {
+                    $limit: limit
+                }
+            ]);
+            return query;
+        }
+
+
+    }
+    async findrewardcount(iduser: ObjectId, startdate: string, enddate: string) {
+        if (startdate !== undefined && enddate !== undefined) {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+            let query = await this.accountbalancesModel.aggregate([
+
+                {
+                    $match: {
+                        iduser: iduser, type: "rewards", timestamp: { $gte: startdate, $lte: dateend }
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+
+            ]);
+            return query;
+
+        } else {
+            let query = await this.accountbalancesModel.aggregate([
+
+                {
+                    $match: {
+                        iduser: iduser, type: "rewards"
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+
+            ]);
+            return query;
+        }
+
+
+    }
 
 }

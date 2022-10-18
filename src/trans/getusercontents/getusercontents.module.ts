@@ -23,6 +23,7 @@ import { CountriesModule } from '../../infra/countries/countries.module';
 import { SettingsModule } from '../settings/settings.module';
 import { GetuserprofilesModule } from '../getuserprofiles/getuserprofiles.module';
 
+
 @Module({
 
     imports: [

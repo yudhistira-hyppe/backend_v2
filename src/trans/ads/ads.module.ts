@@ -14,12 +14,14 @@ import { MediavideosadsModule } from '../../stream/mediavideosads/mediavideosads
 import { SettingsModule } from '../settings/settings.module';
 import { VouchersModule } from '../vouchers/vouchers.module';
 import { AdsplacesModule } from '../adsplaces/adsplaces.module';
+import { PostsModule } from '../../content/posts/posts.module';
 //import { UserAdsModule } from '../userads/userads.module';
 @Module({
 
     imports: [
         AdsplacesModule,
-        ConfigModule.forRoot(), UservouchersModule, UserbasicsModule, AdstypesModule, SeaweedfsModule, MediaimageadsModule, UtilsModule, MediavideosadsModule, SettingsModule, VouchersModule,
+        ConfigModule.forRoot(), UservouchersModule, UserbasicsModule, AdstypesModule, SeaweedfsModule, MediaimageadsModule, UtilsModule, MediavideosadsModule,
+        SettingsModule, VouchersModule, PostsModule,
         MongooseModule.forFeature([{ name: Ads.name, schema: AdsSchema }], 'SERVER_TRANS')
     ],
     controllers: [AdsController],

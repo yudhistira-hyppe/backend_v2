@@ -36,7 +36,7 @@ export class UserauthsService {
 
   async findIn(id: String[]): Promise<Userauth[]> {
     return this.userauthModel.find().where('email').in(id).exec();
-  }  
+  }
 
   async findRoleEmail(email: String, roles_: String): Promise<Userauth[]> {
     return this.userauthModel.find({ email: email, roles: { $in: [roles_] } }).exec();
@@ -156,10 +156,10 @@ export class UserauthsService {
     let data = await this.userauthModel.updateOne({ "email": email },
       {
         $set: {
-          "isEnabled": false, 
+          "isEnabled": false,
           "isEmailVerified": false,
-          "email": email + '_noneactive', 
-        } 
+          "email": email + '_noneactive',
+        }
       });
     return data;
   }
@@ -181,6 +181,68 @@ export class UserauthsService {
           }
         }
       }
+    ]);
+    return query;
+  }
+
+  async findUserNew(username: string, skip: number, limit: number) {
+
+
+    const query = await this.userauthModel.aggregate([
+      {
+        "$match": {
+          "username": {
+            $regex: username,
+            $options: 'i'
+          }
+        }
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: limit
+      },
+      {
+        $lookup: {
+          from: 'userbasics',
+          localField: '_id',
+          foreignField: 'userAuth.$id',
+          as: 'userbasic_data',
+
+        },
+
+      },
+      {
+        $project: {
+          ubasic: {
+            $arrayElemAt: ['$userbasic_data', 0]
+          },
+          username: '$username',
+          email: '$email',
+          idUserAuth: '$_id',
+        },
+
+      },
+      {
+        $project: {
+
+          _id: '$ubasic._id',
+          username: '$username',
+          fullName: '$ubasic.fullName',
+          mediaId: '$ubasic.profilePict.$id',
+          email: '$email',
+          idUserAuth: '$idUserAuth'
+
+        },
+
+      },
+      {
+        $sort: {
+          username: 1
+        },
+
+      },
     ]);
     return query;
   }

@@ -24,6 +24,10 @@ export class MediaprofilepictsService {
     return this.MediaprofilepictsModel.find().exec();
   }
 
+  async findArrayId(mediaId: any[]): Promise<Mediaprofilepicts[]> {
+    return this.MediaprofilepictsModel.find({ mediaID: { $in: mediaId } }).exec();
+  }
+
   async findOne(id: string): Promise<Mediaprofilepicts> {
     return this.MediaprofilepictsModel.findOne({ _id: id }).exec();
   }

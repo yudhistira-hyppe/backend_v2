@@ -75,7 +75,7 @@ export class AdsController {
         private readonly errorHandler: ErrorHandler,
         private readonly utilsService: UtilsService,
         private readonly seaweedfsService: SeaweedfsService,
-        private readonly settingsService: SettingsService, 
+        private readonly settingsService: SettingsService,
         private readonly adsplacesService: AdsplacesService,
         private readonly vouchersService: VouchersService) { }
 
@@ -1500,6 +1500,64 @@ export class AdsController {
         let data = await this.adsService.adsdata(userid, startdate, enddate, skip, limit);
 
         var totalSearch = data.length;
+
+        return { response_code: 202, data, totalSearch, skip, limit, messages };
+    }
+
+    @Post('listadsuser')
+    @UseGuards(JwtAuthGuard)
+    async adslist(@Req() request: Request): Promise<any> {
+
+        var email = null;
+        var ubasic = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var email = null;
+        var skip = 0;
+        var limit = 0;
+        var startdate = null;
+        var enddate = null;
+        var search = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        search = request_json["search"];
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        try {
+            ubasic = await this.userbasicsService.findOne(email);
+            var userid = mongoose.Types.ObjectId(ubasic._id);
+
+        } catch (e) {
+            throw new BadRequestException("User not found");
+        }
+
+
+        let data = await this.adsService.list(userid, search, startdate, enddate, skip, limit);
+        let datacount = await this.adsService.listcount(userid, search, startdate, enddate);
+
+        var totalSearch = datacount.length;
 
         return { response_code: 202, data, totalSearch, skip, limit, messages };
     }
