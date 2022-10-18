@@ -763,12 +763,12 @@ export class PostContentService {
 
         query.where('visibility').in(['FRIEND', 'PUBLIC']).or(following);
       } else if (body.visibility == 'FRIEND') {
-        let friend = [];
+        let friend :String[] = [];
         let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
         if (check != undefined) {
           for (let i = 0; i < check.length; i++) {
             var cex = check[i];
-            friend.push(cex.friend);
+            friend.push(String(cex.friend));
           }
         }
 
@@ -780,12 +780,13 @@ export class PostContentService {
           query.where('visibility', 'PUBLIC');
         }
       } else {
-        let friend = [];
+        /*
+        let friend :String[] = [];
         let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
         if (check != undefined) {
           for (let i = 0; i < check.length; i++) {
             var cex = check[i];
-            friend.push(cex.friend);
+            friend.push(String(cex.friend));
           }
         }
 
@@ -796,6 +797,8 @@ export class PostContentService {
         } else {
           query.where('visibility', 'PUBLIC');
         }
+        */
+        query.where('visibility', 'PUBLIC');
       }
     }
 
@@ -1840,17 +1843,18 @@ export class PostContentService {
       this.logger.error('generateCertificate >>> get post: undefined');
       return undefined;
     }
+    this.logger.log('generateCertificate >>> post: ' + postId + ', post validated');
     if (post.certified == false) {
       this.logger.error('generateCertificate >>> get post certified: ' + post.certified);
       return undefined;
     }
-
+    this.logger.log('generateCertificate >>> post: ' + postId + ', post certified validated');
     let profile = await this.userService.findOne(String(post.email));
     if (profile == undefined) {
       this.logger.error('generateCertificate >>> validate profile: ' + post.email);
       return undefined;
     }
-
+    this.logger.log('generateCertificate >>> post: ' + postId + ', profile validated');
     let fileName = post.postID + ".pdf";
 
     let postType = 'HyppeVid';
@@ -1868,6 +1872,7 @@ export class PostContentService {
     if (lang == 'id' && template.body_detail_id != undefined) {
       body = template.body_detail_id;
     }
+    this.logger.log('generateCertificate >>> post: ' + postId + ', body: ' + body);
 
     const $_ = cheerio.load(body);
 
@@ -1894,6 +1899,7 @@ export class PostContentService {
     if (lang == 'id' && template.body_detail_id != undefined) {
       body = template.body_detail_id;
     }
+    this.logger.log('generateCertificate >>> post: ' + postId + ', post pdf validated');
 
     let pdf = cheerio.load(body);
     pdf('#fullname').text(profile.fullName);

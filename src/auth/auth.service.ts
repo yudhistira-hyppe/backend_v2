@@ -35,7 +35,11 @@ import { ContenteventsService } from '../content/contentevents/contentevents.ser
 import { CreateContenteventsDto } from '../content/contentevents/dto/create-contentevents.dto';
 import { CreateGetcontenteventsDto } from '../trans/getusercontents/getcontentevents/dto/create-getcontentevents.dto';
 import { CreateUserbasicnewDto } from '../trans/newuserbasic/dto/create-userbasicnew.dto';
+<<<<<<< HEAD
+import { PostsService } from 'src/content/posts/posts.service';
+=======
 import { PostsService } from '../content/posts/posts.service';
+>>>>>>> master
 
 @Injectable()
 export class AuthService {
@@ -61,7 +65,11 @@ export class AuthService {
     private seaweedfsService: SeaweedfsService, 
     private adsUserCompareService: AdsUserCompareService,
     private contenteventsService: ContenteventsService,
+<<<<<<< HEAD
+    private postService: PostsService,
+=======
     private postsService: PostsService,  
+>>>>>>> master
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -5660,5 +5668,10 @@ export class AuthService {
 
   async loginSocmed(body: any) {
 
+  }
+
+  async countPost(id: string) : Promise<number> {
+    
+    return 0;
   }
 }

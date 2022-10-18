@@ -77,6 +77,10 @@ export class PostsService {
     return this.PostsModel.findOne({ email: email }).exec();
   }
 
+  async findUserPost(email: string): Promise<number> {
+    return this.PostsModel.where('email', email).where('active', true).count();
+  }  
+
   async findByPostId(postID: string): Promise<Posts> {
     return this.PostsModel.findOne({ postID: postID }).exec();
   }
