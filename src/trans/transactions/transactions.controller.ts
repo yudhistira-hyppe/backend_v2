@@ -550,369 +550,369 @@ export class TransactionsController {
             }
 
         }
-        // else if (type === "VOUCHER") {
+        else if (type === "VOUCHER") {
 
-        //     var postidTRvoucer = null;
-        //     var arraymountvc = [];
-        //     var arraypostidsvc = [];
-        //     var arrayDetailvc = [];
-        //     try {
-
-
-        //         emailseller = "tjikaljedy@hyppe.id";
-        //         ubasicseller = await this.userbasicsService.findOne(emailseller);
-        //         iduserseller = ubasicseller._id;
-        //         namapenjual = ubasicseller.fullName;
+            var postidTRvoucer = null;
+            var arraymountvc = [];
+            var arraypostidsvc = [];
+            var arrayDetailvc = [];
+            try {
 
 
-        //     } catch (e) {
-        //         throw new BadRequestException("User not found..!");
-        //     }
-        //     try {
-
-        //         datatrpending = await this.transactionsService.findpostidpendingVoucer();
-
-        //     } catch (e) {
-        //         datatrpending = null;
-
-        //     }
-
-        //     try {
-
-        //         var sum = 0;
-        //         for (var i = 0; i < lenghtpostid; i++) {
-        //             var postIds = postid[i].id;
-
-        //             var objid = mongoose.Types.ObjectId(postIds);
-        //             var qty = postid[i].qty;
+                emailseller = "tjikaljedy@hyppe.id";
+                ubasicseller = await this.userbasicsService.findOne(emailseller);
+                iduserseller = ubasicseller._id;
+                namapenjual = ubasicseller.fullName;
 
 
-        //             var totalAmount = postid[i].totalAmount;
-        //             dataconten = await this.vouchersService.findOne(postIds);
-        //             var qtyvoucher = dataconten.qty;
-        //             var tusedvoucher = dataconten.totalUsed;
-        //             var codeVoucher = dataconten.codeVoucher;
-        //             var pendingUsed = dataconten.pendingUsed;
-        //             var totalUsePending = tusedvoucher + pendingUsed;
+            } catch (e) {
+                throw new BadRequestException("User not found..!");
+            }
+            try {
 
-        //             if (qty >= qtyvoucher) {
-        //                 res.status(HttpStatus.BAD_REQUEST).json({
-        //                     "message": "Maaf quantity Voucher melebihi quota.."
-        //                 });
-        //                 process.exit(0);
-        //             }
-        //             else if (totalUsePending === qtyvoucher) {
-        //                 res.status(HttpStatus.BAD_REQUEST).json({
-        //                     "message": "Maaf Voucher " + codeVoucher + " quota sudah habis.."
-        //                 });
-        //                 process.exit(0);
-        //             } else {
-        //                 var amountobj = dataconten.amount * qty;
-        //                 arraymountvc.push(amountobj);
-        //                 arraypostidsvc.push(postIds);
+                datatrpending = await this.transactionsService.findpostidpendingVoucer();
 
-        //                 var arraydetailobj = { "id": objid, "qty": qty, "totalAmount": totalAmount };
-        //                 arrayDetailvc.push(arraydetailobj);
-        //             }
-        //         }
+            } catch (e) {
+                datatrpending = null;
 
-        //         for (var i = 0; i < arraymountvc.length; i++) {
-        //             sum += arraymountvc[i];
-        //         }
+            }
 
-        //         saleAmount = sum;
-        //     } catch (e) {
-        //         dataconten = null;
-        //         saleAmount = 0;
-        //     }
+            try {
 
-        //     postidTRvoucer = arraypostidsvc.toString();
-        //     console.log(postidTRvoucer)
+                var sum = 0;
+                for (var i = 0; i < lenghtpostid; i++) {
+                    var postIds = postid[i].id;
 
-        //     if (datatrpending !== null) {
-
-        //         let cekstatusva = await this.oyPgService.staticVaInfo(datatrpending.idva);
-        //         var expiredva = cekstatusva.trx_expiration_time;
-        //         var dex = new Date(expiredva);
-        //         dex.setHours(dex.getHours() + 7); // timestamp
-        //         dex = new Date(dex);
-
-        //         if (cekstatusva.va_status === "WAITING_PAYMENT") {
-        //             throw new BadRequestException("Tidak dapat melanjutkan. Voucher ini sedang dalam proses pembelian");
-        //         }
-        //         else if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
-        //             var idtransaction = datatrpending._id;
-        //             var datava = {
-        //                 "partner_user_id": userbuy.toString() + stringId,
-        //                 "amount": totalamount,
-        //                 "bank_code": bankcode,
-        //                 "is_open": false,
-        //                 "is_single_use": true,
-        //                 "is_lifetime": false,
-        //                 "username_display": name.toString(),
-        //                 "email": email,
-        //                 "trx_expiration_time": valueexpiredva,
-        //             }
-
-        //             try {
-        //                 var datareqva = await this.oyPgService.generateStaticVa(datava);
-        //                 var idva = datareqva.id;
-        //                 var statuscodeva = datareqva.status.code;
-        //                 var statusmessage = datareqva.status.message;
-        //                 var nova = datareqva.va_number;
-        //                 var expiredva = datareqva.trx_expiration_time;
-        //                 var d1 = new Date(expiredva);
-        //                 d1.setHours(d1.getHours() + 7); // timestamp
-        //                 d1 = new Date(d1);
+                    var objid = mongoose.Types.ObjectId(postIds);
+                    var qty = postid[i].qty;
 
 
-        //             } catch (e) {
-        //                 throw new BadRequestException("Not process..!");
+                    var totalAmount = postid[i].totalAmount;
+                    dataconten = await this.vouchersService.findOne(postIds);
+                    var qtyvoucher = dataconten.qty;
+                    var tusedvoucher = dataconten.totalUsed;
+                    var codeVoucher = dataconten.codeVoucher;
+                    var pendingUsed = dataconten.pendingUsed;
+                    var totalUsePending = tusedvoucher + pendingUsed;
 
-        //             }
+                    if (qty >= qtyvoucher) {
+                        res.status(HttpStatus.BAD_REQUEST).json({
+                            "message": "Maaf quantity Voucher melebihi quota.."
+                        });
+                        process.exit(0);
+                    }
+                    else if (totalUsePending === qtyvoucher) {
+                        res.status(HttpStatus.BAD_REQUEST).json({
+                            "message": "Maaf Voucher " + codeVoucher + " quota sudah habis.."
+                        });
+                        process.exit(0);
+                    } else {
+                        var amountobj = dataconten.amount * qty;
+                        arraymountvc.push(amountobj);
+                        arraypostidsvc.push(postIds);
 
-        //             if (statuscodeva == "000") {
+                        var arraydetailobj = { "id": objid, "qty": qty, "totalAmount": totalAmount };
+                        arrayDetailvc.push(arraydetailobj);
+                    }
+                }
 
-        //                 try {
+                for (var i = 0; i < arraymountvc.length; i++) {
+                    sum += arraymountvc[i];
+                }
 
-        //                     let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+                saleAmount = sum;
+            } catch (e) {
+                dataconten = null;
+                saleAmount = 0;
+            }
 
-        //                     CreateTransactionsDto.iduserbuyer = iduser;
-        //                     CreateTransactionsDto.idusersell = iduserseller;
-        //                     CreateTransactionsDto.timestamp = dt.toISOString();
-        //                     CreateTransactionsDto.noinvoice = no;
-        //                     CreateTransactionsDto.amount = saleAmount;
-        //                     CreateTransactionsDto.status = cekstatusva.va_status;
-        //                     CreateTransactionsDto.bank = idbank;
-        //                     CreateTransactionsDto.idva = idva;
-        //                     CreateTransactionsDto.nova = nova;
-        //                     CreateTransactionsDto.accountbalance = null;
-        //                     CreateTransactionsDto.paymentmethod = idmethode;
-        //                     // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
-        //                     CreateTransactionsDto.ppn = null;
-        //                     CreateTransactionsDto.totalamount = totalamount;
-        //                     CreateTransactionsDto.description = "buy " + type + " pending";
-        //                     CreateTransactionsDto.payload = null;
-        //                     CreateTransactionsDto.expiredtimeva = d1.toISOString();
-        //                     CreateTransactionsDto.detail = arrayDetailvc;
-        //                     CreateTransactionsDto.postid = postidTRvoucer.toString();
-        //                     CreateTransactionsDto.response = datareqva;
-        //                     let datatr = await this.transactionsService.create(CreateTransactionsDto);
+            postidTRvoucer = arraypostidsvc.toString();
+            console.log(postidTRvoucer)
 
-        //                     var lengArrDetail = arrayDetailvc.length;
+            if (datatrpending !== null) {
 
-        //                     for (var i = 0; i < lengArrDetail; i++) {
-        //                         let qtyDetail = arrayDetailvc[i].qty;
-        //                         let idvoucher = arrayDetailvc[i].id.toString();
-        //                         let idvcr = mongoose.Types.ObjectId(idvoucher);
-        //                         datavoucher = await this.vouchersService.findOne(idvoucher);
-        //                         let pendingUsed = datavoucher.pendingUsed;
-        //                         let totalPending = pendingUsed + qtyDetail;
-        //                         await this.vouchersService.updatesPendingUsed(idvcr, totalPending);
-        //                     }
+                let cekstatusva = await this.oyPgService.staticVaInfo(datatrpending.idva);
+                var expiredva = cekstatusva.trx_expiration_time;
+                var dex = new Date(expiredva);
+                dex.setHours(dex.getHours() + 7); // timestamp
+                dex = new Date(dex);
 
-        //                     await this.transactionsService.updatestatuscancel(idtransaction);
-        //                     transactionVoucher = await this.transactionsService.findid(idtransaction.toString());
+                if (cekstatusva.va_status === "WAITING_PAYMENT") {
+                    throw new BadRequestException("Tidak dapat melanjutkan. Voucher ini sedang dalam proses pembelian");
+                }
+                else if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                    var idtransaction = datatrpending._id;
+                    var datava = {
+                        "partner_user_id": userbuy.toString() + stringId,
+                        "amount": totalamount,
+                        "bank_code": bankcode,
+                        "is_open": false,
+                        "is_single_use": true,
+                        "is_lifetime": false,
+                        "username_display": name.toString(),
+                        "email": email,
+                        "trx_expiration_time": valueexpiredva,
+                    }
 
-
-        //                     var detailTr = transactionVoucher.detail;
-        //                     for (var a = 0; a < detailTr.length; a++) {
-        //                         var qtyDetail2 = detailTr[a].qty;
-        //                         var idvoucher2 = detailTr[a].id.toString();
-        //                         var idvcr2 = detailTr[a].id;
-        //                         datavoucher = await this.vouchersService.findOne(idvoucher2);
-        //                         var pendingUsed2 = datavoucher.pendingUsed;
-        //                         var totalPending2 = pendingUsed2 - qtyDetail2;
-        //                         await this.vouchersService.updatesPendingUsed(idvcr2, totalPending2);
-        //                     }
-
-        //                     var data = {
-        //                         "noinvoice": datatr.noinvoice,
-        //                         "postid": postidTRvoucer.toString(),
-        //                         "idusersell": datatr.idusersell,
-        //                         "NamaPenjual": namapenjual,
-        //                         "iduserbuyer": datatr.iduserbuyer,
-        //                         "NamaPembeli": namapembeli,
-        //                         "amount": datatr.amount,
-        //                         "paymentmethod": namamethode,
-        //                         "status": datatr.status,
-        //                         "description": datatr.description,
-        //                         "idva": datatr.idva,
-        //                         "nova": datatr.nova,
-        //                         "expiredtimeva": datatr.expiredtimeva,
-        //                         "salelike": datatr.saleview,
-        //                         "saleview": datatr.salelike,
-        //                         "bank": namabank,
-        //                         // "ppn": valueppn + " %",
-        //                         // "nominalppn": nominalppn,
-        //                         "bankvacharge": valuevacharge,
-        //                         // "mdradmin": valuemradmin + " %",
-        //                         // "nominalmdradmin": nominalmradmin,
-        //                         "detail": arrayDetailvc,
-        //                         "totalamount": datatr.totalamount,
-        //                         "accountbalance": datatr.accountbalance,
-        //                         "timestamp": datatr.timestamp,
-        //                         "_id": datatr._id
-        //                     };
+                    try {
+                        var datareqva = await this.oyPgService.generateStaticVa(datava);
+                        var idva = datareqva.id;
+                        var statuscodeva = datareqva.status.code;
+                        var statusmessage = datareqva.status.message;
+                        var nova = datareqva.va_number;
+                        var expiredva = datareqva.trx_expiration_time;
+                        var d1 = new Date(expiredva);
+                        d1.setHours(d1.getHours() + 7); // timestamp
+                        d1 = new Date(d1);
 
 
-        //                 } catch (e) {
-        //                     res.status(HttpStatus.BAD_REQUEST).json({
+                    } catch (e) {
+                        throw new BadRequestException("Not process..!");
 
-        //                         "message": messagesEror + " " + e.toString()
-        //                     });
-        //                 }
-        //                 res.status(HttpStatus.OK).json({
-        //                     response_code: 202,
-        //                     "data": data,
-        //                     "message": messages
-        //                 });
-        //                 // setTimeout(res, 3000);
-        //             }
-        //             else if (statuscodeva == "208") {
-        //                 throw new BadRequestException("Request is Rejected (API Key is not Valid)");
-        //             }
-        //             else if (statuscodeva == "217") {
-        //                 throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
-        //             }
-        //             else {
-        //                 throw new BadRequestException("Request is Rejected");
-        //             }
-        //             // } else {
-        //             //     throw new BadRequestException("This content is already in the process of being purchased");
-        //             // }
-        //         }
+                    }
 
+                    if (statuscodeva == "000") {
 
+                        try {
 
-        //     }
-        //     else {
+                            let cekstatusva = await this.oyPgService.staticVaInfo(idva);
 
-        //         var datava = {
-        //             "partner_user_id": userbuy.toString() + stringId,
-        //             "amount": totalamount,
-        //             "bank_code": bankcode,
-        //             "is_open": false,
-        //             "is_single_use": true,
-        //             "is_lifetime": false,
-        //             "username_display": name.toString(),
-        //             "email": email,
-        //             "trx_expiration_time": valueexpiredva,
-        //         }
+                            CreateTransactionsDto.iduserbuyer = iduser;
+                            CreateTransactionsDto.idusersell = iduserseller;
+                            CreateTransactionsDto.timestamp = dt.toISOString();
+                            CreateTransactionsDto.noinvoice = no;
+                            CreateTransactionsDto.amount = saleAmount;
+                            CreateTransactionsDto.status = cekstatusva.va_status;
+                            CreateTransactionsDto.bank = idbank;
+                            CreateTransactionsDto.idva = idva;
+                            CreateTransactionsDto.nova = nova;
+                            CreateTransactionsDto.accountbalance = null;
+                            CreateTransactionsDto.paymentmethod = idmethode;
+                            // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                            CreateTransactionsDto.ppn = null;
+                            CreateTransactionsDto.totalamount = totalamount;
+                            CreateTransactionsDto.description = "buy " + type + " pending";
+                            CreateTransactionsDto.payload = null;
+                            CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                            CreateTransactionsDto.detail = arrayDetailvc;
+                            CreateTransactionsDto.postid = postidTRvoucer.toString();
+                            CreateTransactionsDto.response = datareqva;
+                            let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
-        //         try {
-        //             var datareqva = await this.oyPgService.generateStaticVa(datava);
-        //             var idva = datareqva.id;
-        //             var statuscodeva = datareqva.status.code;
-        //             var statusmessage = datareqva.status.message;
-        //             var nova = datareqva.va_number;
-        //             var expiredva = datareqva.trx_expiration_time;
-        //             var d1 = new Date(expiredva);
-        //             d1.setHours(d1.getHours() + 7); // timestamp
-        //             d1 = new Date(d1);
+                            var lengArrDetail = arrayDetailvc.length;
+
+                            for (var i = 0; i < lengArrDetail; i++) {
+                                let qtyDetail = arrayDetailvc[i].qty;
+                                let idvoucher = arrayDetailvc[i].id.toString();
+                                let idvcr = mongoose.Types.ObjectId(idvoucher);
+                                datavoucher = await this.vouchersService.findOne(idvoucher);
+                                let pendingUsed = datavoucher.pendingUsed;
+                                let totalPending = pendingUsed + qtyDetail;
+                                await this.vouchersService.updatesPendingUsed(idvcr, totalPending);
+                            }
+
+                            await this.transactionsService.updatestatuscancel(idtransaction);
+                            transactionVoucher = await this.transactionsService.findid(idtransaction.toString());
 
 
-        //         } catch (e) {
-        //             throw new BadRequestException("Not process..!");
+                            var detailTr = transactionVoucher.detail;
+                            for (var a = 0; a < detailTr.length; a++) {
+                                var qtyDetail2 = detailTr[a].qty;
+                                var idvoucher2 = detailTr[a].id.toString();
+                                var idvcr2 = detailTr[a].id;
+                                datavoucher = await this.vouchersService.findOne(idvoucher2);
+                                var pendingUsed2 = datavoucher.pendingUsed;
+                                var totalPending2 = pendingUsed2 - qtyDetail2;
+                                await this.vouchersService.updatesPendingUsed(idvcr2, totalPending2);
+                            }
 
-        //         }
+                            var data = {
+                                "noinvoice": datatr.noinvoice,
+                                "postid": postidTRvoucer.toString(),
+                                "idusersell": datatr.idusersell,
+                                "NamaPenjual": namapenjual,
+                                "iduserbuyer": datatr.iduserbuyer,
+                                "NamaPembeli": namapembeli,
+                                "amount": datatr.amount,
+                                "paymentmethod": namamethode,
+                                "status": datatr.status,
+                                "description": datatr.description,
+                                "idva": datatr.idva,
+                                "nova": datatr.nova,
+                                "expiredtimeva": datatr.expiredtimeva,
+                                "salelike": datatr.saleview,
+                                "saleview": datatr.salelike,
+                                "bank": namabank,
+                                // "ppn": valueppn + " %",
+                                // "nominalppn": nominalppn,
+                                "bankvacharge": valuevacharge,
+                                // "mdradmin": valuemradmin + " %",
+                                // "nominalmdradmin": nominalmradmin,
+                                "detail": arrayDetailvc,
+                                "totalamount": datatr.totalamount,
+                                "accountbalance": datatr.accountbalance,
+                                "timestamp": datatr.timestamp,
+                                "_id": datatr._id
+                            };
 
-        //         if (statuscodeva == "000") {
+
+                        } catch (e) {
+                            res.status(HttpStatus.BAD_REQUEST).json({
+
+                                "message": messagesEror + " " + e.toString()
+                            });
+                        }
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": messages
+                        });
+                        // setTimeout(res, 3000);
+                    }
+                    else if (statuscodeva == "208") {
+                        throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+                    }
+                    else if (statuscodeva == "217") {
+                        throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
+                    }
+                    else {
+                        throw new BadRequestException("Request is Rejected");
+                    }
+                    // } else {
+                    //     throw new BadRequestException("This content is already in the process of being purchased");
+                    // }
+                }
 
 
-        //             try {
 
-        //                 let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+            }
+            else {
 
-        //                 CreateTransactionsDto.iduserbuyer = iduser;
-        //                 CreateTransactionsDto.idusersell = iduserseller;
-        //                 CreateTransactionsDto.timestamp = dt.toISOString();
-        //                 CreateTransactionsDto.noinvoice = no;
-        //                 CreateTransactionsDto.amount = saleAmount;
-        //                 CreateTransactionsDto.status = cekstatusva.va_status;
-        //                 CreateTransactionsDto.bank = idbank;
-        //                 CreateTransactionsDto.idva = idva;
-        //                 CreateTransactionsDto.nova = nova;
-        //                 CreateTransactionsDto.accountbalance = null;
-        //                 CreateTransactionsDto.paymentmethod = idmethode;
-        //                 // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
-        //                 CreateTransactionsDto.ppn = null;
-        //                 CreateTransactionsDto.totalamount = totalamount;
-        //                 CreateTransactionsDto.description = "buy " + type + " pending";
-        //                 CreateTransactionsDto.payload = null;
-        //                 CreateTransactionsDto.expiredtimeva = d1.toISOString();
-        //                 CreateTransactionsDto.detail = arrayDetailvc;
-        //                 CreateTransactionsDto.postid = postidTRvoucer;
-        //                 CreateTransactionsDto.response = datareqva;
-        //                 let datatr = await this.transactionsService.create(CreateTransactionsDto);
-        //                 await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
-        //                 var lengArrDetail = arrayDetailvc.length;
+                var datava = {
+                    "partner_user_id": userbuy.toString() + stringId,
+                    "amount": totalamount,
+                    "bank_code": bankcode,
+                    "is_open": false,
+                    "is_single_use": true,
+                    "is_lifetime": false,
+                    "username_display": name.toString(),
+                    "email": email,
+                    "trx_expiration_time": valueexpiredva,
+                }
 
-        //                 for (var i = 0; i < lengArrDetail; i++) {
-        //                     let qtyDetail = arrayDetailvc[i].qty;
-        //                     let idvoucher = arrayDetailvc[i].id.toString();
-        //                     let idvcr2 = arrayDetailvc[i].id;
-        //                     datavoucher = await this.vouchersService.findOne(idvoucher);
-        //                     let pendingUsed = datavoucher.pendingUsed;
-        //                     let totalPending = pendingUsed + qtyDetail;
-        //                     await this.vouchersService.updatesPendingUsed(idvcr2, totalPending);
-        //                 }
+                try {
+                    var datareqva = await this.oyPgService.generateStaticVa(datava);
+                    var idva = datareqva.id;
+                    var statuscodeva = datareqva.status.code;
+                    var statusmessage = datareqva.status.message;
+                    var nova = datareqva.va_number;
+                    var expiredva = datareqva.trx_expiration_time;
+                    var d1 = new Date(expiredva);
+                    d1.setHours(d1.getHours() + 7); // timestamp
+                    d1 = new Date(d1);
 
-        //                 var data = {
-        //                     "noinvoice": datatr.noinvoice,
-        //                     "postid": postidTRvoucer,
-        //                     "idusersell": datatr.idusersell,
-        //                     "NamaPenjual": namapenjual,
-        //                     "iduserbuyer": datatr.iduserbuyer,
-        //                     "NamaPembeli": namapembeli,
-        //                     "amount": datatr.amount,
-        //                     "paymentmethod": namamethode,
-        //                     "status": datatr.status,
-        //                     "description": datatr.description,
-        //                     "idva": datatr.idva,
-        //                     "nova": datatr.nova,
-        //                     "expiredtimeva": datatr.expiredtimeva,
-        //                     "salelike": datatr.saleview,
-        //                     "saleview": datatr.salelike,
-        //                     "bank": namabank,
-        //                     // "ppn": valueppn + " %",
-        //                     // "nominalppn": nominalppn,
-        //                     "bankvacharge": valuevacharge,
-        //                     // "mdradmin": valuemradmin + " %",
-        //                     // "nominalmdradmin": nominalmradmin,
-        //                     "detail": arrayDetailvc,
-        //                     "totalamount": datatr.totalamount,
-        //                     "accountbalance": datatr.accountbalance,
-        //                     "timestamp": datatr.timestamp,
-        //                     "_id": datatr._id
-        //                 };
 
-        //             } catch (e) {
-        //                 res.status(HttpStatus.BAD_REQUEST).json({
+                } catch (e) {
+                    throw new BadRequestException("Not process..!");
 
-        //                     "message": messagesEror + " " + e.toString()
-        //                 });
-        //             }
+                }
 
-        //             res.status(HttpStatus.OK).json({
-        //                 response_code: 202,
-        //                 "data": data,
-        //                 "message": messages
-        //             });
-        //             //  setTimeout(res, 3000);
-        //         }
-        //         else if (statuscodeva == "208") {
-        //             throw new BadRequestException("Request is Rejected (API Key is not Valid)");
-        //         }
-        //         else if (statuscodeva == "217") {
-        //             throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
-        //         }
-        //         else {
-        //             throw new BadRequestException("Request is Rejected");
-        //         }
-        //     }
+                if (statuscodeva == "000") {
 
-        // }
+
+                    try {
+
+                        let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                        CreateTransactionsDto.iduserbuyer = iduser;
+                        CreateTransactionsDto.idusersell = iduserseller;
+                        CreateTransactionsDto.timestamp = dt.toISOString();
+                        CreateTransactionsDto.noinvoice = no;
+                        CreateTransactionsDto.amount = saleAmount;
+                        CreateTransactionsDto.status = cekstatusva.va_status;
+                        CreateTransactionsDto.bank = idbank;
+                        CreateTransactionsDto.idva = idva;
+                        CreateTransactionsDto.nova = nova;
+                        CreateTransactionsDto.accountbalance = null;
+                        CreateTransactionsDto.paymentmethod = idmethode;
+                        // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                        CreateTransactionsDto.ppn = null;
+                        CreateTransactionsDto.totalamount = totalamount;
+                        CreateTransactionsDto.description = "buy " + type + " pending";
+                        CreateTransactionsDto.payload = null;
+                        CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                        CreateTransactionsDto.detail = arrayDetailvc;
+                        CreateTransactionsDto.postid = postidTRvoucer;
+                        CreateTransactionsDto.response = datareqva;
+                        let datatr = await this.transactionsService.create(CreateTransactionsDto);
+                        await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                        var lengArrDetail = arrayDetailvc.length;
+
+                        for (var i = 0; i < lengArrDetail; i++) {
+                            let qtyDetail = arrayDetailvc[i].qty;
+                            let idvoucher = arrayDetailvc[i].id.toString();
+                            let idvcr2 = arrayDetailvc[i].id;
+                            datavoucher = await this.vouchersService.findOne(idvoucher);
+                            let pendingUsed = datavoucher.pendingUsed;
+                            let totalPending = pendingUsed + qtyDetail;
+                            await this.vouchersService.updatesPendingUsed(idvcr2, totalPending);
+                        }
+
+                        var data = {
+                            "noinvoice": datatr.noinvoice,
+                            "postid": postidTRvoucer,
+                            "idusersell": datatr.idusersell,
+                            "NamaPenjual": namapenjual,
+                            "iduserbuyer": datatr.iduserbuyer,
+                            "NamaPembeli": namapembeli,
+                            "amount": datatr.amount,
+                            "paymentmethod": namamethode,
+                            "status": datatr.status,
+                            "description": datatr.description,
+                            "idva": datatr.idva,
+                            "nova": datatr.nova,
+                            "expiredtimeva": datatr.expiredtimeva,
+                            "salelike": datatr.saleview,
+                            "saleview": datatr.salelike,
+                            "bank": namabank,
+                            // "ppn": valueppn + " %",
+                            // "nominalppn": nominalppn,
+                            "bankvacharge": valuevacharge,
+                            // "mdradmin": valuemradmin + " %",
+                            // "nominalmdradmin": nominalmradmin,
+                            "detail": arrayDetailvc,
+                            "totalamount": datatr.totalamount,
+                            "accountbalance": datatr.accountbalance,
+                            "timestamp": datatr.timestamp,
+                            "_id": datatr._id
+                        };
+
+                    } catch (e) {
+                        res.status(HttpStatus.BAD_REQUEST).json({
+
+                            "message": messagesEror + " " + e.toString()
+                        });
+                    }
+
+                    res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": messages
+                    });
+                    //  setTimeout(res, 3000);
+                }
+                else if (statuscodeva == "208") {
+                    throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+                }
+                else if (statuscodeva == "217") {
+                    throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
+                }
+                else {
+                    throw new BadRequestException("Request is Rejected");
+                }
+            }
+
+        }
 
     }
 
@@ -3289,6 +3289,9 @@ export class TransactionsController {
         var datacount = null;
         var dtcount = null;
         var status = null;
+        var rewards = null;
+        var datarewards = null;
+        var datarewardscount = null;
         var titleinsukses = "Pembayaran Diajukan!";
         var titleensukses = "Payment Filed!";
         var bodyinsukses = "Periode pembayaran telah berlalu waktu kadaluarsa. konten Anda terdaftar tidak akan diposting";
@@ -3337,19 +3340,30 @@ export class TransactionsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+
+        if (request_json["rewards"] !== undefined) {
+            rewards = request_json["rewards"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
         const messages = {
             "info": ["The process successful"],
         };
-
+        var totalsaldo = null;
 
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         var idadmin = mongoose.Types.ObjectId(iduser);
 
+        try {
+            totalsaldo = await this.accountbalancesService.findsaldo(idadmin);
+        } catch (e) {
+            totalsaldo = 0;
+        }
 
-        if (sell === true && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
+        if (sell === true && buy === false && withdrawal === false && rewards === false && startdate === undefined && enddate === undefined) {
             datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
             data = datasell;
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -3357,11 +3371,11 @@ export class TransactionsController {
                 return 0;
             });
             datacount = datasellcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
-        else if (sell === true && buy === false && withdrawal === false && startdate !== undefined && enddate !== undefined) {
+        else if (sell === true && buy === false && withdrawal === false && rewards === false && startdate !== undefined && enddate !== undefined) {
             datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
             data = datasell;
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -3369,11 +3383,11 @@ export class TransactionsController {
                 return 0;
             });
             datacount = datasellcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
-        else if (sell === false && buy === true && withdrawal === false && startdate === undefined && enddate === undefined) {
+        else if (sell === false && buy === true && withdrawal === false && rewards === false && startdate === undefined && enddate === undefined) {
             databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
             data = databuy;
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -3381,12 +3395,12 @@ export class TransactionsController {
                 return 0;
             });
             datacount = databuycount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
-        else if (sell === false && buy === true && withdrawal === false && startdate !== undefined && enddate !== undefined) {
+        else if (sell === false && buy === true && withdrawal === false && rewards === false && startdate !== undefined && enddate !== undefined) {
 
             databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
             data = databuy;
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -3394,9 +3408,9 @@ export class TransactionsController {
                 return 0;
             });
             datacount = databuycount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
-        else if (sell === false && buy === false && withdrawal === true && startdate === undefined && enddate === undefined) {
+        else if (sell === false && buy === false && withdrawal === true && rewards === false && startdate === undefined && enddate === undefined) {
             datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
             data = datawithdraw;
@@ -3406,10 +3420,10 @@ export class TransactionsController {
                 return 0;
             });
             datacount = datawithdrawcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
 
         }
-        else if (sell === false && buy === false && withdrawal === true && startdate !== undefined && enddate !== undefined) {
+        else if (sell === false && buy === false && withdrawal === true && rewards === false && startdate !== undefined && enddate !== undefined) {
             datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
             data = datawithdraw;
@@ -3419,42 +3433,265 @@ export class TransactionsController {
                 return 0;
             });
             datacount = datawithdrawcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
+        else if (sell === false && buy === false && withdrawal === false && rewards === true && startdate === undefined && enddate === undefined) {
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = datarewards;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            datacount = datarewardscount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === false && buy === false && withdrawal === false && rewards === true && startdate !== undefined && enddate !== undefined) {
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = datarewards;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            datacount = datarewardscount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === true && withdrawal === false && rewards === false && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            data = datasell.concat(databuy);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(databuycount);
+            datacount = dtcount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === true && withdrawal === false && rewards === false && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            data = datasell.concat(databuy);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(databuycount);
+            datacount = dtcount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === true && withdrawal === false && rewards === true && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = datasell.concat(databuy, datarewards);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(databuycount, datarewardscount);
+            datacount = dtcount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === true && withdrawal === false && rewards === true && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = datasell.concat(databuy, datarewards);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(databuycount, datarewardscount);
+            datacount = dtcount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === false && withdrawal === false && rewards === true && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = datasell.concat(datarewards);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(datarewardscount);
+            datacount = dtcount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === false && withdrawal === false && rewards === true && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = datasell.concat(datarewards);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(datarewardscount);
+            datacount = dtcount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === false && withdrawal === true && rewards === true && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = datasell.concat(datawithdraw, datarewards);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(datawithdrawcount, datarewardscount);
+            datacount = dtcount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === false && buy === false && withdrawal === true && rewards === true && startdate === undefined && enddate === undefined) {
 
-        else if (sell === true && buy === true && withdrawal === false && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
-            data = datasell.concat(databuy);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = datawithdraw.concat(datarewards);
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
                 if (first.timestamp < second.timestamp) return 1;
                 return 0;
             });
-            dtcount = datasellcount.concat(databuycount);
+            dtcount = datawithdrawcount.concat(datarewardscount);
             datacount = dtcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
-        else if (sell === true && buy === true && withdrawal === false && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
-            data = datasell.concat(databuy);
+        else if (sell === false && buy === false && withdrawal === true && rewards === true && startdate !== undefined && enddate !== undefined) {
+
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = datawithdraw.concat(datarewards);
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
                 if (first.timestamp < second.timestamp) return 1;
                 return 0;
             });
-            dtcount = datasellcount.concat(databuycount);
+            dtcount = datawithdrawcount.concat(datarewardscount);
             datacount = dtcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
-        else if (sell === true && buy === false && withdrawal === true && startdate === undefined && enddate === undefined) {
+        else if (sell === true && buy === false && withdrawal === true && rewards === true && startdate !== undefined && enddate !== undefined) {
             datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = datasell.concat(datawithdraw, datarewards);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(datawithdrawcount, datarewardscount);
+            datacount = dtcount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === false && buy === true && withdrawal === false && rewards === true && startdate === undefined && enddate === undefined) {
+
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = databuy.concat(datarewards);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = databuycount.concat(datarewardscount);
+            datacount = dtcount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === false && buy === true && withdrawal === false && rewards === true && startdate !== undefined && enddate !== undefined) {
+
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = databuy.concat(datarewards);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = databuycount.concat(datarewardscount);
+            datacount = dtcount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === true && withdrawal === true && rewards === true && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = datasell.concat(databuy, datawithdraw, datarewards);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(databuycount, datawithdrawcount, datarewardscount);
+            datacount = dtcount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === true && withdrawal === true && rewards === true && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
+            datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
+            data = datasell.concat(databuy, datawithdraw, datarewards);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(databuycount, datawithdrawcount, datarewardscount);
+            datacount = dtcount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === false && withdrawal === true && rewards === true && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
             datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
             data = datasell.concat(datawithdraw);
@@ -3465,11 +3702,11 @@ export class TransactionsController {
             });
             dtcount = datasellcount.concat(datawithdrawcount);
             datacount = dtcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
-        else if (sell === true && buy === false && withdrawal === true && startdate !== undefined && enddate !== undefined) {
+        else if (sell === true && buy === false && withdrawal === true && rewards === true && startdate !== undefined && enddate !== undefined) {
             datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
             datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
             data = datasell.concat(datawithdraw);
@@ -3480,11 +3717,26 @@ export class TransactionsController {
             });
             dtcount = datasellcount.concat(datawithdrawcount);
             datacount = dtcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
-        else if (sell === false && buy === true && withdrawal === true && startdate === undefined && enddate === undefined) {
+        else if (sell === true && buy === false && withdrawal === true && rewards === false && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
+        }
+        else if (sell === false && buy === true && withdrawal === true && rewards === false && startdate === undefined && enddate === undefined) {
             databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
             datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
             data = databuy.concat(datawithdraw);
@@ -3495,11 +3747,11 @@ export class TransactionsController {
             });
             dtcount = databuycount.concat(datawithdrawcount);
             datacount = dtcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
-        else if (sell === false && buy === true && withdrawal === true && startdate !== undefined && enddate !== undefined) {
+        else if (sell === false && buy === true && withdrawal === true && rewards === false && startdate !== undefined && enddate !== undefined) {
             databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
             datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
             data = databuy.concat(datawithdraw);
@@ -3510,13 +3762,13 @@ export class TransactionsController {
             });
             dtcount = databuycount.concat(datawithdrawcount);
             datacount = dtcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
-        else if (sell === false && buy === false && withdrawal === false && startdate !== undefined && enddate !== undefined) {
+        else if (sell === false && buy === false && withdrawal === false && rewards === false && startdate !== undefined && enddate !== undefined) {
             datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
             databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
             datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
@@ -3527,13 +3779,13 @@ export class TransactionsController {
             });
             dtcount = datasellcount.concat(databuycount, datawithdrawcount);
             datacount = dtcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
-        else if (sell === true && buy === true && withdrawal === true && startdate === undefined && enddate === undefined) {
+        else if (sell === true && buy === true && withdrawal === true && rewards === false && startdate === undefined && enddate === undefined) {
             datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
             databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
             datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
@@ -3544,13 +3796,13 @@ export class TransactionsController {
             });
             dtcount = datasellcount.concat(databuycount, datawithdrawcount);
             datacount = dtcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
-        else if (sell === true && buy === true && withdrawal === true && startdate !== undefined && enddate !== undefined) {
+        else if (sell === true && buy === true && withdrawal === true && rewards === false && startdate !== undefined && enddate !== undefined) {
             datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
             databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
             datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
@@ -3561,13 +3813,13 @@ export class TransactionsController {
             });
             dtcount = datasellcount.concat(databuycount, datawithdrawcount);
             datacount = dtcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
-        else if (sell === false && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
+        else if (sell === false && buy === false && withdrawal === false && rewards === false && startdate === undefined && enddate === undefined) {
             datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
             databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
             datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
             datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
             data = datasell.concat(databuy, datawithdraw);
@@ -3579,7 +3831,7 @@ export class TransactionsController {
             });
             dtcount = datasellcount.concat(databuycount, datawithdrawcount);
             datacount = dtcount.length;
-            return { response_code: 202, data, skip, limit, datacount, messages };
+            return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
 
 

@@ -10825,7 +10825,7 @@ export class TransactionsService {
             return query;
         }
     }
-    async findhistorySellercount(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
+    async findhistorySellercount(iduser: ObjectId, startdate: string, enddate: string) {
         const posts = await this.postsService.findpost();
 
 
@@ -11051,11 +11051,7 @@ export class TransactionsService {
                     }
                 },
                 { $sort: { timestamp: -1 }, },
-                {
-                    $skip: skip
-                }, {
-                    $limit: limit
-                }
+
             ]);
 
             return query;
@@ -11278,11 +11274,7 @@ export class TransactionsService {
                     }
                 },
                 { $sort: { timestamp: -1 }, },
-                {
-                    $skip: skip
-                }, {
-                    $limit: limit
-                }
+
             ]);
 
 
@@ -11743,7 +11735,7 @@ export class TransactionsService {
         }
 
     }
-    async findhistoryBuyerCount(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
+    async findhistoryBuyerCount(iduser: ObjectId, startdate: string, enddate: string) {
         const posts = await this.postsService.findpost();
 
 
@@ -11963,11 +11955,7 @@ export class TransactionsService {
                     }
                 },
                 { $sort: { timestamp: -1 }, },
-                {
-                    $skip: skip
-                }, {
-                    $limit: limit
-                }
+
             ]);
 
 
@@ -12185,11 +12173,7 @@ export class TransactionsService {
                     }
                 },
                 { $sort: { timestamp: -1 }, },
-                {
-                    $skip: skip
-                }, {
-                    $limit: limit
-                }
+
             ]);
 
             return query;

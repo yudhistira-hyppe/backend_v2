@@ -362,7 +362,58 @@ export class GetuserprofilesService {
     ]);
     return query;
   }
+  async findUserNew(username: string, skip: number, limit: number) {
 
+
+    const query = await this.getuserprofilesModel.aggregate([
+      {
+        $addFields: {
+          userAuth_id: '$userAuth.$id',
+          profilePict_id: '$profilePict.$id',
+          email: '$email',
+
+        },
+      },
+
+
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+      {
+        "$unwind": {
+          "path": "$userAuth_data",
+          "preserveNullAndEmptyArrays": false
+        }
+      },
+
+      {
+        "$match": {
+          "userAuth_data.username": {
+            $regex: username, $options: 'i'
+          }
+        }
+      },
+
+      {
+        $project: {
+          // idUserAuth: '$idUserAuth',
+          // username: '$userAuth_data.username',
+          _id: '$profilePict_id',
+
+        },
+      },
+
+      { $sort: { fullName: 1 }, },
+      { $skip: skip },
+      { $limit: limit },
+    ]);
+    return query;
+  }
   async getUserHyppe(searchemail: string, search: string, skip: number, limit: number, groupId: string) {
     const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
     var groupId_match = {};

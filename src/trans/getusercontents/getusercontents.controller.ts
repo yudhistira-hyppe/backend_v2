@@ -11,6 +11,8 @@ import { Res, HttpStatus, Response, Req } from '@nestjs/common';
 import { Request } from 'express';
 import { CountriesService } from '../../infra/countries/countries.service';
 import { GetuserprofilesService } from '../getuserprofiles/getuserprofiles.service';
+import { PostsService } from '../../content/posts/posts.service';
+import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 @Controller()
 export class GetusercontentsController {
     constructor(private readonly getusercontentsService: GetusercontentsService,
@@ -20,6 +22,8 @@ export class GetusercontentsController {
         private readonly countriesService: CountriesService,
         private readonly getuserprofilesService: GetuserprofilesService,
         private readonly userauthsService: UserauthsService,
+        private readonly postsService: PostsService,
+        private readonly mediaprofilepictsService: MediaprofilepictsService,
     ) { }
 
     @Post('api/getusercontents/all')
@@ -880,6 +884,7 @@ export class GetusercontentsController {
         var datatag = null;
         var datauser = null;
         var postType = null;
+        var mediaprofilepicts = null;
         var skip = 0;
         var limit = 0;
         var totalFilterPostVid = null;
@@ -913,83 +918,128 @@ export class GetusercontentsController {
             "info": ["The process successful"],
         };
 
-
-
-
+        var arrmediaid = [];
+        var arrdatauser = [];
+        var objuser = {};
+        var mediaprofilepicts_res = {};
 
         try {
-            datauser = await this.getuserprofilesService.findUser(keys, skip, limit);
+            datauser = await this.userauthsService.findUserNew(keys, skip, limit);
+
+            for (var i = 0; i < datauser.length; i++) {
+                var media = datauser[i].mediaId;
+
+                try {
+
+                    mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
+                    console.log(mediaprofilepicts)
+                    var mediaUri = mediaprofilepicts.mediaUri;
+                    let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+                    mediaprofilepicts_res = {
+                        mediaBasePath: mediaprofilepicts.mediaBasePath,
+                        mediaUri: mediaprofilepicts.mediaUri,
+                        mediaType: mediaprofilepicts.mediaType,
+                        mediaEndpoint: result
+                    };
+                } catch (e) {
+
+                    mediaprofilepicts_res = {
+                        mediaBasePath: "",
+                        mediaUri: "",
+                        mediaType: "",
+                        mediaEndpoint: ""
+                    };
+                }
+
+
+                objuser = {
+
+                    "_id": datauser[i]._id,
+                    "avatar": mediaprofilepicts_res,
+                    "idUserAuth": datauser[i].idUserAuth,
+                    "username": datauser[i].username,
+                    "fullName": datauser[i].fullName,
+                    "email": datauser[i].email,
+                }
+
+                arrdatauser.push(objuser);
+            }
+
         } catch (e) {
             datauser = null;
+            arrdatauser = [];
+
         }
 
+
+
         try {
-            datavids = await this.getusercontentsService.findcontentfilter(keys, "vid", skip, limit);
+            datavids = await this.postsService.findcontentfilters(keys, "vid", skip, limit);
         } catch (e) {
             datavids = null;
         }
 
         try {
-            datadiary = await this.getusercontentsService.findcontentfilter(keys, "diary", skip, limit);
+            datadiary = await this.postsService.findcontentfilters(keys, "diary", skip, limit);
         } catch (e) {
             datadiary = null;
         }
 
         try {
-            datapict = await this.getusercontentsService.findcontentfilter(keys, "pict", skip, limit);
+            datapict = await this.postsService.findcontentfilters(keys, "pict", skip, limit);
         } catch (e) {
             datapict = null;
         }
 
         var totalFilterPostTag = null;
         var totalFilter = null;
-        if (keys !== "") {
-            try {
-                datatag = await this.getusercontentsService.findcontentfilterTags(keys, skip, limit);
-            } catch (e) {
-                datatag = null;
-            }
+        // if (keys !== "") {
+        //     try {
+        //         datatag = await this.postsService.findcontentfilterTags(keys, skip, limit);
+        //     } catch (e) {
+        //         datatag = null;
+        //     }
 
-            try {
-                totalFilterPostTag = await this.getusercontentsService.findcountfilteTag(keys);
-                totalFilter = totalFilterPostTag[0].totalpost;
-            } catch (e) {
-                totalFilter = 0;
-            }
+        //     try {
+        //         totalFilterPostTag = await this.postsService.findcountfilteTag(keys);
+        //         totalFilter = totalFilterPostTag[0].totalpost;
+        //     } catch (e) {
+        //         totalFilter = 0;
+        //     }
 
-        } else {
+        // } else {
 
-            try {
-                datatag = await this.getusercontentsService.findcontentAllTags(skip, limit);
-            } catch (e) {
-                datatag = null;
-            }
+        //     try {
+        //         datatag = await this.postsService.findcontentAllTags(skip, limit);
+        //     } catch (e) {
+        //         datatag = null;
+        //     }
 
-            try {
-                totalFilterPostTag = await this.getusercontentsService.findcountfilteTagAll();
-                totalFilter = totalFilterPostTag[0].totalpost;
-            } catch (e) {
-                totalFilter = 0;
-            }
+        //     try {
+        //         totalFilterPostTag = await this.postsService.findcountfilteTagAll();
+        //         totalFilter = totalFilterPostTag[0].totalpost;
+        //     } catch (e) {
+        //         totalFilter = 0;
+        //     }
 
-        }
+        // }
 
         try {
-            totalFilterPostVid = await this.getusercontentsService.findcountfilterall(keys, "vid");
+            totalFilterPostVid = await this.postsService.findcountfilterall(keys, "vid");
             totalFilterVid = totalFilterPostVid[0].totalpost;
         } catch (e) {
             totalFilterVid = 0;
         }
 
         try {
-            totalFilterPostDiary = await this.getusercontentsService.findcountfilterall(keys, "diary");
+            totalFilterPostDiary = await this.postsService.findcountfilterall(keys, "diary");
             totalFilterDiary = totalFilterPostDiary[0].totalpost;
         } catch (e) {
             totalFilterDiary = 0;
         }
 
         try {
-            totalFilterPostPic = await this.getusercontentsService.findcountfilterall(keys, "pict");
+            totalFilterPostPic = await this.postsService.findcountfilterall(keys, "pict");
             totalFilterPict = totalFilterPostPic[0].totalpost;
         } catch (e) {
             totalFilterPict = 0;
@@ -1004,8 +1054,8 @@ export class GetusercontentsController {
 
 
         let data = {
-            "users": { "data": datauser, "totalFilter": totalFilterUser, "skip": skip, "limit": limit },
-            "tags": { "data": datatag, "totalFilter": totalFilter, "skip": skip, "limit": limit },
+            "users": { "data": arrdatauser, "totalFilter": totalFilterUser, "skip": skip, "limit": limit },
+            // "tags": { "data": datatag, "totalFilter": totalFilter, "skip": skip, "limit": limit },
             "vid": { "data": datavids, "totalFilter": totalFilterVid, "skip": skip, "limit": limit },
             "diary": { "data": datadiary, "totalFilter": totalFilterDiary, "skip": skip, "limit": limit },
             "pict": { "data": datapict, "totalFilter": totalFilterPict, "skip": skip, "limit": limit },
