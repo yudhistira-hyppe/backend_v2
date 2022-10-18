@@ -1463,21 +1463,20 @@ export class PostContentService {
 
               //isview
               pa.isViewed = false;
-              /*
+              
               if (video.viewers != undefined && video.viewers.length > 0) {
                 for (let i = 0; i < video.viewers.length; i++) {
                   let vwt = video.viewers[i];
                   let vwns = vwt.namespace;
                   if (vwns == 'userbasics') {
-                    let vw = await this.userService.findbyid(vwns.oid);
-                    if (vw != undefined && vw.email == iam.email) {
+                    if (String(vwt.oid) == String(iam._id.oid)) {
                       pa.isViewed = true;
                       break;
                     }
                   }
                 }
               }
-              */
+              
 
             } else if (ns == 'mediapicts') {
               let pic = await this.picService.findOne(String(med.oid));
@@ -1496,21 +1495,20 @@ export class PostContentService {
 
               //isview
               pa.isViewed = false;
-              /*
+              
               if (pic.viewers != undefined && pic.viewers.length > 0) {
                 for (let i = 0; i < pic.viewers.length; i++) {
                   let pct = pic.viewers[i];
                   let pcns = pct.namespace;
                   if (pcns == 'userbasics') {
-                    let vw = await this.userService.findbyid(pcns.oid);
-                    if (vw != undefined && vw.email == iam.email) {
+                    if (String(pct.oid) == String(iam._id.oid)) {
                       pa.isViewed = true;
                       break;
                     }
                   }
                 }
               }
-              */
+              
             } else if (ns == 'mediadiaries') {
               let diary = await this.diaryService.findOne(String(med.oid));
               if (diary.apsara == true) {
@@ -1527,21 +1525,20 @@ export class PostContentService {
 
               //isview
               pa.isViewed = false;
-              /*
+              
               if (diary.viewers != undefined && diary.viewers.length > 0) {
                 for (let i = 0; i < diary.viewers.length; i++) {
                   let drt = diary.viewers[i];
                   let drns = drt.namespace;
                   if (drns == 'userbasics') {
-                    let vw = await this.userService.findbyid(drns.oid);
-                    if (vw != undefined && vw.email == iam.email) {
+                    if (String(drt.oid) == String(iam._id.oid)) {
                       pa.isViewed = true;
                       break;
                     }
                   }
                 }
               }
-              */
+              
             } else if (ns == 'mediastories') {
               let story = await this.storyService.findOne(String(med.oid));
 
@@ -1571,21 +1568,20 @@ export class PostContentService {
 
               //isview
               pa.isViewed = false;
-              /*
+              
               if (story.viewers != undefined && story.viewers.length > 0) {
                 for (let i = 0; i < story.viewers.length; i++) {
                   let drt = story.viewers[i];
                   let drns = drt.namespace;
                   if (drns == 'userbasics') {
-                    let vw = await this.userService.findbyid(drns.oid);
-                    if (vw != undefined && vw.email == iam.email) {
+                    if (String(drt.oid) == String(iam._id.oid)) {
                       pa.isViewed = true;
                       break;
                     }
                   }
                 }
               }
-              */
+              
             }
           }
         }
