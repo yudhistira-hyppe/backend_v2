@@ -12,6 +12,14 @@ import { CreateDisquslogsDto } from '../disquslogs/dto/create-disquslogs.dto';
 import { PostDisqusService } from './post/postdisqus.service';
 import { ReactionsService } from '../../infra/reactions/reactions.service';
 import { CreateDisquscontactsDto } from '../disquscontacts/dto/create-disquscontacts.dto';
+import { CreateInsightsDto, InsightsDto } from '../insights/dto/create-insights.dto';
+import { ProfileDTO } from '../../utils/data/Profile'
+import { InsightsService } from '../../content/insights/insights.service';
+import { ContenteventsService } from '../contentevents/contentevents.service';
+import { CreateContenteventsDto } from '../contentevents/dto/create-contentevents.dto';
+import { Contentevents } from '../contentevents/schemas/contentevents.schema';
+import { Insightlogs } from '../insightlogs/schemas/insightlogs.schema';
+import { CreateInsightlogsDto } from '../insightlogs/dto/create-insightlogs.dto';
 
 @Controller('api/')
 export class DisqusController {
@@ -21,6 +29,8 @@ export class DisqusController {
     //private readonly reactionsService: ReactionsService,
     private readonly utilsService: UtilsService,
     private readonly postDisqusService: PostDisqusService,
+    private readonly insightsService: InsightsService,
+    private readonly contenteventsService: ContenteventsService,
     private readonly errorHandler: ErrorHandler) { }
 
   @Post('disqus')
@@ -266,18 +276,78 @@ export class DisqusController {
             ContentDto_.receiverParty = PostData.email;
             ContentDto_.reactionUri = ContentDto_.reactionUri;
 
-					// InsightDto insightDto = this.validationEvent(contentDto);
-          //   this.processInsightEvent(insightDto);
+            var InsightsDto_ = new InsightsDto(this.utilsService);
+            InsightsDto_ = await this.validationEvent(ContentDto_);
+            //await this.processInsightEvent(InsightsDto_);
           }
         }
       }
     }
   }
 
-  private async validationEvent(ContentDto_: ContentDto){
-    var post = await this.postDisqusService.findContentPost(ContentDto_.postID.toString());
-    var InsightsDto = new InsightsDto();
-    
+  // private async processInsightEvent(InsightsDto_: InsightsDto): Promise<ContentDto> {
+  //   if (InsightsDto_.contentDto.eventType =="REACTION") {
+  //     if (InsightsDto_.step4("DONE", "ACCEPT", false)) {
+  //       if (InsightsDto_.restrictContentPost()) {
+  //         var CreateInsightlogsDto_ = new CreateInsightlogsDto();
+  //         CreateInsightlogsDto_
+  //         Optional < InsightLog > item = insightDto.increaseReaction();
+  //         if (item.isPresent()) {
+  //           this.saveInteractive(insightDto, item.get());
+  //           notifService.sendInsightFcm(insightDto);
+  //         }
+  //       }
+  //     }
+
+  //   } else if (EventInsight.COMMENT.getName().equals(insightDto.getContentDto().getEventType())) {
+  //     if (insightDto.step4(EventType.DONE.getName(), EventType.ACCEPT.getName(), false)) {
+  //       if (insightDto.restrictContentPost()) {
+  //         Optional < InsightLog > item = insightDto.increaseComment();
+  //         if (item.isPresent()) {
+  //           this.saveInteractive(insightDto, item.get());
+  //           notifService.sendInsightFcm(insightDto);
+
+  //           contentService.broadcast(SocketEnum.POST_COMMENT.getName(), SocketEnum.POST_COMMENT.getName(), insightDto.toString());
+  //         }
+  //       }
+  //     }
+
+  //   } else if (EventInsight.CHAT.getName().equals(insightDto.getContentDto().getEventType())) {
+  //     insightDto.step4(EventType.DONE.getName(), EventType.ACCEPT.getName(), false);
+  //   }
+  //   return insightDto.getContentDto();
+  //   return new ContentDto();
+  // }
+
+  private async validationEvent(ContentDto_: ContentDto): Promise<InsightsDto>{
+    var InsightsDto_ = new InsightsDto(this.utilsService);
+    var ProfileDTO_email = new ProfileDTO();
+    ProfileDTO_email = await this.utilsService.generateProfile(ContentDto_.email.toString(), "FULL");
+    var ProfileDTO_mate = new ProfileDTO();
+    ProfileDTO_mate = await this.utilsService.generateProfile(ContentDto_.receiverParty.toString(), "FULL");
+    if (InsightsDto_.step1(ProfileDTO_email, ProfileDTO_mate)) {
+      var insightSender = await this.insightsService.findemail(ProfileDTO_email.email.toString());
+      var insightReceiver = await this.insightsService.findemail(ProfileDTO_mate.email.toString());
+      if (InsightsDto_.step2(insightSender, insightReceiver)) {
+        if (ContentDto_.eventType =="FOLLOWER") {
+          var Contentevents_Sender = new Contentevents();
+          Contentevents_Sender = await this.contenteventsService.findParentBySender("FOLLOWER", InsightsDto_.profile.email.toString(), InsightsDto_.receiverParty.email.toString(), false);
+          var Contentevents_Receiver = new Contentevents();
+          Contentevents_Receiver = await this.contenteventsService.findParentByReceiver("FOLLOWING", InsightsDto_.receiverParty.email.toString(), InsightsDto_.profile.email.toString(), false);
+          InsightsDto_.step3(Contentevents_Sender, Contentevents_Receiver);
+        }else{
+          if (InsightsDto_.isContentPost()) {
+            InsightsDto_.step3_(
+              (await this.postDisqusService.findContentPost(ContentDto_.postID.toString())),
+              (await this.contenteventsService.findSenderOrReceiverByPostID(ContentDto_.postID.toString(), ContentDto_.eventType.toString(), InsightsDto_.profile.email.toString(), InsightsDto_.receiverParty.email.toString()))
+            );
+          } else {
+            InsightsDto_.step3__(await this.contenteventsService.findSenderOrReceiver(InsightsDto_.contentDto.eventType.toString(), InsightsDto_.profile.email.toString(), InsightsDto_.receiverParty.email.toString()));
+          }
+        }
+      }
+    }
+    return InsightsDto_;
   }
 
   @Post('posts/disqus/deletedicuss')
