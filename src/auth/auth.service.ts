@@ -5661,4 +5661,9 @@ export class AuthService {
   async loginSocmed(body: any) {
 
   }
+
+  async countPost(id: string) : Promise<number> {
+    
+    return 0;
+  }
 }
