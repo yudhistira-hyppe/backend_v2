@@ -6,15 +6,16 @@ import { DivisionService } from './division.service';
 import { ConfigModule } from '@nestjs/config';
 import { Division, DivisionSchema } from './schemas/division.schema';
 import { UtilsModule } from '../../../utils/utils.module';
+import { UserbasicsModule } from '../../userbasics/userbasics.module';
 
 @Module({
     imports: [
         UtilsModule,
-        ConfigModule.forRoot(),
+        ConfigModule.forRoot(), UserbasicsModule,
         MongooseModule.forFeature([{ name: Division.name, schema: DivisionSchema }], 'SERVER_TRANS')
     ],
     controllers: [DivisionController],
     exports: [DivisionService],
     providers: [DivisionService],
 })
-export class DivisionModule {}
+export class DivisionModule { }

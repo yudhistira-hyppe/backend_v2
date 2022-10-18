@@ -56,7 +56,7 @@ export class TransactionsController {
     ) { }
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions')
-    async create(@Res() res, @Headers('x-auth-token') auth: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Request() request) {
+    async create(@Res() res, @Headers('x-auth-token') auth: string, @Headers('x-auth-user') email: string, @Body() CreateTransactionsDto: CreateTransactionsDto, @Request() request) {
         const messages = {
             "info": ["The create successful"],
         };
@@ -130,7 +130,7 @@ export class TransactionsController {
         var ObjectId = require('mongodb').ObjectId;
 
         var totalamount = 0;
-        var email = x.email;
+        var email = email;
 
         var datatransaction = await this.transactionsService.findAll();
         var leng = datatransaction.length + 1;
@@ -280,16 +280,15 @@ export class TransactionsController {
             }
 
 
-            for (var i = 0; i < lenghtpostid; i++) {
-                var postIds = postid[i].id;
+            var postIds = postid[0].id;
 
-                //  var objid = mongoose.Types.ObjectId(postIds);
-                var qty = postid[i].qty;
-                var totalAmount = postid[i].totalAmount;
-                var arraydetailobj = { "id": postIds, "qty": qty, "totalAmount": totalAmount };
-                arrayDetail.push(arraydetailobj);
-            }
-            postidTR = postid[0].id;
+            //  var objid = mongoose.Types.ObjectId(postIds);
+            var qty = postid[0].qty;
+            var totalAmount = postid[0].totalAmount;
+            var arraydetailobj = { "id": postIds, "qty": qty, "totalAmount": totalAmount };
+            arrayDetail.push(arraydetailobj);
+
+            postidTR = postIds;
             arraypostids.push(postid[0].id);
 
 
@@ -302,7 +301,7 @@ export class TransactionsController {
                 dex = new Date(dex);
 
                 if (cekstatusva.va_status === "WAITING_PAYMENT") {
-                    throw new BadRequestException("This content is already in the process of being purchased");
+                    throw new BadRequestException("Tidak dapat melanjutkan. Konten ini sedang dalam proses pembelian");
                 }
                 else if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
 
@@ -330,7 +329,7 @@ export class TransactionsController {
                     }
 
                     try {
-                        let datareqva = await this.oyPgService.generateStaticVa(datava);
+                        var datareqva = await this.oyPgService.generateStaticVa(datava);
                         var idva = datareqva.id;
                         var statuscodeva = datareqva.status.code;
                         var statusmessage = datareqva.status.message;
@@ -370,7 +369,8 @@ export class TransactionsController {
                             CreateTransactionsDto.payload = null;
                             CreateTransactionsDto.expiredtimeva = d1.toISOString();
                             CreateTransactionsDto.detail = arrayDetail;
-                            CreateTransactionsDto.postid = postidTR.toString();
+                            CreateTransactionsDto.postid = postidTR;
+                            CreateTransactionsDto.response = datareqva;
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
                             await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                             await this.transactionsService.updatestatuscancel(idtransaction);
@@ -378,7 +378,7 @@ export class TransactionsController {
 
                             var data = {
                                 "noinvoice": datatr.noinvoice,
-                                "postid": postidTR.toString(),
+                                "postid": postidTR,
                                 "idusersell": datatr.idusersell,
                                 "NamaPenjual": namapenjual,
                                 "iduserbuyer": datatr.iduserbuyer,
@@ -405,23 +405,28 @@ export class TransactionsController {
                                 "_id": datatr._id
                             };
 
-                            res.status(HttpStatus.OK).json({
-                                response_code: 202,
-                                "data": data,
-                                "message": messages
-                            });
+
                         } catch (e) {
                             res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror + " " + e.toString()
                             });
                         }
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": messages
+                        });
+                        // setTimeout(res, 3000);
+                    }
+                    else if (statuscodeva == "208") {
+                        throw new BadRequestException("Request is Rejected (API Key is not Valid)");
                     }
                     else if (statuscodeva == "217") {
-                        throw new BadRequestException("VA Number is still active for this partner user id !");
+                        throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
                     }
                     else {
-                        throw new BadRequestException("Given amount are greater than allowed value for static va value not found..!");
+                        throw new BadRequestException("Request is Rejected");
                     }
                     // } else {
                     //     throw new BadRequestException("This content is already in the process of being purchased");
@@ -446,7 +451,7 @@ export class TransactionsController {
                 }
 
                 try {
-                    let datareqva = await this.oyPgService.generateStaticVa(datava);
+                    var datareqva = await this.oyPgService.generateStaticVa(datava);
                     var idva = datareqva.id;
                     var statuscodeva = datareqva.status.code;
                     var statusmessage = datareqva.status.message;
@@ -487,13 +492,14 @@ export class TransactionsController {
                         CreateTransactionsDto.payload = null;
                         CreateTransactionsDto.expiredtimeva = d1.toISOString();
                         CreateTransactionsDto.detail = arrayDetail;
-                        CreateTransactionsDto.postid = postidTR.toString();
+                        CreateTransactionsDto.postid = postidTR;
+                        CreateTransactionsDto.response = datareqva;
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
                         await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
                         var data = {
                             "noinvoice": datatr.noinvoice,
-                            "postid": postidTR.toString(),
+                            "postid": postidTR,
                             "idusersell": datatr.idusersell,
                             "NamaPenjual": namapenjual,
                             "iduserbuyer": datatr.iduserbuyer,
@@ -519,28 +525,37 @@ export class TransactionsController {
                             "timestamp": datatr.timestamp,
                             "_id": datatr._id
                         };
-
-                        res.status(HttpStatus.OK).json({
-                            response_code: 202,
-                            "data": data,
-                            "message": messages
-                        });
                     } catch (e) {
                         res.status(HttpStatus.BAD_REQUEST).json({
 
                             "message": messagesEror + " " + e.toString()
                         });
                     }
-                } else if (statuscodeva == "217") {
-                    throw new BadRequestException("This content is already in the process of being purchased!");
+                    res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": messages
+                    });
+                    // setTimeout(res, 3000);
+                }
+                else if (statuscodeva == "208") {
+                    throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+                }
+                else if (statuscodeva == "217") {
+                    throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
                 }
                 else {
-                    throw new BadRequestException("This content is already in the process of being purchased");
+                    throw new BadRequestException("Request is Rejected");
                 }
             }
 
         }
         else if (type === "VOUCHER") {
+
+            var postidTRvoucer = null;
+            var arraymountvc = [];
+            var arraypostidsvc = [];
+            var arrayDetailvc = [];
             try {
 
 
@@ -556,8 +571,6 @@ export class TransactionsController {
             try {
 
                 datatrpending = await this.transactionsService.findpostidpendingVoucer();
-                console.log(datatrpending);
-
 
             } catch (e) {
                 datatrpending = null;
@@ -595,16 +608,16 @@ export class TransactionsController {
                         process.exit(0);
                     } else {
                         var amountobj = dataconten.amount * qty;
-                        arraymount.push(amountobj);
-                        arraypostids.push(postIds);
+                        arraymountvc.push(amountobj);
+                        arraypostidsvc.push(postIds);
 
                         var arraydetailobj = { "id": objid, "qty": qty, "totalAmount": totalAmount };
-                        arrayDetail.push(arraydetailobj);
+                        arrayDetailvc.push(arraydetailobj);
                     }
                 }
 
-                for (var i = 0; i < arraymount.length; i++) {
-                    sum += arraymount[i];
+                for (var i = 0; i < arraymountvc.length; i++) {
+                    sum += arraymountvc[i];
                 }
 
                 saleAmount = sum;
@@ -613,7 +626,8 @@ export class TransactionsController {
                 saleAmount = 0;
             }
 
-            postidTR = arraypostids.toString();
+            postidTRvoucer = arraypostidsvc.toString();
+            console.log(postidTRvoucer)
 
             if (datatrpending !== null) {
 
@@ -624,7 +638,7 @@ export class TransactionsController {
                 dex = new Date(dex);
 
                 if (cekstatusva.va_status === "WAITING_PAYMENT") {
-                    throw new BadRequestException("This content is already in the process of being purchased");
+                    throw new BadRequestException("Tidak dapat melanjutkan. Voucher ini sedang dalam proses pembelian");
                 }
                 else if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
                     var idtransaction = datatrpending._id;
@@ -641,7 +655,7 @@ export class TransactionsController {
                     }
 
                     try {
-                        let datareqva = await this.oyPgService.generateStaticVa(datava);
+                        var datareqva = await this.oyPgService.generateStaticVa(datava);
                         var idva = datareqva.id;
                         var statuscodeva = datareqva.status.code;
                         var statusmessage = datareqva.status.message;
@@ -680,19 +694,20 @@ export class TransactionsController {
                             CreateTransactionsDto.description = "buy " + type + " pending";
                             CreateTransactionsDto.payload = null;
                             CreateTransactionsDto.expiredtimeva = d1.toISOString();
-                            CreateTransactionsDto.detail = arrayDetail;
-                            CreateTransactionsDto.postid = postidTR.toString();
+                            CreateTransactionsDto.detail = arrayDetailvc;
+                            CreateTransactionsDto.postid = postidTRvoucer.toString();
+                            CreateTransactionsDto.response = datareqva;
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
-                            var lengArrDetail = arrayDetail.length;
+                            var lengArrDetail = arrayDetailvc.length;
 
                             for (var i = 0; i < lengArrDetail; i++) {
-                                var qtyDetail = arrayDetail[i].qty;
-                                var idvoucher = arrayDetail[i].id.toString();
-                                var idvcr = mongoose.Types.ObjectId(idvoucher);
+                                let qtyDetail = arrayDetailvc[i].qty;
+                                let idvoucher = arrayDetailvc[i].id.toString();
+                                let idvcr = mongoose.Types.ObjectId(idvoucher);
                                 datavoucher = await this.vouchersService.findOne(idvoucher);
-                                var pendingUsed = datavoucher.pendingUsed;
-                                var totalPending = pendingUsed + qtyDetail;
+                                let pendingUsed = datavoucher.pendingUsed;
+                                let totalPending = pendingUsed + qtyDetail;
                                 await this.vouchersService.updatesPendingUsed(idvcr, totalPending);
                             }
 
@@ -704,7 +719,7 @@ export class TransactionsController {
                             for (var a = 0; a < detailTr.length; a++) {
                                 var qtyDetail2 = detailTr[a].qty;
                                 var idvoucher2 = detailTr[a].id.toString();
-                                var idvcr2 = mongoose.Types.ObjectId(idvoucher2);
+                                var idvcr2 = detailTr[a].id;
                                 datavoucher = await this.vouchersService.findOne(idvoucher2);
                                 var pendingUsed2 = datavoucher.pendingUsed;
                                 var totalPending2 = pendingUsed2 - qtyDetail2;
@@ -713,7 +728,7 @@ export class TransactionsController {
 
                             var data = {
                                 "noinvoice": datatr.noinvoice,
-                                "postid": postidTR.toString(),
+                                "postid": postidTRvoucer.toString(),
                                 "idusersell": datatr.idusersell,
                                 "NamaPenjual": namapenjual,
                                 "iduserbuyer": datatr.iduserbuyer,
@@ -733,30 +748,35 @@ export class TransactionsController {
                                 "bankvacharge": valuevacharge,
                                 // "mdradmin": valuemradmin + " %",
                                 // "nominalmdradmin": nominalmradmin,
-                                "detail": arrayDetail,
+                                "detail": arrayDetailvc,
                                 "totalamount": datatr.totalamount,
                                 "accountbalance": datatr.accountbalance,
                                 "timestamp": datatr.timestamp,
                                 "_id": datatr._id
                             };
 
-                            res.status(HttpStatus.OK).json({
-                                response_code: 202,
-                                "data": data,
-                                "message": messages
-                            });
+
                         } catch (e) {
                             res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror + " " + e.toString()
                             });
                         }
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": messages
+                        });
+                        // setTimeout(res, 3000);
+                    }
+                    else if (statuscodeva == "208") {
+                        throw new BadRequestException("Request is Rejected (API Key is not Valid)");
                     }
                     else if (statuscodeva == "217") {
-                        throw new BadRequestException("VA Number is still active for this partner user id !");
+                        throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
                     }
                     else {
-                        throw new BadRequestException("Given amount are greater than allowed value for static va value not found..!");
+                        throw new BadRequestException("Request is Rejected");
                     }
                     // } else {
                     //     throw new BadRequestException("This content is already in the process of being purchased");
@@ -781,7 +801,7 @@ export class TransactionsController {
                 }
 
                 try {
-                    let datareqva = await this.oyPgService.generateStaticVa(datava);
+                    var datareqva = await this.oyPgService.generateStaticVa(datava);
                     var idva = datareqva.id;
                     var statuscodeva = datareqva.status.code;
                     var statusmessage = datareqva.status.message;
@@ -821,24 +841,26 @@ export class TransactionsController {
                         CreateTransactionsDto.description = "buy " + type + " pending";
                         CreateTransactionsDto.payload = null;
                         CreateTransactionsDto.expiredtimeva = d1.toISOString();
-                        CreateTransactionsDto.detail = arrayDetail;
-                        CreateTransactionsDto.postid = postidTR.toString();
+                        CreateTransactionsDto.detail = arrayDetailvc;
+                        CreateTransactionsDto.postid = postidTRvoucer;
+                        CreateTransactionsDto.response = datareqva;
                         let datatr = await this.transactionsService.create(CreateTransactionsDto);
                         await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
-                        var lengArrDetail = arrayDetail.length;
+                        var lengArrDetail = arrayDetailvc.length;
 
                         for (var i = 0; i < lengArrDetail; i++) {
-                            var qtyDetail = arrayDetail[i].qty;
-                            var idvoucher = arrayDetail[i].id.toString();
+                            let qtyDetail = arrayDetailvc[i].qty;
+                            let idvoucher = arrayDetailvc[i].id.toString();
+                            let idvcr2 = arrayDetailvc[i].id;
                             datavoucher = await this.vouchersService.findOne(idvoucher);
-                            var pendingUsed = datavoucher.pendingUsed;
-                            var totalPending = pendingUsed + qtyDetail;
-                            await this.vouchersService.updatesPendingUsed(idvoucher, totalPending);
+                            let pendingUsed = datavoucher.pendingUsed;
+                            let totalPending = pendingUsed + qtyDetail;
+                            await this.vouchersService.updatesPendingUsed(idvcr2, totalPending);
                         }
 
                         var data = {
                             "noinvoice": datatr.noinvoice,
-                            "postid": postidTR.toString(),
+                            "postid": postidTRvoucer,
                             "idusersell": datatr.idusersell,
                             "NamaPenjual": namapenjual,
                             "iduserbuyer": datatr.iduserbuyer,
@@ -858,29 +880,35 @@ export class TransactionsController {
                             "bankvacharge": valuevacharge,
                             // "mdradmin": valuemradmin + " %",
                             // "nominalmdradmin": nominalmradmin,
-                            "detail": arrayDetail,
+                            "detail": arrayDetailvc,
                             "totalamount": datatr.totalamount,
                             "accountbalance": datatr.accountbalance,
                             "timestamp": datatr.timestamp,
                             "_id": datatr._id
                         };
 
-                        res.status(HttpStatus.OK).json({
-                            response_code: 202,
-                            "data": data,
-                            "message": messages
-                        });
                     } catch (e) {
                         res.status(HttpStatus.BAD_REQUEST).json({
 
                             "message": messagesEror + " " + e.toString()
                         });
                     }
-                } else if (statuscodeva == "217") {
-                    throw new BadRequestException("This content is already in the process of being purchased!");
+
+                    res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": messages
+                    });
+                    //  setTimeout(res, 3000);
+                }
+                else if (statuscodeva == "208") {
+                    throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+                }
+                else if (statuscodeva == "217") {
+                    throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
                 }
                 else {
-                    throw new BadRequestException("This content is already in the process of being purchased");
+                    throw new BadRequestException("Request is Rejected");
                 }
             }
 
@@ -1015,6 +1043,8 @@ export class TransactionsController {
                     if (status == "WAITING_PAYMENT") {
                         var ubasic = await this.userbasicsService.findid(iduserbuy);
                         var emailbuyer = ubasic.email;
+                        var ubasicsell = await this.userbasicsService.findid(idusersell);
+                        var emailseller = ubasicsell.email;
 
                         try {
                             languages = ubasic.languages;
@@ -1050,7 +1080,7 @@ export class TransactionsController {
 
 
                         await this.transactionsService.updateone(idtransaction, idbalance, payload);
-                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                        await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
 
                         await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy);
@@ -1084,13 +1114,13 @@ export class TransactionsController {
 
                         var mediaId = data_media.mediaID;
 
-                        let CreateUserplaylistDto_ = new CreateUserplaylistDto();
-                        CreateUserplaylistDto_.mediaId = mediaId;
-                        CreateUserplaylistDto_.userPostId = idusersell;
-                        CreateUserplaylistDto_.postType = postType;
-                        console.log(langIso);
+                        // let CreateUserplaylistDto_ = new CreateUserplaylistDto();
+                        // CreateUserplaylistDto_.mediaId = mediaId;
+                        // CreateUserplaylistDto_.userPostId = iduserbuy;
+                        // CreateUserplaylistDto_.postType = postType;
+                        // console.log(langIso);
 
-                        await this.postsService.generateUserPlaylist(CreateUserplaylistDto_);
+                        // await this.postsService.updateGenerateUserPlaylist(idusersell, CreateUserplaylistDto_);
                         await this.postContentService.generateCertificate(postid, langIso);
 
                         res.status(HttpStatus.OK).json({
@@ -1166,7 +1196,8 @@ export class TransactionsController {
                     if (status == "WAITING_PAYMENT") {
                         var ubasic = await this.userbasicsService.findid(iduserbuy);
                         var emailbuyer = ubasic.email;
-
+                        var ubasicsell = await this.userbasicsService.findid(idusersell);
+                        var emailseller = ubasicsell.email;
 
                         var createbalance = await this.accontbalanceVoucher(postid, idusersell, saleAmountVoucher);
                         var createbalanceadmin = await this.accontbalanceAdmin("Admin", idadmin, idusersell, nominalmradmin);
@@ -1175,7 +1206,7 @@ export class TransactionsController {
 
                         var idbalance = databalance._id;
                         await this.transactionsService.updateoneVoucher(idtransaction, idbalance, payload);
-                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                        await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                         for (var i = 0; i < lengtvoucherid; i++) {
                             var postvcid = detail[i].id.toString();
                             var jml = detail[i].qty;
@@ -3235,6 +3266,330 @@ export class TransactionsController {
 
 
     }
+
+    @Post('api/transactions/list')
+    @UseGuards(JwtAuthGuard)
+    async searchhistory(@Req() request: Request): Promise<any> {
+        var startdate = null;
+        var enddate = null;
+        var iduser = null;
+        var email = null;
+        var datasell = null;
+        var datasellcount = null;
+        var skip = null;
+        var limit = null;
+        var databuy = null;
+        var databuycount = null;
+        var datawithdraw = null;
+        var datawithdrawcount = null;
+        var sell = null;
+        var buy = null;
+        var withdrawal = null;
+        var data = null;
+        var datacount = null;
+        var dtcount = null;
+        var status = null;
+        var titleinsukses = "Pembayaran Diajukan!";
+        var titleensukses = "Payment Filed!";
+        var bodyinsukses = "Periode pembayaran telah berlalu waktu kadaluarsa. konten Anda terdaftar tidak akan diposting";
+        var bodyensukses = "The payment period has passed the expiration time. The content you registered will not posted";
+        var eventType = "TRANSACTION";
+        var event = "TRANSACTION";
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+            var ubasic = await this.userbasicsService.findOne(email);
+
+            iduser = ubasic._id;
+
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        status = request_json["status"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+
+        if (request_json["sell"] !== undefined) {
+            sell = request_json["sell"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["buy"] !== undefined) {
+            buy = request_json["buy"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["withdrawal"] !== undefined) {
+            withdrawal = request_json["withdrawal"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var idadmin = mongoose.Types.ObjectId(iduser);
+
+
+        if (sell === true && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            data = datasell;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            datacount = datasellcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === false && withdrawal === false && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            data = datasell;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            datacount = datasellcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+        else if (sell === false && buy === true && withdrawal === false && startdate === undefined && enddate === undefined) {
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            data = databuy;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            datacount = databuycount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+        else if (sell === false && buy === true && withdrawal === false && startdate !== undefined && enddate !== undefined) {
+
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            data = databuy;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            datacount = databuycount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+        else if (sell === false && buy === false && withdrawal === true && startdate === undefined && enddate === undefined) {
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            data = datawithdraw;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            datacount = datawithdrawcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+
+        }
+        else if (sell === false && buy === false && withdrawal === true && startdate !== undefined && enddate !== undefined) {
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            data = datawithdraw;
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            datacount = datawithdrawcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+
+        else if (sell === true && buy === true && withdrawal === false && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(databuy);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(databuycount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === true && withdrawal === false && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(databuy);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(databuycount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === false && withdrawal === true && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === false && withdrawal === true && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+        else if (sell === false && buy === true && withdrawal === true && startdate === undefined && enddate === undefined) {
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            data = databuy.concat(datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = databuycount.concat(datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+        else if (sell === false && buy === true && withdrawal === true && startdate !== undefined && enddate !== undefined) {
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            data = databuy.concat(datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = databuycount.concat(datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+        else if (sell === false && buy === false && withdrawal === false && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(databuy, datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(databuycount, datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === true && withdrawal === true && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(databuy, datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(databuycount, datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+        else if (sell === true && buy === true && withdrawal === true && startdate !== undefined && enddate !== undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(databuy, datawithdraw);
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(databuycount, datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+        else if (sell === false && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
+            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            data = datasell.concat(databuy, datawithdraw);
+
+            data.sort((first, second) => {
+                if (first.timestamp > second.timestamp) return -1;
+                if (first.timestamp < second.timestamp) return 1;
+                return 0;
+            });
+            dtcount = datasellcount.concat(databuycount, datawithdrawcount);
+            datacount = dtcount.length;
+            return { response_code: 202, data, skip, limit, datacount, messages };
+        }
+
+
+
+        // console.log(datawithdraw)
+        // var data = datasell.concat(databuy, datawithdraw);
+
+
+    }
+
 
 
     @Post('api/transactions/historys/details')

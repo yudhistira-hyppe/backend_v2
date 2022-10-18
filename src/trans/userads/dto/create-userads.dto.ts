@@ -20,5 +20,6 @@ export class CreateUserAdsDto {
     adstypesId: mongoose.Types.ObjectId;
     nameType: string;
     timeViewSecond: number;
+    isActive: boolean;
 
 }

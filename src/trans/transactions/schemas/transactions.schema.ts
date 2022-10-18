@@ -14,13 +14,13 @@ export class Transactions {
     postid: string;
 
     @Prop({ type: mongoose.Schema.Types.ObjectId })
-    idusersell: { oid: string }
+    idusersell: { oid: String }
     @Prop({ type: mongoose.Schema.Types.ObjectId })
-    iduserbuyer: { oid: string }
+    iduserbuyer: { oid: String }
     @Prop()
     amount: number
     @Prop({ type: mongoose.Schema.Types.ObjectId })
-    paymentmethod: { oid: string }
+    paymentmethod: { oid: String }
 
     @Prop()
     status: string
@@ -36,17 +36,17 @@ export class Transactions {
     @Prop()
     saleview: boolean
     @Prop({ type: mongoose.Schema.Types.ObjectId })
-    bank: { oid: string }
+    bank: { oid: String }
     @Prop({ type: mongoose.Schema.Types.ObjectId })
-    ppn: { oid: string }
+    ppn: { oid: String }
     @Prop({ type: mongoose.Schema.Types.ObjectId })
-    mdradmin: { oid: string }
+    mdradmin: { oid: String }
     @Prop({ type: mongoose.Schema.Types.ObjectId })
-    bankvacharge: { oid: string }
+    bankvacharge: { oid: String }
     @Prop()
     totalamount: number
     @Prop({ type: mongoose.Schema.Types.ObjectId })
-    accountbalance: { oid: string }
+    accountbalance: { oid: String }
     @Prop()
     timestamp: string
     @Prop()
@@ -57,6 +57,9 @@ export class Transactions {
     type: string
     @Prop([])
     detail: [];
+    @Prop({ type: Object })
+    response: {}
+
 
 }
 

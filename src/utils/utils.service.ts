@@ -86,16 +86,16 @@ export class UtilsService {
 
   async sendEmailWithAttachment(to: string, from: string, subject: string, html: string, att: any,): Promise<boolean> {
     var sendEmail_ = false;
-    await this.mailerService.sendMail({to: to,from: from,subject: subject,html: html,attachments: [att]})
-    .then((success) => {
-      sendEmail_ = true;
-      //console.log(success);
-    }).catch((err) => {
-      sendEmail_ = false;
-      //console.log(err);
-    });
+    await this.mailerService.sendMail({ to: to, from: from, subject: subject, html: html, attachments: [att] })
+      .then((success) => {
+        sendEmail_ = true;
+        //console.log(success);
+      }).catch((err) => {
+        sendEmail_ = false;
+        //console.log(err);
+      });
     return sendEmail_;
-  }  
+  }
 
   async ceckDistance(
     lat1: double,
@@ -145,7 +145,7 @@ export class UtilsService {
     var dtstring = dt.toISOString();
     var splitdt = dtstring.split(".");
     var date = splitdt[0].replace("T", " ");
-
+    var mediaprofilepicts = null;
     let createNotificationsDto = new CreateNotificationsDto();
 
     const datauserbasicsService = await this.userbasicsService.findOne(
@@ -153,14 +153,17 @@ export class UtilsService {
     );
     if (await this.ceckData(datauserbasicsService)) {
       emailuserbasic = datauserbasicsService.email;
-      profilepict = datauserbasicsService.profilePict;
-      idprofilepict = profilepict.oid;
-      console.log(idprofilepict);
+
+      try {
+        profilepict = datauserbasicsService.profilePict;
+        idprofilepict = profilepict.oid;
+        mediaprofilepicts = await this.mediaprofilepictsService.findOne(idprofilepict);
+      } catch (e) {
+        mediaprofilepicts = null;
+      }
       const user_userAuth = await this.userauthsService.findOne(
         emailuserbasic
       );
-
-      var mediaprofilepicts = await this.mediaprofilepictsService.findOne(idprofilepict);
 
       var mediaUri = null;
       var mediaBasePath = null;
@@ -850,9 +853,9 @@ export class UtilsService {
         }
         ProfileDTO_.pin_create = pin_create;
         ProfileDTO_.pin_verified = otppinVerified;
-        if (get_userbasic.statusKyc!=undefined){
+        if (get_userbasic.statusKyc != undefined) {
           ProfileDTO_.statusKyc = get_userbasic.statusKyc;
-        }else{
+        } else {
           if (get_userbasic.isIdVerified != undefined) {
             if (get_userbasic.isIdVerified) {
               ProfileDTO_.statusKyc = "review";

@@ -1,18 +1,19 @@
 export class CreateDisquslogsDto {
   
 
-    readonly _id: String;
-    readonly disqusID: String;
-    readonly sequenceNumber: Number;
-    readonly sender: String;
-    readonly receiver: String;
-    readonly active: boolean;
-    readonly eventInsight: String;
-    readonly  postType: String;
-    readonly  postID: String;
-    readonly  createdAt: String;
-    readonly  updatedAt: String;
-    readonly  reactionUri: String;
+     _id: String;
+     disqusID: String;
+     sequenceNumber: Number;
+     sender: String;
+     receiver: String;
+     active: boolean;
+     eventInsight: String;
+      postType: String;
+      postID: String;
+      createdAt: String;
+      updatedAt: String;
+      reactionUri: String;
+    txtMessages: String;
     
     readonly  medias: [{
         createdAt: String;

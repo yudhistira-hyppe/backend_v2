@@ -153,7 +153,10 @@ export class AdsUserCompareController {
             mediaType: get_profilePict.mediaType,
             mediaEndpoint: '/profilepict/' + get_profilePict.mediaUri.replace('_0001.jpeg', '')
         }
-        data_response['adsPlace'] = (await this.adsplacesService.findOne(data_ads.placingID.toString())).namePlace;
+        var dataPlace = await this.adsplacesService.findOne(data_ads.placingID.toString());
+        if (await this.utilsService.ceckData(dataPlace)) {
+            data_response['adsPlace'] = dataPlace.namePlace;
+        }
         data_response['adsType'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).nameType;
         data_response['adsSkip'] = (await this.adstypesService.findOne(data_ads.typeAdsID.toString())).AdsSkip;
         data_response['mediaType'] = data_ads.type;
@@ -289,35 +292,35 @@ export class AdsUserCompareController {
                     );
                 }
 
-                if (userAds_liveTypeuserads) {
-                    //Insert userads
-                    try {
-                        var _CreateUserAdsDto_ = new CreateUserAdsDto();
-                        _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
-                        _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
-                        _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
-                        _CreateUserAdsDto_.createdAt = current_date;
-                        _CreateUserAdsDto_.description = data_userAdsService.description;
-                        _CreateUserAdsDto_.priority = data_userAdsService.priority;
-                        _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
-                        _CreateUserAdsDto_.statusClick = false;
-                        _CreateUserAdsDto_.statusView = false;
-                        _CreateUserAdsDto_.updatedAt = current_date;
-                        _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
-                        _CreateUserAdsDto_.userID = data_userAdsService.userID;
-                        _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
-                        _CreateUserAdsDto_.viewed = 0;
-                        _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
-                        _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
-                        _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
-                        _CreateUserAdsDto_.timeViewSecond = 0;
-                        await this.userAdsService.create(_CreateUserAdsDto_);
-                    } catch (e) {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed, Insert userAds liveTypeuserads' + e,
-                        );
-                    }
-                }
+                // if (userAds_liveTypeuserads) {
+                //     //Insert userads
+                //     try {
+                //         var _CreateUserAdsDto_ = new CreateUserAdsDto();
+                //         _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
+                //         _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
+                //         _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
+                //         _CreateUserAdsDto_.createdAt = current_date;
+                //         _CreateUserAdsDto_.description = data_userAdsService.description;
+                //         _CreateUserAdsDto_.priority = data_userAdsService.priority;
+                //         _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
+                //         _CreateUserAdsDto_.statusClick = false;
+                //         _CreateUserAdsDto_.statusView = false;
+                //         _CreateUserAdsDto_.updatedAt = current_date;
+                //         _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
+                //         _CreateUserAdsDto_.userID = data_userAdsService.userID;
+                //         _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
+                //         _CreateUserAdsDto_.viewed = 0;
+                //         _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
+                //         _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
+                //         _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
+                //         _CreateUserAdsDto_.timeViewSecond = 0;
+                //         await this.userAdsService.create(_CreateUserAdsDto_);
+                //     } catch (e) {
+                //         await this.errorHandler.generateNotAcceptableException(
+                //             'Unabled to proceed, Insert userAds liveTypeuserads' + e,
+                //         );
+                //     }
+                // }
 
                 return {
                     response_code: 202,
@@ -357,6 +360,7 @@ export class AdsUserCompareController {
                     var credit_free = data_adsService.creditFree;
                     var used_credit = data_adsService.usedCredit;
                     var used_credit_free = data_adsService.usedCreditFree;
+                    var adsStatus = true;
 
                     if ((ads_totalView + 1) <= ads_tayang) {
                         const sisa_credit = credit - (used_credit + credit_view);
@@ -381,6 +385,10 @@ export class AdsUserCompareController {
                             if (sisa_credit_free >= credit_view) {
                                 used_credit_free = used_credit_free + credit_view;
                             }
+                        }
+
+                        if (ads_totalView == ads_tayang){
+                            adsStatus = false;
                         }
 
                         if (watching_time > 0 && watching_time < AdsSkip) {
@@ -419,6 +427,7 @@ export class AdsUserCompareController {
                                 CreateAdsDto_.usedCredit = used_credit;
                                 CreateAdsDto_.usedCreditFree = used_credit_free;
                                 CreateAdsDto_.totalView = ads_totalView + 1;
+                                CreateAdsDto_.isActive = adsStatus;
                                 await this.adsService.update(data_adsService._id.toString(), CreateAdsDto_);
                             } catch (e) {
                                 await this.errorHandler.generateNotAcceptableException(
@@ -427,35 +436,41 @@ export class AdsUserCompareController {
                             }
                         }
 
-                        if (userAds_liveTypeuserads) {
-                            //Insert userads
-                            try {
-                                var _CreateUserAdsDto_ = new CreateUserAdsDto();
-                                _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
-                                _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
-                                _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
-                                _CreateUserAdsDto_.createdAt = current_date;
-                                _CreateUserAdsDto_.description = data_userAdsService.description;
-                                _CreateUserAdsDto_.priority = data_userAdsService.priority;
-                                _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
-                                _CreateUserAdsDto_.statusClick = false;
-                                _CreateUserAdsDto_.statusView = false;
-                                _CreateUserAdsDto_.updatedAt = current_date;
-                                _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
-                                _CreateUserAdsDto_.userID = data_userAdsService.userID;
-                                _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
-                                _CreateUserAdsDto_.viewed = 0;
-                                _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
-                                _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
-                                _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
-                                _CreateUserAdsDto_.timeViewSecond = 0;
-                                await this.userAdsService.create(_CreateUserAdsDto_);
-                            } catch (e) {
-                                await this.errorHandler.generateNotAcceptableException(
-                                    'Unabled to proceed, Insert userAds liveTypeuserads' + e,
-                                );
-                            }
+                        if (ads_totalView == ads_tayang) {
+                            var CreateUserAdsDto_ = new CreateUserAdsDto();
+                            CreateUserAdsDto_.isActive = adsStatus;
+                            await this.userAdsService.updatesAlladsNotActive(data_userAdsService.adsID.toString(), CreateUserAdsDto_);
                         }
+
+                        // if (userAds_liveTypeuserads) {
+                        //     //Insert userads
+                        //     try {
+                        //         var _CreateUserAdsDto_ = new CreateUserAdsDto();
+                        //         _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
+                        //         _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
+                        //         _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
+                        //         _CreateUserAdsDto_.createdAt = current_date;
+                        //         _CreateUserAdsDto_.description = data_userAdsService.description;
+                        //         _CreateUserAdsDto_.priority = data_userAdsService.priority;
+                        //         _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
+                        //         _CreateUserAdsDto_.statusClick = false;
+                        //         _CreateUserAdsDto_.statusView = false;
+                        //         _CreateUserAdsDto_.updatedAt = current_date;
+                        //         _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
+                        //         _CreateUserAdsDto_.userID = data_userAdsService.userID;
+                        //         _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
+                        //         _CreateUserAdsDto_.viewed = 0;
+                        //         _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
+                        //         _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
+                        //         _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
+                        //         _CreateUserAdsDto_.timeViewSecond = 0;
+                        //         await this.userAdsService.create(_CreateUserAdsDto_);
+                        //     } catch (e) {
+                        //         await this.errorHandler.generateNotAcceptableException(
+                        //             'Unabled to proceed, Insert userAds liveTypeuserads' + e,
+                        //         );
+                        //     }
+                        // }
 
                         if (rewards) {
                             //Update accountbalace
@@ -466,27 +481,54 @@ export class AdsUserCompareController {
                                 CreateAccountbalancesDto_.kredit = ads_rewards;
                                 CreateAccountbalancesDto_.type = "rewards";
                                 CreateAccountbalancesDto_.timestamp = current_date;
-                                CreateAccountbalancesDto_.description = "rewards form ads";
+                                CreateAccountbalancesDto_.description = "rewards form ads view";
                                 await this.accountbalancesService.create(CreateAccountbalancesDto_);
                             } catch (e) {
-                                await this.errorHandler.generateNotAcceptableException(
-                                    'Unabled to proceed, ' + e,
-                                );
+                                console.log('Unabled to proceed, ' + e);
+                                // await this.errorHandler.generateNotAcceptableException(
+                                //     'Unabled to proceed, ' + e,
+                                // );
+                            }
+
+                            try{
+                                var titleinsukses = "Reward";
+                                var titleensukses = "Reward";
+                                var bodyinsukses = "Selamat kamu mendapatkan reward Rp." + ads_rewards;
+                                var bodyensukses = "Congratulation you've got a reward Rp." + ads_rewards;
+                                var eventType = "ADS VIEW";
+                                var event = "ADS VIEW";
+                                await this.utilsService.sendFcm(data_userbasicsService.email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                            } catch (e) {
+                                console.log('Unabled to proceed, ' + e);
                             }
                         }
 
-                        if (ads_tayang == (ads_totalView + 1)) {
-                            //Update userads
-                            try {
-                                var CreateUserAdsDto_ = new CreateUserAdsDto();
-                                CreateUserAdsDto_.statusView = false;
-                                await this.userAdsService.updatesdataAdsID(data_adsService._id.toString(), CreateUserAdsDto_);
+                        // if (ads_tayang == (ads_totalView + 1)) {
+                        //     //Update userads
+                        //     try {
+                        //         var CreateUserAdsDto_ = new CreateUserAdsDto();
+                        //         CreateUserAdsDto_.statusView = false;
+                        //         await this.userAdsService.updatesdataAdsID(data_adsService._id.toString(), CreateUserAdsDto_);
 
-                            } catch (e) {
-                                await this.errorHandler.generateNotAcceptableException(
-                                    'Unabled to proceed, ' + e,
-                                );
-                            }
+                        //     } catch (e) {
+                        //         await this.errorHandler.generateNotAcceptableException(
+                        //             'Unabled to proceed, ' + e,
+                        //         );
+                        //     }
+                        // }
+                    }else{
+                        //Update userads
+                        try {
+                            var CreateUserAdsDto_ = new CreateUserAdsDto();
+                            CreateUserAdsDto_.statusView = true;
+                            CreateUserAdsDto_.clickAt = current_date;
+                            CreateUserAdsDto_.viewed = 1;
+                            CreateUserAdsDto_.timeViewSecond = watching_time;
+                            await this.userAdsService.updatesdataUserId_(data_userAdsService._id.toString(), CreateUserAdsDto_);
+                        } catch (e) {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed, ' + e,
+                            );
                         }
                     }
 
@@ -613,6 +655,7 @@ export class AdsUserCompareController {
             var credit_free = data_adsService.creditFree;
             var used_credit = data_adsService.usedCredit;
             var used_credit_free = data_adsService.usedCreditFree;
+            var adsStatus = true;
 
             if ((ads_totalView + 1) <= ads_tayang) {
                 const sisa_credit = credit - (used_credit + credit_view);
@@ -637,6 +680,10 @@ export class AdsUserCompareController {
                     if (sisa_credit_free >= credit_view) {
                         used_credit_free = used_credit_free + credit_view;
                     }
+                }
+
+                if (ads_totalView == ads_tayang) {
+                    adsStatus = false;
                 }
 
                 //Update userads
@@ -667,35 +714,41 @@ export class AdsUserCompareController {
                     );
                 }
 
-                if (userAds_liveTypeuserads) {
-                    //Insert userads
-                    try {
-                        var _CreateUserAdsDto_ = new CreateUserAdsDto();
-                        _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
-                        _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
-                        _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
-                        _CreateUserAdsDto_.createdAt = current_date;
-                        _CreateUserAdsDto_.description = data_userAdsService.description;
-                        _CreateUserAdsDto_.priority = data_userAdsService.priority;
-                        _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
-                        _CreateUserAdsDto_.statusClick = false;
-                        _CreateUserAdsDto_.statusView = false;
-                        _CreateUserAdsDto_.updatedAt = current_date;
-                        _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
-                        _CreateUserAdsDto_.userID = data_userAdsService.userID;
-                        _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
-                        _CreateUserAdsDto_.viewed = 0;
-                        _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
-                        _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
-                        _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
-                        _CreateUserAdsDto_.timeViewSecond = 0;
-                        await this.userAdsService.create(_CreateUserAdsDto_);
-                    } catch (e) {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed, Insert userAds liveTypeuserads' + e,
-                        );
-                    }
+                if (ads_totalView == ads_tayang) {
+                    var CreateUserAdsDto_ = new CreateUserAdsDto();
+                    CreateUserAdsDto_.isActive = adsStatus;
+                    await this.userAdsService.updatesAlladsNotActive(data_userAdsService.adsID.toString(), CreateUserAdsDto_);
                 }
+
+                // if (userAds_liveTypeuserads) {
+                //     //Insert userads
+                //     try {
+                //         var _CreateUserAdsDto_ = new CreateUserAdsDto();
+                //         _CreateUserAdsDto_._id = new mongoose.Types.ObjectId();
+                //         _CreateUserAdsDto_.adsID = data_userAdsService.adsID;
+                //         _CreateUserAdsDto_.clickAt = data_userAdsService.clickAt;
+                //         _CreateUserAdsDto_.createdAt = current_date;
+                //         _CreateUserAdsDto_.description = data_userAdsService.description;
+                //         _CreateUserAdsDto_.priority = data_userAdsService.priority;
+                //         _CreateUserAdsDto_.priorityNumber = data_userAdsService.priorityNumber;
+                //         _CreateUserAdsDto_.statusClick = false;
+                //         _CreateUserAdsDto_.statusView = false;
+                //         _CreateUserAdsDto_.updatedAt = current_date;
+                //         _CreateUserAdsDto_.liveTypeuserads = data_userAdsService.liveTypeuserads;
+                //         _CreateUserAdsDto_.userID = data_userAdsService.userID;
+                //         _CreateUserAdsDto_.viewAt = data_userAdsService.viewAt;
+                //         _CreateUserAdsDto_.viewed = 0;
+                //         _CreateUserAdsDto_.liveAt = data_userAdsService.liveAt.toString();
+                //         _CreateUserAdsDto_.adstypesId = new mongoose.Types.ObjectId(data_userAdsService.adstypesId.toString());
+                //         _CreateUserAdsDto_.nameType = data_userAdsService.nameType;
+                //         _CreateUserAdsDto_.timeViewSecond = 0;
+                //         await this.userAdsService.create(_CreateUserAdsDto_);
+                //     } catch (e) {
+                //         await this.errorHandler.generateNotAcceptableException(
+                //             'Unabled to proceed, Insert userAds liveTypeuserads' + e,
+                //         );
+                //     }
+                // }
 
                 if (rewards) {
                     //Update accountbalace
@@ -706,12 +759,23 @@ export class AdsUserCompareController {
                         CreateAccountbalancesDto_.kredit = ads_rewards;
                         CreateAccountbalancesDto_.type = "rewards";
                         CreateAccountbalancesDto_.timestamp = current_date;
-                        CreateAccountbalancesDto_.description = "rewards form ads";
+                        CreateAccountbalancesDto_.description = "rewards form ads click";
                         await this.accountbalancesService.create(CreateAccountbalancesDto_);
                     } catch (e) {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed, ' + e,
-                        );
+                        console.log('Unabled to proceed, ' + e);
+                    }
+
+
+                    try {
+                        var titleinsukses = "Reward";
+                        var titleensukses = "Reward";
+                        var bodyinsukses = "Selamat kamu mendapatkan reward Rp." + ads_rewards;
+                        var bodyensukses = "Congratulation you've got a reward Rp." + ads_rewards;
+                        var eventType = "ADS CLICK";
+                        var event = "ADS CLICK";
+                        await this.utilsService.sendFcm(data_userbasicsService.email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                    } catch (e) {
+                        console.log('Unabled to proceed, ' + e);
                     }
                 }
 

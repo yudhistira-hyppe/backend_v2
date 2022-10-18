@@ -319,8 +319,6 @@ export class PostsController {
 
     if (saleAmount > 0) {
       await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
-    } else {
-
     }
 
     return data;
@@ -397,6 +395,12 @@ export class PostsController {
     CreateUserplaylistDto_.mediaId = body.mediaId;
     CreateUserplaylistDto_.postType = body.postType;
     return await this.PostsService.updateGenerateUserPlaylist_(CreateUserplaylistDto_);
+  } 
+
+  @Get('api/userplaylist/generateNewUserPlaylist')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async generateNewUserPlaylist() {;
+    return await this.PostsService.generateNewUserPlaylist("633d0c26c9dca3610d7209f9");
   }
 
   @UseGuards(JwtAuthGuard)

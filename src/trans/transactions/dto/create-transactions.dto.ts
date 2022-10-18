@@ -1,7 +1,7 @@
 export class CreateTransactionsDto {
 
 
-    _id: { oid: string; };
+
     noinvoice: string;
     postid: string;
     idusersell: { oid: String; };
@@ -25,6 +25,7 @@ export class CreateTransactionsDto {
     idva: string;
     type: string;
     detail: any[];
+    response: {};
 
 }
 export class Uservoucher {

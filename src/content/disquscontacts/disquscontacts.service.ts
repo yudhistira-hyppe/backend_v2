@@ -30,6 +30,78 @@ export class DisquscontactsService {
   async findOne(email: string): Promise<Disquscontacts> {
     return this.DisquscontactsModel.findOne({ email: email }).exec();
   }
+
+  async findDisqusByEmail(email: string): Promise<any[]> {
+    const Disquscontacts_ = this.DisquscontactsModel.aggregate([
+      {
+        $match: {
+          email: email
+        }
+      },
+      {
+        $addFields: {
+          disqus_id: '$disqus.$id'
+        },
+      },
+      {
+        $lookup: {
+          from: 'disqus',
+          localField: 'disqus_id',
+          foreignField: '_id',
+          as: 'disqus_data',
+        },
+      },
+      {
+        $addFields: {
+          disqus_data_: { $arrayElemAt: ['$disqus_data', 0] },
+        },
+      },
+      {
+        $addFields: {
+          updatedAt: '$disqus_data_.updatedAt',
+        },
+      },
+      { $sort: { updatedAt: -1 } },
+    ]).exec();
+    return Disquscontacts_;
+  }
+
+  async findByEmailAndMate(email: string, receiverParty: string): Promise<Disquscontacts> {
+    const Disquscontacts_ = await this.DisquscontactsModel.aggregate([
+      {
+        $match: {
+          email: email,
+          mate: receiverParty
+        }
+      },
+      {
+        $addFields: {
+          disqus_id: '$disqus.$id'
+        },
+      },
+      {
+        $lookup: {
+          from: 'disqus',
+          localField: 'disqus_id',
+          foreignField: '_id',
+          as: 'disqus_data',
+        },
+      },
+      {
+        $addFields: {
+          disqus_data_: { $arrayElemAt: ['$disqus_data', 0] },
+        },
+      },
+      {
+        $addFields: {
+          updatedAt: '$disqus_data_.updatedAt',
+        },
+      },
+      { $sort: { updatedAt: -1 } },
+    ]).exec();
+    return Disquscontacts_[0];
+  }
+
   async delete(id: string) {
     const deletedCat = await this.DisquscontactsModel.findByIdAndRemove({
       _id: id,

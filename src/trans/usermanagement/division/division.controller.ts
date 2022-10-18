@@ -2,18 +2,21 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Query, Post, UseGu
 import { DivisionService } from './division.service';
 import { DivisionDto } from './dto/division.dto';
 import { JwtAuthGuard } from '../../../auth/jwt-auth.guard';
-import { Division } from './schemas/division.schema'; 
+import { Division } from './schemas/division.schema';
 import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
+import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
+
 
 @Controller('/api/division')
 export class DivisionController {
 
     constructor(
         private readonly divisionService: DivisionService,
-        private readonly utilsService: UtilsService, 
+        private readonly utilsService: UtilsService,
         private readonly errorHandler: ErrorHandler,
-        ) { }
+        private readonly userbasicsService: UserbasicsService,
+    ) { }
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
@@ -59,7 +62,7 @@ export class DivisionController {
             "response_code": 202,
             "totalRow": totalRow,
             "data": data,
-            skip: skip, 
+            skip: skip,
             limit: limit,
             "messages": {
                 "info": [
@@ -68,6 +71,8 @@ export class DivisionController {
             },
         };
     }
+
+
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
@@ -104,7 +109,7 @@ export class DivisionController {
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Get('/:id')
-    async findOne(@Param('id') id: string){
+    async findOne(@Param('id') id: string) {
         return this.divisionService.findOne(id);
     }
 

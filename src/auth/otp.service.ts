@@ -35,7 +35,7 @@ import { ContenteventsService } from '../content/contentevents/contentevents.ser
 import { CreateContenteventsDto } from '../content/contentevents/dto/create-contentevents.dto';
 import { CreateGetcontenteventsDto } from '../trans/getusercontents/getcontentevents/dto/create-getcontentevents.dto';
 import { CreateUserbasicnewDto } from '../trans/newuserbasic/dto/create-userbasicnew.dto';
-import { CreatePostResponse, Messages } from 'src/content/posts/dto/create-posts.dto';
+import { CreatePostResponse, Messages } from '../content/posts/dto/create-posts.dto';
 
 @Injectable()
 export class OtpService {

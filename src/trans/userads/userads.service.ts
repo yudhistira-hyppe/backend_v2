@@ -35,7 +35,7 @@ export class UserAdsService {
     }
 
     async findOneByuserID(userID: string, nameType: string): Promise<UserAds[]> {
-        return this.userAdsModel.find({ userID: userID, nameType: nameType, statusView: false }).sort({ priorityNumber:-1, createdAt: -1 }).exec();
+        return this.userAdsModel.find({ userID: userID, nameType: nameType, statusView: false, isActive: true }).sort({ priorityNumber:-1, createdAt: -1 }).exec();
     }
 
     async findOneByuserIDAds(userID: string, adsId: string): Promise<UserAds> {
@@ -266,6 +266,17 @@ export class UserAdsService {
         let data = await this.userAdsModel.updateOne(
             {
                 "_id": new ObjectId(id)
+            },
+            {
+                $set: createUserAdsDto
+            });
+        return data;
+    }
+
+    async updatesAlladsNotActive(adsID: string, createUserAdsDto: CreateUserAdsDto): Promise<Object> {
+        let data = await this.userAdsModel.updateMany(
+            {
+                "adsID": new ObjectId(adsID)
             },
             {
                 $set: createUserAdsDto

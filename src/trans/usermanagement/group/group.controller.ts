@@ -365,6 +365,7 @@ export class GroupController {
         };
     }
 
+
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Get()

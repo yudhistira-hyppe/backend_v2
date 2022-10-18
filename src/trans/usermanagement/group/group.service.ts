@@ -31,6 +31,13 @@ export class GroupService {
     async findAllnoSkip(): Promise<Group[]> {
         return this.groupModel.find().exec();
     }
+    async findbydiv(divisiId: ObjectId): Promise<Group[]> {
+        return this.groupModel.find({ divisionId: divisiId }).exec();
+    }
+    async find(): Promise<Group[]> {
+        return this.groupModel.find().exec();
+    }
+
 
     async findOne(_id: String): Promise<Group> {
         return this.groupModel.findOne({ _id: _id }).exec();
@@ -167,6 +174,37 @@ export class GroupService {
 
         return query;
     }
+
+    async listGroup(divisionId: ObjectId) {
+        var query = await this.groupModel.aggregate([
+            {
+                $match: {
+                    "divisionId": divisionId
+                }
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "userbasics",
+                    foreignField: "_id",
+                    as: "user"
+                }
+            },
+            {
+                $project: {
+                    "divisionId": "$divisionId",
+                    "nameGroup": "$nameGroup",
+                    "createAt": "$createAt",
+                    "desc": "$desc",
+                    "user": "$user"
+                }
+            },
+
+        ]);
+
+        return query;
+    }
+
 
     // async validasiUserGroup(email: String) {
     //     return await this.groupModel.find({ userbasics: { $in: [_id] } }).exec();
