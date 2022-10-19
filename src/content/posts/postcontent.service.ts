@@ -38,6 +38,7 @@ import { post } from 'jquery';
 import { TemplatesRepoService } from '../../infra/templates_repo/templates_repo.service';
 import { UnsubscriptionError } from 'rxjs';
 import { Userauth } from 'src/trans/userauths/schemas/userauth.schema';
+import { SettingsService } from 'src/trans/settings/settings.service';
 
 
 //import FormData from "form-data";
@@ -66,6 +67,7 @@ export class PostContentService {
     private readonly configService: ConfigService,
     private seaweedfsService: SeaweedfsService,
     private templateService: TemplatesRepoService,
+    private settingsService: SettingsService,
     private errorHandler: ErrorHandler,
   ) { }
 
@@ -703,6 +705,10 @@ export class PostContentService {
     //let posts = await this.loadBulk(postId, page, row);
     let pd = await this.loadPostData(posts, body, profile);
     res.data = pd;
+
+    var ver = await this.settingsService.findOneByJenis('AppsVersion');
+    ver.value;
+    res.version = String(ver.value);
 
     return res;
   }
@@ -1951,6 +1957,15 @@ export class PostContentService {
       return res;
     }
 
+    if (body.certified && body.certified == "true") {
+      if (profile.isIdVerified != true) {
+        let msg = new Messages();
+        msg.info = ["The user ID has not been verified"];
+        res.messages = msg;
+        return res;
+      }
+    }    
+
     let post = await this.buildUpdatePost(body, headers);
     let apost = await this.PostsModel.create(post);
 
@@ -2098,6 +2113,12 @@ export class PostContentService {
         }
       }
       post.tagDescription = pcats;
+    }
+
+    if (body.certified != undefined) {
+      post.certified = <boolean>body.certified;
+    } else {
+      post.certified = false;
     }
 
     return post;
@@ -2306,6 +2327,9 @@ export class PostContentService {
               pdpp.mediaEndpoint = vi.URL;
               pdpp.mediaUri = vi.URL;
 
+              pdpp.mediaThumbEndpoint = vi.URL;
+              pdpp.mediaThumbUri = vi.URL;              
+
               let oid = pdpp.username;
               pdpp.username = this.getUserName(oid, cuser, ubs);
               pdpp.avatar = await this.getAvatar(oid, cuser, ubs);
@@ -2339,6 +2363,10 @@ export class PostContentService {
       data.diary = resDiary;
     }
     res.data = data;
+
+    var ver = await this.settingsService.findOneByJenis('AppsVersion');
+    ver.value;
+    res.version = String(ver.value);
 
     let ed = await this.utilService.getDateTimeDate();
     let gap = ed.getTime() - st.getTime();
