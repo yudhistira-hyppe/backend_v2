@@ -1762,6 +1762,7 @@ export class TransactionsController {
                     });
                 } else {
                     await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
                     datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
                     var idbankaccount = datarek._doc._id;
                     norekdb = datarek._doc.noRek;
@@ -1785,6 +1786,7 @@ export class TransactionsController {
             }
             else if (statuscode == "201") {
                 await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
                 datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
                 var idbankaccount = datarek._doc._id;
                 norekdb = datarek._doc.noRek;
@@ -1806,6 +1808,7 @@ export class TransactionsController {
             }
             else if (statuscode == "208") {
                 await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
                 datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
                 var idbankaccount = datarek._doc._id;
                 norekdb = datarek._doc.noRek;
@@ -1827,6 +1830,7 @@ export class TransactionsController {
             }
             else if (statuscode == "209") {
                 await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
                 datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
                 var idbankaccount = datarek._doc._id;
                 norekdb = datarek._doc.noRek;
@@ -1846,6 +1850,7 @@ export class TransactionsController {
                 });
             } else {
                 await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
                 datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
                 var idbankaccount = datarek._doc._id;
                 norekdb = datarek._doc.noRek;
