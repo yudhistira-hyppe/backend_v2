@@ -1729,7 +1729,7 @@ export class TransactionsController {
             let datareqinquiry = new OyAccountInquirys();
             datareqinquiry.bank_code = bankcode;
             datareqinquiry.account_number = norek;
-            if (statusInquiry === false || statusInquiry === null) {
+            if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
                 datareqinq = await this.oyPgService.inquiryAccount(datareqinquiry);
                 var statuscode = datareqinq.status.code;
                 var account_name = datareqinq.account_name;
