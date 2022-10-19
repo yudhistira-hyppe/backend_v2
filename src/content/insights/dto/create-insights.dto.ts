@@ -1,5 +1,5 @@
 import { Long } from "mongodb";
-import { ContentEventId, CreateContenteventsDto } from "src/content/contentevents/dto/create-contentevents.dto";
+import { ContentEventId, CreateContenteventsDto } from "../../../content/contentevents/dto/create-contentevents.dto";
 import { ProfileDTO } from "../../../utils/data/Profile";
 import { ContentDto } from "../../../content/disqus/dto/create-disqus.dto";
 import { UtilsService } from '../../../utils/utils.service';
