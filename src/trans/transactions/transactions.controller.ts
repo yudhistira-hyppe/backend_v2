@@ -1663,6 +1663,7 @@ export class TransactionsController {
         var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
         var statusInquiry = null;
         var email = null;
+        var datareqinq = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["bankcode"] !== undefined) {
             bankcode = request_json["bankcode"];
@@ -1727,38 +1728,126 @@ export class TransactionsController {
             let datareqinquiry = new OyAccountInquirys();
             datareqinquiry.bank_code = bankcode;
             datareqinquiry.account_number = norek;
+            if (statusInquiry === false) {
+                datareqinq = await this.oyPgService.inquiryAccount(datareqinquiry);
+                var statuscode = datareqinq.status.code;
+                var account_name = datareqinq.account_name;
+                var namaakun = account_name.toLowerCase();
 
-            let datareqinq = await this.oyPgService.inquiryAccount(datareqinquiry);
-            var statuscode = datareqinq.status.code;
-            var account_name = datareqinq.account_name;
-            var namaakun = account_name.toLowerCase();
+                if (statuscode == "000") {
+                    await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
 
-            if (statuscode == "000") {
-                await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
-                await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
+                    nama = namarek.toLowerCase();
+                    if (nama == namaakun) {
+                        data = {
+                            "name": account_name,
+                            "bankName": bankname,
+                            "bankAccount": norek,
+                            "amount": amount,
+                            "totalAmount": totalamount,
+                            "adminFee": valuedisbcharge,
+                            "chargeInquiry": valuebankcharge,
+                            "statusInquiry": statusInquiry
+                        }
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": "Inquiry is success"
+                        });
+                    } else {
+                        await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                        await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                        datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                        var idbankaccount = datarek._doc._id;
+                        norekdb = datarek._doc.noRek;
+                        namarek = datarek._doc.nama;
+                        iduser = datarek._doc.userId;
+                        statusInquiry = datarek._doc.statusInquiry;
 
-                datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
-                var idbankaccount = datarek._doc._id;
-                norekdb = datarek._doc.noRek;
-                namarek = datarek._doc.nama;
-                iduser = datarek._doc.userId;
-                statusInquiry = datarek._doc.statusInquiry;
-                nama = namarek.toLowerCase();
-                if (nama == namaakun) {
+                        data = {
+                            "name": account_name,
+                            "bankName": bankname,
+                            "bankAccount": norek,
+                            "statusInquiry": statusInquiry
+                        }
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "data": data,
+                            "message": "Nama Akun bank tidak sama"
+                        });
+                    }
+
+                }
+                else if (statuscode == "201") {
+                    await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
                     data = {
                         "name": account_name,
                         "bankName": bankname,
                         "bankAccount": norek,
-                        "amount": amount,
-                        "totalAmount": totalamount,
-                        "adminFee": valuedisbcharge,
-                        "chargeInquiry": valuebankcharge,
                         "statusInquiry": statusInquiry
                     }
                     res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
-                        "message": "Inquiry is success"
+                        "message": "Request is Rejected (User ID is not Found)"
+                    });
+
+                }
+                else if (statuscode == "208") {
+                    await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
+                    data = {
+                        "name": account_name,
+                        "bankName": bankname,
+                        "bankAccount": norek,
+                        "statusInquiry": statusInquiry
+                    }
+                    res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": "Request is Rejected (API Key is not Valid)"
+                    });
+
+                }
+                else if (statuscode == "209") {
+                    await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
+                    await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                    datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
+                    var idbankaccount = datarek._doc._id;
+                    norekdb = datarek._doc.noRek;
+                    namarek = datarek._doc.nama;
+                    iduser = datarek._doc.userId;
+                    statusInquiry = datarek._doc.statusInquiry;
+                    data = {
+                        "name": account_name,
+                        "bankName": bankname,
+                        "bankAccount": norek,
+                        "statusInquiry": statusInquiry
+                    }
+                    res.status(HttpStatus.OK).json({
+                        response_code: 202,
+                        "data": data,
+                        "message": "Request is Rejected (Bank Account is not found)"
                     });
                 } else {
                     await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
@@ -1769,7 +1858,6 @@ export class TransactionsController {
                     namarek = datarek._doc.nama;
                     iduser = datarek._doc.userId;
                     statusInquiry = datarek._doc.statusInquiry;
-
                     data = {
                         "name": account_name,
                         "bankName": bankname,
@@ -1779,96 +1867,28 @@ export class TransactionsController {
                     res.status(HttpStatus.OK).json({
                         response_code: 202,
                         "data": data,
-                        "message": "Nama Akun bank tidak sama"
+                        "message": "Request is Rejected"
                     });
                 }
-
-            }
-            else if (statuscode == "201") {
-                await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
-                await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
-                datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
-                var idbankaccount = datarek._doc._id;
-                norekdb = datarek._doc.noRek;
-                namarek = datarek._doc.nama;
-                iduser = datarek._doc.userId;
-                statusInquiry = datarek._doc.statusInquiry;
-                data = {
-                    "name": account_name,
-                    "bankName": bankname,
-                    "bankAccount": norek,
-                    "statusInquiry": statusInquiry
-                }
-                res.status(HttpStatus.OK).json({
-                    response_code: 202,
-                    "data": data,
-                    "message": "Request is Rejected (User ID is not Found)"
-                });
-
-            }
-            else if (statuscode == "208") {
-                await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
-                await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
-                datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
-                var idbankaccount = datarek._doc._id;
-                norekdb = datarek._doc.noRek;
-                namarek = datarek._doc.nama;
-                iduser = datarek._doc.userId;
-                statusInquiry = datarek._doc.statusInquiry;
-                data = {
-                    "name": account_name,
-                    "bankName": bankname,
-                    "bankAccount": norek,
-                    "statusInquiry": statusInquiry
-                }
-                res.status(HttpStatus.OK).json({
-                    response_code: 202,
-                    "data": data,
-                    "message": "Request is Rejected (API Key is not Valid)"
-                });
-
-            }
-            else if (statuscode == "209") {
-                await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
-                await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
-                datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
-                var idbankaccount = datarek._doc._id;
-                norekdb = datarek._doc.noRek;
-                namarek = datarek._doc.nama;
-                iduser = datarek._doc.userId;
-                statusInquiry = datarek._doc.statusInquiry;
-                data = {
-                    "name": account_name,
-                    "bankName": bankname,
-                    "bankAccount": norek,
-                    "statusInquiry": statusInquiry
-                }
-                res.status(HttpStatus.OK).json({
-                    response_code: 202,
-                    "data": data,
-                    "message": "Request is Rejected (Bank Account is not found)"
-                });
             } else {
-                await this.userbankaccountsService.updateonefalse(idbankaccount, "failed inquiry");
-                await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
-                datarek = await this.userbankaccountsService.findnorekWithdrawuser(norek, idbank, idubasic);
-                var idbankaccount = datarek._doc._id;
-                norekdb = datarek._doc.noRek;
-                namarek = datarek._doc.nama;
-                iduser = datarek._doc.userId;
-                statusInquiry = datarek._doc.statusInquiry;
                 data = {
-                    "name": account_name,
+                    "name": namarek,
                     "bankName": bankname,
                     "bankAccount": norek,
+                    "amount": amount,
+                    "totalAmount": totalamount,
+                    "adminFee": valuedisbcharge,
+                    "chargeInquiry": valuebankcharge,
                     "statusInquiry": statusInquiry
                 }
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
                     "data": data,
-                    "message": "Request is Rejected"
+                    "message": "Inquiry is success"
                 });
             }
+
+
 
         } else {
 
