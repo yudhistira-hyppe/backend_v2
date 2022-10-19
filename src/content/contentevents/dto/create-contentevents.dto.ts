@@ -1,3 +1,5 @@
+import { UtilsService } from "../../../utils/utils.service";
+
 export class CreateContenteventsDto {
   
 
@@ -16,3 +18,12 @@ export class CreateContenteventsDto {
     _class: String;
     postID: String;
   }
+
+export class ContentEventId {
+  dtoID: String;
+  eventType: String;
+  parent: CreateContenteventsDto;
+  last: CreateContenteventsDto;
+  next: CreateContenteventsDto;
+  validActivity: boolean;
+}

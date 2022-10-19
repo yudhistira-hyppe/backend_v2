@@ -999,7 +999,8 @@ export class AuthController {
         await this.authService.viewProfile(SearchUserbasicDto_.search.toString(), user_view);
         var Data = await this.utilsService.generateProfile(SearchUserbasicDto_.search.toString(), 'PROFILE');
         var numPost = await this.postsService.findUserPost(SearchUserbasicDto_.search.toString());
-        //Data.insight.posts = Long.fromInt(numPost);
+        let y = <any> numPost;
+        Data.insight.posts = <Long> y;
         return {
           "response_code": 202,
           "data": [Data],

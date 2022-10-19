@@ -51,7 +51,7 @@ export class PostDisqusService {
     return query;
   }
 
-  async findContentPost(postID: string): Promise<Object> {
+  async findContentPost(postID: string): Promise<Posts> {
     return await this.PostsModel.findOne({ postID: postID }).exec();
   }
 

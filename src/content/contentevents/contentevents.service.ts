@@ -76,6 +76,34 @@ export class ContenteventsService {
     return this.ContenteventsModel.findOne(CreateGetcontenteventsDto_).exec();
   }
 
+  async findParentBySender(eventType: string, email: string, senderParty: string, flowIsDone: boolean): Promise<Contentevents> {
+    return this.ContenteventsModel.findOne({ eventType: eventType, email: email, senderParty: senderParty, flowIsDone: flowIsDone }).exec();
+  }
+
+  async findParentByReceiver(eventType: string, receiverParty: string, email: string, flowIsDone: boolean): Promise<Contentevents> {
+    return this.ContenteventsModel.findOne({ eventType: eventType, email: email, receiverParty: receiverParty, flowIsDone: flowIsDone }).exec();
+  }
+
+  async findSenderOrReceiverByPostID(postID: string, eventType: string, email: string, receiverParty: string): Promise<Contentevents> {
+    return await this.ContenteventsModel.findOne({ postID: postID, eventType: eventType, email: email, receiverParty: receiverParty }).exec();
+  } 
+
+  async findSenderOrReceiver(eventType: string, email: string, receiverParty: string): Promise<Contentevents> {
+    return await this.ContenteventsModel.findOne(
+      { $and: 
+        [
+          { eventType: eventType }, 
+          { email: email }, 
+          { $or: 
+            [
+              { receiverParty: receiverParty }, 
+              { senderParty: receiverParty }
+            ] 
+          }
+        ] 
+      }).exec();
+  }
+
   async findOne(email: string): Promise<Contentevents> {
     return this.ContenteventsModel.findOne({ email: email }).exec();
   }

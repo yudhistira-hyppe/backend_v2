@@ -9,10 +9,14 @@ import { NestjsFormDataModule } from 'nestjs-form-data';
 import { DisquslogsModule } from '../disquslogs/disquslogs.module';
 import { DisquscontactsModule } from '../disquscontacts/disquscontacts.module';
 import { PostDisqusModule } from './post/postdisqus.module';
+import { InsightsModule } from '../insights/insights.module';
+import { ContenteventsModule } from '../contentevents/contentevents.module';
 
 @Module({
 
     imports: [
+        ContenteventsModule,
+        InsightsModule,
         PostDisqusModule,
         DisquscontactsModule,
         DisquslogsModule,
