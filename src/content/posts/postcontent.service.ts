@@ -1954,6 +1954,10 @@ export class PostContentService {
     let post = await this.buildUpdatePost(body, headers);
     let apost = await this.PostsModel.create(post);
 
+    if (post.certified) {
+      this.generateCertificate(String(post.postID), 'id');
+    }    
+
     let cm = post.contentMedias[0];
 
     let updatePl = new CreateUserplaylistDto();
