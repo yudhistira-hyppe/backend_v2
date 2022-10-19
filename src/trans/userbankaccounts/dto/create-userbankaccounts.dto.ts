@@ -7,6 +7,5 @@ export class CreateUserbankaccountsDto {
     statusInquiry: boolean;
     description: string;
     active: boolean;
-    status: string
 
 }

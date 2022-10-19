@@ -22,8 +22,6 @@ export class Userbankaccounts {
     description: string
     @Prop()
     active: boolean
-    @Prop()
-    status: string
 
 
 }
