@@ -28,6 +28,7 @@ import { TemplatesRepoModule } from '../../infra/templates_repo/templates_repo.m
 import { PostCommentService } from './postcomment.service';
 import { DisqusModule } from '../disqus/disqus.module';
 import { DisquslogsModule } from '../disquslogs/disquslogs.module';
+import { SettingsModule } from 'src/trans/settings/settings.module';
 @Module({
 
     imports: [
@@ -41,7 +42,8 @@ import { DisquslogsModule } from '../disquslogs/disquslogs.module';
         UtilsModule,
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
         UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
-        MediapictsModule,MediadiariesModule,MediaprofilepictsModule,PostPlayModule,TemplatesRepoModule,DisqusModule,DisquslogsModule,
+        MediapictsModule,MediadiariesModule,MediaprofilepictsModule,PostPlayModule,TemplatesRepoModule,DisqusModule
+        ,DisquslogsModule,SettingsModule,
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [PostsController],
