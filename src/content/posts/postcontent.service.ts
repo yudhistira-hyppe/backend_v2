@@ -1951,8 +1951,21 @@ export class PostContentService {
       return res;
     }
 
+    if (body.certified && body.certified == "true") {
+      if (profile.isIdVerified != true) {
+        let msg = new Messages();
+        msg.info = ["The user ID has not been verified"];
+        res.messages = msg;
+        return res;
+      }
+    }    
+
     let post = await this.buildUpdatePost(body, headers);
     let apost = await this.PostsModel.create(post);
+
+    if (post.certified) {
+      this.generateCertificate(String(post.postID), 'id');
+    }    
 
     let cm = post.contentMedias[0];
 
@@ -2094,6 +2107,12 @@ export class PostContentService {
         }
       }
       post.tagDescription = pcats;
+    }
+
+    if (body.certified != undefined) {
+      post.certified = <boolean>body.certified;
+    } else {
+      post.certified = false;
     }
 
     return post;
