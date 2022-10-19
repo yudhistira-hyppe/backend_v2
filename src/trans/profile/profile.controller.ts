@@ -348,7 +348,8 @@ export class ProfileController {
           reactions: insights.reactions,
           posts: insights.posts,
           views: insights.views,
-          likes: insights.likes
+          likes: insights.likes,
+          friend: lengfrend
         };
       } catch (e) {
         insights_res = {
@@ -360,7 +361,7 @@ export class ProfileController {
           posts: 0,
           views: 0,
           likes: 0,
-          friend: lengfrend
+          friend: 0
         };
       }
       try {
