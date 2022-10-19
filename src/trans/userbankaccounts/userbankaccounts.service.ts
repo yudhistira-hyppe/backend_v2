@@ -80,6 +80,9 @@ export class UserbankaccountsService {
     async findnorekWithdraw(noRek: string, idBank: string, nama: string): Promise<Userbankaccounts> {
         return this.userbankaccountsModel.findOne({ noRek: noRek, idBank: idBank, nama: nama }).exec();
     }
+    async findnorekWithdrawuser(noRek: string, idBank: string, userid: ObjectId): Promise<Userbankaccounts> {
+        return this.userbankaccountsModel.findOne({ userId: userid, noRek: noRek, idBank: idBank }).exec();
+    }
     async create(CreateUserbankaccountsDto: CreateUserbankaccountsDto): Promise<Userbankaccounts> {
         let data = await this.userbankaccountsModel.create(CreateUserbankaccountsDto);
 
@@ -92,6 +95,12 @@ export class UserbankaccountsService {
     async updateone(id: Types.ObjectId, description: string): Promise<Object> {
         let data = await this.userbankaccountsModel.updateOne({ "_id": id },
             { $set: { "statusInquiry": true, "description": description } });
+        return data;
+    }
+
+    async updateonefalse(id: Types.ObjectId, description: string): Promise<Object> {
+        let data = await this.userbankaccountsModel.updateOne({ "_id": id },
+            { $set: { "statusInquiry": false, "description": description } });
         return data;
     }
 
