@@ -17,6 +17,7 @@ import { GroupService } from '../usermanagement/group/group.service';
 import { DivisionService } from '../usermanagement/division/division.service';
 import { ProfileDTO } from '../../utils/data/Profile';
 import { UtilsService } from '../../utils/utils.service';
+import { ContenteventsService } from '../../content/contentevents/contentevents.service';
 import { UserbankaccountsService } from '../userbankaccounts/userbankaccounts.service';
 
 @Controller('api/profile')
@@ -35,6 +36,7 @@ export class ProfileController {
     private divisionService: DivisionService,
     private utilsService: UtilsService,
     private userbankaccountsService: UserbankaccountsService,
+    private contenteventsService: ContenteventsService,
   ) { }
 
 
@@ -263,7 +265,9 @@ export class ProfileController {
     var datauserbasicsService = null;
     var isIdVerified = null;
     var statusUser = null;
-
+    var datafrend = null;
+    var emailfrend = null;
+    var lengfrend = null;
     if (request_json["email"] !== undefined) {
       emails = request_json["email"];
     } else {
@@ -279,6 +283,22 @@ export class ProfileController {
     } catch (e) {
       datauserbasicsService = null;
     }
+
+    try {
+      datafrend = await this.contenteventsService.findfriend(emails);
+      console.log(datafrend);
+      lengfrend = datafrend.length;
+      for (var i = 0; i < lengfrend; i++) {
+        emailfrend = datafrend[i]._id.email;
+
+        if (emails === emailfrend) {
+          lengfrend = lengfrend - 1;
+        }
+      }
+    } catch (e) {
+      datafrend = null;
+    }
+    console.log(lengfrend);
 
     if (datauserbasicsService == null) {
       throw new BadRequestException("User not found");
@@ -328,7 +348,8 @@ export class ProfileController {
           reactions: insights.reactions,
           posts: insights.posts,
           views: insights.views,
-          likes: insights.likes
+          likes: insights.likes,
+          friend: lengfrend
         };
       } catch (e) {
         insights_res = {
@@ -339,7 +360,8 @@ export class ProfileController {
           reactions: 0,
           posts: 0,
           views: 0,
-          likes: 0
+          likes: 0,
+          friend: 0
         };
       }
       try {
