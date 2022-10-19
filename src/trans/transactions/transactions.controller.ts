@@ -1720,6 +1720,7 @@ export class TransactionsController {
 
         } catch (e) {
             datarek = null;
+            statusInquiry = null;
         }
 
 
@@ -1728,7 +1729,7 @@ export class TransactionsController {
             let datareqinquiry = new OyAccountInquirys();
             datareqinquiry.bank_code = bankcode;
             datareqinquiry.account_number = norek;
-            if (statusInquiry === false) {
+            if (statusInquiry === false || statusInquiry === null) {
                 datareqinq = await this.oyPgService.inquiryAccount(datareqinquiry);
                 var statuscode = datareqinq.status.code;
                 var account_name = datareqinq.account_name;
