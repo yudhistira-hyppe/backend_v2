@@ -109,7 +109,7 @@ export class UserbankaccountsController {
                     CreateUserbankaccountsDto.userId = iduser;
                     CreateUserbankaccountsDto.noRek = noRek;
                     CreateUserbankaccountsDto.idBank = idbank;
-                    CreateUserbankaccountsDto.statusInquiry = false;
+                    // CreateUserbankaccountsDto.statusInquiry = false;
                     CreateUserbankaccountsDto.active = true;
 
                     let data = await this.userbankaccountsService.create(CreateUserbankaccountsDto);
