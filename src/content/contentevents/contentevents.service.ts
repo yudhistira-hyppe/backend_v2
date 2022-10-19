@@ -28,18 +28,18 @@ export class ContenteventsService {
       CreateContenteventsDto,
     );
     return createContenteventsDto;
-  }  
+  }
 
   async findAll(): Promise<Contentevents[]> {
     return this.ContenteventsModel.find().exec();
   }
 
   async findFollowing(email: String): Promise<Contentevents[]> {
-    let query =  this.ContenteventsModel.find();
+    let query = this.ContenteventsModel.find();
     query.where('eventType', 'FOLLOWING');
     query.where('email', email);
     return query.exec();
-  }  
+  }
   async updateNoneActive(email: string) {
     this.ContenteventsModel.updateMany(
       {
@@ -64,7 +64,7 @@ export class ContenteventsService {
   async getConteneventbyType(CreateGetcontenteventsDto_: CreateGetcontenteventsDto): Promise<Contentevents[]> {
     return this.ContenteventsModel.find({
       postID: CreateGetcontenteventsDto_.postID,
-          eventType: CreateGetcontenteventsDto_.eventType,
+      eventType: CreateGetcontenteventsDto_.eventType,
       receiverParty: CreateGetcontenteventsDto_.receiverParty,
     }).skip(CreateGetcontenteventsDto_.skip).limit(CreateGetcontenteventsDto_.limit).exec();
   }
@@ -560,55 +560,55 @@ export class ContenteventsService {
     return query;
   }
 
-  async friend(email:string,head:any) {
+  async friend(email: string, head: any) {
     const query = await this.ContenteventsModel.aggregate([
-        { 
-            "$match" : { 
-                "$or" : [
-                    { 
-                        "eventType" : "FOLLOWER"
-                    }, 
-                    { 
-                        "eventType" : "FOLLOWING"
-                    }
-                ]
+      {
+        "$match": {
+          "$or": [
+            {
+              "eventType": "FOLLOWER"
+            },
+            {
+              "eventType": "FOLLOWING"
             }
-        }, 
-        { 
-            "$redact" : { 
-                "$cond" : [
-                    { 
-                        "$eq" : [
-                            "$senderParty", 
-                            "$receiveParty"
-                        ]
-                    }, 
-                    "$$KEEP", 
-                    "$$PRUNE"
-                ]
-            }
-        }, 
-        { 
-            "$match" : { 
-                "event" : "ACCEPT"
-            }
-        }, 
-        { 
-            "$match" : { 
-                "email" : email
-            }
-        }, 
-        { 
-            "$group" : { 
-                "_id" : "$receiverParty",
-            }
+          ]
+        }
+      },
+      {
+        "$redact": {
+          "$cond": [
+            {
+              "$eq": [
+                "$senderParty",
+                "$receiveParty"
+              ]
+            },
+            "$$KEEP",
+            "$$PRUNE"
+          ]
+        }
+      },
+      {
+        "$match": {
+          "event": "ACCEPT"
+        }
+      },
+      {
+        "$match": {
+          "email": email
+        }
+      },
+      {
+        "$group": {
+          "_id": "$receiverParty",
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          friend: '$_id',
         },
-        {
-          $project: {
-            _id: 0,
-            friend: '$_id',
-          },
-        },
+      },
     ]);
     return query;
   }
@@ -667,18 +667,18 @@ export class ContenteventsService {
     if (EventType != "") {
       Object.assign(Where, { eventType: EventType });
     }
-    if (Events.length >0) {
+    if (Events.length > 0) {
       for (let i = 0; i < Events.length; i++) {
         if (Events[i] == "INITIAL") {
-          Or.push({ event: Events[i] }, { $and: [{ flowIsDone :false}] })
+          Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
         } else if (Events[i] == "REQUEST") {
           Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
-        }else{
+        } else {
           Or.push({ event: Events[i] }, { $and: [{ flowIsDone: true }] })
         }
       }
     }
-    if (Object.keys(Or).length>0) {
+    if (Object.keys(Or).length > 0) {
       Object.assign(Where, { $or: Or });
     } else {
       Object.assign(Where);
@@ -688,7 +688,7 @@ export class ContenteventsService {
     if (EventType != "") {
       if (EventType == "FOLLOWING" || EventType == "FOLLOWER") {
         sort = { sequenceNumber: 1, updatedAt: -1 }
-      }else{
+      } else {
         sort = { postType: 1, updatedAt: -1 }
       }
     } else {
@@ -697,6 +697,89 @@ export class ContenteventsService {
     const query = this.ContenteventsModel.find(Where)
       .limit(pageRow)
       .skip(pageRow * pageNumber).sort(sort);
+    return query;
+  }
+
+  async findfriend(email: string) {
+
+    let query = await this.ContenteventsModel.aggregate(
+
+      [
+        {
+          "$match": {
+            "$or": [
+              {
+                "$and": [
+                  {
+                    "eventType": "FOLLOWING"
+                  },
+                  {
+                    "senderParty": email
+                  }
+                ]
+              },
+              {
+                "$and": [
+                  {
+                    "eventType": "FOLLOWER"
+                  },
+                  {
+                    "receiverParty": email
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "$lookup": {
+            from: "userauths",
+            localField: "email",
+            foreignField: "email",
+            as: "nameUser"
+          }
+        },
+        {
+          "$lookup": {
+            from: "userbasics",
+            localField: "email",
+            foreignField: "email",
+            as: "userBasic"
+          }
+        },
+
+
+
+        {
+          "$group": {
+            "_id": {
+              "friend": "$email",
+              "username": "$nameUser.username",
+
+            },
+            "count": {
+              "$sum": 1.0
+            }
+          }
+        },
+        {
+          "$match": {
+            "count": {
+              "$gt": 1.0
+            }
+          }
+        },
+        {
+          "$project": {
+            "email": 1.0
+          }
+        }
+      ],
+      {
+        "allowDiskUse": true
+      }
+    );
+
     return query;
   }
 }

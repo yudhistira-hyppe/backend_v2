@@ -16,6 +16,7 @@ import { GroupModule } from '../usermanagement/group/group.module';
 import { DivisionModule } from '../usermanagement/division/division.module';
 import { UtilsModule } from '../../utils/utils.module';
 import { UserbankaccountsModule } from '../userbankaccounts/userbankaccounts.module';
+import { ContenteventsModule } from '../../content/contentevents/contentevents.module';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { UserbankaccountsModule } from '../userbankaccounts/userbankaccounts.mod
     DivisionModule,
     GroupModule,
     ConfigModule.forRoot(), UserbasicsModule, NestjsFormDataModule, CountriesModule, AreasModule, UserauthsModule, CitiesModule, MediaprofilepictsModule, InsightsModule, LanguagesModule,
-    InterestsModule, UserbankaccountsModule,
+    InterestsModule, UserbankaccountsModule, ContenteventsModule,
 
   ],
   providers: [ProfileService],
