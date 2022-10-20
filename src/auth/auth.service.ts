@@ -1804,9 +1804,9 @@ export class AuthService {
         user_mobileNumber = req.body.mobileNumber;
       }
 
-      if (req.body.$idProofNumber != undefined) {
-        user_idProofNumber = req.body.$idProofNumber;
-      }
+      // if (req.body.$idProofNumber != undefined) {
+      //   user_idProofNumber = req.body.idProofNumber;
+      // }
 
       if (req.body.gender != undefined) {
         user_gender = req.body.gender;
@@ -1852,9 +1852,9 @@ export class AuthService {
         user_mobileNumber = req.body.mobileNumber;
       }
 
-      if (req.body.$idProofNumber != undefined) {
-        user_idProofNumber = req.body.$idProofNumber;
-      }
+      // if (req.body.$idProofNumber != undefined) {
+      //   user_idProofNumber = req.body.$idProofNumber;
+      // }
 
       if (req.body.gender != undefined) {
         user_gender = req.body.gender;
@@ -1933,11 +1933,61 @@ export class AuthService {
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
               }
-              if (user_fullName != null) {
-                data_update_userbasict['fullName'] = user_fullName;
+              if (user_mobileNumber != null) {
+                data_update_userbasict['mobileNumber'] = user_mobileNumber;
+              }
+              // if (user_idProofNumber != null) {
+              //   data_update_userbasict['idProofNumber'] = user_idProofNumber;
+              // }
+              if (user_gender != null) {
+                data_update_userbasict['gender'] = user_gender;
               }
               if (user_dob != null) {
                 data_update_userbasict['dob'] = user_dob;
+              }
+              if (user_country != null) {
+                var countries = await this.countriesService.findOneName(user_country);
+                if ((await this.utilsService.ceckData(countries))) {
+                  var countries_id = (await countries)._id;
+                  data_update_userbasict['countries'] = {
+                    $ref: 'countries',
+                    $id: countries_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_area != null) {
+                var areas = await this.areasService.findOneName(user_area);
+                if ((await this.utilsService.ceckData(areas))) {
+                  var areas_id = (await areas)._id;
+                  data_update_userbasict['states'] = {
+                    $ref: 'areas',
+                    $id: areas_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_city != null) {
+                var cities = await this.citiesService.findOneName(user_city);
+                if ((await this.utilsService.ceckData(cities))) {
+                  var cities_id = (await cities)._id;
+                  data_update_userbasict['cities'] = {
+                    $ref: 'cities',
+                    $id: cities_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_langIso != null) {
+                var languages = await this.languagesService.findOneLangiso(user_langIso);
+                if ((await this.utilsService.ceckData(languages))) {
+                  var languages_id = (await languages)._id;
+                  data_update_userbasict['languages'] = {
+                    $ref: 'languages',
+                    $id: languages_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
               }
               data_update_userbasict['status'] = status;
               data_update_userbasict['event'] = event;
@@ -2024,6 +2074,14 @@ export class AuthService {
           } else if ((event == 'UPDATE_PROFILE') && (status == 'COMPLETE_BIO')) {
             //Update Profile Detail
             try {
+              if (user_username != null) {
+                if (await this.utilsService.validateUsername(user_username)) {
+                  await this.userauthsService.updatebyEmail(user_email, {
+                    username: user_username
+                  });
+                }
+              }
+
               var data_update_userbasict = {};
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
@@ -2031,16 +2089,15 @@ export class AuthService {
               if (user_mobileNumber != null) {
                 data_update_userbasict['mobileNumber'] = user_mobileNumber;
               }
-              if (user_idProofNumber != null) {
-                data_update_userbasict['idProofNumber'] = user_idProofNumber;
-              }
+              // if (user_idProofNumber != null) {
+              //   data_update_userbasict['idProofNumber'] = user_idProofNumber;
+              // }
               if (user_gender != null) {
                 data_update_userbasict['gender'] = user_gender;
               }
               if (user_dob != null) {
                 data_update_userbasict['dob'] = user_dob;
               }
-
               if (user_country != null) {
                 var countries = await this.countriesService.findOneName(user_country);
                 if ((await this.utilsService.ceckData(countries))) {
@@ -2201,12 +2258,63 @@ export class AuthService {
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
               }
-              if (user_fullName != null) {
-                data_update_userbasict['fullName'] = user_fullName;
+              if (user_mobileNumber != null) {
+                data_update_userbasict['mobileNumber'] = user_mobileNumber;
+              }
+              // if (user_idProofNumber != null) {
+              //   data_update_userbasict['idProofNumber'] = user_idProofNumber;
+              // }
+              if (user_gender != null) {
+                data_update_userbasict['gender'] = user_gender;
               }
               if (user_dob != null) {
                 data_update_userbasict['dob'] = user_dob;
               }
+              if (user_country != null) {
+                var countries = await this.countriesService.findOneName(user_country);
+                if ((await this.utilsService.ceckData(countries))) {
+                  var countries_id = (await countries)._id;
+                  data_update_userbasict['countries'] = {
+                    $ref: 'countries',
+                    $id: countries_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_area != null) {
+                var areas = await this.areasService.findOneName(user_area);
+                if ((await this.utilsService.ceckData(areas))) {
+                  var areas_id = (await areas)._id;
+                  data_update_userbasict['states'] = {
+                    $ref: 'areas',
+                    $id: areas_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_city != null) {
+                var cities = await this.citiesService.findOneName(user_city);
+                if ((await this.utilsService.ceckData(cities))) {
+                  var cities_id = (await cities)._id;
+                  data_update_userbasict['cities'] = {
+                    $ref: 'cities',
+                    $id: cities_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_langIso != null) {
+                var languages = await this.languagesService.findOneLangiso(user_langIso);
+                if ((await this.utilsService.ceckData(languages))) {
+                  var languages_id = (await languages)._id;
+                  data_update_userbasict['languages'] = {
+                    $ref: 'languages',
+                    $id: languages_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+
               //data_update_userbasict['status'] = status;
               //data_update_userbasict['event'] = event;
 
@@ -2221,6 +2329,14 @@ export class AuthService {
           } else if ((event == 'UPDATE_PROFILE') && (status == 'COMPLETE_BIO')) {
             //Update Profile Detail
             try {
+              if (user_username != null) {
+                if (await this.utilsService.validateUsername(user_username)) {
+                  await this.userauthsService.updatebyEmail(user_email, {
+                    username: user_username
+                  });
+                }
+              }
+
               var data_update_userbasict = {};
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
@@ -2228,20 +2344,19 @@ export class AuthService {
               if (user_mobileNumber != null) {
                 data_update_userbasict['mobileNumber'] = user_mobileNumber;
               }
-              if (user_idProofNumber != null) {
-                data_update_userbasict['idProofNumber'] = user_idProofNumber;
-              }
+              // if (user_idProofNumber != null) {
+              //   data_update_userbasict['idProofNumber'] = user_idProofNumber;
+              // }
               if (user_gender != null) {
                 data_update_userbasict['gender'] = user_gender;
               }
               if (user_dob != null) {
                 data_update_userbasict['dob'] = user_dob;
               }
-
               if (user_country != null) {
-                var countries_ = await this.countriesService.findOneName(user_country);
-                if ((await this.utilsService.ceckData(countries_))) {
-                  var countries_id = (await countries_)._id;
+                var countries = await this.countriesService.findOneName(user_country);
+                if ((await this.utilsService.ceckData(countries))) {
+                  var countries_id = (await countries)._id;
                   data_update_userbasict['countries'] = {
                     $ref: 'countries',
                     $id: countries_id,
@@ -2250,9 +2365,9 @@ export class AuthService {
                 }
               }
               if (user_area != null) {
-                var areas_ = await this.areasService.findOneName(user_area);
-                if ((await this.utilsService.ceckData(areas_))) {
-                  var areas_id = (await areas_)._id;
+                var areas = await this.areasService.findOneName(user_area);
+                if ((await this.utilsService.ceckData(areas))) {
+                  var areas_id = (await areas)._id;
                   data_update_userbasict['states'] = {
                     $ref: 'areas',
                     $id: areas_id,
@@ -2261,9 +2376,9 @@ export class AuthService {
                 }
               }
               if (user_city != null) {
-                var cities_ = await this.citiesService.findOneName(user_city);
-                if ((await this.utilsService.ceckData(cities_))) {
-                  var cities_id = (await cities_)._id;
+                var cities = await this.citiesService.findOneName(user_city);
+                if ((await this.utilsService.ceckData(cities))) {
+                  var cities_id = (await cities)._id;
                   data_update_userbasict['cities'] = {
                     $ref: 'cities',
                     $id: cities_id,
@@ -2272,9 +2387,9 @@ export class AuthService {
                 }
               }
               if (user_langIso != null) {
-                var languages_ = await this.languagesService.findOneLangiso(user_langIso);
-                if ((await this.utilsService.ceckData(languages_))) {
-                  var languages_id = (await languages_)._id;
+                var languages = await this.languagesService.findOneLangiso(user_langIso);
+                if ((await this.utilsService.ceckData(languages))) {
+                  var languages_id = (await languages)._id;
                   data_update_userbasict['languages'] = {
                     $ref: 'languages',
                     $id: languages_id,

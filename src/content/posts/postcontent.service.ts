@@ -37,8 +37,8 @@ import * as fs from 'fs';
 import { post } from 'jquery';
 import { TemplatesRepoService } from '../../infra/templates_repo/templates_repo.service';
 import { UnsubscriptionError } from 'rxjs';
-import { Userauth } from 'src/trans/userauths/schemas/userauth.schema';
-import { SettingsService } from 'src/trans/settings/settings.service';
+import { Userauth } from '../../trans/userauths/schemas/userauth.schema';
+import { SettingsService } from '../../trans/settings/settings.service';
 
 
 //import FormData from "form-data";

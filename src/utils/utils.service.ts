@@ -813,6 +813,9 @@ export class UtilsService {
         if (await this.ceckData(get_userbasic)) {
           if (get_userbasic.gender != undefined) { ProfileDTO_.gender = get_userbasic.gender; }
         }
+        if (await this.ceckData(get_userbasic)) {
+          if (get_userbasic.dob != undefined) { ProfileDTO_.dob = get_userbasic.dob; }
+        }
         if (get_cities != null) { ProfileDTO_.city = get_cities.cityName; }
         if (await this.ceckData(get_userbasic)) {
           ProfileDTO_.mobileNumber = get_userbasic.mobileNumber;
