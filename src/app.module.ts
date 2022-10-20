@@ -108,6 +108,9 @@ import { UserbasicsnewModule } from './trans/newuserbasic/userbasicsnew.module';
     MongooseModule.forRoot(process.env.SERVER_INFRA, {
       connectionName: 'SERVER_INFRA',
     }),
+    MongooseModule.forRoot(process.env.SERVER_FULL, {
+      connectionName: 'SERVER_FULL',
+    }),
     UserplaylistModule,
     // LogticketsModule,
     // ReportreasonsModule,

@@ -6,9 +6,9 @@ import { Countries, CountriesDocument } from './schemas/countries.schema';
 @Injectable()
 export class CountriesService {
   constructor(
-    @InjectModel(Countries.name, 'SERVER_INFRA')
+    @InjectModel(Countries.name, 'SERVER_FULL')
     private readonly countriesModel: Model<CountriesDocument>,
-  ) {}
+  ) { }
 
   async create(CreateCountriesDto: CreateCountriesDto): Promise<Countries> {
     const createCountriesDto = await this.countriesModel.create(
@@ -17,12 +17,12 @@ export class CountriesService {
     return createCountriesDto;
   }
 
-  async findCriteria(pageNumber:number,pageRow:number,search:string) {
+  async findCriteria(pageNumber: number, pageRow: number, search: string) {
     var perPage = pageRow
-  , page = Math.max(0, pageNumber);
+      , page = Math.max(0, pageNumber);
     var where = {};
-    if(search!=undefined){
-      where['country'] = {$regex: search,  $options: "i"};
+    if (search != undefined) {
+      where['country'] = { $regex: search, $options: "i" };
     }
     const query = await this.countriesModel.find(where).limit(perPage).skip(perPage * page).sort({ country: 'asc' });
     return query;
@@ -47,9 +47,9 @@ export class CountriesService {
     return deletedCat;
   }
 
-  async findcountries(){
-    const query =await this.countriesModel.aggregate([
-  
+  async findcountries() {
+    const query = await this.countriesModel.aggregate([
+
       {
         $lookup: {
           from: 'countries',
@@ -57,13 +57,13 @@ export class CountriesService {
           foreignField: '_id',
           as: 'roless',
         },
-      },{
-        $out:{
-          db:'hyppe_trans_db',
-          coll:'countries2'
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'countries2'
         }
       },
-     
+
     ]);
     return query;
   }

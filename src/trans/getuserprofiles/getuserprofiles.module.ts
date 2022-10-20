@@ -22,7 +22,7 @@ import { FileSystemStoredFile, FormDataRequest, NestjsFormDataModule } from 'nes
   imports: [
     ConfigModule.forRoot(), ActivityeventsModule, UserbasicsModule, NestjsFormDataModule, CountriesModule, AreasModule, InterestsRepoModule, UserauthsModule, CitiesModule, MediaprofilepictsModule, InsightsModule, LanguagesModule, InterestsModule,
 
-    MongooseModule.forFeature([{ name: Getuserprofiles.name, schema: GetuserprofilesSchema }], 'SERVER_TRANS')
+    MongooseModule.forFeature([{ name: Getuserprofiles.name, schema: GetuserprofilesSchema }], 'SERVER_FULL')
   ],
   controllers: [GetuserprofilesController],
   exports: [GetuserprofilesService],

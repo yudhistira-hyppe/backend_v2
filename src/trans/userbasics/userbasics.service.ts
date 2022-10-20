@@ -10,7 +10,7 @@ import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediap
 @Injectable()
 export class UserbasicsService {
   constructor(
-    @InjectModel(Userbasic.name, 'SERVER_TRANS')
+    @InjectModel(Userbasic.name, 'SERVER_FULL')
     private readonly userbasicModel: Model<UserbasicDocument>,
     private readonly languagesService: LanguagesService,
     private readonly interestsRepoService: InterestsRepoService,
@@ -49,7 +49,7 @@ export class UserbasicsService {
         email: email,
       },
       {
-        languages:{
+        languages: {
           $ref: 'languages',
           $id: new Object(language),
           $db: 'hyppe_infra_db',
@@ -153,7 +153,7 @@ export class UserbasicsService {
 
   async findIn(username: string[]): Promise<Userbasic[]> {
     return this.userbasicModel.find().where('email').in(username).exec();
-  }  
+  }
 
   async delete(id: string) {
     const deletedCat = await this.userbasicModel
@@ -172,7 +172,7 @@ export class UserbasicsService {
 
     return data;
   }
-  
+
   async updateIdVerified(id: ObjectId): Promise<Object> {
     let data = await this.userbasicModel.updateOne({ "_id": id },
       {
@@ -514,8 +514,8 @@ export class UserbasicsService {
     if (endDate != null) {
       endDate_format = new Date(endDate.toString());
     }
-    if (startDate_format != null && endDate_format!=null){
-      date_range_match = { "createdAt_format": { $gte: startDate_format, $lte: endDate_format }};
+    if (startDate_format != null && endDate_format != null) {
+      date_range_match = { "createdAt_format": { $gte: startDate_format, $lte: endDate_format } };
     }
     let Query_aggregate = [
       {

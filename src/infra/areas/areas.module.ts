@@ -8,10 +8,10 @@ import { Areas, AreasSchema } from './schemas/areas.schema';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Areas.name, schema: AreasSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Areas.name, schema: AreasSchema }], 'SERVER_FULL')
     ],
     controllers: [AreasController],
     providers: [AreasService],
     exports: [AreasService],
 })
-export class AreasModule {}
+export class AreasModule { }

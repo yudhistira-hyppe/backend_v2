@@ -7,9 +7,9 @@ import { Areas, AreasDocument } from './schemas/areas.schema';
 @Injectable()
 export class AreasService {
   constructor(
-    @InjectModel(Areas.name, 'SERVER_INFRA')
+    @InjectModel(Areas.name, 'SERVER_FULL')
     private readonly areasModel: Model<AreasDocument>,
-  ) {}
+  ) { }
 
   async create(CreateAreasDto: CreateAreasDto): Promise<Areas> {
     const createAreasDto = await this.areasModel.create(CreateAreasDto);
@@ -24,15 +24,15 @@ export class AreasService {
   //   return this.areasModel.findOne({ _id: id }).exec();
   // }
 
-  async findCriteria(countryID:string,pageNumber:number,pageRow:number,search:string) {
+  async findCriteria(countryID: string, pageNumber: number, pageRow: number, search: string) {
     var perPage = pageRow
-  , page = Math.max(0, pageNumber);
+      , page = Math.max(0, pageNumber);
     var where = {};
-    if(countryID!=undefined){
+    if (countryID != undefined) {
       where['countryID'] = countryID;
     }
-    if(search!=undefined){
-      where['stateName'] = {$regex: search,  $options: "i"};
+    if (search != undefined) {
+      where['stateName'] = { $regex: search, $options: "i" };
     }
     const query = await this.areasModel.find(where).limit(perPage).skip(perPage * page).sort({ stateName: 'asc' });
     return query;
@@ -53,9 +53,9 @@ export class AreasService {
       .exec();
     return deletedCat;
   }
-  async findarea(){
-    const query =await this.areasModel.aggregate([
-  
+  async findarea() {
+    const query = await this.areasModel.aggregate([
+
       {
         $lookup: {
           from: 'areas',
@@ -63,13 +63,13 @@ export class AreasService {
           foreignField: '_id',
           as: 'roless',
         },
-      },{
-        $out:{
-          db:'hyppe_trans_db',
-          coll:'areas2'
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'areas2'
         }
       },
-     
+
     ]);
     return query;
   }

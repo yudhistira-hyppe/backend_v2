@@ -18,10 +18,10 @@ import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediapr
         LanguagesModule,
         CountriesModule,
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Userbasic.name, schema: UserbasicSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Userbasic.name, schema: UserbasicSchema }], 'SERVER_FULL')
     ],
     controllers: [UserbasicsController],
     exports: [UserbasicsService],
     providers: [UserbasicsService],
 })
-export class UserbasicsModule {}
+export class UserbasicsModule { }

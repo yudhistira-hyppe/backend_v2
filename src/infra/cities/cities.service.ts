@@ -6,9 +6,9 @@ import { Cities, CitiesDocument } from './schemas/cities.schema';
 @Injectable()
 export class CitiesService {
   constructor(
-    @InjectModel(Cities.name, 'SERVER_INFRA')
+    @InjectModel(Cities.name, 'SERVER_FULL')
     private readonly citiesModel: Model<CitiesDocument>,
-  ) {}
+  ) { }
 
   async create(CreateCitiesDto: CreateCitiesDto): Promise<Cities> {
     const createCitiesDto = await this.citiesModel.create(CreateCitiesDto);
@@ -23,15 +23,15 @@ export class CitiesService {
     return this.citiesModel.findOne({ cityName: cityName }).exec();
   }
 
-  async findCriteria(stateID:string,pageNumber:number,pageRow:number,search:string) {
+  async findCriteria(stateID: string, pageNumber: number, pageRow: number, search: string) {
     var perPage = pageRow
-  , page = Math.max(0, pageNumber);
+      , page = Math.max(0, pageNumber);
     var where = {};
-    if(stateID!=undefined){
+    if (stateID != undefined) {
       where['stateID'] = stateID;
     }
-    if(search!=undefined){
-      where['cityName'] = {$regex: search,  $options: "i"};
+    if (search != undefined) {
+      where['cityName'] = { $regex: search, $options: "i" };
     }
     const query = await this.citiesModel.find(where).limit(perPage).skip(perPage * page).sort({ cityName: 'asc' });
     return query;
@@ -48,9 +48,9 @@ export class CitiesService {
     return deletedCat;
   }
 
-  async findcities(){
-    const query =await this.citiesModel.aggregate([
-  
+  async findcities() {
+    const query = await this.citiesModel.aggregate([
+
       {
         $lookup: {
           from: 'cities',
@@ -58,13 +58,13 @@ export class CitiesService {
           foreignField: '_id',
           as: 'roless',
         },
-      },{
-        $out:{
-          db:'hyppe_trans_db',
-          coll:'cities2'
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'cities2'
         }
       },
-     
+
     ]);
     return query;
   }

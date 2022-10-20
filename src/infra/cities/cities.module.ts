@@ -8,10 +8,10 @@ import { Cities, CitiesSchema } from './schemas/cities.schema';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Cities.name, schema: CitiesSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Cities.name, schema: CitiesSchema }], 'SERVER_FULL')
     ],
     controllers: [CitiesController],
     providers: [CitiesService],
     exports: [CitiesService],
 })
-export class CitiesModule {}
+export class CitiesModule { }

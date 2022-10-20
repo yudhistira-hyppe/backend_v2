@@ -140,7 +140,7 @@ export class GetuserprofilesController {
       totalfilter = 0;
     } else {
       try {
-        datafilter = await this.getuserprofilesService.findataNewCount(username, gender, roles, age, startdate, enddate, interest, 0, 50);
+        datafilter = await this.getuserprofilesService.findataNewCount(username, gender, roles, age, startdate, enddate, interest);
         totalfilter = datafilter.length;
       } catch (e) {
         totalfilter = 0;

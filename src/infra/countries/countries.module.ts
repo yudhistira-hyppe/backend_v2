@@ -8,10 +8,10 @@ import { Countries, CountriesSchema } from './schemas/countries.schema';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Countries.name, schema: CountriesSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Countries.name, schema: CountriesSchema }], 'SERVER_FULL')
     ],
     controllers: [CountriesController],
     providers: [CountriesService],
     exports: [CountriesService],
 })
-export class CountriesModule {}
+export class CountriesModule { }
