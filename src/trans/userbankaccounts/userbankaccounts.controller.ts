@@ -64,13 +64,6 @@ export class UserbankaccountsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-
-        if (language === "id") {
-            messageRespon = "Nama yang Anda masukkan salah, pastikan nama yang Anda masukkan sesuai dengan ID yang terdaftar di hyppe";
-        }
-        else if (language === "en") {
-            messageRespon = "The name you entered is wrong, make sure the name you enter matches the ID registered on hyppe"
-        }
         var ubasic = await this.userbasicsService.findOne(email);
 
         var iduser = ubasic._id;
@@ -82,6 +75,13 @@ export class UserbankaccountsController {
         } catch (e) {
             datamediaprof = null;
             namamediaprof = "";
+        }
+
+        if (language === "id") {
+            messageRespon = "Nama yang Anda masukkan salah, pastikan nama yang Anda masukkan sesuai dengan ID yang terdaftar di hyppe, nama yang sudah terdaftar adalah "+ namamediaprof;
+        }
+        else if (language === "en") {
+            messageRespon = "The name you entered is wrong, make sure the name you enter matches the ID registered on hyppe, the registered name is " + namamediaprof;
         }
 
 
