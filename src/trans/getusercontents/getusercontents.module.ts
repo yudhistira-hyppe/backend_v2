@@ -30,7 +30,7 @@ import { GetuserprofilesModule } from '../getuserprofiles/getuserprofiles.module
         ConfigModule.forRoot(), UserauthsModule, MediaprofilepictsModule, InsightsModule, PostsModule, MediavideosModule, MediapictsModule, MediadiariesModule, DisquslogsModule, DisqusModule, CommentModule, UserbasicsModule,
         GetcontenteventsModule, SettingsModule, CountriesModule, GetuserprofilesModule,
 
-        MongooseModule.forFeature([{ name: Getusercontents.name, schema: GetusercontentsSchema }], 'SERVER_TRANS'),
+        MongooseModule.forFeature([{ name: Getusercontents.name, schema: GetusercontentsSchema }], 'SERVER_FULL'),
 
 
 

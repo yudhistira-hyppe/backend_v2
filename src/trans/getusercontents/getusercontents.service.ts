@@ -18,7 +18,7 @@ import { PostContentService } from '../../content/posts/postcontent.service';
 export class GetusercontentsService {
 
   constructor(
-    @InjectModel(Getusercontents.name, 'SERVER_TRANS')
+    @InjectModel(Getusercontents.name, 'SERVER_FULL')
     private readonly getusercontentsModel: Model<GetusercontentsDocument>,
     private readonly postsService: PostsService,
     private readonly mediavideosService: MediavideosService,
@@ -123,12 +123,6 @@ export class GetusercontentsService {
   }
 
   async findalldata(email: string, skip: number, limit: number): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
@@ -226,7 +220,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -234,7 +228,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -250,7 +244,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -258,7 +252,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -266,7 +260,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -475,12 +469,7 @@ export class GetusercontentsService {
 
 
   async findlatesdata(email: string, skip: number, limit: number): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
@@ -578,7 +567,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -586,7 +575,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -602,7 +591,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -610,7 +599,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -618,7 +607,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -826,12 +815,7 @@ export class GetusercontentsService {
 
 
   async findpopular(email: string, skip: number, limit: number): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
@@ -929,7 +913,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -937,7 +921,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -953,7 +937,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -961,7 +945,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -969,7 +953,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -1177,12 +1161,6 @@ export class GetusercontentsService {
   }
 
   async findsearch(email: string, title: string, skip: number, limit: number): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email, title: { $regex: title, $options: 'i' } } },
@@ -1280,7 +1258,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -1288,7 +1266,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -1304,7 +1282,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -1312,7 +1290,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -1320,7 +1298,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -1529,12 +1507,7 @@ export class GetusercontentsService {
 
 
   async findmonetize(email: string, skip: number, limit: number): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
 
     const query = await this.getusercontentsModel.aggregate([
 
@@ -1647,7 +1620,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -1655,7 +1628,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -1671,7 +1644,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -1679,7 +1652,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -1687,7 +1660,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -1903,15 +1876,6 @@ export class GetusercontentsService {
   }
 
   async findmanagementcontentall(email: string): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
-    const disqus = await this.disqusService.finddisqus();
-    const disquslogs = await this.disquslogsService.finddisquslog();
-
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
@@ -1925,7 +1889,7 @@ export class GetusercontentsService {
 
       {
         "$lookup": {
-          "from": "disqus2",
+          "from": "disqus",
           "let": {
             "postIDs": "$postID",
             "postTypes": "$postType"
@@ -1943,7 +1907,7 @@ export class GetusercontentsService {
             },
             {
               "$lookup": {
-                "from": "disquslogs2",
+                "from": "disquslogs",
                 "let": {
                   "disqusIDs": "$disqusID"
                 },
@@ -2052,7 +2016,7 @@ export class GetusercontentsService {
       {
         $lookup: {
           localField: 'posts.postID',
-          from: 'disqus2',
+          from: 'disqus',
           foreignField: 'postID',
           as: 'disqusdata'
         }
@@ -2064,7 +2028,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'disquslogs2',
+          from: 'disquslogs',
           localField: 'disqusdata.disqusLogs.$id', // or author.$id
           foreignField: "_id",
           as: "logs"
@@ -2073,7 +2037,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'disquslogs2',
+          from: 'disquslogs',
           localField: 'logs.replyLogs.$id', // or author.$id
           foreignField: "_id",
           as: "logs2"
@@ -2122,7 +2086,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -2130,7 +2094,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -2146,7 +2110,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -2154,7 +2118,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -2162,7 +2126,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -2419,14 +2383,7 @@ export class GetusercontentsService {
     return query;
   }
   async findmanagementcontentpopular(email: string) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
-    const disqus = await this.disqusService.finddisqus();
-    const disquslogs = await this.disquslogsService.finddisquslog();
+
 
 
     const query = await this.getusercontentsModel.aggregate([
@@ -2534,7 +2491,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -2542,7 +2499,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -2558,7 +2515,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -2566,7 +2523,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -2574,7 +2531,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -2801,14 +2758,6 @@ export class GetusercontentsService {
     return query;
   }
   async findmanagementcontentlikes(email: string) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
-    const disqus = await this.disqusService.finddisqus();
-    const disquslogs = await this.disquslogsService.finddisquslog();
 
 
     const query = await this.getusercontentsModel.aggregate([
@@ -2916,7 +2865,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -2924,7 +2873,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -2940,7 +2889,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -2948,7 +2897,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -2956,7 +2905,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -3184,15 +3133,6 @@ export class GetusercontentsService {
   }
 
   async findmanagementcontentshare(email: string) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
-    const disqus = await this.disqusService.finddisqus();
-    const disquslogs = await this.disquslogsService.finddisquslog();
-
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
@@ -3299,7 +3239,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -3307,7 +3247,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -3323,7 +3263,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -3331,7 +3271,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -3339,7 +3279,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -3566,15 +3506,6 @@ export class GetusercontentsService {
     return query;
   }
   async findmanagementcontentlatepos(email: string) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
-    const disqus = await this.disqusService.finddisqus();
-    const disquslogs = await this.disquslogsService.finddisquslog();
-
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
@@ -3681,7 +3612,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -3689,7 +3620,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -3705,7 +3636,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -3713,7 +3644,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -3721,7 +3652,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -3949,15 +3880,6 @@ export class GetusercontentsService {
   }
 
   async findmanagementcontentmonetize(email: string) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
-    const disqus = await this.disqusService.finddisqus();
-    const disquslogs = await this.disquslogsService.finddisquslog();
-
 
     const query = await this.getusercontentsModel.aggregate([
 
@@ -4068,7 +3990,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -4076,7 +3998,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -4092,7 +4014,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -4100,7 +4022,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -4108,7 +4030,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -4335,15 +4257,6 @@ export class GetusercontentsService {
     return query;
   }
   async findmanagementcontentowner(email: string) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
-    const disqus = await this.disqusService.finddisqus();
-    const disquslogs = await this.disquslogsService.finddisquslog();
-
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email, isOwned: true } },
@@ -4450,7 +4363,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -4458,7 +4371,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -4474,7 +4387,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -4482,7 +4395,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -4490,7 +4403,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -4751,14 +4664,6 @@ export class GetusercontentsService {
   }
 
   async findmanagementcontenttrafic(email: string) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
-    const disqus = await this.disqusService.finddisqus();
-    const disquslogs = await this.disquslogsService.finddisquslog();
 
 
     const query = await this.getusercontentsModel.aggregate([
@@ -4866,7 +4771,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -4874,7 +4779,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -4890,7 +4795,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -4898,7 +4803,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -4906,7 +4811,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -5135,15 +5040,6 @@ export class GetusercontentsService {
 
 
   async findmanagementcontentmoderate(email: string) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
-    const disqus = await this.disqusService.finddisqus();
-    const disquslogs = await this.disquslogsService.finddisquslog();
-
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
@@ -5250,7 +5146,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -5258,7 +5154,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -5274,7 +5170,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -5282,7 +5178,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -5290,7 +5186,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -5546,12 +5442,6 @@ export class GetusercontentsService {
 
 
   async findpostid(postID: string): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { postID: postID } },
@@ -5649,7 +5539,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -5657,7 +5547,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -5673,7 +5563,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -5681,7 +5571,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -5689,7 +5579,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -5891,12 +5781,7 @@ export class GetusercontentsService {
 
 
   async findalldatakonten(email: string, skip: number, limit: number): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
@@ -6002,7 +5887,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -6010,7 +5895,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -6026,7 +5911,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -6034,7 +5919,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -6042,7 +5927,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -6256,12 +6141,6 @@ export class GetusercontentsService {
   }
 
   async findalldatakontenowned(email: string, skip: number, limit: number): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email, isOwned: true } },
@@ -6367,7 +6246,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -6375,7 +6254,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -6391,7 +6270,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -6399,7 +6278,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -6407,7 +6286,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -6616,12 +6495,7 @@ export class GetusercontentsService {
     return query;
   }
   async findalldatakontenmonetize(email: string, skip: number, limit: number): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
 
     const query = await this.getusercontentsModel.aggregate([
 
@@ -6727,7 +6601,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -6735,7 +6609,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -6751,7 +6625,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -6759,7 +6633,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -6767,7 +6641,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -6978,12 +6852,7 @@ export class GetusercontentsService {
 
 
   async findalldatakontenpostype(email: string, postType: string, skip: number, limit: number): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email, postType: postType } },
