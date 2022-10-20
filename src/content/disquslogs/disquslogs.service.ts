@@ -37,6 +37,16 @@ export class DisquslogsService {
     return deletedCat;
   }
 
+  // async increaseReaction(): Promise<Disquslogs>{
+  //   InsightLog item = this.getInsightReceiver().get().increaseReaction(this.getProfile().getEmail(), this.getContentPost().get().getPostID());
+  //   if (item != null) {
+  //     this.getContentPost().get().increaseReaction();
+  //     this.getReceiverEventId().get().getParent().setReactionUri(this.getContentDto().getReactionUri());
+  //     this.getEventId().get().getParent().setReactionUri(this.getContentDto().getReactionUri());
+  //   }
+  //   return Optional.ofNullable(item);
+  // }
+
   async finddisquslog() {
     const query = await this.DisquslogsModel.aggregate([
 

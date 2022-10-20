@@ -5,6 +5,7 @@ import { ContentDto } from "../../../content/disqus/dto/create-disqus.dto";
 import { UtilsService } from '../../../utils/utils.service';
 import { CreatePostsDto } from "../../../content/posts/dto/create-posts.dto";
 import { Insights } from "../schemas/insights.schema";
+import { Insightlogs } from "../../../content/insightlogs/schemas/insightlogs.schema";
 
 export class CreateInsightsDto {
   _id: String;
@@ -47,6 +48,14 @@ export class InsightsDto {
   contentPost: CreatePostsDto;
   eventId: ContentEventId;
   receiverEventId: ContentEventId;
+
+  async InsightDto(inDto: ContentDto) {
+		this.contentDto = inDto;
+    this.eventType = inDto.eventType;
+    this.validStep3 = false;
+    this.validStep4 = false;
+    this.prevPresent = false;
+	}
 
   async step1(profile: ProfileDTO, receiverParty: ProfileDTO) {
     var retVal = false;
@@ -170,8 +179,8 @@ export class InsightsDto {
     return (this.contentDto.postID!=undefined)?true:false;
   }
 
-  // async increaseReaction(): Promise<Insights> {
-	// 	InsightLog item = this.insightReceiver.increaseReaction(this.getProfile().getEmail(),
+  // async increaseReaction(): Promise<Insightlogs> {
+	// 	Insightlogs item = this.insightReceiver.increaseReaction(this.getProfile().getEmail(),
   //   this.getContentPost().get().getPostID());
   //   if (item != null) {
   //     this.getContentPost().get().increaseReaction();

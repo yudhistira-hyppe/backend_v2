@@ -20,6 +20,8 @@ import { CreateContenteventsDto } from '../contentevents/dto/create-contentevent
 import { Contentevents } from '../contentevents/schemas/contentevents.schema';
 import { Insightlogs } from '../insightlogs/schemas/insightlogs.schema';
 import { CreateInsightlogsDto } from '../insightlogs/dto/create-insightlogs.dto';
+import { Disquscontacts } from '../disquscontacts/schemas/disquscontacts.schema';
+import { Posts } from '../posts/schemas/posts.schema';
 
 @Controller('api/')
 export class DisqusController {
@@ -90,6 +92,7 @@ export class DisqusController {
     if ((type == "DIRECT_MSG") || (type == "COMMENT")) {
       var isValid = false;
       isQuery = ContentDto_.isQuery;
+      console.log("processDisqus >>> event: ", ContentDto_.eventType);
       if (!isQuery){
         if (type == "DIRECT_MSG") {
           var retVal = [{}];
@@ -243,38 +246,40 @@ export class DisqusController {
     return retVal;
   }
 
-  private async buildDisqus(ContentDto_: ContentDto,buildInteractive:boolean){
-    var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
-    CreateDisquscontactsDto_ = await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
-    if (await this.utilsService.ceckData(CreateDisquscontactsDto_)){
-      var IdDisqus = CreateDisquscontactsDto_.disqus.id.toString();
-      var CreateDisqusDto_ = new CreateDisqusDto();
-      if (CreateDisquscontactsDto_.disqus != null) {
-        CreateDisqusDto_ = await this.DisqusService.findOne(IdDisqus);
+  private async buildDisqus(ContentDto_: ContentDto, buildInteractive: boolean) {
+    var Disquscontacts_ = new Disquscontacts();
+    Disquscontacts_ = await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
+    if (await this.utilsService.ceckData(Disquscontacts_)){
+      var IdDisqus = Disquscontacts_.disqus.id.toString();
+      var Disqus_ = new Disqus();
+      if (Disquscontacts_.disqus != null) {
+        Disqus_ = await this.DisqusService.findOne(IdDisqus);
       } else {
         var DataId = await this.utilsService.generateId();
-        CreateDisqusDto_._id = DataId;
-        CreateDisqusDto_.room = DataId;
-        CreateDisqusDto_.disqusID = ContentDto_.disqusID;
-        CreateDisqusDto_.eventType = ContentDto_.eventType;
-        CreateDisqusDto_.email = ContentDto_.email;
-        CreateDisqusDto_.mate = ContentDto_.mate;
-        CreateDisqusDto_.active = ContentDto_.active;
-        CreateDisqusDto_.createdAt = await this.utilsService.getDateTimeString();
-        CreateDisqusDto_.updatedAt = await this.utilsService.getDateTimeString();
+        Disqus_._id = DataId;
+        Disqus_.room = DataId;
+        Disqus_.disqusID = ContentDto_.disqusID;
+        Disqus_.eventType = ContentDto_.eventType;
+        Disqus_.email = ContentDto_.email;
+        Disqus_.mate = ContentDto_.mate;
+        Disqus_.active = ContentDto_.active;
+        Disqus_.createdAt = await this.utilsService.getDateTimeString();
+        Disqus_.updatedAt = await this.utilsService.getDateTimeString();
       }
+      
       if (ContentDto_.postID != undefined) {
-        var PostData = await this.postDisqusService.findid(ContentDto_.postID.toString());
-        if (await this.utilsService.ceckData(PostData)) {
-          ContentDto_.postContent = PostData;
-          ContentDto_.postType = PostData.postType;
+        var Posts_ = new Posts();
+        Posts_ = await this.postDisqusService.findid(ContentDto_.postID.toString());
+        if (await this.utilsService.ceckData(Posts_)) {
+          ContentDto_.postContent = Posts_;
+          ContentDto_.postType = Posts_.postType;
           if (buildInteractive){
             var _ContentDto_ = new ContentDto();
             _ContentDto_ = ContentDto_;
-            ContentDto_.eventType = "REACTION";
-            ContentDto_.postType = PostData.postType;
-            ContentDto_.receiverParty = PostData.email;
-            ContentDto_.reactionUri = ContentDto_.reactionUri;
+            _ContentDto_.eventType = "REACTION";
+            _ContentDto_.postType = Posts_.postType;
+            _ContentDto_.receiverParty = Posts_.email;
+            _ContentDto_.reactionUri = ContentDto_.reactionUri;
 
             var InsightsDto_ = new InsightsDto(this.utilsService);
             InsightsDto_ = await this.validationEvent(ContentDto_);
@@ -321,6 +326,7 @@ export class DisqusController {
 
   private async validationEvent(ContentDto_: ContentDto): Promise<InsightsDto>{
     var InsightsDto_ = new InsightsDto(this.utilsService);
+    InsightsDto_.InsightDto(ContentDto_);
     var ProfileDTO_email = new ProfileDTO();
     ProfileDTO_email = await this.utilsService.generateProfile(ContentDto_.email.toString(), "FULL");
     var ProfileDTO_mate = new ProfileDTO();
