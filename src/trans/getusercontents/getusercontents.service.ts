@@ -6958,7 +6958,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -6966,7 +6966,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -6982,7 +6982,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -6990,7 +6990,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -6998,7 +6998,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -7323,7 +7323,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -7331,7 +7331,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -7347,7 +7347,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -7355,7 +7355,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -7363,7 +7363,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -7702,7 +7702,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -7710,7 +7710,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -7726,7 +7726,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -7734,7 +7734,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -7742,7 +7742,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -7955,12 +7955,6 @@ export class GetusercontentsService {
 
 
   async findalldatakontenmultiple(iduserbuy: Types.ObjectId, email: string, ownership: boolean, monetesisasi: boolean, buy: boolean, archived: boolean, postType: string, startdate: string, enddate: string, skip: number, limit: number) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
 
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -8075,7 +8069,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -8083,7 +8077,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -8099,7 +8093,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -8107,7 +8101,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -8115,7 +8109,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -8581,7 +8575,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -8589,7 +8583,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -8605,7 +8599,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -8613,7 +8607,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -8621,7 +8615,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -9104,7 +9098,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -9112,7 +9106,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -9128,7 +9122,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -9136,7 +9130,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -9144,7 +9138,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -9613,7 +9607,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -9621,7 +9615,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -9637,7 +9631,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -9645,7 +9639,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -9653,7 +9647,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -10119,7 +10113,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -10127,7 +10121,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -10143,7 +10137,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -10151,7 +10145,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -10159,7 +10153,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -10626,7 +10620,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -10634,7 +10628,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -10650,7 +10644,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -10658,7 +10652,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -10666,7 +10660,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -11132,7 +11126,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -11140,7 +11134,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -11156,7 +11150,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -11164,7 +11158,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -11172,7 +11166,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -11638,7 +11632,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -11646,7 +11640,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -11662,7 +11656,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -11670,7 +11664,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -11678,7 +11672,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -12144,7 +12138,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -12152,7 +12146,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -12168,7 +12162,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -12176,7 +12170,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -12184,7 +12178,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -12667,7 +12661,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -12675,7 +12669,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -12691,7 +12685,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -12699,7 +12693,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -12707,7 +12701,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -13192,7 +13186,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -13200,7 +13194,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -13216,7 +13210,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -13224,7 +13218,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -13232,7 +13226,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -13717,7 +13711,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -13725,7 +13719,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -13741,7 +13735,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -13749,7 +13743,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -13757,7 +13751,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -14242,7 +14236,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -14250,7 +14244,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -14266,7 +14260,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -14274,7 +14268,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -14282,7 +14276,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -14767,7 +14761,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -14775,7 +14769,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -14791,7 +14785,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -14799,7 +14793,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -14807,7 +14801,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -15292,7 +15286,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -15300,7 +15294,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -15316,7 +15310,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -15324,7 +15318,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -15332,7 +15326,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -15800,7 +15794,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -15808,7 +15802,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -15824,7 +15818,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -15832,7 +15826,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -15840,7 +15834,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -16306,7 +16300,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -16314,7 +16308,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -16330,7 +16324,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -16338,7 +16332,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -16346,7 +16340,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -16812,7 +16806,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -16820,7 +16814,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -16836,7 +16830,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -16844,7 +16838,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -16852,7 +16846,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -17335,7 +17329,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -17343,7 +17337,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -17359,7 +17353,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -17367,7 +17361,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -17375,7 +17369,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -17860,7 +17854,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -17868,7 +17862,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -17884,7 +17878,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -17892,7 +17886,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -17900,7 +17894,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -18369,7 +18363,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -18377,7 +18371,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -18393,7 +18387,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -18401,7 +18395,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -18409,7 +18403,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -18875,7 +18869,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -18883,7 +18877,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -18899,7 +18893,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -18907,7 +18901,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -18915,7 +18909,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -19381,7 +19375,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -19389,7 +19383,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -19405,7 +19399,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -19413,7 +19407,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -19421,7 +19415,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -19888,7 +19882,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -19896,7 +19890,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -19912,7 +19906,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -19920,7 +19914,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -19928,7 +19922,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -20411,7 +20405,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -20419,7 +20413,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -20435,7 +20429,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -20443,7 +20437,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -20451,7 +20445,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -20936,7 +20930,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -20944,7 +20938,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -20960,7 +20954,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -20968,7 +20962,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -20976,7 +20970,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -21461,7 +21455,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -21469,7 +21463,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -21485,7 +21479,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -21493,7 +21487,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -21501,7 +21495,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -21969,7 +21963,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -21977,7 +21971,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -21993,7 +21987,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -22001,7 +21995,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -22009,7 +22003,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -22475,7 +22469,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -22483,7 +22477,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -22499,7 +22493,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -22507,7 +22501,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -22515,7 +22509,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -22981,7 +22975,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -22989,7 +22983,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -23005,7 +22999,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -23013,7 +23007,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -23021,7 +23015,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -23488,7 +23482,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -23496,7 +23490,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -23512,7 +23506,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -23520,7 +23514,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -23528,7 +23522,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -23893,12 +23887,7 @@ export class GetusercontentsService {
   }
 
   async findpopularanalitic(email: string): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
 
     const query = await this.getusercontentsModel.aggregate([
       { $match: { email: email } },
@@ -24001,7 +23990,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -24009,7 +23998,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'insights2',
+          from: 'insights',
           localField: 'insight_id',
           foreignField: '_id',
           as: 'insight_data',
@@ -24025,7 +24014,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -24033,7 +24022,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -24041,7 +24030,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -24249,12 +24238,7 @@ export class GetusercontentsService {
   }
 
   async findalldatakontenmonetesbuy(iduserbuy: Types.ObjectId, email: string, buy: boolean, monetize: boolean, postType: string, lastmonetize: boolean, startdate: string, enddate: string, skip: number, limit: number) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -24389,7 +24373,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -24397,7 +24381,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -24413,7 +24397,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -24421,7 +24405,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -24429,7 +24413,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -24749,7 +24733,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -24757,7 +24741,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -24773,7 +24757,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -24781,7 +24765,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -24789,7 +24773,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -25107,7 +25091,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -25115,7 +25099,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -25131,7 +25115,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -25139,7 +25123,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -25147,7 +25131,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -25482,7 +25466,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -25490,7 +25474,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -25506,7 +25490,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -25514,7 +25498,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -25522,7 +25506,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -25842,7 +25826,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -25850,7 +25834,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -25866,7 +25850,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -25874,7 +25858,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -25882,7 +25866,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -26217,7 +26201,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -26225,7 +26209,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -26241,7 +26225,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -26249,7 +26233,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -26257,7 +26241,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -26595,7 +26579,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -26603,7 +26587,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -26619,7 +26603,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -26627,7 +26611,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -26635,7 +26619,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -26951,7 +26935,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -26959,7 +26943,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -26975,7 +26959,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -26983,7 +26967,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -26991,7 +26975,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -27309,7 +27293,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -27317,7 +27301,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -27333,7 +27317,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -27341,7 +27325,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -27349,7 +27333,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -27667,7 +27651,7 @@ export class GetusercontentsService {
 
         {
           $lookup: {
-            from: 'mediaprofilepicts2',
+            from: 'mediaprofilepicts',
             localField: 'profilpictid',
             foreignField: '_id',
             as: 'profilePict_data',
@@ -27675,7 +27659,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'insights2',
+            from: 'insights',
             localField: 'insight_id',
             foreignField: '_id',
             as: 'insight_data',
@@ -27691,7 +27675,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediapicts2',
+            from: 'mediapicts',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediaPict_data',
@@ -27699,7 +27683,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediadiaries2',
+            from: 'mediadiaries',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediadiaries_data',
@@ -27707,7 +27691,7 @@ export class GetusercontentsService {
         },
         {
           $lookup: {
-            from: 'mediavideos2',
+            from: 'mediavideos',
             localField: 'idmedia',
             foreignField: '_id',
             as: 'mediavideos_data',
@@ -27922,12 +27906,7 @@ export class GetusercontentsService {
   }
 
   async findcontenbuy(postID: string) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
     const query = await this.getusercontentsModel.aggregate([
       { $match: { postID: postID } },
       {
@@ -28040,7 +28019,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -28064,7 +28043,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -28072,7 +28051,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -28080,7 +28059,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -28288,12 +28267,7 @@ export class GetusercontentsService {
 
 
   async findcontentfilter(keys: string, postType: string, skip: number, limit: number) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
     const query = await this.getusercontentsModel.aggregate([
       {
         $match: {
@@ -28428,7 +28402,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -28444,7 +28418,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -28452,7 +28426,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -28460,7 +28434,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -28632,12 +28606,7 @@ export class GetusercontentsService {
 
 
   async findcontentfilterTags(keys: string, skip: number, limit: number) {
-    const posts = await this.postsService.findpost();
-    // const video = await this.mediavideosService.findvideo();
-    // const pict = await this.mediapictsService.findpict();
-    // const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    // const insight = await this.insightsService.findinsight();
-    // const diaries = await this.mediadiariesService.finddiaries();
+
     const query = await this.getusercontentsModel.aggregate([
       {
         $match: {
@@ -28664,12 +28633,7 @@ export class GetusercontentsService {
   }
 
   async findcontentAllTags(skip: number, limit: number) {
-    const posts = await this.postsService.findpost();
-    // const video = await this.mediavideosService.findvideo();
-    // const pict = await this.mediapictsService.findpict();
-    // const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    // const insight = await this.insightsService.findinsight();
-    // const diaries = await this.mediadiariesService.finddiaries();
+
     const query = await this.getusercontentsModel.aggregate([
 
 
@@ -28690,12 +28654,7 @@ export class GetusercontentsService {
 
 
   async findcontentfilterbyuser(username: string, postType: string, skip: number, limit: number) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
     const query = await this.getusercontentsModel.aggregate([
 
 
@@ -28811,7 +28770,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -28842,7 +28801,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -28850,7 +28809,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -28858,7 +28817,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
@@ -29035,12 +28994,7 @@ export class GetusercontentsService {
 
 
   async findcontentfilterbyuserCount(username: string, postType: string) {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
     const query = await this.getusercontentsModel.aggregate([
 
 
@@ -29154,7 +29108,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'profilpictid',
           foreignField: '_id',
           as: 'profilePict_data',
@@ -29185,7 +29139,7 @@ export class GetusercontentsService {
 
       {
         $lookup: {
-          from: 'mediapicts2',
+          from: 'mediapicts',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
@@ -29193,7 +29147,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediadiaries2',
+          from: 'mediadiaries',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
@@ -29201,7 +29155,7 @@ export class GetusercontentsService {
       },
       {
         $lookup: {
-          from: 'mediavideos2',
+          from: 'mediavideos',
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',

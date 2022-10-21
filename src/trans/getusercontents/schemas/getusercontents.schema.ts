@@ -3,7 +3,7 @@ import mongoose, { Collection, Document } from 'mongoose';
 
 export type GetusercontentsDocument = Getusercontents & Document;
 
-@Schema({ collection: 'posts2' })
+@Schema({ collection: 'posts' })
 export class Getusercontents {
   @Prop()
   _id: String;

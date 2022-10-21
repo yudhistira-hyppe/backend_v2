@@ -657,7 +657,7 @@ export class GetusercontentsController {
             "info": ["The process successful"],
         };
 
-        var datatotal = await this.getusercontentsService.findcountfilter(email);
+        var datatotal = await this.getusercontentsService.findcountfilter(email.toString());
         var totalAll = datatotal[0].totalpost;
         let dataFilter = await this.getusercontentsService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, postType, startdate, enddate, 0, totalAll);
         let data = await this.getusercontentsService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, postType, startdate, enddate, skip, limit);
