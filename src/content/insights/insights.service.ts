@@ -8,7 +8,7 @@ import { Insights, InsightsDocument } from './schemas/insights.schema';
 @Injectable()
 export class InsightsService {
   constructor(
-    @InjectModel(Insights.name, 'SERVER_CONTENT')
+    @InjectModel(Insights.name, 'SERVER_FULL')
     private readonly InsightsModel: Model<InsightsDocument>,
   ) { }
 
@@ -192,7 +192,7 @@ export class InsightsService {
     return query;
   }
 
-  async updateViewProfile(emailViewed: string){
+  async updateViewProfile(emailViewed: string) {
     this.InsightsModel.updateOne(
       {
         email: emailViewed,

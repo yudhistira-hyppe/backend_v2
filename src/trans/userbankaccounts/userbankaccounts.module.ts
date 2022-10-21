@@ -12,7 +12,7 @@ import { MediaproofpictsModule } from '../../content/mediaproofpicts/mediaproofp
     imports: [
 
         ConfigModule.forRoot(), UserbasicsModule, BanksModule, MediaproofpictsModule,
-        MongooseModule.forFeature([{ name: Userbankaccounts.name, schema: UserbankaccountsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Userbankaccounts.name, schema: UserbankaccountsSchema }], 'SERVER_FULL')
     ],
     controllers: [UserbankaccountsController],
     exports: [UserbankaccountsService],

@@ -17,10 +17,10 @@ import { UserauthsModule } from '../../../trans/userauths/userauths.module';
         UserbasicsModule,
         UtilsModule,
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Group.name, schema: GroupSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Group.name, schema: GroupSchema }], 'SERVER_FULL')
     ],
     controllers: [GroupController],
     exports: [GroupService],
     providers: [GroupService],
 })
-export class GroupModule {}
+export class GroupModule { }

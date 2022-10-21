@@ -9,10 +9,10 @@ import { Documents, DocumentsSchema } from './schemas/documents.schema';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Documents.name, schema: DocumentsSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Documents.name, schema: DocumentsSchema }], 'SERVER_FULL')
     ],
     controllers: [DocumentsController],
     providers: [DocumentsService],
     exports: [DocumentsService],
 })
-export class DocumentsModule {}
+export class DocumentsModule { }

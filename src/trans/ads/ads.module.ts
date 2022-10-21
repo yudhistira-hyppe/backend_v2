@@ -22,7 +22,7 @@ import { PostsModule } from '../../content/posts/posts.module';
         AdsplacesModule,
         ConfigModule.forRoot(), UservouchersModule, UserbasicsModule, AdstypesModule, SeaweedfsModule, MediaimageadsModule, UtilsModule, MediavideosadsModule,
         SettingsModule, VouchersModule, PostsModule,
-        MongooseModule.forFeature([{ name: Ads.name, schema: AdsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Ads.name, schema: AdsSchema }], 'SERVER_FULL')
     ],
     controllers: [AdsController],
     providers: [AdsService],

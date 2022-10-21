@@ -14,7 +14,7 @@ import { type } from 'os';
 @Injectable()
 export class TransactionsService {
     constructor(
-        @InjectModel(Transactions.name, 'SERVER_TRANS')
+        @InjectModel(Transactions.name, 'SERVER_FULL')
         private readonly transactionsModel: Model<TransactionsDocument>,
         private readonly postsService: PostsService,
         private readonly mediavideosService: MediavideosService,
@@ -109,10 +109,6 @@ export class TransactionsService {
     }
 
     async findhistoryBuy(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
-        const posts = await this.postsService.findpost();
-        const video = await this.mediavideosService.findvideo();
-        const pict = await this.mediapictsService.findpict();
-        const diaries = await this.mediadiariesService.finddiaries();
 
         if (startdate !== undefined && enddate !== undefined && status !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -143,28 +139,28 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediapicts2",
+                        from: "mediapicts",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediaPict_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediadiaries2",
+                        from: "mediadiaries",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediadiaries_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediavideos2",
+                        from: "mediavideos",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediavideos_data"
@@ -831,28 +827,28 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediapicts2",
+                        from: "mediapicts",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediaPict_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediadiaries2",
+                        from: "mediadiaries",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediadiaries_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediavideos2",
+                        from: "mediavideos",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediavideos_data"
@@ -1518,28 +1514,28 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediapicts2",
+                        from: "mediapicts",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediaPict_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediadiaries2",
+                        from: "mediadiaries",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediadiaries_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediavideos2",
+                        from: "mediavideos",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediavideos_data"
@@ -2201,28 +2197,28 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediapicts2",
+                        from: "mediapicts",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediaPict_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediadiaries2",
+                        from: "mediadiaries",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediadiaries_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediavideos2",
+                        from: "mediavideos",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediavideos_data"
@@ -2863,10 +2859,6 @@ export class TransactionsService {
     }
 
     async findhistoryBuyCount(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
-        const posts = await this.postsService.findpost();
-        const video = await this.mediavideosService.findvideo();
-        const pict = await this.mediapictsService.findpict();
-        const diaries = await this.mediadiariesService.finddiaries();
 
         if (startdate !== undefined && enddate !== undefined && status !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -2897,7 +2889,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -3117,7 +3109,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -3336,7 +3328,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -3552,7 +3544,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -3747,11 +3739,6 @@ export class TransactionsService {
     }
 
     async findhistorySell(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
-        const posts = await this.postsService.findpost();
-        const video = await this.mediavideosService.findvideo();
-        const pict = await this.mediapictsService.findpict();
-        const diaries = await this.mediadiariesService.finddiaries();
-
 
         if (startdate !== undefined && enddate !== undefined && status !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -3783,28 +3770,28 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediapicts2",
+                        from: "mediapicts",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediaPict_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediadiaries2",
+                        from: "mediadiaries",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediadiaries_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediavideos2",
+                        from: "mediavideos",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediavideos_data"
@@ -4472,28 +4459,28 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediapicts2",
+                        from: "mediapicts",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediaPict_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediadiaries2",
+                        from: "mediadiaries",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediadiaries_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediavideos2",
+                        from: "mediavideos",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediavideos_data"
@@ -5160,28 +5147,28 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediapicts2",
+                        from: "mediapicts",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediaPict_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediadiaries2",
+                        from: "mediadiaries",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediadiaries_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediavideos2",
+                        from: "mediavideos",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediavideos_data"
@@ -5847,28 +5834,28 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediapicts2",
+                        from: "mediapicts",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediaPict_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediadiaries2",
+                        from: "mediadiaries",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediadiaries_data"
                     }
                 }, {
                     $lookup: {
-                        from: "mediavideos2",
+                        from: "mediavideos",
                         localField: "post_data.contentMedias.$id",
                         foreignField: "_id",
                         as: "mediavideos_data"
@@ -6509,10 +6496,7 @@ export class TransactionsService {
         }
     }
     async findhistorySellCount(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
-        const posts = await this.postsService.findpost();
-        const video = await this.mediavideosService.findvideo();
-        const pict = await this.mediapictsService.findpict();
-        const diaries = await this.mediadiariesService.finddiaries();
+
 
         if (startdate !== undefined && enddate !== undefined && status !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -6544,7 +6528,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -6770,7 +6754,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -6994,7 +6978,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -7216,7 +7200,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -7433,28 +7417,28 @@ export class TransactionsService {
                 }
             }, {
                 $lookup: {
-                    from: "posts2",
+                    from: "posts",
                     localField: "postid",
                     foreignField: "postID",
                     as: "post_data"
                 }
             }, {
                 $lookup: {
-                    from: "mediapicts2",
+                    from: "mediapicts",
                     localField: "post_data.contentMedias.$id",
                     foreignField: "_id",
                     as: "mediaPict_data"
                 }
             }, {
                 $lookup: {
-                    from: "mediadiaries2",
+                    from: "mediadiaries",
                     localField: "post_data.contentMedias.$id",
                     foreignField: "_id",
                     as: "mediadiaries_data"
                 }
             }, {
                 $lookup: {
-                    from: "mediavideos2",
+                    from: "mediavideos",
                     localField: "post_data.contentMedias.$id",
                     foreignField: "_id",
                     as: "mediavideos_data"
@@ -8032,28 +8016,28 @@ export class TransactionsService {
                 }
             }, {
                 $lookup: {
-                    from: "posts2",
+                    from: "posts",
                     localField: "postid",
                     foreignField: "postID",
                     as: "post_data"
                 }
             }, {
                 $lookup: {
-                    from: "mediapicts2",
+                    from: "mediapicts",
                     localField: "post_data.contentMedias.$id",
                     foreignField: "_id",
                     as: "mediaPict_data"
                 }
             }, {
                 $lookup: {
-                    from: "mediadiaries2",
+                    from: "mediadiaries",
                     localField: "post_data.contentMedias.$id",
                     foreignField: "_id",
                     as: "mediadiaries_data"
                 }
             }, {
                 $lookup: {
-                    from: "mediavideos2",
+                    from: "mediavideos",
                     localField: "post_data.contentMedias.$id",
                     foreignField: "_id",
                     as: "mediavideos_data"
@@ -10362,7 +10346,6 @@ export class TransactionsService {
     }
 
     async findhistorySeller(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
-        const posts = await this.postsService.findpost();
 
 
         if (startdate !== undefined && enddate !== undefined) {
@@ -10395,7 +10378,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -10622,7 +10605,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -10826,8 +10809,6 @@ export class TransactionsService {
         }
     }
     async findhistorySellercount(iduser: ObjectId, startdate: string, enddate: string) {
-        const posts = await this.postsService.findpost();
-
 
         if (startdate !== undefined && enddate !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -10859,7 +10840,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -11082,7 +11063,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -11283,8 +11264,6 @@ export class TransactionsService {
     }
 
     async findhistoryBuyer(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
-        const posts = await this.postsService.findpost();
-
 
         if (startdate !== undefined && enddate !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -11315,7 +11294,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -11537,7 +11516,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -11736,8 +11715,6 @@ export class TransactionsService {
 
     }
     async findhistoryBuyerCount(iduser: ObjectId, startdate: string, enddate: string) {
-        const posts = await this.postsService.findpost();
-
 
         if (startdate !== undefined && enddate !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -11768,7 +11745,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"
@@ -11986,7 +11963,7 @@ export class TransactionsService {
                     }
                 }, {
                     $lookup: {
-                        from: "posts2",
+                        from: "posts",
                         localField: "postid",
                         foreignField: "postID",
                         as: "post_data"

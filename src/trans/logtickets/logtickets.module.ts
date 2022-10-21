@@ -9,7 +9,7 @@ import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediapr
 
     imports: [
         MediaprofilepictsModule, ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Logtickets.name, schema: LogticketsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Logtickets.name, schema: LogticketsSchema }], 'SERVER_FULL')
     ],
     controllers: [LogticketsController],
     providers: [LogticketsService],

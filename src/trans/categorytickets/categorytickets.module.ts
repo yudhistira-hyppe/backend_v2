@@ -9,7 +9,7 @@ import { Categorytickets, CategoryticketsSchema } from './schemas/categoryticket
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Categorytickets.name, schema: CategoryticketsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Categorytickets.name, schema: CategoryticketsSchema }], 'SERVER_FULL')
     ],
     controllers: [CategoryticketsController],
     providers: [CategoryticketsService],

@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateDevicelogDto } from './dto/create-devicelog.dto'; 
+import { CreateDevicelogDto } from './dto/create-devicelog.dto';
 import { Devicelog, DevicelogDocument } from './schemas/devicelog.schema';
 
 @Injectable()
 export class DevicelogService {
   constructor(
-    @InjectModel(Devicelog.name, 'SERVER_INFRA')
+    @InjectModel(Devicelog.name, 'SERVER_FULL')
     private readonly devicelogModel: Model<DevicelogDocument>,
-  ) {}
+  ) { }
 
   async create(CreateDevicelogDto: CreateDevicelogDto): Promise<Devicelog> {
     const createDevicelogDto = await this.devicelogModel.create(

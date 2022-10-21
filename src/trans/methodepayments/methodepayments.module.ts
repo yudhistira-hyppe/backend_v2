@@ -8,7 +8,7 @@ import { Methodepayments, MethodepaymentsSchema } from './schemas/methodepayment
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Methodepayments.name, schema: MethodepaymentsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Methodepayments.name, schema: MethodepaymentsSchema }], 'SERVER_FULL')
     ],
     controllers: [MethodepaymentsController],
     providers: [MethodepaymentsService],

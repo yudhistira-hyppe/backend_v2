@@ -9,7 +9,7 @@ import { Withdraws, WithdrawsSchema } from './schemas/withdraws.schema';
     imports: [
 
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Withdraws.name, schema: WithdrawsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Withdraws.name, schema: WithdrawsSchema }], 'SERVER_FULL')
     ],
     controllers: [WithdrawsController],
     exports: [WithdrawsService],

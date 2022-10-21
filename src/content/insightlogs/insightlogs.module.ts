@@ -9,7 +9,7 @@ import { InsightsModule } from '../../content/insights/insights.module';
 
     imports: [
         ConfigModule.forRoot(), InsightsModule,
-        MongooseModule.forFeature([{ name: Insightlogs.name, schema: InsightlogsSchema }], 'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Insightlogs.name, schema: InsightlogsSchema }], 'SERVER_FULL')
     ],
     controllers: [InsightlogsController],
     providers: [InsightlogsService],

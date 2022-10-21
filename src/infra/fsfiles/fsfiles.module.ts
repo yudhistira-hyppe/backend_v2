@@ -9,11 +9,11 @@ import { Fsfiles, FsfilesSchema } from './schemas/fsfiles.schema';
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Fsfiles.name, schema: FsfilesSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Fsfiles.name, schema: FsfilesSchema }], 'SERVER_FULL')
     ],
     controllers: [FsfilesController],
     providers: [FsfilesService],
     exports: [FsfilesService],
 
 })
-export class FsfilesModule {}
+export class FsfilesModule { }

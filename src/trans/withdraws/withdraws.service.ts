@@ -9,7 +9,7 @@ import { ObjectId } from 'mongodb';
 export class WithdrawsService {
 
     constructor(
-        @InjectModel(Withdraws.name, 'SERVER_TRANS')
+        @InjectModel(Withdraws.name, 'SERVER_FULL')
         private readonly withdrawsModel: Model<WithdrawsDocument>,
     ) { }
 

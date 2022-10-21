@@ -8,7 +8,7 @@ import { Mediaimageads, MediaimageadsDocument } from './schemas/mediaimageads.sc
 @Injectable()
 export class MediaimageadsService {
     constructor(
-        @InjectModel(Mediaimageads.name, 'SERVER_TRANS')
+        @InjectModel(Mediaimageads.name, 'SERVER_FULL')
         private readonly mediaimageadsModel: Model<MediaimageadsDocument>
 
     ) { }

@@ -9,7 +9,7 @@ import { Notifications, NotificationsDocument } from './schemas/notifications.sc
 @Injectable()
 export class NotificationsService {
   constructor(
-    @InjectModel(Notifications.name, 'SERVER_CONTENT')
+    @InjectModel(Notifications.name, 'SERVER_FULL')
     private readonly NotificationsModel: Model<NotificationsDocument>,
 
     private userService: UserbasicsService,
@@ -59,7 +59,7 @@ export class NotificationsService {
     return deletedCat;
   }
 
-  async getNotification(body: any, headers: any) : Promise<NotifResponseApps> {
+  async getNotification(body: any, headers: any): Promise<NotifResponseApps> {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(auth.email);
@@ -78,21 +78,21 @@ export class NotificationsService {
     let msg = new Messages;
     msg.info = ["User tidak tedaftar"];
     res.messages = msg;
-    res.response_code = 202;    
+    res.response_code = 202;
     return res;
   }
 
-  private async getNotificationQuery(body: any, profile: Userbasic) : Promise<Notifications[]> {
+  private async getNotificationQuery(body: any, profile: Userbasic): Promise<Notifications[]> {
     let query = this.NotificationsModel.find();
     query.where('email', profile.email);
 
     if (body.postID != undefined) {
-			query.where('postID', body.postID);
-		}
+      query.where('postID', body.postID);
+    }
 
-		if (body.eventType != undefined) {
+    if (body.eventType != undefined) {
       query.where('eventType', body.eventType);
-		}
+    }
 
     let row = 20;
     let page = 0;
@@ -100,13 +100,13 @@ export class NotificationsService {
       page = body.pageNumber;
     }
     if (body.pageRow != undefined) {
-      row = body.pageRow;      
+      row = body.pageRow;
     }
     let skip = this.paging(page, row);
     query.skip(skip);
-    query.limit(row);         
-    query.sort({'createAt': -1});
-    return await query.exec();    
+    query.limit(row);
+    query.sort({ 'createAt': -1 });
+    return await query.exec();
   }
 
   private paging(page: number, row: number) {
@@ -115,5 +115,5 @@ export class NotificationsService {
     }
     let num = ((page - 1) * row);
     return num;
-  }    
+  }
 }

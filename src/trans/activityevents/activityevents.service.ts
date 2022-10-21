@@ -6,7 +6,7 @@ import { Activityevents, ActivityeventsDocument } from './schemas/activityevents
 @Injectable()
 export class ActivityeventsService {
   constructor(
-    @InjectModel(Activityevents.name, 'SERVER_TRANS')
+    @InjectModel(Activityevents.name, 'SERVER_FULL')
     private readonly activityeventsModel: Model<ActivityeventsDocument>,
   ) { }
 
@@ -194,10 +194,10 @@ export class ActivityeventsService {
       {
         flowIsDone: true,
       }, function (err, docs) {
-      if (err) {
-      } else {
+        if (err) {
+        } else {
+        }
       }
-    }
     );
     this.activityeventsModel.updateOne(
       {

@@ -47,24 +47,24 @@ export class CountriesService {
     return deletedCat;
   }
 
-  async findcountries() {
-    const query = await this.countriesModel.aggregate([
+  // async findcountries() {
+  //   const query = await this.countriesModel.aggregate([
 
-      {
-        $lookup: {
-          from: 'countries',
-          localField: 'countries.$id',
-          foreignField: '_id',
-          as: 'roless',
-        },
-      }, {
-        $out: {
-          db: 'hyppe_trans_db',
-          coll: 'countries2'
-        }
-      },
+  //     {
+  //       $lookup: {
+  //         from: 'countries',
+  //         localField: 'countries.$id',
+  //         foreignField: '_id',
+  //         as: 'roless',
+  //       },
+  //     }, {
+  //       $out: {
+  //         db: 'hyppe_trans_db',
+  //         coll: 'countries2'
+  //       }
+  //     },
 
-    ]);
-    return query;
-  }
+  //   ]);
+  //   return query;
+  // }
 }

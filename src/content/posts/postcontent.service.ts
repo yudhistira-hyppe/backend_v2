@@ -49,7 +49,7 @@ export class PostContentService {
   private readonly logger = new Logger(PostContentService.name);
 
   constructor(
-    @InjectModel(Posts.name, 'SERVER_CONTENT')
+    @InjectModel(Posts.name, 'SERVER_FULL')
     private readonly PostsModel: Model<PostsDocument>,
     private postService: PostsService,
     private userService: UserbasicsService,
@@ -218,7 +218,7 @@ export class PostContentService {
     post.likes = Long.fromInt(0);
     post.views = Long.fromInt(0);
     post.shares = Long.fromInt(0);
-    
+
 
     if (body.tagPeople != undefined && body.tagPeople.length > 1) {
       var obj = body.tagPeople;
@@ -769,7 +769,7 @@ export class PostContentService {
 
         query.where('visibility').in(['FRIEND', 'PUBLIC']).or(following);
       } else if (body.visibility == 'FRIEND') {
-        let friend :String[] = [];
+        let friend: String[] = [];
         let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
         if (check != undefined) {
           for (let i = 0; i < check.length; i++) {
@@ -1306,19 +1306,19 @@ export class PostContentService {
         //  if (ps.userProfile?.namespace) {
         //    let oid = String(ps.userProfile.oid);
         //    pa.username = oid;
-            //pa.avatar = oid;
-            /*
-            let ua = await this.userService.findbyid(oid.toString());
-            if (ua != undefined) {
-              let ub = await this.userAuthService.findOneByEmail(ua.email);
-              if (ub != undefined) {
-                pa.username = ub.username;
-              }
+        //pa.avatar = oid;
+        /*
+        let ua = await this.userService.findbyid(oid.toString());
+        if (ua != undefined) {
+          let ub = await this.userAuthService.findOneByEmail(ua.email);
+          if (ub != undefined) {
+            pa.username = ub.username;
+          }
 
-              pa.avatar = await this.getProfileAvatar(ua);
-            } else {
-              this.logger.log('oid: ' + oid + ' error');
-            }*/
+          pa.avatar = await this.getProfileAvatar(ua);
+        } else {
+          this.logger.log('oid: ' + oid + ' error');
+        }*/
 
         //  }
 
@@ -1385,7 +1385,7 @@ export class PostContentService {
               }
               */
               atp1.push(tp1);
-             user.push(oid);
+              user.push(oid);
             }
           }
 
@@ -1469,7 +1469,7 @@ export class PostContentService {
 
               //isview
               pa.isViewed = false;
-              
+
               if (video.viewers != undefined && video.viewers.length > 0) {
                 for (let i = 0; i < video.viewers.length; i++) {
                   let vwt = video.viewers[i];
@@ -1482,7 +1482,7 @@ export class PostContentService {
                   }
                 }
               }
-              
+
 
             } else if (ns == 'mediapicts') {
               let pic = await this.picService.findOne(String(med.oid));
@@ -1501,7 +1501,7 @@ export class PostContentService {
 
               //isview
               pa.isViewed = false;
-              
+
               if (pic.viewers != undefined && pic.viewers.length > 0) {
                 for (let i = 0; i < pic.viewers.length; i++) {
                   let pct = pic.viewers[i];
@@ -1514,7 +1514,7 @@ export class PostContentService {
                   }
                 }
               }
-              
+
             } else if (ns == 'mediadiaries') {
               let diary = await this.diaryService.findOne(String(med.oid));
               if (diary.apsara == true) {
@@ -1531,7 +1531,7 @@ export class PostContentService {
 
               //isview
               pa.isViewed = false;
-              
+
               if (diary.viewers != undefined && diary.viewers.length > 0) {
                 for (let i = 0; i < diary.viewers.length; i++) {
                   let drt = diary.viewers[i];
@@ -1544,7 +1544,7 @@ export class PostContentService {
                   }
                 }
               }
-              
+
             } else if (ns == 'mediastories') {
               let story = await this.storyService.findOne(String(med.oid));
 
@@ -1574,7 +1574,7 @@ export class PostContentService {
 
               //isview
               pa.isViewed = false;
-              
+
               if (story.viewers != undefined && story.viewers.length > 0) {
                 for (let i = 0; i < story.viewers.length; i++) {
                   let drt = story.viewers[i];
@@ -1589,7 +1589,7 @@ export class PostContentService {
                   }
                 }
               }
-              
+
             }
           }
         }
@@ -1598,7 +1598,7 @@ export class PostContentService {
     }
     let ed = await this.utilService.getDateTimeDate();
     let gap = ed.getTime() - st.getTime();
-    this.logger.log('loadPostDataBulk >>> exec time: ' + gap);    
+    this.logger.log('loadPostDataBulk >>> exec time: ' + gap);
     return pd;
   }
 
@@ -1964,14 +1964,14 @@ export class PostContentService {
         res.messages = msg;
         return res;
       }
-    }    
+    }
 
     let post = await this.buildUpdatePost(body, headers);
     let apost = await this.PostsModel.create(post);
 
     if (post.certified) {
       this.generateCertificate(String(post.postID), 'id');
-    }    
+    }
 
     let cm = post.contentMedias[0];
 
@@ -2138,12 +2138,12 @@ export class PostContentService {
 
     let vids: string[] = [];
     let pics: string[] = [];
-    let user: string[] = [];    
+    let user: string[] = [];
 
-    let resVideo: PostData[] = [];        
-    let resPic: PostData[] = [];        
-    let resDiary: PostData[] = [];        
-    let resStory: PostData[] = [];        
+    let resVideo: PostData[] = [];
+    let resPic: PostData[] = [];
+    let resDiary: PostData[] = [];
+    let resStory: PostData[] = [];
 
     this.logger.log('getUserPostLandingPage >>> exec: video');
     body.postType = 'vid';
@@ -2156,20 +2156,20 @@ export class PostContentService {
     body.postType = 'pict';
     let pp = await this.doGetUserPost(body, headers, profile);
     let pdp = await this.loadPostDataBulk(pp, body, profile, vids, pics, user);
-    data.pict = pdp;    
+    data.pict = pdp;
 
     this.logger.log('getUserPostLandingPage >>> exec: diary');
     body.postType = 'diary';
     let pd = await this.doGetUserPost(body, headers, profile);
     let pdd = await this.loadPostDataBulk(pd, body, profile, vids, pics, user);
-    data.diary = pdd;        
+    data.diary = pdd;
 
     this.logger.log('getUserPostLandingPage >>> exec: story');
     body.postType = 'story';
     body.withExp = true;
     let ps = await this.doGetUserPost(body, headers, profile);
     let pds = await this.loadPostDataBulk(ps, body, profile, vids, pics, user);
-    data.story = pds;            
+    data.story = pds;
 
     let xvids: string[] = [];
     let xpics: string[] = [];
@@ -2188,13 +2188,13 @@ export class PostContentService {
         xpics.push(o);
       }
     }
-    
+
     for (let i = 0; i < user.length; i++) {
       let o = user[i];
       if (o != undefined) {
         xuser.push(o);
       }
-    }    
+    }
 
     let vapsara = undefined;
     let papsara = undefined;
@@ -2206,7 +2206,7 @@ export class PostContentService {
     }
 
     if (xpics.length > 0) {
-      papsara = await this.getImageApsara(xpics);  
+      papsara = await this.getImageApsara(xpics);
     }
 
     if (xuser.length > 0) {
@@ -2216,7 +2216,7 @@ export class PostContentService {
 
     if (vapsara != undefined) {
       if (pdv.length > 0) {
-        for(let i = 0; i < pdv.length; i++) {
+        for (let i = 0; i < pdv.length; i++) {
           let pdvv = pdv[i];
           for (let i = 0; i < vapsara.VideoList.length; i++) {
             let vi = vapsara.VideoList[i];
@@ -2225,14 +2225,14 @@ export class PostContentService {
 
               let oid = pdvv.username;
               pdvv.username = this.getUserName(oid, cuser, ubs);
-              pdvv.avatar = await this.getAvatar(oid, cuser, ubs);              
+              pdvv.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
-          resVideo.push(pdvv);          
+          resVideo.push(pdvv);
         }
       }
       if (pds.length > 0) {
-        for(let i = 0; i < pds.length; i++) {
+        for (let i = 0; i < pds.length; i++) {
           let pdss = pds[i];
           for (let i = 0; i < vapsara.VideoList.length; i++) {
             let vi = vapsara.VideoList[i];
@@ -2241,14 +2241,14 @@ export class PostContentService {
 
               let oid = pdss.username;
               pdss.username = this.getUserName(oid, cuser, ubs);
-              pdss.avatar = await this.getAvatar(oid, cuser, ubs);                            
+              pdss.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
           resStory.push(pdss);
         }
-      }      
+      }
       if (pdd.length > 0) {
-        for(let i = 0; i < pdd.length; i++) {
+        for (let i = 0; i < pdd.length; i++) {
           let pddd = pdd[i];
           for (let i = 0; i < vapsara.VideoList.length; i++) {
             let vi = vapsara.VideoList[i];
@@ -2257,7 +2257,7 @@ export class PostContentService {
 
               let oid = pddd.username;
               pddd.username = this.getUserName(oid, cuser, ubs);
-              pddd.avatar = await this.getAvatar(oid, cuser, ubs);                                          
+              pddd.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
           resDiary.push(pddd);
@@ -2267,7 +2267,7 @@ export class PostContentService {
 
     if (papsara != undefined) {
       if (pdv.length > 0) {
-        for(let i = 0; i < pdv.length; i++) {
+        for (let i = 0; i < pdv.length; i++) {
           let pdvv = pdv[i];
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
@@ -2277,14 +2277,14 @@ export class PostContentService {
 
               let oid = pdvv.username;
               pdvv.username = this.getUserName(oid, cuser, ubs);
-              pdvv.avatar = await this.getAvatar(oid, cuser, ubs);                                                        
+              pdvv.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
           resVideo.push(pdvv);
         }
       }
       if (pds.length > 0) {
-        for(let i = 0; i < pds.length; i++) {
+        for (let i = 0; i < pds.length; i++) {
           let pdss = pds[i];
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
@@ -2294,14 +2294,14 @@ export class PostContentService {
 
               let oid = pdss.username;
               pdss.username = this.getUserName(oid, cuser, ubs);
-              pdss.avatar = await this.getAvatar(oid, cuser, ubs);                                                        
+              pdss.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
           resStory.push(pdss);
         }
-      }      
+      }
       if (pdd.length > 0) {
-        for(let i = 0; i < pdd.length; i++) {
+        for (let i = 0; i < pdd.length; i++) {
           let pddd = pdd[i];
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
@@ -2311,14 +2311,14 @@ export class PostContentService {
 
               let oid = pddd.username;
               pddd.username = this.getUserName(oid, cuser, ubs);
-              pddd.avatar = await this.getAvatar(oid, cuser, ubs);                                                                      
+              pddd.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
           resDiary.push(pddd);
         }
       }
       if (pdp.length > 0) {
-        for(let i = 0; i < pdp.length; i++) {
+        for (let i = 0; i < pdp.length; i++) {
           let pdpp = pdp[i];
           let found = false;
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
@@ -2328,7 +2328,7 @@ export class PostContentService {
               pdpp.mediaUri = vi.URL;
 
               pdpp.mediaThumbEndpoint = vi.URL;
-              pdpp.mediaThumbUri = vi.URL;              
+              pdpp.mediaThumbUri = vi.URL;
 
               let oid = pdpp.username;
               pdpp.username = this.getUserName(oid, cuser, ubs);
@@ -2339,11 +2339,11 @@ export class PostContentService {
               pdpp.mediaThumbEndpoint = vi.URL;
               pdpp.mediaThumbUri = vi.URL;
 
-            }            
+            }
           }
           resPic.push(pdpp);
         }
-      }            
+      }
     }
 
 
@@ -2370,9 +2370,9 @@ export class PostContentService {
 
     let ed = await this.utilService.getDateTimeDate();
     let gap = ed.getTime() - st.getTime();
-    this.logger.log('getUserPostLandingPage >>> finexec: ' + gap);        
+    this.logger.log('getUserPostLandingPage >>> finexec: ' + gap);
     return res;
-  }    
+  }
 
   private formatTime(seconds) {
     const h = Math.floor(seconds / 3600);
@@ -2385,7 +2385,7 @@ export class PostContentService {
   }
 
   private getUserName(oid: string, cuser: Userauth[], ub: Userbasic[]) {
-    for(let x = 0; x < cuser.length; x++) {
+    for (let x = 0; x < cuser.length; x++) {
       let c = cuser[x];
       if (c.email == oid) {
         return c.username;
@@ -2396,13 +2396,13 @@ export class PostContentService {
   }
 
   private async getAvatar(oid: any, cuser: Userauth[], ub: Userbasic[]) {
-    for(let i = 0; i < ub.length; i++) {
+    for (let i = 0; i < ub.length; i++) {
       let u = ub[i];
       if (u.email == String(oid)) {
         return this.getProfileAvatar(u);
       }
     }
 
-    return ;
-  }  
+    return;
+  }
 }

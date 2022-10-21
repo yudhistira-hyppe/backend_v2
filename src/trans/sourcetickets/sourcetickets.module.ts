@@ -9,7 +9,7 @@ import { Sourcetickets, SourceticketsSchema } from './schemas/sourcetickets.sche
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Sourcetickets.name, schema: SourceticketsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Sourcetickets.name, schema: SourceticketsSchema }], 'SERVER_FULL')
     ],
     controllers: [SourceticketsController],
     providers: [SourceticketsService],

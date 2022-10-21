@@ -21,7 +21,7 @@ import { DisquslogsModule } from '../../../content/disquslogs/disquslogs.module'
     imports: [
         ConfigModule.forRoot(), UserauthsModule, MediaprofilepictsModule, InsightsModule, PostsModule, MediavideosModule, MediapictsModule, MediadiariesModule, DisqusModule, DisquslogsModule,
 
-        MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }], 'SERVER_TRANS'),
+        MongooseModule.forFeature([{ name: Comment.name, schema: CommentSchema }], 'SERVER_FULL'),
 
     ],
     controllers: [CommentController],

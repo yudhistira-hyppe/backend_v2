@@ -9,12 +9,12 @@ import { Userplaylist, UserplaylistDocument, VPlay, VPlayDocument } from './sche
 @Injectable()
 export class UserplaylistService {
 
-  private readonly logger = new Logger(UserplaylistService.name);  
+  private readonly logger = new Logger(UserplaylistService.name);
 
   constructor(
-    @InjectModel(Userplaylist.name, 'SERVER_TRANS')
+    @InjectModel(Userplaylist.name, 'SERVER_FULL')
     private readonly userplaylistModel: Model<UserplaylistDocument>,
-    @InjectModel(VPlay.name, 'SERVER_TRANS')
+    @InjectModel(VPlay.name, 'SERVER_FULL')
     private readonly vPlayModel: Model<VPlayDocument>,
 
     private utilService: UtilsService,
@@ -141,8 +141,8 @@ export class UserplaylistService {
         query.where('createAt').lte(body.endDate);
       } else {
         query.where('createAt').lte(body.endDate);
-      }      
-    }    
+      }
+    }
 
     query.where('userId', whoami._id);
 
@@ -152,15 +152,15 @@ export class UserplaylistService {
       page = body.pageNumber;
     }
     if (body.pageRow != undefined) {
-      row = body.pageRow;      
+      row = body.pageRow;
     }
     let skip = this.paging(page, row);
     query.skip(skip);
-    query.limit(row);         
-    query.sort({'createAt': -1});
+    query.limit(row);
+    query.sort({ 'createAt': -1 });
     let res = await query.exec();
-    
-    let pids:String[] = [];
+
+    let pids: String[] = [];
     for (let x = 0; x < res.length; x++) {
       let tmp = res[x];
       let pid = tmp.postID;
@@ -170,7 +170,7 @@ export class UserplaylistService {
     return pids;
 
   }
-  
+
   public async doGetUserPostVPlaylist(body: any, headers: any, whoami: Userbasic): Promise<VPlay[]> {
     this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(body));
     let query = this.vPlayModel.find();
@@ -208,10 +208,10 @@ export class UserplaylistService {
         query.where('createAt').lte(body.endDate);
       } else {
         query.where('createAt').lte(body.endDate);
-      }      
+      }
     }
 
-    
+
     query.where('userId', whoami._id);
 
     let row = 20;
@@ -220,15 +220,15 @@ export class UserplaylistService {
       page = body.pageNumber;
     }
     if (body.pageRow != undefined) {
-      row = body.pageRow;      
+      row = body.pageRow;
     }
     let skip = this.paging(page, row);
     query.skip(skip);
-    query.limit(row);         
-    query.sort({'createAt': -1});
+    query.limit(row);
+    query.sort({ 'createAt': -1 });
     return await query.exec();
 
-  }  
+  }
 
   public async doGetUserPostPlaylistV2(body: any, headers: any, whoami: Userbasic): Promise<Userplaylist[]> {
     this.logger.log('doGetUserPostPlaylistV2 >>> start: ' + JSON.stringify(body));
@@ -247,13 +247,13 @@ export class UserplaylistService {
         query.where('userId', Object(whoami._id));
         query.where('userPostId', Object(whoami._id));
       } else if (body.visibility == 'PUBLIC') {
-        query.where('PUBLIC', true);        
+        query.where('PUBLIC', true);
       } else if (body.visibility == 'FRIEND') {
-        query.where('FRIEND', true);        
+        query.where('FRIEND', true);
       } else if (body.visibility == 'FOLLOWING') {
-        query.where('FOLLOWING', true);        
+        query.where('FOLLOWING', true);
       } else if (body.visibility == 'FOLLOWER') {
-        query.where('FOLLOWER', true);        
+        query.where('FOLLOWER', true);
       }
 
     }
@@ -283,10 +283,10 @@ export class UserplaylistService {
         query.where('createAt').lte(body.endDate);
       } else {
         query.where('createAt').lte(body.endDate);
-      }      
+      }
     }
 
-    
+
     query.where('userId', whoami._id);
 
     let row = 20;
@@ -295,15 +295,15 @@ export class UserplaylistService {
       page = body.pageNumber;
     }
     if (body.pageRow != undefined) {
-      row = body.pageRow;      
+      row = body.pageRow;
     }
     let skip = this.paging(page, row);
     query.skip(skip);
-    query.limit(row);         
-    query.sort({'createAt': -1});
+    query.limit(row);
+    query.sort({ 'createAt': -1 });
     return await query.exec();
 
-  } 
+  }
 
   private paging(page: number, row: number) {
     if (page == 0 || page == 1) {
@@ -311,9 +311,9 @@ export class UserplaylistService {
     }
     let num = ((page - 1) * row);
     return num;
-  }  
+  }
 
-  public async dataView(): Promise<VPlay[]>{
+  public async dataView(): Promise<VPlay[]> {
     return this.vPlayModel.find();
   }
 
@@ -337,7 +337,7 @@ export class UserplaylistService {
   //   var userPostId = CreateUserplaylistDto_.userPostId;
   //   var mediaId = CreateUserplaylistDto_.mediaId;
   //   var postType = CreateUserplaylistDto_.postType;
-    
+
   //   var current_date = await this.utilsService.getDateTimeString();
   //   var data_userbasic_all = await this.userbasicsService.findAll();
   //   var data_media = null;
@@ -427,7 +427,7 @@ export class UserplaylistService {
   //     }else{
   //       type = "PUBLIC";
   //     }
-      
+
   //     var interest_db = [];
   //     if (Count_compare_interest > 0) {
   //       for (var i = 0; i < Count_compare_interest; i++) {
@@ -452,14 +452,14 @@ export class UserplaylistService {
   //     // const userIdPost = data_userbasic._id.toString();
   //     // const mediaId_ = mediaId.toString();
   //     //var ceckDataUser_ = await this.userplaylistModel.findOne({ userId: new Types.ObjectId(userId), userPostId: new Types.ObjectId(userIdPost), mediaId: mediaId_ }).clone().exec();
-      
+
   //     var ceckDataUser_ = await this.userplaylistModel.find(
   //       { 
   //         userId: new Types.ObjectId(element._id.toString()), 
   //         userPostId: new Types.ObjectId(data_userbasic._id.toString()), 
   //         mediaId: mediaId.toString() 
   //       }).exec();
-      
+
   //     if (await this.utilsService.ceckData(ceckDataUser_)){
   //       await this.userplaylistModel.updateOne(
   //         { _id: new Types.ObjectId(ceckDataUser_[0]._id.toString()) }, 

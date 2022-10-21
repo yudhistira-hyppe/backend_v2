@@ -12,7 +12,7 @@ export class GetcontenteventsService {
     constructor(
         @InjectModel(Getcontentevents.name, 'SERVER_TRANS')
         private readonly getcontenteventsModel: Model<GetcontenteventsDocument>,
-        private readonly contenteventsService: ContenteventsService, 
+        private readonly contenteventsService: ContenteventsService,
         private readonly mediaprofilepictsService: MediaprofilepictsService,
         private readonly countriesService: CountriesService,
     ) { }
@@ -660,8 +660,7 @@ export class GetcontenteventsService {
         return query;
     }
     async findlocation(postID: string) {
-        const countries = await this.countriesService.findcountries();
-        const posts = await this.contenteventsService.findcontent();
+
         const query = await this.getcontenteventsModel.aggregate([
 
             {
@@ -674,7 +673,7 @@ export class GetcontenteventsService {
             },
             {
                 $lookup: {
-                    from: 'countries2',
+                    from: 'countries',
                     localField: 'field.countries.$id',
                     foreignField: '_id',
                     as: 'countries_data',
@@ -814,7 +813,7 @@ export class GetcontenteventsService {
         return query;
     }
 
-    async getConteneventbyType(CreateGetcontenteventsDto_: CreateGetcontenteventsDto): Promise<any[]>{
+    async getConteneventbyType(CreateGetcontenteventsDto_: CreateGetcontenteventsDto): Promise<any[]> {
         const getcontenteventsModel = await this.contenteventsService.getConteneventbyType(CreateGetcontenteventsDto_);
         return getcontenteventsModel;
     }
@@ -863,7 +862,7 @@ export class GetcontenteventsService {
             },
             {
                 $lookup: {
-                    from: 'mediaprofilepicts2',
+                    from: 'mediaprofilepicts',
                     localField: 'profilePict_id',
                     foreignField: '_id',
                     as: 'profilePict_data',
@@ -884,7 +883,7 @@ export class GetcontenteventsService {
                     email: '$userbasics.email',
                     username: '$userauths.username',
                     avatar: {
-                        profilePict_id:'$profilePict._id',
+                        profilePict_id: '$profilePict._id',
                         mediaBasePath: '$profilePict.mediaBasePath',
                         mediaUri: '$profilePict.mediaUri',
                         mediaType: '$profilePict.mediaType',
@@ -893,7 +892,7 @@ export class GetcontenteventsService {
                     }
                 },
             },
-            { $sort: { fullName:1} },
+            { $sort: { fullName: 1 } },
             { $skip: CreateGetcontenteventsDto_.skip },
             { $limit: CreateGetcontenteventsDto_.limit },
         ]);

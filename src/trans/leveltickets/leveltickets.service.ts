@@ -8,7 +8,7 @@ import { Leveltickets, LevelticketsDocument } from './schemas/leveltickets.schem
 export class LevelticketsService {
 
     constructor(
-        @InjectModel(Leveltickets.name, 'SERVER_TRANS')
+        @InjectModel(Leveltickets.name, 'SERVER_FULL')
         private readonly levelticketsModel: Model<LevelticketsDocument>,
     ) { }
 

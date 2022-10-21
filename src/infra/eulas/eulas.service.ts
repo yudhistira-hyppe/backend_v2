@@ -6,20 +6,20 @@ import { Eulas, EulasDocument } from './schemas/eulas.schema';
 @Injectable()
 export class EulasService {
   constructor(
-    @InjectModel(Eulas.name, 'SERVER_INFRA')
+    @InjectModel(Eulas.name, 'SERVER_FULL')
     private readonly eulasModel: Model<EulasDocument>,
-  ) {}
+  ) { }
 
   async create(CreateEulasDto: CreateEulasDto): Promise<Eulas> {
     const createEulasDto = await this.eulasModel.create(CreateEulasDto);
     return createEulasDto;
   }
 
-  async findCriteria(pageNumber:number,pageRow:number,langIso:string) {
+  async findCriteria(pageNumber: number, pageRow: number, langIso: string) {
     var perPage = pageRow
-  , page = Math.max(0, pageNumber);
+      , page = Math.max(0, pageNumber);
     var where = {};
-    if(langIso!=undefined){
+    if (langIso != undefined) {
       where['langIso'] = langIso;
     }
     const query = await this.eulasModel.find(where).limit(perPage).skip(perPage * page).sort({ _id: 'asc' });

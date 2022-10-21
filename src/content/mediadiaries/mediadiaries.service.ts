@@ -7,7 +7,7 @@ import { Mediadiaries, MediadiariesDocument } from './schemas/mediadiaries.schem
 @Injectable()
 export class MediadiariesService {
   constructor(
-    @InjectModel(Mediadiaries.name, 'SERVER_CONTENT')
+    @InjectModel(Mediadiaries.name, 'SERVER_FULL')
     private readonly MediadiariesModel: Model<MediadiariesDocument>,
   ) { }
 

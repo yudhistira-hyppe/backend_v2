@@ -7,7 +7,7 @@ import { Mediaproofpicts, MediaproofpictsDocument } from './schemas/mediaproofpi
 @Injectable()
 export class MediaproofpictsService {
   constructor(
-    @InjectModel(Mediaproofpicts.name, 'SERVER_CONTENT')
+    @InjectModel(Mediaproofpicts.name, 'SERVER_FULL')
     private readonly MediaproofpictsModel: Model<MediaproofpictsDocument>,
   ) { }
 

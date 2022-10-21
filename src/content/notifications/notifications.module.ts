@@ -10,11 +10,11 @@ import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Notifications.name, schema: NotificationsSchema }],'SERVER_CONTENT'),
+        MongooseModule.forFeature([{ name: Notifications.name, schema: NotificationsSchema }], 'SERVER_FULL'),
         UserbasicsModule,
     ],
     controllers: [NotificationsController],
     providers: [NotificationsService],
     exports: [NotificationsService],
 })
-export class NotificationsModule {}
+export class NotificationsModule { }

@@ -8,7 +8,7 @@ import { Division, DivisionDocument } from './schemas/division.schema';
 @Injectable()
 export class DivisionService {
     constructor(
-        @InjectModel(Division.name, 'SERVER_TRANS')
+        @InjectModel(Division.name, 'SERVER_FULL')
         private readonly divisionModel: Model<DivisionDocument>
     ) { }
 

@@ -7,7 +7,7 @@ import { Insightlogs, InsightlogsDocument } from './schemas/insightlogs.schema';
 @Injectable()
 export class InsightlogsService {
   constructor(
-    @InjectModel(Insightlogs.name, 'SERVER_CONTENT')
+    @InjectModel(Insightlogs.name, 'SERVER_FULL')
     private readonly InsightlogsModel: Model<InsightlogsDocument>,
   ) { }
 

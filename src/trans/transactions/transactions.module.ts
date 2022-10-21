@@ -32,7 +32,7 @@ import { LanguagesModule } from '../../infra/languages/languages.module';
         UtilsModule,
         ConfigModule.forRoot(), GetusercontentsModule, UserbasicsModule, SettingsModule, MethodepaymentsModule, BanksModule, PostsModule, Pph21sModule, AccountbalancesModule, OyPgModule,
         InsightsModule, UserbankaccountsModule, WithdrawsModule, MediavideosModule, MediapictsModule, MediadiariesModule, UservouchersModule, VouchersModule, MediastoriesModule, LanguagesModule,
-        MongooseModule.forFeature([{ name: Transactions.name, schema: TransactionsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Transactions.name, schema: TransactionsSchema }], 'SERVER_FULL')
     ],
     controllers: [TransactionsController],
     exports: [TransactionsService],

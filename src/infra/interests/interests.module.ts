@@ -8,10 +8,10 @@ import { Interests, InterestsSchema } from './schemas/interests.schema';
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Interests.name, schema: InterestsSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Interests.name, schema: InterestsSchema }], 'SERVER_FULL')
     ],
     controllers: [InterestsController],
     providers: [InterestsService],
     exports: [InterestsService],
 })
-export class InterestsModule {}
+export class InterestsModule { }

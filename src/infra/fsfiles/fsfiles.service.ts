@@ -7,9 +7,9 @@ import { Fsfiles, FsfilesDocument } from './schemas/fsfiles.schema';
 @Injectable()
 export class FsfilesService {
   constructor(
-    @InjectModel(Fsfiles.name, 'SERVER_INFRA')
+    @InjectModel(Fsfiles.name, 'SERVER_FULL')
     private readonly fsfilesModel: Model<FsfilesDocument>,
-  ) {}
+  ) { }
 
   async create(CreateFsfilesDto: CreateFsfilesDto): Promise<Fsfiles> {
     const createFsfilesDto = await this.fsfilesModel.create(CreateFsfilesDto);

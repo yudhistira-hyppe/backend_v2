@@ -9,7 +9,7 @@ import { Vouchers, VouchersDocument } from './schemas/vouchers.schema';
 export class VouchersService {
 
     constructor(
-        @InjectModel(Vouchers.name, 'SERVER_TRANS')
+        @InjectModel(Vouchers.name, 'SERVER_FULL')
         private readonly vouchersModel: Model<VouchersDocument>
 
     ) { }

@@ -7,7 +7,7 @@ import { Userauth, UserauthDocument } from './schemas/userauth.schema';
 @Injectable()
 export class UserauthsService {
   constructor(
-    @InjectModel(Userauth.name, 'SERVER_TRANS')
+    @InjectModel(Userauth.name, 'SERVER_FULL')
     private readonly userauthModel: Model<UserauthDocument>,
   ) { }
 

@@ -8,7 +8,7 @@ import { Removedreasons, RemovedreasonsSchema } from './schemas/removedreasons.s
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Removedreasons.name, schema: RemovedreasonsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Removedreasons.name, schema: RemovedreasonsSchema }], 'SERVER_FULL')
     ],
     controllers: [RemovedreasonsController],
     providers: [RemovedreasonsService],

@@ -9,7 +9,7 @@ import { Settings, SettingsSchema } from './schemas/settings.schema';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Settings.name, schema: SettingsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Settings.name, schema: SettingsSchema }], 'SERVER_FULL')
     ],
     controllers: [SettingsController],
     providers: [SettingsService],

@@ -7,9 +7,9 @@ import { Snapshotevents, SnapshoteventsDocument } from './schemas/snapshotevents
 @Injectable()
 export class SnapshoteventsService {
   constructor(
-    @InjectModel(Snapshotevents.name, 'SERVER_TRANS')
+    @InjectModel(Snapshotevents.name, 'SERVER_FULL')
     private readonly snapshoteventsModel: Model<SnapshoteventsDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateSnapshoteventsDto: CreateSnapshoteventsDto,

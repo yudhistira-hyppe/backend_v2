@@ -11,7 +11,7 @@ import { Pph21s, Pph21sSchema } from './schemas/pph21s.schema';
     imports: [
 
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Pph21s.name, schema: Pph21sSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Pph21s.name, schema: Pph21sSchema }], 'SERVER_FULL')
     ],
     controllers: [Pph21sController],
     exports: [Pph21sService],

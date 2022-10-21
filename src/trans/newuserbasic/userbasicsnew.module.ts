@@ -8,10 +8,10 @@ import { Userbasic, UserbasicnewSchema } from './schemas/userbasicnew.schema';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Userbasic.name, schema: UserbasicnewSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Userbasic.name, schema: UserbasicnewSchema }], 'SERVER_FULL')
     ],
     controllers: [UserbasicsnewController],
     exports: [UserbasicsnewService],
     providers: [UserbasicsnewService],
 })
-export class UserbasicsnewModule {}
+export class UserbasicsnewModule { }

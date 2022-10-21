@@ -8,10 +8,10 @@ import { Mediaprofilepicts, MediaprofilepictsSchema } from './schemas/mediaprofi
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Mediaprofilepicts.name, schema: MediaprofilepictsSchema }],'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Mediaprofilepicts.name, schema: MediaprofilepictsSchema }], 'SERVER_FULL')
     ],
     controllers: [MediaprofilepictsController],
     providers: [MediaprofilepictsService],
     exports: [MediaprofilepictsService],
 })
-export class MediaprofilepictsModule {}
+export class MediaprofilepictsModule { }

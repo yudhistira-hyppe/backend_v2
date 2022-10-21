@@ -13,7 +13,7 @@ import { v4 as uuidv4 } from 'uuid';
     imports: [
         ConfigModule.forRoot(), NestjsFormDataModule,
 
-        MongooseModule.forFeature([{ name: Mediaproofpicts.name, schema: MediaproofpictsSchema }], 'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Mediaproofpicts.name, schema: MediaproofpictsSchema }], 'SERVER_FULL')
     ],
     controllers: [MediaproofpictsController],
     providers: [MediaproofpictsService],

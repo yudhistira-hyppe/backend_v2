@@ -7,9 +7,9 @@ import { Contentdailyqueues, ContentdailyqueuesDocument } from './schemas/conten
 @Injectable()
 export class ContentdailyqueueService {
   constructor(
-    @InjectModel(Contentdailyqueues.name, 'SERVER_CONTENT')
+    @InjectModel(Contentdailyqueues.name, 'SERVER_FULL')
     private readonly ContentdailyqueuesModel: Model<ContentdailyqueuesDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateContentdailyqueuesDto: CreateContentdailyqueuesDto,

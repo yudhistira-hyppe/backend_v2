@@ -7,7 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { GroupModule as GroupModule_, GroupModuleSchema } from './schemas/groupmodule.schema';
 import { UtilsModule } from '../../../utils/utils.module';
 import { GroupModule } from '../group/group.module';
-import { ModuleModule } from '../module/module.module'; 
+import { ModuleModule } from '../module/module.module';
 import { UserbasicsModule } from '../../../trans/userbasics/userbasics.module';
 import { DivisionModule } from '../division/division.module';
 
@@ -20,10 +20,10 @@ import { DivisionModule } from '../division/division.module';
         GroupModule,
         UtilsModule,
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: GroupModule_.name, schema: GroupModuleSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: GroupModule_.name, schema: GroupModuleSchema }], 'SERVER_FULL')
     ],
     controllers: [GroupModuleController],
     exports: [GroupModuleService],
     providers: [GroupModuleService],
 })
-export class GroupModuleModule {}
+export class GroupModuleModule { }

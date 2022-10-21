@@ -13,7 +13,7 @@ import { AdsModule } from '../ads/ads.module';
 
     imports: [
         UserbasicsModule, PostsModule, AdsModule, ReportreasonsModule, RemovedreasonsModule, ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Reportuser.name, schema: ReportuserSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Reportuser.name, schema: ReportuserSchema }], 'SERVER_FULL')
     ],
     controllers: [ReportuserController],
     providers: [ReportuserService],

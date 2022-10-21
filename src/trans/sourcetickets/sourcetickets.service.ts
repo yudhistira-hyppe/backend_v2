@@ -8,7 +8,7 @@ import { Sourcetickets, SourceticketsDocument } from './schemas/sourcetickets.sc
 export class SourceticketsService {
 
     constructor(
-        @InjectModel(Sourcetickets.name, 'SERVER_TRANS')
+        @InjectModel(Sourcetickets.name, 'SERVER_FULL')
         private readonly sourceticketsModel: Model<SourceticketsDocument>,
     ) { }
 

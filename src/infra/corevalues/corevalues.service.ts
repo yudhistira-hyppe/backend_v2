@@ -7,9 +7,9 @@ import { Corevalues, CorevaluesDocument } from './schemas/corevalues.schema';
 @Injectable()
 export class CorevaluesService {
   constructor(
-    @InjectModel(Corevalues.name, 'SERVER_INFRA')
+    @InjectModel(Corevalues.name, 'SERVER_FULL')
     private readonly corevaluesModel: Model<CorevaluesDocument>,
-  ) {}
+  ) { }
 
   async create(CreateCorevaluesDto: CreateCorevaluesDto): Promise<Corevalues> {
     const createCorevaluesDto = await this.corevaluesModel.create(

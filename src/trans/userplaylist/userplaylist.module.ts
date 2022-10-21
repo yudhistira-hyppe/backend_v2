@@ -10,12 +10,12 @@ import { UtilsModule } from '../../utils/utils.module';
 
     imports: [
         ConfigModule.forRoot(),
-        UtilsModule, 
-        MongooseModule.forFeature([{ name: Userplaylist.name, schema: UserplaylistSchema }], 'SERVER_TRANS'),
-        MongooseModule.forFeature([{ name: VPlay.name, schema: VPlaySchema }], 'SERVER_TRANS')
+        UtilsModule,
+        MongooseModule.forFeature([{ name: Userplaylist.name, schema: UserplaylistSchema }], 'SERVER_FULL'),
+        MongooseModule.forFeature([{ name: VPlay.name, schema: VPlaySchema }], 'SERVER_FULL')
     ],
     controllers: [UserplaylistController],
     exports: [UserplaylistService],
     providers: [UserplaylistService],
 })
-export class UserplaylistModule {}
+export class UserplaylistModule { }

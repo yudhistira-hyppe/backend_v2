@@ -8,7 +8,7 @@ import { Banks, BanksDocument } from './schemas/banks.schema';
 export class BanksService {
 
     constructor(
-        @InjectModel(Banks.name, 'SERVER_TRANS')
+        @InjectModel(Banks.name, 'SERVER_FULL')
         private readonly settingsModel: Model<BanksDocument>,
     ) { }
 

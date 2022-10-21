@@ -9,10 +9,10 @@ import { Interestsrepo, InterestsrepoSchema } from './schemas/interests_repo.sch
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Interestsrepo.name, schema: InterestsrepoSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Interestsrepo.name, schema: InterestsrepoSchema }], 'SERVER_FULL')
     ],
     controllers: [InterestsRepoController],
     providers: [InterestsRepoService],
     exports: [InterestsRepoService],
 })
-export class InterestsRepoModule {}
+export class InterestsRepoModule { }

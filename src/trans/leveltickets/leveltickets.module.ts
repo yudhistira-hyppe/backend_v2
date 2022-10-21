@@ -9,7 +9,7 @@ import { Leveltickets, LevelticketsSchema } from './schemas/leveltickets.schema'
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Leveltickets.name, schema: LevelticketsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Leveltickets.name, schema: LevelticketsSchema }], 'SERVER_FULL')
     ],
     controllers: [LevelticketsController],
     providers: [LevelticketsService],

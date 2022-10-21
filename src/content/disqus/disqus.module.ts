@@ -23,10 +23,10 @@ import { ContenteventsModule } from '../contentevents/contentevents.module';
         NestjsFormDataModule,
         UtilsModule,
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Disqus.name, schema: DisqusSchema }],'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Disqus.name, schema: DisqusSchema }], 'SERVER_FULL')
     ],
     controllers: [DisqusController],
     providers: [DisqusService],
     exports: [DisqusService],
 })
-export class DisqusModule {}
+export class DisqusModule { }

@@ -7,7 +7,7 @@ import { Reportreasons, ReportreasonsDocument } from './schemas/reportreasons.sc
 @Injectable()
 export class ReportreasonsService {
     constructor(
-        @InjectModel(Reportreasons.name, 'SERVER_TRANS')
+        @InjectModel(Reportreasons.name, 'SERVER_FULL')
         private readonly reportreasonsModel: Model<ReportreasonsDocument>,
     ) { }
     async findAll(): Promise<Reportreasons[]> {

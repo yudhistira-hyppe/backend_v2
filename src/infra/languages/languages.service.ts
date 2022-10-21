@@ -8,9 +8,9 @@ import { Languages, LanguagesDocument } from './schemas/languages.schema';
 @Injectable()
 export class LanguagesService {
   constructor(
-    @InjectModel(Languages.name, 'SERVER_INFRA')
+    @InjectModel(Languages.name, 'SERVER_FULL')
     private readonly LanguagesModel: Model<LanguagesDocument>,
-  ) {}
+  ) { }
 
   async create(CreateLanguagesDto: CreateLanguagesDto): Promise<Languages> {
     const createLanguagesDto = await this.LanguagesModel.create(
@@ -23,13 +23,13 @@ export class LanguagesService {
     return this.LanguagesModel.find().exec();
   }
 
-  async findCriteria(langIso:string,search:string) {
+  async findCriteria(langIso: string, search: string) {
     var where = {};
-    if(langIso!=undefined){
+    if (langIso != undefined) {
       where['langIso'] = langIso;
     }
-    if(search!=undefined){
-      where['country'] = {$regex: search,  $options: "i"};
+    if (search != undefined) {
+      where['country'] = { $regex: search, $options: "i" };
     }
     const query = await this.LanguagesModel.find(where).sort({ langIso: 'asc' });
     return query;

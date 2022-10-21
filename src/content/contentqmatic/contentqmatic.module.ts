@@ -8,10 +8,10 @@ import { Contentqmatic, ContentqmaticSchema } from './schemas/contentqmatic.sche
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Contentqmatic.name, schema: ContentqmaticSchema }],'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Contentqmatic.name, schema: ContentqmaticSchema }], 'SERVER_FULL')
     ],
     controllers: [ContentqmaticController],
     providers: [ContentqmaticService],
     exports: [ContentqmaticService],
 })
-export class ContentqmaticModule {}
+export class ContentqmaticModule { }

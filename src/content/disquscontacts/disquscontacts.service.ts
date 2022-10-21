@@ -7,9 +7,9 @@ import { Disquscontacts, DisquscontactsDocument } from './schemas/disquscontacts
 @Injectable()
 export class DisquscontactsService {
   constructor(
-    @InjectModel(Disquscontacts.name, 'SERVER_CONTENT')
+    @InjectModel(Disquscontacts.name, 'SERVER_FULL')
     private readonly DisquscontactsModel: Model<DisquscontactsDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateDisquscontactsDto: CreateDisquscontactsDto,

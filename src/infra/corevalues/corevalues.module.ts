@@ -8,10 +8,10 @@ import { Corevalues, CorevaluesSchema } from './schemas/corevalues.schema';
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Corevalues.name, schema: CorevaluesSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Corevalues.name, schema: CorevaluesSchema }], 'SERVER_FULL')
     ],
     controllers: [CorevaluesController],
     providers: [CorevaluesService],
     exports: [CorevaluesService],
 })
-export class CorevaluesModule {}
+export class CorevaluesModule { }

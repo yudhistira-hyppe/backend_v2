@@ -3,14 +3,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateDisqusDto } from './dto/create-disqus.dto';
 import { Disqus, DisqusDocument } from './schemas/disqus.schema';
-import { UtilsService } from '../../utils/utils.service'; 
+import { UtilsService } from '../../utils/utils.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
 
 @Injectable()
 export class DisqusService {
   constructor(
-    @InjectModel(Disqus.name, 'SERVER_CONTENT')
-    private readonly DisqusModel: Model<DisqusDocument>, 
+    @InjectModel(Disqus.name, 'SERVER_FULL')
+    private readonly DisqusModel: Model<DisqusDocument>,
     private utilsService: UtilsService,
     private disquslogsService: DisquslogsService,
   ) { }
@@ -23,7 +23,7 @@ export class DisqusService {
   async findAll(): Promise<Disqus[]> {
     return this.DisqusModel.find().exec();
   }
-  
+
   async findOne(email: string): Promise<Disqus> {
     return this.DisqusModel.findOne({ email: email }).exec();
   }
@@ -47,7 +47,7 @@ export class DisqusService {
           }
           data_update = { $set: { "mateActive": false } }
         }
-      } 
+      }
       if (data_discus.mate != undefined) {
         if (data_discus.mate == request.email) {
           param_update = {
@@ -61,21 +61,21 @@ export class DisqusService {
         param_update,
         data_update,
         function (err, docs) {
-        if (err) {
-          //console.log(err);
-        } else {
-          //console.log(docs);
-        }
-      });
+          if (err) {
+            //console.log(err);
+          } else {
+            //console.log(docs);
+          }
+        });
       this.disquslogsService.updateBydiscusid(request._id, request.email);
 
       return {
-          response_code: 202,
-          messages: {
-            info: ['Delete Disqus successful'],
+        response_code: 202,
+        messages: {
+          info: ['Delete Disqus successful'],
         }
       }
-    }else{
+    } else {
       throw new NotAcceptableException({
         response_code: 406,
         messages: {

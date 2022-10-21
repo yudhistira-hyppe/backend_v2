@@ -12,7 +12,7 @@ import { UtilsModule } from '../../../utils/utils.module';
     imports: [
         UtilsModule,
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Module_.name, schema: ModuleSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Module_.name, schema: ModuleSchema }], 'SERVER_FULL')
     ],
     controllers: [ModuleController],
     exports: [ModuleService],

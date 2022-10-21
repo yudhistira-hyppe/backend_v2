@@ -9,7 +9,7 @@ import { VouchersModule } from '../vouchers/vouchers.module';
 @Module({
     imports: [
         ConfigModule.forRoot(), UserbasicsModule, VouchersModule,
-        MongooseModule.forFeature([{ name: Uservouchers.name, schema: UservouchersSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Uservouchers.name, schema: UservouchersSchema }], 'SERVER_FULL')
     ],
     controllers: [UservouchersController],
     providers: [UservouchersService],

@@ -8,7 +8,7 @@ import { Pph21s, Pph21sDocument } from './schemas/pph21s.schema';
 @Injectable()
 export class Pph21sService {
     constructor(
-        @InjectModel(Pph21s.name, 'SERVER_TRANS')
+        @InjectModel(Pph21s.name, 'SERVER_FULL')
         private readonly pph21sModel: Model<Pph21sDocument>,
     ) { }
 

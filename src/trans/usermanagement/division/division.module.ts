@@ -12,7 +12,7 @@ import { UserbasicsModule } from '../../userbasics/userbasics.module';
     imports: [
         UtilsModule,
         ConfigModule.forRoot(), UserbasicsModule,
-        MongooseModule.forFeature([{ name: Division.name, schema: DivisionSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Division.name, schema: DivisionSchema }], 'SERVER_FULL')
     ],
     controllers: [DivisionController],
     exports: [DivisionService],

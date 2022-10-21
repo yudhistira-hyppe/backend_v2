@@ -7,7 +7,7 @@ import { UserAds, UserAdsDocument } from './schemas/userads.schema';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 @Injectable()
 export class UserAdsService {
-    constructor(@InjectModel(UserAds.name, 'SERVER_TRANS')
+    constructor(@InjectModel(UserAds.name, 'SERVER_FULL')
     private readonly userAdsModel: Model<UserAdsDocument>, private readonly mediaprofilepictsService: MediaprofilepictsService,
     ) { }
 
@@ -22,7 +22,7 @@ export class UserAdsService {
         return this.userAdsModel.find().exec();
     }
 
-    async findAllLimit(limit:number): Promise<UserAds[]> {
+    async findAllLimit(limit: number): Promise<UserAds[]> {
         return this.userAdsModel.find().sort({ priorityNumber: 1 }).limit(limit).exec();
     }
 
@@ -35,7 +35,7 @@ export class UserAdsService {
     }
 
     async findOneByuserID(userID: string, nameType: string): Promise<UserAds[]> {
-        return this.userAdsModel.find({ userID: userID, nameType: nameType, statusView: false, isActive: true }).sort({ priorityNumber:-1, createdAt: -1 }).exec();
+        return this.userAdsModel.find({ userID: userID, nameType: nameType, statusView: false, isActive: true }).sort({ priorityNumber: -1, createdAt: -1 }).exec();
     }
 
     async findOneByuserIDAds(userID: string, adsId: string): Promise<UserAds> {
@@ -81,7 +81,7 @@ export class UserAdsService {
 
     async useradslistbyads(adsID: Types.ObjectId) {
 
-        const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+
         const query = await this.userAdsModel.aggregate([
 
             {
@@ -129,7 +129,7 @@ export class UserAdsService {
                 }
             }, {
                 $lookup: {
-                    from: 'mediaprofilepicts2',
+                    from: 'mediaprofilepicts',
                     localField: 'profilpictid',
                     foreignField: '_id',
                     as: 'profilePict_data',

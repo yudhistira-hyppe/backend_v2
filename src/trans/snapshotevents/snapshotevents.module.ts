@@ -9,10 +9,10 @@ import { Snapshotevents, SnapshoteventsSchema } from './schemas/snapshotevents.s
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Snapshotevents.name, schema: SnapshoteventsSchema }],'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Snapshotevents.name, schema: SnapshoteventsSchema }], 'SERVER_FULL')
     ],
     controllers: [SnapshoteventsController],
     providers: [SnapshoteventsService],
 
 })
-export class SnapshoteventsModule {}
+export class SnapshoteventsModule { }

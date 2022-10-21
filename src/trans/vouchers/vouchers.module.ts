@@ -10,7 +10,7 @@ import { SettingsModule } from '../settings/settings.module';
 
     imports: [
         ConfigModule.forRoot(), UserbasicsModule, SettingsModule,
-        MongooseModule.forFeature([{ name: Vouchers.name, schema: VouchersSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Vouchers.name, schema: VouchersSchema }], 'SERVER_FULL')
     ],
     controllers: [VouchersController],
     providers: [VouchersService],

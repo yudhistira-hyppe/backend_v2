@@ -8,10 +8,10 @@ import { Disquscontacts, DisquscontactsSchema } from './schemas/disquscontacts.s
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Disquscontacts.name, schema: DisquscontactsSchema }],'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Disquscontacts.name, schema: DisquscontactsSchema }], 'SERVER_FULL')
     ],
     controllers: [DisquscontactsController],
     providers: [DisquscontactsService],
     exports: [DisquscontactsService],
 })
-export class DisquscontactsModule {}
+export class DisquscontactsModule { }

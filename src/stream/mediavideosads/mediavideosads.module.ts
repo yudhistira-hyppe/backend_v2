@@ -11,7 +11,7 @@ import { SeaweedfsModule } from '../../stream/seaweedfs/seaweedfs.module';
     imports: [
         SeaweedfsModule,
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Mediavideosads.name, schema: MediavideosadsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Mediavideosads.name, schema: MediavideosadsSchema }], 'SERVER_FULL')
     ],
     controllers: [MediavideosadsController],
     providers: [MediavideosadsService],

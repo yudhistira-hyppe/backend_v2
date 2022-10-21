@@ -9,10 +9,10 @@ import { Mediastories, MediastoriesSchema } from './schemas/mediastories.schema'
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Mediastories.name, schema: MediastoriesSchema }],'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Mediastories.name, schema: MediastoriesSchema }], 'SERVER_FULL')
     ],
     controllers: [MediastoriesController],
     providers: [MediastoriesService],
     exports: [MediastoriesService],
 })
-export class MediastoriesModule {}
+export class MediastoriesModule { }

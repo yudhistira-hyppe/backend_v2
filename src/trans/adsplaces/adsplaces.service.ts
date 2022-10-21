@@ -7,7 +7,7 @@ import { Adsplaces, AdsplacesDocument } from './schemas/adsplaces.schema';
 @Injectable()
 export class AdsplacesService {
     constructor(
-        @InjectModel(Adsplaces.name, 'SERVER_TRANS')
+        @InjectModel(Adsplaces.name, 'SERVER_FULL')
         private readonly adsplacesModel: Model<AdsplacesDocument>,
     ) { }
 

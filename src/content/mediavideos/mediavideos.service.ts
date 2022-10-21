@@ -7,7 +7,7 @@ import { Mediavideos, MediavideosDocument } from './schemas/mediavideos.schema';
 @Injectable()
 export class MediavideosService {
   constructor(
-    @InjectModel(Mediavideos.name, 'SERVER_CONTENT')
+    @InjectModel(Mediavideos.name, 'SERVER_FULL')
     private readonly MediavideosModel: Model<MediavideosDocument>,
   ) { }
 
@@ -35,7 +35,7 @@ export class MediavideosService {
 
   async findByIds(ids: string[]): Promise<Mediavideos[]> {
     return this.MediavideosModel.find().where('_id').in(ids).exec();
-  }  
+  }
 
   async findOnepostID(id: string): Promise<Mediavideos> {
     return this.MediavideosModel.findOne({ postID: id }).exec();
@@ -47,7 +47,7 @@ export class MediavideosService {
     }).exec();
     return deletedCat;
   }
-  
+
   async findvideo() {
     const query = await this.MediavideosModel.aggregate([
 

@@ -10,7 +10,7 @@ import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediapr
 @Module({
     imports: [
         ConfigModule.forRoot(), AdsModule, MediaprofilepictsModule,
-        MongooseModule.forFeature([{ name: UserAds.name, schema: UserAdsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: UserAds.name, schema: UserAdsSchema }], 'SERVER_FULL')
     ],
     controllers: [UserAdsController],
     exports: [UserAdsService],

@@ -7,9 +7,9 @@ import { Reactionsrepo, ReactionsrepoDocument } from './schemas/reactionsrepo.sc
 @Injectable()
 export class ReactionsRepoService {
   constructor(
-    @InjectModel(Reactionsrepo.name, 'SERVER_INFRA')
+    @InjectModel(Reactionsrepo.name, 'SERVER_FULL')
     private readonly ReactionsrepoModel: Model<ReactionsrepoDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateReactionsrepoDto: CreateReactionsrepoDto,
@@ -20,12 +20,12 @@ export class ReactionsRepoService {
     return createReactionsrepoDto;
   }
 
-  async findCriteria(pageNumber:number,pageRow:number,search:string) {
+  async findCriteria(pageNumber: number, pageRow: number, search: string) {
     var perPage = pageRow
-  , page = Math.max(0, pageNumber);
+      , page = Math.max(0, pageNumber);
     var where = {};
-    if(search!=undefined){
-      where['iconName'] = {$regex: search,  $options: "i"};
+    if (search != undefined) {
+      where['iconName'] = { $regex: search, $options: "i" };
     }
     const query = await this.ReactionsrepoModel.find(where).limit(perPage).skip(perPage * page).sort({ iconName: 'asc' });
     return query;

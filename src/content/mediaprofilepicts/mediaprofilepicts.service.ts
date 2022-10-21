@@ -7,7 +7,7 @@ import { Mediaprofilepicts, MediaprofilepictsDocument } from './schemas/mediapro
 @Injectable()
 export class MediaprofilepictsService {
   constructor(
-    @InjectModel(Mediaprofilepicts.name, 'SERVER_CONTENT')
+    @InjectModel(Mediaprofilepicts.name, 'SERVER_FULL')
     private readonly MediaprofilepictsModel: Model<MediaprofilepictsDocument>,
   ) { }
 

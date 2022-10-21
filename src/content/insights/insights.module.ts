@@ -9,11 +9,11 @@ import { Insights, InsightsSchema } from './schemas/insights.schema';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Insights.name, schema: InsightsSchema }],'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Insights.name, schema: InsightsSchema }], 'SERVER_FULL')
     ],
     controllers: [InsightsController],
     providers: [InsightsService],
     exports: [InsightsService],
 
 })
-export class InsightsModule {}
+export class InsightsModule { }

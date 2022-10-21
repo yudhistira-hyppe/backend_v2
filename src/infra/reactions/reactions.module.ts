@@ -7,11 +7,11 @@ import { Reactions, ReactionsSchema } from './schemas/reactions.schema';
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Reactions.name, schema: ReactionsSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Reactions.name, schema: ReactionsSchema }], 'SERVER_FULL')
     ],
     controllers: [ReactionsController],
     providers: [ReactionsService],
     exports: [ReactionsService],
 
 })
-export class ReactionsModule {}
+export class ReactionsModule { }

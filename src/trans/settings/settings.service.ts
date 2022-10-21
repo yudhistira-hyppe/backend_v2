@@ -7,7 +7,7 @@ import { Settings, SettingsDocument } from './schemas/settings.schema';
 @Injectable()
 export class SettingsService {
     constructor(
-        @InjectModel(Settings.name, 'SERVER_TRANS')
+        @InjectModel(Settings.name, 'SERVER_FULL')
         private readonly settingsModel: Model<SettingsDocument>,
     ) { }
 
@@ -24,7 +24,7 @@ export class SettingsService {
     }
 
     async findOneAndUpdate(jenis_: string, value_: any): Promise<Settings> {
-        return this.settingsModel.findOneAndUpdate({ jenis: jenis_ }, { value: value_ },{
+        return this.settingsModel.findOneAndUpdate({ jenis: jenis_ }, { value: value_ }, {
             new: true
         }).exec();
     }

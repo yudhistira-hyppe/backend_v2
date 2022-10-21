@@ -10,7 +10,7 @@ import { SeaweedfsService } from '../../stream/seaweedfs/seaweedfs.service';
 export class MediavideosadsService {
 
     constructor(
-        @InjectModel(Mediavideosads.name, 'SERVER_TRANS')
+        @InjectModel(Mediavideosads.name, 'SERVER_FULL')
         private readonly mediavideosadsModel: Model<MediavideosadsDocument>,
         private seaweedfsService: SeaweedfsService,
 

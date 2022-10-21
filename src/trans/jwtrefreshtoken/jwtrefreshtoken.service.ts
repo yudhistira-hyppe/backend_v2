@@ -10,10 +10,10 @@ import { Userbasic } from '../userbasics/schemas/userbasic.schema';
 @Injectable()
 export class JwtrefreshtokenService {
   constructor(
-    @InjectModel(Jwtrefreshtoken.name, 'SERVER_TRANS')
+    @InjectModel(Jwtrefreshtoken.name, 'SERVER_FULL')
     private readonly jwtrefreshtokenModel: Model<JwtrefreshtokenDocument>,
     private userauthsService: UserauthsService,
-  ) {}
+  ) { }
 
   async create(
     CreateJwtrefreshtokenDto: CreateJwtrefreshtokenDto,
@@ -65,7 +65,7 @@ export class JwtrefreshtokenService {
       data.exp = exp;
       data.iat = iat;
       data._class = 'io.melody.core.domain.JwtRefreshToken';
-       data.userAuth = {
+      data.userAuth = {
         $ref: 'userauths',
         $id: Object(data_user._id),
       };

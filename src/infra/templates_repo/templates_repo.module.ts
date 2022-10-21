@@ -7,10 +7,10 @@ import { TemplatesRepo, TemplatesRepoSchema } from './schemas/templatesrepo.sche
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: TemplatesRepo.name, schema: TemplatesRepoSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: TemplatesRepo.name, schema: TemplatesRepoSchema }], 'SERVER_FULL')
     ],
     controllers: [TemplatesRepoController],
     providers: [TemplatesRepoService],
     exports: [TemplatesRepoService],
 })
-export class TemplatesRepoModule {}
+export class TemplatesRepoModule { }

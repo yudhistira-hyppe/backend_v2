@@ -7,9 +7,9 @@ import { Templates, TemplatesDocument } from './schemas/templates.schema';
 @Injectable()
 export class TemplatesService {
   constructor(
-    @InjectModel(Templates.name, 'SERVER_INFRA')
+    @InjectModel(Templates.name, 'SERVER_FULL')
     private readonly TemplatesModel: Model<TemplatesDocument>,
-  ) {}
+  ) { }
 
   async create(CreateTemplatesDto: CreateTemplatesDto): Promise<Templates> {
     const createTemplatesDto = await this.TemplatesModel.create(

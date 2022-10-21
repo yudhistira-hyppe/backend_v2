@@ -9,7 +9,7 @@ import { ErrorHandler } from '../../utils/error.handler';
 @Injectable()
 export class DisquslogsService {
   constructor(
-    @InjectModel(Disquslogs.name, 'SERVER_CONTENT')
+    @InjectModel(Disquslogs.name, 'SERVER_FULL')
     private readonly DisquslogsModel: Model<DisquslogsDocument>,
     private utilsService: UtilsService,
     private errorHandler: ErrorHandler,
@@ -108,16 +108,16 @@ export class DisquslogsService {
     if (disqusID != undefined) {
       this.DisquslogsModel.updateMany(
         {
-        disqusID: disqusID,
+          disqusID: disqusID,
           sender: email
-      }, 
+        },
         { receiverActive: false }, function (err, docs) {
-        if (err) {
-          console.log('err'+err);
-        } else {
-          console.log('docs' + docs);
-        }
-      });
+          if (err) {
+            console.log('err' + err);
+          } else {
+            console.log('docs' + docs);
+          }
+        });
       this.DisquslogsModel.updateMany(
         {
           disqusID: disqusID,

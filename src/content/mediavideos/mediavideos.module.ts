@@ -9,10 +9,10 @@ import { Mediavideos, MediavideosSchema } from './schemas/mediavideos.schema';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Mediavideos.name, schema: MediavideosSchema }],'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Mediavideos.name, schema: MediavideosSchema }], 'SERVER_FULL')
     ],
     controllers: [MediavideosController],
     providers: [MediavideosService],
     exports: [MediavideosService],
 })
-export class MediavideosModule {}
+export class MediavideosModule { }

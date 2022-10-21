@@ -7,11 +7,11 @@ import { Eulas, EulasSchema } from './schemas/eulas.schema';
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Eulas.name, schema: EulasSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Eulas.name, schema: EulasSchema }], 'SERVER_FULL')
     ],
     controllers: [EulasController],
     providers: [EulasService],
     exports: [EulasService],
 
 })
-export class EulasModule {}
+export class EulasModule { }

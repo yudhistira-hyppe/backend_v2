@@ -8,10 +8,10 @@ import { Contentdailyqueues, ContentdailyqueuesSchema } from './schemas/contentd
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Contentdailyqueues.name, schema: ContentdailyqueuesSchema }],'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Contentdailyqueues.name, schema: ContentdailyqueuesSchema }], 'SERVER_FULL')
     ],
     controllers: [ContentdailyqueueController],
     providers: [ContentdailyqueueService],
     exports: [ContentdailyqueueService],
 })
-export class ContentdailyqueueModule {}
+export class ContentdailyqueueModule { }

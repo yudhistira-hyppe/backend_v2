@@ -7,11 +7,11 @@ import { Reactionsrepo, ReactionsrepoSchema } from './schemas/reactionsrepo.sche
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Reactionsrepo.name, schema: ReactionsrepoSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Reactionsrepo.name, schema: ReactionsrepoSchema }], 'SERVER_FULL')
     ],
     controllers: [ReactionsRepoController],
     providers: [ReactionsRepoService],
     exports: [ReactionsRepoService],
 
 })
-export class ReactionsRepoModule {}
+export class ReactionsRepoModule { }

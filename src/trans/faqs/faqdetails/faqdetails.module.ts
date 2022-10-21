@@ -12,7 +12,7 @@ import { FaqsModule } from '../../faqs/faqs.module';
     imports: [
 
         ConfigModule.forRoot(), UserbasicsModule, FaqsModule,
-        MongooseModule.forFeature([{ name: Faqdetails.name, schema: FaqdetailsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Faqdetails.name, schema: FaqdetailsSchema }], 'SERVER_FULL')
     ],
     controllers: [FaqdetailsController],
     exports: [FaqdetailsService],

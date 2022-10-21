@@ -8,10 +8,10 @@ import { Mediadiaries, MediadiariesSchema } from './schemas/mediadiaries.schema'
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Mediadiaries.name, schema: MediadiariesSchema }],'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Mediadiaries.name, schema: MediadiariesSchema }], 'SERVER_FULL')
     ],
     controllers: [MediadiariesController],
     providers: [MediadiariesService],
     exports: [MediadiariesService],
 })
-export class MediadiariesModule {}
+export class MediadiariesModule { }

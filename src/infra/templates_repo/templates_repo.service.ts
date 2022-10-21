@@ -7,9 +7,9 @@ import { TemplatesRepo, TemplatesRepoDocument } from './schemas/templatesrepo.sc
 @Injectable()
 export class TemplatesRepoService {
   constructor(
-    @InjectModel(TemplatesRepo.name, 'SERVER_INFRA')
+    @InjectModel(TemplatesRepo.name, 'SERVER_FULL')
     private readonly TemplatesRepoModel: Model<TemplatesRepoDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateTemplatesRepoDto: CreateTemplatesRepoDto,
@@ -34,7 +34,7 @@ export class TemplatesRepoService {
       return res[0];
     }
     return undefined;
-  }  
+  }
 
   async findTemplateCreatePostPdf(): Promise<TemplatesRepo> {
     let res = await this.TemplatesRepoModel.find().where('event', 'NOTIFY_POST').where('type', 'CREATE_POST').where('category', 'EMAIL_PDF').exec();
@@ -42,7 +42,7 @@ export class TemplatesRepoService {
       return res[0];
     }
     return undefined;
-  }    
+  }
 
   async delete(id: string) {
     const deletedCat = await this.TemplatesRepoModel.findByIdAndRemove({

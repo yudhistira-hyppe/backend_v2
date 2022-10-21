@@ -8,7 +8,7 @@ import { Adstypes, AdstypesDocument } from './schemas/adstypes.schema';
 export class AdstypesService {
 
     constructor(
-        @InjectModel(Adstypes.name, 'SERVER_TRANS')
+        @InjectModel(Adstypes.name, 'SERVER_FULL')
         private readonly adstypesModel: Model<AdstypesDocument>,
     ) { }
 

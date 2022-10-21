@@ -8,7 +8,7 @@ import { Adsplaces, AdsplacesSchema } from './schemas/adsplaces.schema';
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Adsplaces.name, schema: AdsplacesSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Adsplaces.name, schema: AdsplacesSchema }], 'SERVER_FULL')
     ],
     controllers: [AdsplacesController],
     providers: [AdsplacesService],

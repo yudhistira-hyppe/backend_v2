@@ -1479,6 +1479,7 @@ export class TransactionsController {
                                 datawithdraw.partnerTrxid = partnertrxid;
                                 datawithdraw.statusOtp = null;
                                 datawithdraw.totalamount = totalamount;
+                                datawithdraw.idAccountBank = idbankaccount;
                                 var datatr = await this.withdrawsService.create(datawithdraw);
                                 await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
 

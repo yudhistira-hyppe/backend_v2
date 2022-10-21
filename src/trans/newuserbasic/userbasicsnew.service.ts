@@ -7,7 +7,7 @@ import { Userbasic, UserbasicnewDocument } from './schemas/userbasicnew.schema';
 @Injectable()
 export class UserbasicsnewService {
   constructor(
-    @InjectModel(Userbasic.name, 'SERVER_TRANS')
+    @InjectModel(Userbasic.name, 'SERVER_FULL')
     private readonly userbasicModel: Model<UserbasicnewDocument>,
   ) { }
 

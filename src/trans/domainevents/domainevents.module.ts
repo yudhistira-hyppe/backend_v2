@@ -8,10 +8,10 @@ import { Domainevents, DomaineventsSchema } from './schemas/domainevents.schema'
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Domainevents.name, schema: DomaineventsSchema }],'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Domainevents.name, schema: DomaineventsSchema }], 'SERVER_FULL')
     ],
     controllers: [DomaineventsController],
     providers: [DomaineventsService],
     exports: [DomaineventsService],
 })
-export class DomaineventsModule {}
+export class DomaineventsModule { }

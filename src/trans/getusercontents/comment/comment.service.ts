@@ -11,7 +11,7 @@ import { DisquslogsService } from '../../../content/disquslogs/disquslogs.servic
 @Injectable()
 export class CommentService {
     constructor(
-        @InjectModel(Comment.name, 'SERVER_TRANS')
+        @InjectModel(Comment.name, 'SERVER_FULL')
         private readonly commentModel: Model<CommentDocument>,
         private readonly postsService: PostsService,
         private readonly disqusService: DisqusService,

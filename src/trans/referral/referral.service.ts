@@ -7,9 +7,9 @@ import { Referral, ReferralDocument } from './schemas/referral.schema';
 @Injectable()
 export class ReferralService {
   constructor(
-    @InjectModel(Referral.name, 'SERVER_TRANS')
+    @InjectModel(Referral.name, 'SERVER_FULL')
     private readonly referralModel: Model<ReferralDocument>,
-  ) {}
+  ) { }
 
   async create(CreateSagasDto: CreateReferralDto): Promise<Referral> {
     const createSagasDto = await this.referralModel.create(CreateSagasDto);
@@ -20,16 +20,16 @@ export class ReferralService {
     return this.referralModel.find().exec();
   }
 
-  async findAllByParentChildren(parent:string,children:string): Promise<Referral[]> {
-    return this.referralModel.find({ parent: parent,children: children}).exec();
+  async findAllByParentChildren(parent: string, children: string): Promise<Referral[]> {
+    return this.referralModel.find({ parent: parent, children: children }).exec();
   }
 
-  async findAllByParent(parent:string): Promise<Referral[]> {
-    return this.referralModel.find({ parent: parent,verified:true}).exec();
+  async findAllByParent(parent: string): Promise<Referral[]> {
+    return this.referralModel.find({ parent: parent, verified: true }).exec();
   }
 
-  async findAllByChildren(children:string): Promise<Referral[]> {
-    return this.referralModel.find({ children: children}).exec();
+  async findAllByChildren(children: string): Promise<Referral[]> {
+    return this.referralModel.find({ children: children }).exec();
   }
 
   async findbyparent(parent: string): Promise<Referral> {

@@ -48,24 +48,24 @@ export class CitiesService {
     return deletedCat;
   }
 
-  async findcities() {
-    const query = await this.citiesModel.aggregate([
+  // async findcities() {
+  //   const query = await this.citiesModel.aggregate([
 
-      {
-        $lookup: {
-          from: 'cities',
-          localField: 'cities.$id',
-          foreignField: '_id',
-          as: 'roless',
-        },
-      }, {
-        $out: {
-          db: 'hyppe_trans_db',
-          coll: 'cities2'
-        }
-      },
+  //     {
+  //       $lookup: {
+  //         from: 'cities',
+  //         localField: 'cities.$id',
+  //         foreignField: '_id',
+  //         as: 'roless',
+  //       },
+  //     }, {
+  //       $out: {
+  //         db: 'hyppe_trans_db',
+  //         coll: 'cities2'
+  //       }
+  //     },
 
-    ]);
-    return query;
-  }
+  //   ]);
+  //   return query;
+  // }
 }

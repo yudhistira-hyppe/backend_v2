@@ -12,7 +12,7 @@ import { GroupModuleModule } from '../../trans/usermanagement/groupmodule/groupm
         GroupModuleModule,
         UtilsModule,
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Activityevents.name, schema: ActivityeventsSchema }],'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Activityevents.name, schema: ActivityeventsSchema }], 'SERVER_FULL')
     ],
     controllers: [ActivityeventsController],
     providers: [ActivityeventsService],

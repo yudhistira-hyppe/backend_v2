@@ -8,7 +8,7 @@ import { Removedreasons, RemovedreasonsDocument } from './schemas/removedreasons
 export class RemovedreasonsService {
 
     constructor(
-        @InjectModel(Removedreasons.name, 'SERVER_TRANS')
+        @InjectModel(Removedreasons.name, 'SERVER_FULL')
         private readonly levelticketsModel: Model<RemovedreasonsDocument>,
     ) { }
 

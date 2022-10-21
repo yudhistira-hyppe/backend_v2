@@ -8,7 +8,7 @@ import { Oauthclientdetails, OauthclientdetailsSchema } from './schemas/oauthcli
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Oauthclientdetails.name, schema: OauthclientdetailsSchema }],'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Oauthclientdetails.name, schema: OauthclientdetailsSchema }], 'SERVER_FULL')
     ],
     controllers: [OauthclientdetailsController],
     providers: [OauthclientdetailsService],

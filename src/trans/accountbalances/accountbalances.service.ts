@@ -9,7 +9,7 @@ import { Accountbalances, AccountbalancesDocument } from './schemas/accountbalan
 export class AccountbalancesService {
 
     constructor(
-        @InjectModel(Accountbalances.name, 'SERVER_TRANS')
+        @InjectModel(Accountbalances.name, 'SERVER_FULL')
         private readonly accountbalancesModel: Model<AccountbalancesDocument>,
     ) { }
     async findOne(iduser: Types.ObjectId): Promise<Accountbalances> {

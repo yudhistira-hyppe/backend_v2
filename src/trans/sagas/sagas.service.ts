@@ -7,9 +7,9 @@ import { Sagas, SagasDocument } from './schemas/sagas.schema';
 @Injectable()
 export class SagasService {
   constructor(
-    @InjectModel(Sagas.name, 'SERVER_TRANS')
+    @InjectModel(Sagas.name, 'SERVER_FULL')
     private readonly sagasModel: Model<SagasDocument>,
-  ) {}
+  ) { }
 
   async create(CreateSagasDto: CreateSagasDto): Promise<Sagas> {
     const createSagasDto = await this.sagasModel.create(CreateSagasDto);

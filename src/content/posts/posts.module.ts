@@ -40,11 +40,11 @@ import { SettingsModule } from 'src/trans/settings/settings.module';
         UserplaylistModule,
         GroupModuleModule,
         UtilsModule,
-        ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
-        UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
-        MediapictsModule,MediadiariesModule,MediaprofilepictsModule,PostPlayModule,TemplatesRepoModule,DisqusModule
-        ,DisquslogsModule,SettingsModule,
-        MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
+        ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule, InterestsModule,
+        UserauthsModule, MediavideosModule, InsightsModule, ContenteventsModule, MediadiariesModule, MediastoriesModule,
+        MediapictsModule, MediadiariesModule, MediaprofilepictsModule, PostPlayModule, TemplatesRepoModule, DisqusModule
+        , DisquslogsModule, SettingsModule,
+        MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_FULL')
     ],
     controllers: [PostsController],
     providers: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService],

@@ -7,9 +7,9 @@ import { Reactions, ReactionsDocument } from './schemas/reactions.schema';
 @Injectable()
 export class ReactionsService {
   constructor(
-    @InjectModel(Reactions.name, 'SERVER_INFRA')
+    @InjectModel(Reactions.name, 'SERVER_FULL')
     private readonly ReactionsModel: Model<ReactionsDocument>,
-  ) {}
+  ) { }
 
   async create(CreateReactionsDto: CreateReactionsDto): Promise<Reactions> {
     const createReactionsDto = await this.ReactionsModel.create(

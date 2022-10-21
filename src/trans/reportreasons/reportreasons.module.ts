@@ -8,7 +8,7 @@ import { Reportreasons, ReportreasonsSchema } from './schemas/reportreasons.sche
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Reportreasons.name, schema: ReportreasonsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Reportreasons.name, schema: ReportreasonsSchema }], 'SERVER_FULL')
     ],
     controllers: [ReportreasonsController],
     providers: [ReportreasonsService],

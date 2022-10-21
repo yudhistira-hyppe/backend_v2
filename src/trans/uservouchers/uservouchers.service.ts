@@ -10,7 +10,7 @@ import { Uservouchers, UservouchersDocument } from './schemas/uservouchers.schem
 @Injectable()
 export class UservouchersService {
     constructor(
-        @InjectModel(Uservouchers.name, 'SERVER_TRANS')
+        @InjectModel(Uservouchers.name, 'SERVER_FULL')
         private readonly uservouchersModel: Model<UservouchersDocument>
 
     ) { }

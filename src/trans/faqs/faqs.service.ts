@@ -7,7 +7,7 @@ import { Faqs, FaqsDocument } from './schemas/faqs.schema';
 @Injectable()
 export class FaqService {
   constructor(
-    @InjectModel(Faqs.name, 'SERVER_TRANS')
+    @InjectModel(Faqs.name, 'SERVER_FULL')
     private readonly faqsModel: Model<FaqsDocument>,
 
   ) { }

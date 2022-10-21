@@ -10,7 +10,7 @@ import { UserbasicsModule } from '../userbasics/userbasics.module';
     imports: [
 
         ConfigModule.forRoot(), UserbasicsModule,
-        MongooseModule.forFeature([{ name: Announcements.name, schema: AnnouncementsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Announcements.name, schema: AnnouncementsSchema }], 'SERVER_FULL')
     ],
     controllers: [AnnouncementsController],
     exports: [AnnouncementsService],

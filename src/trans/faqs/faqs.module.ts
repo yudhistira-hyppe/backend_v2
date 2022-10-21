@@ -11,7 +11,7 @@ import { UserbasicsModule } from '../userbasics/userbasics.module';
     imports: [
 
         ConfigModule.forRoot(), UserbasicsModule,
-        MongooseModule.forFeature([{ name: Faqs.name, schema: FaqsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Faqs.name, schema: FaqsSchema }], 'SERVER_FULL')
     ],
     controllers: [FaqsController],
     exports: [FaqService],

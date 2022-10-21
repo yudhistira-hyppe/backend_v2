@@ -419,11 +419,11 @@ export class UserbasicsService {
   }
 
   async getinterest(email: string, langIso: string, pageNumber: number, pageRow: number, search: string): Promise<object> {
-    const interes = await this.interestsRepoService.findinterst();
+
     const query = await this.userbasicModel.aggregate([
       {
         $lookup: {
-          from: "interests_repo2",
+          from: "interests_repo",
           localField: "userInterests.$id",
           foreignField: "_id",
           as: "field"
@@ -501,8 +501,7 @@ export class UserbasicsService {
   }
 
   async kycList(startDate: String, endDate: String, search: String, skip: number, limit: number) {
-    const mediaproofpictsService = await this.mediaproofpictsService.findmediaproofpicts();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+
     var date_range_match = {};
     var startDate_format = null;
     var endDate_format = null;
@@ -533,7 +532,7 @@ export class UserbasicsService {
       },
       {
         $lookup: {
-          from: "mediaproofpicts2",
+          from: "mediaproofpicts",
           localField: "id_mediaproofpicts",
           foreignField: "_id",
           as: "mediaproofpicts"
@@ -542,7 +541,7 @@ export class UserbasicsService {
 
       {
         $lookup: {
-          from: 'mediaprofilepicts2',
+          from: 'mediaprofilepicts',
           localField: 'id_mediaprofilepicts',
           foreignField: '_id',
           as: 'mediaprofilepicts',

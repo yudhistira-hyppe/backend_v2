@@ -7,9 +7,9 @@ import { Domainevents, DomaineventsDocument } from './schemas/domainevents.schem
 @Injectable()
 export class DomaineventsService {
   constructor(
-    @InjectModel(Domainevents.name, 'SERVER_TRANS')
+    @InjectModel(Domainevents.name, 'SERVER_FULL')
     private readonly domaineventsModel: Model<DomaineventsDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateDomaineventsDto: CreateDomaineventsDto,

@@ -8,7 +8,7 @@ import { Logapsaras, LogapsarasDocument } from './schemas/logapsaras.schema';
 export class LogapsarasService {
 
     constructor(
-        @InjectModel(Logapsaras.name, 'SERVER_TRANS')
+        @InjectModel(Logapsaras.name, 'SERVER_FULL')
         private readonly logapsarasModel: Model<LogapsarasDocument>,
     ) { }
 

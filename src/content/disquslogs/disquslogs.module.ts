@@ -10,10 +10,10 @@ import { UtilsModule } from '../../utils/utils.module';
     imports: [
         UtilsModule,
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Disquslogs.name, schema: DisquslogsSchema }],'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Disquslogs.name, schema: DisquslogsSchema }], 'SERVER_FULL')
     ],
     controllers: [DisquslogsController],
     providers: [DisquslogsService],
     exports: [DisquslogsService],
 })
-export class DisquslogsModule {}
+export class DisquslogsModule { }

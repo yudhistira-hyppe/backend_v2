@@ -7,9 +7,9 @@ import { Interests, InterestsDocument } from './schemas/interests.schema';
 @Injectable()
 export class InterestsService {
   constructor(
-    @InjectModel(Interests.name, 'SERVER_INFRA')
+    @InjectModel(Interests.name, 'SERVER_FULL')
     private readonly interestsModel: Model<InterestsDocument>,
-  ) {}
+  ) { }
 
   async create(CreateInterestsDto: CreateInterestsDto): Promise<Interests> {
     const createInterestsDto = await this.interestsModel.create(
@@ -41,7 +41,7 @@ export class InterestsService {
       {
         $out: {
           db: 'hyppe_trans_db',
-          coll: 'interests_repo2',
+          coll: 'interests_repo',
         },
       },
     ]);
@@ -54,7 +54,7 @@ export class InterestsService {
 
   async findByName(name: string): Promise<Interests> {
     return this.interestsModel.findOne({ interestName: name }).exec();
-  }  
+  }
 
   async delete(id: string) {
     const deletedCat = await this.interestsModel

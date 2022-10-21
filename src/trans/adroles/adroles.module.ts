@@ -7,11 +7,11 @@ import { ConfigModule } from '@nestjs/config';
 import { Adroles, AdrolesSchema } from './schemas/adroles.schema';
 
 @Module({
-    imports: [
-        ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Adroles.name, schema: AdrolesSchema }],'SERVER_TRANS')
-    ],
+  imports: [
+    ConfigModule.forRoot(),
+    MongooseModule.forFeature([{ name: Adroles.name, schema: AdrolesSchema }], 'SERVER_FULL')
+  ],
   controllers: [AdrolesController],
   providers: [AdrolesService]
 })
-export class AdrolesModule {}
+export class AdrolesModule { }

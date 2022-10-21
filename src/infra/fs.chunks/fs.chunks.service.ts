@@ -6,9 +6,9 @@ import { Fschunks, FschunksDocument } from './schemas/fs.chunks.schema';
 @Injectable()
 export class FsChunksService {
   constructor(
-    @InjectModel(Fschunks.name, 'SERVER_INFRA')
+    @InjectModel(Fschunks.name, 'SERVER_FULL')
     private readonly fschunksModel: Model<FschunksDocument>,
-  ) {}
+  ) { }
 
   async create(CreateFschunksDto: CreateFschunksDto): Promise<Fschunks> {
     const createFschunksDto = await this.fschunksModel.create(

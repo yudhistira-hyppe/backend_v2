@@ -7,9 +7,9 @@ import { Adroles, AdrolesDocument } from './schemas/adroles.schema';
 @Injectable()
 export class AdrolesService {
   constructor(
-    @InjectModel(Adroles.name, 'SERVER_TRANS')
+    @InjectModel(Adroles.name, 'SERVER_FULL')
     private readonly adrolesModel: Model<AdrolesDocument>,
-  ) {}
+  ) { }
 
   async create(CreateAdrolesDto: CreateAdrolesDto): Promise<Adroles> {
     const createSagasDto = await this.adrolesModel.create(CreateAdrolesDto);

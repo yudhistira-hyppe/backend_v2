@@ -7,9 +7,9 @@ import { Oauthclientdetails, OauthclientdetailsDocument } from './schemas/oauthc
 @Injectable()
 export class OauthclientdetailsService {
   constructor(
-    @InjectModel(Oauthclientdetails.name, 'SERVER_TRANS')
+    @InjectModel(Oauthclientdetails.name, 'SERVER_FULL')
     private readonly oauthclientdetailsModel: Model<OauthclientdetailsDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateOauthclientdetailsDto: CreateOauthclientdetailsDto,

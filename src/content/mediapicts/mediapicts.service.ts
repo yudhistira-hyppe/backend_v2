@@ -7,7 +7,7 @@ import { Mediapicts, MediapictsDocument } from './schemas/mediapicts.schema';
 @Injectable()
 export class MediapictsService {
   constructor(
-    @InjectModel(Mediapicts.name, 'SERVER_CONTENT')
+    @InjectModel(Mediapicts.name, 'SERVER_FULL')
     private readonly MediapictsModel: Model<MediapictsDocument>,
   ) { }
 

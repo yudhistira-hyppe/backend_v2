@@ -6,9 +6,9 @@ import { Documents, DocumentsDocument } from './schemas/documents.schema';
 @Injectable()
 export class DocumentsService {
   constructor(
-    @InjectModel(Documents.name, 'SERVER_INFRA')
+    @InjectModel(Documents.name, 'SERVER_FULL')
     private readonly documentsModel: Model<DocumentsDocument>,
-  ) {}
+  ) { }
 
   async create(CreateDocumentsDto: CreateDocumentsDto): Promise<Documents> {
     const createDocumentsDto = await this.documentsModel.create(
@@ -17,15 +17,15 @@ export class DocumentsService {
     return createDocumentsDto;
   }
 
-  async findCriteria(langIso:string,pageNumber:number,pageRow:number,search:string) {
+  async findCriteria(langIso: string, pageNumber: number, pageRow: number, search: string) {
     var perPage = pageRow
-  , page = Math.max(0, pageNumber);
+      , page = Math.max(0, pageNumber);
     var where = {};
-    if(langIso!=undefined){
+    if (langIso != undefined) {
       where['langIso'] = langIso;
     }
-    if(search!=undefined){
-      where['documentName'] = {$regex: search,  $options: "i"};
+    if (search != undefined) {
+      where['documentName'] = { $regex: search, $options: "i" };
     }
     const query = await this.documentsModel.find(where).limit(perPage).skip(perPage * page).sort({ documentName: 'asc' });
     return query;

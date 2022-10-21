@@ -8,10 +8,10 @@ import { Welcomenotes, WelcomenotesSchema } from './schemas/welcomenotes.schema'
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Welcomenotes.name, schema: WelcomenotesSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Welcomenotes.name, schema: WelcomenotesSchema }], 'SERVER_FULL')
     ],
     controllers: [WelcomenotesController],
     providers: [WelcomenotesService],
     exports: [WelcomenotesService],
 })
-export class WelcomenotesModule {}
+export class WelcomenotesModule { }

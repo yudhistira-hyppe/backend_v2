@@ -8,11 +8,11 @@ import { Sagas, SagasSchema } from './schemas/sagas.schema';
 
 @Module({
 
-    imports: [
-        ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Sagas.name, schema: SagasSchema }],'SERVER_TRANS')
-    ],
+  imports: [
+    ConfigModule.forRoot(),
+    MongooseModule.forFeature([{ name: Sagas.name, schema: SagasSchema }], 'SERVER_FULL')
+  ],
   controllers: [SagasController],
   providers: [SagasService]
 })
-export class SagasModule {}
+export class SagasModule { }

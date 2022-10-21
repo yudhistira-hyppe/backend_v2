@@ -7,7 +7,7 @@ import { Categorytickets, CategoryticketsDocument } from './schemas/categorytick
 @Injectable()
 export class CategoryticketsService {
     constructor(
-        @InjectModel(Categorytickets.name, 'SERVER_TRANS')
+        @InjectModel(Categorytickets.name, 'SERVER_FULL')
         private readonly categoryticketsModel: Model<CategoryticketsDocument>,
     ) { }
 

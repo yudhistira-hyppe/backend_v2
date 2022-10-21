@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
-import { GroupModuleDto } from './dto/groupmodule.dto'; 
+import { GroupModuleDto } from './dto/groupmodule.dto';
 import { GroupModule, GroupModuleDocument } from './schemas/groupmodule.schema';
 import { GroupService } from '../group/group.service';
 import { ModuleService } from '../module/module.service';
@@ -14,14 +14,14 @@ import { DomUtils } from 'htmlparser2';
 @Injectable()
 export class GroupModuleService {
     constructor(
-        @InjectModel(GroupModule.name, 'SERVER_TRANS')
+        @InjectModel(GroupModule.name, 'SERVER_FULL')
         private readonly moduleModel: Model<GroupModuleDocument>,
-        private readonly groupService: GroupService, 
+        private readonly groupService: GroupService,
         private readonly moduleService: ModuleService,
         private readonly utilsService: UtilsService,
         private readonly userbasicsService: UserbasicsService,
         private readonly errorHandler: ErrorHandler
-    ) {}
+    ) { }
 
     async create(GroupModuleDto: GroupModuleDto): Promise<GroupModule> {
         let data = await this.moduleModel.create(GroupModuleDto);
@@ -114,7 +114,7 @@ export class GroupModuleService {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed ceck permission, the user does not have a group',
             );
-        } 
+        }
 
         var data_module = await this.moduleService.findOnebyName(name_module);
         if (!(await this.utilsService.ceckData(data_module))) {
@@ -150,10 +150,10 @@ export class GroupModuleService {
                     permission = false;
                 }
             }
-        }else{
+        } else {
             permission = false;
         }
-        
+
         return permission;
     }
 }

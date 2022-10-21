@@ -8,10 +8,10 @@ import { Userdevice, UserdeviceSchema } from './schemas/userdevice.schema';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forFeature([{ name: Userdevice.name, schema: UserdeviceSchema }],'SERVER_TRANS')
+    MongooseModule.forFeature([{ name: Userdevice.name, schema: UserdeviceSchema }], 'SERVER_FULL')
   ],
   controllers: [UserdevicesController],
   exports: [UserdevicesService],
   providers: [UserdevicesService],
 })
-export class UserdevicesModule {}
+export class UserdevicesModule { }

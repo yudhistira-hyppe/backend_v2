@@ -53,25 +53,25 @@ export class AreasService {
       .exec();
     return deletedCat;
   }
-  async findarea() {
-    const query = await this.areasModel.aggregate([
+  // async findarea() {
+  //   const query = await this.areasModel.aggregate([
 
-      {
-        $lookup: {
-          from: 'areas',
-          localField: 'areas.$id',
-          foreignField: '_id',
-          as: 'roless',
-        },
-      }, {
-        $out: {
-          db: 'hyppe_trans_db',
-          coll: 'areas2'
-        }
-      },
+  //     {
+  //       $lookup: {
+  //         from: 'areas',
+  //         localField: 'areas.$id',
+  //         foreignField: '_id',
+  //         as: 'roless',
+  //       },
+  //     }, {
+  //       $out: {
+  //         db: 'hyppe_trans_db',
+  //         coll: 'areas2'
+  //       }
+  //     },
 
-    ]);
-    return query;
-  }
+  //   ]);
+  //   return query;
+  // }
 
 }

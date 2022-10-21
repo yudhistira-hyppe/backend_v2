@@ -9,10 +9,10 @@ import { Devicelog, DevicelogSchema } from './schemas/devicelog.schema';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Devicelog.name, schema: DevicelogSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Devicelog.name, schema: DevicelogSchema }], 'SERVER_FULL')
     ],
     controllers: [DevicelogController],
     providers: [DevicelogService],
     exports: [DevicelogService],
 })
-export class DevicelogModule {}
+export class DevicelogModule { }

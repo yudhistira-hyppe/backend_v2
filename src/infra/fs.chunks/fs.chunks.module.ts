@@ -8,10 +8,10 @@ import { Fschunks, FschunksSchema } from './schemas/fs.chunks.schema';
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Fschunks.name, schema: FschunksSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Fschunks.name, schema: FschunksSchema }], 'SERVER_FULL')
     ],
     controllers: [FsChunksController],
     providers: [FsChunksService],
     exports: [FsChunksService],
 })
-export class FsChunksModule {}
+export class FsChunksModule { }

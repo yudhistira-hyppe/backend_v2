@@ -8,7 +8,7 @@ import { Group, GroupDocument } from './schemas/group.schema';
 @Injectable()
 export class GroupService {
     constructor(
-        @InjectModel(Group.name, 'SERVER_TRANS')
+        @InjectModel(Group.name, 'SERVER_FULL')
         private readonly groupModel: Model<GroupDocument>
     ) { }
 

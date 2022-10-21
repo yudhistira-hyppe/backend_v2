@@ -37,7 +37,7 @@ export class PostsService {
 
   constructor(
     @InjectQueue('post-user-playlist') private generateUserPlaylistqueue: Queue,
-    @InjectModel(Posts.name, 'SERVER_CONTENT')
+    @InjectModel(Posts.name, 'SERVER_FULL')
     private readonly PostsModel: Model<PostsDocument>,
     private getuserprofilesService: GetuserprofilesService,
     private userService: UserbasicsService,
@@ -79,7 +79,7 @@ export class PostsService {
 
   async findUserPost(email: string): Promise<number> {
     return this.PostsModel.where('email', email).where('active', true).count();
-  }  
+  }
 
   async findByPostId(postID: string): Promise<Posts> {
     return this.PostsModel.findOne({ postID: postID }).exec();

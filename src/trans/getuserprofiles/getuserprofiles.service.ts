@@ -49,13 +49,7 @@ export class GetuserprofilesService {
 
 
   async findUserDetailbyEmail(email: string) {
-    // const countries = await this.countriesService.findcountries();
-    // const cities = await this.citiesService.findcities();
-    // const areas = await this.areasService.findarea();
-    // const languanges = await this.languagesService.findlanguanges();
-    // const insight = await this.insightsService.findinsight();
-    // const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    // const interes = await this.interestsRepoService.findinterst();
+
 
     const query = await this.getuserprofilesModel.aggregate([
 
@@ -272,7 +266,7 @@ export class GetuserprofilesService {
   }
 
   async findUser(username: string, skip: number, limit: number) {
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+
 
     const query = await this.getuserprofilesModel.aggregate([
       {
@@ -415,7 +409,7 @@ export class GetuserprofilesService {
     return query;
   }
   async getUserHyppe(searchemail: string, search: string, skip: number, limit: number, groupId: string) {
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+
     var groupId_match = {};
     if (groupId != "") {
       groupId_match = { 'group_userbasics._id': new ObjectId(groupId) }
@@ -549,7 +543,7 @@ export class GetuserprofilesService {
   }
 
   async countUserHyppe(searchemail: string, search: string) {
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+
     const query = await this.getuserprofilesModel.aggregate([
       {
         $addFields: {
@@ -669,13 +663,7 @@ export class GetuserprofilesService {
   }
 
   async findUserDetail(username: string, skip: number, limit: number) {
-    // const countries = await this.countriesService.findcountries();
-    // const cities = await this.citiesService.findcities();
-    // const areas = await this.areasService.findarea();
-    // const languanges = await this.languagesService.findlanguanges();
-    // const insight = await this.insightsService.findinsight();
-    // const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    // const interes = await this.interestsRepoService.findinterst();
+
 
     const query = await this.getuserprofilesModel.aggregate([
 
@@ -77572,13 +77560,6 @@ export class GetuserprofilesService {
   }
 
   async findUserDetailCount(username: string) {
-    const countries = await this.countriesService.findcountries();
-    const cities = await this.citiesService.findcities();
-    const areas = await this.areasService.findarea();
-    const languanges = await this.languagesService.findlanguanges();
-    const insight = await this.insightsService.findinsight();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const interes = await this.interestsRepoService.findinterst();
 
     const query = await this.getuserprofilesModel.aggregate([
 

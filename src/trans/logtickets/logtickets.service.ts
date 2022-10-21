@@ -8,7 +8,7 @@ import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediap
 export class LogticketsService {
 
     constructor(
-        @InjectModel(Logtickets.name, 'SERVER_TRANS')
+        @InjectModel(Logtickets.name, 'SERVER_FULL')
         private readonly logticketsModel: Model<LogticketsDocument>, private readonly mediaprofilepictsService: MediaprofilepictsService,
     ) { }
     async findAll(): Promise<Logtickets[]> {

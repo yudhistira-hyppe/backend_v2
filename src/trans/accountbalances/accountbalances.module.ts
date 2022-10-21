@@ -10,7 +10,7 @@ import { UserbasicsModule } from '../userbasics/userbasics.module';
     imports: [
 
         ConfigModule.forRoot(), UserbasicsModule,
-        MongooseModule.forFeature([{ name: Accountbalances.name, schema: AccountbalancesSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Accountbalances.name, schema: AccountbalancesSchema }], 'SERVER_FULL')
     ],
     controllers: [AccountbalancesController],
     exports: [AccountbalancesService],

@@ -9,7 +9,7 @@ import { Adstypes, AdstypesSchema } from './schemas/adstypes.schema';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Adstypes.name, schema: AdstypesSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Adstypes.name, schema: AdstypesSchema }], 'SERVER_FULL')
     ],
     controllers: [AdstypesController],
     providers: [AdstypesService],

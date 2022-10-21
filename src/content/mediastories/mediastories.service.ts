@@ -7,7 +7,7 @@ import { Mediastories, MediastoriesDocument } from './schemas/mediastories.schem
 @Injectable()
 export class MediastoriesService {
   constructor(
-    @InjectModel(Mediastories.name, 'SERVER_CONTENT')
+    @InjectModel(Mediastories.name, 'SERVER_FULL')
     private readonly MediastoriesModel: Model<MediastoriesDocument>,
   ) { }
 

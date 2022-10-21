@@ -19,7 +19,7 @@ import { LogticketsModule } from '../logtickets/logtickets.module';
     imports: [
 
         UserbasicsModule, MediaprofilepictsModule, UtilsModule, SeaweedfsModule, NestjsFormDataModule, ConfigService, SettingsModule, LogticketsModule, UserauthsModule, ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Usertickets.name, schema: UserticketsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Usertickets.name, schema: UserticketsSchema }], 'SERVER_FULL')
     ],
     controllers: [UserticketsController],
     exports: [UserticketsService],

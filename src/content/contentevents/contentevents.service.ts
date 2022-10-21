@@ -8,7 +8,7 @@ import { Contentevents, ContenteventsDocument } from './schemas/contentevents.sc
 @Injectable()
 export class ContenteventsService {
   constructor(
-    @InjectModel(Contentevents.name, 'SERVER_CONTENT')
+    @InjectModel(Contentevents.name, 'SERVER_FULL')
     private readonly ContenteventsModel: Model<ContenteventsDocument>,
   ) { }
 
@@ -86,21 +86,23 @@ export class ContenteventsService {
 
   async findSenderOrReceiverByPostID(postID: string, eventType: string, email: string, receiverParty: string): Promise<Contentevents> {
     return await this.ContenteventsModel.findOne({ postID: postID, eventType: eventType, email: email, receiverParty: receiverParty }).exec();
-  } 
+  }
 
   async findSenderOrReceiver(eventType: string, email: string, receiverParty: string): Promise<Contentevents> {
     return await this.ContenteventsModel.findOne(
-      { $and: 
-        [
-          { eventType: eventType }, 
-          { email: email }, 
-          { $or: 
-            [
-              { receiverParty: receiverParty }, 
-              { senderParty: receiverParty }
-            ] 
-          }
-        ] 
+      {
+        $and:
+          [
+            { eventType: eventType },
+            { email: email },
+            {
+              $or:
+                [
+                  { receiverParty: receiverParty },
+                  { senderParty: receiverParty }
+                ]
+            }
+          ]
       }).exec();
   }
 

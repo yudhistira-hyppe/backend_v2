@@ -7,9 +7,9 @@ import { Welcomenotes, WelcomenotesDocument } from './schemas/welcomenotes.schem
 @Injectable()
 export class WelcomenotesService {
   constructor(
-    @InjectModel(Welcomenotes.name, 'SERVER_INFRA')
+    @InjectModel(Welcomenotes.name, 'SERVER_FULL')
     private readonly WelcomenotesModel: Model<WelcomenotesDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateWelcomenotesDto: CreateWelcomenotesDto,
@@ -20,14 +20,14 @@ export class WelcomenotesService {
     return createWelcomenotesDto;
   }
 
-  async findCriteria(langIso:string,countryCode:string,pageNumber:number,pageRow:number) {
+  async findCriteria(langIso: string, countryCode: string, pageNumber: number, pageRow: number) {
     var perPage = pageRow
-  , page = Math.max(0, pageNumber);
+      , page = Math.max(0, pageNumber);
     var where = {};
-    if(langIso!=undefined){
+    if (langIso != undefined) {
       where['langIso'] = langIso;
     }
-    if(langIso!=undefined){
+    if (langIso != undefined) {
       where['countryCode'] = countryCode;
     }
     const query = await this.WelcomenotesModel.find(where).limit(perPage).skip(perPage * page).sort({ langIso: 'asc' });

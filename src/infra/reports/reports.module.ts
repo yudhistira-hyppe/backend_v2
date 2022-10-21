@@ -9,10 +9,10 @@ import { Reports, ReportsSchema } from './schemas/reports.schema';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Reports.name, schema: ReportsSchema }],'SERVER_INFRA')
+        MongooseModule.forFeature([{ name: Reports.name, schema: ReportsSchema }], 'SERVER_FULL')
     ],
     controllers: [ReportsController],
     providers: [ReportsService],
     exports: [ReportsService],
 })
-export class ReportsModule {}
+export class ReportsModule { }

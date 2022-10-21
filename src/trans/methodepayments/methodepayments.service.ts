@@ -8,7 +8,7 @@ import { Methodepayments, MethodepaymentsDocument } from './schemas/methodepayme
 export class MethodepaymentsService {
 
     constructor(
-        @InjectModel(Methodepayments.name, 'SERVER_TRANS')
+        @InjectModel(Methodepayments.name, 'SERVER_FULL')
         private readonly methodepaymentsModel: Model<Methodepayments>,
     ) { }
 

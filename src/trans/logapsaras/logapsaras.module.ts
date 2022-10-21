@@ -9,7 +9,7 @@ import { Logapsaras, LogapsarasSchema } from './schemas/logapsaras.schema';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Logapsaras.name, schema: LogapsarasSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Logapsaras.name, schema: LogapsarasSchema }], 'SERVER_FULL')
     ],
     controllers: [LogapsarasController],
     providers: [LogapsarasService],

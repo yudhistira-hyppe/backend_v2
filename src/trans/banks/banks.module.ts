@@ -7,7 +7,7 @@ import { Banks, BanksSchema } from './schemas/banks.schema';
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Banks.name, schema: BanksSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Banks.name, schema: BanksSchema }], 'SERVER_FULL')
     ],
     controllers: [BanksController],
     providers: [BanksService],

@@ -11,7 +11,7 @@ import { ObjectID } from 'bson';
 export class AdsService {
     private readonly logger = new Logger(AdsService.name);
     constructor(
-        @InjectModel(Ads.name, 'SERVER_TRANS')
+        @InjectModel(Ads.name, 'SERVER_FULL')
         private readonly adsModel: Model<AdsDocument>,
         private utilService: UtilsService,
         private readonly postsService: PostsService,

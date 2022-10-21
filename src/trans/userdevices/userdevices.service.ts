@@ -7,7 +7,7 @@ import { Userdevice, UserdeviceDocument } from './schemas/userdevice.schema';
 @Injectable()
 export class UserdevicesService {
   constructor(
-    @InjectModel(Userdevice.name, 'SERVER_TRANS')
+    @InjectModel(Userdevice.name, 'SERVER_FULL')
     private readonly userdeviceModel: Model<UserdeviceDocument>,
   ) { }
 

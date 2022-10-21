@@ -8,7 +8,7 @@ import { Mediaimageads, MediaimageadsSchema } from './schemas/mediaimageads.sche
 @Module({
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Mediaimageads.name, schema: MediaimageadsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Mediaimageads.name, schema: MediaimageadsSchema }], 'SERVER_FULL')
     ],
     controllers: [MediaimageadsController],
     providers: [MediaimageadsService],

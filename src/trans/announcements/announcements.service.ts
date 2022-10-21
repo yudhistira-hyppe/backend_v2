@@ -7,7 +7,7 @@ import { Announcements, AnnouncementsDocument } from './schemas/announcement.sch
 @Injectable()
 export class AnnouncementsService {
     constructor(
-        @InjectModel(Announcements.name, 'SERVER_TRANS')
+        @InjectModel(Announcements.name, 'SERVER_FULL')
         private readonly announcementsDocumentModel: Model<AnnouncementsDocument>,
 
     ) { }

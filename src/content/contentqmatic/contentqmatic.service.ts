@@ -7,9 +7,9 @@ import { Contentqmatic, ContentqmaticDocument } from './schemas/contentqmatic.sc
 @Injectable()
 export class ContentqmaticService {
   constructor(
-    @InjectModel(Contentqmatic.name, 'SERVER_CONTENT')
+    @InjectModel(Contentqmatic.name, 'SERVER_FULL')
     private readonly ContentqmaticModel: Model<ContentqmaticDocument>,
-  ) {}
+  ) { }
 
   async create(
     CreateContentqmaticDto: CreateContentqmaticDto,

@@ -13,11 +13,11 @@ import { UserauthsModule } from '../userauths/userauths.module';
     UserauthsModule,
     UserbasicsModule,
     ConfigModule.forRoot(),
-    MongooseModule.forFeature([{ name: Jwtrefreshtoken.name, schema: JwtrefreshtokenSchema }],'SERVER_TRANS')
-],
-controllers: [JwtrefreshtokenController],
-providers: [JwtrefreshtokenService],
-exports: [JwtrefreshtokenService],
+    MongooseModule.forFeature([{ name: Jwtrefreshtoken.name, schema: JwtrefreshtokenSchema }], 'SERVER_FULL')
+  ],
+  controllers: [JwtrefreshtokenController],
+  providers: [JwtrefreshtokenService],
+  exports: [JwtrefreshtokenService],
 
 })
-export class JwtrefreshtokenModule {}
+export class JwtrefreshtokenModule { }

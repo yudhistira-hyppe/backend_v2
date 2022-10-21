@@ -8,7 +8,7 @@ import { ObjectId } from 'mongodb';
 @Injectable()
 export class UserbankaccountsService {
     constructor(
-        @InjectModel(Userbankaccounts.name, 'SERVER_TRANS')
+        @InjectModel(Userbankaccounts.name, 'SERVER_FULL')
         private readonly userbankaccountsModel: Model<UserbankaccountsDocument>,
     ) { }
 

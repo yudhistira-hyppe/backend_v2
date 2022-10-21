@@ -8,10 +8,10 @@ import { Languages, LanguagesSchema } from './schemas/languages.schema';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forFeature([{ name: Languages.name, schema: LanguagesSchema }],'SERVER_INFRA')
-],
-controllers: [LanguagesController],
-providers: [LanguagesService],
-exports: [LanguagesService],
+    MongooseModule.forFeature([{ name: Languages.name, schema: LanguagesSchema }], 'SERVER_FULL')
+  ],
+  controllers: [LanguagesController],
+  providers: [LanguagesService],
+  exports: [LanguagesService],
 })
-export class LanguagesModule {}
+export class LanguagesModule { }

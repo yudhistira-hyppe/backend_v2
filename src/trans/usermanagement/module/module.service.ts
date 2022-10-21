@@ -8,9 +8,9 @@ import { Module, ModuleDocument } from './schemas/module.schema';
 @Injectable()
 export class ModuleService {
     constructor(
-        @InjectModel(Module.name, 'SERVER_TRANS')
+        @InjectModel(Module.name, 'SERVER_FULL')
         private readonly moduleModel: Model<ModuleDocument>,
-    ) {}
+    ) { }
 
     async create(ModuleDto: ModuleDto): Promise<Module> {
         console.log(ModuleDto);
@@ -21,7 +21,7 @@ export class ModuleService {
         return data;
     }
 
-    async findAll(search:string, skip: number, limit:number): Promise<Module[]> {
+    async findAll(search: string, skip: number, limit: number): Promise<Module[]> {
         var GetModule = this.moduleModel.aggregate([
             {
                 "$match": {

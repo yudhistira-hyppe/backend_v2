@@ -14,7 +14,7 @@ import { GroupModuleModule } from '../../trans/usermanagement/groupmodule/groupm
         GroupModuleModule,
         UtilsModule,
         ConfigModule.forRoot(), MediadiariesModule, MediavideosModule, MediastoriesModule,
-        MongooseModule.forFeature([{ name: Mediapicts.name, schema: MediapictsSchema }], 'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Mediapicts.name, schema: MediapictsSchema }], 'SERVER_FULL')
     ],
     controllers: [MediapictsController],
     providers: [MediapictsService],

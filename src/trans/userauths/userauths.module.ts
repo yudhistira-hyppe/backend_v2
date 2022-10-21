@@ -9,11 +9,12 @@ import { Userauth, UserauthSchema } from './schemas/userauth.schema';
 
     imports: [
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Userauth.name, schema: UserauthSchema }],'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Userauth.name, schema: UserauthSchema }], 'SERVER_FULL')
     ],
-controllers: [UserauthsController],
-providers: [UserauthsService],
-exports: [UserauthsService],})
+    controllers: [UserauthsController],
+    providers: [UserauthsService],
+    exports: [UserauthsService],
+})
 export class UserauthsModule {
-    
+
 }

@@ -41,7 +41,7 @@ export class PostContentPlaylistService {
   private readonly logger = new Logger(PostContentPlaylistService.name);
 
   constructor(
-    @InjectModel(Posts.name, 'SERVER_CONTENT')
+    @InjectModel(Posts.name, 'SERVER_FULL')
     private readonly PostsModel: Model<PostsDocument>,
     private postService: PostsService,
     private userService: UserbasicsService,
@@ -57,7 +57,7 @@ export class PostContentPlaylistService {
     private profilePictService: MediaprofilepictsService,
     private postPlaylistService: PostPlaylistService,
     private postContentService: PostContentService,
-    private readonly configService: ConfigService, 
+    private readonly configService: ConfigService,
     private seaweedfsService: SeaweedfsService,
     private errorHandler: ErrorHandler,
   ) { }
@@ -82,16 +82,16 @@ export class PostContentPlaylistService {
     }
     if (body.pageRow != undefined) {
       row = body.pageRow;
-    }    
+    }
 
     let vids: string[] = [];
     let pics: string[] = [];
-    let user: string[] = [];    
+    let user: string[] = [];
 
-    let resVideo: PostData[] = [];        
-    let resPic: PostData[] = [];        
-    let resDiary: PostData[] = [];        
-    let resStory: PostData[] = [];        
+    let resVideo: PostData[] = [];
+    let resPic: PostData[] = [];
+    let resDiary: PostData[] = [];
+    let resStory: PostData[] = [];
 
     body.postType = 'vid';
     body.withExp = false;
@@ -100,7 +100,7 @@ export class PostContentPlaylistService {
     let ed = await this.utilService.getDateTimeDate();
     let gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPage >>> video stopwatch 1: ' + gap);
-    
+
     st = await this.utilService.getDateTimeDate();
     let pdv = await this.loadPostDataBulkV2(postVid, body, profile, vids, pics);
     ed = await this.utilService.getDateTimeDate();
@@ -116,33 +116,33 @@ export class PostContentPlaylistService {
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPage >>> pict stopwatch 1: ' + gap);
 
-    st = await this.utilService.getDateTimeDate();    
+    st = await this.utilService.getDateTimeDate();
     let pdp = await this.loadPostDataBulkV2(postPid, body, profile, vids, pics);
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
-    this.logger.log('getUserPostLandingPage >>> pict stopwatch 3: ' + gap);    
-    data.pict = pdp;    
+    this.logger.log('getUserPostLandingPage >>> pict stopwatch 3: ' + gap);
+    data.pict = pdp;
 
     body.postType = 'diary';
     let postDid = await this.postPlaylistService.doGetUserPostPlaylistV2(body, headers, profile);
     //let pd = await this.loadBulk(postDid, page, row);
     let pdd = await this.loadPostDataBulkV2(postDid, body, profile, vids, pics);
-    data.diary = pdd;        
+    data.diary = pdd;
 
     body.postType = 'story';
     body.withExp = true;
-    st = await this.utilService.getDateTimeDate();    
+    st = await this.utilService.getDateTimeDate();
     let postSid = await this.postPlaylistService.doGetUserPostPlaylistV2(body, headers, profile);
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPage >>> story stopwatch 1: ' + gap);
 
-    st = await this.utilService.getDateTimeDate();            
+    st = await this.utilService.getDateTimeDate();
     let pds = await this.loadPostDataBulkV2(postSid, body, profile, vids, pics);
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
-    this.logger.log('getUserPostLandingPage >>> story stopwatch 3: ' + gap);    
-    data.story = pds;            
+    this.logger.log('getUserPostLandingPage >>> story stopwatch 3: ' + gap);
+    data.story = pds;
 
 
     //check apsara
@@ -161,7 +161,7 @@ export class PostContentPlaylistService {
       if (o != undefined) {
         xpics.push(o);
       }
-    }    
+    }
 
     let vapsara = undefined;
     let papsara = undefined;
@@ -175,16 +175,16 @@ export class PostContentPlaylistService {
     }
 
     if (xpics.length > 0) {
-      st = await this.utilService.getDateTimeDate();    
-      papsara = await this.postContentService.getImageApsara(xpics);  
+      st = await this.utilService.getDateTimeDate();
+      papsara = await this.postContentService.getImageApsara(xpics);
       ed = await this.utilService.getDateTimeDate();
-      gap = ed.getTime() - st.getTime();      
+      gap = ed.getTime() - st.getTime();
       this.logger.log('getUserPostLandingPage >>> apsara image with : ' + xpics.length + " item is: " + gap);
     }
 
     if (vapsara != undefined) {
       if (pdv.length > 0) {
-        for(let i = 0; i < pdv.length; i++) {
+        for (let i = 0; i < pdv.length; i++) {
           let pdvv = pdv[i];
           for (let i = 0; i < vapsara.VideoList.length; i++) {
             let vi = vapsara.VideoList[i];
@@ -196,7 +196,7 @@ export class PostContentPlaylistService {
         }
       }
       if (pds.length > 0) {
-        for(let i = 0; i < pds.length; i++) {
+        for (let i = 0; i < pds.length; i++) {
           let pdss = pds[i];
           for (let i = 0; i < vapsara.VideoList.length; i++) {
             let vi = vapsara.VideoList[i];
@@ -206,9 +206,9 @@ export class PostContentPlaylistService {
             }
           }
         }
-      }      
+      }
       if (pdd.length > 0) {
-        for(let i = 0; i < pdd.length; i++) {
+        for (let i = 0; i < pdd.length; i++) {
           let pddd = pdd[i];
           for (let i = 0; i < vapsara.VideoList.length; i++) {
             let vi = vapsara.VideoList[i];
@@ -223,7 +223,7 @@ export class PostContentPlaylistService {
 
     if (papsara != undefined) {
       if (pdv.length > 0) {
-        for(let i = 0; i < pdv.length; i++) {
+        for (let i = 0; i < pdv.length; i++) {
           let pdvv = pdv[i];
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
@@ -237,7 +237,7 @@ export class PostContentPlaylistService {
         }
       }
       if (pds.length > 0) {
-        for(let i = 0; i < pds.length; i++) {
+        for (let i = 0; i < pds.length; i++) {
           let pdss = pds[i];
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
@@ -248,9 +248,9 @@ export class PostContentPlaylistService {
             }
           }
         }
-      }      
+      }
       if (pdd.length > 0) {
-        for(let i = 0; i < pdd.length; i++) {
+        for (let i = 0; i < pdd.length; i++) {
           let pddd = pdd[i];
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
@@ -263,7 +263,7 @@ export class PostContentPlaylistService {
         }
       }
       if (pdp.length > 0) {
-        for(let i = 0; i < pdp.length; i++) {
+        for (let i = 0; i < pdp.length; i++) {
           let pdpp = pdp[i];
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
@@ -274,7 +274,7 @@ export class PostContentPlaylistService {
             }
           }
         }
-      }            
+      }
     }
 
     if (resVideo.length > 0) {
@@ -293,11 +293,11 @@ export class PostContentPlaylistService {
       data.diary = resDiary;
     }
 
-    
+
     res.data = data;
 
     return res;
-  }    
+  }
 
   async getUserPostLandingPageVPlay(body: any, headers: any): Promise<PostLandingResponseApps> {
 
@@ -318,16 +318,16 @@ export class PostContentPlaylistService {
     }
     if (body.pageRow != undefined) {
       row = body.pageRow;
-    }    
+    }
 
     let vids: string[] = [];
     let pics: string[] = [];
-    let user: string[] = [];    
+    let user: string[] = [];
 
-    let resVideo: PostData[] = [];        
-    let resPic: PostData[] = [];        
-    let resDiary: PostData[] = [];        
-    let resStory: PostData[] = [];        
+    let resVideo: PostData[] = [];
+    let resPic: PostData[] = [];
+    let resDiary: PostData[] = [];
+    let resStory: PostData[] = [];
 
     body.postType = 'vid';
     body.withExp = false;
@@ -336,7 +336,7 @@ export class PostContentPlaylistService {
     let ed = await this.utilService.getDateTimeDate();
     let gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPageVPlay >>> video stopwatch 1: ' + gap);
-    
+
     st = await this.utilService.getDateTimeDate();
     let pdv = await this.loadPostDataBulkView(postVid, body, profile, vids, pics);
     ed = await this.utilService.getDateTimeDate();
@@ -352,33 +352,33 @@ export class PostContentPlaylistService {
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPageVPlay >>> pict stopwatch 1: ' + gap);
 
-    st = await this.utilService.getDateTimeDate();    
+    st = await this.utilService.getDateTimeDate();
     let pdp = await this.loadPostDataBulkView(postPid, body, profile, vids, pics);
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
-    this.logger.log('getUserPostLandingPageVPlay >>> pict stopwatch 3: ' + gap);    
-    data.pict = pdp;    
+    this.logger.log('getUserPostLandingPageVPlay >>> pict stopwatch 3: ' + gap);
+    data.pict = pdp;
 
     body.postType = 'diary';
     let postDid = await this.postPlaylistService.doGetUserPostVPlaylist(body, headers, profile);
     //let pd = await this.loadBulk(postDid, page, row);
     let pdd = await this.loadPostDataBulkView(postDid, body, profile, vids, pics);
-    data.diary = pdd;        
+    data.diary = pdd;
 
     body.postType = 'story';
     body.withExp = true;
-    st = await this.utilService.getDateTimeDate();    
+    st = await this.utilService.getDateTimeDate();
     let postSid = await this.postPlaylistService.doGetUserPostVPlaylist(body, headers, profile);
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPageVPlay >>> story stopwatch 1: ' + gap);
 
-    st = await this.utilService.getDateTimeDate();            
+    st = await this.utilService.getDateTimeDate();
     let pds = await this.loadPostDataBulkView(postSid, body, profile, vids, pics);
     ed = await this.utilService.getDateTimeDate();
     gap = ed.getTime() - st.getTime();
-    this.logger.log('getUserPostLandingPageVPlay >>> story stopwatch 3: ' + gap);    
-    data.story = pds;            
+    this.logger.log('getUserPostLandingPageVPlay >>> story stopwatch 3: ' + gap);
+    data.story = pds;
 
 
     //check apsara
@@ -397,7 +397,7 @@ export class PostContentPlaylistService {
       if (o != undefined) {
         xpics.push(o);
       }
-    }    
+    }
 
     let vapsara = undefined;
     let papsara = undefined;
@@ -411,16 +411,16 @@ export class PostContentPlaylistService {
     }
 
     if (xpics.length > 0) {
-      st = await this.utilService.getDateTimeDate();    
-      papsara = await this.postContentService.getImageApsara(xpics);  
+      st = await this.utilService.getDateTimeDate();
+      papsara = await this.postContentService.getImageApsara(xpics);
       ed = await this.utilService.getDateTimeDate();
-      gap = ed.getTime() - st.getTime();      
+      gap = ed.getTime() - st.getTime();
       this.logger.log('getUserPostLandingPage >>> apsara image with : ' + xpics.length + " item is: " + gap);
     }
 
     if (vapsara != undefined) {
       if (pdv.length > 0) {
-        for(let i = 0; i < pdv.length; i++) {
+        for (let i = 0; i < pdv.length; i++) {
           let pdvv = pdv[i];
           for (let i = 0; i < vapsara.VideoList.length; i++) {
             let vi = vapsara.VideoList[i];
@@ -432,7 +432,7 @@ export class PostContentPlaylistService {
         }
       }
       if (pds.length > 0) {
-        for(let i = 0; i < pds.length; i++) {
+        for (let i = 0; i < pds.length; i++) {
           let pdss = pds[i];
           for (let i = 0; i < vapsara.VideoList.length; i++) {
             let vi = vapsara.VideoList[i];
@@ -442,9 +442,9 @@ export class PostContentPlaylistService {
           }
           resStory.push(pdss);
         }
-      }      
+      }
       if (pdd.length > 0) {
-        for(let i = 0; i < pdd.length; i++) {
+        for (let i = 0; i < pdd.length; i++) {
           let pddd = pdd[i];
           for (let i = 0; i < vapsara.VideoList.length; i++) {
             let vi = vapsara.VideoList[i];
@@ -459,7 +459,7 @@ export class PostContentPlaylistService {
 
     if (papsara != undefined) {
       if (pdv.length > 0) {
-        for(let i = 0; i < pdv.length; i++) {
+        for (let i = 0; i < pdv.length; i++) {
           let pdvv = pdv[i];
           for (let i = 0; i < papsara.VideoList.length; i++) {
             let vi = papsara.VideoList[i];
@@ -471,7 +471,7 @@ export class PostContentPlaylistService {
         }
       }
       if (pds.length > 0) {
-        for(let i = 0; i < pds.length; i++) {
+        for (let i = 0; i < pds.length; i++) {
           let pdss = pds[i];
           for (let i = 0; i < papsara.VideoList.length; i++) {
             let vi = papsara.VideoList[i];
@@ -481,9 +481,9 @@ export class PostContentPlaylistService {
           }
           resStory.push(pdss);
         }
-      }      
+      }
       if (pdd.length > 0) {
-        for(let i = 0; i < pdd.length; i++) {
+        for (let i = 0; i < pdd.length; i++) {
           let pddd = pdd[i];
           for (let i = 0; i < papsara.VideoList.length; i++) {
             let vi = papsara.VideoList[i];
@@ -495,7 +495,7 @@ export class PostContentPlaylistService {
         }
       }
       if (pdp.length > 0) {
-        for(let i = 0; i < pdp.length; i++) {
+        for (let i = 0; i < pdp.length; i++) {
           let pdpp = pdd[i];
           for (let i = 0; i < papsara.VideoList.length; i++) {
             let vi = papsara.VideoList[i];
@@ -505,7 +505,7 @@ export class PostContentPlaylistService {
           }
           resPic.push(pdpp);
         }
-      }            
+      }
     }
 
     if (resVideo.length > 0) {
@@ -524,11 +524,11 @@ export class PostContentPlaylistService {
       data.diary = resDiary;
     }
 
-    
+
     res.data = data;
 
     return res;
-  }    
+  }
 
   async getUserPost(body: any, headers: any): Promise<PostResponseApps> {
 
@@ -544,14 +544,14 @@ export class PostContentPlaylistService {
     let vids: string[] = [];
     let pics: string[] = [];
 
-    let resVideo: PostData[] = [];        
+    let resVideo: PostData[] = [];
 
     let st = await this.utilService.getDateTimeDate();
     let postVid = await this.postPlaylistService.doGetUserPostPlaylistV2(body, headers, profile);
     let ed = await this.utilService.getDateTimeDate();
     let gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPost >>> video stopwatch 1: ' + gap);
-    
+
     st = await this.utilService.getDateTimeDate();
     let pdv = await this.loadPostDataBulkV2(postVid, body, profile, vids, pics);
     ed = await this.utilService.getDateTimeDate();
@@ -577,7 +577,7 @@ export class PostContentPlaylistService {
       if (o != undefined) {
         xpics.push(o);
       }
-    }    
+    }
 
     let vapsara = undefined;
     let papsara = undefined;
@@ -591,16 +591,16 @@ export class PostContentPlaylistService {
     }
 
     if (xpics.length > 0) {
-      st = await this.utilService.getDateTimeDate();    
-      papsara = await this.postContentService.getImageApsara(xpics);  
+      st = await this.utilService.getDateTimeDate();
+      papsara = await this.postContentService.getImageApsara(xpics);
       ed = await this.utilService.getDateTimeDate();
-      gap = ed.getTime() - st.getTime();      
+      gap = ed.getTime() - st.getTime();
       this.logger.log('getUserPostLandingPage >>> apsara image with : ' + xpics.length + " item is: " + gap);
     }
 
     if (vapsara != undefined) {
       if (pdv.length > 0) {
-        for(let i = 0; i < pdv.length; i++) {
+        for (let i = 0; i < pdv.length; i++) {
           let pdvv = pdv[i];
           for (let i = 0; i < vapsara.VideoList.length; i++) {
             let vi = vapsara.VideoList[i];
@@ -615,7 +615,7 @@ export class PostContentPlaylistService {
 
     if (papsara != undefined) {
       if (pdv.length > 0) {
-        for(let i = 0; i < pdv.length; i++) {
+        for (let i = 0; i < pdv.length; i++) {
           let pdvv = pdv[i];
           for (let i = 0; i < papsara.VideoList.length; i++) {
             let vi = papsara.VideoList[i];
@@ -633,7 +633,7 @@ export class PostContentPlaylistService {
     }
 
     return res;
-  }      
+  }
 
   private async loadPostDataBulkV2(posts: Userplaylist[], body: any, iam: Userbasic, xvids: string[], xpics: string[]): Promise<PostData[]> {
     //this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(posts));
@@ -644,7 +644,7 @@ export class PostContentPlaylistService {
         let ps = posts[i];
         let pa = new PostData();
 
-        let post = <Posts> ps.postData;
+        let post = <Posts>ps.postData;
 
         pa.active = (ps.isHidden == false);
         pa.allowComments = post.allowComments;
@@ -658,7 +658,7 @@ export class PostContentPlaylistService {
         //let following = await this.contentEventService.findFollowing(pa.email);
 
         if (ps.userBasicData != undefined) {
-          let ub = <Userbasic> ps.userBasicData;
+          let ub = <Userbasic>ps.userBasicData;
           pa.avatar = await this.postContentService.getProfileAvatar(ub);
           pa.username = String(ub.fullName);
         }
@@ -761,8 +761,8 @@ export class PostContentPlaylistService {
         privacy.isCelebrity = false;
         pa.privacy = privacy;
 
-        let txs : string[] = [];
-        for(let i = 0; i < post.tags.length; i++) {
+        let txs: string[] = [];
+        for (let i = 0; i < post.tags.length; i++) {
           let oo = String(post.tags[i]);
           if (oo.length > 0) {
             txs.push(oo);
@@ -780,7 +780,7 @@ export class PostContentPlaylistService {
         pa.insight = tmp;
 
         //MEDIA
-        let meds = <MediaData> ps.mediaData;
+        let meds = <MediaData>ps.mediaData;
         if (ps.postType == 'vid') {
           if (meds.apsara == true) {
             xvids.push(String(meds.apsaraId));
@@ -800,7 +800,7 @@ export class PostContentPlaylistService {
           } else {
             pa.mediaThumbUri = ps.mediaThumbUri;
             pa.mediaEndpoint = String(ps.mediaEndpoint);
-            pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);            
+            pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);
           }
           pa.mediaType = 'image';
         } else if (ps.postType == 'diary') {
@@ -824,8 +824,8 @@ export class PostContentPlaylistService {
               pa.mediaThumbUri = ps.mediaThumbUri;
               pa.mediaEndpoint = String(ps.mediaEndpoint);
               pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);
-            }  
-            pa.mediaType = 'video';          
+            }
+            pa.mediaType = 'video';
           } else {
             if (meds.apsara == true) {
               xpics.push(String(meds.apsaraId));
@@ -834,9 +834,9 @@ export class PostContentPlaylistService {
             } else {
               pa.mediaThumbUri = ps.mediaThumbUri;
               pa.mediaEndpoint = String(ps.mediaEndpoint);
-              pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);            
-            }      
-            pa.mediaType = 'image';      
+              pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);
+            }
+            pa.mediaType = 'image';
           }
         }
 
@@ -877,7 +877,7 @@ export class PostContentPlaylistService {
     }
     return pd;
   }
-  
+
   private async loadPostDataBulkView(posts: VPlay[], body: any, iam: Userbasic, xvids: string[], xpics: string[]): Promise<PostData[]> {
     //this.logger.log('doGetUserPostPlaylist >>> start: ' + JSON.stringify(posts));
     let pd = Array<PostData>();
@@ -887,7 +887,7 @@ export class PostContentPlaylistService {
         let ps = posts[i];
         let pa = new PostData();
 
-        let post = <Posts> ps.postData;
+        let post = <Posts>ps.postData;
 
         pa.active = (ps.isHidden == false);
         pa.allowComments = post.allowComments;
@@ -898,12 +898,12 @@ export class PostContentPlaylistService {
         pa.email = String(post.email);
         pa.postType = String(ps.postType);
         console.log(JSON.stringify(ps));
-        pa.username = String(ps.username[0].username);        
+        pa.username = String(ps.username[0].username);
 
         //let following = await this.contentEventService.findFollowing(pa.email);
 
         if (ps.userBasicData != undefined) {
-          let ub = <Userbasic> ps.userBasicData;
+          let ub = <Userbasic>ps.userBasicData;
           pa.avatar = await this.postContentService.getProfileAvatar(ub);
         }
 
@@ -1000,13 +1000,13 @@ export class PostContentPlaylistService {
         privacy.isCelebrity = false;
         pa.privacy = privacy;
 
-        let txs : string[] = [];
-        for(let i = 0; i < post.tags.length; i++) {
+        let txs: string[] = [];
+        for (let i = 0; i < post.tags.length; i++) {
           let oo = String(post.tags[i]);
           if (oo.length > 0) {
             txs.push(oo);
           }
-        }        
+        }
         pa.tags = txs;
 
         //Insight
@@ -1030,7 +1030,7 @@ export class PostContentPlaylistService {
         }
 
         //MEDIA
-        let meds = <MediaData> ps.mediaData;
+        let meds = <MediaData>ps.mediaData;
         if (ps.postType == 'vid') {
           if (meds.apsara == true) {
             xvids.push(String(meds.apsaraId));
@@ -1050,7 +1050,7 @@ export class PostContentPlaylistService {
           } else {
             pa.mediaThumbUri = ps.mediaThumbUri;
             pa.mediaEndpoint = String(ps.mediaEndpoint);
-            pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);            
+            pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);
           }
           pa.mediaType = 'image';
         } else if (ps.postType == 'diary') {
@@ -1074,8 +1074,8 @@ export class PostContentPlaylistService {
               pa.mediaThumbUri = ps.mediaThumbUri;
               pa.mediaEndpoint = String(ps.mediaEndpoint);
               pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);
-            }  
-            pa.mediaType = 'video';          
+            }
+            pa.mediaType = 'video';
           } else {
             if (meds.apsara == true) {
               xpics.push(String(meds.apsaraId));
@@ -1084,9 +1084,9 @@ export class PostContentPlaylistService {
             } else {
               pa.mediaThumbUri = ps.mediaThumbUri;
               pa.mediaEndpoint = String(ps.mediaEndpoint);
-              pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);            
-            }      
-            pa.mediaType = 'image';      
+              pa.mediaThumbEndpoint = String(ps.mediaThumbEndpoint);
+            }
+            pa.mediaType = 'image';
           }
         }
 
@@ -1126,5 +1126,5 @@ export class PostContentPlaylistService {
       }
     }
     return pd;
-  }  
+  }
 }

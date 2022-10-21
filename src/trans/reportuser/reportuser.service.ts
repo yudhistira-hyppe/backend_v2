@@ -8,7 +8,7 @@ import { Reportuser, ReportuserDocument } from './schemas/reportuser.schema';
 export class ReportuserService {
 
     constructor(
-        @InjectModel(Reportuser.name, 'SERVER_TRANS')
+        @InjectModel(Reportuser.name, 'SERVER_FULL')
         private readonly reportuserModel: Model<ReportuserDocument>,
     ) { }
     async findAll(): Promise<Reportuser[]> {
