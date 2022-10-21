@@ -1328,7 +1328,7 @@ export class TransactionsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-        var ubasic = await this.userbasicsService.findOne(email);
+        // var ubasic = await this.userbasicsService.findOne(email);
 
         var iduser = ubasic._id;
         var amounreq = OyDisbursements.amount;
@@ -1479,6 +1479,7 @@ export class TransactionsController {
                                 datawithdraw.partnerTrxid = partnertrxid;
                                 datawithdraw.statusOtp = null;
                                 datawithdraw.totalamount = totalamount;
+                                datawithdraw.idAccountBank = idbankaccount;
                                 var datatr = await this.withdrawsService.create(datawithdraw);
                                 await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
 
@@ -1751,6 +1752,7 @@ export class TransactionsController {
                             "name": account_name,
                             "bankName": bankname,
                             "bankAccount": norek,
+                            "bankCode": bankcode,
                             "amount": amount,
                             "totalAmount": totalamount,
                             "adminFee": valuedisbcharge,
@@ -1776,6 +1778,7 @@ export class TransactionsController {
                             "name": account_name,
                             "bankName": bankname,
                             "bankAccount": norek,
+                            "bankCode": bankcode,
                             "statusInquiry": statusInquiry
                         }
                         res.status(HttpStatus.OK).json({
@@ -1799,6 +1802,7 @@ export class TransactionsController {
                         "name": account_name,
                         "bankName": bankname,
                         "bankAccount": norek,
+                        "bankCode": bankcode,
                         "statusInquiry": statusInquiry
                     }
                     res.status(HttpStatus.OK).json({
@@ -1821,6 +1825,7 @@ export class TransactionsController {
                         "name": account_name,
                         "bankName": bankname,
                         "bankAccount": norek,
+                        "bankCode": bankcode,
                         "statusInquiry": statusInquiry
                     }
                     res.status(HttpStatus.OK).json({
@@ -1843,6 +1848,7 @@ export class TransactionsController {
                         "name": account_name,
                         "bankName": bankname,
                         "bankAccount": norek,
+                        "bankCode": bankcode,
                         "statusInquiry": statusInquiry
                     }
                     res.status(HttpStatus.OK).json({
@@ -1863,6 +1869,7 @@ export class TransactionsController {
                         "name": account_name,
                         "bankName": bankname,
                         "bankAccount": norek,
+                        "bankCode": bankcode,
                         "statusInquiry": statusInquiry
                     }
                     res.status(HttpStatus.OK).json({
@@ -1876,6 +1883,7 @@ export class TransactionsController {
                     "name": namarek,
                     "bankName": bankname,
                     "bankAccount": norek,
+                    "bankCode": bankcode,
                     "amount": amount,
                     "totalAmount": totalamount,
                     "adminFee": valuedisbcharge,
