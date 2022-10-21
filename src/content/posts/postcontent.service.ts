@@ -1706,7 +1706,10 @@ export class PostContentService {
       if (ty.VideoList.length > 0) {
         for (let x = 0; x < ty.VideoList.length; x++) {
           let vv = ty.VideoList[x];
-          vl.push(vv);
+         //vl.push(vv);          
+         var re = /https/gi;
+         vv.CoverURL = vv.CoverURL.replace(re, "http");
+         vl.push(vv);           
         }
       }
 
@@ -1758,7 +1761,10 @@ export class PostContentService {
       if (ty.ImageInfo.length > 0) {
         for (let x = 0; x < ty.ImageInfo.length; x++) {
           let vv = ty.ImageInfo[x];
-          vl.push(vv);
+          //vl.push(vv);          
+          var re = /https/gi;
+          vv.URL = vv.URL.replace(re, "http");
+          vl.push(vv);           
         }
       }
     }
@@ -1790,7 +1796,9 @@ export class PostContentService {
     let xres = new ApsaraPlayResponse();
     this.logger.log('getVideoApsaraSingle >>> response: ' + JSON.stringify(result));
     if (result != null && result.PlayInfoList != null && result.PlayInfoList.PlayInfo && result.PlayInfoList.PlayInfo.length > 0) {
-      xres.PlayUrl = result.PlayInfoList.PlayInfo[0].PlayURL;
+
+      var re = /https/gi;
+      xres.PlayUrl = result.PlayInfoList.PlayInfo[0].PlayURL.replace(re, "http");
     }
     return xres;
   }
