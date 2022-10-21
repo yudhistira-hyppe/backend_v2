@@ -390,7 +390,8 @@ export class AuthController {
                 CreateReferralDto_.active = true;
                 CreateReferralDto_.verified = true;
                 CreateReferralDto_.createdAt = current_date;
-                CreateReferralDto_.updatedAt = current_date; 
+                CreateReferralDto_.updatedAt = current_date;
+                CreateReferralDto_.imei = LoginRequest_.imei;
                 CreateReferralDto_._class = "io.melody.core.domain.Referral";
                 await this.referralService.create(CreateReferralDto_);
               }
