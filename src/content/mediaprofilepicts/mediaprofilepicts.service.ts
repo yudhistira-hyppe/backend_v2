@@ -44,24 +44,24 @@ export class MediaprofilepictsService {
     return deletedCat;
   }
 
-  async findmediaprofil() {
-    const query = await this.MediaprofilepictsModel.aggregate([
+  // async findmediaprofil() {
+  //   const query = await this.MediaprofilepictsModel.aggregate([
 
-      {
-        $lookup: {
-          from: 'mediaprofilepicts',
-          localField: 'mediaprofilepicts.$id',
-          foreignField: '_id',
-          as: 'roless',
-        },
-      }, {
-        $out: {
-          db: 'hyppe_trans_db',
-          coll: 'mediaprofilepicts2'
-        }
-      },
+  //     {
+  //       $lookup: {
+  //         from: 'mediaprofilepicts',
+  //         localField: 'mediaprofilepicts.$id',
+  //         foreignField: '_id',
+  //         as: 'roless',
+  //       },
+  //     }, {
+  //       $out: {
+  //         db: 'hyppe_trans_db',
+  //         coll: 'mediaprofilepicts2'
+  //       }
+  //     },
 
-    ]);
-    return query;
-  }
+  //   ]);
+  //   return query;
+  // }
 }

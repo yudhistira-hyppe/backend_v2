@@ -10,7 +10,7 @@ import { MediaprofilepictsService } from '../../../content/mediaprofilepicts/med
 @Injectable()
 export class GetcontenteventsService {
     constructor(
-        @InjectModel(Getcontentevents.name, 'SERVER_TRANS')
+        @InjectModel(Getcontentevents.name, 'SERVER_FULL')
         private readonly getcontenteventsModel: Model<GetcontenteventsDocument>,
         private readonly contenteventsService: ContenteventsService,
         private readonly mediaprofilepictsService: MediaprofilepictsService,
@@ -18,7 +18,7 @@ export class GetcontenteventsService {
     ) { }
 
     async findgender(postID: string) {
-        const posts = await this.contenteventsService.findcontent();
+
         const query = await this.getcontenteventsModel.aggregate([
 
 
@@ -74,7 +74,7 @@ export class GetcontenteventsService {
     }
 
     async findgender_perempuan(postID: string) {
-        const posts = await this.contenteventsService.findcontent();
+
         const query = await this.getcontenteventsModel.aggregate([
 
 
@@ -139,7 +139,7 @@ export class GetcontenteventsService {
     }
 
     async findgenderMale(postID: string) {
-        const posts = await this.contenteventsService.findcontent();
+
         const query = await this.getcontenteventsModel.aggregate([
 
 
@@ -204,7 +204,7 @@ export class GetcontenteventsService {
     }
 
     async findgenderFeMale(postID: string) {
-        const posts = await this.contenteventsService.findcontent();
+
         const query = await this.getcontenteventsModel.aggregate([
 
 
@@ -269,7 +269,7 @@ export class GetcontenteventsService {
     }
 
     async findgender_laki(postID: string) {
-        const posts = await this.contenteventsService.findcontent();
+
         const query = await this.getcontenteventsModel.aggregate([
 
 
@@ -334,7 +334,7 @@ export class GetcontenteventsService {
     }
 
     async findgender_FeMale(postID: string) {
-        const posts = await this.contenteventsService.findcontent();
+
         const query = await this.getcontenteventsModel.aggregate([
 
 
@@ -399,7 +399,7 @@ export class GetcontenteventsService {
     }
 
     async findall(postID: string) {
-        const posts = await this.contenteventsService.findcontent();
+
         const query = await this.getcontenteventsModel.aggregate([
 
 
@@ -448,7 +448,7 @@ export class GetcontenteventsService {
     }
 
     async findage1440(postID: string) {
-        const posts = await this.contenteventsService.findcontent();
+
         const query = await this.getcontenteventsModel.aggregate([
 
 
@@ -519,7 +519,7 @@ export class GetcontenteventsService {
     }
 
     async findage40(postID: string) {
-        const posts = await this.contenteventsService.findcontent();
+
         const query = await this.getcontenteventsModel.aggregate([
 
 
@@ -590,7 +590,7 @@ export class GetcontenteventsService {
     }
 
     async findage14(postID: string) {
-        const posts = await this.contenteventsService.findcontent();
+
         const query = await this.getcontenteventsModel.aggregate([
 
 
@@ -727,7 +727,7 @@ export class GetcontenteventsService {
     }
 
     async findfollower(email: string, year: number) {
-        const posts = await this.contenteventsService.findcontent();
+
 
         const query = await this.getcontenteventsModel.aggregate([
 
@@ -788,7 +788,7 @@ export class GetcontenteventsService {
     }
 
     async findfollowerall(email: string) {
-        const posts = await this.contenteventsService.findcontent();
+
 
 
         const query = await this.getcontenteventsModel.aggregate([
@@ -820,8 +820,8 @@ export class GetcontenteventsService {
 
 
     async findAllviewlike(CreateGetcontenteventsDto_: CreateGetcontenteventsDto): Promise<Getcontentevents[]> {
-        await this.contenteventsService.findcontent();
-        await this.mediaprofilepictsService.findmediaprofil();
+
+
         var receiverParty = CreateGetcontenteventsDto_.receiverParty;
         const query = await this.getcontenteventsModel.aggregate([
             {

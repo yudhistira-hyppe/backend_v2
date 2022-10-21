@@ -4630,8 +4630,6 @@ export class GetusercontentsService {
     return query;
   }
   async findmanagementcontentregion(email: string, countries: string) {
-    const posts = await this.postsService.findpost();
-
 
     const query = await this.getusercontentsModel.aggregate([
       {
@@ -4656,8 +4654,6 @@ export class GetusercontentsService {
   }
 
   async findmanagementcontentallregion(email: string) {
-    const posts = await this.postsService.findpost();
-
 
     const query = await this.getusercontentsModel.find({ "email": email }).exec();
     return query;
@@ -7208,12 +7204,7 @@ export class GetusercontentsService {
   }
 
   async findalldatakontendaterange(email: string, startdate: string, enddate: string, skip: number, limit: number): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
 
     var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -7574,12 +7565,7 @@ export class GetusercontentsService {
 
 
   async findalldatakontenbuy(iduserbuy: Types.ObjectId, skip: number, limit: number): Promise<object> {
-    const posts = await this.postsService.findpost();
-    const video = await this.mediavideosService.findvideo();
-    const pict = await this.mediapictsService.findpict();
-    const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
-    const insight = await this.insightsService.findinsight();
-    const diaries = await this.mediadiariesService.finddiaries();
+
 
     const query = await this.getusercontentsModel.aggregate([
       {

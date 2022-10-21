@@ -16,7 +16,7 @@ import { MediaprofilepictsModule } from '../../../content/mediaprofilepicts/medi
     imports: [
 
         UserbasicsModule, UserticketsModule, UtilsModule, SeaweedfsModule, LogticketsModule, MediaprofilepictsModule, NestjsFormDataModule, ConfigService, ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Userticketdetails.name, schema: UserticketdetailsSchema }], 'SERVER_TRANS'),
+        MongooseModule.forFeature([{ name: Userticketdetails.name, schema: UserticketdetailsSchema }], 'SERVER_FULL'),
         UserticketdetailsModule
     ],
     controllers: [UserticketdetailsController],

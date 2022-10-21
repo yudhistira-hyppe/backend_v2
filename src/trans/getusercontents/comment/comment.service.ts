@@ -48,9 +48,7 @@ export class CommentService {
     }
 
     async findlastcomment(email: string) {
-        const posts = await this.postsService.findpost();
-        const disqus = await this.disqusService.finddisqus();
-        const disquslogs = await this.disquslogsService.finddisquslog();
+
         const query = await this.commentModel.aggregate([
             { $match: { receiver: email, active: true } },
 
@@ -65,7 +63,7 @@ export class CommentService {
             },
             {
                 $lookup: {
-                    from: 'disqus2',
+                    from: 'disqus',
                     localField: 'disqusID',
                     foreignField: '_id',
                     as: 'disqus_data',
@@ -73,7 +71,7 @@ export class CommentService {
             },
             {
                 $lookup: {
-                    from: "posts2",
+                    from: "posts",
                     localField: "postID",
                     foreignField: "postID",
                     as: "postdata"
@@ -200,7 +198,7 @@ export class CommentService {
             },
             {
                 $lookup: {
-                    from: 'mediaprofilepicts2',
+                    from: 'mediaprofilepicts',
                     localField: 'profilePict_id',
                     foreignField: '_id',
                     as: 'profilePict_data',
@@ -355,9 +353,7 @@ export class CommentService {
     }
 
     async findcomment(postID: string) {
-        const posts = await this.postsService.findpost();
-        const disqus = await this.disqusService.finddisqus();
-        const disquslogs = await this.disquslogsService.finddisquslog();
+
         const query = await this.commentModel.aggregate([
             { $match: { postID: postID } },
 
@@ -372,7 +368,7 @@ export class CommentService {
             },
             {
                 $lookup: {
-                    from: 'disqus2',
+                    from: 'disqus',
                     localField: 'disqusID',
                     foreignField: '_id',
                     as: 'disqus_data',
@@ -380,7 +376,7 @@ export class CommentService {
             },
             {
                 $lookup: {
-                    from: "posts2",
+                    from: "posts",
                     localField: "postID",
                     foreignField: "postID",
                     as: "postdata"
@@ -507,7 +503,7 @@ export class CommentService {
             },
             {
                 $lookup: {
-                    from: 'mediaprofilepicts2',
+                    from: 'mediaprofilepicts',
                     localField: 'profilePict_id',
                     foreignField: '_id',
                     as: 'profilePict_data',

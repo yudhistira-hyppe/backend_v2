@@ -11,10 +11,10 @@ import { GetuserprofilesModule } from '../../../trans/getuserprofiles/getuserpro
     imports: [
         GetuserprofilesModule,
         ConfigModule.forRoot(),
-        MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
+        MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_FULL')
     ],
     controllers: [PostDisqusController],
     providers: [PostDisqusService],
     exports: [PostDisqusService],
 })
-export class PostDisqusModule {}
+export class PostDisqusModule { }

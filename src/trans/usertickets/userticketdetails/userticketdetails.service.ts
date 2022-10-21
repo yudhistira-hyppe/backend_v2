@@ -8,7 +8,7 @@ import { Userticketdetails, UserticketdetailsDocument } from './schemas/usertick
 @Injectable()
 export class UserticketdetailsService {
     constructor(
-        @InjectModel(Userticketdetails.name, 'SERVER_TRANS')
+        @InjectModel(Userticketdetails.name, 'SERVER_FULL')
         private readonly userticketsModel: Model<UserticketdetailsDocument>,
         private readonly mediaprofilepictsService: MediaprofilepictsService,
 
@@ -29,7 +29,7 @@ export class UserticketdetailsService {
         return this.userticketsModel.find({ IdUserticket: id, type: type }).exec();
     }
     async detailKomentar(id: object, type: string): Promise<object> {
-        const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+
         const query = await this.userticketsModel.aggregate([
             {
                 $lookup: {
@@ -69,7 +69,7 @@ export class UserticketdetailsService {
             },
             {
                 $lookup: {
-                    from: 'mediaprofilepicts2',
+                    from: 'mediaprofilepicts',
                     localField: 'profilpictid',
                     foreignField: '_id',
                     as: 'profilePict_data',
@@ -147,7 +147,7 @@ export class UserticketdetailsService {
 
 
     async detailKomentarChat(id: object, type: string): Promise<any[]> {
-        const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+
         const query = await this.userticketsModel.aggregate([
             {
                 $lookup: {
@@ -188,7 +188,7 @@ export class UserticketdetailsService {
             },
             {
                 $lookup: {
-                    from: 'mediaprofilepicts2',
+                    from: 'mediaprofilepicts',
                     localField: 'profilpictid',
                     foreignField: '_id',
                     as: 'profilePict_data',
@@ -281,7 +281,7 @@ export class UserticketdetailsService {
     }
 
     async detailKomentarChatNew(id: object): Promise<any[]> {
-        const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+
         const query = await this.userticketsModel.aggregate([
             {
                 $lookup: {
@@ -322,7 +322,7 @@ export class UserticketdetailsService {
             },
             {
                 $lookup: {
-                    from: 'mediaprofilepicts2',
+                    from: 'mediaprofilepicts',
                     localField: 'profilpictid',
                     foreignField: '_id',
                     as: 'profilePict_data',

@@ -85,24 +85,24 @@ export class DisqusService {
     }
   }
 
-  async finddisqus() {
-    const query = await this.DisqusModel.aggregate([
+  // async finddisqus() {
+  //   const query = await this.DisqusModel.aggregate([
 
-      {
-        $lookup: {
-          from: 'disqus',
-          localField: 'disqus.$id',
-          foreignField: '_id',
-          as: 'roless',
-        },
-      }, {
-        $out: {
-          db: 'hyppe_trans_db',
-          coll: 'disqus2'
-        }
-      },
+  //     {
+  //       $lookup: {
+  //         from: 'disqus',
+  //         localField: 'disqus.$id',
+  //         foreignField: '_id',
+  //         as: 'roless',
+  //       },
+  //     }, {
+  //       $out: {
+  //         db: 'hyppe_trans_db',
+  //         coll: 'disqus2'
+  //       }
+  //     },
 
-    ]);
-    return query;
-  }
+  //   ]);
+  //   return query;
+  // }
 }

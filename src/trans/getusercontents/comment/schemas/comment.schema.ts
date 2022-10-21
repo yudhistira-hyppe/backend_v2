@@ -3,7 +3,7 @@ import mongoose, { Document } from 'mongoose';
 
 export type CommentDocument = Comment & Document;
 
-@Schema({ collection: 'disquslogs2' })
+@Schema({ collection: 'disquslogs' })
 export class Comment {
     @Prop()
     _id: String;

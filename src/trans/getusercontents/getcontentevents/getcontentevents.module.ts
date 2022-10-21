@@ -16,7 +16,7 @@ import { MediaprofilepictsModule } from '../../../content/mediaprofilepicts/medi
         MediaprofilepictsModule,
         UtilsModule, PostsModule,
         ConfigModule.forRoot(), ContenteventsModule, CountriesModule,
-        MongooseModule.forFeature([{ name: Getcontentevents.name, schema: GetcontenteventsSchema }], 'SERVER_TRANS')
+        MongooseModule.forFeature([{ name: Getcontentevents.name, schema: GetcontenteventsSchema }], 'SERVER_FULL')
     ],
     controllers: [GetcontenteventsController],
     providers: [GetcontenteventsService],

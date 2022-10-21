@@ -8,7 +8,7 @@ import { GetuserprofilesService } from '../../../trans/getuserprofiles/getuserpr
 @Injectable()
 export class PostDisqusService {
   constructor(
-    @InjectModel(Posts.name, 'SERVER_CONTENT')
+    @InjectModel(Posts.name, 'SERVER_FULL')
     private readonly PostsModel: Model<PostsDocument>,
     private getuserprofilesService: GetuserprofilesService,
   ) { }

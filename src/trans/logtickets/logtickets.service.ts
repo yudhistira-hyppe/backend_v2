@@ -20,7 +20,7 @@ export class LogticketsService {
     }
 
     async findbyidticket(id: object): Promise<object> {
-        const mediaprofil = await this.mediaprofilepictsService.findmediaprofil();
+
         const query = await this.logticketsModel.aggregate([
             {
                 $lookup: {
@@ -55,7 +55,7 @@ export class LogticketsService {
             },
             {
                 $lookup: {
-                    from: 'mediaprofilepicts2',
+                    from: 'mediaprofilepicts',
                     localField: 'profilpictid',
                     foreignField: '_id',
                     as: 'profilePict_data',

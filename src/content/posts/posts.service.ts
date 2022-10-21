@@ -320,26 +320,26 @@ export class PostsService {
     return GetCount;
   }
 
-  async findpost() {
-    const query = await this.PostsModel.aggregate([
+  // async findpost() {
+  //   const query = await this.PostsModel.aggregate([
 
-      {
-        $lookup: {
-          from: 'posts',
-          localField: 'posts.$id',
-          foreignField: '_id',
-          as: 'roless',
-        },
-      }, {
-        $out: {
-          db: 'hyppe_trans_db',
-          coll: 'posts2'
-        }
-      },
+  //     {
+  //       $lookup: {
+  //         from: 'posts',
+  //         localField: 'posts.$id',
+  //         foreignField: '_id',
+  //         as: 'roless',
+  //       },
+  //     }, {
+  //       $out: {
+  //         db: 'hyppe_trans_db',
+  //         coll: 'posts2'
+  //       }
+  //     },
 
-    ]);
-    return query;
-  }
+  //   ]);
+  //   return query;
+  // }
 
   async regcontenMonetize(): Promise<Object> {
     var GetCount = this.PostsModel.aggregate([

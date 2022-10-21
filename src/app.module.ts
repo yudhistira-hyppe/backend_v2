@@ -99,15 +99,15 @@ import { UserbasicsnewModule } from './trans/newuserbasic/userbasicsnew.module';
     }),
     ScheduleUserPlaylistModule,
     ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRoot(process.env.SERVER_TRANS, {
-      connectionName: 'SERVER_TRANS',
-    }),
-    MongooseModule.forRoot(process.env.SERVER_CONTENT, {
-      connectionName: 'SERVER_CONTENT',
-    }),
-    MongooseModule.forRoot(process.env.SERVER_INFRA, {
-      connectionName: 'SERVER_INFRA',
-    }),
+    // MongooseModule.forRoot(process.env.SERVER_TRANS, {
+    //   connectionName: 'SERVER_TRANS',
+    // }),
+    // MongooseModule.forRoot(process.env.SERVER_CONTENT, {
+    //   connectionName: 'SERVER_CONTENT',
+    // }),
+    // MongooseModule.forRoot(process.env.SERVER_INFRA, {
+    //   connectionName: 'SERVER_INFRA',
+    // }),
     MongooseModule.forRoot(process.env.SERVER_FULL, {
       connectionName: 'SERVER_FULL',
     }),

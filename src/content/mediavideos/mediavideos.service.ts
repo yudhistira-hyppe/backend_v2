@@ -48,26 +48,26 @@ export class MediavideosService {
     return deletedCat;
   }
 
-  async findvideo() {
-    const query = await this.MediavideosModel.aggregate([
+  // async findvideo() {
+  //   const query = await this.MediavideosModel.aggregate([
 
-      {
-        $lookup: {
-          from: 'mediavideos',
-          localField: 'mediavideos.$id',
-          foreignField: '_id',
-          as: 'roless',
-        },
-      }, {
-        $out: {
-          db: 'hyppe_trans_db',
-          coll: 'mediavideos2'
-        }
-      },
+  //     {
+  //       $lookup: {
+  //         from: 'mediavideos',
+  //         localField: 'mediavideos.$id',
+  //         foreignField: '_id',
+  //         as: 'roless',
+  //       },
+  //     }, {
+  //       $out: {
+  //         db: 'hyppe_trans_db',
+  //         coll: 'mediavideos2'
+  //       }
+  //     },
 
-    ]);
-    return query;
-  }
+  //   ]);
+  //   return query;
+  // }
 
   async findtotalpostmediavid(date: string) {
 

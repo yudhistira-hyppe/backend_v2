@@ -569,26 +569,26 @@ export class ContenteventsService {
     return GetCount;
   }
 
-  async findcontent() {
-    const query = await this.ContenteventsModel.aggregate([
+  // async findcontent() {
+  //   const query = await this.ContenteventsModel.aggregate([
 
-      {
-        $lookup: {
-          from: 'contentevents',
-          localField: 'contentevents.$id',
-          foreignField: '_id',
-          as: 'roless',
-        },
-      }, {
-        $out: {
-          db: 'hyppe_trans_db',
-          coll: 'contentevents2'
-        }
-      },
+  //     {
+  //       $lookup: {
+  //         from: 'contentevents',
+  //         localField: 'contentevents.$id',
+  //         foreignField: '_id',
+  //         as: 'roless',
+  //       },
+  //     }, {
+  //       $out: {
+  //         db: 'hyppe_trans_db',
+  //         coll: 'contentevents2'
+  //       }
+  //     },
 
-    ]);
-    return query;
-  }
+  //   ]);
+  //   return query;
+  // }
 
   async friend(email: string, head: any) {
     const query = await this.ContenteventsModel.aggregate([
