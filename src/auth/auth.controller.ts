@@ -391,9 +391,27 @@ export class AuthController {
         GlobalResponse_.version = await this.utilsService.getversion();
         return GlobalResponse_;
       } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, Data email not verified ',
-        );
+        let messages_response;
+        var datasetting = await this.settingsService.findAll();
+
+        var ProfileDTO_ = new ProfileDTO();
+        ProfileDTO_ = await this.utilsService.generateProfile(LoginRequest_.email, 'LOGIN');
+        ProfileDTO_.token = 'Bearer ' + (await this.utilsService.generateToken(LoginRequest_.email, LoginRequest_.deviceId)).toString();
+        ProfileDTO_.refreshToken = data_jwtrefreshtoken.refresh_token_id;
+        ProfileDTO_.listSetting = datasetting;
+
+        var GlobalResponse_ = new GlobalResponse();
+        var GlobalMessages_ = new GlobalMessages();
+        GlobalMessages_.info = [messages_response];
+
+        GlobalResponse_.response_code = 202;
+        GlobalResponse_.data = ProfileDTO_;
+        GlobalResponse_.messages = GlobalMessages_;
+        GlobalResponse_.version = await this.utilsService.getversion();
+        return GlobalResponse_;
+        // await this.errorHandler.generateNotAcceptableException(
+        //   'Unabled to proceed, Data email not verified ',
+        // );
       }
     } else {
       await this.errorHandler.generateNotAcceptableException(
