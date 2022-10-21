@@ -3867,7 +3867,7 @@ export class AuthService {
 
   async referralcount(req: any, head: any): Promise<any> {
     if (await this.utilsService.validasiTokenEmail(head)) {
-      var user_email = head['x-auth-user'];;
+      var user_email = head['x-auth-user'];
 
       //Ceck User Userauths
       const datauserauthsService = await this.userauthsService.findOneByEmail(
