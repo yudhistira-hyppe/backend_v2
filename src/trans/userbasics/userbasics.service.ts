@@ -96,6 +96,17 @@ export class UserbasicsService {
     return data;
   }
 
+  async updateStatusemail(email: string, timeEmailSend: string): Promise<Object> {
+    let data = await this.userbasicModel.updateOne({ "email": email },
+      {
+        $set: {
+          "timeEmailSend": timeEmailSend
+        }
+      },
+    );
+    return data;
+  }
+
   async updateStatus(email: string, status: Boolean): Promise<Object> {
     let data = await this.userbasicModel.updateOne({ "email": email },
       {

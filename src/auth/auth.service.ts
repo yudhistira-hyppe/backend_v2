@@ -3516,6 +3516,7 @@ export class AuthService {
         subject,
         html_body,
       );
+      await this.userbasicsService.updateStatusemail(email, (await this.utilsService.getDateTimeString()));
       if (!send) {
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed Send Email OTP',
@@ -3866,7 +3867,7 @@ export class AuthService {
 
   async referralcount(req: any, head: any): Promise<any> {
     if (await this.utilsService.validasiTokenEmail(head)) {
-      var user_email = head['x-auth-user'];
+      var user_email = "azaliarahmi0909@gmail.com";
 
       //Ceck User Userauths
       const datauserauthsService = await this.userauthsService.findOneByEmail(
@@ -3881,9 +3882,12 @@ export class AuthService {
       if ((await this.utilsService.ceckData(datauserbasicsService)) && (await this.utilsService.ceckData(datauserauthsService))) {
         try {
           var data_referral = await this.referralService.findAllByParent(user_email);
+          var data_referral_parent = await this.referralService.findAllByChildren(user_email);
 
           return {
+            parent: data_referral_parent[0].parent,
             response_code: 202,
+            data: data_referral.length,
             messages: {
               info: ['The process successful'],
             },
