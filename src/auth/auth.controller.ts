@@ -47,6 +47,8 @@ import { ContenteventsService } from '../content/contentevents/contentevents.ser
 import { InsightsService } from '../content/insights/insights.service';
 import { Long } from 'mongodb';
 import { OtpService } from './otp.service';
+import { ReferralService } from '../trans/referral/referral.service';
+import { CreateReferralDto } from 'src/trans/referral/dto/create-referral.dto';
 
 @Controller()
 export class AuthController {
@@ -65,6 +67,7 @@ export class AuthController {
     private settingsService: SettingsService,
     private contenteventsService: ContenteventsService,
     private insightsService: InsightsService,
+    private referralService: ReferralService,
     private otpService: OtpService,
   ) { }
 
@@ -106,290 +109,334 @@ export class AuthController {
       LoginRequest_.email,
     );
 
-    if ((await this.utilsService.ceckData(data_userbasics)) && (await this.utilsService.ceckData(data_jwtrefreshtoken))) {
-      if (await this.utilsService.ceckData(data_userauths)) {
-        _isEmailVerified = data_userauths.isEmailVerified;
-      } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, Data user auths not found',
-        );
-      }
-
-      if (_isEmailVerified) {
-        let messages_response;
-        if (Object.keys(data_activityevents).length > 0) {
-          var Activityevents_child = new CreateActivityeventsDto();
-          var generate_id_Activityevents_child = new mongoose.Types.ObjectId();
-          var generate_activityEventID_Activityevents_child = (await this.utilsService.generateId()).toLowerCase();
-
-          var latitude = undefined;
-          var longitude = undefined;
-          if (LoginRequest_.location != undefined) {
-            if (LoginRequest_.location.latitude != undefined) {
-              latitude = LoginRequest_.location.latitude;
-            }
-            if (LoginRequest_.location.longitude != undefined) {
-              longitude = LoginRequest_.location.longitude;
-            }
-          }
-          //Create ActivityEvent child
-          try {
-            Activityevents_child._id = generate_id_Activityevents_child;
-            Activityevents_child.activityEventID =
-              generate_activityEventID_Activityevents_child;
-            Activityevents_child.activityType = 'DEVICE_ACTIVITY';
-            Activityevents_child.active = true;
-            Activityevents_child.status = 'INITIAL';
-            Activityevents_child.target = 'ACTIVE';
-            Activityevents_child.event = 'AWAKE';
-            Activityevents_child._class = _class_ActivityEvent;
-            Activityevents_child.payload = {
-              login_location: {
-                latitude: latitude,
-                longitude: longitude,
-              },
-              logout_date: undefined,
-              login_date: current_date,
-              login_device: LoginRequest_.deviceId,
-              email: LoginRequest_.email,
-            };
-            Activityevents_child.createdAt = current_date;
-            Activityevents_child.updatedAt = current_date;
-            Activityevents_child.sequenceNumber = new Int32(1);
-            Activityevents_child.flowIsDone = false;
-            Activityevents_child.__v = undefined;
-            Activityevents_child.parentActivityEventID =
-              data_activityevents[0].activityEventID;
-            Activityevents_child.userbasic =
-              data_userbasics._id;
-
-            //Insert ActivityEvent child
-            await this.activityeventsService.create(Activityevents_child);
-          } catch (error) {
-            await this.errorHandler.generateNotAcceptableException(
-              'Unabled to proceed, Failed create Activity events Child. Error:' + error,
-            );
-          }
-
-          //Update ActivityEvent Parent
-          try {
-            const data_transitions = data_activityevents[0].transitions;
-            data_transitions.push({
-              $ref: 'activityevents',
-              $id: new Object(generate_activityEventID_Activityevents_child),
-              $db: 'hyppe_trans_db',
-            });
-
-            //Update ActivityEvent Parent
-            const update_activityevents_parent =
-              await this.activityeventsService.update(
-                {
-                  _id: data_activityevents[0]._id,
-                },
-                {
-                  transitions: data_transitions,
-                },
-              );
-          } catch (error) {
-            await this.errorHandler.generateNotAcceptableException(
-              'Unabled to proceed Update Activity events Parent. Error:' +
-              error,
-            );
-          }
-          messages_response = 'Device activity logging successful';
+    if ((await this.utilsService.ceckData(data_userbasics))) {
+      if ((await this.utilsService.ceckData(data_jwtrefreshtoken))) {
+        if (await this.utilsService.ceckData(data_userauths)) {
+          _isEmailVerified = data_userauths.isEmailVerified;
         } else {
-          var Activityevents_parent = new CreateActivityeventsDto();
-          var generate_id_Activityevents_parent = new mongoose.Types.ObjectId();
-          var generate_activityEventID_Activityevents_parent = (await this.utilsService.generateId()).toLowerCase();
-
-          var Activityevents_child = new CreateActivityeventsDto();
-          var generate_id_Activityevents_child = new mongoose.Types.ObjectId();
-          var generate_activityEventID_Activityevents_child = (await this.utilsService.generateId()).toLowerCase();
-
-          var latitude = undefined;
-          var longitude = undefined;
-          if (LoginRequest_.location != undefined) {
-            if (LoginRequest_.location.latitude != undefined) {
-              latitude = LoginRequest_.location.latitude;
-            }
-            if (LoginRequest_.location.longitude != undefined) {
-              longitude = LoginRequest_.location.longitude;
-            }
-          }
-
-          //Create ActivityEvent Parent
-          try {
-            Activityevents_parent._id = generate_id_Activityevents_parent;
-            Activityevents_parent.activityEventID = generate_activityEventID_Activityevents_parent;
-            Activityevents_parent.activityType = 'LOGIN';
-            Activityevents_parent.active = true;
-            Activityevents_parent.status = 'INITIAL';
-            Activityevents_parent.target = 'USER_LOGOUT';
-            Activityevents_parent.event = 'LOGIN';
-            Activityevents_parent._class = _class_ActivityEvent;
-            Activityevents_parent.payload = {
-              login_location: {
-                latitude: latitude,
-                longitude: longitude,
-              },
-              logout_date: undefined,
-              login_date: current_date,
-              login_device: LoginRequest_.deviceId,
-              email: LoginRequest_.email,
-            };
-            Activityevents_parent.createdAt = current_date;
-            Activityevents_parent.updatedAt = current_date;
-            Activityevents_parent.sequenceNumber = new Int32(0);
-            Activityevents_parent.flowIsDone = false;
-            Activityevents_parent.__v = undefined;
-            Activityevents_parent.transitions = [
-              {
-                $ref: 'activityevents',
-                $id: Object(generate_activityEventID_Activityevents_child),
-                $db: 'hyppe_trans_db',
-              },
-            ];
-            Activityevents_parent.userbasic = data_userbasics._id;
-
-            //Insert ActivityEvent Parent
-            await this.activityeventsService.create(Activityevents_parent);
-          } catch (error) {
-            await this.errorHandler.generateNotAcceptableException(
-              'Unabled to proceed, Failed create activity events parent. Error:' +
-              error,
-            );
-          }
-
-          //Create ActivityEvent child
-          try {
-            Activityevents_child._id = generate_id_Activityevents_child;
-            Activityevents_child.activityEventID = generate_activityEventID_Activityevents_child;
-            Activityevents_child.activityType = 'DEVICE_ACTIVITY';
-            Activityevents_child.active = true;
-            Activityevents_child.status = 'INITIAL';
-            Activityevents_child.target = 'ACTIVE';
-            Activityevents_child.event = 'AWAKE';
-            Activityevents_child._class = _class_ActivityEvent;
-            Activityevents_child.payload = {
-              login_location: {
-                latitude: latitude,
-                longitude: longitude,
-              },
-              logout_date: undefined,
-              login_date: current_date,
-              login_device: LoginRequest_.deviceId,
-              email: LoginRequest_.email,
-            };
-            Activityevents_child.createdAt = current_date;
-            Activityevents_child.updatedAt = current_date;
-            Activityevents_child.sequenceNumber = new Int32(1);
-            Activityevents_child.flowIsDone = false;
-            Activityevents_child.__v = undefined;
-            Activityevents_child.parentActivityEventID = generate_activityEventID_Activityevents_parent;
-            Activityevents_child.userbasic = data_userbasics._id;
-
-            //Insert ActivityEvent Parent
-            await this.activityeventsService.create(Activityevents_child);
-          } catch (error) {
-            await this.errorHandler.generateNotAcceptableException(
-              'Unabled to proceed, Failed create Activity events Child. Error:' + error,
-            );
-          }
-
-          var Id_user_userdevices = null;
-          //Userdevices != null
-          if (await this.utilsService.ceckData(data_userdevices)) {
-            //Get Userdevices
-            try {
-              var data_update = null;
-              if (LoginRequest_.devicetype != undefined) {
-                data_update = {
-                  active: true,
-                  devicetype: LoginRequest_.devicetype
-                };
-              } else {
-                data_update = {
-                  active: true
-                };
-              }
-              await this.userdevicesService.updatebyEmail(LoginRequest_.email, LoginRequest_.deviceId, data_update);
-              Id_user_userdevices = data_userdevices._id;
-            } catch (error) {
-              await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed, Failed update user devices. Error:' + error,
-              );
-            }
-          } else {
-            var CreateUserdeviceDto_ = new CreateUserdeviceDto();
-            //Create Userdevices
-            try {
-              Id_user_userdevices = (await this.utilsService.generateId()).toLowerCase();
-              CreateUserdeviceDto_._id = Id_user_userdevices;
-              CreateUserdeviceDto_.deviceID = LoginRequest_.deviceId;
-              CreateUserdeviceDto_.email = LoginRequest_.email;
-              CreateUserdeviceDto_.active = true;
-              CreateUserdeviceDto_._class = _class_UserDevices;
-              CreateUserdeviceDto_.createdAt = current_date;
-              CreateUserdeviceDto_.updatedAt = current_date;
-              if (LoginRequest_.devicetype != undefined) {
-                CreateUserdeviceDto_.devicetype = LoginRequest_.devicetype;
-              }
-              //Insert User Userdevices
-              await this.userdevicesService.create(CreateUserdeviceDto_);
-            } catch (error) {
-              await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed, Failed update user devices. Error:' + error,
-              );
-            }
-          }
-
-          //Update Devices Userauths
-          try {
-            //Get Devices Userauths
-            const data_userauths_devices_list = data_userauths.devices;
-
-            //Filter ID_user_userdevicesService Devices UserDevices
-            var filteredData = data_userauths_devices_list.filter(function (data_userauths_devices_list) {
-              return (JSON.parse(JSON.stringify(data_userauths_devices_list)).$id === Id_user_userdevices);
-            });
-
-            if (filteredData.length == 0) {
-              //Pust Devices Userauths
-              data_userauths_devices_list.push({
-                $ref: 'userdevices',
-                $id: Object(Id_user_userdevices),
-                $db: 'hyppe_trans_db',
-              });
-
-              await this.userauthsService.updatebyEmail(LoginRequest_.email, {
-                devices: data_userauths_devices_list,
-              });
-            }
-          } catch (error) {
-            await this.errorHandler.generateNotAcceptableException(
-              'Unabled to proceed, Failed update devices userauths. Error:' + error,
-            );
-          }
-          messages_response = 'Login successful';
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed, Data user auths not found',
+          );
         }
 
-        var datasetting = await this.settingsService.findAll();
+        if (_isEmailVerified) {
+          let messages_response;
+          if (Object.keys(data_activityevents).length > 0) {
+            var Activityevents_child = new CreateActivityeventsDto();
+            var generate_id_Activityevents_child = new mongoose.Types.ObjectId();
+            var generate_activityEventID_Activityevents_child = (await this.utilsService.generateId()).toLowerCase();
 
-        var ProfileDTO_ = new ProfileDTO();
-        ProfileDTO_ = await this.utilsService.generateProfile(LoginRequest_.email, 'LOGIN');
-        ProfileDTO_.token = 'Bearer ' + (await this.utilsService.generateToken(LoginRequest_.email, LoginRequest_.deviceId)).toString();
-        ProfileDTO_.refreshToken = data_jwtrefreshtoken.refresh_token_id;
-        ProfileDTO_.listSetting = datasetting;
+            var latitude = undefined;
+            var longitude = undefined;
+            if (LoginRequest_.location != undefined) {
+              if (LoginRequest_.location.latitude != undefined) {
+                latitude = LoginRequest_.location.latitude;
+              }
+              if (LoginRequest_.location.longitude != undefined) {
+                longitude = LoginRequest_.location.longitude;
+              }
+            }
+            //Create ActivityEvent child
+            try {
+              Activityevents_child._id = generate_id_Activityevents_child;
+              Activityevents_child.activityEventID =
+                generate_activityEventID_Activityevents_child;
+              Activityevents_child.activityType = 'DEVICE_ACTIVITY';
+              Activityevents_child.active = true;
+              Activityevents_child.status = 'INITIAL';
+              Activityevents_child.target = 'ACTIVE';
+              Activityevents_child.event = 'AWAKE';
+              Activityevents_child._class = _class_ActivityEvent;
+              Activityevents_child.payload = {
+                login_location: {
+                  latitude: latitude,
+                  longitude: longitude,
+                },
+                logout_date: undefined,
+                login_date: current_date,
+                login_device: LoginRequest_.deviceId,
+                email: LoginRequest_.email,
+              };
+              Activityevents_child.createdAt = current_date;
+              Activityevents_child.updatedAt = current_date;
+              Activityevents_child.sequenceNumber = new Int32(1);
+              Activityevents_child.flowIsDone = false;
+              Activityevents_child.__v = undefined;
+              Activityevents_child.parentActivityEventID =
+                data_activityevents[0].activityEventID;
+              Activityevents_child.userbasic =
+                data_userbasics._id;
 
-        var GlobalResponse_ = new GlobalResponse();
-        var GlobalMessages_ = new GlobalMessages();
-        GlobalMessages_.info = [messages_response];
+              //Insert ActivityEvent child
+              await this.activityeventsService.create(Activityevents_child);
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, Failed create Activity events Child. Error:' + error,
+              );
+            }
 
-        GlobalResponse_.response_code = 202;
-        GlobalResponse_.data = ProfileDTO_;
-        GlobalResponse_.messages = GlobalMessages_;
-        GlobalResponse_.version = await this.utilsService.getversion();
-        return GlobalResponse_;
+            //Update ActivityEvent Parent
+            try {
+              const data_transitions = data_activityevents[0].transitions;
+              data_transitions.push({
+                $ref: 'activityevents',
+                $id: new Object(generate_activityEventID_Activityevents_child),
+                $db: 'hyppe_trans_db',
+              });
+
+              //Update ActivityEvent Parent
+              const update_activityevents_parent =
+                await this.activityeventsService.update(
+                  {
+                    _id: data_activityevents[0]._id,
+                  },
+                  {
+                    transitions: data_transitions,
+                  },
+                );
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed Update Activity events Parent. Error:' +
+                error,
+              );
+            }
+            messages_response = 'Device activity logging successful';
+          } else {
+            var Activityevents_parent = new CreateActivityeventsDto();
+            var generate_id_Activityevents_parent = new mongoose.Types.ObjectId();
+            var generate_activityEventID_Activityevents_parent = (await this.utilsService.generateId()).toLowerCase();
+
+            var Activityevents_child = new CreateActivityeventsDto();
+            var generate_id_Activityevents_child = new mongoose.Types.ObjectId();
+            var generate_activityEventID_Activityevents_child = (await this.utilsService.generateId()).toLowerCase();
+
+            var latitude = undefined;
+            var longitude = undefined;
+            if (LoginRequest_.location != undefined) {
+              if (LoginRequest_.location.latitude != undefined) {
+                latitude = LoginRequest_.location.latitude;
+              }
+              if (LoginRequest_.location.longitude != undefined) {
+                longitude = LoginRequest_.location.longitude;
+              }
+            }
+
+            //Create ActivityEvent Parent
+            try {
+              Activityevents_parent._id = generate_id_Activityevents_parent;
+              Activityevents_parent.activityEventID = generate_activityEventID_Activityevents_parent;
+              Activityevents_parent.activityType = 'LOGIN';
+              Activityevents_parent.active = true;
+              Activityevents_parent.status = 'INITIAL';
+              Activityevents_parent.target = 'USER_LOGOUT';
+              Activityevents_parent.event = 'LOGIN';
+              Activityevents_parent._class = _class_ActivityEvent;
+              Activityevents_parent.payload = {
+                login_location: {
+                  latitude: latitude,
+                  longitude: longitude,
+                },
+                logout_date: undefined,
+                login_date: current_date,
+                login_device: LoginRequest_.deviceId,
+                email: LoginRequest_.email,
+              };
+              Activityevents_parent.createdAt = current_date;
+              Activityevents_parent.updatedAt = current_date;
+              Activityevents_parent.sequenceNumber = new Int32(0);
+              Activityevents_parent.flowIsDone = false;
+              Activityevents_parent.__v = undefined;
+              Activityevents_parent.transitions = [
+                {
+                  $ref: 'activityevents',
+                  $id: Object(generate_activityEventID_Activityevents_child),
+                  $db: 'hyppe_trans_db',
+                },
+              ];
+              Activityevents_parent.userbasic = data_userbasics._id;
+
+              //Insert ActivityEvent Parent
+              await this.activityeventsService.create(Activityevents_parent);
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, Failed create activity events parent. Error:' +
+                error,
+              );
+            }
+
+            //Create ActivityEvent child
+            try {
+              Activityevents_child._id = generate_id_Activityevents_child;
+              Activityevents_child.activityEventID = generate_activityEventID_Activityevents_child;
+              Activityevents_child.activityType = 'DEVICE_ACTIVITY';
+              Activityevents_child.active = true;
+              Activityevents_child.status = 'INITIAL';
+              Activityevents_child.target = 'ACTIVE';
+              Activityevents_child.event = 'AWAKE';
+              Activityevents_child._class = _class_ActivityEvent;
+              Activityevents_child.payload = {
+                login_location: {
+                  latitude: latitude,
+                  longitude: longitude,
+                },
+                logout_date: undefined,
+                login_date: current_date,
+                login_device: LoginRequest_.deviceId,
+                email: LoginRequest_.email,
+              };
+              Activityevents_child.createdAt = current_date;
+              Activityevents_child.updatedAt = current_date;
+              Activityevents_child.sequenceNumber = new Int32(1);
+              Activityevents_child.flowIsDone = false;
+              Activityevents_child.__v = undefined;
+              Activityevents_child.parentActivityEventID = generate_activityEventID_Activityevents_parent;
+              Activityevents_child.userbasic = data_userbasics._id;
+
+              //Insert ActivityEvent Parent
+              await this.activityeventsService.create(Activityevents_child);
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, Failed create Activity events Child. Error:' + error,
+              );
+            }
+
+            var Id_user_userdevices = null;
+            //Userdevices != null
+            if (await this.utilsService.ceckData(data_userdevices)) {
+              //Get Userdevices
+              try {
+                var data_update = null;
+                if (LoginRequest_.devicetype != undefined) {
+                  data_update = {
+                    active: true,
+                    devicetype: LoginRequest_.devicetype
+                  };
+                } else {
+                  data_update = {
+                    active: true
+                  };
+                }
+                await this.userdevicesService.updatebyEmail(LoginRequest_.email, LoginRequest_.deviceId, data_update);
+                Id_user_userdevices = data_userdevices._id;
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed, Failed update user devices. Error:' + error,
+                );
+              }
+            } else {
+              var CreateUserdeviceDto_ = new CreateUserdeviceDto();
+              //Create Userdevices
+              try {
+                Id_user_userdevices = (await this.utilsService.generateId()).toLowerCase();
+                CreateUserdeviceDto_._id = Id_user_userdevices;
+                CreateUserdeviceDto_.deviceID = LoginRequest_.deviceId;
+                CreateUserdeviceDto_.email = LoginRequest_.email;
+                CreateUserdeviceDto_.active = true;
+                CreateUserdeviceDto_._class = _class_UserDevices;
+                CreateUserdeviceDto_.createdAt = current_date;
+                CreateUserdeviceDto_.updatedAt = current_date;
+                if (LoginRequest_.devicetype != undefined) {
+                  CreateUserdeviceDto_.devicetype = LoginRequest_.devicetype;
+                }
+                //Insert User Userdevices
+                await this.userdevicesService.create(CreateUserdeviceDto_);
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed, Failed update user devices. Error:' + error,
+                );
+              }
+            }
+
+            //Update Devices Userauths
+            try {
+              //Get Devices Userauths
+              const data_userauths_devices_list = data_userauths.devices;
+
+              //Filter ID_user_userdevicesService Devices UserDevices
+              var filteredData = data_userauths_devices_list.filter(function (data_userauths_devices_list) {
+                return (JSON.parse(JSON.stringify(data_userauths_devices_list)).$id === Id_user_userdevices);
+              });
+
+              if (filteredData.length == 0) {
+                //Pust Devices Userauths
+                data_userauths_devices_list.push({
+                  $ref: 'userdevices',
+                  $id: Object(Id_user_userdevices),
+                  $db: 'hyppe_trans_db',
+                });
+
+                await this.userauthsService.updatebyEmail(LoginRequest_.email, {
+                  devices: data_userauths_devices_list,
+                });
+              }
+            } catch (error) {
+              await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, Failed update devices userauths. Error:' + error,
+              );
+            }
+            messages_response = 'Login successful';
+          }
+
+          if (LoginRequest_.referral != undefined && LoginRequest_.imei != undefined) {
+           
+            var data_refferal = await this.referralService.findOneInChild(LoginRequest_.email);
+            if (!(await this.utilsService.ceckData(data_refferal))) {
+              var data_imei = await this.referralService.findOneInIme(LoginRequest_.imei);
+              if (!(await this.utilsService.ceckData(data_imei))) {
+                var CreateReferralDto_ = new CreateReferralDto();
+                CreateReferralDto_._id = (await this.utilsService.generateId())
+                CreateReferralDto_.parent = LoginRequest_.referral;
+                CreateReferralDto_.children = LoginRequest_.email;
+                CreateReferralDto_.active = true;
+                CreateReferralDto_.verified = true;
+                CreateReferralDto_.createdAt = current_date;
+                CreateReferralDto_.updatedAt = current_date; 
+                CreateReferralDto_._class = "io.melody.core.domain.Referral";
+                await this.referralService.create(CreateReferralDto_);
+              }
+            }
+          }
+
+          var datasetting = await this.settingsService.findAll();
+
+          var ProfileDTO_ = new ProfileDTO();
+          ProfileDTO_ = await this.utilsService.generateProfile(LoginRequest_.email, 'LOGIN');
+          ProfileDTO_.token = 'Bearer ' + (await this.utilsService.generateToken(LoginRequest_.email, LoginRequest_.deviceId)).toString();
+          ProfileDTO_.refreshToken = data_jwtrefreshtoken.refresh_token_id;
+          ProfileDTO_.listSetting = datasetting;
+
+          var GlobalResponse_ = new GlobalResponse();
+          var GlobalMessages_ = new GlobalMessages();
+          GlobalMessages_.info = [messages_response];
+
+          GlobalResponse_.response_code = 202;
+          GlobalResponse_.data = ProfileDTO_;
+          GlobalResponse_.messages = GlobalMessages_;
+          GlobalResponse_.version = await this.utilsService.getversion();
+          return GlobalResponse_;
+        } else {
+          let messages_response;
+          var datasetting = await this.settingsService.findAll();
+
+          var ProfileDTO_ = new ProfileDTO();
+          ProfileDTO_ = await this.utilsService.generateProfile(LoginRequest_.email, 'LOGIN');
+          ProfileDTO_.token = 'Bearer ' + (await this.utilsService.generateToken(LoginRequest_.email, LoginRequest_.deviceId)).toString();
+          ProfileDTO_.refreshToken = data_jwtrefreshtoken.refresh_token_id;
+          ProfileDTO_.listSetting = datasetting;
+
+          var GlobalResponse_ = new GlobalResponse();
+          var GlobalMessages_ = new GlobalMessages();
+          GlobalMessages_.info = [messages_response];
+
+          GlobalResponse_.response_code = 202;
+          GlobalResponse_.data = ProfileDTO_;
+          GlobalResponse_.messages = GlobalMessages_;
+          GlobalResponse_.version = await this.utilsService.getversion();
+          return GlobalResponse_;
+          // await this.errorHandler.generateNotAcceptableException(
+          //   'Unabled to proceed, Data email not verified ',
+          // );
+        }
       } else {
         let messages_response;
         var datasetting = await this.settingsService.findAll();
@@ -409,13 +456,10 @@ export class AuthController {
         GlobalResponse_.messages = GlobalMessages_;
         GlobalResponse_.version = await this.utilsService.getversion();
         return GlobalResponse_;
-        // await this.errorHandler.generateNotAcceptableException(
-        //   'Unabled to proceed, Data email not verified ',
-        // );
       }
     } else {
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed, Data user basics and jwt not found',
+        'Unabled to proceed, Data user basics not found',
       );
     }
   }
