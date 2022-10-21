@@ -445,7 +445,7 @@ export class AuthController {
         var ProfileDTO_ = new ProfileDTO();
         ProfileDTO_ = await this.utilsService.generateProfile(LoginRequest_.email, 'LOGIN');
         ProfileDTO_.token = 'Bearer ' + (await this.utilsService.generateToken(LoginRequest_.email, LoginRequest_.deviceId)).toString();
-        ProfileDTO_.refreshToken = data_jwtrefreshtoken.refresh_token_id;
+        // ProfileDTO_.refreshToken = data_jwtrefreshtoken.refresh_token_id;
         ProfileDTO_.listSetting = datasetting;
 
         var GlobalResponse_ = new GlobalResponse();
