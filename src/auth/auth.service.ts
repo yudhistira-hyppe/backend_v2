@@ -1151,101 +1151,103 @@ export class AuthService {
 
                 if (req.body.referral != undefined && req.body.imei != undefined) {
 
-                  var data_refferal = await this.referralService.findOneInChild(req.body.email);
-                  if (!(await this.utilsService.ceckData(data_refferal))) {
-                    var data_imei = await this.referralService.findOneInIme(req.body.imei);
-                    if (!(await this.utilsService.ceckData(data_imei))) {
-                      var CreateReferralDto_ = new CreateReferralDto();
-                      CreateReferralDto_._id = (await this.utilsService.generateId())
-                      CreateReferralDto_.parent = req.body.referral;
-                      CreateReferralDto_.children = req.body.email;
-                      CreateReferralDto_.active = true;
-                      CreateReferralDto_.verified = true;
-                      CreateReferralDto_.createdAt = current_date;
-                      CreateReferralDto_.updatedAt = current_date;
-                      CreateReferralDto_.imei = req.body.imei;
-                      CreateReferralDto_._class = "io.melody.core.domain.Referral";
-                      await this.referralService.create(CreateReferralDto_);
+                  if (req.body.referral != "" && req.body.imei != "") {
+                    var data_refferal = await this.referralService.findOneInChild(req.body.email);
+                    if (!(await this.utilsService.ceckData(data_refferal))) {
+                      var data_imei = await this.referralService.findOneInIme(req.body.imei);
+                      if (!(await this.utilsService.ceckData(data_imei))) {
+                        var CreateReferralDto_ = new CreateReferralDto();
+                        CreateReferralDto_._id = (await this.utilsService.generateId())
+                        CreateReferralDto_.parent = req.body.referral;
+                        CreateReferralDto_.children = req.body.email;
+                        CreateReferralDto_.active = true;
+                        CreateReferralDto_.verified = true;
+                        CreateReferralDto_.createdAt = current_date;
+                        CreateReferralDto_.updatedAt = current_date;
+                        CreateReferralDto_.imei = req.body.imei;
+                        CreateReferralDto_._class = "io.melody.core.domain.Referral";
+                        await this.referralService.create(CreateReferralDto_);
 
-                      var _id_1 = (await this.utilsService.generateId());
-                      var _id_2 = (await this.utilsService.generateId());
-                      var _id_3 = (await this.utilsService.generateId());
-                      var _id_4 = (await this.utilsService.generateId());
+                        var _id_1 = (await this.utilsService.generateId());
+                        var _id_2 = (await this.utilsService.generateId());
+                        var _id_3 = (await this.utilsService.generateId());
+                        var _id_4 = (await this.utilsService.generateId());
 
-                      var CreateContenteventsDto1 = new CreateContenteventsDto();
-                      CreateContenteventsDto1._id = _id_1
-                      CreateContenteventsDto1.contentEventID = (await this.utilsService.generateId())
-                      CreateContenteventsDto1.email = req.body.referral
-                      CreateContenteventsDto1.eventType = "FOLLOWER"
-                      CreateContenteventsDto1.active = true
-                      CreateContenteventsDto1.event = "REQUEST"
-                      CreateContenteventsDto1.createdAt = current_date
-                      CreateContenteventsDto1.updatedAt = current_date
-                      CreateContenteventsDto1.sequenceNumber = 0
-                      CreateContenteventsDto1.flowIsDone = true
-                      CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
-                      CreateContenteventsDto1.senderParty = req.body.email
-                      CreateContenteventsDto1.transitions = [{
-                        $ref: 'contentevents',
-                        $id: Object(_id_2),
-                        $db: 'hyppe_trans_db',
-                      }]
+                        var CreateContenteventsDto1 = new CreateContenteventsDto();
+                        CreateContenteventsDto1._id = _id_1
+                        CreateContenteventsDto1.contentEventID = (await this.utilsService.generateId())
+                        CreateContenteventsDto1.email = req.body.referral
+                        CreateContenteventsDto1.eventType = "FOLLOWER"
+                        CreateContenteventsDto1.active = true
+                        CreateContenteventsDto1.event = "REQUEST"
+                        CreateContenteventsDto1.createdAt = current_date
+                        CreateContenteventsDto1.updatedAt = current_date
+                        CreateContenteventsDto1.sequenceNumber = 0
+                        CreateContenteventsDto1.flowIsDone = true
+                        CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
+                        CreateContenteventsDto1.senderParty = req.body.email
+                        CreateContenteventsDto1.transitions = [{
+                          $ref: 'contentevents',
+                          $id: Object(_id_2),
+                          $db: 'hyppe_trans_db',
+                        }]
 
-                      var CreateContenteventsDto2 = new CreateContenteventsDto();
-                      CreateContenteventsDto2._id = _id_2
-                      CreateContenteventsDto2.contentEventID = (await this.utilsService.generateId())
-                      CreateContenteventsDto2.email = req.body.referral
-                      CreateContenteventsDto2.eventType = "FOLLOWER"
-                      CreateContenteventsDto2.active = true
-                      CreateContenteventsDto2.event = "ACCEPT"
-                      CreateContenteventsDto2.createdAt = current_date
-                      CreateContenteventsDto2.updatedAt = current_date
-                      CreateContenteventsDto2.sequenceNumber = 1
-                      CreateContenteventsDto2.flowIsDone = true
-                      CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
-                      CreateContenteventsDto2.receiverParty = req.body.email
-                      CreateContenteventsDto2.parentContentEventID = _id_1
+                        var CreateContenteventsDto2 = new CreateContenteventsDto();
+                        CreateContenteventsDto2._id = _id_2
+                        CreateContenteventsDto2.contentEventID = (await this.utilsService.generateId())
+                        CreateContenteventsDto2.email = req.body.referral
+                        CreateContenteventsDto2.eventType = "FOLLOWER"
+                        CreateContenteventsDto2.active = true
+                        CreateContenteventsDto2.event = "ACCEPT"
+                        CreateContenteventsDto2.createdAt = current_date
+                        CreateContenteventsDto2.updatedAt = current_date
+                        CreateContenteventsDto2.sequenceNumber = 1
+                        CreateContenteventsDto2.flowIsDone = true
+                        CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+                        CreateContenteventsDto2.receiverParty = req.body.email
+                        CreateContenteventsDto2.parentContentEventID = _id_1
 
-                      var CreateContenteventsDto3 = new CreateContenteventsDto();
-                      CreateContenteventsDto3._id = _id_3
-                      CreateContenteventsDto3.contentEventID = (await this.utilsService.generateId())
-                      CreateContenteventsDto3.email = req.body.email
-                      CreateContenteventsDto3.eventType = "FOLLOWING"
-                      CreateContenteventsDto3.active = true
-                      CreateContenteventsDto3.event = "INITIAL"
-                      CreateContenteventsDto3.createdAt = current_date
-                      CreateContenteventsDto3.updatedAt = current_date
-                      CreateContenteventsDto3.sequenceNumber = 0
-                      CreateContenteventsDto3.flowIsDone = true
-                      CreateContenteventsDto3._class = "io.melody.hyppe.content.domain.ContentEvent"
-                      CreateContenteventsDto3.receiverParty = req.body.referral
-                      CreateContenteventsDto3.transitions = [{
-                        $ref: 'contentevents',
-                        $id: Object(_id_4),
-                        $db: 'hyppe_trans_db',
-                      }]
+                        var CreateContenteventsDto3 = new CreateContenteventsDto();
+                        CreateContenteventsDto3._id = _id_3
+                        CreateContenteventsDto3.contentEventID = (await this.utilsService.generateId())
+                        CreateContenteventsDto3.email = req.body.email
+                        CreateContenteventsDto3.eventType = "FOLLOWING"
+                        CreateContenteventsDto3.active = true
+                        CreateContenteventsDto3.event = "INITIAL"
+                        CreateContenteventsDto3.createdAt = current_date
+                        CreateContenteventsDto3.updatedAt = current_date
+                        CreateContenteventsDto3.sequenceNumber = 0
+                        CreateContenteventsDto3.flowIsDone = true
+                        CreateContenteventsDto3._class = "io.melody.hyppe.content.domain.ContentEvent"
+                        CreateContenteventsDto3.receiverParty = req.body.referral
+                        CreateContenteventsDto3.transitions = [{
+                          $ref: 'contentevents',
+                          $id: Object(_id_4),
+                          $db: 'hyppe_trans_db',
+                        }]
 
-                      var CreateContenteventsDto4 = new CreateContenteventsDto();
-                      CreateContenteventsDto4._id = _id_4
-                      CreateContenteventsDto4.contentEventID = (await this.utilsService.generateId())
-                      CreateContenteventsDto4.email = req.body.email
-                      CreateContenteventsDto4.eventType = "FOLLOWING"
-                      CreateContenteventsDto4.active = true
-                      CreateContenteventsDto4.event = "ACCEPT"
-                      CreateContenteventsDto4.createdAt = current_date
-                      CreateContenteventsDto4.updatedAt = current_date
-                      CreateContenteventsDto4.sequenceNumber = 1
-                      CreateContenteventsDto4.flowIsDone = true
-                      CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
-                      CreateContenteventsDto4.senderParty = req.body.referral
-                      CreateContenteventsDto4.parentContentEventID = _id_3
+                        var CreateContenteventsDto4 = new CreateContenteventsDto();
+                        CreateContenteventsDto4._id = _id_4
+                        CreateContenteventsDto4.contentEventID = (await this.utilsService.generateId())
+                        CreateContenteventsDto4.email = req.body.email
+                        CreateContenteventsDto4.eventType = "FOLLOWING"
+                        CreateContenteventsDto4.active = true
+                        CreateContenteventsDto4.event = "ACCEPT"
+                        CreateContenteventsDto4.createdAt = current_date
+                        CreateContenteventsDto4.updatedAt = current_date
+                        CreateContenteventsDto4.sequenceNumber = 1
+                        CreateContenteventsDto4.flowIsDone = true
+                        CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
+                        CreateContenteventsDto4.senderParty = req.body.referral
+                        CreateContenteventsDto4.parentContentEventID = _id_3
 
-                      await this.contenteventsService.create(CreateContenteventsDto1);
-                      await this.contenteventsService.create(CreateContenteventsDto2);
-                      await this.contenteventsService.create(CreateContenteventsDto3);
-                      await this.contenteventsService.create(CreateContenteventsDto4);
-                      await this.insightsService.updateFollower(req.body.referral);
-                      await this.insightsService.updateFollowing(req.body.email);
+                        await this.contenteventsService.create(CreateContenteventsDto1);
+                        await this.contenteventsService.create(CreateContenteventsDto2);
+                        await this.contenteventsService.create(CreateContenteventsDto3);
+                        await this.contenteventsService.create(CreateContenteventsDto4);
+                        await this.insightsService.updateFollower(req.body.referral);
+                        await this.insightsService.updateFollowing(req.body.email);
+                      }
                     }
                   }
                 }
