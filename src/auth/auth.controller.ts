@@ -474,7 +474,7 @@ export class AuthController {
                 await this.contenteventsService.create(CreateContenteventsDto3);
                 await this.contenteventsService.create(CreateContenteventsDto4);
                 await this.insightsService.updateFollower(LoginRequest_.referral);
-                await this.insightsService.updateFollower(LoginRequest_.email);
+                await this.insightsService.updateFollowing(LoginRequest_.email);
               }
             }
           }
