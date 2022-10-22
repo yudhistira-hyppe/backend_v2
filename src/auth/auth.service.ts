@@ -3988,7 +3988,7 @@ export class AuthService {
           var data_referral_parent = await this.referralService.findAllByChildren(user_email);
 
           return {
-            parent: data_referral_parent[0].parent,
+            parent: (await this.utilsService.ceckData(data_referral_parent))? data_referral_parent[0].parent:"",
             response_code: 202,
             data: data_referral.length,
             messages: {
