@@ -2069,6 +2069,10 @@ export class PostContentService {
       post.isOwned = false;
     }
 
+    if (body.active != undefined) {
+      post.active = body.active;
+    }    
+
 
     if (body.cats != undefined && body.cats.length > 1) {
       var obj = body.cats;
