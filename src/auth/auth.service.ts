@@ -1149,6 +1149,9 @@ export class AuthService {
                 data["status"] = 'IN_PROGRESS';
                 data["refreshToken"] = datajwtrefreshtoken_data.refresh_token_id;
 
+                console.log("---------------------------------------------------REQUEST---------------------------------------------------");
+                console.log(req.body);
+                console.log("---------------------------------------------------REQUEST---------------------------------------------------");
                 if (req.body.referral != undefined && req.body.imei != undefined) {
 
                   if (req.body.referral != "" && req.body.imei != "") {
