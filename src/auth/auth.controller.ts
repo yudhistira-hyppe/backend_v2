@@ -48,6 +48,7 @@ import { ContenteventsService } from '../content/contentevents/contentevents.ser
 import { InsightsService } from '../content/insights/insights.service';
 import { Long } from 'mongodb';
 import { OtpService } from './otp.service';
+import { SocmedService } from './socmed.service';
 
 @Controller()
 export class AuthController {
@@ -69,7 +70,7 @@ export class AuthController {
     private settingsService: SettingsService,
     private contenteventsService: ContenteventsService,
     private insightsService: InsightsService,
-    private otpService: OtpService,
+    private socmed: SocmedService,
   ) { }
 
   @UseGuards(LocalAuthGuard)
@@ -940,7 +941,7 @@ export class AuthController {
   @Post('api/user/signup/socmed')
   async signupsosmed(@Req() request: any) {
     this.logger.log("signupsosmed >>> start: " + JSON.stringify(request.body));
-    return await this.authService.signupsosmed(request);
+    return await this.socmed.signupsosmed(request);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
