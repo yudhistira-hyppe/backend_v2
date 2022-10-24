@@ -5487,7 +5487,7 @@ export class AuthService {
   }
 
   async signsosmed(req: any) {
-    this.logger.log("signsosmed >>> start: " + JSON.stringify(req));
+    this.logger.log("signsosmed >>> start: ");
     var user_email = req.body.email;
     var user_socmedSource = req.body.socmedSource;
     var user_deviceId = req.body.deviceId;
