@@ -1057,7 +1057,7 @@ export class GetusercontentsController {
                     "monetize": query[i].monetize,
                     "insight": query[i].insight,
                     "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "isApsara": query[i].apsara,
                     "media": datas
                 };
 
@@ -1147,7 +1147,7 @@ export class GetusercontentsController {
                     "monetize": query[i].monetize,
                     "insight": query[i].insight,
                     "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "isApsara": query[i].apsara,
                     "media": datas
                 };
 
@@ -1238,7 +1238,7 @@ export class GetusercontentsController {
                     "monetize": query[i].monetize,
                     "insight": query[i].insight,
                     "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "isApsara": query[i].apsara,
                     "media": datas
                 };
 
