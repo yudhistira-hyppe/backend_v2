@@ -4179,7 +4179,23 @@ export class AuthService {
           await this.contenteventsService.create(CreateContenteventsDto4);
           await this.insightsService.updateFollower(user_email_parent);
           await this.insightsService.updateFollowing(user_email_children);
+          return {
+            "response_code": 202,
+            "messages": {
+              "info": [
+                "The process successful"
+              ]
+            }
+          };
+        } else {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed, yours device already register',
+          );
         }
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, yours email already register',
+        );
       }
     }
   }
