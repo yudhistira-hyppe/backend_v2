@@ -4608,7 +4608,7 @@ export class AuthService {
   }
 
   async signupsosmed(req: any) {
-    this.logger.log("signupsosmed >>> start: " + JSON.stringify(req));
+    this.logger.log("signupsosmed >>> start: ");
     var user_email = null;
     var user_socmedSource = null;
     var user_deviceId = null;
@@ -5488,6 +5488,7 @@ export class AuthService {
 
   async signsosmed(req: any) {
     this.logger.log("signsosmed >>> start: ");
+    console.log(req);
     var user_email = req.body.email;
     var user_socmedSource = req.body.socmedSource;
     var user_deviceId = req.body.deviceId;
