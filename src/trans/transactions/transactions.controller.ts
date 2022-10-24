@@ -1410,136 +1410,153 @@ export class TransactionsController {
             throw new BadRequestException("The balance is not sufficient...!");
         }
         else {
-            if (norekdb !== null) {
+            if (norekdb !== null && statusInquiry === true) {
 
-                let datareqinquiry = new OyAccountInquirys();
-                datareqinquiry.bank_code = recipient_bank;
-                datareqinquiry.account_number = recipient_account;
-                nama = namarek.toLowerCase();
-                let datareqinq = await this.oyPgService.inquiryAccount(datareqinquiry);
-                var statuscode = datareqinq.status.code;
-                var account_name = datareqinq.account_name;
-                var namaakun = account_name.toLowerCase();
-
-
-                if (statuscode === "000") {
-
-                    if (nama === namaakun) {
-                        var stringId = (await this.generateNumber()).toString();
-                        var partnertrxid = "OYO" + stringId;
-                        await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
-                        await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
-                        //  await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, totalinquiry);
-                        //await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, valuebankcharge);
-                        OyDisbursements.partner_trx_id = partnertrxid;
-                        OyDisbursements.amount = totalamount;
-                        let datadisbursemen = await this.oyPgService.disbursement(OyDisbursements);
+                // let datareqinquiry = new OyAccountInquirys();
+                // datareqinquiry.bank_code = recipient_bank;
+                // datareqinquiry.account_number = recipient_account;
+                // nama = namarek.toLowerCase();
+                // let datareqinq = await this.oyPgService.inquiryAccount(datareqinquiry);
+                // var statuscode = datareqinq.status.code;
+                // var account_name = datareqinq.account_name;
+                // var namaakun = account_name.toLowerCase();
 
 
+                // if (statuscode === "000") {
 
-                        var statusdisb = datadisbursemen.status.code;
-                        var timeoy = datadisbursemen.timestamp;
-                        var splittimeoy = timeoy.split(" ");
-
-                        var substrtahun = splittimeoy[0].substring(10, 6);
-
-                        var substrbulan = splittimeoy[0].substring(5, 3);
-
-                        var substrtanggal = splittimeoy[0].substring(0, 2);
-
-                        var strdate = substrtahun + "-" + substrbulan + "-" + substrtanggal + " " + splittimeoy[1];
-
-
-                        if (statusdisb === "101") {
-
-                            var partnerTrxid = datadisbursemen.partner_trx_id;
-
-                            let reqinfo = new OyDisbursementStatus2();
-                            reqinfo.partner_trx_id = partnerTrxid;
-                            let infodisbursemen = await this.oyPgService.disbursementStatus(reqinfo);
-                            var statuscode = infodisbursemen.status.code;
-                            var statusmessage = infodisbursemen.status.message;
-
-                            if (statuscode === "000") {
-                                var dtburs = new Date(strdate);
-                                dtburs.setHours(dtburs.getHours() + 14); // timestamp
-                                dtburs = new Date(dtburs);
-                                var dtb = dtburs.toISOString();
-                                await this.accontbalanceWithdraw(iduser, valuedisbcharge, "disbursement");
-                                await this.accontbalanceAdminWitdraw("disbursement", idadmin, iduser, valuedisbcharge);
-                                let datawithdraw = new CreateWithdraws();
-                                datawithdraw.amount = amounreq;
-                                datawithdraw.bankVerificationCharge = mongoose.Types.ObjectId(idbankverificationcharge);
-                                datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
-                                datawithdraw.description = OyDisbursements.note;
-                                datawithdraw.idUser = iduser;
-                                datawithdraw.status = statusmessage;
-                                datawithdraw.timestamp = dtb;
-                                datawithdraw.verified = false;
-                                datawithdraw.partnerTrxid = partnertrxid;
-                                datawithdraw.statusOtp = null;
-                                datawithdraw.totalamount = totalamount;
-                                datawithdraw.idAccountBank = idbankaccount;
-                                var datatr = await this.withdrawsService.create(datawithdraw);
-                                await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
-
-                                try {
-
-                                    var data = {
-                                        "idUser": datatr.idUser,
-                                        "amount": datatr.amount,
-                                        "status": datatr.status,
-                                        "bankVerificationCharge": valuebankcharge,
-                                        "bankDisbursmentCharge": valuedisbcharge,
-                                        "timestamp": datatr.timestamp,
-                                        "verified": datatr.verified,
-                                        "description": datatr.description,
-                                        "partnerTrxid": datatr.partnerTrxid,
-                                        "statusOtp": datatr.statusOtp,
-                                        "totalamount": totalamount,
-                                        "_id": datatr._id
-                                    };
-
-                                    res.status(HttpStatus.OK).json({
-                                        response_code: 202,
-                                        "data": data,
-                                        "message": messages
-                                    });
-                                } catch (e) {
-                                    res.status(HttpStatus.BAD_REQUEST).json({
-
-                                        "message": messagesEror
-                                    });
-                                }
+                //     if (nama === namaakun) {
+                var stringId = (await this.generateNumber()).toString();
+                var partnertrxid = "OYO" + stringId;
+                // await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
+                // await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                //  await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, totalinquiry);
+                //await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, valuebankcharge);
+                OyDisbursements.partner_trx_id = partnertrxid;
+                OyDisbursements.amount = totalamount;
+                let datadisbursemen = await this.oyPgService.disbursement(OyDisbursements);
 
 
-                            } else {
-                                throw new BadRequestException(statusmessage);
-                            }
 
-                        } else {
-                            throw new BadRequestException("Failed disburstment");
+                var statusdisb = datadisbursemen.status.code;
+                var timeoy = datadisbursemen.timestamp;
+                var splittimeoy = timeoy.split(" ");
+
+                var substrtahun = splittimeoy[0].substring(10, 6);
+
+                var substrbulan = splittimeoy[0].substring(5, 3);
+
+                var substrtanggal = splittimeoy[0].substring(0, 2);
+
+                var strdate = substrtahun + "-" + substrbulan + "-" + substrtanggal + " " + splittimeoy[1];
+
+
+                if (statusdisb === "101") {
+
+                    var partnerTrxid = datadisbursemen.partner_trx_id;
+
+                    let reqinfo = new OyDisbursementStatus2();
+                    reqinfo.partner_trx_id = partnerTrxid;
+                    let infodisbursemen = await this.oyPgService.disbursementStatus(reqinfo);
+                    var statuscode = infodisbursemen.status.code;
+                    var statusmessage = infodisbursemen.status.message;
+
+                    if (statuscode === "000") {
+                        var dtburs = new Date(strdate);
+                        dtburs.setHours(dtburs.getHours() + 14); // timestamp
+                        dtburs = new Date(dtburs);
+                        var dtb = dtburs.toISOString();
+                        await this.accontbalanceWithdraw(iduser, valuedisbcharge, "disbursement");
+                        await this.accontbalanceAdminWitdraw("disbursement", idadmin, iduser, valuedisbcharge);
+                        let datawithdraw = new CreateWithdraws();
+                        datawithdraw.amount = amounreq;
+                        datawithdraw.bankVerificationCharge = mongoose.Types.ObjectId(idbankverificationcharge);
+                        datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
+                        datawithdraw.description = OyDisbursements.note;
+                        datawithdraw.idUser = iduser;
+                        datawithdraw.status = statusmessage;
+                        datawithdraw.timestamp = dtb;
+                        datawithdraw.verified = false;
+                        datawithdraw.partnerTrxid = partnertrxid;
+                        datawithdraw.statusOtp = null;
+                        datawithdraw.totalamount = totalamount;
+                        datawithdraw.idAccountBank = idbankaccount;
+                        var datatr = await this.withdrawsService.create(datawithdraw);
+                        await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
+
+                        try {
+
+                            var data = {
+                                "idUser": datatr.idUser,
+                                "amount": datatr.amount,
+                                "status": datatr.status,
+                                "bankVerificationCharge": valuebankcharge,
+                                "bankDisbursmentCharge": valuedisbcharge,
+                                "timestamp": datatr.timestamp,
+                                "verified": datatr.verified,
+                                "description": datatr.description,
+                                "partnerTrxid": datatr.partnerTrxid,
+                                "statusOtp": datatr.statusOtp,
+                                "totalamount": totalamount,
+                                "_id": datatr._id
+                            };
+
+                            res.status(HttpStatus.OK).json({
+                                response_code: 202,
+                                "data": data,
+                                "message": messages
+                            });
+                        } catch (e) {
+                            res.status(HttpStatus.BAD_REQUEST).json({
+
+                                "message": messagesEror
+                            });
                         }
 
 
                     } else {
-                        await this.userbankaccountsService.updateone(idbankaccount, "failed inquiry");
-                        await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
-                        // await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, valuebankcharge);
-                        res.status(HttpStatus.OK).json({
-                            response_code: 202,
-                            "message": "failed inquiry"
-                        });
-
+                        throw new BadRequestException(statusmessage);
                     }
+
                 }
+                else if (statusdisb == "208") {
+                    throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+                }
+                else if (statusdisb == "204") {
+                    throw new BadRequestException("Request is Rejected (Partner Tx ID is Not Found)");
+                }
+
                 else {
                     throw new BadRequestException("Disbursement is FAILED");
                 }
 
+
+                // } else {
+                //     await this.userbankaccountsService.updateone(idbankaccount, "failed inquiry");
+                //     await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
+                //     // await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, valuebankcharge);
+                //     res.status(HttpStatus.OK).json({
+                //         response_code: 202,
+                //         "message": "Nama Akun Bank tidak sama"
+                //     });
+
+                // }
+                // }
+                // else if (statusdisb == "208") {
+                //     throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+                // }
+                // else if (statusdisb == "201") {
+                //     throw new BadRequestException("Request is Rejected (User ID is not Found)");
+                // }
+                // else if (statusdisb == "209") {
+                //     throw new BadRequestException("Request is Rejected (Bank Account is not found)");
+                // }
+                // else {
+                //     throw new BadRequestException("Request is Rejected");
+                // }
+
             }
             else {
-                throw new BadRequestException("Data not found...!");
+                throw new BadRequestException("Account Bank is not found...!");
             }
         }
 
@@ -1887,7 +1904,7 @@ export class TransactionsController {
                     "amount": amount,
                     "totalAmount": totalamount,
                     "adminFee": valuedisbcharge,
-                    "chargeInquiry": valuebankcharge,
+                    "chargeInquiry": 0,
                     "statusInquiry": statusInquiry
                 }
                 res.status(HttpStatus.OK).json({
