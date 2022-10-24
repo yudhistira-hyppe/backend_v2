@@ -939,6 +939,7 @@ export class AuthController {
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/signup/socmed')
   async signupsosmed(@Req() request: any) {
+    this.logger.log("signupsosmed >>> start: " + JSON.stringify(request.body));
     return await this.authService.signupsosmed(request);
   }
 
