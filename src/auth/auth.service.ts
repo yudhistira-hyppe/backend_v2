@@ -5855,7 +5855,10 @@ export class AuthService {
               const interests = await this.interestsRepoService.findOne(
                 interests_json.$id,
               );
-              interests_array[i] = interests.interestName;
+              if (interests != undefined) {
+                interests_array[i] = interests.interestName;
+              }
+
             }
           }
         }
@@ -5911,16 +5914,19 @@ export class AuthService {
           mediaprofilepicts_res["mediaEndpoint"] = result;
         }
 
-        var insights_res = {
-          shares: insights.shares,
-          followers: insights.followers,
-          comments: insights.comments,
-          followings: insights.followings,
-          reactions: insights.reactions,
-          posts: insights.posts,
-          views: insights.views,
-          likes: insights.likes,
-        };
+        var insights_res = {};
+        if (insights != undefined) {
+          insights_res = {
+            shares: insights.shares,
+            followers: insights.followers,
+            comments: insights.comments,
+            followings: insights.followings,
+            reactions: insights.reactions,
+            posts: insights.posts,
+            views: insights.views,
+            likes: insights.likes,
+          };
+        }
 
         var token = (
           await this.utilsService.generateToken(user_email, user_deviceId)
