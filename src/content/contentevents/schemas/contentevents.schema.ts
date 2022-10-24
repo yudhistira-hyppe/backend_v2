@@ -33,7 +33,17 @@ senderParty: String;
 @Prop()
 receiverParty: String;
 @Prop()
-_class:String
+    _class: String
+    @Prop()
+    parentContentEventID: String;
+    @Prop()
+    transitions: [
+        {
+            $ref: String;
+            $id: { oid: String };
+            $db: String;
+        },
+    ];
 }
 
 export const ContenteventsSchema = SchemaFactory.createForClass(Contentevents);

@@ -15,9 +15,7 @@ export class ContenteventsService {
   async create(
     CreateContenteventsDto: CreateContenteventsDto,
   ): Promise<Contentevents> {
-    const createContenteventsDto = await this.ContenteventsModel.create(
-      CreateContenteventsDto,
-    );
+    const createContenteventsDto = await this.ContenteventsModel.create(CreateContenteventsDto);
     return createContenteventsDto;
   }
 

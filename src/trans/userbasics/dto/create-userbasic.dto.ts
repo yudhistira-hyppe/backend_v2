@@ -76,6 +76,7 @@ export class CreateUserbasicDto {
   otppinVerified: Boolean;
   otp_attemp: number;
   statusKyc: string;
+  timeEmailSend: string;
 }
 
 export class SearchUserbasicDto {

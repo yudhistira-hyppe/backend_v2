@@ -40,6 +40,14 @@ export class ReferralService {
     return this.referralModel.findOne({ _id: id }).exec();
   }
 
+  async findOneInChild(email: string): Promise<Referral> {
+    return this.referralModel.findOne({ children: email }).exec();
+  }
+
+  async findOneInIme(imei: string): Promise<Referral> {
+    return this.referralModel.findOne({ imei: imei }).exec();
+  }
+
   async delete(id: string) {
     const deletedCat = await this.referralModel
       .findByIdAndRemove({ _id: id })
