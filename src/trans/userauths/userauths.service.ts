@@ -23,11 +23,11 @@ export class UserauthsService {
   }
 
   async findOneUsername(username: String): Promise<Userauth> {
-    return this.userauthModel.findOne({ username: username }).exec();
+    return this.userauthModel.findOne({ username: username, isEmailVerified: true, isEnabled: true }).exec();
   }
 
   async findOneemail(email: String): Promise<Userauth> {
-    return this.userauthModel.findOne({ email: email }).exec();
+    return this.userauthModel.findOne({ email: email, isEmailVerified: true, isEnabled: true }).exec();
   }
 
   async findById(id: String): Promise<Userauth> {
