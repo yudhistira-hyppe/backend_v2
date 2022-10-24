@@ -1208,7 +1208,6 @@ export class AuthService {
                         CreateContenteventsDto2.flowIsDone = true
                         CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
                         CreateContenteventsDto2.receiverParty = req.body.email
-                        CreateContenteventsDto2.parentContentEventID = _id_1
 
                         // var CreateContenteventsDto3 = new CreateContenteventsDto();
                         // CreateContenteventsDto3._id = _id_3
@@ -1242,7 +1241,6 @@ export class AuthService {
                         CreateContenteventsDto4.flowIsDone = true
                         CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
                         CreateContenteventsDto4.senderParty = req.body.referral
-                        CreateContenteventsDto4.parentContentEventID = _id_3
 
                         //await this.contenteventsService.create(CreateContenteventsDto1);
                         await this.contenteventsService.create(CreateContenteventsDto2);
@@ -4018,95 +4016,187 @@ export class AuthService {
 
   async referral(req: any, head: any): Promise<any> {
     var user_email_parent = null;
+    var user_username_parent = null;
+    var user_imei_children = null;
     var user_email_children = null;
-    var user_username_childen = null;
     var email_ceck = false;
+    var current_date = await this.utilsService.getDateTimeString();
 
     if (head['x-auth-user'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
+        'Unabled to proceed, required param email header',
       );
     } else {
-      user_email_parent = head['x-auth-user'];
+      user_email_children = head['x-auth-user'];
     }
+
+    if (req.body.imei == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, required param imei',
+      );
+    } else {
+      user_imei_children = req.body.imei;
+    }
+
     if (req.body.email == undefined) {
-      email_ceck = true;
-      user_username_childen = req.body.username;
+      if (req.body.username != undefined) {
+        email_ceck = true;
+        user_username_parent = req.body.username;
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, required param email or username',
+        );
+      }
     } else {
       email_ceck = false;
-      user_email_children = req.body.email;
+      user_email_parent = req.body.email;
     }
-    var current_date = await this.utilsService.getDateTimeString();
 
-    var datauserbasicsService_parent = null;
-    var datauserbasicsService_children = null;
+    var datauserauthService_parent = null;
+    var datauserauthService_children = null;
 
-    //Ceck User Userbasics parent
-    datauserbasicsService_parent = await this.userbasicsService.findOne(
-      user_email_parent,
-    );
+    //Ceck User auth child
+    datauserauthService_children = await this.userauthsService.findOneemail(user_email_children);
+    if (!(await this.utilsService.ceckData(datauserauthService_children))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, user not found or not active',
+      );
+    }
 
     if (email_ceck) {
-      //Ceck User Userbasics children
-      datauserbasicsService_children = await this.userbasicsService.findOneUsername(
-        user_username_childen,
-      );
+      //Ceck User auth parent
+      datauserauthService_parent = await this.userauthsService.findOneUsername(user_username_parent);
+      if (await this.utilsService.ceckData(datauserauthService_parent)){
+        user_email_parent = datauserauthService_parent.email;
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, Data user parent referral not found',
+        );
+      }
     } else {
-      //Ceck User Userbasics children
-      datauserbasicsService_children = await this.userbasicsService.findOne(
-        user_email_children,
-      );
+      //Ceck User auth parent
+      datauserauthService_parent = await this.userauthsService.findOneemail(user_email_parent);
+      if (!(await this.utilsService.ceckData(datauserauthService_parent))) {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, Data user parent referral not found',
+        );
+      }
     }
-    if (await datauserbasicsService_parent != null && await datauserbasicsService_children != null) {
-      if ((await this.utilsService.ceckData(datauserbasicsService_parent)) && (await this.utilsService.ceckData(datauserbasicsService_children))) {
-        try {
-          if (email_ceck) {
-            user_email_children = user_email_children;
-          } else {
-            user_email_children = datauserbasicsService_children.email;
-          }
-          //Ceck User Referral parent children
-          const data_referral_parent_children = await this.referralService.findAllByParentChildren(
-            user_email_parent, user_email_children,
-          );
 
-          if (!(await this.utilsService.ceckData(data_referral_parent_children))) {
-            var CreateReferralDto_ = new CreateReferralDto();
+    if (user_email_parent != "" && user_imei_children != "") {
+      var data_refferal = await this.referralService.findOneInChild(user_email_children);
+      if (!(await this.utilsService.ceckData(data_refferal))) {
+        var data_imei = await this.referralService.findOneInIme(user_imei_children);
+        if (!(await this.utilsService.ceckData(data_imei))) {
+          var CreateReferralDto_ = new CreateReferralDto();
+          CreateReferralDto_._id = (await this.utilsService.generateId())
+          CreateReferralDto_.parent = user_email_parent;
+          CreateReferralDto_.children = user_email_children;
+          CreateReferralDto_.active = true;
+          CreateReferralDto_.verified = true;
+          CreateReferralDto_.createdAt = current_date;
+          CreateReferralDto_.updatedAt = current_date;
+          CreateReferralDto_.imei = user_imei_children;
+          CreateReferralDto_._class = "io.melody.core.domain.Referral";
+          await this.referralService.create(CreateReferralDto_);
 
-            CreateReferralDto_._id = await this.utilsService.generateId();
-            CreateReferralDto_.parent = user_email_parent;
-            CreateReferralDto_.children = user_email_children;
-            CreateReferralDto_.active = true;
-            CreateReferralDto_.verified = true;
-            CreateReferralDto_.createdAt = current_date;
-            CreateReferralDto_.updatedAt = current_date;
-            CreateReferralDto_._class = 'io.melody.core.domain.Referral';
-            if (req.body.imei != undefined) {
-              CreateReferralDto_.imei = req.body.imei;
-            }
-            //Create User Referral
-            await this.referralService.create(CreateReferralDto_);
-          }
+          var _id_1 = (await this.utilsService.generateId());
+          var _id_2 = (await this.utilsService.generateId());
+          var _id_3 = (await this.utilsService.generateId());
+          var _id_4 = (await this.utilsService.generateId());
+
+          // var CreateContenteventsDto1 = new CreateContenteventsDto();
+          // CreateContenteventsDto1._id = _id_1
+          // CreateContenteventsDto1.contentEventID = (await this.utilsService.generateId())
+          // CreateContenteventsDto1.email = LoginRequest_.referral
+          // CreateContenteventsDto1.eventType = "FOLLOWER"
+          // CreateContenteventsDto1.active = true
+          // CreateContenteventsDto1.event = "REQUEST"
+          // CreateContenteventsDto1.createdAt = current_date
+          // CreateContenteventsDto1.updatedAt = current_date
+          // CreateContenteventsDto1.sequenceNumber = 0
+          // CreateContenteventsDto1.flowIsDone = true
+          // CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
+          // CreateContenteventsDto1.senderParty = LoginRequest_.email
+          // CreateContenteventsDto1.transitions = [{
+          //   $ref: 'contentevents',
+          //   $id: Object(_id_2),
+          //   $db: 'hyppe_trans_db',
+          // }]
+
+          var CreateContenteventsDto2 = new CreateContenteventsDto();
+          CreateContenteventsDto2._id = _id_2
+          CreateContenteventsDto2.contentEventID = (await this.utilsService.generateId())
+          CreateContenteventsDto2.email = user_email_parent
+          CreateContenteventsDto2.eventType = "FOLLOWER"
+          CreateContenteventsDto2.active = true
+          CreateContenteventsDto2.event = "ACCEPT"
+          CreateContenteventsDto2.createdAt = current_date
+          CreateContenteventsDto2.updatedAt = current_date
+          CreateContenteventsDto2.sequenceNumber = 1
+          CreateContenteventsDto2.flowIsDone = true
+          CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+          CreateContenteventsDto2.receiverParty = user_email_children
+          CreateContenteventsDto2.parentContentEventID = _id_1
+
+          // var CreateContenteventsDto3 = new CreateContenteventsDto();
+          // CreateContenteventsDto3._id = _id_3
+          // CreateContenteventsDto3.contentEventID = (await this.utilsService.generateId())
+          // CreateContenteventsDto3.email = LoginRequest_.email
+          // CreateContenteventsDto3.eventType = "FOLLOWING"
+          // CreateContenteventsDto3.active = true
+          // CreateContenteventsDto3.event = "INITIAL"
+          // CreateContenteventsDto3.createdAt = current_date
+          // CreateContenteventsDto3.updatedAt = current_date
+          // CreateContenteventsDto3.sequenceNumber = 0
+          // CreateContenteventsDto3.flowIsDone = true
+          // CreateContenteventsDto3._class = "io.melody.hyppe.content.domain.ContentEvent"
+          // CreateContenteventsDto3.receiverParty = LoginRequest_.referral
+          // CreateContenteventsDto3.transitions = [{
+          //   $ref: 'contentevents',
+          //   $id: Object(_id_4),
+          //   $db: 'hyppe_trans_db',
+          // }]
+
+          var CreateContenteventsDto4 = new CreateContenteventsDto();
+          CreateContenteventsDto4._id = _id_4
+          CreateContenteventsDto4.contentEventID = (await this.utilsService.generateId())
+          CreateContenteventsDto4.email = user_email_children
+          CreateContenteventsDto4.eventType = "FOLLOWING"
+          CreateContenteventsDto4.active = true
+          CreateContenteventsDto4.event = "ACCEPT"
+          CreateContenteventsDto4.createdAt = current_date
+          CreateContenteventsDto4.updatedAt = current_date
+          CreateContenteventsDto4.sequenceNumber = 1
+          CreateContenteventsDto4.flowIsDone = true
+          CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
+          CreateContenteventsDto4.senderParty = user_email_parent
+          CreateContenteventsDto4.parentContentEventID = _id_3
+
+          //await this.contenteventsService.create(CreateContenteventsDto1);
+          await this.contenteventsService.create(CreateContenteventsDto2);
+          //await this.contenteventsService.create(CreateContenteventsDto3);
+          await this.contenteventsService.create(CreateContenteventsDto4);
+          await this.insightsService.updateFollower(user_email_parent);
+          await this.insightsService.updateFollowing(user_email_children);
           return {
-            response_code: 202,
-            messages: {
-              info: ['The process successful'],
+            "response_code": 202,
+            "messages": {
+              "info": [
+                "The process successful"
+              ]
             }
-          }
-        } catch (error) {
+          };
+        } else {
           await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed ' + error,
+            'Unabled to proceed, yours device already register',
           );
         }
       } else {
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed',
+          'Unabled to proceed, yours email already register',
         );
       }
-    } else {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
-      );
     }
   }
 

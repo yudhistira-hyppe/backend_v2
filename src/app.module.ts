@@ -85,6 +85,7 @@ import { ReportreasonsModule } from './trans/reportreasons/reportreasons.module'
 import { ReportuserModule } from './trans/reportuser/reportuser.module';
 import { BullModule } from '@nestjs/bull';
 import { UserbasicsnewModule } from './trans/newuserbasic/userbasicsnew.module';
+import { AppGateway } from './app.gateway';
 @Module({
   imports: [
     BullModule.forRootAsync({
@@ -191,6 +192,6 @@ import { UserbasicsnewModule } from './trans/newuserbasic/userbasicsnew.module';
     AdrolesModule,
     AuthModule,
 
-  ],
+  ], providers: [AppGateway],
 })
 export class AppModule { }

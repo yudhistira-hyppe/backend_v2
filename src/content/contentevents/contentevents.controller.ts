@@ -1,4 +1,4 @@
-import { Body, Headers,Controller, Delete, Get, Param, Post,UseGuards, HttpCode, HttpStatus } from '@nestjs/common';
+import { Body, Headers,Controller, Delete, Get, Param, Post,UseGuards, HttpCode, HttpStatus, Req } from '@nestjs/common';
 import { ContenteventsService } from './contentevents.service';
 import { CreateContenteventsDto } from './dto/create-contentevents.dto';
 import { Contentevents } from './schemas/contentevents.schema';
@@ -6,6 +6,7 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { GroupModuleService } from '../../trans/usermanagement/groupmodule/groupmodule.service';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
+import { request } from 'http';
 
 @Controller()
 export class ContenteventsController {
@@ -143,5 +144,27 @@ export class ContenteventsController {
         info: ['Succes Get Friend'],
       },
     };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/posts/interactive')
+  async interactive(@Req() request: any, @Headers() headers) {
+    if (headers['x-auth-user'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed auth-user undefined',
+      );
+    }
+    if (request.body.eventType == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, param eventType is required',
+      );
+    }
+    if (request.body.receiverParty == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, param eventType is required',
+      );
+    }
+    //return this.ContenteventsService.interactive(request);
   }
 }
