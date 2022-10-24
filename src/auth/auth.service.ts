@@ -4065,7 +4065,7 @@ export class AuthService {
 
     if (email_ceck) {
       //Ceck User auth parent
-      datauserauthService_parent = await this.userauthsService.findOneUsername(user_email_parent);
+      datauserauthService_parent = await this.userauthsService.findOneUsername(user_username_parent);
       if (await this.utilsService.ceckData(datauserauthService_parent)){
         user_email_parent = datauserauthService_parent.email;
       } else {
