@@ -1084,7 +1084,7 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
-  @Post('api/sign/socmed')
+  @Post('api/user/signup/socmed')
   async signsosmed(@Req() request: any) {
     var deviceId = null;
     var socmedSource = null;

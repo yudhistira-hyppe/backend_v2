@@ -1,4 +1,4 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { Injectable, Logger, NotAcceptableException } from '@nestjs/common';
 import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken.service';
 import { UserauthsService } from '../trans/userauths/userauths.service';
 import { UserbasicsService } from '../trans/userbasics/userbasics.service';
@@ -39,6 +39,9 @@ import { PostsService } from '../content/posts/posts.service';
 
 @Injectable()
 export class AuthService {
+
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private userbasicsnewService: UserbasicsnewService,
     private userauthsService: UserauthsService,
@@ -4605,6 +4608,7 @@ export class AuthService {
   }
 
   async signupsosmed(req: any) {
+    this.logger.log("signupsosmed >>> start: " + JSON.stringify(req));
     var user_email = null;
     var user_socmedSource = null;
     var user_deviceId = null;
@@ -4992,7 +4996,7 @@ export class AuthService {
             isEmailVerified: "true",
             token: token,
             idProofStatus: "IN_PROGRESS",
-            insight: {
+            painsight: {
               shares: new Double(0),
               followers: new Double(0),
               comments: new Double(0),
@@ -5483,6 +5487,7 @@ export class AuthService {
   }
 
   async signsosmed(req: any) {
+    this.logger.log("signsosmed >>> start: " + JSON.stringify(req));
     var user_email = req.body.email;
     var user_socmedSource = req.body.socmedSource;
     var user_deviceId = req.body.deviceId;
