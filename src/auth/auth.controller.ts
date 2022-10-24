@@ -1090,7 +1090,7 @@ export class AuthController {
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/signup/socmed')
   async signsosmed(@Req() request: any) {
-    this.logger.log("signsosmed >>> start: " + JSON.stringify(request));
+    this.logger.log("signsosmed >>> start: ");
     var deviceId = null;
     var socmedSource = null;
     var devicetype = null;
