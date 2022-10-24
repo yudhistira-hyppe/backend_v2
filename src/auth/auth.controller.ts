@@ -16,6 +16,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -53,6 +54,9 @@ import { CreateContenteventsDto } from '../content/contentevents/dto/create-cont
 
 @Controller()
 export class AuthController {
+
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     private errorHandler: ErrorHandler,
     private authService: AuthService,
@@ -1086,6 +1090,7 @@ export class AuthController {
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/signup/socmed')
   async signsosmed(@Req() request: any) {
+    this.logger.log("signsosmed >>> start: " + JSON.stringify(request));
     var deviceId = null;
     var socmedSource = null;
     var devicetype = null;
