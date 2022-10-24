@@ -937,13 +937,13 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
-  @Post('api/signup/socmed')
+  @Post('api/user/signup/socmed')
   async signupsosmed(@Req() request: any) {
     return await this.authService.signupsosmed(request);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
-  @Post('api/user/signup/socmed')
+  @Post('api/sign/socmed')
   async signsosmed(@Req() request: any) {
     this.logger.log("signsosmed >>> start: " + JSON.stringify(request.body));
     var deviceId = null;
