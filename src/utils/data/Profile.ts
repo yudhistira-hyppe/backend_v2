@@ -4,6 +4,7 @@ import { DivisionDto } from "src/trans/usermanagement/division/dto/division.dto"
 import { GroupDto } from "src/trans/usermanagement/group/dto/group.dto";
 
 export class ProfileDTO {
+    iduser: Object;
     profileID: String;
     username: String;
     password: String;
@@ -52,7 +53,7 @@ export class ProfileDTO {
     referralCount: String;
     children: Array<CreateReferralDto>;
     listSetting: any[];
-    pin_verified: boolean; 
+    pin_verified: boolean;
     pin_create: boolean;
     statusKyc: String;
 }

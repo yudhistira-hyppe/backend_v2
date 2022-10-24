@@ -781,6 +781,8 @@ export class UtilsService {
       ProfileDTO_.otpToken = get_userauth.otpToken;
       ProfileDTO_.otpToken = get_userauth.otpToken;
       ProfileDTO_.authEmail = get_userauth.email;
+      ProfileDTO_.iduser = get_userbasic._id;
+      ProfileDTO_.profileID = get_userbasic.profileID;
       //ProfileDTO_.token =
       //ProfileDTO_.refreshToken =
       //ProfileDTO_.userProfile =
@@ -856,6 +858,8 @@ export class UtilsService {
         }
         ProfileDTO_.pin_create = pin_create;
         ProfileDTO_.pin_verified = otppinVerified;
+        ProfileDTO_.iduser = get_userbasic._id;
+        ProfileDTO_.profileID = get_userbasic.profileID;
         if (get_userbasic.statusKyc != undefined) {
           ProfileDTO_.statusKyc = get_userbasic.statusKyc;
         } else {
