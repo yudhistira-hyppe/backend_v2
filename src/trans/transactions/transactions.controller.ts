@@ -4706,6 +4706,9 @@ export class TransactionsController {
         var startdate = null;
         var enddate = null;
         var limit = null;
+        var iduser = null;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
             limit = request_json["limit"];
         } else {
@@ -4720,9 +4723,11 @@ export class TransactionsController {
         status = request_json["status"];
         startdate = request_json["startdate"];
         enddate = request_json["enddate"];
-        let data = await this.transactionsService.findhistoryBuyVoucher(key, status, startdate, enddate, page, limit);
+        iduser = request_json["iduser"];
+        var userid = mongoose.Types.ObjectId(iduser);
+        let data = await this.transactionsService.findhistoryBuyVoucher(key, userid, status, startdate, enddate, page, limit);
         var total = data.length;
-        let datasearch = await this.transactionsService.findhistoryBuyVoucherCount(key, status, startdate, enddate);
+        let datasearch = await this.transactionsService.findhistoryBuyVoucherCount(key, userid, status, startdate, enddate);
         var total = data.length;
         var totalsearch = datasearch.length;
         var allrow = await this.transactionsService.totalcountVoucher();
