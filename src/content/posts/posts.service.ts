@@ -28,6 +28,7 @@ import { MediapictsService } from '../../content/mediapicts/mediapicts.service';
 import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userplaylist.dto';
 import { UserplaylistService } from '../../trans/userplaylist/userplaylist.service';
 import { InjectQueue, Process, Processor } from '@nestjs/bull';
+
 import { Queue, Job } from 'bull';
 
 
@@ -54,6 +55,7 @@ export class PostsService {
     private readonly mediapictsService: MediapictsService,
     private readonly configService: ConfigService,
     private readonly userplaylistService: UserplaylistService,
+
   ) { }
 
   async create(CreatePostsDto: CreatePostsDto): Promise<Posts> {
@@ -79,7 +81,7 @@ export class PostsService {
 
   async findUserPost(email: string): Promise<number> {
     return this.PostsModel.where('email', email).where('active', true).where('postType').ne('story').count();
-  }  
+  }
 
   async findByPostId(postID: string): Promise<Posts> {
     return this.PostsModel.findOne({ postID: postID }).exec();
@@ -2915,7 +2917,74 @@ export class PostsService {
               default: ''
             }
           },
-
+          apsaraId: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediapicts"
+                    ]
+                  },
+                  then: "$mediapict.apsaraId"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediadiaries"
+                    ]
+                  },
+                  then: "$mediadiaries.apsaraId"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediavideos"
+                    ]
+                  },
+                  then: "$mediavideos.apsaraId"
+                }
+              ],
+              default: false
+            }
+          },
+          apsara: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediapicts"
+                    ]
+                  },
+                  then: "$mediapict.apsara"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediadiaries"
+                    ]
+                  },
+                  then: "$mediadiaries.apsara"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediavideos"
+                    ]
+                  },
+                  then: "$mediavideos.apsara"
+                }
+              ],
+              default: false
+            }
+          },
           fullName: '$fullName',
           username: '$auth.username',
           createdAt: '$createdAt',
@@ -2947,6 +3016,7 @@ export class PostsService {
       { $skip: skip },
       { $limit: limit },
     ]);
+
     return query;
   }
   async findcontentfilterTags(keys: string, skip: number, limit: number) {
