@@ -1410,7 +1410,7 @@ export class TransactionsController {
             throw new BadRequestException("The balance is not sufficient...!");
         }
         else {
-            if (norekdb !== null) {
+            if (norekdb !== null || norekdb !== undefined) {
 
                 let datareqinquiry = new OyAccountInquirys();
                 datareqinquiry.bank_code = recipient_bank;
@@ -1517,8 +1517,16 @@ export class TransactionsController {
                                 throw new BadRequestException(statusmessage);
                             }
 
-                        } else {
-                            throw new BadRequestException("Failed disburstment");
+                        }
+                        else if (statusdisb == "208") {
+                            throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+                        }
+                        else if (statusdisb == "204") {
+                            throw new BadRequestException("Request is Rejected (Partner Tx ID is Not Found)");
+                        }
+
+                        else {
+                            throw new BadRequestException("Disbursement is FAILED");
                         }
 
 
@@ -1528,18 +1536,27 @@ export class TransactionsController {
                         // await this.accontbalanceAdminWitdraw("inquiry", idadmin, iduser, valuebankcharge);
                         res.status(HttpStatus.OK).json({
                             response_code: 202,
-                            "message": "failed inquiry"
+                            "message": "Nama Akun Bank tidak sama"
                         });
 
                     }
                 }
+                else if (statusdisb == "208") {
+                    throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+                }
+                else if (statusdisb == "201") {
+                    throw new BadRequestException("Request is Rejected (User ID is not Found)");
+                }
+                else if (statusdisb == "209") {
+                    throw new BadRequestException("Request is Rejected (Bank Account is not found)");
+                }
                 else {
-                    throw new BadRequestException("Disbursement is FAILED");
+                    throw new BadRequestException("Request is Rejected");
                 }
 
             }
             else {
-                throw new BadRequestException("Data not found...!");
+                throw new BadRequestException("Account Bank is not found...!");
             }
         }
 
@@ -1887,7 +1904,7 @@ export class TransactionsController {
                     "amount": amount,
                     "totalAmount": totalamount,
                     "adminFee": valuedisbcharge,
-                    "chargeInquiry": valuebankcharge,
+                    "chargeInquiry": 0,
                     "statusInquiry": statusInquiry
                 }
                 res.status(HttpStatus.OK).json({
