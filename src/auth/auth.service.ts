@@ -4084,7 +4084,7 @@ export class AuthService {
     }
 
     if (user_email_parent != "" && user_imei_children != "") {
-      var data_refferal = await this.referralService.findOneInChild(user_email_children);
+      var data_refferal = await this.referralService.findOneInChildParent(user_email_children, user_email_parent);
       if (!(await this.utilsService.ceckData(data_refferal))) {
         var data_imei = await this.referralService.findOneInIme(user_imei_children);
         if (!(await this.utilsService.ceckData(data_imei))) {
@@ -4194,7 +4194,7 @@ export class AuthService {
         }
       } else {
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, yours email already register',
+          'Unabled to proceed, this email already registered as Child',
         );
       }
     }

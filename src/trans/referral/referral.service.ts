@@ -44,6 +44,10 @@ export class ReferralService {
     return this.referralModel.findOne({ children: email }).exec();
   }
 
+  async findOneInChildParent(user_email_children: string, user_email_parent: string): Promise<Referral> {
+    return this.referralModel.findOne({ children: user_email_parent, parent: user_email_children }).exec();
+  }
+
   async findOneInIme(imei: string): Promise<Referral> {
     return this.referralModel.findOne({ imei: imei }).exec();
   }
