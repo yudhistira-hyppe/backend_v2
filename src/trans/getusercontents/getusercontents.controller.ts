@@ -925,55 +925,63 @@ export class GetusercontentsController {
         var objuser = {};
         var mediaprofilepicts_res = {};
 
-        try {
-            datauser = await this.userauthsService.findUserNew(keys, skip, limit);
 
-            for (var i = 0; i < datauser.length; i++) {
-                var media = datauser[i].mediaId;
+        if (keys !== undefined) {
 
-                try {
 
-                    mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
-                    console.log(mediaprofilepicts)
-                    var mediaUri = mediaprofilepicts.mediaUri;
-                    let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
-                    mediaprofilepicts_res = {
-                        mediaBasePath: mediaprofilepicts.mediaBasePath,
-                        mediaUri: mediaprofilepicts.mediaUri,
-                        mediaType: mediaprofilepicts.mediaType,
-                        mediaEndpoint: result
-                    };
-                } catch (e) {
 
-                    mediaprofilepicts_res = {
-                        mediaBasePath: "",
-                        mediaUri: "",
-                        mediaType: "",
-                        mediaEndpoint: ""
-                    };
+            try {
+
+                datauser = await this.userauthsService.findUserNew(keys, skip, limit);
+
+                for (var i = 0; i < datauser.length; i++) {
+                    var media = datauser[i].mediaId;
+
+                    try {
+
+                        mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
+                        console.log(mediaprofilepicts)
+                        var mediaUri = mediaprofilepicts.mediaUri;
+                        let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+                        mediaprofilepicts_res = {
+                            mediaBasePath: mediaprofilepicts.mediaBasePath,
+                            mediaUri: mediaprofilepicts.mediaUri,
+                            mediaType: mediaprofilepicts.mediaType,
+                            mediaEndpoint: result
+                        };
+                    } catch (e) {
+
+                        mediaprofilepicts_res = {
+                            mediaBasePath: "",
+                            mediaUri: "",
+                            mediaType: "",
+                            mediaEndpoint: ""
+                        };
+                    }
+
+
+                    objuser = {
+
+                        "_id": datauser[i]._id,
+                        "avatar": mediaprofilepicts_res,
+                        "idUserAuth": datauser[i].idUserAuth,
+                        "username": datauser[i].username,
+                        "fullName": datauser[i].fullName,
+                        "email": datauser[i].email,
+                    }
+
+                    arrdatauser.push(objuser);
                 }
 
+            } catch (e) {
+                datauser = null;
+                arrdatauser = [];
 
-                objuser = {
-
-                    "_id": datauser[i]._id,
-                    "avatar": mediaprofilepicts_res,
-                    "idUserAuth": datauser[i].idUserAuth,
-                    "username": datauser[i].username,
-                    "fullName": datauser[i].fullName,
-                    "email": datauser[i].email,
-                }
-
-                arrdatauser.push(objuser);
             }
 
-        } catch (e) {
-            datauser = null;
+        } else {
             arrdatauser = [];
-
         }
-
-
 
         try {
             let query = null;
@@ -1301,12 +1309,18 @@ export class GetusercontentsController {
             totalFilterPict = 0;
         }
 
-        try {
-            totalFilterPostUser = await this.userauthsService.coutRow(keys);
-            totalFilterUser = totalFilterPostUser[0].totalpost;
-        } catch (e) {
+        if (keys !== undefined) {
+            try {
+                totalFilterPostUser = await this.userauthsService.coutRow(keys);
+                totalFilterUser = totalFilterPostUser[0].totalpost;
+            } catch (e) {
+                totalFilterUser = 0;
+            }
+        } else {
             totalFilterUser = 0;
+
         }
+
 
 
         let data = {

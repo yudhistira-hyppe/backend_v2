@@ -2671,11 +2671,10 @@ export class PostsService {
       const query = await this.PostsModel.aggregate([
         {
           $match: {
-            $or: [{
-              description: {
-                $regex: keys, $options: 'i'
-              }, postType: postType, visibility: "PUBLIC", active: true
-            }]
+
+            description: {
+              $regex: keys, $options: 'i'
+            }, postType: postType, visibility: "PUBLIC", active: true
           }
         },
 
@@ -3446,30 +3445,46 @@ export class PostsService {
     return query;
   }
   async findcountfilterall(keys: string, postType: string) {
-    const query = await this.PostsModel.aggregate([
-      {
-        $match: {
-          $or: [{
+
+    if (keys !== undefined) {
+      const query = await this.PostsModel.aggregate([
+        {
+          $match: {
+
             description: {
               $regex: keys, $options: 'i'
-            }, postType: postType
-          }, {
-            tags: {
-              $regex: keys, $options: 'i'
-            }, postType: postType
-          }]
-        }
-      },
-      {
-        $group: {
-          _id: null,
-          totalpost: {
-            $sum: 1
+            }, postType: postType, visibility: "PUBLIC", active: true
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalpost: {
+              $sum: 1
+            }
           }
         }
-      }
-    ]);
-    return query;
+      ]);
+      return query;
+    } else {
+      const query = await this.PostsModel.aggregate([
+        {
+          $match: {
+
+            postType: postType, visibility: "PUBLIC", active: true
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalpost: {
+              $sum: 1
+            }
+          }
+        }
+      ]);
+      return query;
+    }
   }
 }
 
