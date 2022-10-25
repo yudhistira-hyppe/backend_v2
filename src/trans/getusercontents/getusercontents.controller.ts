@@ -13,6 +13,7 @@ import { CountriesService } from '../../infra/countries/countries.service';
 import { GetuserprofilesService } from '../getuserprofiles/getuserprofiles.service';
 import { PostsService } from '../../content/posts/posts.service';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
+import { PostContentService } from '../../content/posts/postcontent.service';
 @Controller()
 export class GetusercontentsController {
     constructor(private readonly getusercontentsService: GetusercontentsService,
@@ -23,6 +24,7 @@ export class GetusercontentsController {
         private readonly getuserprofilesService: GetuserprofilesService,
         private readonly userauthsService: UserauthsService,
         private readonly postsService: PostsService,
+        private readonly postContentService: PostContentService,
         private readonly mediaprofilepictsService: MediaprofilepictsService,
     ) { }
 
@@ -657,7 +659,7 @@ export class GetusercontentsController {
             "info": ["The process successful"],
         };
 
-        var datatotal = await this.getusercontentsService.findcountfilter(email.toString());
+        var datatotal = await this.getusercontentsService.findcountfilter(email);
         var totalAll = datatotal[0].totalpost;
         let dataFilter = await this.getusercontentsService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, postType, startdate, enddate, 0, totalAll);
         let data = await this.getusercontentsService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, postType, startdate, enddate, skip, limit);
@@ -877,6 +879,7 @@ export class GetusercontentsController {
     @Post('api/getusercontents/searchdata')
     @UseGuards(JwtAuthGuard)
     async contentfilter(@Req() request: Request): Promise<any> {
+
         var datavids = null;
         var datadiary = null;
         var datapict = null;
@@ -895,6 +898,7 @@ export class GetusercontentsController {
         var totalFilterPict = null;
         var totalFilterPostUser = null;
         var totalFilterUser = null;
+
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
@@ -974,19 +978,273 @@ export class GetusercontentsController {
 
 
         try {
-            datavids = await this.postsService.findcontentfilters(keys, "vid", skip, limit);
+            let query = null;
+            query = await this.postsService.findcontentfilters(keys, "vid", skip, limit);
+
+            var datas = null;
+            var arrdata = [];
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            var idapsara = null;
+            for (var i = 0; i < query.length; i++) {
+                try {
+                    idapsara = query[i].apsaraId;
+                } catch (e) {
+                    idapsara = "";
+                }
+
+                var type = query[i].postType;
+                pict = [idapsara];
+
+                if (idapsara === "") {
+                    datas = [];
+                } else {
+                    if (type === "pict") {
+
+                        try {
+                            datas = await this.postContentService.getImageApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                    else if (type === "vid") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+
+                    }
+                    else if (type === "story") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                    else if (type === "diary") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                }
+                objk = {
+                    "_id": query[i]._id,
+                    "mediaBasePath": query[i].mediaBasePath,
+                    "mediaUri": query[i].mediaUri,
+                    "mediaType": query[i].mediaType,
+                    "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+                    "mediaEndpoint": query[i].mediaEndpoint,
+                    "mediaThumbUri": query[i].mediaThumbUri,
+                    "createdAt": query[i].createdAt,
+                    "updatedAt": query[i].updatedAt,
+                    "postID": query[i].postID,
+                    "email": query[i].email,
+                    "postType": query[i].postType,
+                    "description": query[i].description,
+                    "title": query[i].title,
+                    "active": query[i].active,
+                    "metadata": query[i].metadata,
+                    "location": query[i].location,
+                    "isOwned": query[i].isOwned,
+                    "visibility": query[i].visibility,
+                    "isViewed": query[i].isViewed,
+                    "allowComments": query[i].allowComments,
+                    "saleAmount": query[i].saleAmount,
+                    "monetize": query[i].monetize,
+                    "insight": query[i].insight,
+                    "apsaraId": query[i].apsaraId,
+                    "isApsara": query[i].apsara,
+                    "media": datas
+                };
+
+                arrdata.push(objk);
+            }
+            datavids = arrdata;
         } catch (e) {
             datavids = null;
         }
 
         try {
-            datadiary = await this.postsService.findcontentfilters(keys, "diary", skip, limit);
+            let query = null;
+            query = await this.postsService.findcontentfilters(keys, "diary", skip, limit);
+            var datas = null;
+            var arrdata = [];
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            var idapsara = null;
+            for (var i = 0; i < query.length; i++) {
+                try {
+                    idapsara = query[i].apsaraId;
+                } catch (e) {
+                    idapsara = "";
+                }
+
+                var type = query[i].postType;
+                pict = [idapsara];
+
+                if (idapsara === "") {
+                    datas = [];
+                } else {
+                    if (type === "pict") {
+
+                        try {
+                            datas = await this.postContentService.getImageApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                    else if (type === "vid") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+
+                    }
+                    else if (type === "story") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                    else if (type === "diary") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                }
+                objk = {
+                    "_id": query[i]._id,
+                    "mediaBasePath": query[i].mediaBasePath,
+                    "mediaUri": query[i].mediaUri,
+                    "mediaType": query[i].mediaType,
+                    "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+                    "mediaEndpoint": query[i].mediaEndpoint,
+                    "mediaThumbUri": query[i].mediaThumbUri,
+                    "createdAt": query[i].createdAt,
+                    "updatedAt": query[i].updatedAt,
+                    "postID": query[i].postID,
+                    "email": query[i].email,
+                    "postType": query[i].postType,
+                    "description": query[i].description,
+                    "title": query[i].title,
+                    "active": query[i].active,
+                    "metadata": query[i].metadata,
+                    "location": query[i].location,
+                    "isOwned": query[i].isOwned,
+                    "visibility": query[i].visibility,
+                    "isViewed": query[i].isViewed,
+                    "allowComments": query[i].allowComments,
+                    "saleAmount": query[i].saleAmount,
+                    "monetize": query[i].monetize,
+                    "insight": query[i].insight,
+                    "apsaraId": query[i].apsaraId,
+                    "isApsara": query[i].apsara,
+                    "media": datas
+                };
+
+                arrdata.push(objk);
+            }
+            datadiary = arrdata;
         } catch (e) {
             datadiary = null;
         }
 
         try {
-            datapict = await this.postsService.findcontentfilters(keys, "pict", skip, limit);
+            let query = null;
+            query = await this.postsService.findcontentfilters(keys, "pict", skip, limit);
+
+            var datas = null;
+            var arrdata = [];
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            var idapsara = null;
+            for (var i = 0; i < query.length; i++) {
+                try {
+                    idapsara = query[i].apsaraId;
+                } catch (e) {
+                    idapsara = "";
+                }
+
+                var type = query[i].postType;
+                pict = [idapsara];
+
+                if (idapsara === "") {
+                    datas = [];
+                } else {
+                    if (type === "pict") {
+
+                        try {
+                            datas = await this.postContentService.getImageApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                    else if (type === "vid") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+
+                    }
+                    else if (type === "story") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                    else if (type === "diary") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                }
+                objk = {
+                    "_id": query[i]._id,
+                    "mediaBasePath": query[i].mediaBasePath,
+                    "mediaUri": query[i].mediaUri,
+                    "mediaType": query[i].mediaType,
+                    "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+                    "mediaEndpoint": query[i].mediaEndpoint,
+                    "mediaThumbUri": query[i].mediaThumbUri,
+                    "createdAt": query[i].createdAt,
+                    "updatedAt": query[i].updatedAt,
+                    "postID": query[i].postID,
+                    "email": query[i].email,
+                    "postType": query[i].postType,
+                    "description": query[i].description,
+                    "title": query[i].title,
+                    "active": query[i].active,
+                    "metadata": query[i].metadata,
+                    "location": query[i].location,
+                    "isOwned": query[i].isOwned,
+                    "visibility": query[i].visibility,
+                    "isViewed": query[i].isViewed,
+                    "allowComments": query[i].allowComments,
+                    "saleAmount": query[i].saleAmount,
+                    "monetize": query[i].monetize,
+                    "insight": query[i].insight,
+                    "apsaraId": query[i].apsaraId,
+                    "isApsara": query[i].apsara,
+                    "media": datas
+                };
+
+                arrdata.push(objk);
+            }
+            datapict = arrdata;
         } catch (e) {
             datapict = null;
         }
@@ -1062,6 +1320,7 @@ export class GetusercontentsController {
         };
         return { response_code: 202, data, messages };
     }
+
 
 
     @Post('api/getusercontents/searchdatabyuser')

@@ -781,6 +781,8 @@ export class UtilsService {
       ProfileDTO_.otpToken = get_userauth.otpToken;
       ProfileDTO_.otpToken = get_userauth.otpToken;
       ProfileDTO_.authEmail = get_userauth.email;
+      ProfileDTO_.iduser = get_userbasic._id;
+      ProfileDTO_.profileID = get_userbasic.profileID;
       //ProfileDTO_.token =
       //ProfileDTO_.refreshToken =
       //ProfileDTO_.userProfile =
@@ -812,6 +814,9 @@ export class UtilsService {
         if (get_countries != null) { ProfileDTO_.country = get_countries.country; }
         if (await this.ceckData(get_userbasic)) {
           if (get_userbasic.gender != undefined) { ProfileDTO_.gender = get_userbasic.gender; }
+        }
+        if (await this.ceckData(get_userbasic)) {
+          if (get_userbasic.dob != undefined) { ProfileDTO_.dob = get_userbasic.dob; }
         }
         if (get_cities != null) { ProfileDTO_.city = get_cities.cityName; }
         if (await this.ceckData(get_userbasic)) {
@@ -853,6 +858,8 @@ export class UtilsService {
         }
         ProfileDTO_.pin_create = pin_create;
         ProfileDTO_.pin_verified = otppinVerified;
+        ProfileDTO_.iduser = get_userbasic._id;
+        ProfileDTO_.profileID = get_userbasic.profileID;
         if (get_userbasic.statusKyc != undefined) {
           ProfileDTO_.statusKyc = get_userbasic.statusKyc;
         } else {
