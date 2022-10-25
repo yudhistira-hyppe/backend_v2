@@ -4608,7 +4608,7 @@ export class AuthService {
   }
 
   async signupsosmed(req: any) {
-    this.logger.log("signupsosmed >>> start: " + JSON.stringify(req));
+    this.logger.log("signupsosmed >>> start: ");
     var user_email = null;
     var user_socmedSource = null;
     var user_deviceId = null;
@@ -5320,6 +5320,44 @@ export class AuthService {
                 CreateReferralDto_._class = _class_Referral;
 
                 this.referralService.create(CreateReferralDto_);
+
+                var _id_2 = (await this.utilsService.generateId());
+                var _id_4 = (await this.utilsService.generateId());
+
+                var CreateContenteventsDto2 = new CreateContenteventsDto();
+                CreateContenteventsDto2._id = _id_2
+                CreateContenteventsDto2.contentEventID = (await this.utilsService.generateId())
+                CreateContenteventsDto2.email = req.body.referral
+                CreateContenteventsDto2.eventType = "FOLLOWER"
+                CreateContenteventsDto2.active = true
+                CreateContenteventsDto2.event = "ACCEPT"
+                CreateContenteventsDto2.createdAt = current_date
+                CreateContenteventsDto2.updatedAt = current_date
+                CreateContenteventsDto2.sequenceNumber = 1
+                CreateContenteventsDto2.flowIsDone = true
+                CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+                CreateContenteventsDto2.receiverParty = req.body.email
+
+                var CreateContenteventsDto4 = new CreateContenteventsDto();
+                CreateContenteventsDto4._id = _id_4
+                CreateContenteventsDto4.contentEventID = (await this.utilsService.generateId())
+                CreateContenteventsDto4.email = req.body.email
+                CreateContenteventsDto4.eventType = "FOLLOWING"
+                CreateContenteventsDto4.active = true
+                CreateContenteventsDto4.event = "ACCEPT"
+                CreateContenteventsDto4.createdAt = current_date
+                CreateContenteventsDto4.updatedAt = current_date
+                CreateContenteventsDto4.sequenceNumber = 1
+                CreateContenteventsDto4.flowIsDone = true
+                CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
+                CreateContenteventsDto4.senderParty = req.body.referral
+
+                //await this.contenteventsService.create(CreateContenteventsDto1);
+                await this.contenteventsService.create(CreateContenteventsDto2);
+                //await this.contenteventsService.create(CreateContenteventsDto3);
+                await this.contenteventsService.create(CreateContenteventsDto4);
+                await this.insightsService.updateFollower(req.body.referral);
+                await this.insightsService.updateFollowing(req.body.email);                
               } catch (error) {
                 await this.errorHandler.generateNotAcceptableException(
                   'Unabled to proceed Create Refferal. Error:' +
@@ -5487,7 +5525,7 @@ export class AuthService {
   }
 
   async signsosmed(req: any) {
-    this.logger.log("signsosmed >>> start: ");
+    this.logger.log("signsosmed >>> start: " + JSON.stringify(req.body));
     var user_email = req.body.email;
     var user_socmedSource = req.body.socmedSource;
     var user_deviceId = req.body.deviceId;
