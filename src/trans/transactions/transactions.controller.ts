@@ -28,6 +28,7 @@ import { MediapictsService } from '../../content/mediapicts/mediapicts.service';
 import { MediavideosService } from '../../content/mediavideos/mediavideos.service';
 import { CreateUserplaylistDto } from '../userplaylist/dto/create-userplaylist.dto';
 import { LanguagesService } from '../../infra/languages/languages.service';
+import { ignoreElements } from 'rxjs';
 @Controller()
 export class TransactionsController {
     constructor(private readonly transactionsService: TransactionsService,
@@ -4733,11 +4734,26 @@ export class TransactionsController {
         var totalsearch = datasearch.length;
         var allrow = await this.transactionsService.totalcountVoucher();
         var totalallrow = allrow[0].countrow;
-
+        var tpage = null;
+        var tpage2 = null;
         if (iduser === undefined) {
-            totalpage = (totalallrow / limit).toFixed(0);
+            tpage2 = (totalallrow / limit).toFixed(0);
+            tpage = (totalallrow % limit);
+            if (tpage > 0 && tpage < 6) {
+                totalpage = parseInt(tpage2) + 1;
+
+            } else {
+                totalpage = parseInt(tpage2);
+            }
         } else {
-            totalpage = (totalsearch / limit).toFixed(0);
+            tpage2 = (totalsearch / limit).toFixed(0);
+            tpage = (totalsearch % limit);
+            if (tpage > 0 && tpage < 6) {
+                totalpage = parseInt(tpage2) + 1;
+
+            } else {
+                totalpage = parseInt(tpage2);
+            }
         }
 
 
