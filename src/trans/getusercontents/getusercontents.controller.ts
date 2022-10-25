@@ -912,11 +912,9 @@ export class GetusercontentsController {
             throw new BadRequestException("Unabled to proceed");
         }
 
-        if (request_json["keys"] !== undefined) {
-            keys = request_json["keys"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
+
+        keys = request_json["keys"];
+
 
         const messages = {
             "info": ["The process successful"],
