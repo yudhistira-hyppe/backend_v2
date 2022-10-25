@@ -1269,8 +1269,16 @@ export class PostContentService {
             for (let j = 0; j < pd.length; j++) {
               let ps = pd[j];
               if (ps.apsaraId == vi.ImageId) {
+                ps.mediaEndpoint = vi.URL;
+                ps.mediaUri = vi.URL;
+  
                 ps.mediaThumbEndpoint = vi.URL;
-                ps.mediaThumbUri = vi.URL;
+                ps.mediaThumbUri = vi.URL;                                            
+              }
+
+              if (ps.apsaraThumbId == vi.ImageId) {
+                ps.mediaThumbEndpoint = vi.URL;
+                ps.mediaThumbUri = vi.URL;                                                            
               }
             }
           }
