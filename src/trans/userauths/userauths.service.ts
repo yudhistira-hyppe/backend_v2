@@ -187,64 +187,78 @@ export class UserauthsService {
 
   async findUserNew(username: string, skip: number, limit: number) {
 
-
-    const query = await this.userauthModel.aggregate([
-      {
-        "$match": {
-          "username": {
-            $regex: username,
-            $options: 'i'
+    if (username !== undefined) {
+      const query = await this.userauthModel.aggregate([
+        {
+          "$match": {
+            "username": {
+              $regex: username,
+              $options: 'i'
+            }
           }
-        }
-      },
-      {
-        $skip: skip
-      },
-      {
-        $limit: limit
-      },
-      {
-        $lookup: {
-          from: 'userbasics',
-          localField: '_id',
-          foreignField: 'userAuth.$id',
-          as: 'userbasic_data',
-
         },
+        {
+          $skip: skip
+        },
+        {
+          $limit: limit
+        },
+        {
+          $lookup: {
+            from: 'userbasics',
+            localField: '_id',
+            foreignField: 'userAuth.$id',
+            as: 'userbasic_data',
 
-      },
-      {
-        $project: {
-          ubasic: {
-            $arrayElemAt: ['$userbasic_data', 0]
           },
-          username: '$username',
-          email: '$email',
-          idUserAuth: '$_id',
-        },
-
-      },
-      {
-        $project: {
-
-          _id: '$ubasic._id',
-          username: '$username',
-          fullName: '$ubasic.fullName',
-          mediaId: '$ubasic.profilePict.$id',
-          email: '$email',
-          idUserAuth: '$idUserAuth'
 
         },
+        {
+          $project: {
+            ubasic: {
+              $arrayElemAt: ['$userbasic_data', 0]
+            },
+            username: '$username',
+            email: '$email',
+            idUserAuth: '$_id',
+          },
 
-      },
-      {
-        $sort: {
-          username: 1
+        },
+        {
+          $project: {
+
+            _id: '$ubasic._id',
+            username: '$username',
+            fullName: '$ubasic.fullName',
+            mediaId: '$ubasic.profilePict.$id',
+            email: '$email',
+            idUserAuth: '$idUserAuth'
+
+          },
+
+        },
+        {
+          $sort: {
+            username: 1
+          },
+
+        },
+      ]);
+      return query;
+    }
+    else {
+      const query = await this.userauthModel.aggregate([
+
+        {
+          $skip: 0
+        },
+        {
+          $limit: 1
         },
 
-      },
-    ]);
-    return query;
+      ]);
+      return query;
+    }
 
   }
 }
