@@ -16,6 +16,7 @@ import {
   UseInterceptors,
   UploadedFile,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -47,9 +48,13 @@ import { ContenteventsService } from '../content/contentevents/contentevents.ser
 import { InsightsService } from '../content/insights/insights.service';
 import { Long } from 'mongodb';
 import { OtpService } from './otp.service';
+import { SocmedService } from './socmed.service';
 
 @Controller()
 export class AuthController {
+
+  private readonly logger = new Logger(AuthController.name);
+
   constructor(
     private errorHandler: ErrorHandler,
     private authService: AuthService,
@@ -65,7 +70,7 @@ export class AuthController {
     private settingsService: SettingsService,
     private contenteventsService: ContenteventsService,
     private insightsService: InsightsService,
-    private otpService: OtpService,
+    private socmed: SocmedService,
   ) { }
 
   @UseGuards(LocalAuthGuard)
@@ -933,14 +938,16 @@ export class AuthController {
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
-  @Post('api/signup/socmed')
+  @Post('api/user/signup/socmed')
   async signupsosmed(@Req() request: any) {
-    return await this.authService.signupsosmed(request);
+    this.logger.log("signupsosmed >>> start: " + JSON.stringify(request.body));
+    return await this.socmed.signupsosmed(request);
   }
 
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/sign/socmed')
   async signsosmed(@Req() request: any) {
+    this.logger.log("signsosmed >>> start: " + JSON.stringify(request.body));
     var deviceId = null;
     var socmedSource = null;
     var devicetype = null;
@@ -999,8 +1006,8 @@ export class AuthController {
         await this.authService.viewProfile(SearchUserbasicDto_.search.toString(), user_view);
         var Data = await this.utilsService.generateProfile(SearchUserbasicDto_.search.toString(), 'PROFILE');
         var numPost = await this.postsService.findUserPost(SearchUserbasicDto_.search.toString());
-        let y = <any> numPost;
-        Data.insight.posts = <Long> y;
+        let aNumPost = <any> numPost;
+        Data.insight.posts = <Long> aNumPost;
         return {
           "response_code": 202,
           "data": [Data],

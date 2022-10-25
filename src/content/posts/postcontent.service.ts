@@ -37,8 +37,8 @@ import * as fs from 'fs';
 import { post } from 'jquery';
 import { TemplatesRepoService } from '../../infra/templates_repo/templates_repo.service';
 import { UnsubscriptionError } from 'rxjs';
-import { Userauth } from 'src/trans/userauths/schemas/userauth.schema';
-import { SettingsService } from 'src/trans/settings/settings.service';
+import { Userauth } from '../../trans/userauths/schemas/userauth.schema';
+import { SettingsService } from '../../trans/settings/settings.service';
 
 
 //import FormData from "form-data";
@@ -1269,8 +1269,16 @@ export class PostContentService {
             for (let j = 0; j < pd.length; j++) {
               let ps = pd[j];
               if (ps.apsaraId == vi.ImageId) {
+                ps.mediaEndpoint = vi.URL;
+                ps.mediaUri = vi.URL;
+  
                 ps.mediaThumbEndpoint = vi.URL;
-                ps.mediaThumbUri = vi.URL;
+                ps.mediaThumbUri = vi.URL;                                            
+              }
+
+              if (ps.apsaraThumbId == vi.ImageId) {
+                ps.mediaThumbEndpoint = vi.URL;
+                ps.mediaThumbUri = vi.URL;                                                            
               }
             }
           }
@@ -2068,6 +2076,10 @@ export class PostContentService {
     } else {
       post.isOwned = false;
     }
+
+    if (body.active != undefined) {
+      post.active = body.active;
+    }    
 
 
     if (body.cats != undefined && body.cats.length > 1) {

@@ -28,6 +28,7 @@ import { MediapictsService } from '../../content/mediapicts/mediapicts.service';
 import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userplaylist.dto';
 import { UserplaylistService } from '../../trans/userplaylist/userplaylist.service';
 import { InjectQueue, Process, Processor } from '@nestjs/bull';
+
 import { Queue, Job } from 'bull';
 
 
@@ -54,6 +55,7 @@ export class PostsService {
     private readonly mediapictsService: MediapictsService,
     private readonly configService: ConfigService,
     private readonly userplaylistService: UserplaylistService,
+
   ) { }
 
   async create(CreatePostsDto: CreatePostsDto): Promise<Posts> {
@@ -78,7 +80,7 @@ export class PostsService {
   }
 
   async findUserPost(email: string): Promise<number> {
-    return this.PostsModel.where('email', email).where('active', true).count();
+    return this.PostsModel.where('email', email).where('active', true).where('postType').ne('story').count();
   }
 
   async findByPostId(postID: string): Promise<Posts> {

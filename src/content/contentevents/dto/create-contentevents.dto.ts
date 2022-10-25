@@ -17,6 +17,14 @@ export class CreateContenteventsDto {
     receiverParty: String;
     _class: String;
     postID: String;
+    parentContentEventID: String;
+    transitions: [
+      {
+        $ref: String;
+        $id: { oid: String };
+        $db: String;
+      },
+    ];
   }
 
 export class ContentEventId {

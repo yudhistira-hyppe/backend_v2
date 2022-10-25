@@ -37,99 +37,109 @@ export class DisquslogsService {
     return deletedCat;
   }
 
-  // async finddisquslog() {
-  //   const query = await this.DisquslogsModel.aggregate([
-
-  //     {
-  //       $lookup: {
-  //         from: 'disquslogs',
-  //         localField: 'disquslogs.$id',
-  //         foreignField: '_id',
-  //         as: 'roless',
-  //       },
-  //     }, {
-  //       $out: {
-  //         db: 'hyppe_trans_db',
-  //         coll: 'disquslogs2'
-  //       }
-  //     },
-
-  //   ]);
-  //   return query;
+  // async increaseReaction(): Promise<Disquslogs>{
+  //   InsightLog item = this.getInsightReceiver().get().increaseReaction(this.getProfile().getEmail(), this.getContentPost().get().getPostID());
+  //   if (item != null) {
+  //     this.getContentPost().get().increaseReaction();
+  //     this.getReceiverEventId().get().getParent().setReactionUri(this.getContentDto().getReactionUri());
+  //     this.getEventId().get().getParent().setReactionUri(this.getContentDto().getReactionUri());
+  //   }
+  //   return Optional.ofNullable(item);
   // }
 
-  async update(
-    id: string,
-    createDisquslogsDto: CreateDisquslogsDto,
-  ): Promise<Disquslogs> {
-    let data = await this.DisquslogsModel.findByIdAndUpdate(
-      id,
-      createDisquslogsDto,
-      { new: true },
-    );
+  async finddisquslog() {
+    const query = await this.DisquslogsModel.aggregate([
 
-    if (!data) {
-      throw new Error('Todo is not found!');
-    }
-    return data;
-  }
+      //     {
+      //       $lookup: {
+      //         from: 'disquslogs',
+      //         localField: 'disquslogs.$id',
+      //         foreignField: '_id',
+      //         as: 'roless',
+      //       },
+      //     }, {
+      //       $out: {
+      //         db: 'hyppe_trans_db',
+      //         coll: 'disquslogs2'
+      //       }
+      //     },
 
-  async deletedicusslog(request: any): Promise<any> {
-    const data_discuslog = await this.DisquslogsModel.findOne({ _id: request._id }).exec();
-    if (await this.utilsService.ceckData(data_discuslog)) {
-      this.DisquslogsModel.updateOne(
-        { _id: request._id },
-        { active: false },
-        function (err, docs) {
-          if (err) {
-            console.log(err);
-          } else {
-            console.log(docs);
-          }
-        });
+      //   ]);
+      //   return query;
+      // }
 
-      return {
-        response_code: 202,
-        messages: {
-          info: ['Delete Disqus successful'],
+      async update(
+        id: string,
+        createDisquslogsDto: CreateDisquslogsDto,
+      ): Promise < Disquslogs > {
+        let data = await this.DisquslogsModel.findByIdAndUpdate(
+          id,
+          createDisquslogsDto,
+          { new: true },
+        );
+
+        if(!data) {
+          throw new Error('Todo is not found!');
         }
+    return data;
       }
-    } else {
-      throw new NotAcceptableException({
-        response_code: 406,
-        messages: {
-          info: ['Unabled to proceed, Disquslog not found'],
-        },
-      });
+
+  async deletedicusslog(request: any): Promise < any > {
+        const data_discuslog = await this.DisquslogsModel.findOne({ _id: request._id }).exec();
+        if(await this.utilsService.ceckData(data_discuslog)) {
+          this.DisquslogsModel.updateOne(
+            { _id: request._id },
+            { active: false },
+            function (err, docs) {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log(docs);
+              }
+            });
+
+    return {
+      response_code: 202,
+      messages: {
+        info: ['Delete Disqus successful'],
+      }
     }
+  } else {
+  throw new NotAcceptableException({
+    response_code: 406,
+    messages: {
+      info: ['Unabled to proceed, Disquslog not found'],
+    },
+  });
+}
   }
 
   async updateBydiscusid(disqusID: string, email: string) {
-    if (disqusID != undefined) {
-      this.DisquslogsModel.updateMany(
-        {
-          disqusID: disqusID,
-          sender: email
-        },
-        { receiverActive: false }, function (err, docs) {
-          if (err) {
-            console.log('err' + err);
-          } else {
-            console.log('docs' + docs);
-          }
-        });
-      this.DisquslogsModel.updateMany(
-        {
-          disqusID: disqusID,
-          receiver: email
-        },
-        { senderActive: false }, function (err, docs) {
-          if (err) {
-            console.log('err' + err);
-          } else {
-            console.log('docs' + docs);
-          }
-        });
-    }
+  if (disqusID != undefined) {
+    this.DisquslogsModel.updateMany(
+      {
+        disqusID: disqusID,
+        sender: email
+      },
+      { receiverActive: false }, function (err, docs) {
+        if (err) {
+          console.log('err' + err);
+        } else {
+          console.log('docs' + docs);
+        }
+      });
+    this.DisquslogsModel.updateMany(
+      {
+        disqusID: disqusID,
+        receiver: email
+      },
+      { senderActive: false }, function (err, docs) {
+        if (err) {
+          console.log('err' + err);
+        } else {
+          console.log('docs' + docs);
+        }
+      });
   }
+}
 }
