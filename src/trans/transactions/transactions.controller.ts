@@ -4707,6 +4707,7 @@ export class TransactionsController {
         var enddate = null;
         var limit = null;
         var iduser = null;
+        var totalpage = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -4732,7 +4733,12 @@ export class TransactionsController {
         var totalsearch = datasearch.length;
         var allrow = await this.transactionsService.totalcountVoucher();
         var totalallrow = allrow[0].countrow;
-        var totalpage = (totalallrow / limit).toFixed(0);
+
+        if (iduser === undefined) {
+            totalpage = (totalallrow / limit).toFixed(0);
+        } else {
+            totalpage = (totalsearch / limit).toFixed(0);
+        }
 
 
         return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };
