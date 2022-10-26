@@ -130,6 +130,8 @@ export class Userbasic {
   otp_attemp: number;
   @Prop()
   statusKyc: string;
+  @Prop()
+  timeEmailSend: string;
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);

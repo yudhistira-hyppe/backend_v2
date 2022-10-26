@@ -11213,7 +11213,6 @@ export class TransactionsService {
 
 
     }
-
     async findtransactiondetailvoucher(id: ObjectId) {
 
         const query = await this.transactionsModel.aggregate([

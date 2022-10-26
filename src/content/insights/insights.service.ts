@@ -77,6 +77,38 @@ export class InsightsService {
     return deletedCat;
   }
 
+  async updateFollower(email: string) {
+    this.InsightsModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { followers: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateFollowing(email: string) {
+    this.InsightsModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { followings: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
   async Engagement(year: number): Promise<Object> {
     var currentTime = new Date();
     var year_param = 0;

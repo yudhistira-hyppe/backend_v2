@@ -26,8 +26,9 @@ export class CreateDisqusDto {
   }
 
 export class ContentDto {
-  postID: String;
   email: String;
+  postID: String;
+  mediaID: String;
   disqusID: String;
   disqusLogID: String;
   eventDisqus: String;
@@ -44,9 +45,9 @@ export class ContentDto {
   senderOrReceiver: String;
 
   contentPost: CreatePostsDto;
-
+  eventId: String;
   postType: String;
-  postContent: CreatePostsDto; 
+  postContent: CreatePostsDto;
   title: String;
   description: String; 
   isQuery: boolean;

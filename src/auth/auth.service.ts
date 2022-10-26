@@ -1,4 +1,4 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { Injectable, Logger, NotAcceptableException } from '@nestjs/common';
 import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken.service';
 import { UserauthsService } from '../trans/userauths/userauths.service';
 import { UserbasicsService } from '../trans/userbasics/userbasics.service';
@@ -39,6 +39,9 @@ import { PostsService } from '../content/posts/posts.service';
 
 @Injectable()
 export class AuthService {
+
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private userbasicsnewService: UserbasicsnewService,
     private userauthsService: UserauthsService,
@@ -1149,6 +1152,110 @@ export class AuthService {
                 data["status"] = 'IN_PROGRESS';
                 data["refreshToken"] = datajwtrefreshtoken_data.refresh_token_id;
 
+                console.log("---------------------------------------------------REQUEST---------------------------------------------------");
+                console.log(req.body);
+                console.log("---------------------------------------------------REQUEST---------------------------------------------------");
+                if (req.body.referral != undefined && req.body.imei != undefined) {
+
+                  if (req.body.referral != "" && req.body.imei != "") {
+                    var data_refferal = await this.referralService.findOneInChild(req.body.email);
+                    if (!(await this.utilsService.ceckData(data_refferal))) {
+                      var data_imei = await this.referralService.findOneInIme(req.body.imei);
+                      if (!(await this.utilsService.ceckData(data_imei))) {
+                        var CreateReferralDto_ = new CreateReferralDto();
+                        CreateReferralDto_._id = (await this.utilsService.generateId())
+                        CreateReferralDto_.parent = req.body.referral;
+                        CreateReferralDto_.children = req.body.email;
+                        CreateReferralDto_.active = true;
+                        CreateReferralDto_.verified = true;
+                        CreateReferralDto_.createdAt = current_date;
+                        CreateReferralDto_.updatedAt = current_date;
+                        CreateReferralDto_.imei = req.body.imei;
+                        CreateReferralDto_._class = "io.melody.core.domain.Referral";
+                        await this.referralService.create(CreateReferralDto_);
+
+                        var _id_1 = (await this.utilsService.generateId());
+                        var _id_2 = (await this.utilsService.generateId());
+                        var _id_3 = (await this.utilsService.generateId());
+                        var _id_4 = (await this.utilsService.generateId());
+
+                        // var CreateContenteventsDto1 = new CreateContenteventsDto();
+                        // CreateContenteventsDto1._id = _id_1
+                        // CreateContenteventsDto1.contentEventID = (await this.utilsService.generateId())
+                        // CreateContenteventsDto1.email = req.body.referral
+                        // CreateContenteventsDto1.eventType = "FOLLOWER"
+                        // CreateContenteventsDto1.active = true
+                        // CreateContenteventsDto1.event = "REQUEST"
+                        // CreateContenteventsDto1.createdAt = current_date
+                        // CreateContenteventsDto1.updatedAt = current_date
+                        // CreateContenteventsDto1.sequenceNumber = 0
+                        // CreateContenteventsDto1.flowIsDone = true
+                        // CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
+                        // CreateContenteventsDto1.senderParty = req.body.email
+                        // CreateContenteventsDto1.transitions = [{
+                        //   $ref: 'contentevents',
+                        //   $id: Object(_id_2),
+                        //   $db: 'hyppe_trans_db',
+                        // }]
+
+                        var CreateContenteventsDto2 = new CreateContenteventsDto();
+                        CreateContenteventsDto2._id = _id_2
+                        CreateContenteventsDto2.contentEventID = (await this.utilsService.generateId())
+                        CreateContenteventsDto2.email = req.body.referral
+                        CreateContenteventsDto2.eventType = "FOLLOWER"
+                        CreateContenteventsDto2.active = true
+                        CreateContenteventsDto2.event = "ACCEPT"
+                        CreateContenteventsDto2.createdAt = current_date
+                        CreateContenteventsDto2.updatedAt = current_date
+                        CreateContenteventsDto2.sequenceNumber = 1
+                        CreateContenteventsDto2.flowIsDone = true
+                        CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+                        CreateContenteventsDto2.receiverParty = req.body.email
+
+                        // var CreateContenteventsDto3 = new CreateContenteventsDto();
+                        // CreateContenteventsDto3._id = _id_3
+                        // CreateContenteventsDto3.contentEventID = (await this.utilsService.generateId())
+                        // CreateContenteventsDto3.email = req.body.email
+                        // CreateContenteventsDto3.eventType = "FOLLOWING"
+                        // CreateContenteventsDto3.active = true
+                        // CreateContenteventsDto3.event = "INITIAL"
+                        // CreateContenteventsDto3.createdAt = current_date
+                        // CreateContenteventsDto3.updatedAt = current_date
+                        // CreateContenteventsDto3.sequenceNumber = 0
+                        // CreateContenteventsDto3.flowIsDone = true
+                        // CreateContenteventsDto3._class = "io.melody.hyppe.content.domain.ContentEvent"
+                        // CreateContenteventsDto3.receiverParty = req.body.referral
+                        // CreateContenteventsDto3.transitions = [{
+                        //   $ref: 'contentevents',
+                        //   $id: Object(_id_4),
+                        //   $db: 'hyppe_trans_db',
+                        // }]
+
+                        var CreateContenteventsDto4 = new CreateContenteventsDto();
+                        CreateContenteventsDto4._id = _id_4
+                        CreateContenteventsDto4.contentEventID = (await this.utilsService.generateId())
+                        CreateContenteventsDto4.email = req.body.email
+                        CreateContenteventsDto4.eventType = "FOLLOWING"
+                        CreateContenteventsDto4.active = true
+                        CreateContenteventsDto4.event = "ACCEPT"
+                        CreateContenteventsDto4.createdAt = current_date
+                        CreateContenteventsDto4.updatedAt = current_date
+                        CreateContenteventsDto4.sequenceNumber = 1
+                        CreateContenteventsDto4.flowIsDone = true
+                        CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
+                        CreateContenteventsDto4.senderParty = req.body.referral
+
+                        //await this.contenteventsService.create(CreateContenteventsDto1);
+                        await this.contenteventsService.create(CreateContenteventsDto2);
+                        //await this.contenteventsService.create(CreateContenteventsDto3);
+                        await this.contenteventsService.create(CreateContenteventsDto4);
+                        await this.insightsService.updateFollower(req.body.referral);
+                        await this.insightsService.updateFollowing(req.body.email);
+                      }
+                    }
+                  }
+                }
+
                 //Create User Ads
                 try{
                   await this.adsUserCompareService.createNewUserAds(datauserbasicsService._id.toString());
@@ -1804,9 +1911,9 @@ export class AuthService {
         user_mobileNumber = req.body.mobileNumber;
       }
 
-      if (req.body.$idProofNumber != undefined) {
-        user_idProofNumber = req.body.$idProofNumber;
-      }
+      // if (req.body.$idProofNumber != undefined) {
+      //   user_idProofNumber = req.body.idProofNumber;
+      // }
 
       if (req.body.gender != undefined) {
         user_gender = req.body.gender;
@@ -1852,9 +1959,9 @@ export class AuthService {
         user_mobileNumber = req.body.mobileNumber;
       }
 
-      if (req.body.$idProofNumber != undefined) {
-        user_idProofNumber = req.body.$idProofNumber;
-      }
+      // if (req.body.$idProofNumber != undefined) {
+      //   user_idProofNumber = req.body.$idProofNumber;
+      // }
 
       if (req.body.gender != undefined) {
         user_gender = req.body.gender;
@@ -1933,11 +2040,61 @@ export class AuthService {
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
               }
-              if (user_fullName != null) {
-                data_update_userbasict['fullName'] = user_fullName;
+              if (user_mobileNumber != null) {
+                data_update_userbasict['mobileNumber'] = user_mobileNumber;
+              }
+              // if (user_idProofNumber != null) {
+              //   data_update_userbasict['idProofNumber'] = user_idProofNumber;
+              // }
+              if (user_gender != null) {
+                data_update_userbasict['gender'] = user_gender;
               }
               if (user_dob != null) {
                 data_update_userbasict['dob'] = user_dob;
+              }
+              if (user_country != null) {
+                var countries = await this.countriesService.findOneName(user_country);
+                if ((await this.utilsService.ceckData(countries))) {
+                  var countries_id = (await countries)._id;
+                  data_update_userbasict['countries'] = {
+                    $ref: 'countries',
+                    $id: countries_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_area != null) {
+                var areas = await this.areasService.findOneName(user_area);
+                if ((await this.utilsService.ceckData(areas))) {
+                  var areas_id = (await areas)._id;
+                  data_update_userbasict['states'] = {
+                    $ref: 'areas',
+                    $id: areas_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_city != null) {
+                var cities = await this.citiesService.findOneName(user_city);
+                if ((await this.utilsService.ceckData(cities))) {
+                  var cities_id = (await cities)._id;
+                  data_update_userbasict['cities'] = {
+                    $ref: 'cities',
+                    $id: cities_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_langIso != null) {
+                var languages = await this.languagesService.findOneLangiso(user_langIso);
+                if ((await this.utilsService.ceckData(languages))) {
+                  var languages_id = (await languages)._id;
+                  data_update_userbasict['languages'] = {
+                    $ref: 'languages',
+                    $id: languages_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
               }
               data_update_userbasict['status'] = status;
               data_update_userbasict['event'] = event;
@@ -2024,6 +2181,14 @@ export class AuthService {
           } else if ((event == 'UPDATE_PROFILE') && (status == 'COMPLETE_BIO')) {
             //Update Profile Detail
             try {
+              if (user_username != null) {
+                if (await this.utilsService.validateUsername(user_username)) {
+                  await this.userauthsService.updatebyEmail(user_email, {
+                    username: user_username
+                  });
+                }
+              }
+
               var data_update_userbasict = {};
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
@@ -2031,16 +2196,15 @@ export class AuthService {
               if (user_mobileNumber != null) {
                 data_update_userbasict['mobileNumber'] = user_mobileNumber;
               }
-              if (user_idProofNumber != null) {
-                data_update_userbasict['idProofNumber'] = user_idProofNumber;
-              }
+              // if (user_idProofNumber != null) {
+              //   data_update_userbasict['idProofNumber'] = user_idProofNumber;
+              // }
               if (user_gender != null) {
                 data_update_userbasict['gender'] = user_gender;
               }
               if (user_dob != null) {
                 data_update_userbasict['dob'] = user_dob;
               }
-
               if (user_country != null) {
                 var countries = await this.countriesService.findOneName(user_country);
                 if ((await this.utilsService.ceckData(countries))) {
@@ -2201,12 +2365,63 @@ export class AuthService {
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
               }
-              if (user_fullName != null) {
-                data_update_userbasict['fullName'] = user_fullName;
+              if (user_mobileNumber != null) {
+                data_update_userbasict['mobileNumber'] = user_mobileNumber;
+              }
+              // if (user_idProofNumber != null) {
+              //   data_update_userbasict['idProofNumber'] = user_idProofNumber;
+              // }
+              if (user_gender != null) {
+                data_update_userbasict['gender'] = user_gender;
               }
               if (user_dob != null) {
                 data_update_userbasict['dob'] = user_dob;
               }
+              if (user_country != null) {
+                var countries = await this.countriesService.findOneName(user_country);
+                if ((await this.utilsService.ceckData(countries))) {
+                  var countries_id = (await countries)._id;
+                  data_update_userbasict['countries'] = {
+                    $ref: 'countries',
+                    $id: countries_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_area != null) {
+                var areas = await this.areasService.findOneName(user_area);
+                if ((await this.utilsService.ceckData(areas))) {
+                  var areas_id = (await areas)._id;
+                  data_update_userbasict['states'] = {
+                    $ref: 'areas',
+                    $id: areas_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_city != null) {
+                var cities = await this.citiesService.findOneName(user_city);
+                if ((await this.utilsService.ceckData(cities))) {
+                  var cities_id = (await cities)._id;
+                  data_update_userbasict['cities'] = {
+                    $ref: 'cities',
+                    $id: cities_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+              if (user_langIso != null) {
+                var languages = await this.languagesService.findOneLangiso(user_langIso);
+                if ((await this.utilsService.ceckData(languages))) {
+                  var languages_id = (await languages)._id;
+                  data_update_userbasict['languages'] = {
+                    $ref: 'languages',
+                    $id: languages_id,
+                    $db: 'hyppe_infra_db',
+                  };
+                }
+              }
+
               //data_update_userbasict['status'] = status;
               //data_update_userbasict['event'] = event;
 
@@ -2221,6 +2436,14 @@ export class AuthService {
           } else if ((event == 'UPDATE_PROFILE') && (status == 'COMPLETE_BIO')) {
             //Update Profile Detail
             try {
+              if (user_username != null) {
+                if (await this.utilsService.validateUsername(user_username)) {
+                  await this.userauthsService.updatebyEmail(user_email, {
+                    username: user_username
+                  });
+                }
+              }
+
               var data_update_userbasict = {};
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
@@ -2228,20 +2451,19 @@ export class AuthService {
               if (user_mobileNumber != null) {
                 data_update_userbasict['mobileNumber'] = user_mobileNumber;
               }
-              if (user_idProofNumber != null) {
-                data_update_userbasict['idProofNumber'] = user_idProofNumber;
-              }
+              // if (user_idProofNumber != null) {
+              //   data_update_userbasict['idProofNumber'] = user_idProofNumber;
+              // }
               if (user_gender != null) {
                 data_update_userbasict['gender'] = user_gender;
               }
               if (user_dob != null) {
                 data_update_userbasict['dob'] = user_dob;
               }
-
               if (user_country != null) {
-                var countries_ = await this.countriesService.findOneName(user_country);
-                if ((await this.utilsService.ceckData(countries_))) {
-                  var countries_id = (await countries_)._id;
+                var countries = await this.countriesService.findOneName(user_country);
+                if ((await this.utilsService.ceckData(countries))) {
+                  var countries_id = (await countries)._id;
                   data_update_userbasict['countries'] = {
                     $ref: 'countries',
                     $id: countries_id,
@@ -2250,9 +2472,9 @@ export class AuthService {
                 }
               }
               if (user_area != null) {
-                var areas_ = await this.areasService.findOneName(user_area);
-                if ((await this.utilsService.ceckData(areas_))) {
-                  var areas_id = (await areas_)._id;
+                var areas = await this.areasService.findOneName(user_area);
+                if ((await this.utilsService.ceckData(areas))) {
+                  var areas_id = (await areas)._id;
                   data_update_userbasict['states'] = {
                     $ref: 'areas',
                     $id: areas_id,
@@ -2261,9 +2483,9 @@ export class AuthService {
                 }
               }
               if (user_city != null) {
-                var cities_ = await this.citiesService.findOneName(user_city);
-                if ((await this.utilsService.ceckData(cities_))) {
-                  var cities_id = (await cities_)._id;
+                var cities = await this.citiesService.findOneName(user_city);
+                if ((await this.utilsService.ceckData(cities))) {
+                  var cities_id = (await cities)._id;
                   data_update_userbasict['cities'] = {
                     $ref: 'cities',
                     $id: cities_id,
@@ -2272,9 +2494,9 @@ export class AuthService {
                 }
               }
               if (user_langIso != null) {
-                var languages_ = await this.languagesService.findOneLangiso(user_langIso);
-                if ((await this.utilsService.ceckData(languages_))) {
-                  var languages_id = (await languages_)._id;
+                var languages = await this.languagesService.findOneLangiso(user_langIso);
+                if ((await this.utilsService.ceckData(languages))) {
+                  var languages_id = (await languages)._id;
                   data_update_userbasict['languages'] = {
                     $ref: 'languages',
                     $id: languages_id,
@@ -3401,6 +3623,7 @@ export class AuthService {
         subject,
         html_body,
       );
+      await this.userbasicsService.updateStatusemail(email, (await this.utilsService.getDateTimeString()));
       if (!send) {
         await this.errorHandler.generateNotAcceptableException(
           'Unabled to proceed Send Email OTP',
@@ -3766,9 +3989,12 @@ export class AuthService {
       if ((await this.utilsService.ceckData(datauserbasicsService)) && (await this.utilsService.ceckData(datauserauthsService))) {
         try {
           var data_referral = await this.referralService.findAllByParent(user_email);
+          var data_referral_parent = await this.referralService.findAllByChildren(user_email);
 
           return {
+            parent: (await this.utilsService.ceckData(data_referral_parent))? data_referral_parent[0].parent:"",
             response_code: 202,
+            data: data_referral.length,
             messages: {
               info: ['The process successful'],
             },
@@ -3793,95 +4019,187 @@ export class AuthService {
 
   async referral(req: any, head: any): Promise<any> {
     var user_email_parent = null;
+    var user_username_parent = null;
+    var user_imei_children = null;
     var user_email_children = null;
-    var user_username_childen = null;
     var email_ceck = false;
+    var current_date = await this.utilsService.getDateTimeString();
 
     if (head['x-auth-user'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
+        'Unabled to proceed, required param email header',
       );
     } else {
-      user_email_parent = head['x-auth-user'];
+      user_email_children = head['x-auth-user'];
     }
+
+    if (req.body.imei == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, required param imei',
+      );
+    } else {
+      user_imei_children = req.body.imei;
+    }
+
     if (req.body.email == undefined) {
-      email_ceck = true;
-      user_username_childen = req.body.username;
+      if (req.body.username != undefined) {
+        email_ceck = true;
+        user_username_parent = req.body.username;
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, required param email or username',
+        );
+      }
     } else {
       email_ceck = false;
-      user_email_children = req.body.email;
+      user_email_parent = req.body.email;
     }
-    var current_date = await this.utilsService.getDateTimeString();
 
-    var datauserbasicsService_parent = null;
-    var datauserbasicsService_children = null;
+    var datauserauthService_parent = null;
+    var datauserauthService_children = null;
 
-    //Ceck User Userbasics parent
-    datauserbasicsService_parent = await this.userbasicsService.findOne(
-      user_email_parent,
-    );
+    //Ceck User auth child
+    datauserauthService_children = await this.userauthsService.findOneemail(user_email_children);
+    if (!(await this.utilsService.ceckData(datauserauthService_children))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, user not found or not active',
+      );
+    }
 
     if (email_ceck) {
-      //Ceck User Userbasics children
-      datauserbasicsService_children = await this.userbasicsService.findOneUsername(
-        user_username_childen,
-      );
+      //Ceck User auth parent
+      datauserauthService_parent = await this.userauthsService.findOneUsername(user_username_parent);
+      if (await this.utilsService.ceckData(datauserauthService_parent)){
+        user_email_parent = datauserauthService_parent.email;
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, Data user parent referral not found',
+        );
+      }
     } else {
-      //Ceck User Userbasics children
-      datauserbasicsService_children = await this.userbasicsService.findOne(
-        user_email_children,
-      );
+      //Ceck User auth parent
+      datauserauthService_parent = await this.userauthsService.findOneemail(user_email_parent);
+      if (!(await this.utilsService.ceckData(datauserauthService_parent))) {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, Data user parent referral not found',
+        );
+      }
     }
-    if (await datauserbasicsService_parent != null && await datauserbasicsService_children != null) {
-      if ((await this.utilsService.ceckData(datauserbasicsService_parent)) && (await this.utilsService.ceckData(datauserbasicsService_children))) {
-        try {
-          if (email_ceck) {
-            user_email_children = user_email_children;
-          } else {
-            user_email_children = datauserbasicsService_children.email;
-          }
-          //Ceck User Referral parent children
-          const data_referral_parent_children = await this.referralService.findAllByParentChildren(
-            user_email_parent, user_email_children,
-          );
 
-          if (!(await this.utilsService.ceckData(data_referral_parent_children))) {
-            var CreateReferralDto_ = new CreateReferralDto();
+    if (user_email_parent != "" && user_imei_children != "") {
+      var data_refferal = await this.referralService.findOneInChildParent(user_email_children, user_email_parent);
+      if (!(await this.utilsService.ceckData(data_refferal))) {
+        var data_imei = await this.referralService.findOneInIme(user_imei_children);
+        if (!(await this.utilsService.ceckData(data_imei))) {
+          var CreateReferralDto_ = new CreateReferralDto();
+          CreateReferralDto_._id = (await this.utilsService.generateId())
+          CreateReferralDto_.parent = user_email_parent;
+          CreateReferralDto_.children = user_email_children;
+          CreateReferralDto_.active = true;
+          CreateReferralDto_.verified = true;
+          CreateReferralDto_.createdAt = current_date;
+          CreateReferralDto_.updatedAt = current_date;
+          CreateReferralDto_.imei = user_imei_children;
+          CreateReferralDto_._class = "io.melody.core.domain.Referral";
+          await this.referralService.create(CreateReferralDto_);
 
-            CreateReferralDto_._id = await this.utilsService.generateId();
-            CreateReferralDto_.parent = user_email_parent;
-            CreateReferralDto_.children = user_email_children;
-            CreateReferralDto_.active = true;
-            CreateReferralDto_.verified = true;
-            CreateReferralDto_.createdAt = current_date;
-            CreateReferralDto_.updatedAt = current_date;
-            CreateReferralDto_._class = 'io.melody.core.domain.Referral';
-            if (req.body.imei != undefined) {
-              CreateReferralDto_.imei = req.body.imei;
-            }
-            //Create User Referral
-            await this.referralService.create(CreateReferralDto_);
-          }
+          var _id_1 = (await this.utilsService.generateId());
+          var _id_2 = (await this.utilsService.generateId());
+          var _id_3 = (await this.utilsService.generateId());
+          var _id_4 = (await this.utilsService.generateId());
+
+          // var CreateContenteventsDto1 = new CreateContenteventsDto();
+          // CreateContenteventsDto1._id = _id_1
+          // CreateContenteventsDto1.contentEventID = (await this.utilsService.generateId())
+          // CreateContenteventsDto1.email = LoginRequest_.referral
+          // CreateContenteventsDto1.eventType = "FOLLOWER"
+          // CreateContenteventsDto1.active = true
+          // CreateContenteventsDto1.event = "REQUEST"
+          // CreateContenteventsDto1.createdAt = current_date
+          // CreateContenteventsDto1.updatedAt = current_date
+          // CreateContenteventsDto1.sequenceNumber = 0
+          // CreateContenteventsDto1.flowIsDone = true
+          // CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
+          // CreateContenteventsDto1.senderParty = LoginRequest_.email
+          // CreateContenteventsDto1.transitions = [{
+          //   $ref: 'contentevents',
+          //   $id: Object(_id_2),
+          //   $db: 'hyppe_trans_db',
+          // }]
+
+          var CreateContenteventsDto2 = new CreateContenteventsDto();
+          CreateContenteventsDto2._id = _id_2
+          CreateContenteventsDto2.contentEventID = (await this.utilsService.generateId())
+          CreateContenteventsDto2.email = user_email_parent
+          CreateContenteventsDto2.eventType = "FOLLOWER"
+          CreateContenteventsDto2.active = true
+          CreateContenteventsDto2.event = "ACCEPT"
+          CreateContenteventsDto2.createdAt = current_date
+          CreateContenteventsDto2.updatedAt = current_date
+          CreateContenteventsDto2.sequenceNumber = 1
+          CreateContenteventsDto2.flowIsDone = true
+          CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+          CreateContenteventsDto2.receiverParty = user_email_children
+          CreateContenteventsDto2.parentContentEventID = _id_1
+
+          // var CreateContenteventsDto3 = new CreateContenteventsDto();
+          // CreateContenteventsDto3._id = _id_3
+          // CreateContenteventsDto3.contentEventID = (await this.utilsService.generateId())
+          // CreateContenteventsDto3.email = LoginRequest_.email
+          // CreateContenteventsDto3.eventType = "FOLLOWING"
+          // CreateContenteventsDto3.active = true
+          // CreateContenteventsDto3.event = "INITIAL"
+          // CreateContenteventsDto3.createdAt = current_date
+          // CreateContenteventsDto3.updatedAt = current_date
+          // CreateContenteventsDto3.sequenceNumber = 0
+          // CreateContenteventsDto3.flowIsDone = true
+          // CreateContenteventsDto3._class = "io.melody.hyppe.content.domain.ContentEvent"
+          // CreateContenteventsDto3.receiverParty = LoginRequest_.referral
+          // CreateContenteventsDto3.transitions = [{
+          //   $ref: 'contentevents',
+          //   $id: Object(_id_4),
+          //   $db: 'hyppe_trans_db',
+          // }]
+
+          var CreateContenteventsDto4 = new CreateContenteventsDto();
+          CreateContenteventsDto4._id = _id_4
+          CreateContenteventsDto4.contentEventID = (await this.utilsService.generateId())
+          CreateContenteventsDto4.email = user_email_children
+          CreateContenteventsDto4.eventType = "FOLLOWING"
+          CreateContenteventsDto4.active = true
+          CreateContenteventsDto4.event = "ACCEPT"
+          CreateContenteventsDto4.createdAt = current_date
+          CreateContenteventsDto4.updatedAt = current_date
+          CreateContenteventsDto4.sequenceNumber = 1
+          CreateContenteventsDto4.flowIsDone = true
+          CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
+          CreateContenteventsDto4.senderParty = user_email_parent
+          CreateContenteventsDto4.parentContentEventID = _id_3
+
+          //await this.contenteventsService.create(CreateContenteventsDto1);
+          await this.contenteventsService.create(CreateContenteventsDto2);
+          //await this.contenteventsService.create(CreateContenteventsDto3);
+          await this.contenteventsService.create(CreateContenteventsDto4);
+          await this.insightsService.updateFollower(user_email_parent);
+          await this.insightsService.updateFollowing(user_email_children);
           return {
-            response_code: 202,
-            messages: {
-              info: ['The process successful'],
+            "response_code": 202,
+            "messages": {
+              "info": [
+                "The process successful"
+              ]
             }
-          }
-        } catch (error) {
+          };
+        } else {
           await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed ' + error,
+            'Unabled to proceed, yours device already register',
           );
         }
       } else {
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed',
+          'Unabled to proceed, this email already registered as Child',
         );
       }
-    } else {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
-      );
     }
   }
 
@@ -4290,6 +4608,7 @@ export class AuthService {
   }
 
   async signupsosmed(req: any) {
+    this.logger.log("signupsosmed >>> start: ");
     var user_email = null;
     var user_socmedSource = null;
     var user_deviceId = null;
@@ -4677,7 +4996,7 @@ export class AuthService {
             isEmailVerified: "true",
             token: token,
             idProofStatus: "IN_PROGRESS",
-            insight: {
+            painsight: {
               shares: new Double(0),
               followers: new Double(0),
               comments: new Double(0),
@@ -5001,6 +5320,44 @@ export class AuthService {
                 CreateReferralDto_._class = _class_Referral;
 
                 this.referralService.create(CreateReferralDto_);
+
+                var _id_2 = (await this.utilsService.generateId());
+                var _id_4 = (await this.utilsService.generateId());
+
+                var CreateContenteventsDto2 = new CreateContenteventsDto();
+                CreateContenteventsDto2._id = _id_2
+                CreateContenteventsDto2.contentEventID = (await this.utilsService.generateId())
+                CreateContenteventsDto2.email = req.body.referral
+                CreateContenteventsDto2.eventType = "FOLLOWER"
+                CreateContenteventsDto2.active = true
+                CreateContenteventsDto2.event = "ACCEPT"
+                CreateContenteventsDto2.createdAt = current_date
+                CreateContenteventsDto2.updatedAt = current_date
+                CreateContenteventsDto2.sequenceNumber = 1
+                CreateContenteventsDto2.flowIsDone = true
+                CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+                CreateContenteventsDto2.receiverParty = req.body.email
+
+                var CreateContenteventsDto4 = new CreateContenteventsDto();
+                CreateContenteventsDto4._id = _id_4
+                CreateContenteventsDto4.contentEventID = (await this.utilsService.generateId())
+                CreateContenteventsDto4.email = req.body.email
+                CreateContenteventsDto4.eventType = "FOLLOWING"
+                CreateContenteventsDto4.active = true
+                CreateContenteventsDto4.event = "ACCEPT"
+                CreateContenteventsDto4.createdAt = current_date
+                CreateContenteventsDto4.updatedAt = current_date
+                CreateContenteventsDto4.sequenceNumber = 1
+                CreateContenteventsDto4.flowIsDone = true
+                CreateContenteventsDto4._class = "io.melody.hyppe.content.domain.ContentEvent"
+                CreateContenteventsDto4.senderParty = req.body.referral
+
+                //await this.contenteventsService.create(CreateContenteventsDto1);
+                await this.contenteventsService.create(CreateContenteventsDto2);
+                //await this.contenteventsService.create(CreateContenteventsDto3);
+                await this.contenteventsService.create(CreateContenteventsDto4);
+                await this.insightsService.updateFollower(req.body.referral);
+                await this.insightsService.updateFollowing(req.body.email);                
               } catch (error) {
                 await this.errorHandler.generateNotAcceptableException(
                   'Unabled to proceed Create Refferal. Error:' +
@@ -5168,6 +5525,7 @@ export class AuthService {
   }
 
   async signsosmed(req: any) {
+    this.logger.log("signsosmed >>> start: " + JSON.stringify(req.body));
     var user_email = req.body.email;
     var user_socmedSource = req.body.socmedSource;
     var user_deviceId = req.body.deviceId;
@@ -5540,7 +5898,10 @@ export class AuthService {
               const interests = await this.interestsRepoService.findOne(
                 interests_json.$id,
               );
-              interests_array[i] = interests.interestName;
+              if (interests != undefined) {
+                interests_array[i] = interests.interestName;
+              }
+
             }
           }
         }
@@ -5596,16 +5957,19 @@ export class AuthService {
           mediaprofilepicts_res["mediaEndpoint"] = result;
         }
 
-        var insights_res = {
-          shares: insights.shares,
-          followers: insights.followers,
-          comments: insights.comments,
-          followings: insights.followings,
-          reactions: insights.reactions,
-          posts: insights.posts,
-          views: insights.views,
-          likes: insights.likes,
-        };
+        var insights_res = {};
+        if (insights != undefined) {
+          insights_res = {
+            shares: insights.shares,
+            followers: insights.followers,
+            comments: insights.comments,
+            followings: insights.followings,
+            reactions: insights.reactions,
+            posts: insights.posts,
+            views: insights.views,
+            likes: insights.likes,
+          };
+        }
 
         var token = (
           await this.utilsService.generateToken(user_email, user_deviceId)

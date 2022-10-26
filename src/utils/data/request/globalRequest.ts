@@ -14,6 +14,10 @@ export class LoginRequest {
     deviceId: string;
     @IsString()
     devicetype: string;
+    @IsString()
+    referral: string;
+    @IsString()
+    imei: string;
 } 
 
 export class RefreshTokenRequest {

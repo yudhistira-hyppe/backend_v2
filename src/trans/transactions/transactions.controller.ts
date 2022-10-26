@@ -28,6 +28,7 @@ import { MediapictsService } from '../../content/mediapicts/mediapicts.service';
 import { MediavideosService } from '../../content/mediavideos/mediavideos.service';
 import { CreateUserplaylistDto } from '../userplaylist/dto/create-userplaylist.dto';
 import { LanguagesService } from '../../infra/languages/languages.service';
+import { ignoreElements } from 'rxjs';
 @Controller()
 export class TransactionsController {
     constructor(private readonly transactionsService: TransactionsService,
@@ -4707,6 +4708,7 @@ export class TransactionsController {
         var enddate = null;
         var limit = null;
         var iduser = null;
+        var totalpage = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -4732,7 +4734,27 @@ export class TransactionsController {
         var totalsearch = datasearch.length;
         var allrow = await this.transactionsService.totalcountVoucher();
         var totalallrow = allrow[0].countrow;
-        var totalpage = (totalallrow / limit).toFixed(0);
+        var tpage = null;
+        var tpage2 = null;
+        if (iduser === undefined) {
+            tpage2 = (totalallrow / limit).toFixed(0);
+            tpage = (totalallrow % limit);
+            if (tpage > 0 && tpage < 6) {
+                totalpage = parseInt(tpage2) + 1;
+
+            } else {
+                totalpage = parseInt(tpage2);
+            }
+        } else {
+            tpage2 = (totalsearch / limit).toFixed(0);
+            tpage = (totalsearch % limit);
+            if (tpage > 0 && tpage < 6) {
+                totalpage = parseInt(tpage2) + 1;
+
+            } else {
+                totalpage = parseInt(tpage2);
+            }
+        }
 
 
         return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };

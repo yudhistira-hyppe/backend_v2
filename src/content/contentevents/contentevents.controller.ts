@@ -8,6 +8,7 @@ import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import { InsightsService } from '../insights/insights.service';
 import { PostDisqusService } from '../disqus/post/postdisqus.service'; 
+import { request } from 'http';
 
 @Controller()
 export class ContenteventsController {
