@@ -237,6 +237,7 @@ export class UtilsController {
         });
         var Response = {
             response_code: 202,
+            total: data.length.toString(),
             data: data_[0],
             messages: {
                 info: [
