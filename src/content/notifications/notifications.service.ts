@@ -28,7 +28,7 @@ export class NotificationsService {
     return this.NotificationsModel.find().exec();
   }
 
-  async findlatest(email: string, skip: number, limit: number): Promise<object> {z
+  async findlatest(email: string, skip: number, limit: number): Promise<object> {
     const query = await this.NotificationsModel.aggregate([
       { $match: { email: email } },
       {
@@ -75,11 +75,11 @@ export class NotificationsService {
     let res = new NotifResponseApps();
     let msg = new Messages;
 
-    let dns : CreateNotificationsDto[] = [];
+    let dns: CreateNotificationsDto[] = [];
     let q = await this.getNotificationQuery(body, profile);
     for (let i = 0; i < q.length; i++) {
       let notif = q[i];
-      let dn = <CreateNotificationsDto> notif;
+      let dn = <CreateNotificationsDto>notif;
       dns.push(dn);
     }
 
@@ -111,9 +111,9 @@ export class NotificationsService {
     }
     let skip = this.paging(page, row);
     query.skip(skip);
-    query.limit(row);         
-    query.sort({'updatedAt': -1});
-    return await query.exec();    
+    query.limit(row);
+    query.sort({ 'updatedAt': -1 });
+    return await query.exec();
   }
 
   private paging(page: number, row: number) {
