@@ -50,23 +50,23 @@ export class DisquslogsService {
   async finddisquslog() {
     const query = await this.DisquslogsModel.aggregate([
 
-      //     {
-      //       $lookup: {
-      //         from: 'disquslogs',
-      //         localField: 'disquslogs.$id',
-      //         foreignField: '_id',
-      //         as: 'roless',
-      //       },
-      //     }, {
-      //       $out: {
-      //         db: 'hyppe_trans_db',
-      //         coll: 'disquslogs2'
-      //       }
-      //     },
+          {
+            $lookup: {
+              from: 'disquslogs',
+              localField: 'disquslogs.$id',
+              foreignField: '_id',
+              as: 'roless',
+            },
+          }, {
+            $out: {
+              db: 'hyppe_trans_db',
+              coll: 'disquslogs2'
+            }
+          },
 
-      //   ]);
-      //   return query;
-      // }
+        ]);
+        return query;
+      }
 
       async update(
         id: string,
