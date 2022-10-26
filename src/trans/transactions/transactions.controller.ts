@@ -28,6 +28,7 @@ import { MediapictsService } from '../../content/mediapicts/mediapicts.service';
 import { MediavideosService } from '../../content/mediavideos/mediavideos.service';
 import { CreateUserplaylistDto } from '../userplaylist/dto/create-userplaylist.dto';
 import { LanguagesService } from '../../infra/languages/languages.service';
+import { ignoreElements } from 'rxjs';
 @Controller()
 export class TransactionsController {
     constructor(private readonly transactionsService: TransactionsService,
@@ -1347,7 +1348,7 @@ export class TransactionsController {
         var nama = null;
         var kodebank = null;
         var norekdb = null;
-
+        var totalamount = null;
         var idbankverificationcharge = "62bd4104f37a00001a004367";
         var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
         var iduseradmin = "61d9c847548ae516042f0b13";
@@ -1405,7 +1406,12 @@ export class TransactionsController {
             norekdb = null;
         }
 
-        var totalamount = amounreq - valuedisbcharge - valuebankcharge;
+        if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+            totalamount = amounreq - valuedisbcharge - valuebankcharge;
+        } else {
+            totalamount = amounreq - valuedisbcharge;
+        }
+
         if (amounreq > totalsaldo) {
             throw new BadRequestException("The balance is not sufficient...!");
         }
@@ -1719,11 +1725,11 @@ export class TransactionsController {
             valuebankcharge = datasettingbankvercharge._doc.value;
             datasettingdisbvercharge = await this.settingsService.findOne(idBankDisbursmentCharge);
             valuedisbcharge = datasettingdisbvercharge._doc.value;
-            totalamount = amount - valuedisbcharge - valuebankcharge;
+
         } catch (e) {
             valuebankcharge = 0;
             valuedisbcharge = 0;
-            totalamount = 0;
+
         }
         try {
             databank = await this.banksService.findbankcode(bankcode);
@@ -1752,7 +1758,7 @@ export class TransactionsController {
                 var statuscode = datareqinq.status.code;
                 var account_name = datareqinq.account_name;
                 var namaakun = account_name.toLowerCase();
-
+                totalamount = amount - valuedisbcharge - valuebankcharge;
                 if (statuscode == "000") {
                     await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
                     await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
@@ -1896,6 +1902,7 @@ export class TransactionsController {
                     });
                 }
             } else {
+                totalamount = amount - valuedisbcharge;
                 data = {
                     "name": namarek,
                     "bankName": bankname,
@@ -4628,6 +4635,7 @@ export class TransactionsController {
                     var idacountbank = dataWitdraw[0].idAccountBank;
                     dataakunbank = await this.userbankaccountsService.findOneid(idacountbank);
                     var idBnk = dataakunbank._doc.idBank;
+                    var statusInquiry = dataakunbank._doc.statusInquiry;
                     var databank = null;
                     var namabank = "";
                     try {
@@ -4659,24 +4667,45 @@ export class TransactionsController {
                         valuedisbcharge = 0;
                     }
 
-                    data = {
+                    if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+                        data = {
 
-                        "_id": idtr,
-                        "iduser": dataWitdraw[0].iduser,
-                        "fullName": dataWitdraw[0].fullName,
-                        "email": dataWitdraw[0].email,
-                        "type": dataWitdraw[0].type,
-                        "timestamp": dataWitdraw[0].timestamp,
-                        "amount": dataWitdraw[0].amount,
-                        "totalamount": dataWitdraw[0].totalamount,
-                        "adminFee": valuedisbcharge,
-                        "bankverificationcharge": valuebankcharge,
-                        "description": dataWitdraw[0].description,
-                        "status": dataWitdraw[0].status,
-                        "noRek": dataakunbank._doc.noRek,
-                        "namaRek": dataakunbank._doc.nama,
-                        "namaBank": namabank
-                    };
+                            "_id": idtr,
+                            "iduser": dataWitdraw[0].iduser,
+                            "fullName": dataWitdraw[0].fullName,
+                            "email": dataWitdraw[0].email,
+                            "type": dataWitdraw[0].type,
+                            "timestamp": dataWitdraw[0].timestamp,
+                            "amount": dataWitdraw[0].amount,
+                            "totalamount": dataWitdraw[0].totalamount,
+                            "adminFee": valuedisbcharge,
+                            "bankverificationcharge": valuebankcharge,
+                            "description": dataWitdraw[0].description,
+                            "status": dataWitdraw[0].status,
+                            "noRek": dataakunbank._doc.noRek,
+                            "namaRek": dataakunbank._doc.nama,
+                            "namaBank": namabank
+                        };
+                    } else {
+                        data = {
+
+                            "_id": idtr,
+                            "iduser": dataWitdraw[0].iduser,
+                            "fullName": dataWitdraw[0].fullName,
+                            "email": dataWitdraw[0].email,
+                            "type": dataWitdraw[0].type,
+                            "timestamp": dataWitdraw[0].timestamp,
+                            "amount": dataWitdraw[0].amount,
+                            "totalamount": dataWitdraw[0].totalamount,
+                            "adminFee": valuedisbcharge,
+                            "bankverificationcharge": 0,
+                            "description": dataWitdraw[0].description,
+                            "status": dataWitdraw[0].status,
+                            "noRek": dataakunbank._doc.noRek,
+                            "namaRek": dataakunbank._doc.nama,
+                            "namaBank": namabank
+                        };
+                    }
                 } catch (e) {
                     throw new BadRequestException("Data not found...!");
                 }
@@ -4733,11 +4762,26 @@ export class TransactionsController {
         var totalsearch = datasearch.length;
         var allrow = await this.transactionsService.totalcountVoucher();
         var totalallrow = allrow[0].countrow;
-
+        var tpage = null;
+        var tpage2 = null;
         if (iduser === undefined) {
-            totalpage = (totalallrow / limit).toFixed(0);
+            tpage2 = (totalallrow / limit).toFixed(0);
+            tpage = (totalallrow % limit);
+            if (tpage > 0 && tpage < 6) {
+                totalpage = parseInt(tpage2) + 1;
+
+            } else {
+                totalpage = parseInt(tpage2);
+            }
         } else {
-            totalpage = (totalsearch / limit).toFixed(0);
+            tpage2 = (totalsearch / limit).toFixed(0);
+            tpage = (totalsearch % limit);
+            if (tpage > 0 && tpage < 6) {
+                totalpage = parseInt(tpage2) + 1;
+
+            } else {
+                totalpage = parseInt(tpage2);
+            }
         }
 
 
