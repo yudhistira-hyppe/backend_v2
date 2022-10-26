@@ -350,7 +350,7 @@ export class ContenteventsController {
     } else if (eventType == "REACTION") {
       var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "REACTION", "DONE", email_receiverParty, "", request.body.postID);
       var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "REACTION", "ACCEPT", "", email_user, request.body.postID);
-      if ((await this.utilsService.ceckData(ceck_data_DONE)) && (await this.utilsService.ceckData(ceck_data_ACCEPT))) {
+      if (!(await this.utilsService.ceckData(ceck_data_DONE)) && !(await this.utilsService.ceckData(ceck_data_ACCEPT))) {
         var _id_1 = (await this.utilsService.generateId());
         var _id_2 = (await this.utilsService.generateId());
         var CreateContenteventsDto1 = new CreateContenteventsDto();
