@@ -1353,6 +1353,7 @@ export class TransactionsController {
         var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
         var iduseradmin = "61d9c847548ae516042f0b13";
         var datainquiry = null;
+        var data = null;
         // var valueinquiry = null;
         var idinquirycharge = "63217ae5ec46000002007405";
         var totalinquiry = null;
@@ -1490,21 +1491,38 @@ export class TransactionsController {
                         await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
 
                         try {
+                            if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+                                data = {
+                                    "idUser": datatr.idUser,
+                                    "amount": datatr.amount,
+                                    "status": datatr.status,
+                                    "bankVerificationCharge": valuebankcharge,
+                                    "bankDisbursmentCharge": valuedisbcharge,
+                                    "timestamp": datatr.timestamp,
+                                    "verified": datatr.verified,
+                                    "description": datatr.description,
+                                    "partnerTrxid": datatr.partnerTrxid,
+                                    "statusOtp": datatr.statusOtp,
+                                    "totalamount": totalamount,
+                                    "_id": datatr._id
+                                };
+                            } else {
+                                data = {
+                                    "idUser": datatr.idUser,
+                                    "amount": datatr.amount,
+                                    "status": datatr.status,
+                                    "bankVerificationCharge": 0,
+                                    "bankDisbursmentCharge": valuedisbcharge,
+                                    "timestamp": datatr.timestamp,
+                                    "verified": datatr.verified,
+                                    "description": datatr.description,
+                                    "partnerTrxid": datatr.partnerTrxid,
+                                    "statusOtp": datatr.statusOtp,
+                                    "totalamount": totalamount,
+                                    "_id": datatr._id
+                                };
+                            }
 
-                            var data = {
-                                "idUser": datatr.idUser,
-                                "amount": datatr.amount,
-                                "status": datatr.status,
-                                "bankVerificationCharge": valuebankcharge,
-                                "bankDisbursmentCharge": valuedisbcharge,
-                                "timestamp": datatr.timestamp,
-                                "verified": datatr.verified,
-                                "description": datatr.description,
-                                "partnerTrxid": datatr.partnerTrxid,
-                                "statusOtp": datatr.statusOtp,
-                                "totalamount": totalamount,
-                                "_id": datatr._id
-                            };
 
                             res.status(HttpStatus.OK).json({
                                 response_code: 202,
