@@ -4,6 +4,7 @@ import { UserbasicsService } from '../trans/userbasics/userbasics.service';
 import { UserdevicesService } from '../trans/userdevices/userdevices.service';
 import { UserauthsService } from '../trans/userauths/userauths.service';
 import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken.service';
+import { TemplatesRepoService } from '../infra/templates_repo/templates_repo.service';
 import { TemplatesService } from '../infra/templates/templates.service';
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -27,6 +28,7 @@ import { NotificationsService } from "../content/notifications/notifications.ser
 import * as fs from 'fs';
 import { double } from 'aws-sdk/clients/lightsail';
 import { CreateNotificationsDto } from '../content/notifications/dto/create-notifications.dto';
+import { TemplatesRepo } from '../infra/templates_repo/schemas/templatesrepo.schema';
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -41,6 +43,7 @@ export class UtilsService {
     private jwtrefreshtokenService: JwtrefreshtokenService,
     private jwtService: JwtService,
     private mailerService: MailerService,
+    private templatesRepoService: TemplatesRepoService,
     private templatesService: TemplatesService,
     private errorHandler: ErrorHandler,
     private userbasicsService: UserbasicsService,
@@ -128,6 +131,10 @@ export class UtilsService {
 
   //   await admin.messaging().sendToDevice(fcmtoken, payload);
   // }
+  async sendInsightFcm(email: string,) {
+  }
+
+
   async sendFcm(email: string, titlein: string, titleen: string, bodyin: string, bodyen: string, eventType: string, event: string) {
 
     var emailuserbasic = null;
@@ -277,6 +284,10 @@ export class UtilsService {
     return (await this.settingsService.findOneByJenis(jenis)).value;
   }
 
+  async getUsertname(email: string) {
+    return (await this.userauthsService.findOne(email)).username;
+  }
+
   async updateSetting(jenis: string, value: any) {
     return await this.settingsService.findOneAndUpdate(jenis, value);
   }
@@ -302,6 +313,10 @@ export class UtilsService {
 
   async getTemplate(type: string, category: string): Promise<Templates> {
     return await this.templatesService.findOneByTypeAndCategory(type, category);
+  }
+
+  async getTemplate_repo(type: string, category: string): Promise<TemplatesRepo> {
+    return await this.templatesRepoService.findOneByTypeAndCategory(type, category);
   }
 
   async ceckObjectid(id: string): Promise<boolean> {

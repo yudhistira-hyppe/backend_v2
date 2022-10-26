@@ -42,7 +42,14 @@ export class TemplatesRepoService {
       return res[0];
     }
     return undefined;
-  }    
+  }
+
+  async findOneByTypeAndCategory(type: string, category: string): Promise<TemplatesRepo> {
+    return this.TemplatesRepoModel.findOne({
+      type: type,
+      category: category,
+    }).exec();
+  }  
 
   async delete(id: string) {
     const deletedCat = await this.TemplatesRepoModel.findByIdAndRemove({

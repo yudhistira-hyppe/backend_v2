@@ -808,4 +808,77 @@ export class ContenteventsService {
 
     return query;
   }
+
+  async ceckData(email: String, eventType: String, event: String, receiverParty: String, senderParty: String, postID: String): Promise<Contentevents> {
+    let query = this.ContenteventsModel.findOne();
+    query.where('email', email);
+    query.where('eventType', eventType);
+    query.where('event', event);
+    if (senderParty != "") {
+      query.where('senderParty', senderParty);
+    }
+    if (receiverParty != "") {
+      query.where('receiverParty', receiverParty);
+    }
+    if (postID != "") {
+      query.where('postID', postID);
+    }
+    return query.exec();
+  }
+
+  async updateUnlike(email: string, eventType: string, postID: string) {
+    this.ContenteventsModel.updateOne(
+      {
+        email: email,
+        eventType: eventType,
+        postID: postID,
+      },
+      { active: false },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateUnFollowing(email: string, eventType: string, receiverParty: string) {
+    this.ContenteventsModel.updateOne(
+      {
+        email: email,
+        eventType: eventType,
+        senderParty: receiverParty,
+        event: "ACCEPT"
+      },
+      { active: false },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateUnFollower(email: string, eventType: string, receiverParty: string) {
+    this.ContenteventsModel.updateOne(
+      {
+        email: email,
+        eventType: eventType,
+        receiverParty: receiverParty,
+        event: "ACCEPT"
+      },
+      { active: false },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
 }

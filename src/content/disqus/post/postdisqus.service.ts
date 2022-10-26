@@ -58,4 +58,72 @@ export class PostDisqusService {
   async findid(id: string): Promise<Posts> {
     return this.PostsModel.findOne({ _id: id }).exec();
   }
+
+  async updateView(email: string, postID: string) {
+    this.PostsModel.updateOne(
+      {
+        email: email,
+        postID: postID,
+      },
+      { $inc: { views: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateLike(email: string, postID: string) {
+    this.PostsModel.updateOne(
+      {
+        email: email,
+        postID: postID,
+      },
+      { $inc: { likes: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateReaction(email: string, postID: string) {
+    this.PostsModel.updateOne(
+      {
+        email: email,
+        postID: postID,
+      },
+      { $inc: { reactions: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateUnLike(email: string, postID: string) {
+    this.PostsModel.updateOne(
+      {
+        email: email,
+        postID: postID,
+      },
+      { $inc: { likes: -1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
 }
