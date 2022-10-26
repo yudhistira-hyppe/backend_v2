@@ -25,6 +25,7 @@ import { VouchersModule } from '../vouchers/vouchers.module';
 import { UtilsModule } from '../../utils/utils.module';
 import { MediastoriesModule } from '../../content/mediastories/mediastories.module';
 import { LanguagesModule } from '../../infra/languages/languages.module';
+import { AdsModule } from '../ads/ads.module';
 
 @Module({
 
@@ -32,6 +33,7 @@ import { LanguagesModule } from '../../infra/languages/languages.module';
         UtilsModule,
         ConfigModule.forRoot(), GetusercontentsModule, UserbasicsModule, SettingsModule, MethodepaymentsModule, BanksModule, PostsModule, Pph21sModule, AccountbalancesModule, OyPgModule,
         InsightsModule, UserbankaccountsModule, WithdrawsModule, MediavideosModule, MediapictsModule, MediadiariesModule, UservouchersModule, VouchersModule, MediastoriesModule, LanguagesModule,
+        AdsModule,
         MongooseModule.forFeature([{ name: Transactions.name, schema: TransactionsSchema }], 'SERVER_FULL')
     ],
     controllers: [TransactionsController],
