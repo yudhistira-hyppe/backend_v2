@@ -12,4 +12,5 @@ export class CreateTemplatesDto {
     readonly  langIso: String;
     readonly category:String;
     readonly action_buttons:String;
+    body_detail_id: String
   }

@@ -30,8 +30,10 @@ import { SettingsModule } from '../trans/settings/settings.module';
 import { SeaweedfsModule } from '../stream/seaweedfs/seaweedfs.module';
 import { UserdevicesModule } from "../trans/userdevices/userdevices.module";
 import { NotificationsModule } from "../content/notifications/notifications.module";
+import { TemplatesRepoModule } from '../infra/templates_repo/templates_repo.module';
 @Module({
   imports: [
+    TemplatesRepoModule,
     UserdevicesModule,
     NotificationsModule,
     SeaweedfsModule,

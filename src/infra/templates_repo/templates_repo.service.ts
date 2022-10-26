@@ -36,6 +36,13 @@ export class TemplatesRepoService {
     return undefined;
   }
 
+  async findOneByTypeAndCategory(type: string, category: string): Promise<TemplatesRepo> {
+    return this.TemplatesRepoModel.findOne({
+      type: type,
+      category: category,
+    }).exec();
+  }
+
   async findTemplateCreatePostPdf(): Promise<TemplatesRepo> {
     let res = await this.TemplatesRepoModel.find().where('event', 'NOTIFY_POST').where('type', 'CREATE_POST').where('category', 'EMAIL_PDF').exec();
     if (res != undefined && res.length > 0) {

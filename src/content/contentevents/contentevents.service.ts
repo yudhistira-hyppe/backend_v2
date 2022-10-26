@@ -37,7 +37,25 @@ export class ContenteventsService {
     query.where('eventType', 'FOLLOWING');
     query.where('email', email);
     return query.exec();
+  } 
+
+  async ceckData(email: String, eventType: String, event: String, receiverParty: String, senderParty: String, postID: String): Promise<Contentevents> {
+    let query = this.ContenteventsModel.findOne();
+    query.where('email', email);
+    query.where('eventType', eventType);
+    query.where('event', event);
+    if (senderParty != "") {
+      query.where('senderParty', senderParty);
+    }
+    if (receiverParty != "") {
+      query.where('receiverParty', receiverParty);
+    }
+    if (postID != "") {
+      query.where('postID', postID);
+    }
+    return query.exec();
   }
+
   async updateNoneActive(email: string) {
     this.ContenteventsModel.updateMany(
       {
@@ -703,22 +721,28 @@ export class ContenteventsService {
     if (EventType != "") {
       Object.assign(Where, { eventType: EventType });
     }
-    if (Events.length > 0) {
-      for (let i = 0; i < Events.length; i++) {
-        if (Events[i] == "INITIAL") {
-          Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
-        } else if (Events[i] == "REQUEST") {
-          Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
-        } else {
-          Or.push({ event: Events[i] }, { $and: [{ flowIsDone: true }] })
-        }
-      }
-    }
+    Object.assign(Where, { event: "ACCEPT" });
+    // if (Events.length > 0) {
+    //   if (Events.length > 1) {
+    //     for (let i = 0; i < Events.length; i++) {
+    //       if (Events[i] == "INITIAL") {
+    //         Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
+    //       } else if (Events[i] == "REQUEST") {
+    //         Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
+    //       } else {
+    //         Or.push({ event: Events[i] }, { $and: [{ flowIsDone: true }] })
+    //       }
+    //     }
+    //   }else{
+    //     Object.assign(Where, { event: Events[0] });
+    //   }
+    // }
     if (Object.keys(Or).length > 0) {
       Object.assign(Where, { $or: Or });
     } else {
       Object.assign(Where);
     }
+    Object.assign(Where, { active: true });
 
     var sort = null;
     if (EventType != "") {
