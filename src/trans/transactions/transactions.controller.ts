@@ -1409,7 +1409,7 @@ export class TransactionsController {
         if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
             totalamount = amounreq - valuedisbcharge - valuebankcharge;
         } else {
-            totalamount = amounreq - valuebankcharge;
+            totalamount = amounreq - valuedisbcharge;
         }
 
         if (amounreq > totalsaldo) {
@@ -1902,7 +1902,7 @@ export class TransactionsController {
                     });
                 }
             } else {
-                totalamount = amount - valuebankcharge;
+                totalamount = amount - valuedisbcharge;
                 data = {
                     "name": namarek,
                     "bankName": bankname,
