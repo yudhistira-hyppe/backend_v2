@@ -28,7 +28,7 @@ export class NotificationsService {
     return this.NotificationsModel.find().exec();
   }
 
-  async findlatest(email: string, skip: number, limit: number): Promise<object> {
+  async findlatest(email: string, skip: number, limit: number): Promise<object> {z
     const query = await this.NotificationsModel.aggregate([
       { $match: { email: email } },
       {
@@ -72,11 +72,18 @@ export class NotificationsService {
       return res;
     }
 
-    let q = await this.getNotificationQuery(body, profile);
-
     let res = new NotifResponseApps();
     let msg = new Messages;
-    msg.info = ["User tidak tedaftar"];
+
+    let dns : CreateNotificationsDto[] = [];
+    let q = await this.getNotificationQuery(body, profile);
+    for (let i = 0; i < q.length; i++) {
+      let notif = q[i];
+      let dn = <CreateNotificationsDto> notif;
+      dns.push(dn);
+    }
+
+    res.data = dns;
     res.messages = msg;
     res.response_code = 202;
     return res;
@@ -104,9 +111,9 @@ export class NotificationsService {
     }
     let skip = this.paging(page, row);
     query.skip(skip);
-    query.limit(row);
-    query.sort({ 'createAt': -1 });
-    return await query.exec();
+    query.limit(row);         
+    query.sort({'updatedAt': -1});
+    return await query.exec();    
   }
 
   private paging(page: number, row: number) {
