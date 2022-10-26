@@ -29,6 +29,8 @@ import { PostCommentService } from './postcomment.service';
 import { DisqusModule } from '../disqus/disqus.module';
 import { DisquslogsModule } from '../disquslogs/disquslogs.module';
 import { SettingsModule } from '../../trans/settings/settings.module';
+import { DisqusService } from './disqus.service';
+import { NotificationsModule } from '../notifications/notifications.module';
 @Module({
 
     imports: [
@@ -40,11 +42,11 @@ import { SettingsModule } from '../../trans/settings/settings.module';
         UserplaylistModule,
         GroupModuleModule,
         UtilsModule,
-        ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule, InterestsModule,
-        UserauthsModule, MediavideosModule, InsightsModule, ContenteventsModule, MediadiariesModule, MediastoriesModule,
-        MediapictsModule, MediadiariesModule, MediaprofilepictsModule, PostPlayModule, TemplatesRepoModule, DisqusModule
-        , DisquslogsModule, SettingsModule,
-        MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_FULL')
+        ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
+        UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
+        MediapictsModule,MediadiariesModule,MediaprofilepictsModule,PostPlayModule,TemplatesRepoModule,DisqusModule
+        ,DisquslogsModule,SettingsModule,NotificationsModule,
+        MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [PostsController],
     providers: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService],
