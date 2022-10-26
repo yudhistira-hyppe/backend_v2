@@ -4779,6 +4779,7 @@ export class TransactionsController {
         var limit = null;
         var iduser = null;
         var totalpage = null;
+        var status = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -4792,14 +4793,14 @@ export class TransactionsController {
             throw new BadRequestException("Unabled to proceed");
         }
 
-
+        status = request_json["status"];
         startdate = request_json["startdate"];
         enddate = request_json["enddate"];
         iduser = request_json["iduser"];
         var userid = mongoose.Types.ObjectId(iduser);
-        let data = await this.adsService.listusevoucher(userid, startdate, enddate, page, limit);
+        let data = await this.adsService.listusevoucher(userid, status, startdate, enddate, page, limit);
         var total = data.length;
-        let datasearch = await this.adsService.listusevouchercount(userid, startdate, enddate);
+        let datasearch = await this.adsService.listusevouchercount(userid, status, startdate, enddate);
         var total = data.length;
         var totalsearch = datasearch.length;
 
