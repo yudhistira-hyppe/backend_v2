@@ -125,7 +125,7 @@ import { AppGateway } from './app.gateway';
     // VouchersModule,
     DivisionModule,
     UserAdsModule,
-    AdsModule,
+    //AdsModule,
     // AdstypesModule,
     AdsplacesModule,
     GroupModule,

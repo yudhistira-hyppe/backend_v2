@@ -1820,4 +1820,1460 @@ export class AdsService {
 
     }
 
+    async listusevoucher(userid: ObjectID, status: string, startdate: string, enddate: string, page: number, limit: number): Promise<Ads[]> {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+
+        if (userid !== undefined && status !== undefined && startdate !== undefined && enddate !== undefined) {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+                        "userID": userid,
+                        status: status,
+                        timestamp: { $gte: startdate, $lte: dateend }
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: - 1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                },
+                {
+                    $lookup: {
+                        from: 'adstypes',
+                        localField: 'typeAdsID',
+                        foreignField: '_id',
+                        as: 'tipeads',
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "uservouchers",
+                        as: "uservoucher",
+                        let: {
+                            local_id: '$userVoucherID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$_id', '$$local_id']
+                                            }
+                                        },
+
+                                    ]
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    "from": "vouchers",
+                                    "let": {
+                                        "voucherid": "$voucherID",
+
+                                    },
+                                    "pipeline": [
+                                        {
+                                            "$match": {
+                                                "$expr": {
+                                                    "$eq": [
+
+                                                        "$$voucherid",
+                                                        "$_id"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "as": "voucher"
+                                },
+
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    $project: {
+                        tipeads: {
+                            $arrayElemAt: ['$tipeads', 0]
+                        },
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        uservoucher: '$uservoucher.voucher'
+                    }
+                },
+                {
+
+                    $project: {
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        tipeads: '$tipeads.nameType',
+                        uservoucher: '$uservoucher'
+                    }
+                },
+
+            ]);
+            return query;
+        }
+        else if (userid !== undefined && status === undefined && startdate === undefined && enddate === undefined) {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+                        "userID": userid
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: - 1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                },
+                {
+                    $lookup: {
+                        from: 'adstypes',
+                        localField: 'typeAdsID',
+                        foreignField: '_id',
+                        as: 'tipeads',
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "uservouchers",
+                        as: "uservoucher",
+                        let: {
+                            local_id: '$userVoucherID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$_id', '$$local_id']
+                                            }
+                                        },
+
+                                    ]
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    "from": "vouchers",
+                                    "let": {
+                                        "voucherid": "$voucherID",
+
+                                    },
+                                    "pipeline": [
+                                        {
+                                            "$match": {
+                                                "$expr": {
+                                                    "$eq": [
+
+                                                        "$$voucherid",
+                                                        "$_id"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "as": "voucher"
+                                },
+
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    $project: {
+                        tipeads: {
+                            $arrayElemAt: ['$tipeads', 0]
+                        },
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        uservoucher: '$uservoucher.voucher'
+                    }
+                },
+                {
+
+                    $project: {
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        tipeads: '$tipeads.nameType',
+                        uservoucher: '$uservoucher'
+                    }
+                },
+
+            ]);
+            return query;
+        }
+        else if (userid === undefined && status === undefined && startdate !== undefined && enddate !== undefined) {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+                        timestamp: { $gte: startdate, $lte: dateend }
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: - 1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                },
+                {
+                    $lookup: {
+                        from: 'adstypes',
+                        localField: 'typeAdsID',
+                        foreignField: '_id',
+                        as: 'tipeads',
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "uservouchers",
+                        as: "uservoucher",
+                        let: {
+                            local_id: '$userVoucherID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$_id', '$$local_id']
+                                            }
+                                        },
+
+                                    ]
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    "from": "vouchers",
+                                    "let": {
+                                        "voucherid": "$voucherID",
+
+                                    },
+                                    "pipeline": [
+                                        {
+                                            "$match": {
+                                                "$expr": {
+                                                    "$eq": [
+
+                                                        "$$voucherid",
+                                                        "$_id"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "as": "voucher"
+                                },
+
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    $project: {
+                        tipeads: {
+                            $arrayElemAt: ['$tipeads', 0]
+                        },
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        uservoucher: '$uservoucher.voucher'
+                    }
+                },
+                {
+
+                    $project: {
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        tipeads: '$tipeads.nameType',
+                        uservoucher: '$uservoucher'
+                    }
+                },
+
+            ]);
+            return query;
+        }
+        else if (userid === undefined && status !== undefined && startdate === undefined && enddate === undefined) {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+
+                        status: status,
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: - 1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                },
+                {
+                    $lookup: {
+                        from: 'adstypes',
+                        localField: 'typeAdsID',
+                        foreignField: '_id',
+                        as: 'tipeads',
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "uservouchers",
+                        as: "uservoucher",
+                        let: {
+                            local_id: '$userVoucherID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$_id', '$$local_id']
+                                            }
+                                        },
+
+                                    ]
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    "from": "vouchers",
+                                    "let": {
+                                        "voucherid": "$voucherID",
+
+                                    },
+                                    "pipeline": [
+                                        {
+                                            "$match": {
+                                                "$expr": {
+                                                    "$eq": [
+
+                                                        "$$voucherid",
+                                                        "$_id"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "as": "voucher"
+                                },
+
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    $project: {
+                        tipeads: {
+                            $arrayElemAt: ['$tipeads', 0]
+                        },
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        uservoucher: '$uservoucher.voucher'
+                    }
+                },
+                {
+
+                    $project: {
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        tipeads: '$tipeads.nameType',
+                        uservoucher: '$uservoucher'
+                    }
+                },
+
+            ]);
+            return query;
+        }
+        else if (userid !== undefined && status !== undefined && startdate === undefined && enddate === undefined) {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+                        "userID": userid,
+                        status: status,
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: - 1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                },
+                {
+                    $lookup: {
+                        from: 'adstypes',
+                        localField: 'typeAdsID',
+                        foreignField: '_id',
+                        as: 'tipeads',
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "uservouchers",
+                        as: "uservoucher",
+                        let: {
+                            local_id: '$userVoucherID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$_id', '$$local_id']
+                                            }
+                                        },
+
+                                    ]
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    "from": "vouchers",
+                                    "let": {
+                                        "voucherid": "$voucherID",
+
+                                    },
+                                    "pipeline": [
+                                        {
+                                            "$match": {
+                                                "$expr": {
+                                                    "$eq": [
+
+                                                        "$$voucherid",
+                                                        "$_id"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "as": "voucher"
+                                },
+
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    $project: {
+                        tipeads: {
+                            $arrayElemAt: ['$tipeads', 0]
+                        },
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        uservoucher: '$uservoucher.voucher'
+                    }
+                },
+                {
+
+                    $project: {
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        tipeads: '$tipeads.nameType',
+                        uservoucher: '$uservoucher'
+                    }
+                },
+
+            ]);
+            return query;
+        }
+        else {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+                        "userID": userid
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: - 1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                },
+                {
+                    $lookup: {
+                        from: 'adstypes',
+                        localField: 'typeAdsID',
+                        foreignField: '_id',
+                        as: 'tipeads',
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "uservouchers",
+                        as: "uservoucher",
+                        let: {
+                            local_id: '$userVoucherID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$_id', '$$local_id']
+                                            }
+                                        },
+
+                                    ]
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    "from": "vouchers",
+                                    "let": {
+                                        "voucherid": "$voucherID",
+
+                                    },
+                                    "pipeline": [
+                                        {
+                                            "$match": {
+                                                "$expr": {
+                                                    "$eq": [
+
+                                                        "$$voucherid",
+                                                        "$_id"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "as": "voucher"
+                                },
+
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    $project: {
+                        tipeads: {
+                            $arrayElemAt: ['$tipeads', 0]
+                        },
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        uservoucher: '$uservoucher.voucher'
+                    }
+                },
+                {
+
+                    $project: {
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        tipeads: '$tipeads.nameType',
+                        uservoucher: '$uservoucher'
+                    }
+                },
+
+            ]);
+            return query;
+        }
+    }
+
+    async listusevouchercount(userid: ObjectID, status: string, startdate: string, enddate: string): Promise<Ads[]> {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+
+        if (userid !== undefined && status !== undefined && startdate !== undefined && enddate !== undefined) {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+                        "userID": userid,
+                        status: status,
+                        timestamp: { $gte: startdate, $lte: dateend }
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: - 1
+                    },
+
+                },
+
+                {
+                    $lookup: {
+                        from: 'adstypes',
+                        localField: 'typeAdsID',
+                        foreignField: '_id',
+                        as: 'tipeads',
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "uservouchers",
+                        as: "uservoucher",
+                        let: {
+                            local_id: '$userVoucherID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$_id', '$$local_id']
+                                            }
+                                        },
+
+                                    ]
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    "from": "vouchers",
+                                    "let": {
+                                        "voucherid": "$voucherID",
+
+                                    },
+                                    "pipeline": [
+                                        {
+                                            "$match": {
+                                                "$expr": {
+                                                    "$eq": [
+
+                                                        "$$voucherid",
+                                                        "$_id"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "as": "voucher"
+                                },
+
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    $project: {
+                        tipeads: {
+                            $arrayElemAt: ['$tipeads', 0]
+                        },
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        uservoucher: '$uservoucher.voucher'
+                    }
+                },
+                {
+
+                    $project: {
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        tipeads: '$tipeads.nameType',
+                        uservoucher: '$uservoucher'
+                    }
+                },
+
+            ]);
+            return query;
+        }
+        else if (userid !== undefined && status === undefined && startdate === undefined && enddate === undefined) {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+                        "userID": userid
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: - 1
+                    },
+
+                },
+
+                {
+                    $lookup: {
+                        from: 'adstypes',
+                        localField: 'typeAdsID',
+                        foreignField: '_id',
+                        as: 'tipeads',
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "uservouchers",
+                        as: "uservoucher",
+                        let: {
+                            local_id: '$userVoucherID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$_id', '$$local_id']
+                                            }
+                                        },
+
+                                    ]
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    "from": "vouchers",
+                                    "let": {
+                                        "voucherid": "$voucherID",
+
+                                    },
+                                    "pipeline": [
+                                        {
+                                            "$match": {
+                                                "$expr": {
+                                                    "$eq": [
+
+                                                        "$$voucherid",
+                                                        "$_id"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "as": "voucher"
+                                },
+
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    $project: {
+                        tipeads: {
+                            $arrayElemAt: ['$tipeads', 0]
+                        },
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        uservoucher: '$uservoucher.voucher'
+                    }
+                },
+                {
+
+                    $project: {
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        tipeads: '$tipeads.nameType',
+                        uservoucher: '$uservoucher'
+                    }
+                },
+
+            ]);
+            return query;
+        }
+        else if (userid === undefined && status === undefined && startdate !== undefined && enddate !== undefined) {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+                        timestamp: { $gte: startdate, $lte: dateend }
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: - 1
+                    },
+
+                },
+
+                {
+                    $lookup: {
+                        from: 'adstypes',
+                        localField: 'typeAdsID',
+                        foreignField: '_id',
+                        as: 'tipeads',
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "uservouchers",
+                        as: "uservoucher",
+                        let: {
+                            local_id: '$userVoucherID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$_id', '$$local_id']
+                                            }
+                                        },
+
+                                    ]
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    "from": "vouchers",
+                                    "let": {
+                                        "voucherid": "$voucherID",
+
+                                    },
+                                    "pipeline": [
+                                        {
+                                            "$match": {
+                                                "$expr": {
+                                                    "$eq": [
+
+                                                        "$$voucherid",
+                                                        "$_id"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "as": "voucher"
+                                },
+
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    $project: {
+                        tipeads: {
+                            $arrayElemAt: ['$tipeads', 0]
+                        },
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        uservoucher: '$uservoucher.voucher'
+                    }
+                },
+                {
+
+                    $project: {
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        tipeads: '$tipeads.nameType',
+                        uservoucher: '$uservoucher'
+                    }
+                },
+
+            ]);
+            return query;
+        }
+        else if (userid === undefined && status !== undefined && startdate === undefined && enddate === undefined) {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+
+                        status: status,
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: - 1
+                    },
+
+                },
+
+                {
+                    $lookup: {
+                        from: 'adstypes',
+                        localField: 'typeAdsID',
+                        foreignField: '_id',
+                        as: 'tipeads',
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "uservouchers",
+                        as: "uservoucher",
+                        let: {
+                            local_id: '$userVoucherID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$_id', '$$local_id']
+                                            }
+                                        },
+
+                                    ]
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    "from": "vouchers",
+                                    "let": {
+                                        "voucherid": "$voucherID",
+
+                                    },
+                                    "pipeline": [
+                                        {
+                                            "$match": {
+                                                "$expr": {
+                                                    "$eq": [
+
+                                                        "$$voucherid",
+                                                        "$_id"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "as": "voucher"
+                                },
+
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    $project: {
+                        tipeads: {
+                            $arrayElemAt: ['$tipeads', 0]
+                        },
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        uservoucher: '$uservoucher.voucher'
+                    }
+                },
+                {
+
+                    $project: {
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        tipeads: '$tipeads.nameType',
+                        uservoucher: '$uservoucher'
+                    }
+                },
+
+            ]);
+            return query;
+        }
+        else if (userid !== undefined && status !== undefined && startdate === undefined && enddate === undefined) {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+                        "userID": userid,
+                        status: status,
+
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: - 1
+                    },
+
+                },
+
+                {
+                    $lookup: {
+                        from: 'adstypes',
+                        localField: 'typeAdsID',
+                        foreignField: '_id',
+                        as: 'tipeads',
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "uservouchers",
+                        as: "uservoucher",
+                        let: {
+                            local_id: '$userVoucherID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$_id', '$$local_id']
+                                            }
+                                        },
+
+                                    ]
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    "from": "vouchers",
+                                    "let": {
+                                        "voucherid": "$voucherID",
+
+                                    },
+                                    "pipeline": [
+                                        {
+                                            "$match": {
+                                                "$expr": {
+                                                    "$eq": [
+
+                                                        "$$voucherid",
+                                                        "$_id"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "as": "voucher"
+                                },
+
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    $project: {
+                        tipeads: {
+                            $arrayElemAt: ['$tipeads', 0]
+                        },
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        uservoucher: '$uservoucher.voucher'
+                    }
+                },
+                {
+
+                    $project: {
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        tipeads: '$tipeads.nameType',
+                        uservoucher: '$uservoucher'
+                    }
+                },
+
+            ]);
+            return query;
+        }
+        else {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+                        "userID": userid
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: - 1
+                    },
+
+                },
+
+                {
+                    $lookup: {
+                        from: 'adstypes',
+                        localField: 'typeAdsID',
+                        foreignField: '_id',
+                        as: 'tipeads',
+
+                    },
+
+                },
+                {
+                    "$lookup": {
+                        from: "uservouchers",
+                        as: "uservoucher",
+                        let: {
+                            local_id: '$userVoucherID'
+                        },
+                        pipeline: [
+                            {
+                                $match:
+                                {
+                                    $and: [
+                                        {
+                                            $expr: {
+                                                $in: ['$_id', '$$local_id']
+                                            }
+                                        },
+
+                                    ]
+                                }
+                            },
+                            {
+                                "$lookup": {
+                                    "from": "vouchers",
+                                    "let": {
+                                        "voucherid": "$voucherID",
+
+                                    },
+                                    "pipeline": [
+                                        {
+                                            "$match": {
+                                                "$expr": {
+                                                    "$eq": [
+
+                                                        "$$voucherid",
+                                                        "$_id"
+                                                    ]
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "as": "voucher"
+                                },
+
+                            },
+
+                        ],
+
+                    }
+                },
+                {
+                    $project: {
+                        tipeads: {
+                            $arrayElemAt: ['$tipeads', 0]
+                        },
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        uservoucher: '$uservoucher.voucher'
+                    }
+                },
+                {
+
+                    $project: {
+                        userID: '$userID',
+                        name: '$name',
+                        "status": "$status",
+                        "timestamp": "$timestamp",
+                        "totalUsedCredit": "$totalUsedCredit",
+                        "tayang": '$tayang',
+                        "usedCredit": '$usedCredit',
+                        "usedCreditFree": '$usedCreditFree',
+                        "creditFree": '$creditFree',
+                        "creditValue": '$creditValue',
+                        "totalCredit": '$totalCredit',
+                        tipeads: '$tipeads.nameType',
+                        uservoucher: '$uservoucher'
+                    }
+                },
+
+            ]);
+            return query;
+        }
+    }
+
 }
