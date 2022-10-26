@@ -1725,11 +1725,11 @@ export class TransactionsController {
             valuebankcharge = datasettingbankvercharge._doc.value;
             datasettingdisbvercharge = await this.settingsService.findOne(idBankDisbursmentCharge);
             valuedisbcharge = datasettingdisbvercharge._doc.value;
-            totalamount = amount - valuedisbcharge - valuebankcharge;
+
         } catch (e) {
             valuebankcharge = 0;
             valuedisbcharge = 0;
-            totalamount = 0;
+
         }
         try {
             databank = await this.banksService.findbankcode(bankcode);
@@ -1758,7 +1758,7 @@ export class TransactionsController {
                 var statuscode = datareqinq.status.code;
                 var account_name = datareqinq.account_name;
                 var namaakun = account_name.toLowerCase();
-
+                totalamount = amount - valuedisbcharge - valuebankcharge;
                 if (statuscode == "000") {
                     await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
                     await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
@@ -1902,6 +1902,7 @@ export class TransactionsController {
                     });
                 }
             } else {
+                totalamount = amount - valuebankcharge;
                 data = {
                     "name": namarek,
                     "bankName": bankname,
