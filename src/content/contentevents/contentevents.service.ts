@@ -80,8 +80,16 @@ export class ContenteventsService {
     return this.ContenteventsModel.findOne({ eventType: eventType, email: email, senderParty: senderParty, flowIsDone: flowIsDone }).exec();
   }
 
+  async findParentBySender_(eventType: string, email: string, senderParty: string): Promise<Contentevents> {
+    return this.ContenteventsModel.findOne({ eventType: eventType, email: email, senderParty: senderParty }).exec();
+  }
+
   async findParentByReceiver(eventType: string, receiverParty: string, email: string, flowIsDone: boolean): Promise<Contentevents> {
     return this.ContenteventsModel.findOne({ eventType: eventType, email: email, receiverParty: receiverParty, flowIsDone: flowIsDone }).exec();
+  }
+
+  async findParentByReceiver_(eventType: string, receiverParty: string, email: string): Promise<Contentevents> {
+    return this.ContenteventsModel.findOne({ eventType: eventType, email: email, receiverParty: receiverParty }).exec();
   }
 
   async findSenderOrReceiverByPostID(postID: string, eventType: string, email: string, receiverParty: string): Promise<Contentevents> {
@@ -811,5 +819,61 @@ export class ContenteventsService {
     );
 
     return query;
+  }
+
+  async updateUnlike(email: string, eventType: string, postID: string) {
+    this.ContenteventsModel.updateOne(
+      {
+        email: email,
+        eventType: eventType,
+        postID: postID,
+      },
+      { active:false },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateUnFollowing(email: string, eventType: string, receiverParty: string) {
+    this.ContenteventsModel.updateOne(
+      {
+        email: email,
+        eventType: eventType,
+        senderParty: receiverParty,
+        event: "ACCEPT"
+      },
+      { active: false },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateUnFollower(email: string, eventType: string, receiverParty: string) {
+    this.ContenteventsModel.updateOne(
+      {
+        email: email,
+        eventType: eventType,
+        receiverParty: receiverParty,
+        event: "ACCEPT"
+      },
+      { active: false },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
   }
 }

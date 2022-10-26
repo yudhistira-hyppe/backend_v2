@@ -6,9 +6,13 @@ import { ConfigModule } from '@nestjs/config';
 import { Contentevents, ContenteventsSchema } from './schemas/contentevents.schema';
 import { GroupModuleModule } from '../../trans/usermanagement/groupmodule/groupmodule.module';
 import { UtilsModule } from '../../utils/utils.module';
+import { InsightsModule } from '../insights/insights.module';
+import { PostDisqusModule } from '../disqus/post/postdisqus.module';
 
 @Module({
     imports: [
+        PostDisqusModule,
+        InsightsModule,
         UtilsModule,
         GroupModuleModule,
         ConfigModule.forRoot(),

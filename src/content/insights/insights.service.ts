@@ -211,5 +211,69 @@ export class InsightsService {
   async getInteractivesQuery(emailViewed: string) {
     let Query = this.InsightsModel
   }
+  
+  async updateFollower(email: string) {
+    this.InsightsModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { followers: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateUnFollower(email: string) {
+    this.InsightsModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { followers: -1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateFollowing(email: string) {
+    this.InsightsModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { followings: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateUnFollowing(email: string) {
+    this.InsightsModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { followings: -1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
 
 }
