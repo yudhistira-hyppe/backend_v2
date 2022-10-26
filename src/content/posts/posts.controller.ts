@@ -30,6 +30,8 @@ import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import { PostContentPlaylistService } from './postcontentplaylist.service';
 import mongoose from 'mongoose';
 import { PostCommentService } from './postcomment.service';
+import { DisqusService } from './disqus.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Controller()
 export class PostsController {
@@ -44,7 +46,8 @@ export class PostsController {
     private readonly insightsService: InsightsService,
     private readonly userbasicsService: UserbasicsService,
     private readonly postCommentService: PostCommentService,    
-    private readonly postPlayListService: PostContentPlaylistService,
+    private readonly notifService: NotificationsService,
+    private readonly disqusService: DisqusService,    
     private readonly groupModuleService: GroupModuleService) { }
 
   @Post()
@@ -347,6 +350,20 @@ export class PostsController {
   async getUserPostMy(@Body() body, @Headers() headers): Promise<PostResponseApps> {
     this.logger.log("getUserPostMy >>> start: " + JSON.stringify(body));
     return this.postContentService.getUserPostMy(body, headers);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/disqus')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async disqus(@Body() body, @Headers() headers): Promise<PostResponseApps> {
+    this.logger.log("disqus >>> start: " + JSON.stringify(body));
+    return this.disqusService.createDisqus(body, headers);
+  }
+
+  @Post('api/posts/getnotification')
+  async getNotification(@Body() body, @Headers() headers) {
+    this.logger.log("getNotification >>> start: " + JSON.stringify(body));
+    return this.notifService.getNotification(body, headers);
   }
 
   @UseGuards(JwtAuthGuard)
