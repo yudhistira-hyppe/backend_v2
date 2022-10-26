@@ -1348,7 +1348,7 @@ export class TransactionsController {
         var nama = null;
         var kodebank = null;
         var norekdb = null;
-
+        var totalamount = null;
         var idbankverificationcharge = "62bd4104f37a00001a004367";
         var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
         var iduseradmin = "61d9c847548ae516042f0b13";
@@ -1406,7 +1406,12 @@ export class TransactionsController {
             norekdb = null;
         }
 
-        var totalamount = amounreq - valuedisbcharge - valuebankcharge;
+        if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+            totalamount = amounreq - valuedisbcharge - valuebankcharge;
+        } else {
+            totalamount = amounreq - valuebankcharge;
+        }
+
         if (amounreq > totalsaldo) {
             throw new BadRequestException("The balance is not sufficient...!");
         }
@@ -4629,6 +4634,7 @@ export class TransactionsController {
                     var idacountbank = dataWitdraw[0].idAccountBank;
                     dataakunbank = await this.userbankaccountsService.findOneid(idacountbank);
                     var idBnk = dataakunbank._doc.idBank;
+                    var statusInquiry = dataakunbank._doc.statusInquiry;
                     var databank = null;
                     var namabank = "";
                     try {
@@ -4660,24 +4666,45 @@ export class TransactionsController {
                         valuedisbcharge = 0;
                     }
 
-                    data = {
+                    if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+                        data = {
 
-                        "_id": idtr,
-                        "iduser": dataWitdraw[0].iduser,
-                        "fullName": dataWitdraw[0].fullName,
-                        "email": dataWitdraw[0].email,
-                        "type": dataWitdraw[0].type,
-                        "timestamp": dataWitdraw[0].timestamp,
-                        "amount": dataWitdraw[0].amount,
-                        "totalamount": dataWitdraw[0].totalamount,
-                        "adminFee": valuedisbcharge,
-                        "bankverificationcharge": valuebankcharge,
-                        "description": dataWitdraw[0].description,
-                        "status": dataWitdraw[0].status,
-                        "noRek": dataakunbank._doc.noRek,
-                        "namaRek": dataakunbank._doc.nama,
-                        "namaBank": namabank
-                    };
+                            "_id": idtr,
+                            "iduser": dataWitdraw[0].iduser,
+                            "fullName": dataWitdraw[0].fullName,
+                            "email": dataWitdraw[0].email,
+                            "type": dataWitdraw[0].type,
+                            "timestamp": dataWitdraw[0].timestamp,
+                            "amount": dataWitdraw[0].amount,
+                            "totalamount": dataWitdraw[0].totalamount,
+                            "adminFee": valuedisbcharge,
+                            "bankverificationcharge": valuebankcharge,
+                            "description": dataWitdraw[0].description,
+                            "status": dataWitdraw[0].status,
+                            "noRek": dataakunbank._doc.noRek,
+                            "namaRek": dataakunbank._doc.nama,
+                            "namaBank": namabank
+                        };
+                    } else {
+                        data = {
+
+                            "_id": idtr,
+                            "iduser": dataWitdraw[0].iduser,
+                            "fullName": dataWitdraw[0].fullName,
+                            "email": dataWitdraw[0].email,
+                            "type": dataWitdraw[0].type,
+                            "timestamp": dataWitdraw[0].timestamp,
+                            "amount": dataWitdraw[0].amount,
+                            "totalamount": dataWitdraw[0].totalamount,
+                            "adminFee": valuedisbcharge,
+                            "bankverificationcharge": 0,
+                            "description": dataWitdraw[0].description,
+                            "status": dataWitdraw[0].status,
+                            "noRek": dataakunbank._doc.noRek,
+                            "namaRek": dataakunbank._doc.nama,
+                            "namaBank": namabank
+                        };
+                    }
                 } catch (e) {
                     throw new BadRequestException("Data not found...!");
                 }
