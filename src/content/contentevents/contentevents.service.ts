@@ -84,21 +84,23 @@ export class ContenteventsService {
 
   async findSenderOrReceiverByPostID(postID: string, eventType: string, email: string, receiverParty: string): Promise<Contentevents> {
     return await this.ContenteventsModel.findOne({ postID: postID, eventType: eventType, email: email, receiverParty: receiverParty }).exec();
-  } 
+  }
 
   async findSenderOrReceiver(eventType: string, email: string, receiverParty: string): Promise<Contentevents> {
     return await this.ContenteventsModel.findOne(
-      { $and: 
-        [
-          { eventType: eventType }, 
-          { email: email }, 
-          { $or: 
-            [
-              { receiverParty: receiverParty }, 
-              { senderParty: receiverParty }
-            ] 
-          }
-        ] 
+      {
+        $and:
+          [
+            { eventType: eventType },
+            { email: email },
+            {
+              $or:
+                [
+                  { receiverParty: receiverParty },
+                  { senderParty: receiverParty }
+                ]
+            }
+          ]
       }).exec();
   }
 
@@ -693,17 +695,19 @@ export class ContenteventsService {
     if (EventType != "") {
       Object.assign(Where, { eventType: EventType });
     }
-    if (Events.length > 0) {
-      for (let i = 0; i < Events.length; i++) {
-        if (Events[i] == "INITIAL") {
-          Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
-        } else if (Events[i] == "REQUEST") {
-          Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
-        } else {
-          Or.push({ event: Events[i] }, { $and: [{ flowIsDone: true }] })
-        }
-      }
-    }
+    Object.assign(Where, { event: "ACCEPT" });
+    Object.assign(Where, { active: true });
+    // if (Events.length > 0) {
+    //   for (let i = 0; i < Events.length; i++) {
+    //     if (Events[i] == "INITIAL") {
+    //       Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
+    //     } else if (Events[i] == "REQUEST") {
+    //       Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
+    //     } else {
+    //       Or.push({ event: Events[i] }, { $and: [{ flowIsDone: true }] })
+    //     }
+    //   }
+    // }
     if (Object.keys(Or).length > 0) {
       Object.assign(Where, { $or: Or });
     } else {
