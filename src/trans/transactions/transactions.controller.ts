@@ -1468,10 +1468,10 @@ export class TransactionsController {
                     var statusmessage = infodisbursemen.status.message;
 
                     if (statuscode === "000") {
-                        var dtburs = new Date(strdate);
+                        let dtburs = new Date(strdate);
                         dtburs.setHours(dtburs.getHours() + 14); // timestamp
                         dtburs = new Date(dtburs);
-                        var dtb = dtburs.toISOString();
+                        let dtb = dtburs.toISOString();
                         await this.accontbalanceWithdraw(iduser, valuedisbcharge, "disbursement");
                         await this.accontbalanceAdminWitdraw("disbursement", idadmin, iduser, valuedisbcharge);
                         let datawithdraw = new CreateWithdraws();
@@ -1537,7 +1537,79 @@ export class TransactionsController {
                         }
 
 
-                    } else {
+                    }
+                    else if (statuscode === "101" || statuscode === "102") {
+                        let dtburs = new Date(strdate);
+                        dtburs.setHours(dtburs.getHours() + 14); // timestamp
+                        dtburs = new Date(dtburs);
+                        let dtb = dtburs.toISOString();
+                        await this.accontbalanceWithdraw(iduser, valuedisbcharge, "disbursement");
+                        await this.accontbalanceAdminWitdraw("disbursement", idadmin, iduser, valuedisbcharge);
+                        let datawithdraw = new CreateWithdraws();
+                        datawithdraw.amount = amounreq;
+                        datawithdraw.bankVerificationCharge = mongoose.Types.ObjectId(idbankverificationcharge);
+                        datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
+                        datawithdraw.description = OyDisbursements.note;
+                        datawithdraw.idUser = iduser;
+                        datawithdraw.status = statusmessage;
+                        datawithdraw.timestamp = dtb;
+                        datawithdraw.verified = false;
+                        datawithdraw.partnerTrxid = partnertrxid;
+                        datawithdraw.statusOtp = null;
+                        datawithdraw.totalamount = totalamount;
+                        datawithdraw.idAccountBank = idbankaccount;
+                        var datatr = await this.withdrawsService.create(datawithdraw);
+                        await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
+
+                        try {
+                            if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+                                data = {
+                                    "idUser": datatr.idUser,
+                                    "amount": datatr.amount,
+                                    "status": datatr.status,
+                                    "bankVerificationCharge": valuebankcharge,
+                                    "bankDisbursmentCharge": valuedisbcharge,
+                                    "timestamp": datatr.timestamp,
+                                    "verified": datatr.verified,
+                                    "description": datatr.description,
+                                    "partnerTrxid": datatr.partnerTrxid,
+                                    "statusOtp": datatr.statusOtp,
+                                    "totalamount": totalamount,
+                                    "_id": datatr._id
+                                };
+                            } else {
+                                data = {
+                                    "idUser": datatr.idUser,
+                                    "amount": datatr.amount,
+                                    "status": datatr.status,
+                                    "bankVerificationCharge": 0,
+                                    "bankDisbursmentCharge": valuedisbcharge,
+                                    "timestamp": datatr.timestamp,
+                                    "verified": datatr.verified,
+                                    "description": datatr.description,
+                                    "partnerTrxid": datatr.partnerTrxid,
+                                    "statusOtp": datatr.statusOtp,
+                                    "totalamount": totalamount,
+                                    "_id": datatr._id
+                                };
+                            }
+
+
+                            res.status(HttpStatus.OK).json({
+                                response_code: 202,
+                                "data": data,
+                                "message": messages
+                            });
+                        } catch (e) {
+                            res.status(HttpStatus.BAD_REQUEST).json({
+
+                                "message": messagesEror
+                            });
+                        }
+
+
+                    }
+                    else {
                         throw new BadRequestException(statusmessage);
                     }
 
@@ -1631,6 +1703,7 @@ export class TransactionsController {
                 });
 
             }
+
             else if (statusCallback === "210") {
 
                 await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload);

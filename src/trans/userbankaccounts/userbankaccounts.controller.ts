@@ -85,13 +85,9 @@ export class UserbankaccountsController {
         }
 
 
-        try {
-            datarekkembar = await this.userbankaccountsService.findnorekkembar(noRek);
-        } catch (e) {
-            datarekkembar = null;
-        }
-        var lownama = nama.toLowerCase();
 
+        var lownama = nama.toLowerCase();
+        var idakun = null;
         var databank = null;
         var namabank = "";
         try {
@@ -101,6 +97,13 @@ export class UserbankaccountsController {
 
         } catch (e) {
             throw new BadRequestException("Banks not found...!");
+        }
+
+        try {
+            datarekkembar = await this.userbankaccountsService.findnorek(noRek, idbank.toString());
+            idakun = datarekkembar._id;
+        } catch (e) {
+            datarekkembar = null;
         }
         if (datarekkembar === null) {
 
@@ -132,7 +135,16 @@ export class UserbankaccountsController {
             }
 
         } else {
-            throw new BadRequestException("account number already exists..!");
+
+
+            await this.userbankaccountsService.updateactivetrue(idakun);
+            let data = await this.userbankaccountsService.findOneid(idakun);
+            res.status(HttpStatus.OK).json({
+                response_code: 202,
+                "data": data,
+                "message": messages
+            });
+            // throw new BadRequestException("account number already exists..!");
         }
 
     }
