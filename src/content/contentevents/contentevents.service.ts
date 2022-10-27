@@ -826,12 +826,13 @@ export class ContenteventsService {
     return query.exec();
   }
 
-  async updateUnlike(email: string, eventType: string, postID: string) {
+  async updateUnlike(email: string, eventType: string, event: string, postID: string) {
     this.ContenteventsModel.updateOne(
       {
         email: email,
         eventType: eventType,
         postID: postID,
+        event: event,
       },
       { active: false },
       function (err, docs) {

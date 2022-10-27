@@ -5,7 +5,7 @@ import { DisquslogsController } from './disquslogs.controller';
 import { ConfigModule } from '@nestjs/config';
 import { Disquslogs, DisquslogsSchema } from './schemas/disquslogs.schema';
 import { UtilsModule } from '../../utils/utils.module';
-import { UserbasicsModule } from 'src/trans/userbasics/userbasics.module';
+import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
 
 @Module({
     imports: [
