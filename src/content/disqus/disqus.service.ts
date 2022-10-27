@@ -36,6 +36,11 @@ export class DisqusService {
   async findOne(email: string): Promise<Disqus> {
     return this.DisqusModel.findOne({ email: email }).exec();
   }
+
+  async findById(id: string): Promise<Disqus> {
+    return this.DisqusModel.findOne({ id: id }).exec();
+  }
+
   async delete(id: string) {
     const deletedCat = await this.DisqusModel.findByIdAndRemove({
       _id: id,
