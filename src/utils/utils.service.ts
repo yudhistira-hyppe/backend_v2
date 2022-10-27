@@ -880,7 +880,7 @@ export class UtilsService {
         } else {
           if (get_userbasic.isIdVerified != undefined) {
             if (get_userbasic.isIdVerified) {
-              ProfileDTO_.statusKyc = "review";
+              ProfileDTO_.statusKyc = "verified";
             } else {
               ProfileDTO_.statusKyc = "unverified";
             }
