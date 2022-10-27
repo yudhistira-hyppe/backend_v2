@@ -33,15 +33,15 @@ export class WithdrawsService {
         return data;
     }
 
-    async updateone(partnerTrxid: string, payload: OyDisburseCallbackWithdraw): Promise<Object> {
+    async updateone(partnerTrxid: string, payload: OyDisburseCallbackWithdraw, updatedAt: string): Promise<Object> {
         let data = await this.withdrawsModel.updateOne({ "partnerTrxid": partnerTrxid },
-            { $set: { "status": "Success", "description": "Withdraw success", verified: true, payload: payload } });
+            { $set: { "status": "Success", "description": "Withdraw success", verified: true, payload: payload, "updatedAt": updatedAt } });
         return data;
     }
 
-    async updatefailed(partnerTrxid: string, status: string, description: string, payload: OyDisburseCallbackWithdraw): Promise<Object> {
+    async updatefailed(partnerTrxid: string, status: string, description: string, payload: OyDisburseCallbackWithdraw, updatedAt: string): Promise<Object> {
         let data = await this.withdrawsModel.updateOne({ "partnerTrxid": partnerTrxid },
-            { $set: { "status": status, "description": description, verified: false, payload: payload } });
+            { $set: { "status": status, "description": description, verified: false, payload: payload, "updatedAt": updatedAt } });
         return data;
     }
 
