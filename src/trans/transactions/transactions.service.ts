@@ -9858,6 +9858,102 @@ export class TransactionsService {
 
             return query;
         }
+        else if (key === undefined && iduser === undefined && status === undefined && startdate === undefined && enddate === undefined) {
+            const query = await this.transactionsModel.aggregate([
+                {
+                    $match: {
+
+                        type: "VOUCHER",
+
+                    }
+                },
+                {
+                    $addFields: {
+                        type: 'Buy',
+                        jenis: "$type",
+
+                    },
+
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "iduserbuyer",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "vouchers",
+                        localField: "detail.id",
+                        foreignField: "_id",
+                        as: "voucher_data"
+                    }
+                },
+                {
+                    $project: {
+                        iduser: "$iduserbuyer",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+                        vcdata: "$voucher_data"
+                    }
+                },
+                {
+                    $project: {
+
+                        iduser: "$iduser",
+                        type: "$type",
+                        jenis: "$jenis",
+                        timestamp: "$timestamp",
+                        description: "$description",
+                        noinvoice: "$noinvoice",
+                        nova: "$nova",
+                        expiredtimeva: "$expiredtimeva",
+                        salelike: "$salelike",
+                        saleview: "$saleview",
+                        bank: "$bank",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+                        vcdata: "$vcdata"
+                    }
+                },
+                {
+                    $sort: {
+                        timestamp: - 1
+                    },
+
+                },
+                {
+                    $skip: (page * limit)
+                },
+                {
+                    $limit: limit
+                }
+            ]);
+
+            return query;
+        }
         else {
             const query = await this.transactionsModel.aggregate([
                 {

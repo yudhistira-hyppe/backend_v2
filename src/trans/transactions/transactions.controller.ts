@@ -4848,7 +4848,13 @@ export class TransactionsController {
         startdate = request_json["startdate"];
         enddate = request_json["enddate"];
         iduser = request_json["iduser"];
-        var userid = mongoose.Types.ObjectId(iduser);
+        var userid = null;
+        if (iduser !== undefined) {
+            userid = mongoose.Types.ObjectId(iduser);
+        } else {
+            userid = undefined;
+        }
+
         let data = await this.transactionsService.findhistoryBuyVoucher(key, userid, status, startdate, enddate, page, limit);
         var total = data.length;
         let datasearch = await this.transactionsService.findhistoryBuyVoucherCount(key, userid, status, startdate, enddate);
@@ -4861,7 +4867,7 @@ export class TransactionsController {
         if (iduser === undefined) {
             tpage2 = (totalallrow / limit).toFixed(0);
             tpage = (totalallrow % limit);
-            if (tpage > 0 && tpage < 6) {
+            if (tpage > 0 && tpage < 5) {
                 totalpage = parseInt(tpage2) + 1;
 
             } else {
@@ -4870,7 +4876,7 @@ export class TransactionsController {
         } else {
             tpage2 = (totalsearch / limit).toFixed(0);
             tpage = (totalsearch % limit);
-            if (tpage > 0 && tpage < 6) {
+            if (tpage > 0 && tpage < 5) {
                 totalpage = parseInt(tpage2) + 1;
 
             } else {
@@ -5014,7 +5020,7 @@ export class TransactionsController {
 
         tpage2 = (totalsearch / limit).toFixed(0);
         tpage = (totalsearch % limit);
-        if (tpage > 0 && tpage < 6) {
+        if (tpage > 0 && tpage < 5) {
             totalpage = parseInt(tpage2) + 1;
 
         } else {
