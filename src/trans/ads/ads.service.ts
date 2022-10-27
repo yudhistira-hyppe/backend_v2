@@ -1820,7 +1820,7 @@ export class AdsService {
 
     }
 
-    async listusevoucher(userid: ObjectID, status: string, startdate: string, enddate: string, page: number, limit: number): Promise<Ads[]> {
+    async listusevoucher(userid: ObjectID, status: any[], startdate: string, enddate: string, page: number, limit: number): Promise<Ads[]> {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -1835,7 +1835,9 @@ export class AdsService {
                 {
                     $match: {
                         "userID": userid,
-                        status: status,
+                        status: {
+                            $in: status
+                        },
                         timestamp: { $gte: startdate, $lte: dateend }
                     }
                 },
@@ -2200,7 +2202,9 @@ export class AdsService {
                 {
                     $match: {
 
-                        status: status,
+                        status: {
+                            $in: status
+                        },
 
                     }
                 },
@@ -2323,8 +2327,9 @@ export class AdsService {
                 {
                     $match: {
                         "userID": userid,
-                        status: status,
-
+                        status: {
+                            $in: status
+                        },
                     }
                 },
                 {
@@ -2578,7 +2583,9 @@ export class AdsService {
                 {
                     $match: {
                         "userID": userid,
-                        status: status,
+                        status: {
+                            $in: status
+                        },
                         timestamp: { $gte: startdate, $lte: dateend }
                     }
                 },
@@ -2928,7 +2935,9 @@ export class AdsService {
                 {
                     $match: {
 
-                        status: status,
+                        status: {
+                            $in: status
+                        },
 
                     }
                 },
@@ -3046,8 +3055,9 @@ export class AdsService {
                 {
                     $match: {
                         "userID": userid,
-                        status: status,
-
+                        status: {
+                            $in: status
+                        },
                     }
                 },
                 {
