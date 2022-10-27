@@ -16,7 +16,8 @@ export class CreateContenteventsDto {
     senderParty: String;
     receiverParty: String;
     _class: String;
-    postID: String;
+  postID: String;
+  reactionUri: String;
     parentContentEventID: String;
     transitions: [
       {

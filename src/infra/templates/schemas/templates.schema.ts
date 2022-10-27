@@ -19,7 +19,9 @@ export class Templates {
   @Prop()
   from: String
   @Prop()
-  body_detail: String
+    body_detail: String
+    @Prop()
+    body_detail_id: String
   @Prop()
   status: String
   @Prop()

@@ -31,7 +31,9 @@ postID: String;
 @Prop()
 senderParty: String;
 @Prop()
-receiverParty: String;
+receiverParty: String; 
+@Prop()
+reactionUri: String;
 @Prop()
     _class: String
     @Prop()

@@ -232,7 +232,7 @@ export class UtilsController {
             return [{
                 langIso: item.langIso,
             }, {
-                content: item.content,
+                content: item.content[0],
             }];
         });
         var Response = {
