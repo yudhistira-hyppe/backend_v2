@@ -112,7 +112,7 @@ export class UserbankaccountsService {
 
     async updateactive(id: Types.ObjectId): Promise<Object> {
         let data = await this.userbankaccountsModel.updateOne({ "_id": id },
-            { $set: { "active": false } });
+            { $set: { "active": false, "statusInquiry": false } });
         return data;
     }
     async update(
