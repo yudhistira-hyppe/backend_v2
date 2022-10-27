@@ -101,9 +101,8 @@ export class PostsService {
     }
 
     //Ceck User Userbasics
-    const datauserbasicsService = await this.getuserprofilesService.findUserDetailbyEmail(
-      CreatePostsDto_.email.toString()
-    );
+    const datauserbasicsService = await this.utilsService.generateProfile(
+      CreatePostsDto_.email.toString(),"FULL");
 
     const query = await this.PostsModel.aggregate([
       {

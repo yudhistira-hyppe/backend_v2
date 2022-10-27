@@ -216,67 +216,96 @@ export class PostsController {
     var endpoind = '';
     var data_post = {};
     if (dataquery[0].postType == 'vid') {
-      data_post['metadata'] = {
-        "duration": dataquery[0].metadata.duration,
-        "postRoll": dataquery[0].metadata.postRoll,
-        "postType": dataquery[0].metadata.postType,
-        "preRoll": dataquery[0].metadata.preRoll,
-        "midRoll": dataquery[0].metadata.midRoll,
-        "postID": dataquery[0].metadata.postID,
-        "email": dataquery[0].metadata.email,
-      };
+      if (dataquery[0].metadata != undefined) {
+        data_post['metadata'] = {
+          "duration": (dataquery[0].metadata.duration != undefined)? dataquery[0].metadata.duration:null,
+          "postRoll": (dataquery[0].metadata.postRoll != undefined) ? dataquery[0].metadata.postRoll : null, 
+          "postType": (dataquery[0].metadata.postType != undefined) ? dataquery[0].metadata.postType : null,
+          "preRoll": (dataquery[0].metadata.preRoll != undefined) ? dataquery[0].metadata.preRoll : null,
+          "midRoll": (dataquery[0].metadata.midRoll != undefined) ? dataquery[0].metadata.midRoll : null,
+          "postID": (dataquery[0].metadata.postID != undefined) ? dataquery[0].metadata.postID : null,
+          "email": (dataquery[0].metadata.email != undefined) ? dataquery[0].metadata.email : null,
+        };
+      }
     }
-    data_post['mediaBasePath'] = dataquery[0].datacontent[0].mediaBasePath;
-    data_post['postType'] = dataquery[0].postType;
-    data_post['mediaUri'] = dataquery[0].datacontent[0].mediaUri;
-    data_post['description'] = dataquery[0].description;
-    data_post['active'] = dataquery[0].active;
-    data_post['privacy'] = {
-      "isPostPrivate": dataquery[0].datauser[0].isPostPrivate,
-      "isCelebrity": dataquery[0].datauser[0].isCelebrity,
-      "isPrivate": dataquery[0].datauser[0].isPrivate,
+
+    if (dataquery[0].datacontent != undefined) {
+      if (dataquery[0].datacontent.leght>0) {
+        data_post['mediaBasePath'] = (dataquery[0].datacontent[0].mediaBasePath != undefined) ? dataquery[0].datacontent[0].mediaBasePath : null;
+        data_post['mediaType'] = (dataquery[0].datacontent[0].mediaType != undefined) ? dataquery[0].datacontent[0].mediaType : null;
+        data_post['mediaUri'] = (dataquery[0].datacontent[0].mediaUri != undefined) ? dataquery[0].datacontent[0].mediaUri : null;
+      }
     }
-    data_post['mediaType'] = dataquery[0].datacontent[0].mediaType;
-    if (dataquery[0].postType == 'diary' || dataquery[0].postType == 'vid') {
-      data_post['mediaThumbEndpoint'] = '/thumb/' + dataquery[0].postID;
+    
+    data_post['postType'] = (dataquery[0].postType != undefined) ? dataquery[0].postType : null;
+    data_post['description'] = (dataquery[0].description != undefined) ? dataquery[0].description : null;
+    data_post['active'] = (dataquery[0].active != undefined) ? dataquery[0].active : null;
+
+    if (dataquery[0].datauser != undefined) {
+      if (dataquery[0].datauser.leght > 0) {
+        data_post['privacy'] = {
+          "isPostPrivate": (dataquery[0].datauser.isPostPrivate != undefined) ? dataquery[0].datauser.isPostPrivate : null,
+          "isCelebrity": (dataquery[0].datauser.isCelebrity != undefined) ? dataquery[0].datauser.isCelebrity : null,
+          "isPrivate": (dataquery[0].datauser.isPrivate != undefined) ? dataquery[0].datauser.isPrivate : null,
+        }
+      }
     }
-    data_post['postID'] = dataquery[0].postID;
-    data_post['avatar'] = dataquery[0].datauser[0].avatar;
-    if (dataquery[0].postType == 'vid') {
-      data_post['title'] = dataquery[0].description;
+    if (dataquery[0].postType != undefined) {
+      if (dataquery[0].postType == 'diary' || dataquery[0].postType == 'vid') {
+        data_post['mediaThumbEndpoint'] = '/thumb/' + dataquery[0].postID;
+      }
     }
-    data_post['tags'] = dataquery[0].tags;
-    data_post['allowComments'] = dataquery[0].allowComments;
-    data_post['createdAt'] = dataquery[0].createdAt;
-    data_post['insight'] = {
-      "shares": dataquery[0].datauser[0].insight.shares,
-      "comments": dataquery[0].datauser[0].insight.comments,
-      "reactions": dataquery[0].datauser[0].insight.reactions,
-      "views": dataquery[0].datauser[0].insight.views,
-      "likes": dataquery[0].datauser[0].insight.likes,
-    };
-    data_post['profileInsight'] = {
-      "follower": dataquery[0].datauser[0].insight.followers,
-      "following": dataquery[0].datauser[0].insight.followings,
-    };
-    if (dataquery[0].postType == 'pict') {
-      endpoind = '/pict/';
+    data_post['postID'] = (dataquery[0].postID != undefined) ? dataquery[0].postID : null;
+    data_post['avatar'] = (dataquery[0].avatar != undefined) ? dataquery[0].avatar : null;
+    if (dataquery[0].postType != undefined) {
+      if (dataquery[0].postType == 'vid') {
+        data_post['title'] = dataquery[0].description;
+      }
     }
-    if (dataquery[0].postType == 'vid') {
-      endpoind = '/pict/';
+    data_post['tags'] = (dataquery[0].tags != undefined) ? dataquery[0].tags : null;
+    data_post['allowComments'] = (dataquery[0].allowComments != undefined) ? dataquery[0].allowComments : null;
+    data_post['createdAt'] = (dataquery[0].createdAt != undefined) ? dataquery[0].createdAt : null;
+
+    if (dataquery[0].datauser != undefined) {
+      if (dataquery[0].datauser.leght > 0) {
+        if (dataquery[0].datauser.insight != undefined) {
+          data_post['insight'] = {
+            "shares": (dataquery[0].datauser.insight.shares != undefined) ? dataquery[0].datauser.insight.shares : null,
+            "comments": (dataquery[0].datauser.insight.comments != undefined) ? dataquery[0].datauser.insight.comments : null, 
+            "reactions": (dataquery[0].datauser.insight.reactions != undefined) ? dataquery[0].datauser.insight.reactions : null, 
+            "views": (dataquery[0].datauser.insight.views != undefined) ? dataquery[0].datauser.insight.views : null, 
+            "likes": (dataquery[0].datauser.insight.likes != undefined) ? dataquery[0].datauser.insight.likes : null,
+          };
+
+          data_post['profileInsight'] = {
+            "follower": (dataquery[0].datauser.insight.shares != undefined) ? dataquery[0].datauser.insight.followers : null,
+            "following": (dataquery[0].datauser.insight.shares != undefined) ? dataquery[0].datauser.insight.followings : null,
+          };
+        }
+      }
+    }
+    if (dataquery[0].postType != undefined) {
+      if (dataquery[0].postType == 'pict') {
+        endpoind = '/pict/';
+      }
+      if (dataquery[0].postType == 'vid') {
+        endpoind = '/pict/';
+      }
     }
     data_post['mediaEndpoint'] = endpoind + dataquery[0].datacontent[0].postID;
-    data_post['email'] = dataquery[0].datauser[0].email;
+    data_post['email'] = dataquery[0].datauser.email;
     data_post['updatedAt'] = dataquery[0].updatedAt;
-    data_post['username'] = dataquery[0].datauser[0].username;
+    data_post['username'] = dataquery[0].datauser.username;
 
     var data = [data_post];
     var response = {
       "response_code": 202,
       "data": data,
-      "messages": {},
+      "messages": {
+        info: ['Successful'],
+      },
     }
-    return dataquery;
+    return response;
   }
 
   @UseGuards(JwtAuthGuard)
