@@ -81,6 +81,8 @@ export class DisqusController {
       console.log("processDisqus >>> event: ", ContentDto_.eventType);
       if (!isQuery){
         if (type == "DIRECT_MSG") {
+
+          this.buildDisqus(ContentDto_, true);
           //retVal.push(this.buildDisqus(ContentDto_, true));
           //ContentDto_.disqus = retVal;
           //isValid = true;
@@ -334,7 +336,26 @@ export class DisqusController {
     return retVal;
   }
 
-  private async buildDisqus(ContentDto_: ContentDto, buildInteractive: boolean) {
+  private async buildDisqus(dto: ContentDto, buildInteractive: boolean) {
+    let cts = await this.disquscontactsService.findByEmailAndMate(dto.email.toString(), dto.receiverParty.toString());
+    let dis = new Disqus();
+    if (cts != undefined && cts.length > 0) {
+      let ct = cts[0];
+      dis = await this.disqusService.findById(ct.disqusID);
+    }
+
+    if (dto.postID != undefined) {
+      if (buildInteractive) {
+        // Add reaction in post
+        let post = await this.postDisqusService.findid(dto.postID.toString());
+        post.reactions = post.reactions.add(1);
+
+        let cs = await this.contenteventsService.findSenderOrReceiverByPostID(String(post.postID), 'REACTION', String(dto.email), String(dto.receiverParty));
+      }
+      
+    }
+  }
+  private async buildDisqus0(ContentDto_: ContentDto, buildInteractive: boolean) {
     var cts :Disquscontacts[] = [];
     cts = await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
     if (await this.utilsService.ceckData(cts)){

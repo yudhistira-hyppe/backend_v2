@@ -183,7 +183,10 @@ export class DisquslogsService {
   }
 
   async flattenDisqus(log: Disquslogs, res: DisquslogsDto[]) {
-
+    let rl = log.replyLogs;
+    if (rl != undefined) {
+      
+    }
   }
 
   private paging(page: number, row: number) {
