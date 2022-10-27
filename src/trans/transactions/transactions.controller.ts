@@ -28,8 +28,9 @@ import { MediapictsService } from '../../content/mediapicts/mediapicts.service';
 import { MediavideosService } from '../../content/mediavideos/mediavideos.service';
 import { CreateUserplaylistDto } from '../userplaylist/dto/create-userplaylist.dto';
 import { LanguagesService } from '../../infra/languages/languages.service';
-import { AdsService } from '../ads/ads.service';
 import { ignoreElements } from 'rxjs';
+import { AdsService } from '../ads/ads.service';
+
 @Controller()
 export class TransactionsController {
     constructor(private readonly transactionsService: TransactionsService,
@@ -1350,11 +1351,12 @@ export class TransactionsController {
         var nama = null;
         var kodebank = null;
         var norekdb = null;
-
+        var totalamount = null;
         var idbankverificationcharge = "62bd4104f37a00001a004367";
         var idBankDisbursmentCharge = "62bd4126f37a00001a004368";
         var iduseradmin = "61d9c847548ae516042f0b13";
         var datainquiry = null;
+        var data = null;
         // var valueinquiry = null;
         var idinquirycharge = "63217ae5ec46000002007405";
         var totalinquiry = null;
@@ -1408,7 +1410,12 @@ export class TransactionsController {
             norekdb = null;
         }
 
-        var totalamount = amounreq - valuedisbcharge - valuebankcharge;
+        if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+            totalamount = amounreq - valuedisbcharge - valuebankcharge;
+        } else {
+            totalamount = amounreq - valuedisbcharge;
+        }
+
         if (amounreq > totalsaldo) {
             throw new BadRequestException("The balance is not sufficient...!");
         }
@@ -1487,21 +1494,38 @@ export class TransactionsController {
                         await this.accontbalanceWithdraw(iduser, totalamount, "withdraw");
 
                         try {
+                            if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+                                data = {
+                                    "idUser": datatr.idUser,
+                                    "amount": datatr.amount,
+                                    "status": datatr.status,
+                                    "bankVerificationCharge": valuebankcharge,
+                                    "bankDisbursmentCharge": valuedisbcharge,
+                                    "timestamp": datatr.timestamp,
+                                    "verified": datatr.verified,
+                                    "description": datatr.description,
+                                    "partnerTrxid": datatr.partnerTrxid,
+                                    "statusOtp": datatr.statusOtp,
+                                    "totalamount": totalamount,
+                                    "_id": datatr._id
+                                };
+                            } else {
+                                data = {
+                                    "idUser": datatr.idUser,
+                                    "amount": datatr.amount,
+                                    "status": datatr.status,
+                                    "bankVerificationCharge": 0,
+                                    "bankDisbursmentCharge": valuedisbcharge,
+                                    "timestamp": datatr.timestamp,
+                                    "verified": datatr.verified,
+                                    "description": datatr.description,
+                                    "partnerTrxid": datatr.partnerTrxid,
+                                    "statusOtp": datatr.statusOtp,
+                                    "totalamount": totalamount,
+                                    "_id": datatr._id
+                                };
+                            }
 
-                            var data = {
-                                "idUser": datatr.idUser,
-                                "amount": datatr.amount,
-                                "status": datatr.status,
-                                "bankVerificationCharge": valuebankcharge,
-                                "bankDisbursmentCharge": valuedisbcharge,
-                                "timestamp": datatr.timestamp,
-                                "verified": datatr.verified,
-                                "description": datatr.description,
-                                "partnerTrxid": datatr.partnerTrxid,
-                                "statusOtp": datatr.statusOtp,
-                                "totalamount": totalamount,
-                                "_id": datatr._id
-                            };
 
                             res.status(HttpStatus.OK).json({
                                 response_code: 202,
@@ -1722,11 +1746,11 @@ export class TransactionsController {
             valuebankcharge = datasettingbankvercharge._doc.value;
             datasettingdisbvercharge = await this.settingsService.findOne(idBankDisbursmentCharge);
             valuedisbcharge = datasettingdisbvercharge._doc.value;
-            totalamount = amount - valuedisbcharge - valuebankcharge;
+
         } catch (e) {
             valuebankcharge = 0;
             valuedisbcharge = 0;
-            totalamount = 0;
+
         }
         try {
             databank = await this.banksService.findbankcode(bankcode);
@@ -1755,7 +1779,7 @@ export class TransactionsController {
                 var statuscode = datareqinq.status.code;
                 var account_name = datareqinq.account_name;
                 var namaakun = account_name.toLowerCase();
-
+                totalamount = amount - valuedisbcharge - valuebankcharge;
                 if (statuscode == "000") {
                     await this.userbankaccountsService.updateone(idbankaccount, "success inquiry");
                     await this.accontbalanceWithdraw(iduser, valuebankcharge, "inquiry");
@@ -1899,6 +1923,7 @@ export class TransactionsController {
                     });
                 }
             } else {
+                totalamount = amount - valuedisbcharge;
                 data = {
                     "name": namarek,
                     "bankName": bankname,
@@ -4631,6 +4656,7 @@ export class TransactionsController {
                     var idacountbank = dataWitdraw[0].idAccountBank;
                     dataakunbank = await this.userbankaccountsService.findOneid(idacountbank);
                     var idBnk = dataakunbank._doc.idBank;
+                    var statusInquiry = dataakunbank._doc.statusInquiry;
                     var databank = null;
                     var namabank = "";
                     try {
@@ -4662,24 +4688,45 @@ export class TransactionsController {
                         valuedisbcharge = 0;
                     }
 
-                    data = {
+                    if (statusInquiry === false || statusInquiry === null || statusInquiry === undefined) {
+                        data = {
 
-                        "_id": idtr,
-                        "iduser": dataWitdraw[0].iduser,
-                        "fullName": dataWitdraw[0].fullName,
-                        "email": dataWitdraw[0].email,
-                        "type": dataWitdraw[0].type,
-                        "timestamp": dataWitdraw[0].timestamp,
-                        "amount": dataWitdraw[0].amount,
-                        "totalamount": dataWitdraw[0].totalamount,
-                        "adminFee": valuedisbcharge,
-                        "bankverificationcharge": valuebankcharge,
-                        "description": dataWitdraw[0].description,
-                        "status": dataWitdraw[0].status,
-                        "noRek": dataakunbank._doc.noRek,
-                        "namaRek": dataakunbank._doc.nama,
-                        "namaBank": namabank
-                    };
+                            "_id": idtr,
+                            "iduser": dataWitdraw[0].iduser,
+                            "fullName": dataWitdraw[0].fullName,
+                            "email": dataWitdraw[0].email,
+                            "type": dataWitdraw[0].type,
+                            "timestamp": dataWitdraw[0].timestamp,
+                            "amount": dataWitdraw[0].amount,
+                            "totalamount": dataWitdraw[0].totalamount,
+                            "adminFee": valuedisbcharge,
+                            "bankverificationcharge": valuebankcharge,
+                            "description": dataWitdraw[0].description,
+                            "status": dataWitdraw[0].status,
+                            "noRek": dataakunbank._doc.noRek,
+                            "namaRek": dataakunbank._doc.nama,
+                            "namaBank": namabank
+                        };
+                    } else {
+                        data = {
+
+                            "_id": idtr,
+                            "iduser": dataWitdraw[0].iduser,
+                            "fullName": dataWitdraw[0].fullName,
+                            "email": dataWitdraw[0].email,
+                            "type": dataWitdraw[0].type,
+                            "timestamp": dataWitdraw[0].timestamp,
+                            "amount": dataWitdraw[0].amount,
+                            "totalamount": dataWitdraw[0].totalamount,
+                            "adminFee": valuedisbcharge,
+                            "bankverificationcharge": 0,
+                            "description": dataWitdraw[0].description,
+                            "status": dataWitdraw[0].status,
+                            "noRek": dataakunbank._doc.noRek,
+                            "namaRek": dataakunbank._doc.nama,
+                            "namaBank": namabank
+                        };
+                    }
                 } catch (e) {
                     throw new BadRequestException("Data not found...!");
                 }
@@ -4762,65 +4809,7 @@ export class TransactionsController {
         return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Post('api/transactions/historys/voucherused')
-    async finddatause(@Req() request: Request): Promise<any> {
-        const messages = {
-            "info": ["The process successful"],
-        };
 
-        var request_json = JSON.parse(JSON.stringify(request.body));
-
-        var page = null;
-        var status = null;
-        var countrow = null;
-        var startdate = null;
-        var enddate = null;
-        var limit = null;
-        var iduser = null;
-        var totalpage = null;
-        var status = null;
-        const mongoose = require('mongoose');
-        var ObjectId = require('mongodb').ObjectId;
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-        if (request_json["page"] !== undefined) {
-            page = request_json["page"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        status = request_json["status"];
-        startdate = request_json["startdate"];
-        enddate = request_json["enddate"];
-        iduser = request_json["iduser"];
-        var userid = mongoose.Types.ObjectId(iduser);
-        let data = await this.adsService.listusevoucher(userid, status, startdate, enddate, page, limit);
-        var total = data.length;
-        let datasearch = await this.adsService.listusevouchercount(userid, status, startdate, enddate);
-        var total = data.length;
-        var totalsearch = datasearch.length;
-
-
-        var tpage = null;
-        var tpage2 = null;
-
-        tpage2 = (totalsearch / limit).toFixed(0);
-        tpage = (totalsearch % limit);
-        if (tpage > 0 && tpage < 6) {
-            totalpage = parseInt(tpage2) + 1;
-
-        } else {
-            totalpage = parseInt(tpage2);
-        }
-
-
-
-        return { response_code: 202, data, page, limit, total, totalsearch, totalpage, messages };
-    }
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/historys/voucher/detail')
     async finddatadetail(@Req() request: Request): Promise<any> {
@@ -4908,6 +4897,62 @@ export class TransactionsController {
             return num.toString().padStart(6, "0")
         };
         return getRandomId();
+    }
+    @UseGuards(JwtAuthGuard)
+    @Post('api/transactions/historys/voucherused')
+    async finddatavoucheruse(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        var page = null;
+        var status = null;
+        var countrow = null;
+        var startdate = null;
+        var enddate = null;
+        var limit = null;
+        var iduser = null;
+        var totalpage = null;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        status = request_json["status"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        iduser = request_json["iduser"];
+        var userid = mongoose.Types.ObjectId(iduser);
+        let data = await this.adsService.listusevoucher(userid, status, startdate, enddate, page, limit);
+        var total = data.length;
+        let datasearch = await this.adsService.listusevouchercount(userid, status, startdate, enddate);
+        var total = data.length;
+        var totalsearch = datasearch.length;
+        var tpage = null;
+        var tpage2 = null;
+
+        tpage2 = (totalsearch / limit).toFixed(0);
+        tpage = (totalsearch % limit);
+        if (tpage > 0 && tpage < 6) {
+            totalpage = parseInt(tpage2) + 1;
+
+        } else {
+            totalpage = parseInt(tpage2);
+        }
+
+
+
+        return { response_code: 202, data, page, limit, total, totalsearch, totalpage, messages };
     }
 }
 
