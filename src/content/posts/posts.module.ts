@@ -29,7 +29,6 @@ import { PostCommentService } from './postcomment.service';
 import { DisqusModule } from '../disqus/disqus.module';
 import { DisquslogsModule } from '../disquslogs/disquslogs.module';
 import { SettingsModule } from '../../trans/settings/settings.module';
-import { DisqusService } from './disqus.service';
 import { NotificationsModule } from '../notifications/notifications.module';
 @Module({
 

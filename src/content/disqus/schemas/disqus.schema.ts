@@ -21,6 +21,8 @@ export class Disqus {
   @Prop()
   room: String
   @Prop()
+  postID: String  
+  @Prop()
  createdAt: String
  @Prop()
  updatedAt: String

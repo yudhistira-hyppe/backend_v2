@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Post, UseGuards, Headers, BadRequestException, Res, HttpStatus, Query, Request, Req, HttpCode } from '@nestjs/common';
 import { DisqusService } from './disqus.service';
-import { CreateDisqusDto, ContentDto } from './dto/create-disqus.dto';
+import { CreateDisqusDto, ContentDto, DisqusDto, DisqusResDto, DisqusResponseApps, Messages } from './dto/create-disqus.dto';
 import { Disqus } from './schemas/disqus.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { FormDataRequest } from 'nestjs-form-data';
@@ -22,6 +22,7 @@ import { Disquscontacts } from '../disquscontacts/schemas/disquscontacts.schema'
 import { Posts } from '../posts/schemas/posts.schema';
 import { CreateInsightsDto, InsightsDto } from '../insights/dto/create-insights.dto';
 import { Insights } from '../insights/schemas/insights.schema';
+import { DisquslogsService } from '../disquslogs/disquslogs.service';
 const Long = require('mongodb').Long;
 @Controller('api/')
 export class DisqusController {
@@ -31,6 +32,8 @@ export class DisqusController {
     //private readonly reactionsService: ReactionsService,
     private readonly utilsService: UtilsService,
     private readonly postDisqusService: PostDisqusService,
+    private readonly disqusService: DisqusService,
+    private readonly disqusLogService: DisquslogsService,
     private readonly insightsService: InsightsService,
     private readonly contenteventsService: ContenteventsService,
     private readonly errorHandler: ErrorHandler) { }
@@ -60,32 +63,15 @@ export class DisqusController {
   @HttpCode(HttpStatus.ACCEPTED)
   @FormDataRequest()
   @Post('posts/disqus')
-  async disqus(
-    @Headers() headers, 
-    @Body() ContentDto_: ContentDto, 
-  ) {
-    // if (!(await this.utilsService.validasiTokenEmail(headers))) {
-    //   await this.errorHandler.generateNotAcceptableException(
-    //     'Unabled to proceed token and email not match',
-    //   );
-    // }
-
-    // if (headers['x-auth-token'] == undefined) {
-    //   await this.errorHandler.generateNotAcceptableException(
-    //     'Unabled to proceed email header is required',
-    //   );
-    // }
-
+  async disqus(@Headers() headers, @Body() ContentDto_: ContentDto, ) {
     var email_header = headers['x-auth-token'];
     let type = "";
     let isQuery = false;
-    var retVal = [];
+    let res = new DisqusResponseApps();    
 
     if (ContentDto_.eventType == undefined) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed eventType is required',
-      );
-    }else{
+      await this.errorHandler.generateNotAcceptableException('Unabled to proceed eventType is required',);
+    } else {
       type = ContentDto_.eventType.toString();
     }
 
@@ -95,61 +81,146 @@ export class DisqusController {
       console.log("processDisqus >>> event: ", ContentDto_.eventType);
       if (!isQuery){
         if (type == "DIRECT_MSG") {
-          retVal.push(this.buildDisqus(ContentDto_, true));
-          ContentDto_.disqus = retVal;
-          isValid = true;
-          for (var retValCount = 0; retValCount < retVal.length; retValCount++){
-            if (retVal[retValCount].room != undefined) {
-              var roomName = retVal[retValCount].room;
-            }
+          //retVal.push(this.buildDisqus(ContentDto_, true));
+          //ContentDto_.disqus = retVal;
+          //isValid = true;
+          //for (var retValCount = 0; retValCount < retVal.length; retValCount++){
+          //  if (retVal[retValCount].room != undefined) {
+          //    var roomName = retVal[retValCount].room;
+          //  }
             // String roomName = AppUtils.getAsStr(it, QueryEnum.ROOM_FLD.getName());
             //var roomName = retVal[retValCount].room;
-          }
+          //}
         } else if ((type == "COMMENT") && (ContentDto_.postID!=undefined)) {
           
         }
       }else{
+
         if (type == "DIRECT_MSG") {
-          var aDisqusContacts = (ContentDto_.receiverParty != undefined) ? await this.disquscontactsService.findDisqusByEmail(ContentDto_.email.toString()) : await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
+          var aDisqusContacts : any[] = []; 
+          if (ContentDto_.receiverParty != undefined) {
+            aDisqusContacts = await this.disquscontactsService.findDisqusByEmail(String(ContentDto_.email));
+          } else {
+            aDisqusContacts = await this.disquscontactsService.findByEmailAndMate(String(ContentDto_.email), String(ContentDto_.receiverParty));
+          } 
           var withDetail = ContentDto_.withDetail;
           var detailOnly = ContentDto_.detailOnly;
+          
+          
+          let tmp : DisqusResDto[] = [];
+          for (let i = 0; i < aDisqusContacts.length; i++) {
+            let con = aDisqusContacts[i];
+            var retVal = new DisqusResDto();
 
-          retVal['disqusID'] = aDisqusContacts[0].disqus_data[0].disqusID;
-          if ((aDisqusContacts[0].disqus_data[0].email != undefined) && (aDisqusContacts[0].disqus_data[0].mate != undefined)) {
-            if (detailOnly == false) {
-              retVal['email'] = aDisqusContacts[0].disqus_data[0].email;
-              retVal['room'] = aDisqusContacts[0].disqus_data[0].room;
+            retVal.disqusID = con.disqus_data[0].disqusID;
+            if ((aDisqusContacts[0].disqus_data[0].email != undefined) && (aDisqusContacts[0].disqus_data[0].mate != undefined)) {
+              if (detailOnly == undefined || detailOnly == false) {
+                retVal.email = aDisqusContacts[0].disqus_data[0].email;
+                retVal.room = aDisqusContacts[0].disqus_data[0].room;
+  
+                retVal.eventType = aDisqusContacts[0].disqus_data[0].eventType;
+                retVal.active = aDisqusContacts[0].disqus_data[0].active;
+                retVal.createdAt = aDisqusContacts[0].disqus_data[0].createdAt;
+                retVal.updatedAt = aDisqusContacts[0].disqus_data[0].updatedAt;
+                retVal.lastestMessage = aDisqusContacts[0].disqus_data[0].lastestMessage;
+  
+                var profile = await this.utilsService.generateProfile(aDisqusContacts[0].disqus_data[0].email, 'PROFILE');
+                if (profile.username!=undefined){
+                  retVal.username = profile.username;
+                }
+                if (profile.fullName != undefined) {
+                  retVal.fullName = profile.fullName;
+                }
+                if (profile.avatar != undefined) {
+                  retVal.avatar = profile.avatar;
+                }
+  
+                var profile_mate = await this.utilsService.generateProfile(aDisqusContacts[0].disqus_data[0].mate, 'PROFILE');
+                var mateInfo = {};
+                if (profile_mate.username != undefined) {
+                  mateInfo['username'] = profile_mate.username;
+                }
+                if (profile_mate.fullName != undefined) {
+                  mateInfo['fullName'] = profile_mate.fullName;
+                }
+                if (profile_mate.avatar != undefined) {
+                  mateInfo['avatar'] = profile_mate.avatar;
+                }
+                mateInfo['email'] = aDisqusContacts[0].disqus_data[0].mate;
+                retVal.mate = mateInfo;
+  
+                var senderReciverInfo = {};
+                var currentEmail = (ContentDto_.email) ? ContentDto_.email : email_header;
+                if ((profile_mate != null) && (profile != null) && (currentEmail == profile_mate.email)) {
+                  senderReciverInfo['email'] = profile.fullName;
+                  senderReciverInfo['username'] = profile.username;
+                  senderReciverInfo['fullName'] = profile.fullName;
+                  if (profile.avatar != null) {
+                    senderReciverInfo['avatar'] = profile.avatar;
+                  }
+                } else if ((profile_mate != null) && (profile != null) && (currentEmail == profile.email)) {
+                  senderReciverInfo['email'] = profile_mate.fullName;
+                  senderReciverInfo['username'] = profile_mate.username;
+                  senderReciverInfo['fullName'] = profile_mate.fullName;
+                  if (profile_mate.avatar != null) {
+                    senderReciverInfo['avatar'] = profile_mate.avatar;
+                  }
+                }
+                retVal.senderOrReceiverInfo = senderReciverInfo;
+  
+                if ((ContentDto_.pageNumber != undefined) && (ContentDto_.pageRow != undefined)) {
+                  var pageNumber = Number(ContentDto_.pageNumber);
+                  var pageRow = Number(ContentDto_.pageRow);
+                  var offset = pageNumber * pageRow;
+                  // retVal['disqusLogs'] = profile.avatar;
+                  // retVal.put("disqusLogs",streamSupplier.get().skip(offset).limit(pageRow).collect(Collectors.toList()));
+                } else {
+                  // retVal['disqusLogs'] = profile.avatar;
+                  // retVal.put("disqusLogs", streamSupplier.get().collect(Collectors.toList()));
+                }
+              }            
 
-              retVal['eventType'] = aDisqusContacts[0].disqus_data[0].eventType;
-              retVal['active'] = aDisqusContacts[0].disqus_data[0].active;
-              retVal['createdAt'] = aDisqusContacts[0].disqus_data[0].createdAt;
-              retVal['updatedAt'] = aDisqusContacts[0].disqus_data[0].updatedAt;
-              retVal['lastestMessage'] = aDisqusContacts[0].disqus_data[0].lastestMessage;
+              tmp.push(retVal);
+          }
 
-              var profile = await this.utilsService.generateProfile(aDisqusContacts[0].disqus_data[0].email, 'PROFILE');
+          res.data = tmp;
+
+          if (withDetail || detailOnly) {
+
+          }
+          }
+        } else if (type == "COMMENT") {
+          //inDto.setDisqus(this.aggrCommentsQuery(inDto));
+          let com = await this.disqusService.findDisqusByPost(String(ContentDto_.postID), type);
+
+          let tmp : DisqusResDto[] = [];
+          for (let i = 0; i < com.length; i++) {
+            let con = com[i];
+            var retVal = new DisqusResDto();
+
+            retVal.disqusID = con.disqusID;
+
+            if (detailOnly == undefined || detailOnly == false) {
+              retVal.email = con.email;
+              retVal.room = con.room;
+              retVal.postId = String(con.postID);
+
+              retVal.eventType = con.eventType;
+              retVal.active = con.active;
+              retVal.createdAt = con.createdAt;
+              retVal.updatedAt = con.updatedAt;
+
+              var profile = await this.utilsService.generateProfile(String(con.email), 'PROFILE');
               if (profile.username!=undefined){
-                retVal['username'] = profile.username;
+                retVal.username = profile.username;
               }
               if (profile.fullName != undefined) {
-                retVal['fullName'] = profile.fullName;
+                retVal.fullName = profile.fullName;
               }
               if (profile.avatar != undefined) {
-                retVal['avatar'] = profile.avatar;
+                retVal.avatar = profile.avatar;
               }
 
-              var profile_mate = await this.utilsService.generateProfile(aDisqusContacts[0].disqus_data[0].mate, 'PROFILE');
-              var mateInfo = {};
-              if (profile_mate.username != undefined) {
-                mateInfo['username'] = profile_mate.username;
-              }
-              if (profile_mate.fullName != undefined) {
-                mateInfo['fullName'] = profile_mate.fullName;
-              }
-              if (profile_mate.avatar != undefined) {
-                mateInfo['avatar'] = profile_mate.avatar;
-              }
-              mateInfo['email'] = aDisqusContacts[0].disqus_data[0].mate;
-              retVal['mate'] = mateInfo;
 
               var senderReciverInfo = {};
               var currentEmail = (ContentDto_.email) ? ContentDto_.email : email_header;
@@ -168,7 +239,10 @@ export class DisqusController {
                   senderReciverInfo['avatar'] = profile_mate.avatar;
                 }
               }
-              retVal['senderOrReceiverInfo'] = senderReciverInfo;
+              retVal.senderOrReceiverInfo = senderReciverInfo;
+
+              let dl = await this.disqusLogService.findLogByDisqusId(String(con.disqusID), Number(ContentDto_.pageNumber), Number(ContentDto_.pageRow));
+              retVal.disqusLogs = dl;
 
               if ((ContentDto_.pageNumber != undefined) && (ContentDto_.pageRow != undefined)) {
                 var pageNumber = Number(ContentDto_.pageNumber);
@@ -180,20 +254,23 @@ export class DisqusController {
                 // retVal['disqusLogs'] = profile.avatar;
                 // retVal.put("disqusLogs", streamSupplier.get().collect(Collectors.toList()));
               }
-            }
-
-            if (withDetail || detailOnly) {
-
-            }
+            }                        
+              tmp.push(retVal);
           }
-        } else if (type == "COMMENT") {
-          //inDto.setDisqus(this.aggrCommentsQuery(inDto));
+
+          res.data = tmp;
         }
 
         isValid = true;
       }
 
       if (isValid) {
+        res.response_code = 202;
+        let ms = new Messages();
+        ms.info = ["The process successful"];
+        res.messages = ms;
+
+        return res;
         //inDto.buildResultInfo(inDto.getEventType(), ResBundle.instance().bundleAsStr(ResBundle.PR_DEFAULT_SUCCESS));
       } else {
         //inDto.buildErrorInfo(inDto.getEventType(), ResBundle.instance().bundleAsStr(ResBundle.AC_ERR_DEFAULT));
@@ -204,7 +281,7 @@ export class DisqusController {
       );
     }
 
-    return await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
+    //return await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
   }
 
   private async buildComments(ContentDto_: ContentDto, buildInteractive: boolean) {
@@ -258,46 +335,51 @@ export class DisqusController {
   }
 
   private async buildDisqus(ContentDto_: ContentDto, buildInteractive: boolean) {
-    var Disquscontacts_ = new Disquscontacts();
-    Disquscontacts_ = await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
-    if (await this.utilsService.ceckData(Disquscontacts_)){
-      var IdDisqus = Disquscontacts_.disqus.id.toString();
-      var Disqus_ = new Disqus();
-      if (Disquscontacts_.disqus != null) {
-        Disqus_ = await this.DisqusService.findOne(IdDisqus);
-      } else {
-        var DataId = await this.utilsService.generateId();
-        Disqus_._id = DataId;
-        Disqus_.room = DataId;
-        Disqus_.disqusID = ContentDto_.disqusID;
-        Disqus_.eventType = ContentDto_.eventType;
-        Disqus_.email = ContentDto_.email;
-        Disqus_.mate = ContentDto_.mate;
-        Disqus_.active = ContentDto_.active;
-        Disqus_.createdAt = await this.utilsService.getDateTimeString();
-        Disqus_.updatedAt = await this.utilsService.getDateTimeString();
-      }
-      
-      if (ContentDto_.postID != undefined) {
-        var Posts_ = new Posts();
-        Posts_ = await this.postDisqusService.findid(ContentDto_.postID.toString());
-        if (await this.utilsService.ceckData(Posts_)) {
-          ContentDto_.postContent = Posts_;
-          ContentDto_.postType = Posts_.postType;
-          if (buildInteractive){
-            var _ContentDto_ = new ContentDto();
-            _ContentDto_ = ContentDto_;
-            _ContentDto_.eventType = "REACTION";
-            _ContentDto_.postType = Posts_.postType;
-            _ContentDto_.receiverParty = Posts_.email;
-            _ContentDto_.reactionUri = ContentDto_.reactionUri;
+    var cts :Disquscontacts[] = [];
+    cts = await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
+    if (await this.utilsService.ceckData(cts)){
+      for (let i = 0; i < cts.length; i++) {
+        let ct = cts[i];
 
-            // var InsightsDto_ = new InsightsDto();
-            // InsightsDto_ = await this.validationEvent(ContentDto_);
-            // await this.processInsightEvent(InsightsDto_);
-          }
+        var IdDisqus = ct.disqus.id.toString();
+        var Disqus_ = new Disqus();
+        if (ct.disqus != null) {
+          Disqus_ = await this.DisqusService.findOne(IdDisqus);
+        } else {
+          var DataId = await this.utilsService.generateId();
+          Disqus_._id = DataId;
+          Disqus_.room = DataId;
+          Disqus_.disqusID = ContentDto_.disqusID;
+          Disqus_.eventType = ContentDto_.eventType;
+          Disqus_.email = ContentDto_.email;
+          Disqus_.mate = ContentDto_.mate;
+          Disqus_.active = ContentDto_.active;
+          Disqus_.createdAt = await this.utilsService.getDateTimeString();
+          Disqus_.updatedAt = await this.utilsService.getDateTimeString();
         }
+        
+        if (ContentDto_.postID != undefined) {
+          var Posts_ = new Posts();
+          Posts_ = await this.postDisqusService.findid(ContentDto_.postID.toString());
+          if (await this.utilsService.ceckData(Posts_)) {
+            ContentDto_.postContent = Posts_;
+            ContentDto_.postType = Posts_.postType;
+            if (buildInteractive){
+              var _ContentDto_ = new ContentDto();
+              _ContentDto_ = ContentDto_;
+              _ContentDto_.eventType = "REACTION";
+              _ContentDto_.postType = Posts_.postType;
+              _ContentDto_.receiverParty = Posts_.email;
+              _ContentDto_.reactionUri = ContentDto_.reactionUri;
+  
+              // var InsightsDto_ = new InsightsDto();
+              // InsightsDto_ = await this.validationEvent(ContentDto_);
+              // await this.processInsightEvent(InsightsDto_);
+            }
+          }
+        }        
       }
+
     }
   }
   
