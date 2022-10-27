@@ -257,7 +257,7 @@ export class ContenteventsController {
         CreateContenteventsDto2.flowIsDone = true
         CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
         CreateContenteventsDto2.senderParty = email_user
-        CreateContenteventsDto1.postID = request.body.postID
+        CreateContenteventsDto2.postID = request.body.postID
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);
@@ -303,7 +303,7 @@ export class ContenteventsController {
         CreateContenteventsDto2.flowIsDone = true
         CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
         CreateContenteventsDto2.senderParty = email_user
-        CreateContenteventsDto1.postID = request.body.postID
+        CreateContenteventsDto2.postID = request.body.postID
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);
@@ -382,7 +382,7 @@ export class ContenteventsController {
         CreateContenteventsDto2.flowIsDone = true
         CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
         CreateContenteventsDto2.senderParty = email_user
-        CreateContenteventsDto1.reactionUri = request.body.reactionUri
+        CreateContenteventsDto2.reactionUri = request.body.reactionUri
         CreateContenteventsDto2.postID = request.body.postID
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
