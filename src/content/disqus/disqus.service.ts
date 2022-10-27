@@ -1,18 +1,27 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { Injectable, NotAcceptableException, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateDisqusDto } from './dto/create-disqus.dto';
+import { CreateDisqusDto, DisqusResponseApps } from './dto/create-disqus.dto';
 import { Disqus, DisqusDocument } from './schemas/disqus.schema';
 import { UtilsService } from '../../utils/utils.service'; 
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
+import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
+import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
+import { DisquscontactsService } from '../disquscontacts/disquscontacts.service';
+import { Disquscontacts } from '../disquscontacts/schemas/disquscontacts.schema';
 
 @Injectable()
 export class DisqusService {
+
+  private readonly logger = new Logger(DisqusService.name);
+
   constructor(
     @InjectModel(Disqus.name, 'SERVER_CONTENT')
     private readonly DisqusModel: Model<DisqusDocument>, 
     private utilsService: UtilsService,
     private disquslogsService: DisquslogsService,
+    private disqconService: DisquscontactsService,
+    private userService: UserbasicsService,
   ) { }
 
   async create(CreateDisqusDto: CreateDisqusDto): Promise<Disqus> {
@@ -105,4 +114,47 @@ export class DisqusService {
     ]);
     return query;
   }
+
+  async findDisqusByPost(postId: string, eventType: string) {
+    return await this.DisqusModel.find().where('postID', postId).where('eventType', eventType).exec();
+  }
+
+  async createDisqus(body: any, headers: any): Promise<DisqusResponseApps> {
+
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+    this.logger.log('createDisqus >>> profile: ' + profile);
+
+    let res = new DisqusResponseApps();
+    res.response_code = 202;
+
+    let et = body.eventType;
+    if (et != 'DIRECT_MSG' && et != 'COMMENT') {
+      let inf = [];
+      inf.push("Unable to proceed. Only accept DM and Comment");
+      res.response_code = 204;
+      return res;
+    }
+
+    let qr = body.isQuery;
+    if (qr == true || qr == 'true') {
+      let cts = this.queryDiscuss(body, profile);
+
+      this.logger.log(JSON.stringify(cts));
+    }
+    return res;
+  }  
+
+  async queryDiscuss(body: any, whoami: Userbasic) {
+    let contact : Disquscontacts[] = [];
+    if (body.receiverParty != undefined) {
+      contact = await this.disqconService.findDisqusByEmail(body.email);
+    } else {
+      contact = await this.disqconService.findByEmailAndMate(body.email, body.receiverParty);
+    }
+
+    return contact;
+  }
+
 }
