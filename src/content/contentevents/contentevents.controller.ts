@@ -1,6 +1,6 @@
-import { Body, Headers,Controller, Delete, Get, Param, Post,UseGuards, HttpCode, HttpStatus, Req } from '@nestjs/common';
+import { Body, Headers, Controller, Delete, Get, Param, Post, UseGuards, HttpCode, HttpStatus, Req } from '@nestjs/common';
 import { ContenteventsService } from './contentevents.service';
-import { CreateContenteventsDto } from './dto/create-contentevents.dto';
+import { ContentEventId, CreateContenteventsDto } from './dto/create-contentevents.dto';
 import { Contentevents } from './schemas/contentevents.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { GroupModuleService } from '../../trans/usermanagement/groupmodule/groupmodule.service';
@@ -8,8 +8,8 @@ import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import { InsightsService } from '../insights/insights.service';
 import { PostDisqusService } from '../disqus/post/postdisqus.service';
-import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 import { request } from 'http';
+import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 
 @Controller()
 export class ContenteventsController {
@@ -19,7 +19,7 @@ export class ContenteventsController {
     private readonly utilsService: UtilsService,
     private readonly insightsService: InsightsService,
     private readonly postsService: PostDisqusService,
-    private readonly errorHandler: ErrorHandler) {}
+    private readonly errorHandler: ErrorHandler) { }
 
   @Post('api/contentevents')
   async create(@Body() CreateContenteventsDto: CreateContenteventsDto) {
@@ -139,12 +139,12 @@ export class ContenteventsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('api/friend/:email')
-  async friend( @Param('email') email: string, @Headers() headers) {
-    var data = await this.contenteventsService.friend(email,headers);
+  async friend(@Param('email') email: string, @Headers() headers) {
+    var data = await this.contenteventsService.friend(email, headers);
     return {
       response_code: 202,
-      data:data,
-      count_friend:(await data).length,
+      data: data,
+      count_friend: (await data).length,
       messages: {
         info: ['Succes Get Friend'],
       },
@@ -420,6 +420,8 @@ export class ContenteventsController {
     var bodyin = "";
     var bodyen = "";
 
+    var email_post = "";
+
     if (type == "LIKE") {
       var posts = await this.postsService.findid(postID);
       var bodyin_get = Templates_.body_detail_id.toString();
@@ -428,20 +430,26 @@ export class ContenteventsController {
       var post_type = "";
       if (await this.utilsService.ceckData(posts)) {
         post_type = posts.postType.toString();
+        email_post = posts.email.toString();
       }
 
-      bodyin_get.replace("${post_type}", post_type);
-      bodyen_get.replace("${post_type}", post_type);
+      var new_bodyin_get = bodyin_get.replace("${post_type}", "Hypper" + post_type[0].toUpperCase() + post_type.substring(1));
+      var new_bodyen_get = bodyen_get.replace("${post_type}", "Hypper" + post_type[0].toUpperCase() + post_type.substring(1));
 
-      var bodyin = bodyin_get;
-      var bodyen = bodyen_get;
+      var bodyin = new_bodyin_get;
+      var bodyen = new_bodyen_get;
     } else {
       var bodyin = Templates_.body_detail_id.toString();
       var bodyen = Templates_.body_detail.toString();
     }
     var eventType = type.toString();
     var event = "ACCEPT";
-
-    await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
+    if (type == "LIKE") {
+      if (email != email_post) {
+        await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
+      }
+    } else {
+      await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
+    }
   }
 }
