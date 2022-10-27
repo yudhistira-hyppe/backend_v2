@@ -1480,7 +1480,7 @@ export class TransactionsController {
                         datawithdraw.bankDisbursmentCharge = mongoose.Types.ObjectId(idBankDisbursmentCharge);
                         datawithdraw.description = OyDisbursements.note;
                         datawithdraw.idUser = iduser;
-                        datawithdraw.status = "Request is In Progress";
+                        datawithdraw.status = statusmessage;
                         datawithdraw.timestamp = dtb;
                         datawithdraw.verified = false;
                         datawithdraw.partnerTrxid = partnertrxid;
