@@ -31,3 +31,25 @@ export class CreateDisquslogsDto {
     receiverActive: boolean;
     senderActive: boolean;
   }
+
+
+  export class DisquslogsDto {
+  
+    _id: String;
+    disqusID: String;
+    sequenceNumber: Number;
+    sender: {};
+    receiver: String;
+    active: boolean;
+    eventInsight: String;
+    postType: String;
+    postID: String;
+    createdAt: String;
+    updatedAt: String;
+    reactionUri: String;
+    txtMessages: String;
+   
+    readonly _class: String;
+    receiverActive: boolean;
+    senderActive: boolean;
+ }

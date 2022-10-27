@@ -22,6 +22,8 @@ export class Disquslogs {
   eventInsight: String
   @Prop()
   postType: String
+  @Prop()
+  txtMessages: String  
  @Prop()
  postID: String
  @Prop()
