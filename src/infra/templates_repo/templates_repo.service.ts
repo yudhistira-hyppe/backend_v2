@@ -36,7 +36,7 @@ export class TemplatesRepoService {
     return undefined;
   }
 
-  async findOneByTypeAndCategory(type: string, category: string): Promise<TemplatesRepo> {
+  async findOneByTypeAndCategoryV5(type: string, category: string): Promise<TemplatesRepo> {
     return this.TemplatesRepoModel.findOne({
       type: type,
       category: category,
@@ -50,6 +50,13 @@ export class TemplatesRepoService {
     }
     return undefined;
   }
+
+  async findOneByTypeAndCategory(type: string, category: string): Promise<TemplatesRepo> {
+    return this.TemplatesRepoModel.findOne({
+      type: type,
+      category: category,
+    }).exec();
+  }  
 
   async delete(id: string) {
     const deletedCat = await this.TemplatesRepoModel.findByIdAndRemove({

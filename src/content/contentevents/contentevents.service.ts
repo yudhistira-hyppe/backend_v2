@@ -843,6 +843,23 @@ export class ContenteventsService {
     return query;
   }
 
+  async ceckDataV5(email: String, eventType: String, event: String, receiverParty: String, senderParty: String, postID: String): Promise<Contentevents> {
+    let query = this.ContenteventsModel.findOne();
+    query.where('email', email);
+    query.where('eventType', eventType);
+    query.where('event', event);
+    if (senderParty != "") {
+      query.where('senderParty', senderParty);
+    }
+    if (receiverParty != "") {
+      query.where('receiverParty', receiverParty);
+    }
+    if (postID != "") {
+      query.where('postID', postID);
+    }
+    return query.exec();
+  }
+
   async updateUnlike(email: string, eventType: string, postID: string) {
     this.ContenteventsModel.updateOne(
       {
@@ -850,7 +867,7 @@ export class ContenteventsService {
         eventType: eventType,
         postID: postID,
       },
-      { active:false },
+      { active: false },
       function (err, docs) {
         if (err) {
           console.log(err);

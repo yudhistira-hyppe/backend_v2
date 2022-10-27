@@ -4,7 +4,7 @@ import { UserbasicsService } from '../trans/userbasics/userbasics.service';
 import { UserdevicesService } from '../trans/userdevices/userdevices.service';
 import { UserauthsService } from '../trans/userauths/userauths.service';
 import { JwtrefreshtokenService } from '../trans/jwtrefreshtoken/jwtrefreshtoken.service';
-import { TemplatesRepoService } from '../infra/templates_repo/templates_repo.service'; 
+import { TemplatesRepoService } from '../infra/templates_repo/templates_repo.service';
 import { TemplatesService } from '../infra/templates/templates.service';
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -42,7 +42,7 @@ export class UtilsService {
     private userauthsService: UserauthsService,
     private jwtrefreshtokenService: JwtrefreshtokenService,
     private jwtService: JwtService,
-    private mailerService: MailerService, 
+    private mailerService: MailerService,
     private templatesRepoService: TemplatesRepoService,
     private templatesService: TemplatesService,
     private errorHandler: ErrorHandler,

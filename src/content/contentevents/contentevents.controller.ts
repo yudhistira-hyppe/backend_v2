@@ -1,4 +1,4 @@
-import { Body, Headers,Controller, Delete, Get, Param, Post,UseGuards, HttpCode, HttpStatus, Req } from '@nestjs/common';
+import { Body, Headers, Controller, Delete, Get, Param, Post, UseGuards, HttpCode, HttpStatus, Req } from '@nestjs/common';
 import { ContenteventsService } from './contentevents.service';
 import { ContentEventId, CreateContenteventsDto } from './dto/create-contentevents.dto';
 import { Contentevents } from './schemas/contentevents.schema';
@@ -7,7 +7,7 @@ import { GroupModuleService } from '../../trans/usermanagement/groupmodule/group
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import { InsightsService } from '../insights/insights.service';
-import { PostDisqusService } from '../disqus/post/postdisqus.service'; 
+import { PostDisqusService } from '../disqus/post/postdisqus.service';
 import { request } from 'http';
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 
@@ -19,7 +19,7 @@ export class ContenteventsController {
     private readonly utilsService: UtilsService,
     private readonly insightsService: InsightsService,
     private readonly postsService: PostDisqusService,
-    private readonly errorHandler: ErrorHandler) {}
+    private readonly errorHandler: ErrorHandler) { }
 
   @Post('api/contentevents')
   async create(@Body() CreateContenteventsDto: CreateContenteventsDto) {
@@ -139,12 +139,12 @@ export class ContenteventsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('api/friend/:email')
-  async friend( @Param('email') email: string, @Headers() headers) {
-    var data = await this.contenteventsService.friend(email,headers);
+  async friend(@Param('email') email: string, @Headers() headers) {
+    var data = await this.contenteventsService.friend(email, headers);
     return {
       response_code: 202,
-      data:data,
-      count_friend:(await data).length,
+      data: data,
+      count_friend: (await data).length,
       messages: {
         info: ['Succes Get Friend'],
       },
@@ -395,7 +395,7 @@ export class ContenteventsController {
             error,
           );
         }
-      } 
+      }
     }
 
     return {
@@ -407,14 +407,13 @@ export class ContenteventsController {
   }
 
   async sendInteractiveFCM(email: string, type: string, postID: string, receiverParty: string) {
-    
     var Templates_ = new TemplatesRepo();
     Templates_ = await this.utilsService.getTemplate_repo(type, 'NOTIFICATION');
 
     var get_username_email = await this.utilsService.getUsertname(email);
     var get_username_receiverParty = await this.utilsService.getUsertname(receiverParty);
 
-    var email= email;
+    var email = email;
     var titlein = get_username_receiverParty?.toString() || '';
     var titleen = get_username_receiverParty?.toString() || '';
     var bodyin = "";
@@ -422,13 +421,13 @@ export class ContenteventsController {
 
     var email_post = "";
 
-    if (type =="LIKE"){
+    if (type == "LIKE") {
       var posts = await this.postsService.findid(postID);
       var bodyin_get = Templates_.body_detail_id.toString();
       var bodyen_get = Templates_.body_detail.toString();
 
       var post_type = "";
-      if (await this.utilsService.ceckData(posts)){
+      if (await this.utilsService.ceckData(posts)) {
         post_type = posts.postType.toString();
         email_post = posts.email.toString();
       }
@@ -438,13 +437,13 @@ export class ContenteventsController {
 
       var bodyin = new_bodyin_get;
       var bodyen = new_bodyen_get;
-    }else{
+    } else {
       var bodyin = Templates_.body_detail_id.toString();
       var bodyen = Templates_.body_detail.toString();
     }
     var eventType = type.toString();
     var event = "ACCEPT";
-    if (type == "LIKE"){
+    if (type == "LIKE") {
       if (email != email_post) {
         await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
       }
