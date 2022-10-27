@@ -420,6 +420,8 @@ export class ContenteventsController {
     var bodyin = "";
     var bodyen = "";
 
+    var email_post = "";
+
     if (type =="LIKE"){
       var posts = await this.postsService.findid(postID);
       var bodyin_get = Templates_.body_detail_id.toString();
@@ -428,20 +430,26 @@ export class ContenteventsController {
       var post_type = "";
       if (await this.utilsService.ceckData(posts)){
         post_type = posts.postType.toString();
+        email_post = posts.email.toString();
       }
 
-      bodyin_get.replace("${post_type}", post_type);
-      bodyen_get.replace("${post_type}", post_type);
+      var new_bodyin_get = bodyin_get.replace("${post_type}", "Hypper" + post_type[0].toUpperCase() + post_type.substring(1));
+      var new_bodyen_get = bodyen_get.replace("${post_type}", "Hypper" + post_type[0].toUpperCase() + post_type.substring(1));
 
-      var bodyin = bodyin_get;
-      var bodyen = bodyen_get;
+      var bodyin = new_bodyin_get;
+      var bodyen = new_bodyen_get;
     }else{
       var bodyin = Templates_.body_detail_id.toString();
       var bodyen = Templates_.body_detail.toString();
     }
     var eventType = type.toString();
     var event = "ACCEPT";
-
-    await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
+    if (type == "LIKE"){
+      if (email != email_post) {
+        await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
+      }
+    } else {
+      await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
+    }
   }
 }
