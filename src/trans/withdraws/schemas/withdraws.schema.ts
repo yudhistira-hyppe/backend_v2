@@ -24,6 +24,8 @@ export class Withdraws {
     @Prop()
     timestamp: string
     @Prop()
+    updatedAt: string
+    @Prop()
     verified: boolean
     @Prop()
     description: string
