@@ -257,7 +257,7 @@ export class ContenteventsController {
         CreateContenteventsDto2.flowIsDone = true
         CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
         CreateContenteventsDto2.senderParty = email_user
-        CreateContenteventsDto1.postID = request.body.postID
+        CreateContenteventsDto2.postID = request.body.postID
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);
@@ -303,7 +303,7 @@ export class ContenteventsController {
         CreateContenteventsDto2.flowIsDone = true
         CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
         CreateContenteventsDto2.senderParty = email_user
-        CreateContenteventsDto1.postID = request.body.postID
+        CreateContenteventsDto2.postID = request.body.postID
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);
@@ -321,8 +321,8 @@ export class ContenteventsController {
       var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "LIKE", "ACCEPT", "", email_user, request.body.postID);
       if ((await this.utilsService.ceckData(ceck_data_DONE)) && (await this.utilsService.ceckData(ceck_data_ACCEPT))) {
         try {
-          await this.contenteventsService.updateUnlike(email_user, "LIKE", request.body.postID);
-          await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", request.body.postID);
+          await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID);
+          await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID);
           await this.postsService.updateUnLike(email_receiverParty, request.body.postID);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
@@ -382,7 +382,7 @@ export class ContenteventsController {
         CreateContenteventsDto2.flowIsDone = true
         CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
         CreateContenteventsDto2.senderParty = email_user
-        CreateContenteventsDto1.reactionUri = request.body.reactionUri
+        CreateContenteventsDto2.reactionUri = request.body.reactionUri
         CreateContenteventsDto2.postID = request.body.postID
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);

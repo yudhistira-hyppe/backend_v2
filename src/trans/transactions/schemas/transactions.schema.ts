@@ -50,6 +50,8 @@ export class Transactions {
     @Prop()
     timestamp: string
     @Prop()
+    updatedAt: string
+    @Prop()
     payload: VaCallback
     @Prop()
     idva: string

@@ -358,6 +358,7 @@ export class TransactionsController {
                             CreateTransactionsDto.iduserbuyer = iduser;
                             CreateTransactionsDto.idusersell = iduserseller;
                             CreateTransactionsDto.timestamp = dt.toISOString();
+                            CreateTransactionsDto.updatedAt = dt.toISOString();
                             CreateTransactionsDto.noinvoice = no;
                             CreateTransactionsDto.amount = saleAmount;
                             CreateTransactionsDto.status = cekstatusva.va_status;
@@ -481,6 +482,7 @@ export class TransactionsController {
                         CreateTransactionsDto.iduserbuyer = iduser;
                         CreateTransactionsDto.idusersell = iduserseller;
                         CreateTransactionsDto.timestamp = dt.toISOString();
+                        CreateTransactionsDto.updatedAt = dt.toISOString();
                         CreateTransactionsDto.noinvoice = no;
                         CreateTransactionsDto.amount = saleAmount;
                         CreateTransactionsDto.status = cekstatusva.va_status;
@@ -684,6 +686,7 @@ export class TransactionsController {
                             CreateTransactionsDto.iduserbuyer = iduser;
                             CreateTransactionsDto.idusersell = iduserseller;
                             CreateTransactionsDto.timestamp = dt.toISOString();
+                            CreateTransactionsDto.updatedAt = dt.toISOString();
                             CreateTransactionsDto.noinvoice = no;
                             CreateTransactionsDto.amount = saleAmount;
                             CreateTransactionsDto.status = cekstatusva.va_status;
@@ -831,6 +834,7 @@ export class TransactionsController {
                         CreateTransactionsDto.iduserbuyer = iduser;
                         CreateTransactionsDto.idusersell = iduserseller;
                         CreateTransactionsDto.timestamp = dt.toISOString();
+                        CreateTransactionsDto.updatedAt = dt.toISOString();
                         CreateTransactionsDto.noinvoice = no;
                         CreateTransactionsDto.amount = saleAmount;
                         CreateTransactionsDto.status = cekstatusva.va_status;
@@ -968,7 +972,9 @@ export class TransactionsController {
         var bodyensukses = "Your Content Has Been Sold The balance will be forwarded to your Hyppe Account.";
         var eventType = "TRANSACTION";
         var event = "TRANSACTION";
-
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
         try {
 
             datavabankbca = await this.settingsService.findOne(idbankvachargeBCA);
@@ -1083,7 +1089,7 @@ export class TransactionsController {
                         //// var datapph = await this.pph(idtransaction, idusersell, amount, postid);
 
 
-                        await this.transactionsService.updateone(idtransaction, idbalance, payload);
+                        await this.transactionsService.updateone(idtransaction, idbalance, payload, dt.toISOString());
                         await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
 
@@ -1485,6 +1491,7 @@ export class TransactionsController {
                         datawithdraw.idUser = iduser;
                         datawithdraw.status = statusmessage;
                         datawithdraw.timestamp = dtb;
+                        datawithdraw.updatedAt = dtb;
                         datawithdraw.verified = false;
                         datawithdraw.partnerTrxid = partnertrxid;
                         datawithdraw.statusOtp = null;
@@ -1556,6 +1563,7 @@ export class TransactionsController {
                         datawithdraw.idUser = iduser;
                         datawithdraw.status = statusmessage;
                         datawithdraw.timestamp = dtb;
+                        datawithdraw.updatedAt = dtb;
                         datawithdraw.verified = false;
                         datawithdraw.partnerTrxid = partnertrxid;
                         datawithdraw.statusOtp = null;
@@ -1678,6 +1686,10 @@ export class TransactionsController {
         var partner_trx_id = payload.partner_trx_id;
         var statusCallback = payload.status.code;
         var statusMessage = payload.status.message;
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+
         try {
             databank = await this.banksService.findbankcode(recipient_bank);
             idbank = databank._doc._id;
@@ -1698,7 +1710,7 @@ export class TransactionsController {
 
             if (statusCallback === "000") {
 
-                await this.withdrawsService.updateone(partner_trx_id, payload);
+                await this.withdrawsService.updateone(partner_trx_id, payload, dt.toISOString());
 
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -1709,7 +1721,7 @@ export class TransactionsController {
 
             else if (statusCallback === "210") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload);
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload, dt.toISOString());
 
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -1720,7 +1732,7 @@ export class TransactionsController {
 
             else if (statusCallback === "300") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload, dt.toISOString());
 
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -1730,7 +1742,7 @@ export class TransactionsController {
             }
             else if (statusCallback === "301") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload);
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload, dt.toISOString());
 
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -1738,7 +1750,7 @@ export class TransactionsController {
                 });
 
             } else {
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload, dt.toISOString());
 
                 res.status(HttpStatus.OK).json({
                     response_code: 202,

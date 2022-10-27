@@ -90,9 +90,9 @@ export class TransactionsService {
         return data;
     }
 
-    async updateone(id: Types.ObjectId, idaccountbalance: Types.ObjectId, payload: VaCallback): Promise<Object> {
+    async updateone(id: Types.ObjectId, idaccountbalance: Types.ObjectId, payload: VaCallback, updatedAt: string): Promise<Object> {
         let data = await this.transactionsModel.updateOne({ "_id": id },
-            { $set: { "status": "Success", "description": "buy CONTENT success", "accountbalance": idaccountbalance, payload: payload } });
+            { $set: { "status": "Success", "description": "buy CONTENT success", "accountbalance": idaccountbalance, "updatedAt": updatedAt, payload: payload } });
         return data;
     }
 
