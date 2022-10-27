@@ -13,6 +13,7 @@ export class CreateWithdrawsDto {
     statusOtp: string;
     totalamount: number;
     idAccountBank: { oid: String; };
+    updatedAt: string;
 }
 
 export class OyDisburseCallbackWithdraw {

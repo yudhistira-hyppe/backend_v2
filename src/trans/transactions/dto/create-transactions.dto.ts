@@ -26,6 +26,7 @@ export class CreateTransactionsDto {
     type: string;
     detail: any[];
     response: {};
+    updatedAt: string;
 
 }
 export class Uservoucher {
@@ -91,6 +92,7 @@ export class CreateWithdraws {
     statusOtp: string;
     totalamount: number;
     idAccountBank: { oid: String; };
+    updatedAt: string;
 }
 export class OyDisburseCallbacks {
 
