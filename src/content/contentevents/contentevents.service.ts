@@ -8,7 +8,7 @@ import { Contentevents, ContenteventsDocument } from './schemas/contentevents.sc
 @Injectable()
 export class ContenteventsService {
   constructor(
-    @InjectModel(Contentevents.name, 'SERVER_CONTENT')
+    @InjectModel(Contentevents.name, 'SERVER_FULL')
     private readonly ContenteventsModel: Model<ContenteventsDocument>,
   ) { }
 
@@ -813,7 +813,7 @@ export class ContenteventsService {
     return query;
   }
 
-  async ceckDataV5(email: String, eventType: String, event: String, receiverParty: String, senderParty: String, postID: String): Promise<Contentevents> {
+  async ceckData(email: String, eventType: String, event: String, receiverParty: String, senderParty: String, postID: String): Promise<Contentevents> {
     let query = this.ContenteventsModel.findOne();
     query.where('email', email);
     query.where('eventType', eventType);
