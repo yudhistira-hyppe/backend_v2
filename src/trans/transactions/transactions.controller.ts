@@ -4843,6 +4843,7 @@ export class TransactionsController {
         var limit = null;
         var iduser = null;
         var totalpage = null;
+        var descending = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -4855,6 +4856,7 @@ export class TransactionsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+        descending = request_json["descending"];
         key = request_json["key"];
         status = request_json["status"];
         startdate = request_json["startdate"];
@@ -4867,7 +4869,7 @@ export class TransactionsController {
             userid = undefined;
         }
 
-        let data = await this.transactionsService.findhistoryBuyVoucher(key, userid, status, startdate, enddate, page, limit);
+        let data = await this.transactionsService.findhistoryBuyVoucher(key, userid, status, startdate, enddate, page, limit, descending);
         var total = data.length;
         let datasearch = await this.transactionsService.findhistoryBuyVoucherCount(key, userid, status, startdate, enddate);
         var total = data.length;
@@ -4995,7 +4997,7 @@ export class TransactionsController {
         };
 
         var request_json = JSON.parse(JSON.stringify(request.body));
-
+        var descending = null;
         var page = null;
         var status = null;
         var countrow = null;
@@ -5016,13 +5018,13 @@ export class TransactionsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-
+        descending = request_json["descending"];
         status = request_json["status"];
         startdate = request_json["startdate"];
         enddate = request_json["enddate"];
         iduser = request_json["iduser"];
         var userid = mongoose.Types.ObjectId(iduser);
-        let data = await this.adsService.listusevoucher(userid, status, startdate, enddate, page, limit);
+        let data = await this.adsService.listusevoucher(userid, status, startdate, enddate, page, limit, descending);
         var total = data.length;
         let datasearch = await this.adsService.listusevouchercount(userid, status, startdate, enddate);
         var total = data.length;

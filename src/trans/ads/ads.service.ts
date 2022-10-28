@@ -1820,7 +1820,7 @@ export class AdsService {
 
     }
 
-    async listusevoucher(userid: ObjectID, status: any[], startdate: string, enddate: string, page: number, limit: number): Promise<Ads[]> {
+    async listusevoucher(userid: ObjectID, status: any[], startdate: string, enddate: string, page: number, limit: number, descending: boolean): Promise<Ads[]> {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -1828,7 +1828,13 @@ export class AdsService {
         } catch (e) {
             dateend = "";
         }
+        var order = null;
 
+        if (descending === true) {
+            order = -1;
+        } else {
+            order = 1;
+        }
         if (userid !== undefined && status !== undefined && startdate !== undefined && enddate !== undefined) {
             let query = await this.adsModel.aggregate([
 
@@ -1843,7 +1849,7 @@ export class AdsService {
                 },
                 {
                     $sort: {
-                        timestamp: - 1
+                        timestamp: order
                     },
 
                 },
@@ -1964,7 +1970,7 @@ export class AdsService {
                 },
                 {
                     $sort: {
-                        timestamp: - 1
+                        timestamp: order
                     },
 
                 },
@@ -2085,7 +2091,7 @@ export class AdsService {
                 },
                 {
                     $sort: {
-                        timestamp: - 1
+                        timestamp: order
                     },
 
                 },
@@ -2210,7 +2216,7 @@ export class AdsService {
                 },
                 {
                     $sort: {
-                        timestamp: - 1
+                        timestamp: order
                     },
 
                 },
@@ -2334,7 +2340,7 @@ export class AdsService {
                 },
                 {
                     $sort: {
-                        timestamp: - 1
+                        timestamp: order
                     },
 
                 },
@@ -2456,7 +2462,7 @@ export class AdsService {
                 },
                 {
                     $sort: {
-                        timestamp: - 1
+                        timestamp: order
                     },
 
                 },
@@ -2580,7 +2586,7 @@ export class AdsService {
                 },
                 {
                     $sort: {
-                        timestamp: - 1
+                        timestamp: order
                     },
 
                 },
@@ -2701,7 +2707,7 @@ export class AdsService {
                 },
                 {
                     $sort: {
-                        timestamp: - 1
+                        timestamp: order
                     },
 
                 },
