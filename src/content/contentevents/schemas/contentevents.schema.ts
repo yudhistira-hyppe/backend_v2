@@ -29,11 +29,11 @@ export class Contentevents {
 @Prop()
 postID: String;
 @Prop()
-senderParty: String;
+    senderParty: String; 
+    @Prop()
+    reactionUri: String;
 @Prop()
 receiverParty: String; 
-@Prop()
-reactionUri: String;
 @Prop()
     _class: String
     @Prop()

@@ -1,10 +1,11 @@
 import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateDisquslogsDto } from './dto/create-disquslogs.dto';
+import { CreateDisquslogsDto, DisquslogsDto } from './dto/create-disquslogs.dto';
 import { Disquslogs, DisquslogsDocument } from './schemas/disquslogs.schema';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
+import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
 
 @Injectable()
 export class DisquslogsService {
@@ -12,6 +13,7 @@ export class DisquslogsService {
     @InjectModel(Disquslogs.name, 'SERVER_FULL')
     private readonly DisquslogsModel: Model<DisquslogsDocument>,
     private utilsService: UtilsService,
+    private userService: UserbasicsService,
     private errorHandler: ErrorHandler,
   ) { }
 
@@ -141,5 +143,58 @@ export class DisquslogsService {
         }
       });
   }
-}
+  }
+
+  async findLogByDisqusId(disqusId: string, dpage: number, dpageRow: number) {
+    let query = this.DisquslogsModel.find().where('disqusID', disqusId).where('active', true);
+
+    let row = 20;
+    let page = 0;
+    if (dpage != undefined) {
+      page = dpage;
+    }
+    if (dpageRow != undefined) {
+      row = dpageRow;
+    }
+    let skip = this.paging(page, row);
+    query.skip(skip);
+    query.limit(row);
+    query.sort({'createdAt': -1 });
+
+    let res : DisquslogsDto[] = [];
+    let dt = await query.exec();
+    for (let i = 0; i < dt.length; i++) {
+      let dat = dt[i];
+      let obj = new DisquslogsDto();
+      obj._id = dat._id; 
+      obj.active = dat.active;
+      obj.createdAt = dat.createdAt;
+      obj.disqusID = dat.disqusID;
+      obj.postID = dat.postID;
+      obj.sequenceNumber = dat.sequenceNumber;
+      obj.txtMessages = dat.txtMessages;
+
+      var profile = await this.utilsService.generateProfile(String(dat.sender), 'PROFILE');
+      obj.sender = profile;
+      res.push(obj);
+    }
+
+    return res;
+  }
+
+  async flattenDisqus(log: Disquslogs, res: DisquslogsDto[]) {
+    let rl = log.replyLogs;
+    if (rl != undefined) {
+      
+    }
+  }
+
+  private paging(page: number, row: number) {
+    if (page == 0 || page == 1) {
+      return 0;
+    }
+    let num = ((page - 1) * row);
+    return num;
+  }  
+
 }

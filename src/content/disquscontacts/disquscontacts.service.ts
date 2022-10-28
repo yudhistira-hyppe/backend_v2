@@ -66,7 +66,7 @@ export class DisquscontactsService {
     return Disquscontacts_;
   }
 
-  async findByEmailAndMate(email: string, receiverParty: string): Promise<Disquscontacts> {
+  async findByEmailAndMate(email: string, receiverParty: string): Promise<any[]> {
     const Disquscontacts_ = await this.DisquscontactsModel.aggregate([
       {
         $match: {
@@ -99,7 +99,7 @@ export class DisquscontactsService {
       },
       { $sort: { updatedAt: -1 } },
     ]).exec();
-    return Disquscontacts_[0];
+    return Disquscontacts_;
   }
 
   async delete(id: string) {

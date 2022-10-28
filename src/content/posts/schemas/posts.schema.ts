@@ -65,6 +65,8 @@ export class Posts {
   shares: Long;
   @Prop()
   comments: Long;
+  @Prop()
+  reactions: Long;
 
   @Prop({ type: Object })
   userProfile: any;
