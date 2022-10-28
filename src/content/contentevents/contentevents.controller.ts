@@ -315,14 +315,24 @@ export class ContenteventsController {
             error,
           );
         }
+      } else {
+        try {
+          await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, true);
+          await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, true);
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed, ' +
+            error,
+          );
+        }
       }
     } else if (eventType == "UNLIKE") {
       var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "LIKE", "DONE", email_receiverParty, "", request.body.postID);
       var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "LIKE", "ACCEPT", "", email_user, request.body.postID);
       if ((await this.utilsService.ceckData(ceck_data_DONE)) && (await this.utilsService.ceckData(ceck_data_ACCEPT))) {
         try {
-          await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID);
-          await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID);
+          await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, false);
+          await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, false);
           await this.postsService.updateUnLike(email_receiverParty, request.body.postID);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
@@ -445,7 +455,7 @@ export class ContenteventsController {
     var eventType = type.toString();
     var event = "ACCEPT";
     if (type == "LIKE") {
-      if (email != email_post) {
+      if (receiverParty != email_post) {
         await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
       }
     } else {
