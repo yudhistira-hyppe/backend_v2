@@ -3418,14 +3418,14 @@ export class TransactionsController {
 
         if (sell === true && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
-            //datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell;
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
                 if (first.timestamp < second.timestamp) return 1;
                 return 0;
             });
-            datacount = 0;
+            datacount = datasellcount.length;
             return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === false && startdate !== undefined && enddate !== undefined) {
