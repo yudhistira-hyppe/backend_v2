@@ -965,7 +965,9 @@ export class TransactionsController {
         var bodyensukses = "Your Content Has Been Sold The balance will be forwarded to your Hyppe Account.";
         var eventType = "TRANSACTION";
         var event = "TRANSACTION";
-
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
         try {
 
             datavabankbca = await this.settingsService.findOne(idbankvachargeBCA);
@@ -1084,7 +1086,7 @@ export class TransactionsController {
                         await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
 
-                        await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy);
+                        await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy, dt.toISOString());
                         if (salelike == false) {
                             await this.postsService.updatesalelike(postid);
 
@@ -1103,17 +1105,17 @@ export class TransactionsController {
                         }
 
 
-                        if (postType == "vid") {
-                            data_media = await this.mediavideosService.findOnepostID(postid);
-                        } else if (postType == "pict") {
-                            data_media = await this.mediapictsService.findOnepostID(postid);
-                        } else if (postType == "diary") {
-                            data_media = await this.mediadiariesService.findOnepostID(postid);
-                        } else if (postType == "story") {
-                            data_media = await this.mediastoriesService.findOnepostID(postid);
-                        }
+                        // if (postType == "vid") {
+                        //     data_media = await this.mediavideosService.findOnepostID(postid);
+                        // } else if (postType == "pict") {
+                        //     data_media = await this.mediapictsService.findOnepostID(postid);
+                        // } else if (postType == "diary") {
+                        //     data_media = await this.mediadiariesService.findOnepostID(postid);
+                        // } else if (postType == "story") {
+                        //     data_media = await this.mediastoriesService.findOnepostID(postid);
+                        // }
 
-                        var mediaId = data_media.mediaID;
+                        // var mediaId = data_media.mediaID;
 
                         // let CreateUserplaylistDto_ = new CreateUserplaylistDto();
                         // CreateUserplaylistDto_.mediaId = mediaId;
@@ -3416,14 +3418,14 @@ export class TransactionsController {
 
         if (sell === true && buy === false && withdrawal === false && startdate === undefined && enddate === undefined) {
             datasell = await this.transactionsService.findhistorySell(idadmin, status, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
+            //datasellcount = await this.transactionsService.findhistorySellCount(idadmin, "WAITING_PAYMENT", startdate, enddate, skip, limit);
             data = datasell;
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
                 if (first.timestamp < second.timestamp) return 1;
                 return 0;
             });
-            datacount = datasellcount.length;
+            datacount = 0;
             return { response_code: 202, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === false && startdate !== undefined && enddate !== undefined) {

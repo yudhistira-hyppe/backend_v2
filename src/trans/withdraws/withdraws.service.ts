@@ -67,6 +67,7 @@ export class WithdrawsService {
                 {
                     $addFields: {
                         type: 'Withdrawal',
+                        apsara: false
 
                     },
                 },
@@ -91,7 +92,7 @@ export class WithdrawsService {
                                 0
                             ]
                         },
-
+                        apsara: "$apsara"
                     }
                 }, {
                     $project: {
@@ -103,6 +104,7 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        apsara: "$apsara"
                     }
                 },
                 { $sort: { timestamp: -1 }, },

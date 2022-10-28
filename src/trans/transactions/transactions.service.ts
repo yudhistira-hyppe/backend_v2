@@ -705,7 +705,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -724,11 +724,17 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -793,8 +799,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -1393,7 +1399,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -1411,11 +1417,17 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -1480,8 +1492,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -2080,7 +2092,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -2098,11 +2110,17 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -2167,8 +2185,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -2763,7 +2781,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -2781,11 +2799,17 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -2850,8 +2874,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -4345,7 +4369,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -4363,13 +4387,18 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
                 }
-
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -4433,8 +4462,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -5034,7 +5063,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -5052,13 +5081,18 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
                 }
-
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -5122,8 +5156,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -5722,7 +5756,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -5742,13 +5776,18 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
                 }
-
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -5812,8 +5851,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -6409,7 +6448,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -6428,13 +6467,18 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
                 }
-
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -6498,8 +6542,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -7997,7 +8041,7 @@ export class TransactionsService {
                                     then: "$mediavideos.apsara"
                                 }
                             ],
-                            default: ""
+                            default: false
                         }
                     },
                 }
@@ -8596,7 +8640,7 @@ export class TransactionsService {
                                     then: "$mediavideos.apsara"
                                 }
                             ],
-                            default: ""
+                            default: false
                         }
                     },
                 }
