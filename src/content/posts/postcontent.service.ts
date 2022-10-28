@@ -39,6 +39,7 @@ import { TemplatesRepoService } from '../../infra/templates_repo/templates_repo.
 import { UnsubscriptionError } from 'rxjs';
 import { Userauth } from '../../trans/userauths/schemas/userauth.schema';
 import { SettingsService } from '../../trans/settings/settings.service';
+import { InsightlogsService } from '../insightlogs/insightlogs.service';
 
 
 //import FormData from "form-data";
@@ -61,6 +62,7 @@ export class PostContentService {
     private picService: MediapictsService,
     private diaryService: MediadiariesService,
     private insightService: InsightsService,
+    private insightLogService: InsightlogsService,
     private contentEventService: ContenteventsService,
     private profilePictService: MediaprofilepictsService,
     private postPlaylistService: PostPlaylistService,
