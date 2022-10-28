@@ -30,6 +30,7 @@ import { DisqusModule } from '../disqus/disqus.module';
 import { DisquslogsModule } from '../disquslogs/disquslogs.module';
 import { SettingsModule } from '../../trans/settings/settings.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { InsightlogsModule } from '../insightlogs/insightlogs.module';
 @Module({
 
     imports: [
@@ -44,7 +45,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
         UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
         MediapictsModule,MediadiariesModule,MediaprofilepictsModule,PostPlayModule,TemplatesRepoModule,DisqusModule
-        ,DisquslogsModule,SettingsModule,NotificationsModule,
+        ,DisquslogsModule,SettingsModule,NotificationsModule,InsightlogsModule, 
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [PostsController],

@@ -207,6 +207,7 @@ export class GetcontenteventsController {
         );
         if (await this.utilsService.ceckData(datapostsService)) {
             CreateGetcontenteventsDto_.receiverParty = datapostsService.email;
+            CreateGetcontenteventsDto_.active = true;
             var data_contentevents = await this.getcontenteventsService.getConteneventbyType(CreateGetcontenteventsDto_);
             var data_response = [];
             if (await this.utilsService.ceckData(data_contentevents)){
