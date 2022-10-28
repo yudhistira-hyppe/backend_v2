@@ -2301,12 +2301,22 @@ export class PostContentService {
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
             if (pdss.apsaraId == vi.ImageId) {
+
+              pdss.mediaEndpoint = vi.URL;
+              pdss.mediaUri = vi.URL;
+
               pdss.mediaThumbEndpoint = vi.URL;
               pdss.mediaThumbUri = vi.URL;
 
               let oid = pdss.username;
               pdss.username = this.getUserName(oid, cuser, ubs);
-              pdss.avatar = await this.getAvatar(oid, cuser, ubs);                                                        
+              pdss.avatar = await this.getAvatar(oid, cuser, ubs);           
+              
+              if (pdss.apsaraThumbId == vi.ImageId) {
+                pdss.mediaThumbEndpoint = vi.URL;
+                pdss.mediaThumbUri = vi.URL;
+  
+              }                          
             }
           }
           resStory.push(pdss);
