@@ -951,7 +951,7 @@ export class PostContentService {
       let vids: String[] = [];
       let pics: String[] = [];
 
-      let posts: string[] = [];
+      let postx: string[] = [];
 
       for (let i = 0; i < posts.length; i++) {
         let ps = posts[i];
@@ -1248,11 +1248,11 @@ export class PostContentService {
           }
         }
 
-        posts.push(pa.postID);
+        postx.push(pa.postID);
         pd.push(pa);
       }
 
-    let insl = await this.insightLogService.findInsightLogByEmail(String(iam.email), posts, 'LIKE');
+    let insl = await this.contentEventService.findEventByEmail(String(iam.email), postx, 'LIKE');
     let insh = new Map();
     for (let i = 0; i < insl.length; i++) {
       let ins = insl[i];
@@ -2227,7 +2227,7 @@ export class PostContentService {
     data.story = pds;
 
     this.logger.log('getUserPostLandingPage >>> exec: insightlog');
-    let insl = await this.insightLogService.findInsightLogByEmail(String(profile.email), posts, 'LIKE');
+    let insl = await this.contentEventService.findEventByEmail(String(profile.email), posts, 'LIKE');
     let insh = new Map();
     for (let i = 0; i < insl.length; i++) {
       let ins = insl[i];

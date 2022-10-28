@@ -831,6 +831,11 @@ export class ContenteventsService {
     return query.exec();
   }
 
+  async findEventByEmail(email: string, postID: string[], eventInsight: string): Promise<Contentevents[]> {
+    return this.ContenteventsModel.find().where('email', email).where('postID').in(postID)
+            .where('eventType', eventInsight).where('active', true).where('event', 'DONE').exec();
+  }    
+
   async updateUnlike(email: string, eventType: string, event: string, postID: string, active: boolean) {
     this.ContenteventsModel.updateOne(
       {
