@@ -8636,13 +8636,21 @@ export class TransactionsService {
 
     }
 
-    async findhistoryBuyVoucher(key: string, iduser: ObjectId, status: any[], startdate: string, enddate: string, page: number, limit: number) {
+    async findhistoryBuyVoucher(key: string, iduser: ObjectId, status: any[], startdate: string, enddate: string, page: number, limit: number, descending: boolean) {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
             var dateend = currentdate.toISOString();
         } catch (e) {
             dateend = "";
+        }
+
+        var order = null;
+
+        if (descending === true) {
+            order = -1;
+        } else {
+            order = 1;
         }
         if (key !== undefined && iduser === undefined && status === undefined && startdate === undefined && enddate === undefined) {
             const query = await this.transactionsModel.aggregate([
@@ -8730,7 +8738,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: - 1
+                        timestamp: order
                     },
 
                 },
@@ -8830,7 +8838,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: - 1
+                        timestamp: order
                     },
 
                 },
@@ -8929,7 +8937,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: -1
+                        timestamp: order
                     },
 
                 },
@@ -9029,7 +9037,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: -1
+                        timestamp: order
                     },
 
                 },
@@ -9128,7 +9136,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: -1
+                        timestamp: order
                     },
 
                 },
@@ -9230,7 +9238,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: -1
+                        timestamp: order
                     },
 
                 },
@@ -9326,7 +9334,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: - 1
+                        timestamp: order
                     },
 
                 },
@@ -9428,7 +9436,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: -1
+                        timestamp: order
                     },
 
                 },
@@ -9530,7 +9538,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: -1
+                        timestamp: order
                     },
 
                 },
@@ -9633,7 +9641,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: -1
+                        timestamp: order
                     },
 
                 },
@@ -9738,7 +9746,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: -1
+                        timestamp: order
                     },
 
                 },
@@ -9844,7 +9852,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: -1
+                        timestamp: order
                     },
 
                 },
@@ -9940,7 +9948,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: - 1
+                        timestamp: order
                     },
 
                 },
@@ -10035,7 +10043,7 @@ export class TransactionsService {
                 },
                 {
                     $sort: {
-                        timestamp: -1
+                        timestamp: order
                     },
 
                 },
