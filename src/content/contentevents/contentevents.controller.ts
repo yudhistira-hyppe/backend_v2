@@ -316,8 +316,15 @@ export class ContenteventsController {
           );
         }
       }else{
-        await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, true);
-        await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID,true);
+        try {
+          await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, true);
+          await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, true);
+        } catch (error) {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed, ' +
+            error,
+          );
+        }
       }
     } else if (eventType == "UNLIKE") {
       var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "LIKE", "DONE", email_receiverParty, "", request.body.postID);
@@ -448,7 +455,7 @@ export class ContenteventsController {
     var eventType = type.toString();
     var event = "ACCEPT";
     if (type == "LIKE") {
-      if (email != email_post) {
+      if (receiverParty != email_post) {
         await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
       }
     } else {
