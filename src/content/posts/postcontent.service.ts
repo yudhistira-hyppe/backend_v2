@@ -2150,39 +2150,68 @@ export class PostContentService {
 
     let vids: string[] = [];
     let pics: string[] = [];
-    let user: string[] = [];    
+    let user: string[] = [];
 
-    let resVideo: PostData[] = [];        
-    let resPic: PostData[] = [];        
-    let resDiary: PostData[] = [];        
-    let resStory: PostData[] = [];        
+    let posts: string[] = [];
+
+    let resVideo: PostData[] = [];
+    let resPic: PostData[] = [];
+    let resDiary: PostData[] = [];
+    let resStory: PostData[] = [];
 
     this.logger.log('getUserPostLandingPage >>> exec: video');
     body.postType = 'vid';
     body.withExp = false;
     let pv = await this.doGetUserPost(body, headers, profile);
     let pdv = await this.loadPostDataBulk(pv, body, profile, vids, pics, user);
+    for (let i = 0; i < pdv.length; i++) {
+      let ps = pdv[i];
+      posts.push(ps.postID);
+    }
     data.video = pdv;
 
     this.logger.log('getUserPostLandingPage >>> exec: pict');
     body.postType = 'pict';
     let pp = await this.doGetUserPost(body, headers, profile);
     let pdp = await this.loadPostDataBulk(pp, body, profile, vids, pics, user);
-    data.pict = pdp;    
+    for (let i = 0; i < pdp.length; i++) {
+      let ps = pdp[i];
+      posts.push(ps.postID);
+    }    
+    data.pict = pdp;
 
     this.logger.log('getUserPostLandingPage >>> exec: diary');
     body.postType = 'diary';
     let pd = await this.doGetUserPost(body, headers, profile);
     let pdd = await this.loadPostDataBulk(pd, body, profile, vids, pics, user);
-    data.diary = pdd;        
+    for (let i = 0; i < pdd.length; i++) {
+      let ps = pdd[i];
+      posts.push(ps.postID);
+    }    
+    data.diary = pdd;
 
     this.logger.log('getUserPostLandingPage >>> exec: story');
     body.postType = 'story';
     body.withExp = true;
     let ps = await this.doGetUserPost(body, headers, profile);
     let pds = await this.loadPostDataBulk(ps, body, profile, vids, pics, user);
-    data.story = pds;            
+    for (let i = 0; i < pds.length; i++) {
+      let ps = pds[i];
+      posts.push(ps.postID);
+    }    
+    data.story = pds;
 
+    this.logger.log('getUserPostLandingPage >>> exec: insightlog');
+    let insl = await this.insightLogService.findInsightLogByEmail(String(profile.email), posts, 'LIKE');
+    let insh = new Map();
+    for (let i = 0; i < insl.length; i++) {
+      let ins = insl[i];
+      if (insh.has(String(ins.postID)) == false) {
+        insh.set(ins.postID, ins.postID);
+      }
+    }
+    this.logger.log('getUserPostLandingPage >>> exec: insightlog - done');
+    
     let xvids: string[] = [];
     let xpics: string[] = [];
     let xuser: string[] = [];
@@ -2200,13 +2229,13 @@ export class PostContentService {
         xpics.push(o);
       }
     }
-    
+
     for (let i = 0; i < user.length; i++) {
       let o = user[i];
       if (o != undefined) {
         xuser.push(o);
       }
-    }    
+    }
 
     let vapsara = undefined;
     let papsara = undefined;
@@ -2218,7 +2247,7 @@ export class PostContentService {
     }
 
     if (xpics.length > 0) {
-      papsara = await this.getImageApsara(xpics);  
+      papsara = await this.getImageApsara(xpics);
     }
 
     if (xuser.length > 0) {
@@ -2228,7 +2257,7 @@ export class PostContentService {
 
     if (vapsara != undefined) {
       if (pdv.length > 0) {
-        for(let i = 0; i < pdv.length; i++) {
+        for (let i = 0; i < pdv.length; i++) {
           let pdvv = pdv[i];
           for (let i = 0; i < vapsara.VideoList.length; i++) {
             let vi = vapsara.VideoList[i];
@@ -2237,14 +2266,19 @@ export class PostContentService {
 
               let oid = pdvv.username;
               pdvv.username = this.getUserName(oid, cuser, ubs);
-              pdvv.avatar = await this.getAvatar(oid, cuser, ubs);              
+              pdvv.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
-          resVideo.push(pdvv);          
+          if (insh.has(String(pdvv.postID))) {
+            pdvv.isLiked = true;
+          } else {
+            pdvv.isLiked = false;
+          }
+          resVideo.push(pdvv);
         }
       }
       if (pds.length > 0) {
-        for(let i = 0; i < pds.length; i++) {
+        for (let i = 0; i < pds.length; i++) {
           let pdss = pds[i];
           for (let i = 0; i < vapsara.VideoList.length; i++) {
             let vi = vapsara.VideoList[i];
@@ -2253,14 +2287,19 @@ export class PostContentService {
 
               let oid = pdss.username;
               pdss.username = this.getUserName(oid, cuser, ubs);
-              pdss.avatar = await this.getAvatar(oid, cuser, ubs);                            
+              pdss.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
+          if (insh.has(String(pdss.postID))) {
+            pdss.isLiked = true;
+          } else {
+            pdss.isLiked = false;
+          }          
           resStory.push(pdss);
         }
-      }      
+      }
       if (pdd.length > 0) {
-        for(let i = 0; i < pdd.length; i++) {
+        for (let i = 0; i < pdd.length; i++) {
           let pddd = pdd[i];
           for (let i = 0; i < vapsara.VideoList.length; i++) {
             let vi = vapsara.VideoList[i];
@@ -2269,9 +2308,14 @@ export class PostContentService {
 
               let oid = pddd.username;
               pddd.username = this.getUserName(oid, cuser, ubs);
-              pddd.avatar = await this.getAvatar(oid, cuser, ubs);                                          
+              pddd.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
+          if (insh.has(String(pddd.postID))) {
+            pddd.isLiked = true;
+          } else {
+            pddd.isLiked = false;
+          }          
           resDiary.push(pddd);
         }
       }
@@ -2279,7 +2323,7 @@ export class PostContentService {
 
     if (papsara != undefined) {
       if (pdv.length > 0) {
-        for(let i = 0; i < pdv.length; i++) {
+        for (let i = 0; i < pdv.length; i++) {
           let pdvv = pdv[i];
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
@@ -2289,41 +2333,31 @@ export class PostContentService {
 
               let oid = pdvv.username;
               pdvv.username = this.getUserName(oid, cuser, ubs);
-              pdvv.avatar = await this.getAvatar(oid, cuser, ubs);                                                        
+              pdvv.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
           resVideo.push(pdvv);
         }
       }
       if (pds.length > 0) {
-        for(let i = 0; i < pds.length; i++) {
+        for (let i = 0; i < pds.length; i++) {
           let pdss = pds[i];
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
             if (pdss.apsaraId == vi.ImageId) {
-
-              pdss.mediaEndpoint = vi.URL;
-              pdss.mediaUri = vi.URL;
-
               pdss.mediaThumbEndpoint = vi.URL;
               pdss.mediaThumbUri = vi.URL;
 
               let oid = pdss.username;
               pdss.username = this.getUserName(oid, cuser, ubs);
-              pdss.avatar = await this.getAvatar(oid, cuser, ubs);           
-              
-              if (pdss.apsaraThumbId == vi.ImageId) {
-                pdss.mediaThumbEndpoint = vi.URL;
-                pdss.mediaThumbUri = vi.URL;
-  
-              }                          
+              pdss.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
           resStory.push(pdss);
         }
-      }      
+      }
       if (pdd.length > 0) {
-        for(let i = 0; i < pdd.length; i++) {
+        for (let i = 0; i < pdd.length; i++) {
           let pddd = pdd[i];
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
@@ -2333,14 +2367,14 @@ export class PostContentService {
 
               let oid = pddd.username;
               pddd.username = this.getUserName(oid, cuser, ubs);
-              pddd.avatar = await this.getAvatar(oid, cuser, ubs);                                                                      
+              pddd.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
           resDiary.push(pddd);
         }
       }
       if (pdp.length > 0) {
-        for(let i = 0; i < pdp.length; i++) {
+        for (let i = 0; i < pdp.length; i++) {
           let pdpp = pdp[i];
           let found = false;
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
@@ -2350,7 +2384,7 @@ export class PostContentService {
               pdpp.mediaUri = vi.URL;
 
               pdpp.mediaThumbEndpoint = vi.URL;
-              pdpp.mediaThumbUri = vi.URL;              
+              pdpp.mediaThumbUri = vi.URL;
 
               let oid = pdpp.username;
               pdpp.username = this.getUserName(oid, cuser, ubs);
@@ -2361,11 +2395,16 @@ export class PostContentService {
               pdpp.mediaThumbEndpoint = vi.URL;
               pdpp.mediaThumbUri = vi.URL;
 
-            }            
+            }
           }
+          if (insh.has(String(pdpp.postID))) {
+            pdpp.isLiked = true;
+          } else {
+            pdpp.isLiked = false;
+          }                    
           resPic.push(pdpp);
         }
-      }            
+      }
     }
 
 
@@ -2392,9 +2431,9 @@ export class PostContentService {
 
     let ed = await this.utilService.getDateTimeDate();
     let gap = ed.getTime() - st.getTime();
-    this.logger.log('getUserPostLandingPage >>> finexec: ' + gap);        
+    this.logger.log('getUserPostLandingPage >>> finexec: ' + gap);
     return res;
-  }    
+  }
 
   private formatTime(seconds) {
     const h = Math.floor(seconds / 3600);
