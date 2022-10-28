@@ -30,8 +30,9 @@ import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import { PostContentPlaylistService } from './postcontentplaylist.service';
 import mongoose from 'mongoose';
 import { PostCommentService } from './postcomment.service';
-import { DisqusService } from './disqus.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { DisqusService } from '../disqus/disqus.service';
+import { DisqusResponseApps } from '../disqus/dto/create-disqus.dto';
 
 @Controller()
 export class PostsController {
@@ -379,14 +380,6 @@ export class PostsController {
   async getUserPostMy(@Body() body, @Headers() headers): Promise<PostResponseApps> {
     this.logger.log("getUserPostMy >>> start: " + JSON.stringify(body));
     return this.postContentService.getUserPostMy(body, headers);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Post('api/posts/disqus')
-  @UseInterceptors(FileInterceptor('postContent'))
-  async disqus(@Body() body, @Headers() headers): Promise<PostResponseApps> {
-    this.logger.log("disqus >>> start: " + JSON.stringify(body));
-    return this.disqusService.createDisqus(body, headers);
   }
 
   @Post('api/posts/getnotification')

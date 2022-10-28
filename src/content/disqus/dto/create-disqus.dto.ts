@@ -1,6 +1,8 @@
 import { PostAgentProfileRequest } from "aws-sdk/clients/codeguruprofiler";
 import { List } from "aws-sdk/lib/model";
+import { DisquslogsDto } from "src/content/disquslogs/dto/create-disquslogs.dto";
 import { CreatePostsDto } from "src/content/posts/dto/create-posts.dto";
+import { AvatarDTO } from "src/utils/data/Profile";
 
 export class CreateDisqusDto {
   
@@ -58,3 +60,62 @@ export class ContentDto {
   mate: String; 
   disqus: Array<Object>;
 }
+
+export class DisqusDto {
+  
+
+  _id: String;
+  disqusID: String;
+  email: String;
+  mate: {};
+  eventType: String;
+  active: boolean;
+  room: String;
+  createdAt: String;
+  updatedAt: String;
+  lastestMessage: String;
+  username: String;
+  fullName: String;
+  avatar: AvatarDTO;
+  senderOrReceiverInfo: {};
+  emailActive: boolean; 
+  mateActive: boolean;
+  _class:String;
+}
+
+export class DisqusResDto {
+  
+
+  _id: String;
+  disqusID: String;
+  email: String;
+  mate: {};
+  eventType: String;
+  active: boolean;
+  room: String;
+  createdAt: String;
+  updatedAt: String;
+  lastestMessage: String;
+  username: String;
+  fullName: String;
+  avatar: AvatarDTO;
+  senderOrReceiverInfo: {};
+  emailActive: boolean; 
+  mateActive: boolean;
+  postId: string;
+  postType: string;
+  content: any;
+  disqusLogs: DisquslogsDto[];
+  _class:String;
+}
+
+export class Messages {
+  info: string[];
+}
+
+export class DisqusResponseApps {
+  response_code: number;
+  data: DisqusResDto[];
+  messages: Messages;
+  version: string;
+}  

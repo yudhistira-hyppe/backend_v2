@@ -11,6 +11,8 @@ import { DisquscontactsModule } from '../disquscontacts/disquscontacts.module';
 import { PostDisqusModule } from './post/postdisqus.module';
 import { InsightsModule } from '../insights/insights.module';
 import { ContenteventsModule } from '../contentevents/contentevents.module';
+import { UserbasicsModule } from 'src/trans/userbasics/userbasics.module';
+import { UserauthsModule } from 'src/trans/userauths/userauths.module';
 
 @Module({
 
@@ -21,6 +23,8 @@ import { ContenteventsModule } from '../contentevents/contentevents.module';
         DisquscontactsModule,
         DisquslogsModule,
         NestjsFormDataModule,
+        UserbasicsModule,
+        UserauthsModule,
         UtilsModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Disqus.name, schema: DisqusSchema }], 'SERVER_FULL')

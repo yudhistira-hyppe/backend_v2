@@ -8,7 +8,7 @@ import { Contentevents, ContenteventsDocument } from './schemas/contentevents.sc
 @Injectable()
 export class ContenteventsService {
   constructor(
-    @InjectModel(Contentevents.name, 'SERVER_FULL')
+    @InjectModel(Contentevents.name, 'SERVER_CONTENT')
     private readonly ContenteventsModel: Model<ContenteventsDocument>,
   ) { }
 
@@ -37,25 +37,7 @@ export class ContenteventsService {
     query.where('eventType', 'FOLLOWING');
     query.where('email', email);
     return query.exec();
-  } 
-
-  async ceckData(email: String, eventType: String, event: String, receiverParty: String, senderParty: String, postID: String): Promise<Contentevents> {
-    let query = this.ContenteventsModel.findOne();
-    query.where('email', email);
-    query.where('eventType', eventType);
-    query.where('event', event);
-    if (senderParty != "") {
-      query.where('senderParty', senderParty);
-    }
-    if (receiverParty != "") {
-      query.where('receiverParty', receiverParty);
-    }
-    if (postID != "") {
-      query.where('postID', postID);
-    }
-    return query.exec();
   }
-
   async updateNoneActive(email: string) {
     this.ContenteventsModel.updateMany(
       {
@@ -96,16 +78,8 @@ export class ContenteventsService {
     return this.ContenteventsModel.findOne({ eventType: eventType, email: email, senderParty: senderParty, flowIsDone: flowIsDone }).exec();
   }
 
-  async findParentBySender_(eventType: string, email: string, senderParty: string): Promise<Contentevents> {
-    return this.ContenteventsModel.findOne({ eventType: eventType, email: email, senderParty: senderParty }).exec();
-  }
-
   async findParentByReceiver(eventType: string, receiverParty: string, email: string, flowIsDone: boolean): Promise<Contentevents> {
     return this.ContenteventsModel.findOne({ eventType: eventType, email: email, receiverParty: receiverParty, flowIsDone: flowIsDone }).exec();
-  }
-
-  async findParentByReceiver_(eventType: string, receiverParty: string, email: string): Promise<Contentevents> {
-    return this.ContenteventsModel.findOne({ eventType: eventType, email: email, receiverParty: receiverParty }).exec();
   }
 
   async findSenderOrReceiverByPostID(postID: string, eventType: string, email: string, receiverParty: string): Promise<Contentevents> {
@@ -593,26 +567,26 @@ export class ContenteventsService {
     return GetCount;
   }
 
-  // async findcontent() {
-  //   const query = await this.ContenteventsModel.aggregate([
+  async findcontent() {
+    const query = await this.ContenteventsModel.aggregate([
 
-  //     {
-  //       $lookup: {
-  //         from: 'contentevents',
-  //         localField: 'contentevents.$id',
-  //         foreignField: '_id',
-  //         as: 'roless',
-  //       },
-  //     }, {
-  //       $out: {
-  //         db: 'hyppe_trans_db',
-  //         coll: 'contentevents2'
-  //       }
-  //     },
+      {
+        $lookup: {
+          from: 'contentevents',
+          localField: 'contentevents.$id',
+          foreignField: '_id',
+          as: 'roless',
+        },
+      }, {
+        $out: {
+          db: 'hyppe_trans_db',
+          coll: 'contentevents2'
+        }
+      },
 
-  //   ]);
-  //   return query;
-  // }
+    ]);
+    return query;
+  }
 
   async friend(email: string, head: any) {
     const query = await this.ContenteventsModel.aggregate([
@@ -722,19 +696,16 @@ export class ContenteventsService {
       Object.assign(Where, { eventType: EventType });
     }
     Object.assign(Where, { event: "ACCEPT" });
+    Object.assign(Where, { active: true });
     // if (Events.length > 0) {
-    //   if (Events.length > 1) {
-    //     for (let i = 0; i < Events.length; i++) {
-    //       if (Events[i] == "INITIAL") {
-    //         Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
-    //       } else if (Events[i] == "REQUEST") {
-    //         Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
-    //       } else {
-    //         Or.push({ event: Events[i] }, { $and: [{ flowIsDone: true }] })
-    //       }
+    //   for (let i = 0; i < Events.length; i++) {
+    //     if (Events[i] == "INITIAL") {
+    //       Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
+    //     } else if (Events[i] == "REQUEST") {
+    //       Or.push({ event: Events[i] }, { $and: [{ flowIsDone: false }] })
+    //     } else {
+    //       Or.push({ event: Events[i] }, { $and: [{ flowIsDone: true }] })
     //     }
-    //   }else{
-    //     Object.assign(Where, { event: Events[0] });
     //   }
     // }
     if (Object.keys(Or).length > 0) {
@@ -742,7 +713,6 @@ export class ContenteventsService {
     } else {
       Object.assign(Where);
     }
-    Object.assign(Where, { active: true });
 
     var sort = null;
     if (EventType != "") {
@@ -843,14 +813,32 @@ export class ContenteventsService {
     return query;
   }
 
-  async updateUnlike(email: string, eventType: string, postID: string) {
+  async ceckDataV5(email: String, eventType: String, event: String, receiverParty: String, senderParty: String, postID: String): Promise<Contentevents> {
+    let query = this.ContenteventsModel.findOne();
+    query.where('email', email);
+    query.where('eventType', eventType);
+    query.where('event', event);
+    if (senderParty != "") {
+      query.where('senderParty', senderParty);
+    }
+    if (receiverParty != "") {
+      query.where('receiverParty', receiverParty);
+    }
+    if (postID != "") {
+      query.where('postID', postID);
+    }
+    return query.exec();
+  }
+
+  async updateUnlike(email: string, eventType: string, event: string, postID: string) {
     this.ContenteventsModel.updateOne(
       {
         email: email,
         eventType: eventType,
         postID: postID,
+        event: event,
       },
-      { active:false },
+      { active: false },
       function (err, docs) {
         if (err) {
           console.log(err);
