@@ -951,6 +951,8 @@ export class PostContentService {
       let vids: String[] = [];
       let pics: String[] = [];
 
+      let posts: string[] = [];
+
       for (let i = 0; i < posts.length; i++) {
         let ps = posts[i];
         let pa = new PostData();
@@ -1245,8 +1247,19 @@ export class PostContentService {
             }
           }
         }
+
+        posts.push(pa.postID);
         pd.push(pa);
       }
+
+    let insl = await this.insightLogService.findInsightLogByEmail(String(iam.email), posts, 'LIKE');
+    let insh = new Map();
+    for (let i = 0; i < insl.length; i++) {
+      let ins = insl[i];
+      if (insh.has(String(ins.postID)) == false) {
+        insh.set(ins.postID, ins.postID);
+      }
+    }      
 
       if (vids.length > 0) {
         let res = await this.getVideoApsara(vids);
@@ -1258,6 +1271,11 @@ export class PostContentService {
               if (ps.apsaraId == vi.VideoId) {
                 ps.mediaThumbEndpoint = vi.CoverURL;
               }
+              if (insh.has(String(ps.postID))) {
+                ps.isLiked = true;
+              } else {
+                ps.isLiked = false;
+              }                          
             }
           }
         }
@@ -1282,6 +1300,11 @@ export class PostContentService {
                 ps.mediaThumbEndpoint = vi.URL;
                 ps.mediaThumbUri = vi.URL;                                                            
               }
+              if (insh.has(String(ps.postID))) {
+                ps.isLiked = true;
+              } else {
+                ps.isLiked = false;
+              }                          
             }
           }
         }
