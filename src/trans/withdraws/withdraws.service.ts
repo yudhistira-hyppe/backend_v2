@@ -86,6 +86,7 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
@@ -104,6 +105,7 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                         apsara: "$apsara"
                     }
                 },
@@ -133,6 +135,7 @@ export class WithdrawsService {
                 {
                     $addFields: {
                         type: 'Withdrawal',
+                        apsara: false
 
                     },
                 },
@@ -151,13 +154,14 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
                                 0
                             ]
                         },
-
+                        apsara: "$apsara"
                     }
                 }, {
                     $project: {
@@ -169,6 +173,8 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
+                        apsara: "$apsara"
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -193,6 +199,7 @@ export class WithdrawsService {
                 {
                     $addFields: {
                         type: 'Withdrawal',
+                        apsara: false
 
                     },
                 },
@@ -211,13 +218,14 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
                                 0
                             ]
                         },
-
+                        apsara: "$apsara"
                     }
                 }, {
                     $project: {
@@ -229,6 +237,8 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
+                        apsara: "$apsara"
                     }
                 },
                 { $sort: { timestamp: -1 }, },
