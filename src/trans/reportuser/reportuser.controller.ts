@@ -30,146 +30,423 @@ export class ReportuserController {
     }
 
 
+    // @UseGuards(JwtAuthGuard)
+    // @Post()
+    // async create(@Res() res, @Headers() headers, @Body() CreateReportsuserDto: CreateReportsuserDto, @Request() request) {
+    //     var userid = null;
+    //     const messages = {
+    //         "info": ["The create successful"],
+    //     };
+
+    //     const messagesEror = {
+    //         "info": ["Todo is not found!"],
+    //     };
+    //     if (headers['x-auth-token'] == undefined) {
+    //         throw new BadRequestException("Unabled to proceed email is required");
+    //     }
+    //     try {
+    //         const datauserbasicsService = await this.userbasicsService.findOne(
+    //             headers['x-auth-user'],
+    //         );
+    //         userid = datauserbasicsService._id;
+    //     } catch (e) {
+    //         throw new BadRequestException("Unabled to proceed email is required");
+    //     }
+
+    //     var type = null;
+    //     var reportTypeId = null;
+    //     var cekdata = null;
+    //     var cektypeid = null;
+    //     var iduser = null;
+    //     var reportReasonId = null;
+    //     var detail = [];
+    //     var objdetail = {};
+    //     const mongoose = require('mongoose');
+    //     var ObjectId = require('mongodb').ObjectId;
+    //     // var idadmin = mongoose.Types.ObjectId(iduseradmin);
+    //     var dt = new Date(Date.now());
+    //     dt.setHours(dt.getHours() + 7); // timestamp
+    //     dt = new Date(dt);
+    //     var detailreport = CreateReportsuserDto.detailReport;
+    //     var lenghtdetail = detailreport.length;
+
+    //     for (var i = 0; i < lenghtdetail; i++) {
+    //         iduser = mongoose.Types.ObjectId(detailreport[i].userId);
+    //         reportReasonId = mongoose.Types.ObjectId(detailreport[i].reportReasonId);
+
+    //         let detailrpt = new DetailReport();
+    //         detailrpt.userId = iduser;
+    //         detailrpt.reportReasonId = reportReasonId;
+    //         detailrpt.createdAt = dt.toISOString();
+    //         detail.push(detailrpt);
+    //     }
+    //     try {
+    //         type = CreateReportsuserDto.type;
+    //     } catch (e) {
+    //         type = "";
+    //     }
+    //     try {
+    //         reportTypeId = CreateReportsuserDto.reportTypeId;
+    //     } catch (e) {
+    //         reportTypeId = "";
+    //     }
+
+
+    //     if (type === "post") {
+
+    //         cekdata = await this.postsService.findOnepostID(reportTypeId);
+    //     }
+    //     else if (type === "account") {
+
+    //         cekdata = await this.userbasicsService.findid(reportTypeId);
+    //     }
+    //     else if (type === "ads") {
+
+    //         cekdata = await this.adsService.findOne(reportTypeId);
+    //     }
+
+    //     if (cekdata === null) {
+    //         throw new BadRequestException("reportTypeId not found...!");
+    //     } else {
+    //         cektypeid = await this.reportuserService.findType(reportTypeId);
+
+    //         if (cektypeid === null) {
+
+    //             try {
+    //                 CreateReportsuserDto.createdAt = dt.toISOString();
+    //                 CreateReportsuserDto.detailReport = detail;
+    //                 let data = await this.reportuserService.create(CreateReportsuserDto);
+
+    //                 res.status(HttpStatus.OK).json({
+    //                     response_code: 202,
+    //                     "data": data,
+    //                     "message": messages
+    //                 });
+    //             } catch (e) {
+    //                 res.status(HttpStatus.BAD_REQUEST).json({
+
+    //                     "message": messagesEror + "" + e
+    //                 });
+    //             }
+    //         } else {
+    //             var isremoved = cektypeid._doc.isRemoved;
+    //             var id = cektypeid._id;
+
+    //             if (isremoved === false) {
+    //                 try {
+    //                     CreateReportsuserDto.createdAt = dt.toISOString();
+    //                     CreateReportsuserDto.detailReport = detail;
+    //                     let data = await this.reportuserService.create(CreateReportsuserDto);
+
+    //                     res.status(HttpStatus.OK).json({
+    //                         response_code: 202,
+    //                         "data": data,
+    //                         "message": messages
+    //                     });
+    //                 } catch (e) {
+    //                     res.status(HttpStatus.BAD_REQUEST).json({
+
+    //                         "message": messagesEror + "" + e
+    //                     });
+    //                 }
+    //             } else {
+    //                 try {
+
+    //                     let data = await this.reportuserService.updateid(id, userid, dt.toISOString());
+
+    //                     res.status(HttpStatus.OK).json({
+    //                         response_code: 202,
+    //                         "message": "Update is success"
+    //                     });
+    //                 } catch (e) {
+    //                     res.status(HttpStatus.BAD_REQUEST).json({
+
+    //                         "message": messagesEror + "" + e
+    //                     });
+    //                 }
+    //             }
+    //         }
+    //     }
+
+
+
+
+
+    // }
+
     @UseGuards(JwtAuthGuard)
-    @Post()
-    async create(@Res() res, @Headers() headers, @Body() CreateReportsuserDto: CreateReportsuserDto, @Request() request) {
-        var userid = null;
+    @Post('create')
+    async report(@Req() request) {
+        var reportedStatus = null;
+        var reportedUserHandle = [];
+        var postID = null;
+        var data = null;
+        var reportedUserCount = null;
+        var lenguserreport = null
+        var lengreporthandle = null
+        var reportedUser = [];
+        var dataauth = null;
+        var arrayreportedUser = [];
+        var arrayreportedHandle = [];
+        var contentModeration = null;
+        var contentModerationResponse = null;
+        var datacontent = null;
+        var objreportuser = {};
+        var objreporthandle = {};
+        var type = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["reportedStatus"] !== undefined) {
+            reportedStatus = request_json["reportedStatus"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        reportedUser = request_json["reportedUser"];
+        reportedUserHandle = request_json["reportedUserHandle"];
+        contentModeration = request_json["contentModeration"];
+        contentModerationResponse = request_json["contentModerationResponse"];
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
         const messages = {
-            "info": ["The create successful"],
+            "info": ["The update successful"],
         };
 
         const messagesEror = {
             "info": ["Todo is not found!"],
         };
-        if (headers['x-auth-token'] == undefined) {
-            throw new BadRequestException("Unabled to proceed email is required");
-        }
-        try {
-            const datauserbasicsService = await this.userbasicsService.findOne(
-                headers['x-auth-user'],
-            );
-            userid = datauserbasicsService._id;
-        } catch (e) {
-            throw new BadRequestException("Unabled to proceed email is required");
-        }
 
-        var type = null;
-        var reportTypeId = null;
-        var cekdata = null;
-        var cektypeid = null;
-        var iduser = null;
-        var reportReasonId = null;
-        var detail = [];
-        var objdetail = {};
-        const mongoose = require('mongoose');
-        var ObjectId = require('mongodb').ObjectId;
-        // var idadmin = mongoose.Types.ObjectId(iduseradmin);
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
-        var detailreport = CreateReportsuserDto.detailReport;
-        var lenghtdetail = detailreport.length;
-
-        for (var i = 0; i < lenghtdetail; i++) {
-            iduser = mongoose.Types.ObjectId(detailreport[i].userId);
-            reportReasonId = mongoose.Types.ObjectId(detailreport[i].reportReasonId);
-
-            let detailrpt = new DetailReport();
-            detailrpt.userId = iduser;
-            detailrpt.reportReasonId = reportReasonId;
-            detailrpt.createdAt = dt.toISOString();
-            detail.push(detailrpt);
-        }
         try {
-            type = CreateReportsuserDto.type;
+            lenguserreport = reportedUser.length;
         } catch (e) {
-            type = "";
+            lenguserreport = 0;
         }
+
         try {
-            reportTypeId = CreateReportsuserDto.reportTypeId;
+            lengreporthandle = reportedUserHandle.length;
         } catch (e) {
-            reportTypeId = "";
+            lengreporthandle = 0;
         }
 
+        if (type === "content") {
+            try {
+                datacontent = await this.postsService.findByPostId(postID);
 
-        if (type === "post") {
 
-            cekdata = await this.postsService.findOnepostID(reportTypeId);
-        }
-        else if (type === "account") {
+            } catch (e) {
+                datacontent = null;
+            }
 
-            cekdata = await this.userbasicsService.findid(reportTypeId);
+            if (datacontent !== null) {
+
+                try {
+                    reportedUserCount = datacontent._doc.reportedUserCount + lenguserreport;
+                } catch (e) {
+                    reportedUserCount = lenguserreport;
+                }
+                if (lenguserreport > 0) {
+                    for (let i = 0; i < lenguserreport; i++) {
+
+                        let iduser = reportedUser[i].userID;
+                        let idreason = reportedUser[i].reportReasonId;
+                        let userid = mongoose.Types.ObjectId(iduser);
+                        let reportReasonId = mongoose.Types.ObjectId(idreason);
+                        objreportuser = {
+                            "userID": userid,
+                            "reportReasonId": reportReasonId,
+                            "createdAt": dt.toISOString()
+                        };
+                        arrayreportedUser.push(objreportuser);
+                    }
+                } else {
+
+                }
+
+                if (lengreporthandle > 0) {
+                    for (let i = 0; i < lengreporthandle; i++) {
+
+                        let iduser = reportedUserHandle[i].userID;
+                        let userid = mongoose.Types.ObjectId(iduser);
+                        let remark = reportedUserHandle[i].remark;
+                        objreporthandle = {
+                            "userID": userid,
+                            "remark": remark,
+                            "createdAt": dt.toISOString()
+                        };
+                        arrayreportedHandle.push(objreporthandle);
+                    }
+                } else {
+
+                }
+
+
+                if (reportedUserCount === "NaN") {
+                    this.postsService.updateReportuser(postID, reportedStatus, lenguserreport, arrayreportedUser, contentModeration, contentModerationResponse, arrayreportedHandle);
+                } else {
+                    this.postsService.updateReportuser(postID, reportedStatus, reportedUserCount, arrayreportedUser, contentModeration, contentModerationResponse, arrayreportedHandle);
+                }
+
+
+                var data = request_json;
+                return { response_code: 202, data, messages };
+
+
+            } else {
+                throw new BadRequestException("postID is not found...!");
+            }
         }
         else if (type === "ads") {
 
-            cekdata = await this.adsService.findOne(reportTypeId);
-        }
+            let postid = mongoose.Types.ObjectId(postID);
+            try {
+                datacontent = await this.adsService.findOne(postID);
 
-        if (cekdata === null) {
-            throw new BadRequestException("reportTypeId not found...!");
-        } else {
-            cektypeid = await this.reportuserService.findType(reportTypeId);
 
-            if (cektypeid === null) {
+            } catch (e) {
+                datacontent = null;
+            }
 
+            if (datacontent !== null) {
                 try {
-                    CreateReportsuserDto.createdAt = dt.toISOString();
-                    CreateReportsuserDto.detailReport = detail;
-                    let data = await this.reportuserService.create(CreateReportsuserDto);
-
-                    res.status(HttpStatus.OK).json({
-                        response_code: 202,
-                        "data": data,
-                        "message": messages
-                    });
+                    reportedUserCount = datacontent._doc.reportedUserCount + lenguserreport;
                 } catch (e) {
-                    res.status(HttpStatus.BAD_REQUEST).json({
-
-                        "message": messagesEror + "" + e
-                    });
+                    reportedUserCount = lenguserreport;
                 }
-            } else {
-                var isremoved = cektypeid._doc.isRemoved;
-                var id = cektypeid._id;
 
-                if (isremoved === false) {
-                    try {
-                        CreateReportsuserDto.createdAt = dt.toISOString();
-                        CreateReportsuserDto.detailReport = detail;
-                        let data = await this.reportuserService.create(CreateReportsuserDto);
+                if (lenguserreport > 0) {
+                    for (let i = 0; i < lenguserreport; i++) {
 
-                        res.status(HttpStatus.OK).json({
-                            response_code: 202,
-                            "data": data,
-                            "message": messages
-                        });
-                    } catch (e) {
-                        res.status(HttpStatus.BAD_REQUEST).json({
-
-                            "message": messagesEror + "" + e
-                        });
+                        let iduser = reportedUser[i].userID;
+                        let idreason = reportedUser[i].reportReasonId;
+                        let userid = mongoose.Types.ObjectId(iduser);
+                        let reportReasonId = mongoose.Types.ObjectId(idreason);
+                        objreportuser = {
+                            "userID": userid,
+                            "reportReasonId": reportReasonId,
+                            "createdAt": dt.toISOString()
+                        };
+                        arrayreportedUser.push(objreportuser);
                     }
                 } else {
-                    try {
 
-                        let data = await this.reportuserService.updateid(id, userid, dt.toISOString());
-
-                        res.status(HttpStatus.OK).json({
-                            response_code: 202,
-                            "message": "Update is success"
-                        });
-                    } catch (e) {
-                        res.status(HttpStatus.BAD_REQUEST).json({
-
-                            "message": messagesEror + "" + e
-                        });
-                    }
                 }
+
+                if (lengreporthandle > 0) {
+                    for (let i = 0; i < lengreporthandle; i++) {
+
+                        let iduser = reportedUserHandle[i].userID;
+                        let userid = mongoose.Types.ObjectId(iduser);
+                        let remark = reportedUserHandle[i].remark;
+                        objreporthandle = {
+                            "userID": userid,
+                            "remark": remark,
+                            "createdAt": dt.toISOString()
+                        };
+                        arrayreportedHandle.push(objreporthandle);
+                    }
+                } else {
+
+                }
+
+                if (reportedUserCount === "NaN") {
+                    this.adsService.updateReportuser(postid, reportedStatus, lenguserreport, arrayreportedUser, contentModeration, contentModerationResponse, arrayreportedHandle);
+                } else {
+                    this.adsService.updateReportuser(postid, reportedStatus, reportedUserCount, arrayreportedUser, contentModeration, contentModerationResponse, arrayreportedHandle);
+                }
+
+                var data = request_json;
+                return { response_code: 202, data, messages };
+
+
+            } else {
+                throw new BadRequestException("Ads ID is not found...!");
+            }
+        }
+        else if (type === "user") {
+
+            let postid = mongoose.Types.ObjectId(postID);
+            try {
+                datacontent = await this.userbasicsService.findbyid(postID);
+                console.log(datacontent)
+
+            } catch (e) {
+                datacontent = null;
+            }
+
+            if (datacontent !== null) {
+                try {
+                    reportedUserCount = datacontent._doc.reportedUserCount + lenguserreport;
+                } catch (e) {
+                    reportedUserCount = lenguserreport;
+                }
+
+                if (lenguserreport > 0) {
+                    for (let i = 0; i < lenguserreport; i++) {
+
+                        let iduser = reportedUser[i].userID;
+                        let idreason = reportedUser[i].reportReasonId;
+                        let userid = mongoose.Types.ObjectId(iduser);
+                        let reportReasonId = mongoose.Types.ObjectId(idreason);
+                        objreportuser = {
+                            "userID": userid,
+                            "reportReasonId": reportReasonId,
+                            "createdAt": dt.toISOString()
+                        };
+                        arrayreportedUser.push(objreportuser);
+                    }
+                } else {
+
+                }
+
+                if (lengreporthandle > 0) {
+                    for (let i = 0; i < lengreporthandle; i++) {
+
+                        let iduser = reportedUserHandle[i].userID;
+                        let userid = mongoose.Types.ObjectId(iduser);
+                        let remark = reportedUserHandle[i].remark;
+                        objreporthandle = {
+                            "userID": userid,
+                            "remark": remark,
+                            "createdAt": dt.toISOString()
+                        };
+                        arrayreportedHandle.push(objreporthandle);
+                    }
+                } else {
+
+                }
+
+                if (reportedUserCount === "NaN") {
+                    this.userbasicsService.updateReportuser(postid, reportedStatus, lenguserreport, arrayreportedUser, arrayreportedHandle);
+                } else {
+                    this.userbasicsService.updateReportuser(postid, reportedStatus, reportedUserCount, arrayreportedUser, arrayreportedHandle);
+                }
+
+
+
+                var data = request_json;
+                return { response_code: 202, data, messages };
+
+
+            } else {
+                throw new BadRequestException("User ID is not found...!");
             }
         }
 
 
-
+        //deletetagpeople
 
 
     }

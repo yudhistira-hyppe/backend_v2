@@ -77,6 +77,11 @@ export class CreateUserbasicDto {
   otp_attemp: number;
   statusKyc: string;
   timeEmailSend: string;
+  reportedStatus: string
+  reportedUserCount: number
+  reportedUser: any[];
+  reportedUserHandle: any[];
+
 }
 
 export class SearchUserbasicDto {

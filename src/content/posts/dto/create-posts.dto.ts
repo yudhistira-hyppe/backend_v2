@@ -47,6 +47,7 @@ export class CreatePostsDto {
     readonly reportedUserCount: number
     readonly reportedUser: any[];
     readonly contentModeration: boolean
+    readonly contentModerationResponse: string
     readonly reportedUserHandle: any[];
 }
 

@@ -41,6 +41,12 @@ export class CreateAdsDto {
     liveTypeAds: boolean;
     idApsara: string;
     duration: number;
+    reportedStatus: string
+    reportedUserCount: number
+    reportedUser: any[];
+    contentModeration: boolean
+    contentModerationResponse: string
+    reportedUserHandle: any[];
 }
 
 export class MediaimageadsDto {

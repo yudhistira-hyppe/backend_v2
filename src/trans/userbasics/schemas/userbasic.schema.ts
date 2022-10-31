@@ -132,6 +132,14 @@ export class Userbasic {
   statusKyc: string;
   @Prop()
   timeEmailSend: string;
+  @Prop()
+  reportedStatus: string
+  @Prop()
+  reportedUserCount: number
+  @Prop()
+  reportedUser: any[];
+  @Prop()
+  reportedUserHandle: any[];
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);

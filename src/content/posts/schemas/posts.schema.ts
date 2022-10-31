@@ -101,6 +101,8 @@ export class Posts {
   @Prop()
   contentModeration: boolean
   @Prop()
+  contentModerationResponse: string
+  @Prop()
   reportedUserHandle: any[];
 }
 
