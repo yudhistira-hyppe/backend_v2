@@ -61,6 +61,7 @@ export class ContenteventsService {
 
   async getConteneventbyType(CreateGetcontenteventsDto_: CreateGetcontenteventsDto): Promise<Contentevents[]> {
     return this.ContenteventsModel.find({
+      active: CreateGetcontenteventsDto_.active,
       postID: CreateGetcontenteventsDto_.postID,
       eventType: CreateGetcontenteventsDto_.eventType,
       receiverParty: CreateGetcontenteventsDto_.receiverParty,
@@ -830,7 +831,7 @@ export class ContenteventsService {
     return query.exec();
   }
 
-  async updateUnlike(email: string, eventType: string, event: string, postID: string) {
+  async updateUnlike(email: string, eventType: string, event: string, postID: string, active: boolean) {
     this.ContenteventsModel.updateOne(
       {
         email: email,
@@ -838,7 +839,7 @@ export class ContenteventsService {
         postID: postID,
         event: event,
       },
-      { active: false },
+      { active: active },
       function (err, docs) {
         if (err) {
           console.log(err);
