@@ -102,7 +102,7 @@ export class PostsService {
 
     //Ceck User Userbasics
     const datauserbasicsService = await this.utilsService.generateProfile(
-      CreatePostsDto_.email.toString(),"FULL");
+      CreatePostsDto_.email.toString(), "FULL");
 
     const query = await this.PostsModel.aggregate([
       {
@@ -193,7 +193,7 @@ export class PostsService {
 
   async updateemail(id: string, email: string, iduser: {
     "$oid": string
-  }): Promise<Object> {
+  }, createdAt: string): Promise<Object> {
     let data = await this.PostsModel.updateOne({ "_id": id },
       {
         $set: {
@@ -204,6 +204,8 @@ export class PostsService {
           },
           "saleAmount": 0,
           "certified": true,
+          "createdAt": createdAt,
+          "updatedAt": createdAt,
           "metadata.email": email
         }
       });
@@ -286,6 +288,11 @@ export class PostsService {
     return data;
   }
 
+  async updateReportuser(postID: string, reportedStatus: string, reportedUserCount: number, reportedUser: any[], contentModeration: boolean, reportedUserHandle: any[]): Promise<Object> {
+    let data = await this.PostsModel.updateOne({ "postID": postID },
+      { $set: { "reportedStatus": reportedStatus, "reportedUserCount": reportedUserCount, "reportedUser": reportedUser, "contentModeration": contentModeration, "reportedUserHandle": reportedUserHandle } });
+    return data;
+  }
   async delete(id: string) {
     const deletedCat = await this.PostsModel.findByIdAndRemove({
       _id: id,
