@@ -4379,10 +4379,17 @@ export class TransactionsController {
                 let pict: String[] = [];
                 var objk = {};
                 var idapsara = null;
+                var apsara = null;
                 try {
                     idapsara = databuy[0].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+
+                try {
+                    apsara = databuy[0].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = databuy[0].postType;
                 pict = [idapsara];
@@ -4457,8 +4464,8 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
-                    "apsara": databuy[0].apsara,
-                    "apsaraId": databuy[0].apsaraId,
+                    "apsara": apsara,
+                    "apsaraId": idapsara,
                     "media": dataapsara
 
                 };
@@ -4534,10 +4541,17 @@ export class TransactionsController {
                 let pict: String[] = [];
                 var objk = {};
                 var idapsara = null;
+                var apsara = null;
                 try {
                     idapsara = databuy[0].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+
+                try {
+                    apsara = databuy[0].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = databuy[0].postType;
                 pict = [idapsara];
@@ -4607,8 +4621,8 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
-                    "apsara": databuy[0].apsara,
-                    "apsaraId": databuy[0].apsaraId,
+                    "apsara": apsara,
+                    "apsaraId": idapsara,
                     "media": dataapsara
 
                 };
