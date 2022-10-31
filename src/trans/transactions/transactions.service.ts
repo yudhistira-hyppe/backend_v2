@@ -90,9 +90,9 @@ export class TransactionsService {
         return data;
     }
 
-    async updateone(id: Types.ObjectId, idaccountbalance: Types.ObjectId, payload: VaCallback, updatedAt: string): Promise<Object> {
+    async updateone(id: Types.ObjectId, idaccountbalance: Types.ObjectId, payload: VaCallback): Promise<Object> {
         let data = await this.transactionsModel.updateOne({ "_id": id },
-            { $set: { "status": "Success", "description": "buy CONTENT success", "accountbalance": idaccountbalance, "updatedAt": updatedAt, payload: payload } });
+            { $set: { "status": "Success", "description": "buy CONTENT success", "accountbalance": idaccountbalance, payload: payload } });
         return data;
     }
 
@@ -701,7 +701,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -720,11 +720,17 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -789,8 +795,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -1389,7 +1395,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -1407,11 +1413,17 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -1476,8 +1488,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -2076,7 +2088,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -2094,11 +2106,17 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -2163,8 +2181,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -2759,7 +2777,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -2777,11 +2795,17 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -2846,8 +2870,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -2873,208 +2897,7 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Buy',
-                        jenis: "$type",
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_sell"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$iduserbuyer",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        usersell: {
-                            $arrayElemAt: [
-                                "$userbasics_sell",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
-
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        penjual: "$usersell.fullName",
-                        emailpenjual: "$usersell.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -3093,208 +2916,7 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Buy',
-                        jenis: "$type",
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_sell"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$iduserbuyer",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        usersell: {
-                            $arrayElemAt: [
-                                "$userbasics_sell",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
-
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        penjual: "$usersell.fullName",
-                        emailpenjual: "$usersell.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                },
                 { $sort: { timestamp: -1 }, },
             ]);
             return query;
@@ -3312,208 +2934,7 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Buy',
-                        jenis: "$type",
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_sell"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$iduserbuyer",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        usersell: {
-                            $arrayElemAt: [
-                                "$userbasics_sell",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
-
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        penjual: "$usersell.fullName",
-                        emailpenjual: "$usersell.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -3528,208 +2949,7 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Buy',
-                        jenis: "$type",
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_sell"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$iduserbuyer",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        usersell: {
-                            $arrayElemAt: [
-                                "$userbasics_sell",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
-
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        penjual: "$usersell.fullName",
-                        emailpenjual: "$usersell.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -4332,7 +3552,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -4350,13 +3570,18 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
                 }
-
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -4420,8 +3645,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -5021,7 +4246,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -5039,13 +4264,18 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
                 }
-
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -5109,8 +4339,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -5709,7 +4939,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -5729,13 +4959,18 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
                 }
-
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -5799,8 +5034,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -6396,7 +5631,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -6415,13 +5650,18 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
                 }
-
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -6485,8 +5725,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsara,
+                    "apsara": apsara,
                     "media": data
                 };
 
@@ -6512,213 +5752,7 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Sell',
-                        jenis: '$type'
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_buy"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$idusersell",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        userbuy: {
-                            $arrayElemAt: [
-                                "$userbasics_buy",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
-
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        pembeli: "$userbuy.fullName",
-                        emailpembeli: "$userbuy.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
-
-                    }
-                }, {
-                    $project: {
-                        refs: {
-                            $arrayElemAt: [
-                                "$contentMedias",
-                                0
-                            ]
-                        },
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs.$ref",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -6738,213 +5772,7 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Sell',
-                        jenis: '$type'
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_buy"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$idusersell",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        userbuy: {
-                            $arrayElemAt: [
-                                "$userbasics_buy",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
-
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        pembeli: "$userbuy.fullName",
-                        emailpembeli: "$userbuy.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
-
-                    }
-                }, {
-                    $project: {
-                        refs: {
-                            $arrayElemAt: [
-                                "$contentMedias",
-                                0
-                            ]
-                        },
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs.$ref",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -6962,213 +5790,7 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Sell',
-                        jenis: '$type'
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_buy"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$idusersell",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        userbuy: {
-                            $arrayElemAt: [
-                                "$userbasics_buy",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
-
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        pembeli: "$userbuy.fullName",
-                        emailpembeli: "$userbuy.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
-
-                    }
-                }, {
-                    $project: {
-                        refs: {
-                            $arrayElemAt: [
-                                "$contentMedias",
-                                0
-                            ]
-                        },
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs.$ref",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -7184,213 +5806,7 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Sell',
-                        jenis: '$type'
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_buy"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$idusersell",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        userbuy: {
-                            $arrayElemAt: [
-                                "$userbasics_buy",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
-
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        pembeli: "$userbuy.fullName",
-                        emailpembeli: "$userbuy.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
-
-                    }
-                }, {
-                    $project: {
-                        refs: {
-                            $arrayElemAt: [
-                                "$contentMedias",
-                                0
-                            ]
-                        },
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs.$ref",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -7981,7 +6397,7 @@ export class TransactionsService {
                                     then: "$mediavideos.apsara"
                                 }
                             ],
-                            default: ""
+                            default: false
                         }
                     },
                 }
@@ -8580,7 +6996,7 @@ export class TransactionsService {
                                     then: "$mediavideos.apsara"
                                 }
                             ],
-                            default: ""
+                            default: false
                         }
                     },
                 }

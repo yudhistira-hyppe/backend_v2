@@ -46,9 +46,9 @@ export class PostsController {
     private readonly contenteventsService: ContenteventsService,
     private readonly insightsService: InsightsService,
     private readonly userbasicsService: UserbasicsService,
-    private readonly postCommentService: PostCommentService,    
+    private readonly postCommentService: PostCommentService,
     private readonly notifService: NotificationsService,
-    private readonly disqusService: DisqusService,    
+    private readonly disqusService: DisqusService,
     private readonly groupModuleService: GroupModuleService) { }
 
   @Post()
@@ -160,6 +160,123 @@ export class PostsController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Post('api/posts/reportuser')
+  async report(@Req() request) {
+    var reportedStatus = null;
+    var reportedUserHandle = [];
+    var postID = null;
+    var data = null;
+    var reportedUserCount = null;
+    var lenguserreport = null
+    var lengreporthandle = null
+    var reportedUser = [];
+    var dataauth = null;
+    var arrayreportedUser = [];
+    var arrayreportedHandle = [];
+    var contentModeration = null;
+    var datacontent = null;
+    var objreportuser = {};
+    var objreporthandle = {};
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    if (request_json["reportedStatus"] !== undefined) {
+      reportedStatus = request_json["reportedStatus"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["postID"] !== undefined) {
+      postID = request_json["postID"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+    reportedUser = request_json["reportedUser"];
+    reportedUserHandle = request_json["reportedUserHandle"];
+    contentModeration = request_json["contentModeration"];
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+    const messages = {
+      "info": ["The update successful"],
+    };
+
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+    try {
+      lenguserreport = reportedUser.length;
+    } catch (e) {
+      lenguserreport = 0;
+    }
+
+    try {
+      lengreporthandle = reportedUserHandle.length;
+    } catch (e) {
+      lengreporthandle = 0;
+    }
+    try {
+      datacontent = await this.PostsService.findByPostId(postID);
+
+
+    } catch (e) {
+      datacontent = null;
+    }
+
+    if (datacontent !== null) {
+      reportedUserCount = datacontent._doc.reportedUserCount + lenguserreport;
+
+      if (lenguserreport > 0) {
+        for (let i = 0; i < lenguserreport; i++) {
+
+          let iduser = reportedUser[i].userID;
+          let idreason = reportedUser[i].reportReasonId;
+          let userid = mongoose.Types.ObjectId(iduser);
+          let reportReasonId = mongoose.Types.ObjectId(idreason);
+          objreportuser = {
+            "userID": userid,
+            "reportReasonId": reportReasonId,
+            "createdAt": dt.toISOString()
+          };
+          arrayreportedUser.push(objreportuser);
+        }
+      } else {
+
+      }
+
+      if (lengreporthandle > 0) {
+        for (let i = 0; i < lengreporthandle; i++) {
+
+          let iduser = reportedUserHandle[i].userID;
+          let userid = mongoose.Types.ObjectId(iduser);
+          let remark = reportedUserHandle[i].remark;
+          objreporthandle = {
+            "userID": userid,
+            "remark": remark,
+            "createdAt": dt.toISOString()
+          };
+          arrayreportedHandle.push(objreporthandle);
+        }
+      } else {
+
+      }
+
+      this.PostsService.updateReportuser(postID, reportedStatus, reportedUserCount, arrayreportedUser, contentModeration, arrayreportedHandle);
+
+      var data = request_json;
+      return { response_code: 202, data, messages };
+
+
+    } else {
+      throw new BadRequestException("postID is not found...!");
+    }
+
+    //deletetagpeople
+
+
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/deletetag')
@@ -219,8 +336,8 @@ export class PostsController {
     if (dataquery[0].postType == 'vid') {
       if (dataquery[0].metadata != undefined) {
         data_post['metadata'] = {
-          "duration": (dataquery[0].metadata.duration != undefined)? dataquery[0].metadata.duration:null,
-          "postRoll": (dataquery[0].metadata.postRoll != undefined) ? dataquery[0].metadata.postRoll : null, 
+          "duration": (dataquery[0].metadata.duration != undefined) ? dataquery[0].metadata.duration : null,
+          "postRoll": (dataquery[0].metadata.postRoll != undefined) ? dataquery[0].metadata.postRoll : null,
           "postType": (dataquery[0].metadata.postType != undefined) ? dataquery[0].metadata.postType : null,
           "preRoll": (dataquery[0].metadata.preRoll != undefined) ? dataquery[0].metadata.preRoll : null,
           "midRoll": (dataquery[0].metadata.midRoll != undefined) ? dataquery[0].metadata.midRoll : null,
@@ -231,13 +348,13 @@ export class PostsController {
     }
 
     if (dataquery[0].datacontent != undefined) {
-      if (dataquery[0].datacontent.leght>0) {
+      if (dataquery[0].datacontent.leght > 0) {
         data_post['mediaBasePath'] = (dataquery[0].datacontent[0].mediaBasePath != undefined) ? dataquery[0].datacontent[0].mediaBasePath : null;
         data_post['mediaType'] = (dataquery[0].datacontent[0].mediaType != undefined) ? dataquery[0].datacontent[0].mediaType : null;
         data_post['mediaUri'] = (dataquery[0].datacontent[0].mediaUri != undefined) ? dataquery[0].datacontent[0].mediaUri : null;
       }
     }
-    
+
     data_post['postType'] = (dataquery[0].postType != undefined) ? dataquery[0].postType : null;
     data_post['description'] = (dataquery[0].description != undefined) ? dataquery[0].description : null;
     data_post['active'] = (dataquery[0].active != undefined) ? dataquery[0].active : null;
@@ -272,9 +389,9 @@ export class PostsController {
         if (dataquery[0].datauser.insight != undefined) {
           data_post['insight'] = {
             "shares": (dataquery[0].datauser.insight.shares != undefined) ? dataquery[0].datauser.insight.shares : null,
-            "comments": (dataquery[0].datauser.insight.comments != undefined) ? dataquery[0].datauser.insight.comments : null, 
-            "reactions": (dataquery[0].datauser.insight.reactions != undefined) ? dataquery[0].datauser.insight.reactions : null, 
-            "views": (dataquery[0].datauser.insight.views != undefined) ? dataquery[0].datauser.insight.views : null, 
+            "comments": (dataquery[0].datauser.insight.comments != undefined) ? dataquery[0].datauser.insight.comments : null,
+            "reactions": (dataquery[0].datauser.insight.reactions != undefined) ? dataquery[0].datauser.insight.reactions : null,
+            "views": (dataquery[0].datauser.insight.views != undefined) ? dataquery[0].datauser.insight.views : null,
             "likes": (dataquery[0].datauser.insight.likes != undefined) ? dataquery[0].datauser.insight.likes : null,
           };
 
@@ -323,7 +440,7 @@ export class PostsController {
   async removeComment(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("removeComment >>> start");
     return this.postCommentService.removeComment(body, headers);
-  }  
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/postviewer')
@@ -331,11 +448,11 @@ export class PostsController {
   async postViewer(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("postViewer >>> start");
     return this.postCommentService.postViewer(body, headers);
-  }    
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/updatepost')
-  @UseInterceptors(FileInterceptor('postContent'))  
+  @UseInterceptors(FileInterceptor('postContent'))
   async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("updatePost >>> start");
     var titleinsukses = "Selamat";
@@ -434,11 +551,12 @@ export class PostsController {
     CreateUserplaylistDto_.mediaId = body.mediaId;
     CreateUserplaylistDto_.postType = body.postType;
     return await this.PostsService.updateGenerateUserPlaylist_(CreateUserplaylistDto_);
-  } 
+  }
 
   @Get('api/userplaylist/generateNewUserPlaylist')
   @HttpCode(HttpStatus.ACCEPTED)
-  async generateNewUserPlaylist() {;
+  async generateNewUserPlaylist() {
+    ;
     return await this.PostsService.generateNewUserPlaylist("633d0c26c9dca3610d7209f9");
   }
 
