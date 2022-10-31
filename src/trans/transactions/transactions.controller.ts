@@ -3405,7 +3405,7 @@ export class TransactionsController {
 
                     if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
                         await this.transactionsService.updatestatuscancel(idtransaction);
-                        await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                        //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                     }
 
 
