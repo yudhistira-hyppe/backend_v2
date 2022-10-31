@@ -87,6 +87,18 @@ export class Ads {
     idApsara: string;
     @Prop()
     duration: number;
+    @Prop()
+    reportedStatus: string
+    @Prop()
+    reportedUserCount: number
+    @Prop()
+    reportedUser: any[];
+    @Prop()
+    contentModeration: boolean
+    @Prop()
+    contentModerationResponse: string
+    @Prop()
+    reportedUserHandle: any[];
 }
 
 export const AdsSchema = SchemaFactory.createForClass(Ads);

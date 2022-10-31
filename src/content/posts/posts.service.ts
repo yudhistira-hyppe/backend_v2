@@ -288,9 +288,9 @@ export class PostsService {
     return data;
   }
 
-  async updateReportuser(postID: string, reportedStatus: string, reportedUserCount: number, reportedUser: any[], contentModeration: boolean, reportedUserHandle: any[]): Promise<Object> {
+  async updateReportuser(postID: string, reportedStatus: string, reportedUserCount: number, reportedUser: any[], contentModeration: boolean, contentModerationResponse: string, reportedUserHandle: any[]): Promise<Object> {
     let data = await this.PostsModel.updateOne({ "postID": postID },
-      { $set: { "reportedStatus": reportedStatus, "reportedUserCount": reportedUserCount, "reportedUser": reportedUser, "contentModeration": contentModeration, "reportedUserHandle": reportedUserHandle } });
+      { $set: { "reportedStatus": reportedStatus, "reportedUserCount": reportedUserCount, "reportedUser": reportedUser, "contentModeration": contentModeration, "contentModerationResponse": contentModerationResponse, "reportedUserHandle": reportedUserHandle } });
     return data;
   }
   async delete(id: string) {

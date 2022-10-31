@@ -83,6 +83,12 @@ export class AdsService {
             { $set: { "mediaAds": mediaAds } });
         return data;
     }
+
+    async updateReportuser(id: Types.ObjectId, reportedStatus: string, reportedUserCount: number, reportedUser: any[], contentModeration: boolean, contentModerationResponse: string, reportedUserHandle: any[]): Promise<Object> {
+        let data = await this.adsModel.updateOne({ "_id": id },
+            { $set: { "reportedStatus": reportedStatus, "reportedUserCount": reportedUserCount, "reportedUser": reportedUser, "contentModeration": contentModeration, "contentModerationResponse": contentModerationResponse, "reportedUserHandle": reportedUserHandle } });
+        return data;
+    }
     async adsdata(userid: Types.ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
