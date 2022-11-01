@@ -705,7 +705,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -724,11 +724,19 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -767,6 +775,18 @@ export class TransactionsService {
                         }
                     }
                 }
+
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
                 objk = {
                     "_id": query[i]._id,
                     "iduser": query[i].iduser,
@@ -793,8 +813,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -1393,7 +1413,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -1411,11 +1431,31 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -1480,8 +1520,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -2080,7 +2120,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -2098,11 +2138,29 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -2167,8 +2225,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -2763,7 +2821,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -2781,11 +2839,29 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
+            var apsaradefine = null;
+            var idapsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -2850,8 +2926,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -2863,10 +2939,10 @@ export class TransactionsService {
     }
 
     async findhistoryBuyCount(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
-        const posts = await this.postsService.findpost();
-        const video = await this.mediavideosService.findvideo();
-        const pict = await this.mediapictsService.findpict();
-        const diaries = await this.mediadiariesService.finddiaries();
+        // const posts = await this.postsService.findpost();
+        // const video = await this.mediavideosService.findvideo();
+        // const pict = await this.mediapictsService.findpict();
+        // const diaries = await this.mediadiariesService.finddiaries();
 
         if (startdate !== undefined && enddate !== undefined && status !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -2881,208 +2957,208 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Buy',
-                        jenis: "$type",
+                // {
+                //     $addFields: {
+                //         type: 'Buy',
+                //         jenis: "$type",
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts2",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_sell"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$iduserbuyer",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        usersell: {
-                            $arrayElemAt: [
-                                "$userbasics_sell",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
+                //     },
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "iduserbuyer",
+                //         foreignField: "_id",
+                //         as: "userbasics_data"
+                //     }
+                // }, {
+                //     $lookup: {
+                //         from: "posts2",
+                //         localField: "postid",
+                //         foreignField: "postID",
+                //         as: "post_data"
+                //     }
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "idusersell",
+                //         foreignField: "_id",
+                //         as: "userbasics_sell"
+                //     }
+                // },
+                // {
+                //     $project: {
+                //         iduser: "$iduserbuyer",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         user: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_data",
+                //                 0
+                //             ]
+                //         },
+                //         usersell: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_sell",
+                //                 0
+                //             ]
+                //         },
+                //         postdata: {
+                //             $arrayElemAt: [
+                //                 "$post_data",
+                //                 0
+                //             ]
+                //         },
 
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        penjual: "$usersell.fullName",
-                        emailpenjual: "$usersell.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
+                //     }
+                // }, {
+                //     $project: {
+                //         contentMedias: "$postdata.contentMedias",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$user.fullName",
+                //         email: "$user.email",
+                //         penjual: "$usersell.fullName",
+                //         emailpenjual: "$usersell.email",
+                //         postID: "$postdata.postID",
+                //         postType: "$postdata.postType",
+                //         descriptionContent: '$postdata.description',
+                //         title: '$postdata.description',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                },
+                //     }
+                // },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -3101,208 +3177,208 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Buy',
-                        jenis: "$type",
+                // {
+                //     $addFields: {
+                //         type: 'Buy',
+                //         jenis: "$type",
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts2",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_sell"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$iduserbuyer",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        usersell: {
-                            $arrayElemAt: [
-                                "$userbasics_sell",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
+                //     },
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "iduserbuyer",
+                //         foreignField: "_id",
+                //         as: "userbasics_data"
+                //     }
+                // }, {
+                //     $lookup: {
+                //         from: "posts2",
+                //         localField: "postid",
+                //         foreignField: "postID",
+                //         as: "post_data"
+                //     }
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "idusersell",
+                //         foreignField: "_id",
+                //         as: "userbasics_sell"
+                //     }
+                // },
+                // {
+                //     $project: {
+                //         iduser: "$iduserbuyer",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         user: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_data",
+                //                 0
+                //             ]
+                //         },
+                //         usersell: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_sell",
+                //                 0
+                //             ]
+                //         },
+                //         postdata: {
+                //             $arrayElemAt: [
+                //                 "$post_data",
+                //                 0
+                //             ]
+                //         },
 
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        penjual: "$usersell.fullName",
-                        emailpenjual: "$usersell.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
+                //     }
+                // }, {
+                //     $project: {
+                //         contentMedias: "$postdata.contentMedias",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$user.fullName",
+                //         email: "$user.email",
+                //         penjual: "$usersell.fullName",
+                //         emailpenjual: "$usersell.email",
+                //         postID: "$postdata.postID",
+                //         postType: "$postdata.postType",
+                //         descriptionContent: '$postdata.description',
+                //         title: '$postdata.description',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                },
+                //     }
+                // },
                 { $sort: { timestamp: -1 }, },
             ]);
             return query;
@@ -3320,208 +3396,208 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Buy',
-                        jenis: "$type",
+                // {
+                //     $addFields: {
+                //         type: 'Buy',
+                //         jenis: "$type",
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts2",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_sell"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$iduserbuyer",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        usersell: {
-                            $arrayElemAt: [
-                                "$userbasics_sell",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
+                //     },
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "iduserbuyer",
+                //         foreignField: "_id",
+                //         as: "userbasics_data"
+                //     }
+                // }, {
+                //     $lookup: {
+                //         from: "posts2",
+                //         localField: "postid",
+                //         foreignField: "postID",
+                //         as: "post_data"
+                //     }
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "idusersell",
+                //         foreignField: "_id",
+                //         as: "userbasics_sell"
+                //     }
+                // },
+                // {
+                //     $project: {
+                //         iduser: "$iduserbuyer",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         user: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_data",
+                //                 0
+                //             ]
+                //         },
+                //         usersell: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_sell",
+                //                 0
+                //             ]
+                //         },
+                //         postdata: {
+                //             $arrayElemAt: [
+                //                 "$post_data",
+                //                 0
+                //             ]
+                //         },
 
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        penjual: "$usersell.fullName",
-                        emailpenjual: "$usersell.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
+                //     }
+                // }, {
+                //     $project: {
+                //         contentMedias: "$postdata.contentMedias",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$user.fullName",
+                //         email: "$user.email",
+                //         penjual: "$usersell.fullName",
+                //         emailpenjual: "$usersell.email",
+                //         postID: "$postdata.postID",
+                //         postType: "$postdata.postType",
+                //         descriptionContent: '$postdata.description',
+                //         title: '$postdata.description',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                },
+                //     }
+                // },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -3536,208 +3612,208 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Buy',
-                        jenis: "$type",
+                // {
+                //     $addFields: {
+                //         type: 'Buy',
+                //         jenis: "$type",
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts2",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_sell"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$iduserbuyer",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        usersell: {
-                            $arrayElemAt: [
-                                "$userbasics_sell",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
+                //     },
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "iduserbuyer",
+                //         foreignField: "_id",
+                //         as: "userbasics_data"
+                //     }
+                // }, {
+                //     $lookup: {
+                //         from: "posts2",
+                //         localField: "postid",
+                //         foreignField: "postID",
+                //         as: "post_data"
+                //     }
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "idusersell",
+                //         foreignField: "_id",
+                //         as: "userbasics_sell"
+                //     }
+                // },
+                // {
+                //     $project: {
+                //         iduser: "$iduserbuyer",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         user: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_data",
+                //                 0
+                //             ]
+                //         },
+                //         usersell: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_sell",
+                //                 0
+                //             ]
+                //         },
+                //         postdata: {
+                //             $arrayElemAt: [
+                //                 "$post_data",
+                //                 0
+                //             ]
+                //         },
 
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        penjual: "$usersell.fullName",
-                        emailpenjual: "$usersell.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
+                //     }
+                // }, {
+                //     $project: {
+                //         contentMedias: "$postdata.contentMedias",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$user.fullName",
+                //         email: "$user.email",
+                //         penjual: "$usersell.fullName",
+                //         emailpenjual: "$usersell.email",
+                //         postID: "$postdata.postID",
+                //         postType: "$postdata.postType",
+                //         descriptionContent: '$postdata.description',
+                //         title: '$postdata.description',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        penjual: "$penjual",
-                        emailpenjual: "$emailpenjual",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         penjual: "$penjual",
+                //         emailpenjual: "$emailpenjual",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                },
+                //     }
+                // },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -4345,7 +4421,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -4363,13 +4439,32 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
                 }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
 
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -4433,8 +4528,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -5034,7 +5129,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -5052,13 +5147,31 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
                 }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
 
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -5122,8 +5235,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -5722,7 +5835,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -5742,13 +5855,31 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
                 }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
 
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -5812,8 +5943,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -6409,7 +6540,7 @@ export class TransactionsService {
                                         then: "$mediavideos.apsara"
                                     }
                                 ],
-                                default: ""
+                                default: false
                             }
                         },
                     }
@@ -6428,13 +6559,31 @@ export class TransactionsService {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
                 }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
 
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -6498,8 +6647,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": query[i].apsaraId,
-                    "apsara": query[i].apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -6509,10 +6658,10 @@ export class TransactionsService {
         }
     }
     async findhistorySellCount(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
-        const posts = await this.postsService.findpost();
-        const video = await this.mediavideosService.findvideo();
-        const pict = await this.mediapictsService.findpict();
-        const diaries = await this.mediadiariesService.finddiaries();
+        // const posts = await this.postsService.findpost();
+        // const video = await this.mediavideosService.findvideo();
+        // const pict = await this.mediapictsService.findpict();
+        // const diaries = await this.mediadiariesService.finddiaries();
 
         if (startdate !== undefined && enddate !== undefined && status !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -6528,213 +6677,213 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Sell',
-                        jenis: '$type'
+                // {
+                //     $addFields: {
+                //         type: 'Sell',
+                //         jenis: '$type'
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts2",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_buy"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$idusersell",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        userbuy: {
-                            $arrayElemAt: [
-                                "$userbasics_buy",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
+                //     },
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "idusersell",
+                //         foreignField: "_id",
+                //         as: "userbasics_data"
+                //     }
+                // }, {
+                //     $lookup: {
+                //         from: "posts2",
+                //         localField: "postid",
+                //         foreignField: "postID",
+                //         as: "post_data"
+                //     }
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "iduserbuyer",
+                //         foreignField: "_id",
+                //         as: "userbasics_buy"
+                //     }
+                // },
+                // {
+                //     $project: {
+                //         iduser: "$idusersell",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         user: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_data",
+                //                 0
+                //             ]
+                //         },
+                //         userbuy: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_buy",
+                //                 0
+                //             ]
+                //         },
+                //         postdata: {
+                //             $arrayElemAt: [
+                //                 "$post_data",
+                //                 0
+                //             ]
+                //         },
 
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        pembeli: "$userbuy.fullName",
-                        emailpembeli: "$userbuy.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
+                //     }
+                // }, {
+                //     $project: {
+                //         contentMedias: "$postdata.contentMedias",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$user.fullName",
+                //         email: "$user.email",
+                //         pembeli: "$userbuy.fullName",
+                //         emailpembeli: "$userbuy.email",
+                //         postID: "$postdata.postID",
+                //         postType: "$postdata.postType",
+                //         descriptionContent: '$postdata.description',
+                //         title: '$postdata.description',
 
-                    }
-                }, {
-                    $project: {
-                        refs: {
-                            $arrayElemAt: [
-                                "$contentMedias",
-                                0
-                            ]
-                        },
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //     }
+                // }, {
+                //     $project: {
+                //         refs: {
+                //             $arrayElemAt: [
+                //                 "$contentMedias",
+                //                 0
+                //             ]
+                //         },
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs.$ref",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //     }
+                // }, {
+                //     $project: {
+                //         refs: "$refs.$ref",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //     }
+                // }, {
+                //     $project: {
+                //         refs: "$refs",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                },
+                //     }
+                // },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -6754,213 +6903,213 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Sell',
-                        jenis: '$type'
+                // {
+                //     $addFields: {
+                //         type: 'Sell',
+                //         jenis: '$type'
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts2",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_buy"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$idusersell",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        userbuy: {
-                            $arrayElemAt: [
-                                "$userbasics_buy",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
+                //     },
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "idusersell",
+                //         foreignField: "_id",
+                //         as: "userbasics_data"
+                //     }
+                // }, {
+                //     $lookup: {
+                //         from: "posts2",
+                //         localField: "postid",
+                //         foreignField: "postID",
+                //         as: "post_data"
+                //     }
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "iduserbuyer",
+                //         foreignField: "_id",
+                //         as: "userbasics_buy"
+                //     }
+                // },
+                // {
+                //     $project: {
+                //         iduser: "$idusersell",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         user: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_data",
+                //                 0
+                //             ]
+                //         },
+                //         userbuy: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_buy",
+                //                 0
+                //             ]
+                //         },
+                //         postdata: {
+                //             $arrayElemAt: [
+                //                 "$post_data",
+                //                 0
+                //             ]
+                //         },
 
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        pembeli: "$userbuy.fullName",
-                        emailpembeli: "$userbuy.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
+                //     }
+                // }, {
+                //     $project: {
+                //         contentMedias: "$postdata.contentMedias",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$user.fullName",
+                //         email: "$user.email",
+                //         pembeli: "$userbuy.fullName",
+                //         emailpembeli: "$userbuy.email",
+                //         postID: "$postdata.postID",
+                //         postType: "$postdata.postType",
+                //         descriptionContent: '$postdata.description',
+                //         title: '$postdata.description',
 
-                    }
-                }, {
-                    $project: {
-                        refs: {
-                            $arrayElemAt: [
-                                "$contentMedias",
-                                0
-                            ]
-                        },
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //     }
+                // }, {
+                //     $project: {
+                //         refs: {
+                //             $arrayElemAt: [
+                //                 "$contentMedias",
+                //                 0
+                //             ]
+                //         },
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs.$ref",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //     }
+                // }, {
+                //     $project: {
+                //         refs: "$refs.$ref",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //     }
+                // }, {
+                //     $project: {
+                //         refs: "$refs",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                },
+                //     }
+                // },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -6978,213 +7127,213 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Sell',
-                        jenis: '$type'
+                // {
+                //     $addFields: {
+                //         type: 'Sell',
+                //         jenis: '$type'
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts2",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_buy"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$idusersell",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        userbuy: {
-                            $arrayElemAt: [
-                                "$userbasics_buy",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
+                //     },
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "idusersell",
+                //         foreignField: "_id",
+                //         as: "userbasics_data"
+                //     }
+                // }, {
+                //     $lookup: {
+                //         from: "posts2",
+                //         localField: "postid",
+                //         foreignField: "postID",
+                //         as: "post_data"
+                //     }
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "iduserbuyer",
+                //         foreignField: "_id",
+                //         as: "userbasics_buy"
+                //     }
+                // },
+                // {
+                //     $project: {
+                //         iduser: "$idusersell",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         user: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_data",
+                //                 0
+                //             ]
+                //         },
+                //         userbuy: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_buy",
+                //                 0
+                //             ]
+                //         },
+                //         postdata: {
+                //             $arrayElemAt: [
+                //                 "$post_data",
+                //                 0
+                //             ]
+                //         },
 
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        pembeli: "$userbuy.fullName",
-                        emailpembeli: "$userbuy.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
+                //     }
+                // }, {
+                //     $project: {
+                //         contentMedias: "$postdata.contentMedias",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$user.fullName",
+                //         email: "$user.email",
+                //         pembeli: "$userbuy.fullName",
+                //         emailpembeli: "$userbuy.email",
+                //         postID: "$postdata.postID",
+                //         postType: "$postdata.postType",
+                //         descriptionContent: '$postdata.description',
+                //         title: '$postdata.description',
 
-                    }
-                }, {
-                    $project: {
-                        refs: {
-                            $arrayElemAt: [
-                                "$contentMedias",
-                                0
-                            ]
-                        },
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //     }
+                // }, {
+                //     $project: {
+                //         refs: {
+                //             $arrayElemAt: [
+                //                 "$contentMedias",
+                //                 0
+                //             ]
+                //         },
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs.$ref",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //     }
+                // }, {
+                //     $project: {
+                //         refs: "$refs.$ref",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //     }
+                // }, {
+                //     $project: {
+                //         refs: "$refs",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                },
+                //     }
+                // },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -7200,213 +7349,213 @@ export class TransactionsService {
                     }
                 },
 
-                {
-                    $addFields: {
-                        type: 'Sell',
-                        jenis: '$type'
+                // {
+                //     $addFields: {
+                //         type: 'Sell',
+                //         jenis: '$type'
 
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts2",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_buy"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$idusersell",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        userbuy: {
-                            $arrayElemAt: [
-                                "$userbasics_buy",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
+                //     },
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "idusersell",
+                //         foreignField: "_id",
+                //         as: "userbasics_data"
+                //     }
+                // }, {
+                //     $lookup: {
+                //         from: "posts2",
+                //         localField: "postid",
+                //         foreignField: "postID",
+                //         as: "post_data"
+                //     }
+                // },
+                // {
+                //     $lookup: {
+                //         from: "userbasics",
+                //         localField: "iduserbuyer",
+                //         foreignField: "_id",
+                //         as: "userbasics_buy"
+                //     }
+                // },
+                // {
+                //     $project: {
+                //         iduser: "$idusersell",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         user: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_data",
+                //                 0
+                //             ]
+                //         },
+                //         userbuy: {
+                //             $arrayElemAt: [
+                //                 "$userbasics_buy",
+                //                 0
+                //             ]
+                //         },
+                //         postdata: {
+                //             $arrayElemAt: [
+                //                 "$post_data",
+                //                 0
+                //             ]
+                //         },
 
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        pembeli: "$userbuy.fullName",
-                        emailpembeli: "$userbuy.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
+                //     }
+                // }, {
+                //     $project: {
+                //         contentMedias: "$postdata.contentMedias",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$user.fullName",
+                //         email: "$user.email",
+                //         pembeli: "$userbuy.fullName",
+                //         emailpembeli: "$userbuy.email",
+                //         postID: "$postdata.postID",
+                //         postType: "$postdata.postType",
+                //         descriptionContent: '$postdata.description',
+                //         title: '$postdata.description',
 
-                    }
-                }, {
-                    $project: {
-                        refs: {
-                            $arrayElemAt: [
-                                "$contentMedias",
-                                0
-                            ]
-                        },
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //     }
+                // }, {
+                //     $project: {
+                //         refs: {
+                //             $arrayElemAt: [
+                //                 "$contentMedias",
+                //                 0
+                //             ]
+                //         },
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs.$ref",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //     }
+                // }, {
+                //     $project: {
+                //         refs: "$refs.$ref",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //     }
+                // }, {
+                //     $project: {
+                //         refs: "$refs",
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                }, {
-                    $project: {
+                //     }
+                // }, {
+                //     $project: {
 
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
+                //         iduser: "$iduser",
+                //         type: "$type",
+                //         jenis: "$jenis",
+                //         timestamp: "$timestamp",
+                //         description: "$description",
+                //         noinvoice: "$noinvoice",
+                //         nova: "$nova",
+                //         expiredtimeva: "$expiredtimeva",
+                //         salelike: "$salelike",
+                //         saleview: "$saleview",
+                //         bank: "$bank",
+                //         amount: "$amount",
+                //         totalamount: "$totalamount",
+                //         status: "$status",
+                //         fullName: "$fullName",
+                //         email: "$email",
+                //         pembeli: "$pembeli",
+                //         emailpembeli: "$emailpembeli",
+                //         postID: "$postID",
+                //         postType: "$postType",
+                //         descriptionContent: '$descriptionContent',
+                //         title: '$title',
 
-                    }
-                },
+                //     }
+                // },
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -7997,7 +8146,7 @@ export class TransactionsService {
                                     then: "$mediavideos.apsara"
                                 }
                             ],
-                            default: ""
+                            default: false
                         }
                     },
                 }
@@ -8596,7 +8745,7 @@ export class TransactionsService {
                                     then: "$mediavideos.apsara"
                                 }
                             ],
-                            default: ""
+                            default: false
                         }
                     },
                 }
