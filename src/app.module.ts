@@ -86,6 +86,7 @@ import { ReportuserModule } from './trans/reportuser/reportuser.module';
 import { BullModule } from '@nestjs/bull';
 import { UserbasicsnewModule } from './trans/newuserbasic/userbasicsnew.module';
 import { AppGateway } from './app.gateway';
+import { PostDisqusModule } from './content/disqus/post/postdisqus.module';
 @Module({
   imports: [
     BullModule.forRootAsync({
@@ -109,6 +110,7 @@ import { AppGateway } from './app.gateway';
     // MongooseModule.forRoot(process.env.SERVER_INFRA, {
     //   connectionName: 'SERVER_INFRA',
     // }),
+    PostDisqusModule,
     MongooseModule.forRoot(process.env.SERVER_FULL, {
       connectionName: 'SERVER_FULL',
     }),

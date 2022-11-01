@@ -35,7 +35,9 @@ export class Disquslogs {
     @Prop()
     receiverActive: boolean
     @Prop()
-    senderActive: boolean
+   senderActive: boolean
+   @Prop()
+   parentID: String;
 
 
  @Prop([{type:Object}])
@@ -50,8 +52,15 @@ export class Disquslogs {
     postID: String
     mediaEndpoint: String
 }]
-@Prop()
-replyLogs:[]
+
+   @Prop([{ type: Object }])
+   replyLogs: [
+      {
+         $ref: String;
+            $id: String;
+         $db: String;
+      },
+   ];
  @Prop()
  _class:String
 }
