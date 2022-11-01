@@ -4380,6 +4380,8 @@ export class TransactionsController {
                 var objk = {};
                 var idapsara = null;
                 var apsara = null;
+                var idapsaradefine = null;
+                var apsaradefine = null;
                 try {
                     idapsara = databuy[0].apsaraId;
                 } catch (e) {
@@ -4390,6 +4392,18 @@ export class TransactionsController {
                     apsara = databuy[0].apsara;
                 } catch (e) {
                     apsara = false;
+                }
+
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = databuy[0].postType;
                 pict = [idapsara];
@@ -4464,8 +4478,8 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
-                    "apsara": apsara,
-                    "apsaraId": idapsara,
+                    "apsara": apsaradefine,
+                    "apsaraId": idapsaradefine,
                     "media": dataapsara
 
                 };
@@ -4542,6 +4556,8 @@ export class TransactionsController {
                 var objk = {};
                 var idapsara = null;
                 var apsara = null;
+                var idapsaradefine = null;
+                var apsaradefine = null;
                 try {
                     idapsara = databuy[0].apsaraId;
                 } catch (e) {
@@ -4552,6 +4568,18 @@ export class TransactionsController {
                     apsara = databuy[0].apsara;
                 } catch (e) {
                     apsara = false;
+                }
+
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = databuy[0].postType;
                 pict = [idapsara];
@@ -4621,8 +4649,8 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
-                    "apsara": apsara,
-                    "apsaraId": idapsara,
+                    "apsara": apsaradefine,
+                    "apsaraId": idapsaradefine,
                     "media": dataapsara
 
                 };
