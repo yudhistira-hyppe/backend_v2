@@ -8,6 +8,9 @@ import { RemovedreasonsService } from '../removedreasons/removedreasons.service'
 import { UserbasicsService } from '../userbasics/userbasics.service';
 import { PostsService } from '../../content/posts/posts.service';
 import { AdsService } from '../ads/ads.service';
+import { CreateAdsDto } from '../ads/dto/create-ads.dto';
+import { CreatePostsDto } from 'src/content/posts/dto/create-posts.dto';
+import { CreateUserbasicDto } from '../userbasics/dto/create-userbasic.dto';
 @Controller('api/reportuser')
 export class ReportuserController {
 
@@ -196,11 +199,8 @@ export class ReportuserController {
         var type = null;
 
         var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["reportedStatus"] !== undefined) {
-            reportedStatus = request_json["reportedStatus"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
+
+        reportedStatus = request_json["reportedStatus"];
 
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
@@ -242,6 +242,7 @@ export class ReportuserController {
         }
 
         if (type === "content") {
+            let createPostsDto = new CreatePostsDto();
             try {
                 datacontent = await this.postsService.findByPostId(postID);
 
@@ -253,9 +254,9 @@ export class ReportuserController {
             if (datacontent !== null) {
 
                 try {
-                    reportedUserCount = datacontent._doc.reportedUserCount + lenguserreport;
+                    reportedUserCount = datacontent._doc.reportedUserCount;
                 } catch (e) {
-                    reportedUserCount = lenguserreport;
+                    reportedUserCount = 0;
                 }
                 if (lenguserreport > 0) {
                     for (let i = 0; i < lenguserreport; i++) {
@@ -293,12 +294,42 @@ export class ReportuserController {
                 }
 
 
-                if (reportedUserCount === "NaN") {
-                    this.postsService.updateReportuser(postID, reportedStatus, lenguserreport, arrayreportedUser, contentModeration, contentModerationResponse, arrayreportedHandle);
-                } else {
-                    this.postsService.updateReportuser(postID, reportedStatus, reportedUserCount, arrayreportedUser, contentModeration, contentModerationResponse, arrayreportedHandle);
-                }
 
+                if (reportedUserCount === 0 || reportedUserCount === undefined) {
+                    createPostsDto.reportedStatus = reportedStatus;
+                    createPostsDto.contentModeration = contentModeration;
+                    createPostsDto.contentModerationResponse = contentModerationResponse;
+                    createPostsDto.reportedUserCount = lenguserreport;
+                    if (arrayreportedUser.length > 0) {
+                        createPostsDto.reportedUser = arrayreportedUser;
+                    } else {
+
+                    }
+
+                    if (arrayreportedHandle.length > 0) {
+                        createPostsDto.reportedUserHandle = arrayreportedHandle;
+                    } else {
+
+                    }
+                    this.postsService.update(postID, createPostsDto);
+                } else {
+                    createPostsDto.reportedStatus = reportedStatus;
+                    createPostsDto.contentModeration = contentModeration;
+                    createPostsDto.contentModerationResponse = contentModerationResponse;
+                    createPostsDto.reportedUserCount = parseInt(reportedUserCount) + parseInt(lenguserreport);
+                    if (arrayreportedUser.length > 0) {
+                        createPostsDto.reportedUser = arrayreportedUser;
+                    } else {
+
+                    }
+
+                    if (arrayreportedHandle.length > 0) {
+                        createPostsDto.reportedUserHandle = arrayreportedHandle;
+                    } else {
+
+                    }
+                    this.postsService.update(postID, createPostsDto);
+                }
 
                 var data = request_json;
                 return { response_code: 202, data, messages };
@@ -309,6 +340,9 @@ export class ReportuserController {
             }
         }
         else if (type === "ads") {
+
+
+            let createAdsDto = new CreateAdsDto();
 
             let postid = mongoose.Types.ObjectId(postID);
             try {
@@ -321,10 +355,12 @@ export class ReportuserController {
 
             if (datacontent !== null) {
                 try {
-                    reportedUserCount = datacontent._doc.reportedUserCount + lenguserreport;
+                    reportedUserCount = datacontent._doc.reportedUserCount;
                 } catch (e) {
-                    reportedUserCount = lenguserreport;
+                    reportedUserCount = 0;
                 }
+
+
 
                 if (lenguserreport > 0) {
                     for (let i = 0; i < lenguserreport; i++) {
@@ -361,10 +397,43 @@ export class ReportuserController {
 
                 }
 
-                if (reportedUserCount === "NaN") {
-                    this.adsService.updateReportuser(postid, reportedStatus, lenguserreport, arrayreportedUser, contentModeration, contentModerationResponse, arrayreportedHandle);
+
+                if (reportedUserCount === 0 || reportedUserCount === undefined) {
+                    createAdsDto.reportedStatus = reportedStatus;
+                    createAdsDto.contentModeration = contentModeration;
+                    createAdsDto.contentModerationResponse = contentModerationResponse;
+                    createAdsDto.reportedUserCount = lenguserreport;
+
+                    if (arrayreportedUser.length > 0) {
+                        createAdsDto.reportedUser = arrayreportedUser;
+                    } else {
+
+                    }
+
+                    if (arrayreportedHandle.length > 0) {
+                        createAdsDto.reportedUserHandle = arrayreportedHandle;
+                    } else {
+
+                    }
+                    this.adsService.update(postID, createAdsDto);
                 } else {
-                    this.adsService.updateReportuser(postid, reportedStatus, reportedUserCount, arrayreportedUser, contentModeration, contentModerationResponse, arrayreportedHandle);
+                    createAdsDto.reportedStatus = reportedStatus;
+                    createAdsDto.contentModeration = contentModeration;
+                    createAdsDto.contentModerationResponse = contentModerationResponse;
+                    createAdsDto.reportedUserCount = parseInt(reportedUserCount) + parseInt(lenguserreport);
+                    if (arrayreportedUser.length > 0) {
+                        createAdsDto.reportedUser = arrayreportedUser;
+                    } else {
+
+                    }
+
+                    if (arrayreportedHandle.length > 0) {
+                        createAdsDto.reportedUserHandle = arrayreportedHandle;
+                    } else {
+
+                    }
+
+                    this.adsService.update(postID, createAdsDto);
                 }
 
                 var data = request_json;
@@ -376,7 +445,7 @@ export class ReportuserController {
             }
         }
         else if (type === "user") {
-
+            let createUserbasicDto = new CreateUserbasicDto();
             let postid = mongoose.Types.ObjectId(postID);
             try {
                 datacontent = await this.userbasicsService.findbyid(postID);
@@ -388,11 +457,10 @@ export class ReportuserController {
 
             if (datacontent !== null) {
                 try {
-                    reportedUserCount = datacontent._doc.reportedUserCount + lenguserreport;
+                    reportedUserCount = datacontent._doc.reportedUserCount;
                 } catch (e) {
-                    reportedUserCount = lenguserreport;
+                    reportedUserCount = 0;
                 }
-
                 if (lenguserreport > 0) {
                     for (let i = 0; i < lenguserreport; i++) {
 
@@ -428,13 +496,39 @@ export class ReportuserController {
 
                 }
 
-                if (reportedUserCount === "NaN") {
-                    this.userbasicsService.updateReportuser(postid, reportedStatus, lenguserreport, arrayreportedUser, arrayreportedHandle);
+                if (reportedUserCount === 0 || reportedUserCount === undefined) {
+                    createUserbasicDto.reportedStatus = reportedStatus;
+                    createUserbasicDto.reportedUserCount = lenguserreport;
+
+                    if (arrayreportedUser.length > 0) {
+                        createUserbasicDto.reportedUser = arrayreportedUser;
+                    } else {
+
+                    }
+
+                    if (arrayreportedHandle.length > 0) {
+                        createUserbasicDto.reportedUserHandle = arrayreportedHandle;
+                    } else {
+
+                    }
+                    this.userbasicsService.update(postID, createUserbasicDto);
                 } else {
-                    this.userbasicsService.updateReportuser(postid, reportedStatus, reportedUserCount, arrayreportedUser, arrayreportedHandle);
+                    createUserbasicDto.reportedStatus = reportedStatus;
+                    createUserbasicDto.reportedUserCount = parseInt(reportedUserCount) + parseInt(lenguserreport);
+                    if (arrayreportedUser.length > 0) {
+                        createUserbasicDto.reportedUser = arrayreportedUser;
+                    } else {
+
+                    }
+
+                    if (arrayreportedHandle.length > 0) {
+                        createUserbasicDto.reportedUserHandle = arrayreportedHandle;
+                    } else {
+
+                    }
+
+                    this.userbasicsService.update(postID, createUserbasicDto);
                 }
-
-
 
                 var data = request_json;
                 return { response_code: 202, data, messages };

@@ -3779,5 +3779,19 @@ export class AdsService {
             return query;
         }
     }
+    async updatedata(
+        id: string,
+        CreateAdsDto: CreateAdsDto,
+    ): Promise<Ads> {
+        let data = await this.adsModel.findByIdAndUpdate(
+            id,
+            CreateAdsDto,
+            { new: true },
+        );
 
+        if (!data) {
+            throw new Error('Todo is not found!');
+        }
+        return data;
+    }
 }

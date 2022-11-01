@@ -17,6 +17,8 @@ import mongoose from "mongoose";
 import { SettingsService } from "../../trans/settings/settings.service";
 import { JwtAuthGuard } from "../../auth/jwt-auth.guard";
 import { UserauthsService } from "../../trans/userauths/userauths.service";
+import { CreateMediaprofilepictsDto } from "src/content/mediaprofilepicts/dto/create-mediaprofilepicts.dto";
+import { Mediaprofilepicts } from "src/content/mediaprofilepicts/schemas/mediaprofilepicts.schema";
 
 //import FormData from "form-data";
 const multer = require('multer');
@@ -136,6 +138,7 @@ export class MediaController {
             headers['x-auth-user'],
         );
 
+        let isNew = true;
         if (await this.utilsService.ceckData(datauserbasicsService)) {
             if (datauserbasicsService.profilePict != undefined) {
                 var profilePict_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
@@ -146,10 +149,11 @@ export class MediaController {
                 );
 
                 if (await this.utilsService.ceckData(datamediaprofilepictsService)) {
-                    mongoose_gen_media = datamediaprofilepictsService.mediaBasePath.toString().replace("/profilepict/", "");
+                    mongoose_gen_media = datamediaprofilepictsService.mediaBasePath.toString().replace("/profilepict", "");
                 } else {
                     mongoose_gen_media = new mongoose.Types.ObjectId();
                 }
+                isNew = false;
             } else {
                 id_mediaprofilepicts = await this.utilsService.generateId();
                 mongoose_gen_media = new mongoose.Types.ObjectId();
@@ -173,27 +177,58 @@ export class MediaController {
                 //SeaweedFs path
                 profilePict_seaweedfs_path = '/' + mongoose_gen_media.toString() + '/profilepict/';
 
-                //Create Folder Id
-                if (await this.utilsService.createFolder('./temp/', mongoose_gen_media.toString())) {
-                    //Create folder proofpict
-                    if (await this.utilsService.createFolder('./temp/' + mongoose_gen_media + '/', 'profilepict')) {
-                        //Move File
-                        await fse.move('./temp/' + profilePict_filename_new, './temp/' + mongoose_gen_media.toString() + '/profilepict/' + profilePict_filename_new);
+                if (isNew) {
+                    //Create Folder Id
+                    if (await this.utilsService.createFolder('./temp/', mongoose_gen_media.toString())) {
+                        //Create folder proofpict
+                        if (await this.utilsService.createFolder('./temp/' + mongoose_gen_media + '/', 'profilepict')) {
+                            //Move File
+                            await fse.move('./temp/' + profilePict_filename_new, './temp/' + mongoose_gen_media.toString() + '/profilepict/' + profilePict_filename_new);
+                        } else {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed create folder proofpict',
+                            );
+                        }
                     } else {
                         await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed create folder proofpict',
+                            'Unabled to proceed create folder ' + mongoose_gen_media.toString(),
                         );
                     }
                 } else {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Unabled to proceed create folder ' + mongoose_gen_media.toString(),
-                    );
+                    await fse.move('./temp/' + profilePict_filename_new, './temp/' + mongoose_gen_media.toString() + '/profilepict/' + profilePict_filename_new);
                 }
+
 
                 //Upload Seaweedfs
                 try {
                     FormData_.append('proofpict', fs.createReadStream(path.resolve(profilePict_local_path)));
                     await this.seaweedfsService.write(profilePict_seaweedfs_path, FormData_);
+
+                    if (isNew) {
+                        let mp = new Mediaprofilepicts();
+                        mp._id = id_mediaprofilepicts;
+                        mp.mediaID = id_mediaprofilepicts;
+                        mp.active = true;
+                        mp.createdAt = await this.utilsService.getDateTimeString();
+                        mp.updatedAt = await this.utilsService.getDateTimeString();
+                        mp.fsSourceName = id_mediaprofilepicts + '.' + profilePict_etx;
+                        mp.fsSourceUri = '/localrepo/' + mongoose_gen_media.toString() + '/profilepict/' + profilePict_filename_new;
+                        mp.fsTargetUri = '/localrepo/' + mongoose_gen_media.toString() + '/profilepict/' + profilePict_filename_new;
+                        mp.mediaBasePath = mongoose_gen_media + '/profilepict';
+                        mp.mediaMime = "image/jpg";
+                        mp.mediaType = "image";
+                        mp.mediaUri = profilePict_filename_new;
+                        mp.originalName = profilePict_filename;
+                        mp.postType = "profilepict";
+                        mp._class = 'io.melody.hyppe.content.domain.MediaProfilePict';
+
+                        let nmp = await this.mediaprofilepictsService.create(mp);
+
+                        var usp = { "$ref": "mediaprofilepicts", "$id": nmp._id, "$db": "hyppe_content_db" };
+                        datauserbasicsService.profilePict = usp;
+                        await this.userbasicsService.createV2(datauserbasicsService);
+
+                    }
                 } catch (err) {
                     await this.errorHandler.generateNotAcceptableException(
                         'Unabled to proceed proofpict failed upload seaweedfs',

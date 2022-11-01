@@ -3384,6 +3384,7 @@ export class TransactionsController {
         var ObjectId = require('mongodb').ObjectId;
         var idadmin = mongoose.Types.ObjectId(iduser);
         var datatrpending = null;
+        var datatrpendingjual = null;
 
         try {
 
@@ -3406,6 +3407,45 @@ export class TransactionsController {
                 var idva = datatrpending[i].idva;
                 var idtransaction = datatrpending[i]._id;
                 var expiredva = new Date(datatrpending[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        await this.transactionsService.updatestatuscancel(idtransaction);
+                        //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                    }
+
+
+                }
+
+
+            }
+
+        }
+
+        try {
+
+            datatrpendingjual = await this.transactionsService.findExpiredSell(iduser);
+
+
+        } catch (e) {
+            datatrpendingjual = null;
+
+        }
+
+        if (datatrpendingjual !== null) {
+            var datenow = new Date(Date.now());
+
+
+            var lengdatatr = datatrpendingjual.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpendingjual[i].idva;
+                var idtransaction = datatrpendingjual[i]._id;
+                var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
                 expiredva.setHours(expiredva.getHours() - 7);
 
                 if (datenow > expiredva) {
@@ -4243,7 +4283,6 @@ export class TransactionsController {
     }
 
 
-
     @Post('api/transactions/historys/details')
     @UseGuards(JwtAuthGuard)
     async trdetailbuysell(@Req() request: Request): Promise<any> {
@@ -4349,7 +4388,7 @@ export class TransactionsController {
                     databankvacharge = await this.settingsService.findOne(idbankvacharge);
                     valuevacharge = databankvacharge._doc.value;
                     valuemradmin = datamradmin._doc.value;
-                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
+                    nominalmradmin = Math.ceil(amounts * valuemradmin / 100);
 
 
 
@@ -4388,6 +4427,8 @@ export class TransactionsController {
                 var objk = {};
                 var idapsara = null;
                 var apsara = null;
+                var idapsaradefine = null;
+                var apsaradefine = null;
                 try {
                     idapsara = databuy[0].apsaraId;
                 } catch (e) {
@@ -4398,6 +4439,18 @@ export class TransactionsController {
                     apsara = databuy[0].apsara;
                 } catch (e) {
                     apsara = false;
+                }
+
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = databuy[0].postType;
                 pict = [idapsara];
@@ -4451,7 +4504,7 @@ export class TransactionsController {
                     "view": databuy[0].saleview,
                     "bank": namabank,
                     "paymentmethode": namamethode,
-                    "amount": amount,
+                    "amount": amounts,
                     "totalamount": databuy[0].totalamount,
                     "adminFee": nominalmradmin,
                     "serviceFee": valuevacharge,
@@ -4472,8 +4525,8 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
-                    "apsara": apsara,
-                    "apsaraId": idapsara,
+                    "apsara": apsaradefine,
+                    "apsaraId": idapsaradefine,
                     "media": dataapsara
 
                 };
@@ -4550,6 +4603,8 @@ export class TransactionsController {
                 var objk = {};
                 var idapsara = null;
                 var apsara = null;
+                var idapsaradefine = null;
+                var apsaradefine = null;
                 try {
                     idapsara = databuy[0].apsaraId;
                 } catch (e) {
@@ -4560,6 +4615,18 @@ export class TransactionsController {
                     apsara = databuy[0].apsara;
                 } catch (e) {
                     apsara = false;
+                }
+
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = databuy[0].postType;
                 pict = [idapsara];
@@ -4629,8 +4696,8 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
-                    "apsara": apsara,
-                    "apsaraId": idapsara,
+                    "apsara": apsaradefine,
+                    "apsaraId": idapsaradefine,
                     "media": dataapsara
 
                 };

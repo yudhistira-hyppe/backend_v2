@@ -47,22 +47,7 @@ export class ContentModService {
 
   constructor(
     private postService: PostsService,
-    private userService: UserbasicsService,
-    private utilService: UtilsService,
-    private disqusService: DisqusService,
-    private disqusLogService: DisquslogsService,
-    private storyService: MediastoriesService,
-    private picService: MediapictsService,
-    private diaryService: MediadiariesService,
-    private insightService: InsightsService,
-    private contentEventService: ContenteventsService,
-    private profilePictService: MediaprofilepictsService,
-    private postPlaylistService: PostPlaylistService,
     private readonly configService: ConfigService,
-    private seaweedfsService: SeaweedfsService,
-    private templateService: TemplatesRepoService,
-    private videoService: MediavideosService,
-    private errorHandler: ErrorHandler,
   ) { }
 
   async cmodImage(postId: string, url: string) {
@@ -187,4 +172,44 @@ export class ContentModService {
 
 	requestHeaders.Authorization = 'acs ' + accessKeyId + ':' + authorization;
   }  
+
+
+  async cmodResponse(body: any) {
+    if (body.content == undefined) {
+      this.logger.error('cmodResponse >>> body content is undefined');
+      return;
+    }
+
+    let con = JSON.parse(body.content);
+    if (con.code == undefined || con.code != 200) {
+      this.logger.error('cmodResponse >>> body content code undefined');
+      return;      
+    }
+
+    let pid = String(con.dataId);
+    let pd = await this.postService.findByPostId(pid);
+    if (pd == undefined) {
+      this.logger.error('cmodResponse >>> post id:' + con.dataId + ' not found');
+      return;      
+    }    
+
+    let res = con.results;
+    let pass = true;
+    for (let i = 0; i < res.length; i++) {
+      let re = res[i];
+      if (re.suggestion != 'pass') {
+        pass = false;
+      }
+    }
+
+    this.logger.log('cmodResponse >>> pass: ' + pass);
+    if (pass == false) {
+      pd.contentModeration = true;
+    } else {
+      pd.contentModeration = false;
+    }
+    pd.contentModerationResponse = JSON.stringify(body);
+
+    await this.postService.create(pd);
+  }
 }
