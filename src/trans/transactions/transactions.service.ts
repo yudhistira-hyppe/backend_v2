@@ -776,7 +776,7 @@ export class TransactionsService {
                     }
                 }
 
-                if (apsara === undefined || apsara === "" || apsara === null) {
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
@@ -1446,7 +1446,7 @@ export class TransactionsService {
                     apsara = false;
                 }
 
-                if (apsara === undefined || apsara === "" || apsara === null) {
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
@@ -2152,7 +2152,7 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
-                if (apsara === undefined || apsara === "" || apsara === null) {
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
@@ -2853,7 +2853,7 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
-                if (apsara === undefined || apsara === "" || apsara === null) {
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
@@ -4454,7 +4454,7 @@ export class TransactionsService {
                     apsara = false;
                 }
 
-                if (apsara === undefined || apsara === "" || apsara === null) {
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
@@ -5161,7 +5161,7 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
-                if (apsara === undefined || apsara === "" || apsara === null) {
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
@@ -5869,7 +5869,7 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
-                if (apsara === undefined || apsara === "" || apsara === null) {
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
@@ -6573,7 +6573,7 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
-                if (apsara === undefined || apsara === "" || apsara === null) {
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
