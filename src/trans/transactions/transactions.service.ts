@@ -725,6 +725,8 @@ export class TransactionsService {
             var type = null;
             var idapsara = null;
             var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
@@ -773,6 +775,18 @@ export class TransactionsService {
                         }
                     }
                 }
+
+                if (apsara === undefined || apsara === "" || apsara === null) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
                 objk = {
                     "_id": query[i]._id,
                     "iduser": query[i].iduser,
@@ -799,8 +813,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": idapsara,
-                    "apsara": apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -1418,6 +1432,8 @@ export class TransactionsService {
             var type = null;
             var idapsara = null;
             var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
@@ -1428,6 +1444,18 @@ export class TransactionsService {
                     apsara = query[i].apsara;
                 } catch (e) {
                     apsara = false;
+                }
+
+                if (apsara === undefined || apsara === "" || apsara === null) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -1492,8 +1520,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": idapsara,
-                    "apsara": apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -2111,6 +2139,8 @@ export class TransactionsService {
             var type = null;
             var idapsara = null;
             var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
@@ -2121,6 +2151,16 @@ export class TransactionsService {
                     apsara = query[i].apsara;
                 } catch (e) {
                     apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -2185,8 +2225,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": idapsara,
-                    "apsara": apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -2800,6 +2840,8 @@ export class TransactionsService {
             var type = null;
             var idapsara = null;
             var apsara = null;
+            var apsaradefine = null;
+            var idapsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
@@ -2810,6 +2852,16 @@ export class TransactionsService {
                     apsara = query[i].apsara;
                 } catch (e) {
                     apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -2874,8 +2926,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": idapsara,
-                    "apsara": apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -4388,6 +4440,8 @@ export class TransactionsService {
             var type = null;
             var idapsara = null;
             var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
@@ -4398,6 +4452,18 @@ export class TransactionsService {
                     apsara = query[i].apsara;
                 } catch (e) {
                     apsara = false;
+                }
+
+                if (apsara === undefined || apsara === "" || apsara === null) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -4462,8 +4528,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": idapsara,
-                    "apsara": apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -5082,6 +5148,8 @@ export class TransactionsService {
             var type = null;
             var idapsara = null;
             var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
@@ -5092,6 +5160,17 @@ export class TransactionsService {
                     apsara = query[i].apsara;
                 } catch (e) {
                     apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -5156,8 +5235,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": idapsara,
-                    "apsara": apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -5777,6 +5856,8 @@ export class TransactionsService {
             var type = null;
             var idapsara = null;
             var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
@@ -5787,6 +5868,17 @@ export class TransactionsService {
                     apsara = query[i].apsara;
                 } catch (e) {
                     apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -5851,8 +5943,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": idapsara,
-                    "apsara": apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
@@ -6468,6 +6560,8 @@ export class TransactionsService {
             var type = null;
             var idapsara = null;
             var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
@@ -6478,6 +6572,17 @@ export class TransactionsService {
                     apsara = query[i].apsara;
                 } catch (e) {
                     apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
                 }
                 var type = query[i].postType;
                 pict = [idapsara];
@@ -6542,8 +6647,8 @@ export class TransactionsService {
                     "title": query[i].title,
                     "mediaType": query[i].mediaType,
                     "mediaEndpoint": query[i].mediaEndpoint,
-                    "apsaraId": idapsara,
-                    "apsara": apsara,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
                     "media": data
                 };
 
