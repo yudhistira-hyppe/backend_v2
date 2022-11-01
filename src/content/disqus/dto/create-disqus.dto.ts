@@ -39,6 +39,8 @@ export class ContentDto {
   txtMessages: String;
   parentID: String;
   active: boolean;
+  tagComment: String;
+  tagComment_: string[];
 
   reactionUri: String;
   eventType: String;

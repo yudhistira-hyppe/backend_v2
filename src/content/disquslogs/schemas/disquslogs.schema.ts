@@ -61,6 +61,16 @@ export class Disquslogs {
          $db: String;
       },
    ];
+   @Prop([{ type: Object }])
+   tags: [
+      {
+         $ref: String;
+            $id: {
+               oid: String
+            };
+         $db: String;
+      },
+   ];
  @Prop()
  _class:String
 }
