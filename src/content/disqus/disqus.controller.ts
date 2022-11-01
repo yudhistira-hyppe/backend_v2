@@ -309,7 +309,11 @@ export class DisqusController {
       if (Posts_.active && Posts_.allowComments){
         var disqus = new CreateDisqusDto();
         var disqus_ = new CreateDisqusDto();
+        
+        //error
         disqus_ = await this.disqusService.findDisqusByPost_(Posts_.email.toString(), Posts_.postID.toString(), "COMMENT");
+
+
         if (!(await this.utilsService.ceckData(disqus_))) {
           var data_id = await this.utilsService.generateId();
           disqus._id = data_id;
