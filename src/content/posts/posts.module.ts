@@ -31,6 +31,7 @@ import { DisquslogsModule } from '../disquslogs/disquslogs.module';
 import { SettingsModule } from '../../trans/settings/settings.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { InsightlogsModule } from '../insightlogs/insightlogs.module';
+import { ContentModService } from './contentmod.service';
 @Module({
 
     imports: [
@@ -49,7 +50,7 @@ import { InsightlogsModule } from '../insightlogs/insightlogs.module';
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_CONTENT')
     ],
     controllers: [PostsController],
-    providers: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService],
-    exports: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService],
+    providers: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService, ContentModService],
+    exports: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService, ContentModService],
 })
 export class PostsModule { }

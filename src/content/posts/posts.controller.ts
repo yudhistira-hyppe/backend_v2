@@ -33,6 +33,7 @@ import { PostCommentService } from './postcomment.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { DisqusService } from '../disqus/disqus.service';
 import { DisqusResponseApps } from '../disqus/dto/create-disqus.dto';
+import { ContentModService } from './contentmod.service';
 
 @Controller()
 export class PostsController {
@@ -48,7 +49,7 @@ export class PostsController {
     private readonly userbasicsService: UserbasicsService,
     private readonly postCommentService: PostCommentService,    
     private readonly notifService: NotificationsService,
-    private readonly disqusService: DisqusService,    
+    private readonly cmodService: ContentModService,    
     private readonly groupModuleService: GroupModuleService) { }
 
   @Post()
@@ -374,6 +375,14 @@ export class PostsController {
     let t = { 'response': 'Done' };
     return JSON.stringify(t);
   }
+
+  @Post('api/posts/cmod')
+  async cmod(@Body() body, @Headers() headers) {
+    this.logger.log("cmod >>> start: " + JSON.stringify(body));
+    this.cmodService.cmod();
+    let t = { 'response': 'Done' };
+    return JSON.stringify(t);
+  }  
 
   @Post('api/posts/getvideo')
   async getVideo(@Body() body, @Headers() headers) {
