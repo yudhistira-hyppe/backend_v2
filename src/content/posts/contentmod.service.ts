@@ -66,7 +66,7 @@ export class ContentModService {
   ) { }
 
   async cmodImage(postId: string, url: string) {
-    
+    this.logger.log('cmodImage >>> start');    
     const accessKeyId = this.configService.get("APSARA_ACCESS_KEY");
     const accessKeySecret = this.configService.get("APSARA_ACCESS_SECRET");
     const greenVersion = '2017-01-12';
@@ -144,9 +144,9 @@ export class ContentModService {
 	    headers:requestHeaders
 	};
 
-    console.log('host => ' + hostname + ":" + 443 + encodeURI(path + '?clientInfo=' + JSON.stringify(clientInfo)));
-    console.log('header => ' + JSON.stringify(requestHeaders));
-    console.log('body => ' + JSON.stringify(requestBody));
+  this.logger.log('host => ' + hostname + ":" + 443 + encodeURI(path + '?clientInfo=' + JSON.stringify(clientInfo)));
+  this.logger.log('header => ' + JSON.stringify(requestHeaders));
+  this.logger.log('body => ' + JSON.stringify(requestBody));
 
     
 	var req = http.request(options, function(res) {
