@@ -772,11 +772,7 @@ export class TransactionsService {
                     }
                 }
 
-<<<<<<< HEAD
                 if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
-=======
-                if (apsara === undefined || apsara === "" || apsara === null) {
->>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
@@ -1445,7 +1441,6 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
-<<<<<<< HEAD
 
                 if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
@@ -1458,8 +1453,6 @@ export class TransactionsService {
                 } else {
                     idapsaradefine = idapsara;
                 }
-=======
->>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -2167,7 +2160,6 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
-<<<<<<< HEAD
                 if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
                 } else {
@@ -2178,8 +2170,6 @@ export class TransactionsService {
                 } else {
                     idapsaradefine = idapsara;
                 }
-=======
->>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -2870,13 +2860,8 @@ export class TransactionsService {
             var type = null;
             var idapsara = null;
             var apsara = null;
-<<<<<<< HEAD
             var apsaradefine = null;
             var idapsaradefine = null;
-=======
-            var idapsaradefine = null;
-            var apsaradefine = null;
->>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
@@ -2888,7 +2873,6 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
-<<<<<<< HEAD
                 if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
                 } else {
@@ -2899,8 +2883,6 @@ export class TransactionsService {
                 } else {
                     idapsaradefine = idapsara;
                 }
-=======
->>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -3691,11 +3673,7 @@ export class TransactionsService {
                     apsara = false;
                 }
 
-<<<<<<< HEAD
                 if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
-=======
-                if (apsara === undefined || apsara === "" || apsara === null) {
->>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
@@ -4402,22 +4380,12 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
-<<<<<<< HEAD
                 if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
                 }
 
-=======
-
-                if (apsara === undefined || apsara === "" || apsara === null) {
-                    apsaradefine = false;
-                } else {
-                    apsaradefine = true;
-                }
-
->>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
                 if (idapsara === undefined || idapsara === "" || idapsara === null) {
                     idapsaradefine = "";
                 } else {
