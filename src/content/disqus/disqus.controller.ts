@@ -104,10 +104,15 @@ export class DisqusController {
             //var roomName = retVal[retValCount].room;
           //}
         } else if ((type == "COMMENT") && (ContentDto_.postID!=undefined)) {
-          
+          let xres = await this.buildComments(ContentDto_, true);
+          res.response_code = 202;
+          let m = new Messages();
+          m.info = ["The process successful"]
+          res.messages = m;
+          res.data = [xres];
+          return res;
         }
       }else{
-
         if (type == "DIRECT_MSG") {
           var aDisqusContacts : any[] = []; 
           if (ContentDto_.receiverParty != undefined) {
@@ -117,7 +122,6 @@ export class DisqusController {
           } 
           var withDetail = ContentDto_.withDetail;
           var detailOnly = ContentDto_.detailOnly;
-          
           
           let tmp : DisqusResDto[] = [];
           for (let i = 0; i < aDisqusContacts.length; i++) {
@@ -296,13 +300,232 @@ export class DisqusController {
     //return await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
   }
 
-  private async buildComments(ContentDto_: ContentDto, buildInteractive: boolean) {
-    var retVal = [];
+  private async buildComments(inDto: ContentDto, buildInteractive: boolean) {
+    var retVal = new DisqusResDto();
+    var current_date = await this.utilsService.getDateTimeString();
     var Posts_ = new Posts();
-    Posts_ = await this.postDisqusService.findid(ContentDto_.postID.toString());
-    if ((await this.utilsService.ceckData(Posts_)) && Posts_.active && Posts_.allowComments) {
-      
+    Posts_ = await this.postDisqusService.findid(inDto.postID.toString());
+    if ((await this.utilsService.ceckData(Posts_))) {
+      if (Posts_.active && Posts_.allowComments){
+        var disqus = new CreateDisqusDto();
+        var disqus_ = new CreateDisqusDto();
+        disqus_ = await this.disqusService.findDisqusByPost_(Posts_.email.toString(), Posts_.postID.toString(), "COMMENT");
+        if (!(await this.utilsService.ceckData(disqus_))) {
+          var data_id = await this.utilsService.generateId();
+          disqus._id = data_id;
+          disqus.disqusID = data_id;
+          disqus.room = data_id;
+          disqus.eventType = inDto.eventType;
+          disqus.email = inDto.receiverParty;
+          disqus.mate = inDto.email;
+          disqus.active = true; 
+          disqus.createdAt = current_date;
+          disqus.updatedAt = current_date;
+          disqus._class = "io.melody.hyppe.content.domain.Disqus";
+          if (disqus.email!=undefined){
+            if (disqus.email == "") {
+              disqus.email = Posts_.email;
+            }
+          }
+        }else{
+          disqus = disqus_;
+        }
+        inDto.postContent = Posts_;
+        inDto.postID = Posts_.postID;
+        disqus.postID = Posts_.postID; 
+        disqus.mate = null;
+        if (buildInteractive) {
+          var contentDto = new ContentDto();
+          contentDto.eventType = "COMMENT";
+          contentDto.postType = Posts_.postType;
+          contentDto.receiverParty = Posts_.email;
+
+          var InsightDto_ = new CreateInsightsDto();
+          // InsightDto_ = this.validationEvent(contentDto);
+          this.processInsightEvent(InsightDto_);
+        }
+
+        var parentLog = new CreateDisquslogsDto();
+        if (inDto.parentID!=undefined){
+          if (inDto.parentID != "") {
+            parentLog = await this.disqusLogService.findDisqusLogByParentID(inDto.parentID.toString());
+          }
+        }
+
+        var disqusLog = new CreateDisquslogsDto();
+        if (inDto.parentID != undefined) {
+          if (inDto.parentID != "") {
+            var disqusLog_new = new CreateDisquslogsDto();
+            disqusLog_new._id = await this.utilsService.generateId(); 
+            disqusLog_new.disqusID = disqus.disqusID;
+            disqusLog_new.sequenceNumber = Number(parentLog.sequenceNumber)+1;
+            disqusLog_new.active = true;
+            disqusLog_new.createdAt = current_date;
+            disqusLog_new.updatedAt = current_date;
+            disqusLog_new.parentID = parentLog._id;
+            disqusLog_new.sender = inDto.email;
+            disqusLog_new.receiver = inDto.receiverParty;
+            disqusLog_new.postType = inDto.postType;
+            disqusLog_new.txtMessages = inDto.txtMessages;
+            disqusLog_new.reactionUri = inDto.reactionUri;
+            if (await this.utilsService.ceckData(inDto.postContent)){
+              disqusLog_new.postID = inDto.postContent.postID;
+            }
+
+            disqusLog = disqusLog_new;
+          } else {
+            var disqusLog_new = new CreateDisquslogsDto();
+            disqusLog_new._id = await this.utilsService.generateId(); 
+            disqusLog_new.disqusID = await this.utilsService.generateId(); 
+            disqusLog_new.sender = inDto.email;
+            disqusLog_new.sequenceNumber = 0;
+            disqusLog_new.active = true;
+            disqusLog_new.receiver = inDto.receiverParty;
+            disqusLog_new.postType = inDto.postType;
+            disqusLog_new.txtMessages = inDto.txtMessages;
+            disqusLog_new.reactionUri = inDto.reactionUri;
+            disqusLog_new.updatedAt = current_date;
+            disqusLog_new.createdAt = current_date;
+            disqusLog_new._class = "io.melody.hyppe.content.domain.DisqusLog";
+
+            if (await this.utilsService.ceckData(inDto.postContent)) {
+              disqusLog_new.postID = inDto.postContent.postID;
+            }
+            disqusLog = disqusLog_new;
+          }
+        } else {
+          var disqusLog_new = new CreateDisquslogsDto();
+          disqusLog_new._id = await this.utilsService.generateId();
+          disqusLog_new.disqusID = await this.utilsService.generateId();
+          disqusLog_new.sender = inDto.email;
+          disqusLog_new.sequenceNumber = 0;
+          disqusLog_new.active = true;
+          disqusLog_new.receiver = inDto.receiverParty;
+          disqusLog_new.postType = inDto.postType;
+          disqusLog_new.txtMessages = inDto.txtMessages;
+          disqusLog_new.reactionUri = inDto.reactionUri;
+          disqusLog_new.updatedAt = current_date;
+          disqusLog_new.createdAt = current_date;
+          disqusLog_new._class = "io.melody.hyppe.content.domain.DisqusLog";
+
+          if (await this.utilsService.ceckData(inDto.postContent)) {
+            disqusLog_new.postID = inDto.postContent.postID;
+          }
+          disqusLog = disqusLog_new;
+        }
+
+        if (parentLog != undefined) {
+          if (parentLog.replyLogs != null) {
+            const data_replyLogs = parentLog.replyLogs;
+            data_replyLogs.push({
+              $ref: 'disquslogs',
+              $id: disqusLog._id,
+              $db: 'hyppe_content_db',
+            });
+          }
+        }
+        if (disqus.disqusLogs!=undefined){
+          const data_disqusLogs = disqus.disqusLogs;
+          data_disqusLogs.push({
+            $ref: 'disquslogs',
+            $id: disqusLog._id.toString(),
+            $db: 'hyppe_content_db',
+          });
+        }else{
+          disqus.disqusLogs = [{
+            $ref: 'disquslogs',
+            $id: disqusLog._id.toString(),
+            $db: 'hyppe_content_db',
+          }]
+        }
+
+        await this.disqusLogService.create(disqusLog);
+        await this.disqusService.create(disqus);
+        retVal = await this.aggrDetailDisqusLog(disqus, disqusLog);
+      }
     }
+    return retVal;
+  } 
+  
+  private async aggrDetailDisqusLog(disqus: CreateDisqusDto, disqusLog: CreateDisquslogsDto) {
+    var retVal = new DisqusResDto();
+    let retLineVal: DisquslogsDto[] = [];
+    if (disqus.eventType =="COMMENT") {
+      retVal["postID"] = disqus.postID;
+    } else {
+      retVal["room"] = disqus.room;
+    }
+    var profile = await this.utilsService.generateProfile(disqus.email.toString(),"FULL");
+    if (profile != null) {
+      retVal["username"] = profile.username;
+      retVal["fullName"] = profile.fullName;
+      if (profile.avatar != null) {
+        retVal["avatar"] = profile.avatar;
+      }
+    }
+    retVal["email"] = disqus.email;
+    if (disqus.mate!=undefined){
+      if (disqus.mate != "") {
+        var mateInfo = {};
+        var mateProfile = await this.utilsService.generateProfile(disqus.mate.toString(), "FULL");
+        if (profile != null) {
+          mateInfo['username'] = mateProfile.username;
+          mateInfo['fullName'] = mateProfile.fullName;
+          if (mateProfile.avatar != null) {
+            mateInfo['avatar'] = mateProfile.avatar;
+          } 
+        }
+        mateInfo['email'] = mateProfile.email;
+        retVal["mate"] = mateInfo;
+      }
+    }
+
+    var line = new DisquslogsDto();
+    line["disqusID"] = disqusLog.disqusID;
+    line["postType"] = disqusLog.postType;
+    if (disqusLog.postID!=undefined){
+      if (disqusLog.postID != "") {
+        var Posts_ = new Posts();
+        Posts_ = await this.postDisqusService.findid(disqusLog.postID.toString());
+        line["content"] = Posts_;
+      }
+    }
+    line["lineID"] = disqusLog._id;
+    line["sequenceNumber"] = disqusLog.sequenceNumber;
+    line["sender"] = disqusLog.sender;
+    var mateProfile = await this.utilsService.generateProfile(disqusLog.sender.toString(), "FULL");
+    var mateInfo = {};
+    if (mateProfile != null) {
+      mateInfo["username"] = mateProfile.username;
+      mateInfo["fullName"] = mateProfile.fullName;
+      if (mateProfile.avatar != null) {
+        mateInfo['avatar'] = mateProfile.avatar;
+      }
+      line["senderInfo"] = mateInfo;
+    }
+    line["receiver"] = disqusLog.receiver;
+    line["active"] = disqusLog.active;
+    line["createdAt"] = disqusLog.createdAt;
+    line["updatedAt"] = disqusLog.updatedAt;
+    line["txtMessages"] = disqusLog.txtMessages;
+    retLineVal.push(line);
+    //retVal["disqusLogs"] = retLineVal;
+    retVal.disqusLogs = retLineVal;
+    return retVal;
+  }
+
+  // private async validationEvent(contentDto: ContentDto): Promise<Insights>  {
+  //   var Insights_ = new Insights();
+  //   return Insights_;
+  // }
+
+  private async validationEvent(contentDto: ContentDto): Promise<CreateInsightsDto> {
+    var Insights_ = new CreateInsightsDto();
+    return Insights_;
+  }
+
+  private async processInsightEvent(insightDto: CreateInsightsDto) {
+
   }
 
   private async aggrDisqusLog(eventType: string, DisqusLog: CreateDisquslogsDto){
@@ -445,6 +668,7 @@ export class DisqusController {
     arr.push(agg);
     retVal.disqusLogs = arr;
   
+<<<<<<< HEAD
     var usp = { "ref": "disquslogs", "id": String(ndl._id), "db": "hyppe_trans_db" };
     if (dis.disqusLogs != undefined) {
       dis.disqusLogs.push(usp);
@@ -454,6 +678,10 @@ export class DisqusController {
       dis.disqusLogs = arr;      
     }
 
+=======
+    var usp = { "$ref": "disquslogs", "$id": String(ndl._id), "$db": "hyppe_trans_db" };
+    dis.disqusLogs.push(usp);
+>>>>>>> 261effb06a7a13e8a4c539521fbcbd34cc9da4db
 
     dis.updatedAt = dl.createdAt;
     dis.lastestMessage = dl.txtMessages.substring(0, 21);
@@ -537,6 +765,7 @@ export class DisqusController {
 
     return retVal;
   }
+
   private async buildDisqus0(ContentDto_: ContentDto, buildInteractive: boolean) {
     var cts :Disquscontacts[] = [];
     cts = await this.disquscontactsService.findByEmailAndMate(ContentDto_.email.toString(), ContentDto_.receiverParty.toString());
