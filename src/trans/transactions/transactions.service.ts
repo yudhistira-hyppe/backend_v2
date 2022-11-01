@@ -1491,17 +1491,7 @@ export class TransactionsService {
                     }
                 }
 
-                if (apsara === undefined || apsara === "" || apsara === null) {
-                    apsaradefine = false;
-                } else {
-                    apsaradefine = true;
-                }
 
-                if (idapsara === undefined || idapsara === "" || idapsara === null) {
-                    idapsaradefine = "";
-                } else {
-                    idapsaradefine = idapsara;
-                }
                 objk = {
                     "_id": query[i]._id,
                     "iduser": query[i].iduser,
@@ -2208,17 +2198,7 @@ export class TransactionsService {
                     }
                 }
 
-                if (apsara === undefined || apsara === "" || apsara === null) {
-                    apsaradefine = false;
-                } else {
-                    apsaradefine = true;
-                }
 
-                if (idapsara === undefined || idapsara === "" || idapsara === null) {
-                    idapsaradefine = "";
-                } else {
-                    idapsaradefine = idapsara;
-                }
                 objk = {
                     "_id": query[i]._id,
                     "iduser": query[i].iduser,
@@ -2921,17 +2901,6 @@ export class TransactionsService {
                     }
                 }
 
-                if (apsara === undefined || apsara === "" || apsara === null) {
-                    apsaradefine = false;
-                } else {
-                    apsaradefine = true;
-                }
-
-                if (idapsara === undefined || idapsara === "" || idapsara === null) {
-                    idapsaradefine = "";
-                } else {
-                    idapsaradefine = idapsara;
-                }
                 objk = {
                     "_id": query[i]._id,
                     "iduser": query[i].iduser,
