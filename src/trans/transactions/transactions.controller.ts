@@ -924,6 +924,7 @@ export class TransactionsController {
 
     }
 
+
     @Post('api/pg/oy/callback/va')
     async callbackVa(@Res() res, @Body() payload: VaCallback) {
 
@@ -1089,11 +1090,11 @@ export class TransactionsController {
                         //// var datapph = await this.pph(idtransaction, idusersell, amount, postid);
 
 
-                        await this.transactionsService.updateone(idtransaction, idbalance, payload, dt.toISOString());
+                        await this.transactionsService.updateone(idtransaction, idbalance, payload);
                         await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
 
-                        await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy);
+                        await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy, dt.toISOString());
                         if (salelike == false) {
                             await this.postsService.updatesalelike(postid);
 
@@ -1112,17 +1113,17 @@ export class TransactionsController {
                         }
 
 
-                        if (postType == "vid") {
-                            data_media = await this.mediavideosService.findOnepostID(postid);
-                        } else if (postType == "pict") {
-                            data_media = await this.mediapictsService.findOnepostID(postid);
-                        } else if (postType == "diary") {
-                            data_media = await this.mediadiariesService.findOnepostID(postid);
-                        } else if (postType == "story") {
-                            data_media = await this.mediastoriesService.findOnepostID(postid);
-                        }
+                        // if (postType == "vid") {
+                        //     data_media = await this.mediavideosService.findOnepostID(postid);
+                        // } else if (postType == "pict") {
+                        //     data_media = await this.mediapictsService.findOnepostID(postid);
+                        // } else if (postType == "diary") {
+                        //     data_media = await this.mediadiariesService.findOnepostID(postid);
+                        // } else if (postType == "story") {
+                        //     data_media = await this.mediastoriesService.findOnepostID(postid);
+                        // }
 
-                        var mediaId = data_media.mediaID;
+                        // var mediaId = data_media.mediaID;
 
                         // let CreateUserplaylistDto_ = new CreateUserplaylistDto();
                         // CreateUserplaylistDto_.mediaId = mediaId;
@@ -1491,7 +1492,6 @@ export class TransactionsController {
                         datawithdraw.idUser = iduser;
                         datawithdraw.status = statusmessage;
                         datawithdraw.timestamp = dtb;
-                        datawithdraw.updatedAt = dtb;
                         datawithdraw.verified = false;
                         datawithdraw.partnerTrxid = partnertrxid;
                         datawithdraw.statusOtp = null;
@@ -1563,7 +1563,6 @@ export class TransactionsController {
                         datawithdraw.idUser = iduser;
                         datawithdraw.status = statusmessage;
                         datawithdraw.timestamp = dtb;
-                        datawithdraw.updatedAt = dtb;
                         datawithdraw.verified = false;
                         datawithdraw.partnerTrxid = partnertrxid;
                         datawithdraw.statusOtp = null;
@@ -1686,10 +1685,6 @@ export class TransactionsController {
         var partner_trx_id = payload.partner_trx_id;
         var statusCallback = payload.status.code;
         var statusMessage = payload.status.message;
-        var dt = new Date(Date.now());
-        dt.setHours(dt.getHours() + 7); // timestamp
-        dt = new Date(dt);
-
         try {
             databank = await this.banksService.findbankcode(recipient_bank);
             idbank = databank._doc._id;
@@ -1710,7 +1705,7 @@ export class TransactionsController {
 
             if (statusCallback === "000") {
 
-                await this.withdrawsService.updateone(partner_trx_id, payload, dt.toISOString());
+                await this.withdrawsService.updateone(partner_trx_id, payload);
 
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -1721,7 +1716,7 @@ export class TransactionsController {
 
             else if (statusCallback === "210") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload, dt.toISOString());
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Request is Rejected (Amount is not valid)", payload);
 
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -1732,7 +1727,7 @@ export class TransactionsController {
 
             else if (statusCallback === "300") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload, dt.toISOString());
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
 
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -1742,7 +1737,7 @@ export class TransactionsController {
             }
             else if (statusCallback === "301") {
 
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload, dt.toISOString());
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Pending (When there is a unclear answer from Banks Network)", payload);
 
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -1750,7 +1745,7 @@ export class TransactionsController {
                 });
 
             } else {
-                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload, dt.toISOString());
+                await this.withdrawsService.updatefailed(partner_trx_id, statusMessage, "Disbursement is FAILED", payload);
 
                 res.status(HttpStatus.OK).json({
                     response_code: 202,
@@ -3418,7 +3413,7 @@ export class TransactionsController {
 
                     if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
                         await this.transactionsService.updatestatuscancel(idtransaction);
-                        await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                        //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                     }
 
 
@@ -3767,8 +3762,8 @@ export class TransactionsController {
         }
 
         if (sell === true && buy === false && withdrawal === false && rewards === false && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
             data = datasell;
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -3779,8 +3774,8 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === false && rewards === false && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
             data = datasell;
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -3791,8 +3786,8 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === true && withdrawal === false && rewards === false && startdate === undefined && enddate === undefined) {
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
             data = databuy;
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -3804,8 +3799,8 @@ export class TransactionsController {
         }
         else if (sell === false && buy === true && withdrawal === false && rewards === false && startdate !== undefined && enddate !== undefined) {
 
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
             data = databuy;
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -3816,8 +3811,8 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === false && withdrawal === true && rewards === false && startdate === undefined && enddate === undefined) {
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             data = datawithdraw;
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -3829,8 +3824,8 @@ export class TransactionsController {
 
         }
         else if (sell === false && buy === false && withdrawal === true && rewards === false && startdate !== undefined && enddate !== undefined) {
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             data = datawithdraw;
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -3865,10 +3860,10 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === true && withdrawal === false && rewards === false && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
             data = datasell.concat(databuy);
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -3880,10 +3875,10 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === true && withdrawal === false && rewards === false && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
             data = datasell.concat(databuy);
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -3895,10 +3890,10 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === true && withdrawal === false && rewards === true && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
             datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
             datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
             data = datasell.concat(databuy, datarewards);
@@ -3912,10 +3907,10 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === true && withdrawal === false && rewards === true && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
             datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
             datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
             data = datasell.concat(databuy, datarewards);
@@ -3929,8 +3924,8 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === false && rewards === true && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
             datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
             datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
             data = datasell.concat(datarewards);
@@ -3944,8 +3939,8 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === false && rewards === true && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
             datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
             datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
             data = datasell.concat(datarewards);
@@ -3959,10 +3954,10 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === true && rewards === true && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
             datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
             data = datasell.concat(datawithdraw, datarewards);
@@ -3977,8 +3972,8 @@ export class TransactionsController {
         }
         else if (sell === false && buy === false && withdrawal === true && rewards === true && startdate === undefined && enddate === undefined) {
 
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
             datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
             data = datawithdraw.concat(datarewards);
@@ -3993,8 +3988,8 @@ export class TransactionsController {
         }
         else if (sell === false && buy === false && withdrawal === true && rewards === true && startdate !== undefined && enddate !== undefined) {
 
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
             datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
             data = datawithdraw.concat(datarewards);
@@ -4008,10 +4003,10 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === true && rewards === true && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
             datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
             data = datasell.concat(datawithdraw, datarewards);
@@ -4026,8 +4021,8 @@ export class TransactionsController {
         }
         else if (sell === false && buy === true && withdrawal === false && rewards === true && startdate === undefined && enddate === undefined) {
 
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
             datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
             datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
             data = databuy.concat(datarewards);
@@ -4042,8 +4037,8 @@ export class TransactionsController {
         }
         else if (sell === false && buy === true && withdrawal === false && rewards === true && startdate !== undefined && enddate !== undefined) {
 
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
             datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
             datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
             data = databuy.concat(datarewards);
@@ -4057,12 +4052,12 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === true && withdrawal === true && rewards === true && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
             datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
             data = datasell.concat(databuy, datawithdraw, datarewards);
@@ -4076,12 +4071,12 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === true && withdrawal === true && rewards === true && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             datarewards = await this.accountbalancesService.findreward(idadmin, startdate, enddate, skip, limit);
             datarewardscount = await this.accountbalancesService.findrewardcount(idadmin, startdate, enddate);
             data = datasell.concat(databuy, datawithdraw, datarewards);
@@ -4095,10 +4090,10 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === true && rewards === true && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             data = datasell.concat(datawithdraw);
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -4110,10 +4105,10 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === true && rewards === true && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             data = datasell.concat(datawithdraw);
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -4125,10 +4120,10 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === false && withdrawal === true && rewards === false && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             data = datasell.concat(datawithdraw);
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -4140,10 +4135,10 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === true && withdrawal === true && rewards === false && startdate === undefined && enddate === undefined) {
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             data = databuy.concat(datawithdraw);
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -4155,10 +4150,10 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === true && withdrawal === true && rewards === false && startdate !== undefined && enddate !== undefined) {
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             data = databuy.concat(datawithdraw);
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -4170,12 +4165,12 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === false && withdrawal === false && rewards === false && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             data = datasell.concat(databuy, datawithdraw);
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -4187,12 +4182,12 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === true && withdrawal === true && rewards === false && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             data = datasell.concat(databuy, datawithdraw);
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -4204,12 +4199,12 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === true && buy === true && withdrawal === true && rewards === false && startdate !== undefined && enddate !== undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             data = datasell.concat(databuy, datawithdraw);
             data.sort((first, second) => {
                 if (first.timestamp > second.timestamp) return -1;
@@ -4221,12 +4216,12 @@ export class TransactionsController {
             return { response_code: 202, totalsaldo, data, skip, limit, datacount, messages };
         }
         else if (sell === false && buy === false && withdrawal === false && rewards === false && startdate === undefined && enddate === undefined) {
-            datasell = await this.transactionsService.findhistorySeller(idadmin, startdate, enddate, skip, limit);
-            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, startdate, enddate);
-            databuy = await this.transactionsService.findhistoryBuyer(idadmin, startdate, enddate, skip, limit);
-            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, startdate, enddate);
-            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, startdate, enddate, skip, limit);
-            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, startdate, enddate, skip, limit);
+            datasell = await this.transactionsService.findhistorySeller(idadmin, status, startdate, enddate, skip, limit);
+            datasellcount = await this.transactionsService.findhistorySellercount(idadmin, status, startdate, enddate);
+            databuy = await this.transactionsService.findhistoryBuyer(idadmin, status, startdate, enddate, skip, limit);
+            databuycount = await this.transactionsService.findhistoryBuyerCount(idadmin, status, startdate, enddate);
+            datawithdraw = await this.withdrawsService.findhistoryWithdrawer(idadmin, status, startdate, enddate, skip, limit);
+            datawithdrawcount = await this.withdrawsService.findhistoryWithdrawerCount(idadmin, status, startdate, enddate);
             data = datasell.concat(databuy, datawithdraw);
 
             data.sort((first, second) => {
@@ -4392,10 +4387,17 @@ export class TransactionsController {
                 let pict: String[] = [];
                 var objk = {};
                 var idapsara = null;
+                var apsara = null;
                 try {
                     idapsara = databuy[0].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+
+                try {
+                    apsara = databuy[0].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = databuy[0].postType;
                 pict = [idapsara];
@@ -4470,8 +4472,8 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
-                    "apsara": databuy[0].apsara,
-                    "apsaraId": databuy[0].apsaraId,
+                    "apsara": apsara,
+                    "apsaraId": idapsara,
                     "media": dataapsara
 
                 };
@@ -4547,10 +4549,17 @@ export class TransactionsController {
                 let pict: String[] = [];
                 var objk = {};
                 var idapsara = null;
+                var apsara = null;
                 try {
                     idapsara = databuy[0].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+
+                try {
+                    apsara = databuy[0].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = databuy[0].postType;
                 pict = [idapsara];
@@ -4620,8 +4629,8 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
-                    "apsara": databuy[0].apsara,
-                    "apsaraId": databuy[0].apsaraId,
+                    "apsara": apsara,
+                    "apsaraId": idapsara,
                     "media": dataapsara
 
                 };

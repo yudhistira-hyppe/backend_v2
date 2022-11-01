@@ -46,9 +46,9 @@ export class PostsController {
     private readonly contenteventsService: ContenteventsService,
     private readonly insightsService: InsightsService,
     private readonly userbasicsService: UserbasicsService,
-    private readonly postCommentService: PostCommentService,    
+    private readonly postCommentService: PostCommentService,
     private readonly notifService: NotificationsService,
-    private readonly disqusService: DisqusService,    
+    private readonly disqusService: DisqusService,
     private readonly groupModuleService: GroupModuleService) { }
 
   @Post()
@@ -161,6 +161,7 @@ export class PostsController {
   }
 
 
+
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/deletetag')
   async deleteTag(@Req() request) {
@@ -219,8 +220,8 @@ export class PostsController {
     if (dataquery[0].postType == 'vid') {
       if (dataquery[0].metadata != undefined) {
         data_post['metadata'] = {
-          "duration": (dataquery[0].metadata.duration != undefined)? dataquery[0].metadata.duration:null,
-          "postRoll": (dataquery[0].metadata.postRoll != undefined) ? dataquery[0].metadata.postRoll : null, 
+          "duration": (dataquery[0].metadata.duration != undefined) ? dataquery[0].metadata.duration : null,
+          "postRoll": (dataquery[0].metadata.postRoll != undefined) ? dataquery[0].metadata.postRoll : null,
           "postType": (dataquery[0].metadata.postType != undefined) ? dataquery[0].metadata.postType : null,
           "preRoll": (dataquery[0].metadata.preRoll != undefined) ? dataquery[0].metadata.preRoll : null,
           "midRoll": (dataquery[0].metadata.midRoll != undefined) ? dataquery[0].metadata.midRoll : null,
@@ -231,13 +232,13 @@ export class PostsController {
     }
 
     if (dataquery[0].datacontent != undefined) {
-      if (dataquery[0].datacontent.leght>0) {
+      if (dataquery[0].datacontent.leght > 0) {
         data_post['mediaBasePath'] = (dataquery[0].datacontent[0].mediaBasePath != undefined) ? dataquery[0].datacontent[0].mediaBasePath : null;
         data_post['mediaType'] = (dataquery[0].datacontent[0].mediaType != undefined) ? dataquery[0].datacontent[0].mediaType : null;
         data_post['mediaUri'] = (dataquery[0].datacontent[0].mediaUri != undefined) ? dataquery[0].datacontent[0].mediaUri : null;
       }
     }
-    
+
     data_post['postType'] = (dataquery[0].postType != undefined) ? dataquery[0].postType : null;
     data_post['description'] = (dataquery[0].description != undefined) ? dataquery[0].description : null;
     data_post['active'] = (dataquery[0].active != undefined) ? dataquery[0].active : null;
@@ -272,9 +273,9 @@ export class PostsController {
         if (dataquery[0].datauser.insight != undefined) {
           data_post['insight'] = {
             "shares": (dataquery[0].datauser.insight.shares != undefined) ? dataquery[0].datauser.insight.shares : null,
-            "comments": (dataquery[0].datauser.insight.comments != undefined) ? dataquery[0].datauser.insight.comments : null, 
-            "reactions": (dataquery[0].datauser.insight.reactions != undefined) ? dataquery[0].datauser.insight.reactions : null, 
-            "views": (dataquery[0].datauser.insight.views != undefined) ? dataquery[0].datauser.insight.views : null, 
+            "comments": (dataquery[0].datauser.insight.comments != undefined) ? dataquery[0].datauser.insight.comments : null,
+            "reactions": (dataquery[0].datauser.insight.reactions != undefined) ? dataquery[0].datauser.insight.reactions : null,
+            "views": (dataquery[0].datauser.insight.views != undefined) ? dataquery[0].datauser.insight.views : null,
             "likes": (dataquery[0].datauser.insight.likes != undefined) ? dataquery[0].datauser.insight.likes : null,
           };
 
@@ -323,7 +324,7 @@ export class PostsController {
   async removeComment(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("removeComment >>> start");
     return this.postCommentService.removeComment(body, headers);
-  }  
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/postviewer')
@@ -331,11 +332,11 @@ export class PostsController {
   async postViewer(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("postViewer >>> start");
     return this.postCommentService.postViewer(body, headers);
-  }    
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/updatepost')
-  @UseInterceptors(FileInterceptor('postContent'))  
+  @UseInterceptors(FileInterceptor('postContent'))
   async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("updatePost >>> start");
     var titleinsukses = "Selamat";
@@ -434,11 +435,12 @@ export class PostsController {
     CreateUserplaylistDto_.mediaId = body.mediaId;
     CreateUserplaylistDto_.postType = body.postType;
     return await this.PostsService.updateGenerateUserPlaylist_(CreateUserplaylistDto_);
-  } 
+  }
 
   @Get('api/userplaylist/generateNewUserPlaylist')
   @HttpCode(HttpStatus.ACCEPTED)
-  async generateNewUserPlaylist() {;
+  async generateNewUserPlaylist() {
+    ;
     return await this.PostsService.generateNewUserPlaylist("633d0c26c9dca3610d7209f9");
   }
 

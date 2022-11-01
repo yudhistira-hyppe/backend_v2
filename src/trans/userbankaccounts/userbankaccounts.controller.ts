@@ -229,4 +229,6 @@ export class UserbankaccountsController {
         return { response_code: 202, messages };
     }
 
+
+
 }

@@ -1,7 +1,7 @@
 import { Long } from "mongodb";
 
 export class CreatePostsDto {
-  
+
 
     readonly _id: String;
     readonly postID: String;
@@ -9,12 +9,12 @@ export class CreatePostsDto {
     readonly postType: String;
     readonly description: String;
     readonly active: boolean;
-    readonly  createdAt: String;
-    readonly  updatedAt: String;
+    readonly createdAt: String;
+    readonly updatedAt: String;
     readonly expiration: Long;
-    readonly  visibility: String;
-    readonly  location: String;
-    readonly  tags: [];
+    readonly visibility: String;
+    readonly location: String;
+    readonly tags: [];
     readonly allowComments: boolean;
     readonly isSafe: boolean;
     readonly isOwned: boolean;
@@ -31,28 +31,33 @@ export class CreatePostsDto {
     readonly likes: Long;
     readonly views: Long;
     readonly shares: Long;
-   
+
     readonly comments: Long;
     readonly userProfile: {
         ref: String;
         id: {
-          oid: String;
+            oid: String;
         };
-        db:String;
+        db: String;
     };
-   
-   
-    readonly contentMedias: any[];
-    readonly _class:String;
-  }
 
-  export class CreatePostResponse {
+    readonly contentMedias: any[];
+    readonly _class: String;
+    readonly reportedStatus: string
+    readonly reportedUserCount: number
+    readonly reportedUser: any[];
+    readonly contentModeration: boolean
+    readonly contentModerationResponse: string
+    readonly reportedUserHandle: any[];
+}
+
+export class CreatePostResponse {
     response_code: number;
     messages: Messages;
     data: PostData;
-  }  
+}
 
-  export class Metadata {
+export class Metadata {
     postType: string;
     duration: number;
     postID: string;
@@ -138,7 +143,7 @@ export class PostResponseApps {
     data: PostData[];
     messages: Messages;
     version: string;
-}  
+}
 
 export class VideoList {
     Status: string;
@@ -209,7 +214,7 @@ export class PostLandingData {
     video: PostData[];
     pict: PostData[];
     story: PostData[];
-    diary: PostData[];            
+    diary: PostData[];
 }
 
 export class PostLandingResponseApps {

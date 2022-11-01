@@ -20,7 +20,7 @@ export class Posts {
   active: boolean
 
   @Prop()
-  createdAt: String  
+  createdAt: String
   @Prop()
   updatedAt: String
   @Prop()
@@ -44,7 +44,7 @@ export class Posts {
   @Prop()
   saleLike: boolean
   @Prop()
-  saleView: boolean    
+  saleView: boolean
 
   @Prop({ type: Object })
   metadata: {
@@ -72,26 +72,38 @@ export class Posts {
   userProfile: any;
 
   @Prop()
-  contentMedias: any[];  
+  contentMedias: any[];
 
   @Prop()
   _class: String
 
   @Prop()
-  lat: number;  
+  lat: number;
 
   @Prop()
-  lon: number;    
+  lon: number;
 
   @Prop()
   category: any[];
 
   @Prop()
   tagPeople: any[];
-  
+
   @Prop()
-  tagDescription: any[];  
-  
+  tagDescription: any[];
+
+  @Prop()
+  reportedStatus: string
+  @Prop()
+  reportedUserCount: number
+  @Prop()
+  reportedUser: any[];
+  @Prop()
+  contentModeration: boolean
+  @Prop()
+  contentModerationResponse: string
+  @Prop()
+  reportedUserHandle: any[];
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

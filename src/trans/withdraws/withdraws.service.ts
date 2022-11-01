@@ -33,15 +33,20 @@ export class WithdrawsService {
         return data;
     }
 
-    async updateone(partnerTrxid: string, payload: OyDisburseCallbackWithdraw, updatedAt: string): Promise<Object> {
+    async updateone(partnerTrxid: string, payload: OyDisburseCallbackWithdraw): Promise<Object> {
         let data = await this.withdrawsModel.updateOne({ "partnerTrxid": partnerTrxid },
-            { $set: { "status": "Success", "description": "Withdraw success", verified: true, payload: payload, "updatedAt": updatedAt } });
+            { $set: { "status": "Success", "description": "Withdraw success", verified: true, payload: payload } });
+        return data;
+    }
+    async updateone101(partnerTrxid: string, status: string, payload: OyDisburseCallbackWithdraw): Promise<Object> {
+        let data = await this.withdrawsModel.updateOne({ "partnerTrxid": partnerTrxid },
+            { $set: { "status": status, "description": status, verified: true, payload: payload } });
         return data;
     }
 
-    async updatefailed(partnerTrxid: string, status: string, description: string, payload: OyDisburseCallbackWithdraw, updatedAt: string): Promise<Object> {
+    async updatefailed(partnerTrxid: string, status: string, description: string, payload: OyDisburseCallbackWithdraw): Promise<Object> {
         let data = await this.withdrawsModel.updateOne({ "partnerTrxid": partnerTrxid },
-            { $set: { "status": status, "description": description, verified: false, payload: payload, "updatedAt": updatedAt } });
+            { $set: { "status": status, "description": description, verified: false, payload: payload } });
         return data;
     }
 
@@ -63,6 +68,7 @@ export class WithdrawsService {
                 {
                     $addFields: {
                         type: 'Withdrawal',
+                        apsara: false
 
                     },
                 },
@@ -81,13 +87,14 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
                                 0
                             ]
                         },
-
+                        apsara: "$apsara"
                     }
                 }, {
                     $project: {
@@ -99,6 +106,8 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
+                        apsara: "$apsara"
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -127,6 +136,7 @@ export class WithdrawsService {
                 {
                     $addFields: {
                         type: 'Withdrawal',
+                        apsara: false
 
                     },
                 },
@@ -145,13 +155,14 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
                                 0
                             ]
                         },
-
+                        apsara: "$apsara"
                     }
                 }, {
                     $project: {
@@ -163,6 +174,8 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
+                        apsara: "$apsara"
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -187,6 +200,7 @@ export class WithdrawsService {
                 {
                     $addFields: {
                         type: 'Withdrawal',
+                        apsara: false
 
                     },
                 },
@@ -205,13 +219,14 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
                                 0
                             ]
                         },
-
+                        apsara: "$apsara"
                     }
                 }, {
                     $project: {
@@ -223,6 +238,8 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
+                        apsara: "$apsara"
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -477,16 +494,16 @@ export class WithdrawsService {
         return query;
     }
 
-    async findhistoryWithdrawer(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
+    async findhistoryWithdrawer(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
 
-        if (startdate !== undefined && enddate !== undefined) {
+        if (startdate !== undefined && enddate !== undefined && status !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
             var dateend = currentdate.toISOString();
             const query = await this.withdrawsModel.aggregate([
                 {
                     $match: {
-                        status: "Success",
+                        status: status,
                         idUser: iduser,
                         timestamp: { $gte: startdate, $lte: dateend }
                     }
@@ -513,6 +530,7 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
@@ -531,6 +549,137 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+                {
+                    $skip: skip
+                },
+                {
+                    $limit: limit
+                }
+            ]);
+            return query;
+        }
+        else if (startdate !== undefined && enddate !== undefined && status === undefined) {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+            const query = await this.withdrawsModel.aggregate([
+                {
+                    $match: {
+
+                        idUser: iduser,
+                        timestamp: { $gte: startdate, $lte: dateend }
+                    }
+                },
+
+                {
+                    $addFields: {
+                        type: 'Withdrawal',
+
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idUser",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                }, {
+                    $project: {
+                        iduser: "$idUser",
+                        type: "$type",
+                        timestamp: "$timestamp",
+                        partnerTrxid: "$partnerTrxid",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                }, {
+                    $project: {
+                        iduser: "$iduser",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+                        type: "$type",
+                        timestamp: "$timestamp",
+                        partnerTrxid: "$partnerTrxid",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+                {
+                    $skip: skip
+                },
+                {
+                    $limit: limit
+                }
+            ]);
+            return query;
+        }
+        else if (startdate === undefined && enddate === undefined && status !== undefined) {
+
+            const query = await this.withdrawsModel.aggregate([
+                {
+                    $match: {
+                        status: status,
+                        idUser: iduser,
+
+                    }
+                },
+
+                {
+                    $addFields: {
+                        type: 'Withdrawal',
+
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idUser",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                }, {
+                    $project: {
+                        iduser: "$idUser",
+                        type: "$type",
+                        timestamp: "$timestamp",
+                        partnerTrxid: "$partnerTrxid",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                }, {
+                    $project: {
+                        iduser: "$iduser",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+                        type: "$type",
+                        timestamp: "$timestamp",
+                        partnerTrxid: "$partnerTrxid",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -547,7 +696,7 @@ export class WithdrawsService {
             const query = await this.withdrawsModel.aggregate([
                 {
                     $match: {
-                        status: "Success",
+
                         idUser: iduser
                     }
                 },
@@ -573,6 +722,7 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
@@ -591,6 +741,7 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                     }
                 },
                 { $sort: { timestamp: -1 }, },
@@ -606,16 +757,16 @@ export class WithdrawsService {
 
     }
 
-    async findhistoryWithdrawerCount(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
+    async findhistoryWithdrawerCount(iduser: ObjectId, status: string, startdate: string, enddate: string) {
 
-        if (startdate !== undefined && enddate !== undefined) {
+        if (startdate !== undefined && enddate !== undefined && status !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
             var dateend = currentdate.toISOString();
             const query = await this.withdrawsModel.aggregate([
                 {
                     $match: {
-                        status: "Success",
+                        status: status,
                         idUser: iduser,
                         timestamp: { $gte: startdate, $lte: dateend }
                     }
@@ -642,6 +793,7 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
@@ -660,19 +812,139 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                     }
                 },
-
+                { $sort: { timestamp: -1 }, },
 
             ]);
             return query;
         }
+        else if (startdate !== undefined && enddate !== undefined && status === undefined) {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
+            var dateend = currentdate.toISOString();
+            const query = await this.withdrawsModel.aggregate([
+                {
+                    $match: {
+
+                        idUser: iduser,
+                        timestamp: { $gte: startdate, $lte: dateend }
+                    }
+                },
+
+                {
+                    $addFields: {
+                        type: 'Withdrawal',
+
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idUser",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                }, {
+                    $project: {
+                        iduser: "$idUser",
+                        type: "$type",
+                        timestamp: "$timestamp",
+                        partnerTrxid: "$partnerTrxid",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                }, {
+                    $project: {
+                        iduser: "$iduser",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+                        type: "$type",
+                        timestamp: "$timestamp",
+                        partnerTrxid: "$partnerTrxid",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+
+            ]);
+            return query;
+        }
+        else if (startdate === undefined && enddate === undefined && status !== undefined) {
+
+            const query = await this.withdrawsModel.aggregate([
+                {
+                    $match: {
+                        status: status,
+                        idUser: iduser,
+
+                    }
+                },
+
+                {
+                    $addFields: {
+                        type: 'Withdrawal',
+
+                    },
+                },
+                {
+                    $lookup: {
+                        from: "userbasics",
+                        localField: "idUser",
+                        foreignField: "_id",
+                        as: "userbasics_data"
+                    }
+                }, {
+                    $project: {
+                        iduser: "$idUser",
+                        type: "$type",
+                        timestamp: "$timestamp",
+                        partnerTrxid: "$partnerTrxid",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                        user: {
+                            $arrayElemAt: [
+                                "$userbasics_data",
+                                0
+                            ]
+                        },
+
+                    }
+                }, {
+                    $project: {
+                        iduser: "$iduser",
+                        fullName: "$user.fullName",
+                        email: "$user.email",
+                        type: "$type",
+                        timestamp: "$timestamp",
+                        partnerTrxid: "$partnerTrxid",
+                        amount: "$amount",
+                        totalamount: "$totalamount",
+                        status: "$status",
+                    }
+                },
+                { $sort: { timestamp: -1 }, },
+
+            ]);
+            return query;
+        }
         else {
             const query = await this.withdrawsModel.aggregate([
                 {
                     $match: {
-                        status: "Success",
+
                         idUser: iduser
                     }
                 },
@@ -698,6 +970,7 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                         user: {
                             $arrayElemAt: [
                                 "$userbasics_data",
@@ -716,9 +989,10 @@ export class WithdrawsService {
                         partnerTrxid: "$partnerTrxid",
                         amount: "$amount",
                         totalamount: "$totalamount",
+                        status: "$status",
                     }
                 },
-
+                { $sort: { timestamp: -1 }, },
 
             ]);
             return query;
