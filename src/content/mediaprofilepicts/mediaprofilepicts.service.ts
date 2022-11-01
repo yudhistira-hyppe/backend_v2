@@ -20,6 +20,11 @@ export class MediaprofilepictsService {
     return createMediaprofilepictsDto;
   }
 
+  async createV2(dto: Mediaprofilepicts): Promise<Mediaprofilepicts> {
+    const ndto = await this.MediaprofilepictsModel.create(dto);
+    return ndto;
+  }  
+
   async findAll(): Promise<Mediaprofilepicts[]> {
     return this.MediaprofilepictsModel.find().exec();
   }
