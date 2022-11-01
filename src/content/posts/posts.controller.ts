@@ -458,7 +458,6 @@ export class PostsController {
   @Get('api/userplaylist/generateNewUserPlaylist')
   @HttpCode(HttpStatus.ACCEPTED)
   async generateNewUserPlaylist() {
-    ;
     return await this.PostsService.generateNewUserPlaylist("633d0c26c9dca3610d7209f9");
   }
 
@@ -646,5 +645,77 @@ export class PostsController {
         ]
       }
     }
+  }
+
+  @Get('api/posts/getpostm2m')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async getPostM2M(@Query('postID') postID: string,){
+    var response = {};
+    var post = await this.PostsService.findByPostId(postID);
+    if (await this.utilsService.ceckData(post)){
+      var media = await this.PostsService.findOnepostID(postID);
+      if (await this.utilsService.ceckData(media)){
+        var data = [];
+        var data_ = {};
+        if (media[0].datacontent[0].mediaBasePath != undefined){
+          data_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
+        }
+        if (post.postType != undefined) {
+          data_["postType"] = post.postType;
+        }
+        if (media[0].datacontent[0].mediaUri != undefined) {
+          data_["mediaUri"] = media[0].datacontent[0].mediaUri;
+        }
+        if (post.description != undefined) {
+          data_["description"] = post.description;
+        }
+        if (post.active != undefined) {
+          data_["active"] = post.active;
+        }
+        if (media[0].datacontent[0].mediaType != undefined) {
+          data_["mediaType"] = media[0].datacontent[0].mediaType;
+        }
+        if (post.postID != undefined) {
+          data_["postID"] = post.postID;
+        }
+        if (post.tags != undefined) {
+          data_["tags"] = post.tags;
+        }
+        if (post.allowComments != undefined) {
+          data_["allowComments"] = post.allowComments;
+        }
+        if (post.createdAt != undefined) {
+          data_["createdAt"] = post.createdAt;
+        }
+        if (media[0].datauser.insight != undefined) {
+          data_["insight"] = media[0].datauser.insight;
+        }
+        if (media[0].datauser.insight != undefined) {
+          data_["email"] = post.email;
+        }
+        if (media[0].datauser.insight != undefined) {
+          data_["updatedAt"] = post.updatedAt;
+        }
+        data.push(data_)
+        response = {
+          "response_code": 202,
+          "data": data,
+          "messages": {}
+        }
+      } else {
+        response = {
+          "response_code": 202,
+          "data": [],
+          "messages": {}
+        }
+      }
+    }else{
+      response = {
+        "response_code": 202,
+        "data": [],
+        "messages": {}
+      }
+    }
+    return response;
   }
 }
