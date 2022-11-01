@@ -43,12 +43,12 @@ export class CreatePostsDto {
 
     readonly contentMedias: any[];
     readonly _class: String;
-    readonly reportedStatus: string
-    readonly reportedUserCount: number
-    readonly reportedUser: any[];
-    readonly contentModeration: boolean
-    readonly contentModerationResponse: string
-    readonly reportedUserHandle: any[];
+    reportedStatus: string
+    reportedUserCount: number
+    reportedUser: any[];
+    contentModeration: boolean
+    contentModerationResponse: string
+    reportedUserHandle: any[];
 }
 
 export class CreatePostResponse {
