@@ -32,12 +32,8 @@ lastestMessage: String
     emailActive: boolean
     @Prop()
     mateActive: boolean
- @Prop([{type:Object}])
- disqusLogs: [{
-    ref:String
-    id:String
-    db:String
-}]
+ @Prop()
+ disqusLogs: any[]
  @Prop()
 _class: String
 @Prop()

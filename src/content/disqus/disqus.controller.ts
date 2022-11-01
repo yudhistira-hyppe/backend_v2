@@ -446,7 +446,14 @@ export class DisqusController {
     retVal.disqusLogs = arr;
   
     var usp = { "ref": "disquslogs", "id": String(ndl._id), "db": "hyppe_trans_db" };
-    dis.disqusLogs.push(usp);
+    if (dis.disqusLogs != undefined) {
+      dis.disqusLogs.push(usp);
+    } else {
+      let arr = [];
+      arr.push(usp);
+      dis.disqusLogs = arr;      
+    }
+
 
     dis.updatedAt = dl.createdAt;
     dis.lastestMessage = dl.txtMessages.substring(0, 21);
