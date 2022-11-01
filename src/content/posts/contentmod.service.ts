@@ -187,4 +187,32 @@ export class ContentModService {
 
 	requestHeaders.Authorization = 'acs ' + accessKeyId + ':' + authorization;
   }  
+
+
+  async cmodResponse(body: any) {
+    if (body.content == undefined) {
+      this.logger.error('cmodResponse >>> body content is undefined');
+      return;
+    }
+
+    let con = JSON.parse(body.content);
+    if (con.code == undefined || con.code != 200) {
+      this.logger.error('cmodResponse >>> body content code undefined');
+      return;      
+    }
+
+    let res = con.results;
+    let pass = true;
+    for (let i = 0; i < res.length; i++) {
+      let re = res[i];
+      if (re.suggestion != 'pass') {
+        pass = false;
+      }
+    }
+
+    this.logger.log('cmodResponse >>> pass: ' + pass);
+    if (pass == false) {
+
+    }
+  }
 }
