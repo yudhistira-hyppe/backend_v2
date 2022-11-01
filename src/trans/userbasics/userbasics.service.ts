@@ -25,6 +25,11 @@ export class UserbasicsService {
     return createUserbasicDto;
   }
 
+  async createV2(dto: Userbasic): Promise<Userbasic> {
+    const ndto = await this.userbasicModel.create(dto);
+    return ndto;
+  }  
+
   async updatebyEmail(email: string, data: Object) {
     console.log(data);
     this.userbasicModel.updateOne(
