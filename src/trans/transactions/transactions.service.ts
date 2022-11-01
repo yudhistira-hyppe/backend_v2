@@ -48,6 +48,10 @@ export class TransactionsService {
         return this.transactionsModel.find({ status: "WAITING_PAYMENT", iduserbuyer: iduserbuyer }).exec();
     }
 
+    async findExpiredSell(idusersell: ObjectId): Promise<Transactions[]> {
+        return this.transactionsModel.find({ status: "WAITING_PAYMENT", idusersell: idusersell }).exec();
+    }
+
     // async findpostidpendingVoucer(postid: any[]): Promise<Transactions> {
     //     return this.transactionsModel.findOne({ detail: postid, status: "WAITING_PAYMENT" }).exec();
     // }
