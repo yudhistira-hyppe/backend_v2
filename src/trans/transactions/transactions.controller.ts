@@ -3384,6 +3384,7 @@ export class TransactionsController {
         var ObjectId = require('mongodb').ObjectId;
         var idadmin = mongoose.Types.ObjectId(iduser);
         var datatrpending = null;
+        var datatrpendingjual = null;
 
         try {
 
@@ -3406,6 +3407,45 @@ export class TransactionsController {
                 var idva = datatrpending[i].idva;
                 var idtransaction = datatrpending[i]._id;
                 var expiredva = new Date(datatrpending[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        await this.transactionsService.updatestatuscancel(idtransaction);
+                        //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                    }
+
+
+                }
+
+
+            }
+
+        }
+
+        try {
+
+            datatrpendingjual = await this.transactionsService.findExpiredSell(iduser);
+
+
+        } catch (e) {
+            datatrpendingjual = null;
+
+        }
+
+        if (datatrpendingjual !== null) {
+            var datenow = new Date(Date.now());
+
+
+            var lengdatatr = datatrpendingjual.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpendingjual[i].idva;
+                var idtransaction = datatrpendingjual[i]._id;
+                var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
                 expiredva.setHours(expiredva.getHours() - 7);
 
                 if (datenow > expiredva) {
