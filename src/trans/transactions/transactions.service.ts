@@ -772,7 +772,11 @@ export class TransactionsService {
                     }
                 }
 
+<<<<<<< HEAD
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+=======
                 if (apsara === undefined || apsara === "" || apsara === null) {
+>>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
@@ -1441,6 +1445,21 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
+<<<<<<< HEAD
+
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
+=======
+>>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -2148,6 +2167,19 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
+<<<<<<< HEAD
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
+=======
+>>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -2838,8 +2870,13 @@ export class TransactionsService {
             var type = null;
             var idapsara = null;
             var apsara = null;
+<<<<<<< HEAD
+            var apsaradefine = null;
+            var idapsaradefine = null;
+=======
             var idapsaradefine = null;
             var apsaradefine = null;
+>>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
@@ -2851,6 +2888,19 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
+<<<<<<< HEAD
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
+=======
+>>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -2939,6 +2989,10 @@ export class TransactionsService {
     }
 
     async findhistoryBuyCount(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
+        // const posts = await this.postsService.findpost();
+        // const video = await this.mediavideosService.findvideo();
+        // const pict = await this.mediapictsService.findpict();
+        // const diaries = await this.mediadiariesService.finddiaries();
 
         if (startdate !== undefined && enddate !== undefined && status !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -2952,7 +3006,6 @@ export class TransactionsService {
                         timestamp: { $gte: startdate, $lte: dateend }
                     }
                 },
-
 
                 { $sort: { timestamp: -1 }, },
 
@@ -2972,7 +3025,6 @@ export class TransactionsService {
                     }
                 },
 
-
                 { $sort: { timestamp: -1 }, },
             ]);
             return query;
@@ -2990,7 +3042,6 @@ export class TransactionsService {
                     }
                 },
 
-
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -3004,7 +3055,6 @@ export class TransactionsService {
                         iduserbuyer: iduser
                     }
                 },
-
 
                 { $sort: { timestamp: -1 }, },
 
@@ -3641,7 +3691,11 @@ export class TransactionsService {
                     apsara = false;
                 }
 
+<<<<<<< HEAD
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+=======
                 if (apsara === undefined || apsara === "" || apsara === null) {
+>>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
@@ -4348,6 +4402,14 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
+<<<<<<< HEAD
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+=======
 
                 if (apsara === undefined || apsara === "" || apsara === null) {
                     apsaradefine = false;
@@ -4355,6 +4417,7 @@ export class TransactionsService {
                     apsaradefine = true;
                 }
 
+>>>>>>> 364b984a360ca1724d9e9a39f1b889a99fb9104a
                 if (idapsara === undefined || idapsara === "" || idapsara === null) {
                     idapsaradefine = "";
                 } else {
@@ -5057,8 +5120,7 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
-
-                if (apsara === undefined || apsara === "" || apsara === null) {
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
@@ -5762,8 +5824,7 @@ export class TransactionsService {
                 } catch (e) {
                     apsara = false;
                 }
-
-                if (apsara === undefined || apsara === "" || apsara === null) {
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
                     apsaradefine = false;
                 } else {
                     apsaradefine = true;
@@ -5848,7 +5909,10 @@ export class TransactionsService {
         }
     }
     async findhistorySellCount(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
-
+        // const posts = await this.postsService.findpost();
+        // const video = await this.mediavideosService.findvideo();
+        // const pict = await this.mediapictsService.findpict();
+        // const diaries = await this.mediadiariesService.finddiaries();
 
         if (startdate !== undefined && enddate !== undefined && status !== undefined) {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -5863,7 +5927,6 @@ export class TransactionsService {
 
                     }
                 },
-
 
                 { $sort: { timestamp: -1 }, },
 
@@ -5884,7 +5947,6 @@ export class TransactionsService {
                     }
                 },
 
-
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -5902,7 +5964,6 @@ export class TransactionsService {
                     }
                 },
 
-
                 { $sort: { timestamp: -1 }, },
 
             ]);
@@ -5917,7 +5978,6 @@ export class TransactionsService {
 
                     }
                 },
-
 
                 { $sort: { timestamp: -1 }, },
 
