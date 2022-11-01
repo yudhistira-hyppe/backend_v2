@@ -11,8 +11,8 @@ import { DisquscontactsModule } from '../disquscontacts/disquscontacts.module';
 import { PostDisqusModule } from './post/postdisqus.module';
 import { InsightsModule } from '../insights/insights.module';
 import { ContenteventsModule } from '../contentevents/contentevents.module';
-import { UserbasicsModule } from 'src/trans/userbasics/userbasics.module';
-import { UserauthsModule } from 'src/trans/userauths/userauths.module';
+import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
+import { UserauthsModule } from '../../trans/userauths/userauths.module';
 
 @Module({
 

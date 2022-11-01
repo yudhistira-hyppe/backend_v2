@@ -5,7 +5,7 @@ import { CreateDisquslogsDto, DisquslogsDto } from './dto/create-disquslogs.dto'
 import { Disquslogs, DisquslogsDocument } from './schemas/disquslogs.schema';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
-import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
+import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 
 @Injectable()
 export class DisquslogsService {

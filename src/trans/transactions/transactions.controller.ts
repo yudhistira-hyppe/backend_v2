@@ -1093,7 +1093,7 @@ export class TransactionsController {
                         await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
 
-                        await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy);
+                        await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy, dt.toISOString());
                         if (salelike == false) {
                             await this.postsService.updatesalelike(postid);
 
@@ -1112,17 +1112,17 @@ export class TransactionsController {
                         }
 
 
-                        if (postType == "vid") {
-                            data_media = await this.mediavideosService.findOnepostID(postid);
-                        } else if (postType == "pict") {
-                            data_media = await this.mediapictsService.findOnepostID(postid);
-                        } else if (postType == "diary") {
-                            data_media = await this.mediadiariesService.findOnepostID(postid);
-                        } else if (postType == "story") {
-                            data_media = await this.mediastoriesService.findOnepostID(postid);
-                        }
+                        // if (postType == "vid") {
+                        //     data_media = await this.mediavideosService.findOnepostID(postid);
+                        // } else if (postType == "pict") {
+                        //     data_media = await this.mediapictsService.findOnepostID(postid);
+                        // } else if (postType == "diary") {
+                        //     data_media = await this.mediadiariesService.findOnepostID(postid);
+                        // } else if (postType == "story") {
+                        //     data_media = await this.mediastoriesService.findOnepostID(postid);
+                        // }
 
-                        var mediaId = data_media.mediaID;
+                        // var mediaId = data_media.mediaID;
 
                         // let CreateUserplaylistDto_ = new CreateUserplaylistDto();
                         // CreateUserplaylistDto_.mediaId = mediaId;
@@ -3418,7 +3418,7 @@ export class TransactionsController {
 
                     if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
                         await this.transactionsService.updatestatuscancel(idtransaction);
-                        await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                        //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                     }
 
 
@@ -4392,10 +4392,17 @@ export class TransactionsController {
                 let pict: String[] = [];
                 var objk = {};
                 var idapsara = null;
+                var apsara = null;
                 try {
                     idapsara = databuy[0].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+
+                try {
+                    apsara = databuy[0].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = databuy[0].postType;
                 pict = [idapsara];
@@ -4470,8 +4477,8 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
-                    "apsara": databuy[0].apsara,
-                    "apsaraId": databuy[0].apsaraId,
+                    "apsara": apsara,
+                    "apsaraId": idapsara,
                     "media": dataapsara
 
                 };
@@ -4547,10 +4554,17 @@ export class TransactionsController {
                 let pict: String[] = [];
                 var objk = {};
                 var idapsara = null;
+                var apsara = null;
                 try {
                     idapsara = databuy[0].apsaraId;
                 } catch (e) {
                     idapsara = "";
+                }
+
+                try {
+                    apsara = databuy[0].apsara;
+                } catch (e) {
+                    apsara = false;
                 }
                 var type = databuy[0].postType;
                 pict = [idapsara];
@@ -4620,8 +4634,8 @@ export class TransactionsController {
                     "mediaEndpoint": databuy[0].mediaEndpoint,
                     "mediaThumbEndpoint": mediaThumbEndpoint,
                     "mediaThumbUri": mediaThumbUri,
-                    "apsara": databuy[0].apsara,
-                    "apsaraId": databuy[0].apsaraId,
+                    "apsara": apsara,
+                    "apsaraId": idapsara,
                     "media": dataapsara
 
                 };

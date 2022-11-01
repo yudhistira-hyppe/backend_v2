@@ -993,13 +993,31 @@ export class GetusercontentsController {
             var objk = {};
             var type = null;
             var idapsara = null;
+            var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 try {
                     idapsara = query[i].apsaraId;
                 } catch (e) {
                     idapsara = "";
                 }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
 
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
                 var type = query[i].postType;
                 pict = [idapsara];
 
@@ -1062,8 +1080,8 @@ export class GetusercontentsController {
                     "saleAmount": query[i].saleAmount,
                     "monetize": query[i].monetize,
                     "insight": query[i].insight,
-                    "apsaraId": query[i].apsaraId,
-                    "isApsara": query[i].apsara,
+                    "apsaraId": idapsaradefine,
+                    "isApsara": apsaradefine,
                     "media": datas
                 };
 

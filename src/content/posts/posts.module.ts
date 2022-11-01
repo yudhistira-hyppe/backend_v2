@@ -30,6 +30,8 @@ import { DisqusModule } from '../disqus/disqus.module';
 import { DisquslogsModule } from '../disquslogs/disquslogs.module';
 import { SettingsModule } from '../../trans/settings/settings.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { InsightlogsModule } from '../insightlogs/insightlogs.module';
+import { ContentModService } from './contentmod.service';
 @Module({
 
     imports: [
@@ -41,14 +43,14 @@ import { NotificationsModule } from '../notifications/notifications.module';
         UserplaylistModule,
         GroupModuleModule,
         UtilsModule,
-        ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule, InterestsModule,
-        UserauthsModule, MediavideosModule, InsightsModule, ContenteventsModule, MediadiariesModule, MediastoriesModule,
-        MediapictsModule, MediadiariesModule, MediaprofilepictsModule, PostPlayModule, TemplatesRepoModule, DisqusModule
-        , DisquslogsModule, SettingsModule, NotificationsModule,
+        ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
+        UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
+        MediapictsModule,MediadiariesModule,MediaprofilepictsModule,PostPlayModule,TemplatesRepoModule,DisqusModule
+        ,DisquslogsModule,SettingsModule,NotificationsModule,InsightlogsModule, 
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_FULL')
     ],
     controllers: [PostsController],
-    providers: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService],
-    exports: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService],
+    providers: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService, ContentModService],
+    exports: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService, ContentModService],
 })
 export class PostsModule { }
