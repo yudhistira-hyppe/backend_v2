@@ -1031,7 +1031,7 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
-  @Post('api/profileinterest')
+  @Post('api/user/profileinterest')
   async profileinterest(@Req() request: any, @Headers() headers) {
     var user_email = null;
     var user_interest = null;

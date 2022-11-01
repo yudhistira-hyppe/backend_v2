@@ -5,7 +5,7 @@ import { CreateDisqusDto, DisqusResponseApps } from './dto/create-disqus.dto';
 import { Disqus, DisqusDocument } from './schemas/disqus.schema';
 import { UtilsService } from '../../utils/utils.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
-import { UserbasicsService } from 'src/trans/userbasics/userbasics.service';
+import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
 import { DisquscontactsService } from '../disquscontacts/disquscontacts.service';
 import { Disquscontacts } from '../disquscontacts/schemas/disquscontacts.schema';

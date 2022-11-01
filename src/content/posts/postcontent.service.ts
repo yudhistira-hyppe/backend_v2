@@ -39,6 +39,9 @@ import { TemplatesRepoService } from '../../infra/templates_repo/templates_repo.
 import { UnsubscriptionError } from 'rxjs';
 import { Userauth } from '../../trans/userauths/schemas/userauth.schema';
 import { SettingsService } from '../../trans/settings/settings.service';
+import { InsightlogsService } from '../insightlogs/insightlogs.service';
+import { ContentModService } from './contentmod.service';
+import { threadId } from 'worker_threads';
 
 
 //import FormData from "form-data";
@@ -61,9 +64,10 @@ export class PostContentService {
     private picService: MediapictsService,
     private diaryService: MediadiariesService,
     private insightService: InsightsService,
+    private insightLogService: InsightlogsService,
     private contentEventService: ContenteventsService,
     private profilePictService: MediaprofilepictsService,
-    private postPlaylistService: PostPlaylistService,
+    private cmodService: ContentModService,
     private readonly configService: ConfigService,
     private seaweedfsService: SeaweedfsService,
     private templateService: TemplatesRepoService,
@@ -614,6 +618,19 @@ export class PostContentService {
 
         }
       });
+
+      this.logger.log('updateNewPost >>> checking cmod');
+      let ids : string[] = [];
+      ids.push(body.videoId);
+      this.logger.log('updateNewPost >>> checking cmod image');
+      let aimg = await this.getImageApsara(ids);
+      if (aimg != undefined && aimg.ImageInfo != undefined && aimg.ImageInfo.length > 0) {
+        let aim = aimg.ImageInfo[0];
+        this.logger.log('updateNewPost >>> checking cmod image img: ' + aim.URL);
+        this.cmodService.cmodImage(body.postID, aim.URL);
+      }
+
+
     } else if (ns == 'mediastories') {
       let st = await this.storyService.findOne(cm.oid);
       if (st == undefined) {
@@ -949,6 +966,8 @@ export class PostContentService {
       let vids: String[] = [];
       let pics: String[] = [];
 
+      let postx: string[] = [];
+
       for (let i = 0; i < posts.length; i++) {
         let ps = posts[i];
         let pa = new PostData();
@@ -1243,8 +1262,19 @@ export class PostContentService {
             }
           }
         }
+
+        postx.push(pa.postID);
         pd.push(pa);
       }
+
+    let insl = await this.contentEventService.findEventByEmail(String(iam.email), postx, 'LIKE');
+    let insh = new Map();
+    for (let i = 0; i < insl.length; i++) {
+      let ins = insl[i];
+      if (insh.has(String(ins.postID)) == false) {
+        insh.set(ins.postID, ins.postID);
+      }
+    }      
 
       if (vids.length > 0) {
         let res = await this.getVideoApsara(vids);
@@ -1256,6 +1286,11 @@ export class PostContentService {
               if (ps.apsaraId == vi.VideoId) {
                 ps.mediaThumbEndpoint = vi.CoverURL;
               }
+              if (insh.has(String(ps.postID))) {
+                ps.isLiked = true;
+              } else {
+                ps.isLiked = false;
+              }                          
             }
           }
         }
@@ -1280,6 +1315,11 @@ export class PostContentService {
                 ps.mediaThumbEndpoint = vi.URL;
                 ps.mediaThumbUri = vi.URL;                                                            
               }
+              if (insh.has(String(ps.postID))) {
+                ps.isLiked = true;
+              } else {
+                ps.isLiked = false;
+              }                          
             }
           }
         }
@@ -2152,6 +2192,8 @@ export class PostContentService {
     let pics: string[] = [];
     let user: string[] = [];
 
+    let posts: string[] = [];
+
     let resVideo: PostData[] = [];
     let resPic: PostData[] = [];
     let resDiary: PostData[] = [];
@@ -2162,18 +2204,30 @@ export class PostContentService {
     body.withExp = false;
     let pv = await this.doGetUserPost(body, headers, profile);
     let pdv = await this.loadPostDataBulk(pv, body, profile, vids, pics, user);
+    for (let i = 0; i < pdv.length; i++) {
+      let ps = pdv[i];
+      posts.push(ps.postID);
+    }
     data.video = pdv;
 
     this.logger.log('getUserPostLandingPage >>> exec: pict');
     body.postType = 'pict';
     let pp = await this.doGetUserPost(body, headers, profile);
     let pdp = await this.loadPostDataBulk(pp, body, profile, vids, pics, user);
+    for (let i = 0; i < pdp.length; i++) {
+      let ps = pdp[i];
+      posts.push(ps.postID);
+    }    
     data.pict = pdp;
 
     this.logger.log('getUserPostLandingPage >>> exec: diary');
     body.postType = 'diary';
     let pd = await this.doGetUserPost(body, headers, profile);
     let pdd = await this.loadPostDataBulk(pd, body, profile, vids, pics, user);
+    for (let i = 0; i < pdd.length; i++) {
+      let ps = pdd[i];
+      posts.push(ps.postID);
+    }    
     data.diary = pdd;
 
     this.logger.log('getUserPostLandingPage >>> exec: story');
@@ -2181,8 +2235,23 @@ export class PostContentService {
     body.withExp = true;
     let ps = await this.doGetUserPost(body, headers, profile);
     let pds = await this.loadPostDataBulk(ps, body, profile, vids, pics, user);
+    for (let i = 0; i < pds.length; i++) {
+      let ps = pds[i];
+      posts.push(ps.postID);
+    }    
     data.story = pds;
 
+    this.logger.log('getUserPostLandingPage >>> exec: insightlog');
+    let insl = await this.contentEventService.findEventByEmail(String(profile.email), posts, 'LIKE');
+    let insh = new Map();
+    for (let i = 0; i < insl.length; i++) {
+      let ins = insl[i];
+      if (insh.has(String(ins.postID)) == false) {
+        insh.set(ins.postID, ins.postID);
+      }
+    }
+    this.logger.log('getUserPostLandingPage >>> exec: insightlog - done');
+    
     let xvids: string[] = [];
     let xpics: string[] = [];
     let xuser: string[] = [];
@@ -2240,6 +2309,11 @@ export class PostContentService {
               pdvv.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
+          if (insh.has(String(pdvv.postID))) {
+            pdvv.isLiked = true;
+          } else {
+            pdvv.isLiked = false;
+          }
           resVideo.push(pdvv);
         }
       }
@@ -2256,6 +2330,11 @@ export class PostContentService {
               pdss.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
+          if (insh.has(String(pdss.postID))) {
+            pdss.isLiked = true;
+          } else {
+            pdss.isLiked = false;
+          }          
           resStory.push(pdss);
         }
       }
@@ -2272,6 +2351,11 @@ export class PostContentService {
               pddd.avatar = await this.getAvatar(oid, cuser, ubs);
             }
           }
+          if (insh.has(String(pddd.postID))) {
+            pddd.isLiked = true;
+          } else {
+            pddd.isLiked = false;
+          }          
           resDiary.push(pddd);
         }
       }
@@ -2353,6 +2437,11 @@ export class PostContentService {
 
             }
           }
+          if (insh.has(String(pdpp.postID))) {
+            pdpp.isLiked = true;
+          } else {
+            pdpp.isLiked = false;
+          }                    
           resPic.push(pdpp);
         }
       }

@@ -327,4 +327,8 @@ export class InsightlogsService {
 
     return query;
   }
+
+  async findInsightLogByEmail(email: string, postID: string[], eventInsight: string): Promise<Insightlogs[]> {
+    return this.InsightlogsModel.find().where('mate', email).where('postID').in(postID).where('eventInsight', eventInsight).exec();
+  }  
 }
