@@ -124,6 +124,10 @@ export class DisqusService {
     return await this.DisqusModel.find().where('postID', postId).where('eventType', eventType).exec();
   }
 
+  async findDisqusByPost_(email: string, postId: string, eventType: string): Promise<Disqus> {
+    return await this.DisqusModel.findOne().where('email', email).where('postID', postId).where('eventType', eventType).exec();
+  }
+
   async createDisqus(body: any, headers: any): Promise<DisqusResponseApps> {
 
     var token = headers['x-auth-token'];

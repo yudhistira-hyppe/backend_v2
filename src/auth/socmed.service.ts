@@ -445,6 +445,19 @@ export class SocmedService {
           user_email,
         );
 
+        var user_interest = [];
+        let ins = datauserbasicsService.userInterests;
+        if (ins != undefined && ins.length > 0) {
+          for (let i = 0; i < ins.length; i++) {
+            let idx = ins[i];
+            let ns = idx.namespace;
+            let oid =idx.oid;
+            let inss = await this.interestsRepoService.findOne(String(oid));
+            user_interest.push(inss);
+          }
+        }
+
+
         return {
           response_code: 202,
           data: {

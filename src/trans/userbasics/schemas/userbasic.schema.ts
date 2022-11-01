@@ -64,16 +64,8 @@ export class Userbasic {
     };
     db: String;
   };
-  @Prop([{ type: Object }])
-  userInterests: [
-    {
-      ref: String;
-      id: {
-        oid: String;
-      };
-      db: String;
-    },
-  ];
+  @Prop()
+  userInterests: any[];
   @Prop({ type: Object })
   userAuth: {
     ref: String;
@@ -132,6 +124,14 @@ export class Userbasic {
   statusKyc: string;
   @Prop()
   timeEmailSend: string;
+  @Prop()
+  reportedStatus: string
+  @Prop()
+  reportedUserCount: number
+  @Prop()
+  reportedUser: any[];
+  @Prop()
+  reportedUserHandle: any[];
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);

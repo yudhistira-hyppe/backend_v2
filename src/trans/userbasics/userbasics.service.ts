@@ -206,7 +206,11 @@ export class UserbasicsService {
 
     return data;
   }
-
+  async updateReportuser(id: Types.ObjectId, reportedStatus: string, reportedUserCount: number, reportedUser: any[], reportedUserHandle: any[]): Promise<Object> {
+    let data = await this.userbasicModel.updateOne({ "_id": id },
+      { $set: { "reportedStatus": reportedStatus, "reportedUserCount": reportedUserCount, "reportedUser": reportedUser, "reportedUserHandle": reportedUserHandle } });
+    return data;
+  }
   async UserAge(): Promise<Object> {
     const languages = await this.languagesService.findAll();
     var GetCount = this.userbasicModel

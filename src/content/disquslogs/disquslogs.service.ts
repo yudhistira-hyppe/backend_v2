@@ -145,6 +145,10 @@ export class DisquslogsService {
   }
   }
 
+  async findDisqusLogByParentID(_id: string): Promise<Disquslogs>{
+    return this.DisquslogsModel.findOne({ _id: _id, active: true }).exec();
+  }
+
   async findLogByDisqusId(disqusId: string, dpage: number, dpageRow: number) {
     let query = this.DisquslogsModel.find().where('disqusID', disqusId).where('active', true);
 
@@ -159,14 +163,14 @@ export class DisquslogsService {
     let skip = this.paging(page, row);
     query.skip(skip);
     query.limit(row);
-    query.sort({'createdAt': -1 });
+    query.sort({ 'createdAt': -1 });
 
-    let res : DisquslogsDto[] = [];
+    let res: DisquslogsDto[] = [];
     let dt = await query.exec();
     for (let i = 0; i < dt.length; i++) {
       let dat = dt[i];
       let obj = new DisquslogsDto();
-      obj._id = dat._id; 
+      obj._id = dat._id;
       obj.active = dat.active;
       obj.createdAt = dat.createdAt;
       obj.disqusID = dat.disqusID;
