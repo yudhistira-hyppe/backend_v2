@@ -34,9 +34,9 @@ lastestMessage: String
     mateActive: boolean
  @Prop([{type:Object}])
  disqusLogs: [{
-    ref:String
-    id:String
-    db:String
+    $ref:String
+    $id:String
+    $db:String
 }]
  @Prop()
 _class: String

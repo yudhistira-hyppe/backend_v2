@@ -14,8 +14,9 @@ export class CreateDisquslogsDto {
       updatedAt: String;
       reactionUri: String;
     txtMessages: String;
+  parentID: String;
     
-    readonly  medias: [{
+      medias: [{
         createdAt: String;
         mediaBasePath: String;
         postType: String;
@@ -26,8 +27,14 @@ export class CreateDisquslogsDto {
         postID: String;
         mediaEndpoint: String;
     }];
-    readonly replyLogs: [];
-    readonly _class: String;
+  replyLogs: [
+    {
+      $ref: String;
+      $id: String;
+      $db: String;
+    },
+  ];
+     _class: String;
     receiverActive: boolean;
     senderActive: boolean;
   }

@@ -14,16 +14,17 @@ export class CreateDisqusDto {
      eventType: String;
      active: boolean;
      room: String;
-      createdAt: String;
-      updatedAt: String;
-      lastestMessage: String;
+  createdAt: String;
+  postID: String;
+    updatedAt: String;
+    lastestMessage: String;
     emailActive: boolean; 
     mateActive: boolean;
-      disqusLogs: [{
-        ref:String;
-        id:String;
-        db:String;
-    }];
+    disqusLogs: [{
+      $ref:String;
+      $id:String;
+      $db:String;
+  }];
      _class:String;
   }
 
