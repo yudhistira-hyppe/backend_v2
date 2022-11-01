@@ -26,6 +26,7 @@ import { DisquslogsService } from '../disquslogs/disquslogs.service';
 import { Disquslogs } from '../disquslogs/schemas/disquslogs.schema';
 import { DBRef, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
+import { UserauthsService } from '../../trans/userauths/userauths.service';
 
 const Long = require('mongodb').Long;
 @Controller('api/')
@@ -39,7 +40,8 @@ export class DisqusController {
     private readonly disqusService: DisqusService,
     private readonly disqusLogService: DisquslogsService,
     private readonly insightsService: InsightsService,
-    private readonly contenteventsService: ContenteventsService,
+    private readonly contenteventsService: ContenteventsService, 
+    private readonly userauthsService: UserauthsService,
     private readonly errorHandler: ErrorHandler) { }
 
   @Post('disqus')
@@ -68,7 +70,7 @@ export class DisqusController {
   @FormDataRequest()
   @Post('posts/disqus')
   async disqus(@Headers() headers, @Body() ContentDto_: ContentDto, ) {
-    var email_header = headers['x-auth-token'];
+    var email_header = headers['x-auth-user'];
     let type = "";
     let isQuery = 'false';
     let res = new DisqusResponseApps();    
@@ -104,6 +106,20 @@ export class DisqusController {
             //var roomName = retVal[retValCount].room;
           //}
         } else if ((type == "COMMENT") && (ContentDto_.postID!=undefined)) {
+          if (ContentDto_.email==undefined){
+            ContentDto_.email = email_header;
+          } 
+          if (ContentDto_.receiverParty == undefined) {
+            var Posts_ = new Posts();
+            Posts_ = await this.postDisqusService.findid(ContentDto_.postID.toString());
+            ContentDto_.receiverParty = Posts_.email;
+            ContentDto_.postType = Posts_.postType;
+          }
+          if (ContentDto_.tagComment!=undefined){
+            ContentDto_.tagComment_ = ContentDto_.tagComment.split(',').map(function (n) {
+              return n.toString();
+            });
+          }
           let xres = await this.buildComments(ContentDto_, true);
           res.response_code = 202;
           let m = new Messages();
@@ -330,6 +346,7 @@ export class DisqusController {
         }else{
           disqus = disqus_;
         }
+
         inDto.postContent = Posts_;
         inDto.postID = Posts_.postID;
         disqus.postID = Posts_.postID; 
@@ -362,16 +379,30 @@ export class DisqusController {
             disqusLog_new.active = true;
             disqusLog_new.createdAt = current_date;
             disqusLog_new.updatedAt = current_date;
-            disqusLog_new.parentID = parentLog._id;
+            disqusLog_new.parentID = inDto.parentID;
             disqusLog_new.sender = inDto.email;
             disqusLog_new.receiver = inDto.receiverParty;
             disqusLog_new.postType = inDto.postType;
             disqusLog_new.txtMessages = inDto.txtMessages;
             disqusLog_new.reactionUri = inDto.reactionUri;
+            disqusLog_new._class = "io.melody.hyppe.content.domain.DisqusLog";
             if (await this.utilsService.ceckData(inDto.postContent)){
               disqusLog_new.postID = inDto.postContent.postID;
             }
-
+            if (inDto.tagComment != undefined) {
+              var array_data = [];
+              for (let i = 0; i < inDto.tagComment_.length; i++) {
+                var user = await this.userauthsService.findOneUsername(inDto.tagComment_[i]);
+                if (await this.utilsService.ceckData(user)) {
+                  array_data.push({
+                    $ref: 'userauths',
+                    $id: new ObjectId(user._id.toString()),
+                    $db: 'hyppe_trans_db',
+                  });
+                }
+              }
+              disqusLog_new.tags = Object(array_data);
+            }
             disqusLog = disqusLog_new;
           } else {
             var disqusLog_new = new CreateDisquslogsDto();
@@ -391,39 +422,91 @@ export class DisqusController {
             if (await this.utilsService.ceckData(inDto.postContent)) {
               disqusLog_new.postID = inDto.postContent.postID;
             }
+            if (inDto.tagComment != undefined) {
+              var array_data = [];
+              for (let i = 0; i < inDto.tagComment_.length; i++) {
+                var user = await this.userauthsService.findOneUsername(inDto.tagComment_[i]);
+                if (await this.utilsService.ceckData(user)) {
+                  array_data.push({
+                    $ref: 'userauths',
+                    $id: new ObjectId(user._id.toString()),
+                    $db: 'hyppe_trans_db',
+                  });
+                }
+              }
+              disqusLog_new.tags = Object(array_data);
+            }
             disqusLog = disqusLog_new;
           }
         } else {
           var disqusLog_new = new CreateDisquslogsDto();
           disqusLog_new._id = await this.utilsService.generateId();
-          disqusLog_new.disqusID = await this.utilsService.generateId();
+          disqusLog_new.disqusID = disqus.disqusID;
           disqusLog_new.sender = inDto.email;
           disqusLog_new.sequenceNumber = 0;
           disqusLog_new.active = true;
+          disqusLog_new.postType = inDto.postType
+          disqusLog_new.updatedAt = current_date;
+          disqusLog_new.createdAt = current_date;
+          disqusLog_new.sender = inDto.email;
           disqusLog_new.receiver = inDto.receiverParty;
           disqusLog_new.postType = inDto.postType;
           disqusLog_new.txtMessages = inDto.txtMessages;
           disqusLog_new.reactionUri = inDto.reactionUri;
-          disqusLog_new.updatedAt = current_date;
-          disqusLog_new.createdAt = current_date;
           disqusLog_new._class = "io.melody.hyppe.content.domain.DisqusLog";
 
           if (await this.utilsService.ceckData(inDto.postContent)) {
             disqusLog_new.postID = inDto.postContent.postID;
           }
+          if (inDto.tagComment != undefined) {
+            var array_data = [];
+            for (let i = 0; i < inDto.tagComment_.length; i++) {
+              var user = await this.userauthsService.findOneUsername(inDto.tagComment_[i]);
+              if (await this.utilsService.ceckData(user)) {
+                array_data.push({
+                  $ref: 'userauths',
+                  $id: new ObjectId(user._id.toString()),
+                  $db: 'hyppe_trans_db',
+                });
+              }
+            }
+            disqusLog_new.tags = Object(array_data);
+          }
           disqusLog = disqusLog_new;
         }
 
-        if (parentLog != undefined) {
-          if (parentLog.replyLogs != null) {
-            const data_replyLogs = parentLog.replyLogs;
-            data_replyLogs.push({
-              $ref: 'disquslogs',
-              $id: disqusLog._id,
-              $db: 'hyppe_content_db',
-            });
+        if (parentLog._id != undefined) {
+          var createDisquslogsDto_ = new CreateDisquslogsDto();
+          if (parentLog.replyLogs != undefined){
+            if (parentLog.replyLogs != null) {
+              var data_replyLogs = parentLog.replyLogs;
+              data_replyLogs.push({
+                $ref: 'disquslogs',
+                $id: disqusLog._id,
+                $db: 'hyppe_content_db',
+              });
+              createDisquslogsDto_.replyLogs = data_replyLogs;
+            } else {
+              createDisquslogsDto_.replyLogs = [
+                {
+                  $ref: 'disquslogs',
+                  $id: disqusLog._id,
+                  $db: 'hyppe_content_db',
+                }
+              ]
+            }
+          }else{
+            createDisquslogsDto_.replyLogs = [
+              {
+                $ref: 'disquslogs',
+                $id: disqusLog._id,
+                $db: 'hyppe_content_db',
+              }
+            ]
           }
+          await this.disqusLogService.update(parentLog._id.toString(),createDisquslogsDto_);
         }
+
         if (disqus.disqusLogs!=undefined){
           const data_disqusLogs = disqus.disqusLogs;
           data_disqusLogs.push({

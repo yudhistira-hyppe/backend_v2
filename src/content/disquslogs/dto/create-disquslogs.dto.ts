@@ -34,6 +34,15 @@ export class CreateDisquslogsDto {
       $db: String;
     },
   ];
+  tags:[
+    {
+      $ref: String;
+      $id: {
+        oid: String
+      };
+      $db: String;
+    },
+  ];
      _class: String;
     receiverActive: boolean;
     senderActive: boolean;

@@ -47,26 +47,11 @@ export class ContentModService {
 
   constructor(
     private postService: PostsService,
-    private userService: UserbasicsService,
-    private utilService: UtilsService,
-    private disqusService: DisqusService,
-    private disqusLogService: DisquslogsService,
-    private storyService: MediastoriesService,
-    private picService: MediapictsService,
-    private diaryService: MediadiariesService,
-    private insightService: InsightsService,
-    private contentEventService: ContenteventsService,
-    private profilePictService: MediaprofilepictsService,
-    private postPlaylistService: PostPlaylistService,
     private readonly configService: ConfigService,
-    private seaweedfsService: SeaweedfsService,
-    private templateService: TemplatesRepoService,
-    private videoService: MediavideosService,
-    private errorHandler: ErrorHandler,
   ) { }
 
-  async cmod() {
-    
+  async cmodImage(postId: string, url: string) {
+    this.logger.log('cmodImage >>> start');    
     const accessKeyId = this.configService.get("APSARA_ACCESS_KEY");
     const accessKeySecret = this.configService.get("APSARA_ACCESS_SECRET");
     const greenVersion = '2017-01-12';
@@ -80,10 +65,11 @@ export class ContentModService {
     let requestBody = JSON.stringify({  
         //bizType:'Green',
         scenes:['porn', 'terrorism', 'ad'],
-        callback: 'https://staging.hyppe.app/v4/api/posts/notifyapsara/cmod',
+        callback: this.configService.get("APSARA_IMAGE_CMOD_CALLBACK"),
+        seed: uuidv4(),
         tasks:[{
-            'dataId':uuidv4(),
-            'url':'http://vod.hyppe.cloud/image/default/4D15A84837064D39B8FA886ECDE76BFC-6-2.png'
+            'dataId':postId,
+            'url':url
         }]
     }); 
 
@@ -143,9 +129,9 @@ export class ContentModService {
 	    headers:requestHeaders
 	};
 
-    console.log('host => ' + hostname + ":" + 443 + encodeURI(path + '?clientInfo=' + JSON.stringify(clientInfo)));
-    console.log('header => ' + JSON.stringify(requestHeaders));
-    console.log('body => ' + JSON.stringify(requestBody));
+  this.logger.log('host => ' + hostname + ":" + 443 + encodeURI(path + '?clientInfo=' + JSON.stringify(clientInfo)));
+  this.logger.log('header => ' + JSON.stringify(requestHeaders));
+  this.logger.log('body => ' + JSON.stringify(requestBody));
 
     
 	var req = http.request(options, function(res) {
@@ -186,4 +172,44 @@ export class ContentModService {
 
 	requestHeaders.Authorization = 'acs ' + accessKeyId + ':' + authorization;
   }  
+
+
+  async cmodResponse(body: any) {
+    if (body.content == undefined) {
+      this.logger.error('cmodResponse >>> body content is undefined');
+      return;
+    }
+
+    let con = JSON.parse(body.content);
+    if (con.code == undefined || con.code != 200) {
+      this.logger.error('cmodResponse >>> body content code undefined');
+      return;      
+    }
+
+    let pid = String(con.dataId);
+    let pd = await this.postService.findByPostId(pid);
+    if (pd == undefined) {
+      this.logger.error('cmodResponse >>> post id:' + con.dataId + ' not found');
+      return;      
+    }    
+
+    let res = con.results;
+    let pass = true;
+    for (let i = 0; i < res.length; i++) {
+      let re = res[i];
+      if (re.suggestion != 'pass') {
+        pass = false;
+      }
+    }
+
+    this.logger.log('cmodResponse >>> pass: ' + pass);
+    if (pass == false) {
+      pd.contentModeration = true;
+    } else {
+      pd.contentModeration = false;
+    }
+    pd.contentModerationResponse = JSON.stringify(body);
+
+    await this.postService.create(pd);
+  }
 }
