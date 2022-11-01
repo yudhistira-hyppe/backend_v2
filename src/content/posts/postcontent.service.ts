@@ -40,6 +40,8 @@ import { UnsubscriptionError } from 'rxjs';
 import { Userauth } from '../../trans/userauths/schemas/userauth.schema';
 import { SettingsService } from '../../trans/settings/settings.service';
 import { InsightlogsService } from '../insightlogs/insightlogs.service';
+import { ContentModService } from './contentmod.service';
+import { threadId } from 'worker_threads';
 
 
 //import FormData from "form-data";
@@ -65,7 +67,7 @@ export class PostContentService {
     private insightLogService: InsightlogsService,
     private contentEventService: ContenteventsService,
     private profilePictService: MediaprofilepictsService,
-    private postPlaylistService: PostPlaylistService,
+    private cmodService: ContentModService,
     private readonly configService: ConfigService,
     private seaweedfsService: SeaweedfsService,
     private templateService: TemplatesRepoService,
@@ -616,6 +618,17 @@ export class PostContentService {
 
         }
       });
+
+      let ids : string[] = [];
+      ids.push(body.videoId);
+
+      let aimg = await this.getImageApsara(ids);
+      if (aimg != undefined && aimg.ImageInfo != undefined && aimg.ImageInfo.length > 0) {
+        let aim = aimg.ImageInfo[0];
+        this.cmodService.cmodImage(body.postID, aim.URL);
+      }
+
+
     } else if (ns == 'mediastories') {
       let st = await this.storyService.findOne(cm.oid);
       if (st == undefined) {

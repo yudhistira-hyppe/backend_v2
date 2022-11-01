@@ -65,7 +65,7 @@ export class ContentModService {
     private errorHandler: ErrorHandler,
   ) { }
 
-  async cmod() {
+  async cmodImage(postId: string, url: string) {
     
     const accessKeyId = this.configService.get("APSARA_ACCESS_KEY");
     const accessKeySecret = this.configService.get("APSARA_ACCESS_SECRET");
@@ -80,10 +80,11 @@ export class ContentModService {
     let requestBody = JSON.stringify({  
         //bizType:'Green',
         scenes:['porn', 'terrorism', 'ad'],
-        callback: 'https://staging.hyppe.app/v4/api/posts/notifyapsara/cmod',
+        callback: this.configService.get("APSARA_IMAGE_CMOD_CALLBACK"),
+        seed: uuidv4(),
         tasks:[{
-            'dataId':uuidv4(),
-            'url':'http://vod.hyppe.cloud/image/default/4D15A84837064D39B8FA886ECDE76BFC-6-2.png'
+            'dataId':postId,
+            'url':url
         }]
     }); 
 

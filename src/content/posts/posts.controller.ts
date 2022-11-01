@@ -410,13 +410,13 @@ export class PostsController {
   @Post('api/posts/cmod')
   async cmod(@Body() body, @Headers() headers) {
     this.logger.log("cmod >>> start: " + JSON.stringify(body));
-    this.cmodService.cmod();
+    //this.cmodService.cmod();
     let t = { 'response': 'Done' };
     return JSON.stringify(t);
   }  
 
-  @Post('api/posts/notifyapsara/cmod')
-  async notifyApsaraCmod(@Body() body, @Headers() headers) {
+  @Post('api/posts/notifyapsara/cmod/image')
+  async notifyApsaraCmodImage(@Body() body, @Headers() headers) {
     this.logger.log("notifyApsaraCmod >>> start: " + JSON.stringify(body));
     //this.postContentService.updateNewPost(body, headers);
     let t = { 'response': 'Done' };
