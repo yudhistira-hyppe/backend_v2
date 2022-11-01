@@ -417,7 +417,7 @@ export class PostsController {
 
   @Post('api/posts/notifyapsara/cmod/image')
   async notifyApsaraCmodImage(@Body() body, @Headers() headers) {
-    this.logger.log("notifyApsaraCmod >>> start: " + JSON.stringify(body));
+    this.logger.log("notifyApsaraCmodImage >>> start: " + JSON.stringify(body));
     //this.postContentService.updateNewPost(body, headers);
     let t = { 'response': 'Done' };
     return JSON.stringify(t);

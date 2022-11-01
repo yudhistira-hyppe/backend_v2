@@ -619,12 +619,14 @@ export class PostContentService {
         }
       });
 
+      this.logger.log('updateNewPost >>> checking cmod');
       let ids : string[] = [];
       ids.push(body.videoId);
-
+      this.logger.log('updateNewPost >>> checking cmod image');
       let aimg = await this.getImageApsara(ids);
       if (aimg != undefined && aimg.ImageInfo != undefined && aimg.ImageInfo.length > 0) {
         let aim = aimg.ImageInfo[0];
+        this.logger.log('updateNewPost >>> checking cmod image img: ' + aim.URL);
         this.cmodService.cmodImage(body.postID, aim.URL);
       }
 
