@@ -309,11 +309,7 @@ export class DisqusController {
       if (Posts_.active && Posts_.allowComments){
         var disqus = new CreateDisqusDto();
         var disqus_ = new CreateDisqusDto();
-        
-        //error
-        disqus_ = await this.disqusService.findDisqusByPost_(Posts_.email.toString(), Posts_.postID.toString(), "COMMENT");
-
-
+        //disqus_ = await this.disqusService.findDisqusByPost_(Posts_.email.toString(), Posts_.postID.toString(), "COMMENT");
         if (!(await this.utilsService.ceckData(disqus_))) {
           var data_id = await this.utilsService.generateId();
           disqus._id = data_id;
@@ -650,7 +646,6 @@ export class DisqusController {
         let insReceiver = this.insightsService.findemail(String(dto.receiverParty));
       }
     }
-    
 
     //add disquslog
 
@@ -673,20 +668,8 @@ export class DisqusController {
     arr.push(agg);
     retVal.disqusLogs = arr;
   
-<<<<<<< HEAD
-    var usp = { "ref": "disquslogs", "id": String(ndl._id), "db": "hyppe_trans_db" };
-    if (dis.disqusLogs != undefined) {
-      dis.disqusLogs.push(usp);
-    } else {
-      let arr = [];
-      arr.push(usp);
-      dis.disqusLogs = arr;      
-    }
-
-=======
     var usp = { "$ref": "disquslogs", "$id": String(ndl._id), "$db": "hyppe_trans_db" };
     dis.disqusLogs.push(usp);
->>>>>>> 261effb06a7a13e8a4c539521fbcbd34cc9da4db
 
     dis.updatedAt = dl.createdAt;
     dis.lastestMessage = dl.txtMessages.substring(0, 21);

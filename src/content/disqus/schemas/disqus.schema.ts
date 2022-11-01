@@ -33,7 +33,11 @@ lastestMessage: String
     @Prop()
     mateActive: boolean
  @Prop()
- disqusLogs: any[]
+ disqusLogs: [{
+     $ref: String;
+     $id: String;
+     $db: String;
+ }];
  @Prop()
 _class: String
 @Prop()
