@@ -2037,6 +2037,9 @@ export class AuthService {
               }
 
               var data_update_userbasict = {};
+              if (user_fullName != null) {
+                data_update_userbasict['fullName'] = user_fullName;
+              }
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
               }
@@ -2190,6 +2193,9 @@ export class AuthService {
               }
 
               var data_update_userbasict = {};
+              if (user_fullName != null) {
+                data_update_userbasict['fullName'] = user_fullName;
+              }
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
               }
@@ -2362,6 +2368,9 @@ export class AuthService {
               }
 
               var data_update_userbasict = {};
+              if (user_fullName != null) {
+                data_update_userbasict['fullName'] = user_fullName;
+              }
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
               }
@@ -2445,6 +2454,9 @@ export class AuthService {
               }
 
               var data_update_userbasict = {};
+              if (user_fullName != null) {
+                data_update_userbasict['fullName'] = user_fullName;
+              }
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
               }

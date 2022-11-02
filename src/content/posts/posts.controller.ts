@@ -34,6 +34,8 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { DisqusService } from '../disqus/disqus.service';
 import { DisqusResponseApps } from '../disqus/dto/create-disqus.dto';
 import { ContentModService } from './contentmod.service';
+import { BoostsessionService } from '../boostsession/boostsession.service';
+import { BoostintervalService } from '../boostinterval/boostinterval.service';  
 
 @Controller()
 export class PostsController {
@@ -44,6 +46,8 @@ export class PostsController {
     private readonly userauthsService: UserauthsService,
     private readonly utilsService: UtilsService,
     private readonly errorHandler: ErrorHandler,
+    private readonly boostintervalService: BoostintervalService,
+    private readonly boostsessionService: BoostsessionService,
     private readonly contenteventsService: ContenteventsService,
     private readonly insightsService: InsightsService,
     private readonly userbasicsService: UserbasicsService,
@@ -700,22 +704,169 @@ export class PostsController {
         response = {
           "response_code": 202,
           "data": data,
-          "messages": {}
+          "messages": {
+            info: [
+              "Succesfully"
+            ]
+          }
         }
       } else {
         response = {
           "response_code": 202,
           "data": [],
-          "messages": {}
+          "messages": {
+            info: [
+              "Succesfully"
+            ]
+          }
         }
       }
     }else{
       response = {
         "response_code": 202,
         "data": [],
-        "messages": {}
+        "messages": {
+          info: [
+            "Succesfully"
+          ]
+        }
       }
     }
     return response;
+  }
+
+  @Post('api/posts/boost')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async postBost(
+    @Headers() headers,
+    @Body() body
+  ) {
+    // if (headers['x-auth-user'] == undefined) {
+    //   await this.errorHandler.generateNotAcceptableException(
+    //     'Unauthorized',
+    //   );
+    // }
+    // if (!(await this.utilsService.validasiTokenEmail(headers))) {
+    //   await this.errorHandler.generateNotAcceptableException(
+    //     'Unabled to proceed email header dan token not match',
+    //   );
+    // }
+    if (body.dateStart == undefined) {
+      await this.errorHandler.generateBadRequestException(
+        'Unabled to proceed dateStart is required',
+      );
+    }
+
+    if (body.type.toLowerCase() =="manual"){
+      if (body.interval==undefined) {
+        await this.errorHandler.generateBadRequestException(
+          'Unabled to proceed interval is required',
+        );
+      }
+      if (body.session.toLowerCase() == undefined) {
+        await this.errorHandler.generateBadRequestException(
+          'Unabled to proceed session is required',
+        );
+      }
+      if (body.postID == undefined) {
+        await this.errorHandler.generateBadRequestException(
+          'Unabled to proceed postID is required',
+        );
+      } 
+      const interval = await this.boostintervalService.findById(body.interval);
+      const session = await this.boostsessionService.findById(body.session);
+      const price = await this.utilsService.getSetting_("636212286f07000023005ce2");
+      const BankVaCharge = await this.utilsService.getSetting_("62bd40e0f37a00001a004366");
+
+      var post = await this.PostsService.findByPostId(body.postID);
+      if (await this.utilsService.ceckData(post)) {
+        var media = await this.PostsService.findOnepostID(body.postID);
+        if (await this.utilsService.ceckData(media)) {
+          if (body.bankcode!=undefined){
+            var bank = await this.utilsService.getBank(body.bankcode);
+          }else{
+            var data = {};
+            var post_data = {};
+
+            if (media[0].datacontent[0].mediaBasePath != undefined) {
+              post_data["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
+            }
+            if (post.postType != undefined) {
+              post_data["postType"] = post.postType;
+            }
+            if (media[0].datacontent[0].mediaUri != undefined) {
+              post_data["mediaUri"] = media[0].datacontent[0].mediaUri;
+            }
+            if (post.description != undefined) {
+              post_data["description"] = post.description;
+            }
+            if (post.active != undefined) {
+              post_data["active"] = post.active;
+            }
+            if (media[0].datacontent[0].mediaType != undefined) {
+              post_data["mediaType"] = media[0].datacontent[0].mediaType;
+            }
+            if (post.postID != undefined) {
+              post_data["postID"] = post.postID;
+            }
+            if (post.tags != undefined) {
+              post_data["tags"] = post.tags;
+            }
+            if (post.allowComments != undefined) {
+              post_data["allowComments"] = post.allowComments;
+            }
+            if (post.createdAt != undefined) {
+              post_data["createdAt"] = post.createdAt;
+            }
+            if (media[0].datauser.insight != undefined) {
+              post_data["insight"] = media[0].datauser.insight;
+            }
+            if (media[0].datauser.insight != undefined) {
+              post_data["email"] = post.email;
+            }
+            if (media[0].datauser.insight != undefined) {
+              post_data["updatedAt"] = post.updatedAt;
+            }
+            if (media[0].datauser.insight != undefined) {
+              post_data["updatedAt"] = post.updatedAt;
+            }
+
+            data["post"] = post_data;
+            data["typeBoost"] = body.type;
+            data["intervalBoost"] = interval;
+            data["sessionBoost"] = session;
+            data["dateBoost"] = body.dateStart;
+            data["priceBoost"] = price;
+            data["priceBankVaCharge"] = BankVaCharge;
+            data["priceTotal"] = price + BankVaCharge;
+
+            var response = {
+              "response_code": 202,
+              "data": data,
+              "messages": {
+                info: [
+                  "Succesfully"
+                ]
+              }
+            }
+            return response;
+          }
+        } else {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unabled to proceed, Media Post not found',
+          );
+        }
+      }else{
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, Post not found',
+        );
+      }
+    } else if (body.type == "automatic") {
+
+    } else {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, type not found',
+      );
+    }
   }
 }
