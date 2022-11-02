@@ -87,6 +87,8 @@ import { BullModule } from '@nestjs/bull';
 import { UserbasicsnewModule } from './trans/newuserbasic/userbasicsnew.module';
 import { AppGateway } from './app.gateway';
 import { PostDisqusModule } from './content/disqus/post/postdisqus.module';
+import { BoostsessionModule } from './content/boostsession/boostsession.module';
+import { BoostintervalModule } from './content/boostinterval/boostinterval.module';
 @Module({
   imports: [
     BullModule.forRootAsync({
@@ -99,6 +101,8 @@ import { PostDisqusModule } from './content/disqus/post/postdisqus.module';
       }),
       inject: [ConfigService],
     }),
+    BoostsessionModule,
+    BoostintervalModule,
     ScheduleUserPlaylistModule,
     ConfigModule.forRoot({ isGlobal: true }),
     // MongooseModule.forRoot(process.env.SERVER_TRANS, {
