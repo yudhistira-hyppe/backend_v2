@@ -251,8 +251,8 @@ export class GetusercontentsController {
         var latestpost = datalatepos[0];
         var datamonetize = await this.getusercontentsService.findmanagementcontentmonetize(email);
         var latestmonetize = datamonetize[0];
-        var dataoener = await this.getusercontentsService.findmanagementcontentowner(email);
-        var latestownership = dataoener[0];
+        var dataowner = await this.getusercontentsService.findmanagementcontentowner(email);
+        var latestownership = dataowner[0];
 
         var datacountri = await this.countriesService.findAll();
 
