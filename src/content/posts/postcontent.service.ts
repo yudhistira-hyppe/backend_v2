@@ -1934,7 +1934,7 @@ export class PostContentService {
     $_('#createdAt').text(post.createdAt);
     $_('#contentID').text(post.postID);
 
-    let qr = await this.utilService.generateQRCode('https://sertifikat.hyppe.id/' + post.postID);
+    let qr = await this.utilService.generateQRCode(process.env.LINK_QR + post.postID);
     $_('#qrcode').attr('src', qr);
 
     let meta = post.metadata;
