@@ -2385,6 +2385,9 @@ export class PostContentService {
           for (let i = 0; i < papsara.ImageInfo.length; i++) {
             let vi = papsara.ImageInfo[i];
             if (pdss.apsaraId == vi.ImageId) {
+              pdss.mediaEndpoint = vi.URL;
+              pdss.mediaUri = vi.URL;
+
               pdss.mediaThumbEndpoint = vi.URL;
               pdss.mediaThumbUri = vi.URL;
 
