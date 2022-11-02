@@ -901,4 +901,58 @@ export class GetcontenteventsService {
         return query;
         //return this.getcontenteventsModel.find(CreateGetcontenteventsDto_).exec();
     }
+    
+    async findByPostID(postIDs:Array<String>,eventTypes:Array<String>){        
+        const query=await this.getcontenteventsModel.aggregate([
+            {
+                "$project" : {
+                    "_id" : 0,
+                    "contentevents" : "$$ROOT"
+                }
+            },
+            {
+                "$lookup" : {
+                    "localField" : "contentevents.email",
+                    "from" : "userbasics",
+                    "foreignField" : "email",
+                    "as" : "userbasics"
+                }
+            }, 
+            {
+                "$unwind" : {
+                    "path" : "$userbasics",
+                    "preserveNullAndEmptyArrays" : false
+                }
+            }, 
+            {
+                "$match" : {
+                    "contentevents.postID" : {
+                        "$in" : postIDs
+                    },
+                    "contentevents.eventType" : {"$in":eventTypes}
+                }
+            }, 
+            {
+                "$project" : {
+                    "gender" : "$userbasics.gender",
+                    "createdAt" : "$contentevents.createdAt",
+                    "_id" : 0
+                }
+            }
+        ]);
+
+        return query;
+    }
+    async groupByGender(events:Array<any>){
+        var arr=[];
+        for(var e of events){
+            if(e.gender==null)
+                continue;
+            if(arr[e.gender]===undefined)
+                arr[e.gender]=0;
+            arr[e.gender]++;
+        }
+        return arr;
+    }
+    
 }

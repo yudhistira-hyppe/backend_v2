@@ -254,42 +254,61 @@ export class GetusercontentsController {
         var dataowner = await this.getusercontentsService.findmanagementcontentowner(email);
         var latestownership = dataowner[0];
 
-        var datacountri = await this.countriesService.findAll();
+        // var datacountri = await this.countriesService.findAll();
+        // var lengcountri = datacountri.length;
+        // var dataregionall = await this.getusercontentsService.findmanagementcontentallregion(email);
+        // var totalpost = dataregionall.length;
+        // var datapost = [];
+        // for (var i = 0; i < lengcountri; i++) {
+        //     var countri = datacountri[i].country;
+        //     dataregion = await this.getusercontentsService.findmanagementcontentregion(email, countri);
+        //     var recentlyregion = dataregion;
+        //     var lengregion = dataregion.length;
+        //     var obj = {};
+        //     for (var x = 0; x < lengregion; x++) {
+        //         var tepost = dataregion[x].totalpost * 100 / totalpost;
+        //         var tpost = tepost.toFixed(2);
+        //         obj = { "_id": countri, "totalpost": tepost };
+        //         datapost.push(obj);
+        //     }
+        // }
+        // var datatraffic = await this.getusercontentsService.findmanagementcontenttrafic(email);
+        // var traffic = datatraffic[0];
 
-        var lengcountri = datacountri.length;
-        var dataregionall = await this.getusercontentsService.findmanagementcontentallregion(email);
-        var totalpost = dataregionall.length;
-        var datapost = [];
-        for (var i = 0; i < lengcountri; i++) {
-            var countri = datacountri[i].country;
-            dataregion = await this.getusercontentsService.findmanagementcontentregion(email, countri);
-            var recentlyregion = dataregion;
-            var lengregion = dataregion.length;
-
-
-            var obj = {};
-
-            for (var x = 0; x < lengregion; x++) {
-                var tepost = dataregion[x].totalpost * 100 / totalpost;
-                var tpost = tepost.toFixed(2);
-                obj = { "_id": countri, "totalpost": tepost };
-                datapost.push(obj);
+        var postIDs=await this.getusercontentsService.findPostIDsByEmail(email);
+        var events=await this.getcontenteventsService.findByPostID(postIDs,['VIEW']);
+        var byGenders=[];
+        for(var i=0;i<events.length;i++){
+            if(events[i].gender==null)
+                continue;
+            var idx=byGenders.findIndex(x => x.gender==events[i].gender);
+            if(idx==-1){
+                byGenders.push({'gender':events[i].gender,'count':1});
             }
-
-
+            else{
+                byGenders[idx].count++;
+            }
         }
-
-
-
-
-        var datatraffic = await this.getusercontentsService.findmanagementcontenttrafic(email);
-        var traffic = datatraffic[0];
+        var byYms=[];
+        for(var i=0;i<events.length;i++){
+            var ym=events[i].createdAt.substring(0,7);
+            var idx=byYms.findIndex(x => x.ym==ym);
+            if(idx==-1){
+                byYms.push({'ym':ym,'count':1});
+            }
+            else{
+                byYms[idx].count++;
+            }
+        }
         var datamoderate = await this.getusercontentsService.findmanagementcontentmoderate(email);
         var moderate = datamoderate[0];
+
         data = [{
             "popular": popular, "mostlikes": mostlikes, "mostshares": mostshares, "latestpost": latestpost, "latestmonetize": latestmonetize, "latestownership": latestownership,
-            "recentlyregion": datapost, "traffic": traffic, "moderate": moderate
+            "moderate": moderate, "byGenders": byGenders, "byYms":byYms
         }];
+        // console.log(data);
+        // console.log('returning data');
         return { response_code: 202, data, messages };
     }
 

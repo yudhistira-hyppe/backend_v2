@@ -28978,7 +28978,6 @@ export class GetusercontentsService {
     return query;
   }
 
-
   async findcontentfilterbyuserCount(username: string, postType: string) {
 
     const query = await this.getusercontentsModel.aggregate([
@@ -29311,7 +29310,19 @@ export class GetusercontentsService {
     ]);
     return query;
   }
-
+  async findPostIDsByEmail(email:string){
+    const posts=await this.getusercontentsModel.find({
+      "email":email,
+    },{
+      postID:1,_id:0
+    });
+    var postIDs=[];
+    for(var i=0;i<posts.length;i++){
+      postIDs.push(posts[i].postID);
+    }
+    // console.log(postIDs);
+    return postIDs;
+  }
 }
 
 
