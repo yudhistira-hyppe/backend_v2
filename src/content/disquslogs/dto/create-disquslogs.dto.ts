@@ -63,9 +63,18 @@ export class CreateDisquslogsDto {
     createdAt: String;
     updatedAt: String;
     reactionUri: String;
-    txtMessages: String;
+    txtMessages: String; 
+    lineID: String;
    
     readonly _class: String;
     receiverActive: boolean;
     senderActive: boolean;
+    senderInfo: {};
+    replyLogs: [
+      {
+        $ref: String;
+        $id: String;
+        $db: String;
+      },
+    ];
  }

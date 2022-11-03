@@ -150,7 +150,7 @@ export class DisquslogsService {
   }
 
   async findLogByDisqusId(disqusId: string, dpage: number, dpageRow: number) {
-    let query = this.DisquslogsModel.find().where('disqusID', disqusId).where('active', true);
+    let query = this.DisquslogsModel.find({ disqusID: disqusId, active: true });
 
     let row = 20;
     let page = 0;
@@ -165,22 +165,72 @@ export class DisquslogsService {
     query.limit(row);
     query.sort({ 'createdAt': -1 });
 
-    let res: DisquslogsDto[] = [];
+    //let res: DisquslogsDto[][] = [];
+    var res =[];
     let dt = await query.exec();
     for (let i = 0; i < dt.length; i++) {
       let dat = dt[i];
       let obj = new DisquslogsDto();
-      obj._id = dat._id;
-      obj.active = dat.active;
-      obj.createdAt = dat.createdAt;
-      obj.disqusID = dat.disqusID;
-      obj.postID = dat.postID;
       obj.sequenceNumber = dat.sequenceNumber;
+      obj.createdAt = dat.createdAt;
       obj.txtMessages = dat.txtMessages;
-
       var profile = await this.utilsService.generateProfile(String(dat.sender), 'PROFILE');
-      obj.sender = profile;
-      res.push(obj);
+      
+      var profile_info = {};
+      if (profile.fullName != undefined) {
+        profile_info["fullName"] = profile.fullName;
+      }
+      if (profile.username != undefined) {
+        profile_info["username"] = profile.username;
+      }
+      if (profile.avatar != undefined) {
+        profile_info["avatar"] = profile.avatar;
+      }
+      obj.senderInfo = profile_info;
+      obj.receiver = dat.receiver;
+      obj.sender = dat.sender;
+      obj.lineID = dat._id;
+      obj.active = dat.active;
+      obj.updatedAt = dat.updatedAt;
+      
+      var replyLogs_ = dat.replyLogs;
+      if (replyLogs_.length > 0) {
+        var dta = [];
+        for (var k = 0; k < replyLogs_.length; k++) {
+          console.log(replyLogs_[k]);
+          var Data_id = JSON.parse(JSON.stringify(replyLogs_[k])).$id.toString();
+          var child_replyLogs = await this.findOne(Data_id.toString());
+
+          let objchild = new DisquslogsDto();
+          objchild.sequenceNumber = child_replyLogs.sequenceNumber;
+          objchild.createdAt = child_replyLogs.createdAt;
+          objchild.txtMessages = child_replyLogs.txtMessages;
+          var profilehild = await this.utilsService.generateProfile(String(child_replyLogs.sender), 'PROFILE');
+
+          var profile_info_child = {};
+          if (profilehild.fullName != undefined) {
+            profile_info_child["fullName"] = profilehild.fullName;
+          }
+          if (profilehild.username != undefined) {
+            profile_info_child["username"] = profilehild.username;
+          }
+          if (profilehild.avatar != undefined) {
+            profile_info_child["avatar"] = profilehild.avatar;
+          }
+          objchild.senderInfo = profile_info_child;
+          objchild.receiver = child_replyLogs.receiver;
+          objchild.sender = child_replyLogs.sender;
+          objchild.lineID = child_replyLogs._id;
+          objchild.active = child_replyLogs.active;
+          objchild.updatedAt = child_replyLogs.updatedAt;
+
+          dta.push(objchild);
+        }
+        res.push(dta);
+      } else {
+        res.push([obj]);
+      }
+      //res.push(obj);
     }
 
     return res;
