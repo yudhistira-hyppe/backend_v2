@@ -27,6 +27,7 @@ import { Disquslogs } from '../disquslogs/schemas/disquslogs.schema';
 import { DBRef, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
+import { TemplatesRepo } from 'src/infra/templates_repo/schemas/templatesrepo.schema';
 
 const Long = require('mongodb').Long;
 @Controller('api/')
@@ -123,6 +124,7 @@ export class DisqusController {
             });
           }
           let xres = await this.buildComments(ContentDto_, true);
+          this.sendCommentFCM(ContentDto_.email.toString(), "COMMENT", ContentDto_.postID.toString(), ContentDto_.receiverParty.toString())
           res.response_code = 202;
           let m = new Messages();
           m.info = ["The process successful"]
@@ -907,5 +909,43 @@ export class DisqusController {
     @Headers() headers,
     @Body() request: any) {
     return this.DisqusService.deletedicuss(request);
+  }
+
+
+
+  async sendCommentFCM(email: string, type: string, postID: string, receiverParty: string) {
+    var Templates_ = new TemplatesRepo();
+    Templates_ = await this.utilsService.getTemplate_repo(type, 'NOTIFICATION');
+
+    var get_username_email = await this.utilsService.getUsertname(email);
+    var get_username_receiverParty = await this.utilsService.getUsertname(receiverParty);
+
+    var email = email;
+    var titlein = get_username_receiverParty?.toString() || '';
+    var titleen = get_username_receiverParty?.toString() || '';
+    var bodyin = "";
+    var bodyen = "";
+
+    var email_post = "";
+
+    var posts = await this.postDisqusService.findid(postID);
+    var bodyin_get = Templates_.body_detail_id.toString();
+    var bodyen_get = Templates_.body_detail.toString();
+
+    var post_type = "";
+    if (await this.utilsService.ceckData(posts)) {
+      post_type = posts.postType.toString();
+      email_post = posts.email.toString();
+    }
+
+    var new_bodyin_get = bodyin_get.replace("${post_type}", "Hypper" + post_type[0].toUpperCase() + post_type.substring(1));
+    var new_bodyen_get = bodyen_get.replace("${post_type}", "Hypper" + post_type[0].toUpperCase() + post_type.substring(1));
+
+    var bodyin = new_bodyin_get;
+    var bodyen = new_bodyen_get;
+    
+    var eventType = type.toString();
+    var event = "ACCEPT";
+    await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
   }
 }
