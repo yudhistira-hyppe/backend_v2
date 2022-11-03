@@ -427,7 +427,7 @@ export class DisqusController {
           } else {
             var disqusLog_new = new CreateDisquslogsDto();
             disqusLog_new._id = await this.utilsService.generateId(); 
-            disqusLog_new.disqusID = await this.utilsService.generateId(); 
+            disqusLog_new.disqusID = disqus.disqusID;
             disqusLog_new.sender = inDto.email;
             disqusLog_new.sequenceNumber = 0;
             disqusLog_new.active = true;
