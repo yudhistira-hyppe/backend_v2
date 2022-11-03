@@ -106,10 +106,11 @@ export class DisqusController {
             //var roomName = retVal[retValCount].room;
           //}
         } else if ((type == "COMMENT") && (ContentDto_.postID!=undefined)) {
+          console.log("Payload Insert Comment >>>>>> : ", ContentDto_);
           if (ContentDto_.email==undefined){
             ContentDto_.email = email_header;
           } 
-          if (ContentDto_.receiverParty == undefined) {
+          if (ContentDto_.postID != undefined) {
             var Posts_ = new Posts();
             Posts_ = await this.postDisqusService.findid(ContentDto_.postID.toString());
             ContentDto_.receiverParty = Posts_.email;
@@ -223,6 +224,7 @@ export class DisqusController {
           }
           }
         } else if (type == "COMMENT") {
+          console.log("Payload Query Comment >>>>>> : ", ContentDto_);
           var DisqusResponseComment_ = new DisqusResponseComment();
           let com = await this.disqusService.findDisqusByPost(String(ContentDto_.postID), type);
 
@@ -343,7 +345,7 @@ export class DisqusController {
       if (Posts_.active && Posts_.allowComments){
         var disqus = new CreateDisqusDto();
         var disqus_ = new CreateDisqusDto();
-        disqus_ = await this.disqusService.findDisqusByPost_(Posts_.email.toString(), Posts_.postID.toString(), "COMMENT");
+        disqus_ = await this.disqusService.findDisqusByPost_(Posts_.postID.toString(), "COMMENT");
         if (!(await this.utilsService.ceckData(disqus_))) {
           var data_id = await this.utilsService.generateId();
           disqus._id = data_id;

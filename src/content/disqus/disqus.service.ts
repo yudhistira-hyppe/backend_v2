@@ -124,7 +124,7 @@ export class DisqusService {
     return await this.DisqusModel.find().where('postID', postId).where('eventType', eventType).exec();
   }
 
-  async findDisqusByPost_(email: string, postId: string, eventType: string): Promise<Disqus> {
+  async findDisqusByPost_(postId: string, eventType: string): Promise<Disqus> {
     //return await this.DisqusModel.findOne().where('email', email).where('postID', postId).where('eventType', eventType).exec();
     return await this.DisqusModel.findOne().where('postID', postId).where('eventType', eventType).exec();
   }
