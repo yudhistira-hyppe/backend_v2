@@ -195,6 +195,7 @@ export class DisquslogsService {
       
       var replyLogs_ = dat.replyLogs;
       if (replyLogs_.length > 0) {
+        res.push([obj]);
         var dta = [];
         for (var k = 0; k < replyLogs_.length; k++) {
           console.log(replyLogs_[k]);
