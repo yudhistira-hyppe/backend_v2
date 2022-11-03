@@ -195,8 +195,8 @@ export class DisquslogsService {
       
       var replyLogs_ = dat.replyLogs;
       if (replyLogs_.length > 0) {
-        res.push([obj]);
         var dta = [];
+        dta.push(obj);
         for (var k = 0; k < replyLogs_.length; k++) {
           console.log(replyLogs_[k]);
           var Data_id = JSON.parse(JSON.stringify(replyLogs_[k])).$id.toString();
