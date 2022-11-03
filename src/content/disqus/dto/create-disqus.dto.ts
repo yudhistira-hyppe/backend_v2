@@ -121,4 +121,35 @@ export class DisqusResponseApps {
   data: DisqusResDto[];
   messages: Messages;
   version: string;
-}  
+}
+
+export class DisqusComment {
+  _id: String;
+  disqusID: String;
+  email: String;
+  mate: {};
+  eventType: String;
+  active: boolean;
+  room: String;
+  createdAt: String;
+  updatedAt: String;
+  lastestMessage: String;
+  username: String;
+  fullName: String;
+  avatar: AvatarDTO;
+  senderOrReceiverInfo: {};
+  emailActive: boolean;
+  mateActive: boolean;
+  postId: string;
+  postType: string;
+  content: any;
+  disqusLogs: DisquslogsDto[][];
+  _class: String;
+}
+
+export class DisqusResponseComment {
+  response_code: number;
+  data: DisqusComment[];
+  messages: Messages;
+  version: string;
+}   
