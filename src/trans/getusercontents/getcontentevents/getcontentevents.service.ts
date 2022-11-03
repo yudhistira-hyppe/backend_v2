@@ -905,54 +905,89 @@ export class GetcontenteventsService {
     async findByPostID(postIDs:Array<String>,eventTypes:Array<String>){        
         const query=await this.getcontenteventsModel.aggregate([
             {
-                "$project" : {
-                    "_id" : 0,
-                    "contentevents" : "$$ROOT"
-                }
-            },
-            {
                 "$lookup" : {
-                    "localField" : "contentevents.email",
+                    "localField" : "email",
                     "from" : "userbasics",
                     "foreignField" : "email",
                     "as" : "userbasics"
                 }
             }, 
             {
-                "$unwind" : {
-                    "path" : "$userbasics",
-                    "preserveNullAndEmptyArrays" : false
-                }
-            }, 
-            {
                 "$match" : {
-                    "contentevents.postID" : {
+                    "postID" : {
                         "$in" : postIDs
                     },
-                    "contentevents.eventType" : {"$in":eventTypes}
+                    "eventType" : {"$in":eventTypes}
                 }
-            }, 
+            },
             {
-                "$project" : {
-                    "gender" : "$userbasics.gender",
-                    "createdAt" : "$contentevents.createdAt",
-                    "_id" : 0
-                }
+                 "$project":{
+                     "contentEventID" : 1,
+                    "email" : 1,
+                    "eventType" : 1,
+                    "active" : 1,
+                    "event" : 1,
+                    "createdAt" : 1,
+                    "updatedAt" : 1,
+                    "senderParty" : 1,
+                    "postID" : 1,
+                    "gender":"$userbasics.gender"
+                 }   
             }
         ]);
 
         return query;
     }
-    async groupByGender(events:Array<any>){
-        var arr=[];
-        for(var e of events){
-            if(e.gender==null)
-                continue;
-            if(arr[e.gender]===undefined)
-                arr[e.gender]=0;
-            arr[e.gender]++;
+    async findByReceiverParty(email:String,eventTypes:Array<String>){
+        const query=await this.getcontenteventsModel.find(
+            {"eventType":{$in:["VIEW_PROFILE"]},"receiverParty":"freeman27@getnada.com"}
+        );
+        return query;
+    }
+    async groupEventsBy(events:Array<any>,groupBy:String){
+        if(groupBy=='gender'){
+            var byGenders=[];
+            for(var i=0;i<events.length;i++){
+                if(events[i].gender[0]==null)
+                    continue;
+                var idx=byGenders.findIndex(x => x.gender==events[i].gender[0]);
+                if(idx==-1){
+                    byGenders.push({'gender':events[i].gender[0],'count':1});
+                }
+                else{
+                    byGenders[idx].count++;
+                }
+            }
+            return byGenders;
         }
-        return arr;
+        else if(groupBy=='ym'){
+            var byYms=[];
+            for(var i=0;i<events.length;i++){
+                var ym=events[i].createdAt.substring(0,7);
+                var idx=byYms.findIndex(x => x.ym==ym);
+                if(idx==-1){
+                    byYms.push({'ym':ym,'count':1});
+                }
+                else{
+                    byYms[idx].count++;
+                }
+            }
+            return byYms;
+        }
+        else if(groupBy=='date'){
+            var byDates=[];
+            for(var i=0;i<events.length;i++){
+                var dt=events[i].createdAt.substring(0,10);
+                var idx=byDates.findIndex(x => x.date==dt);
+                if(idx==-1){
+                    byDates.push({'date':dt,'count':1});
+                }
+                else{
+                    byDates[idx].count++;
+                }
+            }
+            return byDates;
+        }
     }
     
 }

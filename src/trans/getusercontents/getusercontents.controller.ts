@@ -277,29 +277,8 @@ export class GetusercontentsController {
 
         var postIDs=await this.getusercontentsService.findPostIDsByEmail(email);
         var events=await this.getcontenteventsService.findByPostID(postIDs,['VIEW']);
-        var byGenders=[];
-        for(var i=0;i<events.length;i++){
-            if(events[i].gender==null)
-                continue;
-            var idx=byGenders.findIndex(x => x.gender==events[i].gender);
-            if(idx==-1){
-                byGenders.push({'gender':events[i].gender,'count':1});
-            }
-            else{
-                byGenders[idx].count++;
-            }
-        }
-        var byYms=[];
-        for(var i=0;i<events.length;i++){
-            var ym=events[i].createdAt.substring(0,7);
-            var idx=byYms.findIndex(x => x.ym==ym);
-            if(idx==-1){
-                byYms.push({'ym':ym,'count':1});
-            }
-            else{
-                byYms[idx].count++;
-            }
-        }
+        var byGenders=await this.getcontenteventsService.groupEventsBy(events,'gender');
+        var byYms=await this.getcontenteventsService.groupEventsBy(events,'ym');
         var datamoderate = await this.getusercontentsService.findmanagementcontentmoderate(email);
         var moderate = datamoderate[0];
 
@@ -707,60 +686,6 @@ export class GetusercontentsController {
         let data = await this.getusercontentsService.findpopularanalitic(email);
 
         return { response_code: 202, data, messages };
-    }
-    @Post('api/getusercontents/management/monetize')
-    @UseGuards(JwtAuthGuard)
-    async contentuserallmanagementkontenmonetis(@Req() request: Request): Promise<any> {
-        const mongoose = require('mongoose');
-        var ObjectId = require('mongodb').ObjectId;
-        var data = null;
-        var buy = null;
-        var postType = null;
-        var monetize = null;
-        var email = null;
-        var lastmonetize = null;
-        var skip = 0;
-        var limit = 0;
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["email"] !== undefined) {
-            email = request_json["email"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        if (request_json["skip"] !== undefined) {
-            skip = request_json["skip"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        buy = request_json["buy"];
-        monetize = request_json["monetize"];
-        postType = request_json["postType"];
-        lastmonetize = request_json["lastmonetize"];
-        var ubasic = await this.userbasicsService.findOne(email);
-        var iduser = ubasic._id;
-        var userid = mongoose.Types.ObjectId(iduser);
-        var startdate = request_json["startdate"];
-        var enddate = request_json["enddate"];
-
-        console.log(userid);
-        const messages = {
-            "info": ["The process successful"],
-        };
-
-        var datatotal = await this.getusercontentsService.findcountfilter(email);
-        var totalAll = datatotal[0].totalpost;
-        let dataFilter = await this.getusercontentsService.findalldatakontenmonetesbuy(userid, email, buy, monetize, postType, lastmonetize, startdate, enddate, 0, totalAll);
-        data = await this.getusercontentsService.findalldatakontenmonetesbuy(userid, email, buy, monetize, postType, lastmonetize, startdate, enddate, skip, limit);
-        var totalFilter = dataFilter.length;
-        return { response_code: 202, data, skip, limit, totalFilter, totalAll, messages };
     }
 
     @Post('api/getusercontents/management/analitic/follower')
