@@ -116,8 +116,8 @@ export class DisqusController {
             ContentDto_.postType = Posts_.postType;
           }
           if (ContentDto_.tagComment!=undefined){
-            var _tagComment_ = ContentDto_.tagComment.toString();
-            ContentDto_.tagComment_ = _tagComment_.split(',').map(function (n) {
+            var _tagComment_ = ContentDto_.tagComment;
+            ContentDto_.tagComment_ = _tagComment_.toString().split(',').map(function (n) {
               return n.toString();
             });
           }
