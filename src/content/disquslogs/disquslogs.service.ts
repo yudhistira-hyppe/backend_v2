@@ -29,7 +29,7 @@ export class DisquslogsService {
   }
 
   async findOne(id: string): Promise<Disquslogs> {
-    return this.DisquslogsModel.findOne({ _id: id }).exec();
+    return this.DisquslogsModel.findOne({ _id: id, active:true }).exec();
   }
 
   async delete(id: string) {
@@ -202,30 +202,33 @@ export class DisquslogsService {
           var Data_id = JSON.parse(JSON.stringify(replyLogs_[k])).$id.toString();
           var child_replyLogs = await this.findOne(Data_id.toString());
 
-          let objchild = new DisquslogsDto();
-          objchild.sequenceNumber = child_replyLogs.sequenceNumber;
-          objchild.createdAt = child_replyLogs.createdAt;
-          objchild.txtMessages = child_replyLogs.txtMessages;
-          var profilehild = await this.utilsService.generateProfile(String(child_replyLogs.sender), 'PROFILE');
+          if (await this.utilsService.ceckData(child_replyLogs)){
+            let objchild = new DisquslogsDto();
+            objchild.sequenceNumber = child_replyLogs.sequenceNumber;
+            objchild.createdAt = child_replyLogs.createdAt;
+            objchild.txtMessages = child_replyLogs.txtMessages;
+            var profilehild = await this.utilsService.generateProfile(String(child_replyLogs.sender), 'PROFILE');
 
-          var profile_info_child = {};
-          if (profilehild.fullName != undefined) {
-            profile_info_child["fullName"] = profilehild.fullName;
-          }
-          if (profilehild.username != undefined) {
-            profile_info_child["username"] = profilehild.username;
-          }
-          if (profilehild.avatar != undefined) {
-            profile_info_child["avatar"] = profilehild.avatar;
-          }
-          objchild.senderInfo = profile_info_child;
-          objchild.receiver = child_replyLogs.receiver;
-          objchild.sender = child_replyLogs.sender;
-          objchild.lineID = child_replyLogs._id;
-          objchild.active = child_replyLogs.active;
-          objchild.updatedAt = child_replyLogs.updatedAt;
+            var profile_info_child = {};
+            if (profilehild.fullName != undefined) {
+              profile_info_child["fullName"] = profilehild.fullName;
+            }
+            if (profilehild.username != undefined) {
+              profile_info_child["username"] = profilehild.username;
+            }
+            if (profilehild.avatar != undefined) {
+              profile_info_child["avatar"] = profilehild.avatar;
+            }
+            objchild.senderInfo = profile_info_child;
+            objchild.receiver = child_replyLogs.receiver;
+            objchild.sender = child_replyLogs.sender;
+            objchild.lineID = child_replyLogs._id;
+            objchild.active = child_replyLogs.active;
+            objchild.updatedAt = child_replyLogs.updatedAt;
 
-          dta.push(objchild);
+            dta.push(objchild);
+          }
+ 
         }
         res.push(dta);
       } else {
