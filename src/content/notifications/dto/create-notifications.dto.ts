@@ -25,8 +25,21 @@ export class CreateNotificationsDto {
     createdAt: String;
     updatedAt: String;
     contentEventID: String;
+    postID: String;
+    content: ContentDTO;
     devices: any[];
     actionButtons: String;
+}
+
+export class ContentDTO {
+    apsaraId:string;
+    apsaraThumbId:string;
+    isApsara:boolean;
+    mediaThumbUri:string;
+    mediaUri:string;
+    mediaEndpoint:string;
+    mediaThumbEndpoint:string;
+    mediaType:string;
 }
 
 export class Messages {

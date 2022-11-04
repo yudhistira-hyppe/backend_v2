@@ -132,6 +132,13 @@ export class PostCommentService {
       return res;        
     }
 
+    if (String(profile.email) == String(pst.email)) {
+      let msg = new Messages();
+      msg.info = ["Viewer is poster"];
+      res.messages = msg;
+      return res;              
+    }
+
     let cm = pst.contentMedias[0];
     let ns = cm.namespace;
 

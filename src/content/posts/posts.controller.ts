@@ -59,7 +59,7 @@ export class PostsController {
     private readonly notifService: NotificationsService,
     private readonly cmodService: ContentModService,
     private readonly disqusService: DisqusService,
-    private readonly methodepaymentsService: MethodepaymentsService, 
+    private readonly methodepaymentsService: MethodepaymentsService,     
     private readonly groupModuleService: GroupModuleService) { }
 
   @Post()
@@ -395,9 +395,12 @@ export class PostsController {
   }
 
   @Post('api/posts/getnotification')
+  @UseInterceptors(FileInterceptor('postContent'))
   async getNotification(@Body() body, @Headers() headers) {
     this.logger.log("getNotification >>> start: " + JSON.stringify(body));
-    return this.notifService.getNotification(body, headers);
+    let y = await this.postContentService.getNotification(body, headers);
+    this.logger.log("getNotification >>> res: " + JSON.stringify(y));
+    return y;
   }
 
   @UseGuards(JwtAuthGuard)
