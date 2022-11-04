@@ -24,7 +24,7 @@ export class ErrorHandler {
 
   async generateBadRequestException(messages: string): Promise<any> {
     throw new BadRequestException({
-      response_code: 406,
+      response_code: 400,
       messages: {
         info: [messages],
       },

@@ -38,6 +38,7 @@ import { post } from 'jquery';
 import { TemplatesRepoService } from '../../infra/templates_repo/templates_repo.service';
 import { DisqusService } from '../disqus/disqus.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
+import { CreateDisquslogsDto } from '../disquslogs/dto/create-disquslogs.dto';
 
 
 //import FormData from "form-data";
@@ -91,7 +92,10 @@ export class PostCommentService {
     }
 
     if (dis.sender == profile.email || dis.receiver == profile.email) {
-        this.disqusLogService.delete(String(dis._id));
+      var createDisquslogsDto_ = new CreateDisquslogsDto();
+      createDisquslogsDto_.active = false;
+      await this.disqusLogService.update(body.disqusLogID, createDisquslogsDto_);
+        //this.disqusLogService.delete(String(dis._id));
     }
 
     res.response_code = 202;
@@ -130,6 +134,13 @@ export class PostCommentService {
       msg.info = ["Content Media unknown"];
       res.messages = msg;
       return res;        
+    }
+
+    if (String(profile.email) == String(pst.email)) {
+      let msg = new Messages();
+      msg.info = ["Viewer is poster"];
+      res.messages = msg;
+      return res;              
     }
 
     let cm = pst.contentMedias[0];

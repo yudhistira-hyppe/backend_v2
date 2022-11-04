@@ -29,6 +29,9 @@ import * as fs from 'fs';
 import { double } from 'aws-sdk/clients/lightsail';
 import { CreateNotificationsDto } from '../content/notifications/dto/create-notifications.dto';
 import { TemplatesRepo } from '../infra/templates_repo/schemas/templatesrepo.schema';
+import { BanksService } from '../trans/banks/banks.service';
+import { Banks } from '../trans/banks/schemas/banks.schema';
+
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -58,6 +61,7 @@ export class UtilsService {
     private mediaprofilepictsService: MediaprofilepictsService,
     private settingsService: SettingsService,
     private seaweedfsService: SeaweedfsService,
+    private banksService: BanksService,
     private userdevicesService: UserdevicesService,
     private notificationsService: NotificationsService
   ) { }
@@ -479,6 +483,21 @@ export class UtilsService {
       },
     );
     return refreshToken;
+  }
+
+  async getBank(BankCode: String): Promise<Banks> {
+    var Bank = await this.banksService.findbankcode(BankCode.toString());
+    return Bank;
+  }
+
+  async generateNumber() {
+    const getRandomId = (min = 0, max = 500000) => {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      const num = Math.floor(Math.random() * (max - min + 1)) + min;
+      return num.toString().padStart(6, "0")
+    };
+    return getRandomId();
   }
 
   async generatePassword(password: string): Promise<string> {

@@ -2037,6 +2037,9 @@ export class AuthService {
               }
 
               var data_update_userbasict = {};
+              if (user_fullName != null) {
+                data_update_userbasict['fullName'] = user_fullName;
+              }
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
               }
@@ -2190,6 +2193,9 @@ export class AuthService {
               }
 
               var data_update_userbasict = {};
+              if (user_fullName != null) {
+                data_update_userbasict['fullName'] = user_fullName;
+              }
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
               }
@@ -2362,6 +2368,9 @@ export class AuthService {
               }
 
               var data_update_userbasict = {};
+              if (user_fullName != null) {
+                data_update_userbasict['fullName'] = user_fullName;
+              }
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
               }
@@ -2425,9 +2434,10 @@ export class AuthService {
               //data_update_userbasict['status'] = status;
               //data_update_userbasict['event'] = event;
 
-              if (user_bio != null || user_fullName != null || user_dob != null || user_gender != null || user_mobileNumber != null) {
-                await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
-              }
+              await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
+              // if (user_bio != null || user_fullName != null || user_dob != null || user_gender != null || user_mobileNumber != null) {
+              //   await this.userbasicsService.updatebyEmail(user_email, data_update_userbasict);
+              // }
             } catch (error) {
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed update profile bio. Error:' + error,
@@ -2445,6 +2455,9 @@ export class AuthService {
               }
 
               var data_update_userbasict = {};
+              if (user_fullName != null) {
+                data_update_userbasict['fullName'] = user_fullName;
+              }
               if (user_bio != null) {
                 data_update_userbasict['bio'] = user_bio;
               }
