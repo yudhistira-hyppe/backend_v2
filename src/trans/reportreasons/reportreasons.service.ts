@@ -18,8 +18,8 @@ export class ReportreasonsService {
         return this.reportreasonsModel.findOne({ _id: id }).exec();
     }
 
-    async findType(type: string): Promise<Reportreasons[]> {
-        return this.reportreasonsModel.find({ type: type }).exec();
+    async findType(): Promise<Reportreasons[]> {
+        return this.reportreasonsModel.find({ "type": "report", "class": "post" }).exec();
     }
     async create(CreateReportreasonsDto: CreateReportreasonsDto): Promise<Reportreasons> {
         let data = await this.reportreasonsModel.create(CreateReportreasonsDto);

@@ -3794,4 +3794,454 @@ export class AdsService {
         }
         return data;
     }
+
+
+    async findreportadscount(keys: string, postType: string, startdate: string, enddate: string) {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+        var pipeline = [];
+        pipeline = [{
+            $lookup: {
+                from: 'adsplaces',
+                localField: 'placingID',
+                foreignField: '_id',
+                as: 'places',
+
+            },
+
+        },
+        {
+            $lookup: {
+                from: 'adstypes',
+                localField: 'typeAdsID',
+                foreignField: '_id',
+                as: 'tipeads',
+
+            },
+
+        },
+        {
+            $project: {
+                tipeads: {
+                    $arrayElemAt: ['$tipeads', 0]
+                },
+                place: {
+                    $arrayElemAt: ['$places', 0]
+                },
+                userID: '$userID',
+                idApsara: '$idApsara',
+                name: '$name',
+                type: '$type',
+                status: "$status",
+                timestamp: "$timestamp",
+                totalUsedCredit: "$totalUsedCredit",
+                tayang: '$tayang',
+                usedCredit: '$usedCredit',
+                usedCreditFree: '$usedCreditFree',
+                creditFree: '$creditFree',
+                creditValue: '$creditValue',
+                totalCredit: '$totalCredit',
+                contentModeration: '$contentModeration',
+                contentModerationResponse: '$contentModerationResponse',
+                reportedStatus: '$reportedStatus',
+                reportedUserCount: '$reportedUserCount',
+                reportedUser: '$reportedUser',
+                reportedUserHandle: '$reportedUserHandle',
+                reportReasonIdLast: {
+                    $last: "$reportedUser.reportReasonId"
+                },
+                reasonLast: {
+                    $last: "$reportedUser.description"
+                },
+                createdAtReportLast: {
+                    $last: "$reportedUser.createdAt"
+                },
+
+            }
+        },
+        {
+
+            $project: {
+                userID: '$userID',
+                idApsara: '$idApsara',
+                name: '$name',
+                type: '$type',
+                status: "$status",
+                timestamp: "$timestamp",
+                totalUsedCredit: "$totalUsedCredit",
+                tayang: '$tayang',
+                usedCredit: '$usedCredit',
+                usedCreditFree: '$usedCreditFree',
+                creditFree: '$creditFree',
+                creditValue: '$creditValue',
+                totalCredit: '$totalCredit',
+                tipeads: '$tipeads.nameType',
+                contentModeration: '$contentModeration',
+                contentModerationResponse: '$contentModerationResponse',
+                reportedStatus: '$reportedStatus',
+                reportedUserCount: '$reportedUserCount',
+                reportedUser: '$reportedUser',
+                reportedUserHandle: '$reportedUserHandle',
+                reportReasonIdLast: {
+                    $last: "$reportedUser.reportReasonId"
+                },
+                reasonLast: {
+                    $last: "$reportedUser.description"
+                },
+                createdAtReportLast: {
+                    $last: "$reportedUser.createdAt"
+                },
+                place: '$place.namePlace',
+                reportStatusLast: {
+                    $last: "$reportedUserHandle.status"
+                },
+
+            }
+        },
+
+        {
+            $sort: {
+                createdAtReportLast: - 1
+            },
+
+        },
+        ];
+        if (keys !== undefined && postType === undefined && startdate === undefined && enddate === undefined) {
+
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    name: {
+                        $regex: keys,
+                        $options: 'i'
+                    },
+
+                }
+            },);
+
+        }
+        else if (keys === undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    tipeads: {
+                        $regex: postType,
+                        $options: 'i'
+                    },
+
+                }
+            });
+        }
+        else if (keys === undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    createdAtReportLast: { $gte: startdate, $lte: dateend }
+
+                }
+            },);
+        }
+        else if (keys !== undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    name: {
+                        $regex: keys,
+                        $options: 'i'
+                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
+
+                }
+            },);
+        }
+        else if (keys !== undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    name: {
+                        $regex: keys,
+                        $options: 'i'
+                    }, tipeads: {
+                        $regex: postType,
+                        $options: 'i'
+                    },
+
+                }
+            },);
+        }
+        else if (keys === undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    tipeads: {
+                        $regex: postType,
+                        $options: 'i'
+                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
+
+                }
+            },);
+        }
+        else if (keys !== undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    name: {
+                        $regex: keys,
+                        $options: 'i'
+                    }, tipeads: {
+                        $regex: postType,
+                        $options: 'i'
+                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
+
+                }
+            },);
+        }
+        else {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+
+
+                }
+            },);
+        }
+
+        const query = await this.adsModel.aggregate(pipeline);
+
+        return query;
+
+
+
+    }
+
+    async findreportads(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number) {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+        var pipeline = [];
+        pipeline = [{
+            $lookup: {
+                from: 'adsplaces',
+                localField: 'placingID',
+                foreignField: '_id',
+                as: 'places',
+
+            },
+
+        },
+        {
+            $lookup: {
+                from: 'adstypes',
+                localField: 'typeAdsID',
+                foreignField: '_id',
+                as: 'tipeads',
+
+            },
+
+        },
+        {
+            $project: {
+                tipeads: {
+                    $arrayElemAt: ['$tipeads', 0]
+                },
+                place: {
+                    $arrayElemAt: ['$places', 0]
+                },
+                userID: '$userID',
+                idApsara: '$idApsara',
+                name: '$name',
+                type: '$type',
+                status: "$status",
+                timestamp: "$timestamp",
+                totalUsedCredit: "$totalUsedCredit",
+                tayang: '$tayang',
+                usedCredit: '$usedCredit',
+                usedCreditFree: '$usedCreditFree',
+                creditFree: '$creditFree',
+                creditValue: '$creditValue',
+                totalCredit: '$totalCredit',
+                contentModeration: '$contentModeration',
+                contentModerationResponse: '$contentModerationResponse',
+                reportedStatus: '$reportedStatus',
+                reportedUserCount: '$reportedUserCount',
+                reportedUser: '$reportedUser',
+                reportedUserHandle: '$reportedUserHandle',
+                reportReasonIdLast: {
+                    $last: "$reportedUser.reportReasonId"
+                },
+                reasonLast: {
+                    $last: "$reportedUser.description"
+                },
+                createdAtReportLast: {
+                    $last: "$reportedUser.createdAt"
+                },
+
+            }
+        },
+        {
+
+            $project: {
+                userID: '$userID',
+                idApsara: '$idApsara',
+                name: '$name',
+                type: '$type',
+                status: "$status",
+                timestamp: "$timestamp",
+                totalUsedCredit: "$totalUsedCredit",
+                tayang: '$tayang',
+                usedCredit: '$usedCredit',
+                usedCreditFree: '$usedCreditFree',
+                creditFree: '$creditFree',
+                creditValue: '$creditValue',
+                totalCredit: '$totalCredit',
+                tipeads: '$tipeads.nameType',
+                contentModeration: '$contentModeration',
+                contentModerationResponse: '$contentModerationResponse',
+                reportedStatus: '$reportedStatus',
+                reportedUserCount: '$reportedUserCount',
+                reportedUser: '$reportedUser',
+                reportedUserHandle: '$reportedUserHandle',
+                reportReasonIdLast: {
+                    $last: "$reportedUser.reportReasonId"
+                },
+                reasonLast: {
+                    $last: "$reportedUser.description"
+                },
+                createdAtReportLast: {
+                    $last: "$reportedUser.createdAt"
+                },
+                place: '$place.namePlace',
+                reportStatusLast: {
+                    $last: "$reportedUserHandle.status"
+                },
+
+            }
+        },
+
+        {
+            $sort: {
+                createdAtReportLast: - 1
+            },
+
+        },
+        {
+            $skip: (page * limit)
+        },
+        {
+            $limit: limit
+        }];
+        if (keys !== undefined && postType === undefined && startdate === undefined && enddate === undefined) {
+
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    name: {
+                        $regex: keys,
+                        $options: 'i'
+                    },
+
+                }
+            },);
+
+        }
+        else if (keys === undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    tipeads: {
+                        $regex: postType,
+                        $options: 'i'
+                    },
+
+                }
+            });
+        }
+        else if (keys === undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    createdAtReportLast: { $gte: startdate, $lte: dateend }
+
+                }
+            },);
+        }
+        else if (keys !== undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    name: {
+                        $regex: keys,
+                        $options: 'i'
+                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
+
+                }
+            },);
+        }
+        else if (keys !== undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    name: {
+                        $regex: keys,
+                        $options: 'i'
+                    }, tipeads: {
+                        $regex: postType,
+                        $options: 'i'
+                    },
+
+                }
+            },);
+        }
+        else if (keys === undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    tipeads: {
+                        $regex: postType,
+                        $options: 'i'
+                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
+
+                }
+            },);
+        }
+        else if (keys !== undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    name: {
+                        $regex: keys,
+                        $options: 'i'
+                    }, tipeads: {
+                        $regex: postType,
+                        $options: 'i'
+                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
+
+                }
+            },);
+        }
+        else {
+            pipeline.push({
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+
+
+                }
+            },);
+        }
+
+        const query = await this.adsModel.aggregate(pipeline);
+
+        return query;
+
+
+
+    }
 }
