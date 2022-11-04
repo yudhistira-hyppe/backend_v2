@@ -40,13 +40,10 @@ import { UnsubscriptionError } from 'rxjs';
 import { Userauth } from '../../trans/userauths/schemas/userauth.schema';
 import { SettingsService } from '../../trans/settings/settings.service';
 import { InsightlogsService } from '../insightlogs/insightlogs.service';
-<<<<<<< HEAD
 import { ContentModService } from './contentmod.service';
 import { threadId } from 'worker_threads';
-=======
 import { NotificationsService } from '../notifications/notifications.service';
 import { ContentDTO, CreateNotificationsDto, NotifResponseApps } from '../notifications/dto/create-notifications.dto';
->>>>>>> master
 
 
 //import FormData from "form-data";
