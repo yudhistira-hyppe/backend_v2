@@ -27,6 +27,7 @@ import { Disquslogs } from '../disquslogs/schemas/disquslogs.schema';
 import { DBRef, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
+import { TemplatesRepo } from 'src/infra/templates_repo/schemas/templatesrepo.schema';
 
 const Long = require('mongodb').Long;
 @Controller('api/')
@@ -123,6 +124,7 @@ export class DisqusController {
             });
           }
           let xres = await this.buildComments(ContentDto_, true);
+          this.sendCommentFCM(ContentDto_.email.toString(), "COMMENT", ContentDto_.postID.toString(), ContentDto_.receiverParty.toString())
           res.response_code = 202;
           let m = new Messages();
           m.info = ["The process successful"]
@@ -617,11 +619,6 @@ export class DisqusController {
     return retVal;
   }
 
-  // private async validationEvent(contentDto: ContentDto): Promise<Insights>  {
-  //   var Insights_ = new Insights();
-  //   return Insights_;
-  // }
-
   private async validationEvent(contentDto: ContentDto): Promise<CreateInsightsDto> {
     var Insights_ = new CreateInsightsDto();
     return Insights_;
@@ -905,220 +902,50 @@ export class DisqusController {
 
     }
   }
-  
-  // private async processInsightEvent(InsightsDto_: InsightsDto): Promise<ContentDto> {
-  //   if (InsightsDto_.contentDto.eventType =="REACTION") {
-  //     if (InsightsDto_.validStep3) {
-
-  //       var inEventId = new ContentEventId();
-  //       var withPrev = false;
-  //       if (await this.utilsService.ceckData(InsightsDto_.contentEvent) && withPrev){
-  //         inEventId.dtoID = InsightsDto_.contentEvent._id;
-  //         inEventId.eventType = InsightsDto_.contentEvent.eventType;
-  //         inEventId.parent = InsightsDto_.contentEvent;
-  //       } else {
-  //         inEventId.dtoID = await this.utilsService.generateId();
-  //         inEventId.eventType = InsightsDto_.contentEvent.eventType;
-  //         var CreateContenteventsDto_ = new CreateContenteventsDto();
-  //         CreateContenteventsDto_._id = await this.utilsService.generateId();
-  //         CreateContenteventsDto_.contentEventID = await this.utilsService.generateId();
-  //         CreateContenteventsDto_.eventType = InsightsDto_.contentEvent.eventType;
-  //         CreateContenteventsDto_.active = true;
-  //         CreateContenteventsDto_.flowIsDone = false;
-  //         CreateContenteventsDto_.createdAt = await this.utilsService.getDateTimeString();
-  //         CreateContenteventsDto_.updatedAt = await this.utilsService.getDateTimeString();
-  //         inEventId.parent = CreateContenteventsDto_;
-  //       }
-
-  //       var inRecvEventId = new ContentEventId();
-  //       inRecvEventId.dtoID = await this.utilsService.generateId();
-  //       inRecvEventId.eventType = InsightsDto_.contentEvent.eventType;
-  //       var _CreateContenteventsDto_ = new CreateContenteventsDto();
-  //       _CreateContenteventsDto_._id = await this.utilsService.generateId();
-  //       _CreateContenteventsDto_.contentEventID = await this.utilsService.generateId();
-  //       _CreateContenteventsDto_.eventType = InsightsDto_.contentEvent.eventType;
-  //       _CreateContenteventsDto_.active = true;
-  //       _CreateContenteventsDto_.flowIsDone = false;
-  //       _CreateContenteventsDto_.createdAt = await this.utilsService.getDateTimeString();
-  //       _CreateContenteventsDto_.updatedAt = await this.utilsService.getDateTimeString();
-  //       inRecvEventId.parent = _CreateContenteventsDto_;
-
-  //       inRecvEventId.parent.event = "ACCEPT";
-  //       inRecvEventId.parent.email = InsightsDto_.profile.email;
-  //       inRecvEventId.parent.receiverParty = InsightsDto_.receiverParty.email.toString();
-  //       inRecvEventId.parent.flowIsDone = true;
-
-  //       inEventId.parent.event = "DONE";
-  //       inEventId.parent.email = InsightsDto_.profile.email;
-  //       inEventId.parent.receiverParty = InsightsDto_.receiverParty.email.toString();
-  //       inEventId.parent.flowIsDone = true;
-      
-  //       InsightsDto_.eventId = inEventId;
-  //       InsightsDto_.receiverEventId = inRecvEventId;
-  //       InsightsDto_.validStep4 = true;
-  //     }
-
-  //     if (InsightsDto_.validStep4) {
-  //       if (((InsightsDto_.contentDto.postID != undefined) ? true : false)) {
-  //         if (await this.utilsService.ceckData(InsightsDto_.contentPost)) {
-  //           InsightsDto_.eventId.parent.postID = InsightsDto_.contentPost.postID;
-  //           InsightsDto_.receiverEventId.parent.postID = InsightsDto_.contentPost.postID;
-  //           InsightsDto_.validStep5 = true;
-  //         }
-  //       } else {
-  //         InsightsDto_.validStep5 = true;
-  //       }
-
-  //       if (InsightsDto_.validStep5) {
-  //         if (InsightsDto_.contentPost.postID!=undefined) {
-  //           if (!(InsightsDto_.contentPost.email == InsightsDto_.profile.email)
-  //             || !(InsightsDto_.contentPost.email == InsightsDto_.contentDto.email)) {
-  //             InsightsDto_.insightReceiver.reactions += Long.fromInt(1);
-
-  //             InsightLog item = InsightsDto_.InsightReceiver.get().increaseComment(this.getProfile().getEmail(),
-  //                 this.getContentPost().get().getPostID());
-
-
-  //             var Insights_ = new Insights();
-  //             Insights_.reactions += Long.fromInt(1);
-              
-  //             if (CollectionUtils.isNotEmpty(this.getInsightLogs())
-  //               ? this.getInsightLogs().stream().anyMatch(s -> s.getMate().equals(mate)
-  //                 && s.getEventInsight().equals(eventInsight) && s.getPostID().equals(postID))
-  //               : false;){
-
-  //             }
-
-  //               InsightLog insightLog = null;
-	// 	boolean exits = this.hasMateOfContent(mate, eventInsight, postID);
-  //             if (!exits) {
-  //               insightLog = new InsightLog(this.get_id(), mate, eventInsight, true);
-  //               insightLog.setPostID(postID);
-  //               this.getInsightLogs().add(insightLog);
-  //             }
-  //             return insightLog;
-
-
-
-	// 	          item = this.addInsightLog(mate, EventInsight.REACTION.getName(), postID);
-
-
-  //             Insightlogs item = InsightsDto_.insightReceiver.get().increaseReaction(this.getProfile().getEmail(), this.getContentPost().get().getPostID());
-  //             if (item != null) {
-  //               this.getContentPost().get().increaseReaction();
-  //               this.getReceiverEventId().get().getParent().setReactionUri(this.getContentDto().getReactionUri());
-  //               this.getEventId().get().getParent().setReactionUri(this.getContentDto().getReactionUri());
-  //             }
-  //             return Optional.ofNullable(item);
-
-
-
-  //             Optional < InsightLog > item = insightDto.increaseReaction();
-  //             if (item.isPresent()) {
-  //               this.saveInteractive(insightDto, item.get());
-  //               notifService.sendInsightFcm(insightDto);
-  //             }
-  //           }
-  //         }
-  //       }
-  //     }
-  //   } else if (EventInsight.COMMENT.getName().equals(insightDto.getContentDto().getEventType())) {
-  //     if (insightDto.step4(EventType.DONE.getName(), EventType.ACCEPT.getName(), false)) {
-  //       if (insightDto.restrictContentPost()) {
-  //         Optional < InsightLog > item = insightDto.increaseComment();
-  //         if (item.isPresent()) {
-  //           this.saveInteractive(insightDto, item.get());
-  //           notifService.sendInsightFcm(insightDto);
-
-  //           contentService.broadcast(SocketEnum.POST_COMMENT.getName(), SocketEnum.POST_COMMENT.getName(), insightDto.toString());
-  //         }
-  //       }
-  //     }
-
-  //   } else if (EventInsight.CHAT.getName().equals(insightDto.getContentDto().getEventType())) {
-  //     insightDto.step4(EventType.DONE.getName(), EventType.ACCEPT.getName(), false);
-  //   }
-  //   return insightDto.getContentDto();
-  //   return new ContentDto();
-  // }
-
-  // private async validationEvent(ContentDto_: ContentDto): Promise<InsightsDto>{
-  //   var InsightsDto_ = new InsightsDto();
-  //   InsightsDto_.contentDto = ContentDto_;
-  //   InsightsDto_.eventType = ContentDto_.eventType;
-  //   InsightsDto_.validStep3 = false;
-  //   InsightsDto_.validStep4 = false;
-  //   InsightsDto_.prevPresent = false;
-
-  //   var ProfileDTO_email = new ProfileDTO();
-  //   ProfileDTO_email = await this.utilsService.generateProfile(ContentDto_.email.toString(), "FULL");
-  //   var ProfileDTO_mate = new ProfileDTO();
-  //   ProfileDTO_mate = await this.utilsService.generateProfile(ContentDto_.receiverParty.toString(), "FULL");
-
-  //   if (ProfileDTO_email != null && ProfileDTO_mate != null) {
-
-  //     InsightsDto_.profile = ProfileDTO_email;
-  //     InsightsDto_.receiverParty = ProfileDTO_mate;
-
-  //     if (((!(ProfileDTO_email.email == ProfileDTO_mate.email)) ? true : false)) {
-
-  //       var insightSender = await this.insightsService.findemail(ProfileDTO_email.email.toString());
-  //       var insightReceiver = await this.insightsService.findemail(ProfileDTO_mate.email.toString());
-
-  //       if ((await this.utilsService.ceckData(insightSender)) && (await this.utilsService.ceckData(insightReceiver))) {
-
-  //         InsightsDto_.insightSender = insightSender;
-  //         InsightsDto_.insightReceiver = insightReceiver;
-
-  //         if (ContentDto_.eventType == "FOLLOWER") {
-  //           var Contentevents_Sender = new Contentevents();
-  //           Contentevents_Sender = await this.contenteventsService.findParentBySender("FOLLOWER", InsightsDto_.profile.email.toString(), InsightsDto_.receiverParty.email.toString(), false);
-  //           var Contentevents_Receiver = new Contentevents();
-  //           Contentevents_Receiver = await this.contenteventsService.findParentByReceiver("FOLLOWING", InsightsDto_.receiverParty.email.toString(), InsightsDto_.profile.email.toString(), false);
-  //           InsightsDto_.parentInSender = Contentevents_Sender;
-  //           InsightsDto_.parentInReceiver = Contentevents_Receiver;
-  //           InsightsDto_.validStep3 = true;
-  //         } else {
-  //           if (((InsightsDto_.contentDto.postID != undefined) ? true : false)) {
-  //             var _contentEvent_ = (await this.contenteventsService.findSenderOrReceiverByPostID(ContentDto_.postID.toString(), ContentDto_.eventType.toString(), InsightsDto_.profile.email.toString(), InsightsDto_.receiverParty.email.toString()));
-  //             var _ContentPost_ = (await this.postDisqusService.findContentPost(ContentDto_.postID.toString()));
-  //             InsightsDto_.contentPost = _ContentPost_;
-  //             InsightsDto_.contentEvent = _contentEvent_;
-  //             InsightsDto_.validStep3 = true;
-  //             InsightsDto_.prevPresent = (await this.utilsService.ceckData(_contentEvent_))
-  //           } else {
-  //             var _contentEvent_ = await this.contenteventsService.findSenderOrReceiver(InsightsDto_.contentDto.eventType.toString(), InsightsDto_.profile.email.toString(), InsightsDto_.receiverParty.email.toString());
-  //             InsightsDto_.contentEvent = _contentEvent_;
-  //             InsightsDto_.validStep3 = true;
-  //             InsightsDto_.prevPresent = (await this.utilsService.ceckData(_contentEvent_));
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return InsightsDto_;
-  // }
 
   @Post('posts/disqus/deletedicuss')
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   async deletedicuss(
     @Headers() headers,
     @Body() request: any) {
-    // if (!(await this.utilsService.validasiTokenEmail(headers))) {
-    //   await this.errorHandler.generateNotAcceptableException(
-    //     'Unabled to proceed',
-    //   );
-    // }
-    // if (request._id == undefined) {
-    //   await this.errorHandler.generateNotAcceptableException(
-    //     'Unabled to proceed',
-    //   );
-    // }
-    // if (request.email == undefined) {
-    //   await this.errorHandler.generateNotAcceptableException(
-    //     'Unabled to proceed',
-    //   );
-    // }
     return this.DisqusService.deletedicuss(request);
+  }
+
+
+
+  async sendCommentFCM(email: string, type: string, postID: string, receiverParty: string) {
+    var Templates_ = new TemplatesRepo();
+    Templates_ = await this.utilsService.getTemplate_repo(type, 'NOTIFICATION');
+
+    var get_username_email = await this.utilsService.getUsertname(email);
+    var get_username_receiverParty = await this.utilsService.getUsertname(receiverParty);
+
+    var email = email;
+    var titlein = get_username_receiverParty?.toString() || '';
+    var titleen = get_username_receiverParty?.toString() || '';
+    var bodyin = "";
+    var bodyen = "";
+
+    var email_post = "";
+
+    var posts = await this.postDisqusService.findid(postID);
+    var bodyin_get = Templates_.body_detail_id.toString();
+    var bodyen_get = Templates_.body_detail.toString();
+
+    var post_type = "";
+    if (await this.utilsService.ceckData(posts)) {
+      post_type = posts.postType.toString();
+      email_post = posts.email.toString();
+    }
+
+    var new_bodyin_get = bodyin_get.replace("${post_type}", "Hypper" + post_type[0].toUpperCase() + post_type.substring(1));
+    var new_bodyen_get = bodyen_get.replace("${post_type}", "Hypper" + post_type[0].toUpperCase() + post_type.substring(1));
+
+    var bodyin = new_bodyin_get;
+    var bodyen = new_bodyen_get;
+    
+    var eventType = type.toString();
+    var event = "ACCEPT";
+    await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
   }
 }

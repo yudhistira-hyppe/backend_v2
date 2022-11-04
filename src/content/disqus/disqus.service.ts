@@ -126,7 +126,7 @@ export class DisqusService {
 
   async findDisqusByPost_(postId: string, eventType: string): Promise<Disqus> {
     //return await this.DisqusModel.findOne().where('email', email).where('postID', postId).where('eventType', eventType).exec();
-    return await this.DisqusModel.findOne().where('postID', postId).where('eventType', eventType).exec();
+    return await this.DisqusModel.findOne().where('postID', postId).where('eventType', eventType).where('active', true).exec();
   }
 
   async createDisqus(body: any, headers: any): Promise<DisqusResponseApps> {
