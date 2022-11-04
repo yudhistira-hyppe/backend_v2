@@ -36,7 +36,7 @@ import { BoostintervalModule } from '../boostinterval/boostinterval.module';
 import { BoostsessionModule } from '../boostsession/boostsession.module';
 import { OyPgModule } from '../../paymentgateway/oypg/oypg.module';
 import { MethodepaymentsModule } from '../../trans/methodepayments/methodepayments.module';
-
+import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 @Module({
 
     imports: [
