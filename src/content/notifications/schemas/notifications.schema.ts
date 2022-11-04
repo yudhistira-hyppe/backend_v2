@@ -44,6 +44,8 @@ export class Notifications {
   updatedAt: String
   @Prop()
   contentEventID: String
+  @Prop()
+  postID: String  
   @Prop([])
   devices: any[]
   @Prop()
