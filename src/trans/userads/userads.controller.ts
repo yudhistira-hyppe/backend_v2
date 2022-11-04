@@ -168,4 +168,66 @@ export class UserAdsController {
 
         return { response_code: 202, data, messages };
     }
+    @Post('api/userads/management/traffic')
+    @UseGuards(JwtAuthGuard)
+    async traffic(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var email;
+        var startdate;
+        var enddate;
+        if (request_json["email"] !== undefined || request_json["startdate"] !== undefined || request_json["enddate"] !== undefined ) {
+            email = request_json["email"];
+            startdate = request_json["startdate"];
+            enddate = request_json["enddate"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        let adsIds=await this.adsService.findAdsIDsByEmail(email);
+        // console.log(adsIds);
+        let ads=await this.userAdsService.findByAdsIDsDate(adsIds,startdate,enddate);
+        // console.log(ads);
+        let data=await this.userAdsService.groupByDateActivity(ads);
+        // console.log(data);
+
+        return { response_code: 202, data, messages };
+    }
+    @Post('api/userads/management/demografi')
+    @UseGuards(JwtAuthGuard)
+    async demografi(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var email;
+        var startdate;
+        var enddate;
+        if (request_json["email"] !== undefined || request_json["startdate"] !== undefined || request_json["enddate"] !== undefined ) {
+            email = request_json["email"];
+            startdate = request_json["startdate"];
+            enddate = request_json["enddate"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        let adsIds=await this.adsService.findAdsIDsByEmail(email);
+        // console.log(adsIds);
+        let ads=await this.userAdsService.findByAdsIDsDate(adsIds,startdate,enddate);
+        console.log(ads);
+        let byArea=await this.userAdsService.groupBy(ads,'area');
+        let byGender=await this.userAdsService.groupBy(ads,'gender');
+        let byAge=await this.userAdsService.groupBy(ads,'age');
+        var data=[{'byArea':byArea,'byGender':byGender,'byAge':byAge}];
+
+        return { response_code: 202, data, messages };
+    }
 }

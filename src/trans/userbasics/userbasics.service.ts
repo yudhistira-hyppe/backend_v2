@@ -634,4 +634,21 @@ export class UserbasicsService {
     const query = await this.userbasicModel.aggregate(Query_aggregate);
     return query;
   }
+  async countBy(field:String){
+    const query=await this.userbasicModel.aggregate([
+      {
+        $group:{
+          _id:"$"+field,
+          countuser:{
+            $sum:1
+          }
+        }
+      },
+      {
+        $project:{_id:1,countuser:1}
+      }
+    ]);
+    return query;
+  }
+  
 }
