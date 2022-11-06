@@ -42,6 +42,8 @@ import { SettingsService } from '../../trans/settings/settings.service';
 import { InsightlogsService } from '../insightlogs/insightlogs.service';
 import { ContentModService } from './contentmod.service';
 import { threadId } from 'worker_threads';
+import { NotificationsService } from '../notifications/notifications.service';
+import { ContentDTO, CreateNotificationsDto, NotifResponseApps } from '../notifications/dto/create-notifications.dto';
 
 
 //import FormData from "form-data";
@@ -72,6 +74,7 @@ export class PostContentService {
     private seaweedfsService: SeaweedfsService,
     private templateService: TemplatesRepoService,
     private settingsService: SettingsService,
+    private readonly notifService: NotificationsService,
     private errorHandler: ErrorHandler,
   ) { }
 
@@ -2476,6 +2479,194 @@ export class PostContentService {
     let gap = ed.getTime() - st.getTime();
     this.logger.log('getUserPostLandingPage >>> finexec: ' + gap);
     return res;
+  }
+
+
+  async getNotification(body: any, headers: any) : Promise<NotifResponseApps> {
+    let dat = await this.notifService.getNotification(body, headers);
+    let dx = dat.data;
+
+    let payload = new NotifResponseApps();
+    payload.messages = dat.messages;
+    payload.response_code = dat.response_code;
+    payload.version = dat.version;
+
+    let xvids: string[] = [];
+    let xpics: string[] = [];
+    let ndat: CreateNotificationsDto[] = [];
+
+    if (dx != undefined && dx.length > 0) {
+      for(let i = 0; i < dx.length; i++) {
+        let dy = dx[i];
+        let ndy = new CreateNotificationsDto();
+        ndy._id = dy._id;
+        ndy.active = dy.active;
+        ndy.body = dy.body;
+        ndy.bodyId = dy.bodyId;
+        ndy.contentEventID = dy.contentEventID;
+        ndy.createdAt = dy.createdAt;
+        ndy.email = dy.email;
+        ndy.event = dy.event;
+        ndy.eventType = dy.eventType;
+        ndy.flowIsDone = dy.flowIsDone;
+        ndy.mate = dy.mate;
+        ndy.notificationID = dy.notificationID;
+        ndy.postID = dy.postID;
+        ndy.senderOrReceiverInfo = dy.senderOrReceiverInfo;
+        ndy.title = dy.title;
+        ndy.updatedAt = dy.updatedAt;
+
+        if (dy.postID != null) {
+          let pid = String(dy.postID);
+          let ps = await this.postService.findByPostId(pid);
+          if (ps != undefined) {
+            let meds = ps.contentMedias;
+            if (meds != undefined && meds.length > 0) {
+
+              let med = meds[0];
+              let cn = new ContentDTO();
+              let ns = med.namespace;
+              if (ns == 'mediavideos') {
+                let video = await this.videoService.findOne(String(med.oid));
+                if (video.apsara == true) {
+                  xvids.push(String(video.apsaraId));
+                  cn.apsaraId = String(video.apsaraId);
+                  cn.isApsara = true;
+                } else {
+                  cn.mediaThumbUri = String(video.mediaThumb);
+                  cn.mediaEndpoint = '/stream/' + video.mediaUri;
+                  cn.mediaThumbEndpoint = '/thumb/' + video.postID;
+                }
+  
+                //mediatype
+                cn['mediaType'] = 'video';                
+  
+              } else if (ns == 'mediapicts') {
+                let pic = await this.picService.findOne(String(med.oid));
+                if (pic.apsara == true) {
+                  xpics.push(String(pic.apsaraId));
+                  xpics.push(String(pic.apsaraThumbId));
+                  cn.apsaraId = String(pic.apsaraId);
+                  cn.apsaraThumbId = String(pic.apsaraThumbId);
+                  cn.isApsara = true;
+                } else {
+                  cn.mediaEndpoint = '/pict/' + pic.postID;
+                  cn.mediaUri = String(pic.mediaUri);
+                }
+  
+                cn.mediaType = 'image';
+                  
+              } else if (ns == 'mediadiaries') {
+                let diary = await this.diaryService.findOne(String(med.oid));
+                if (diary.apsara == true) {
+                  xvids.push(String(diary.apsaraId));
+                  cn.apsaraId = String(diary.apsaraId);
+                  cn.isApsara = true;
+                } else {
+                  cn.mediaThumbUri = String(diary.mediaThumb);
+                  cn.mediaEndpoint = '/stream/' + diary.mediaUri;
+                  cn.mediaThumbEndpoint = '/thumb/' + diary.postID;
+                }
+  
+                cn.mediaType = 'video';
+  
+                
+              } else if (ns == 'mediastories') {
+                let story = await this.storyService.findOne(String(med.oid));
+  
+                if (story.mediaType == 'video') {
+                  if (story.apsara == true) {
+                    xvids.push(String(story.apsaraId));
+                    cn.apsaraId = String(story.apsaraId);
+                    cn.isApsara = true;
+                  } else {
+                    cn.mediaThumbUri = String(story.mediaThumb);
+                    cn.mediaEndpoint = '/stream/' + story.mediaUri;
+                    cn.mediaThumbEndpoint = '/thumb/' + story.postID;
+                  }
+                  cn.mediaType = 'video';
+                } else {
+                  if (story.apsara == true) {
+                    xpics.push(String(story.apsaraId));
+                    cn.apsaraId = String(story.apsaraId);
+                    cn.isApsara = true;
+                  } else {
+                    cn.mediaThumbUri = String(story.mediaThumb);
+                    cn.mediaEndpoint = '/pict/' + story.mediaUri;
+                    cn.mediaThumbEndpoint = '/thumb/' + story.postID;
+                  }
+                  cn.mediaType = 'image';
+                }
+              }
+
+              ndy.content = cn;
+
+              this.logger.log('dy.content: ' + JSON.stringify(ndy));
+              ndat.push(ndy);
+            }
+          }
+        }
+      }
+
+      let yvids: string[] = [];
+      let ypics: string[] = [];
+
+      for (let i = 0; i < xvids.length; i++) {
+        let o = xvids[i];
+        if (o != undefined) {
+          yvids.push(o);
+        }
+      }
+  
+      for (let i = 0; i < xpics.length; i++) {
+        let o = xpics[i];
+        if (o != undefined) {
+          ypics.push(o);
+        }
+      }
+    
+      let vapsara = undefined;
+      let papsara = undefined;
+
+  
+      if (yvids.length > 0) {
+        vapsara = await this.getVideoApsara(xvids);
+      }
+  
+      if (ypics.length > 0) {
+        papsara = await this.getImageApsara(xpics);
+      }
+
+      for(let i = 0; i < ndat.length; i++) {
+        let pdvv = ndat[i];
+        if (pdvv.content != undefined) {
+          if (vapsara != undefined) { 
+            for (let i = 0; i < vapsara.VideoList.length; i++) {
+              let vi = vapsara.VideoList[i];
+              if (pdvv.content['apsaraId'] == vi.VideoId) {
+                pdvv.content['mediaThumbEndpoint'] = vi.CoverURL;
+              }
+            }
+          }
+  
+          if (papsara != undefined) {
+            for (let i = 0; i < papsara.ImageInfo.length; i++) {
+              let vi = papsara.ImageInfo[i];
+              if (pdvv.content['apsaraId'] == vi.ImageId) {
+                pdvv.content['mediaThumbEndpoint'] = vi.URL;
+                pdvv.content['mediaThumbUri'] = vi.URL;
+  
+              }
+            }          
+          }
+        }
+
+      }
+
+      payload.data = ndat;
+    }
+
+    return payload;
   }
 
   private formatTime(seconds) {

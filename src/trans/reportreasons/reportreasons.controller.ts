@@ -19,21 +19,9 @@ export class ReportreasonsController {
         return { response_code: 202, data, messages };
     }
     @UseGuards(JwtAuthGuard)
-    @Post('type')
-    async findType(@Res() res, @Request() request) {
-        const messages = {
-            "info": ["The process successful"],
-        };
-        var type = null;
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["type"] !== undefined) {
-            type = request_json["type"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-        let data = await this.reportreasonsService.findType(type);
-
-        return { response_code: 202, data, messages };
+    @Get('type')
+    async findtype(): Promise<Reportreasons[]> {
+        return await this.reportreasonsService.findType();
     }
 
 
@@ -66,5 +54,6 @@ export class ReportreasonsController {
 
 
     }
+
 
 }
