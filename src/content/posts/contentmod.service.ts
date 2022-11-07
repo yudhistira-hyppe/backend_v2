@@ -93,7 +93,7 @@ export class ContentModService {
     const accessKeySecret = this.configService.get("APSARA_ACCESS_SECRET");
     const greenVersion = '2017-01-12';
     var hostname = 'green.ap-southeast-1.aliyuncs.com';
-    var path = '/green/image/asyncscan';
+    var path = '/green/video/asyncscan';
 
     var clientInfo = {
         "ip":"127.0.0.1"
@@ -106,7 +106,9 @@ export class ContentModService {
         seed: uuidv4(),
         tasks:[{
             'dataId':postId,
-            'url':url
+            'url':url,
+            'interval':1,
+            'maxFrames': 20
         }]
     }); 
 
@@ -242,8 +244,10 @@ export class ContentModService {
     this.logger.log('cmodResponse >>> pass: ' + pass);
     if (pass == false) {
       pd.contentModeration = true;
+      pd.reportedStatus = 'OWNED';
     } else {
       pd.contentModeration = false;
+      pd.reportedStatus = 'ALL';
     }
     pd.contentModerationResponse = JSON.stringify(body);
 

@@ -596,6 +596,17 @@ export class PostContentService {
         }
       });
 
+      this.logger.log('updateNewPost >>> checking cmod');
+      let ids : string[] = [];
+      ids.push(body.videoId);
+      this.logger.log('updateNewPost >>> checking cmod video');
+      let aimg = await this.getVideoApsaraSingle(ids[0]);
+      if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
+        let aim = aimg.PlayUrl;
+        this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
+        this.cmodService.cmodVideo(body.postID, aim);
+      }      
+
       let meta = post.metadata;
       let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll };
       post.metadata = metadata;
