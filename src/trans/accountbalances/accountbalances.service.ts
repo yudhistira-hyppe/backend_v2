@@ -159,7 +159,6 @@ export class AccountbalancesService {
 
     async findhistorySell(iduser: ObjectId, skip: number, limit: number) {
         const query = await this.accountbalancesModel.aggregate([
-
             {
                 $lookup: {
                     from: "transactions",
@@ -664,45 +663,38 @@ export class AccountbalancesService {
     }
 
     async findreward(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
-        if (startdate !== undefined && enddate !== undefined) {
-            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
-            var dateend = currentdate.toISOString();
-            let query = await this.accountbalancesModel.aggregate([
-
-                {
-                    $match: {
-                        iduser: iduser, type: "rewards", timestamp: { $gte: startdate, $lte: dateend }
-                    }
-                },
-                { $sort: { timestamp: -1 }, },
-                {
-                    $skip: skip
-                },
-                {
-                    $limit: limit
-                }
-            ]);
-            return query;
-
-        } else {
-            let query = await this.accountbalancesModel.aggregate([
-
-                {
-                    $match: {
-                        iduser: iduser, type: "rewards"
-                    }
-                },
-                { $sort: { timestamp: -1 }, },
-                {
-                    $skip: skip
-                },
-                {
-                    $limit: limit
-                }
-            ]);
-            return query;
+        var dateend = currentdate.toISOString();
+        var pipeline=[];
+        if(startdate!==undefined){
+            pipeline.push({$match:{timestamp:{"$gte":startdate}}});
+            
         }
+        if(enddate!==undefined){
+            pipeline.push({
+                $match:{
+                    timestamp:{"$lte":enddate}
+                }
+            });
+        }
+        pipeline.push({$match:{iduser:iduser}});
+        pipeline.push({$match:{type:"rewards"}});
+        if(skip>0){
+            pipeline.push({
+                "$skip": skip
+            });
+        }
+        if(limit>0){
+            pipeline.push({
+                "$limit": limit
+            });
+        }
+        pipeline.push({ $sort: { timestamp: -1 }});
+        // console.log(pipeline);
+        let query = await this.accountbalancesModel.aggregate(pipeline);
+        return query;
+        
 
 
     }
@@ -715,7 +707,7 @@ export class AccountbalancesService {
 
                 {
                     $match: {
-                        iduser: iduser, type: "rewards", timestamp: { $gte: startdate, $lte: dateend }
+                        iduser: iduser, type: "rewards", timestamp: { "$gte": startdate, "$lte": dateend }
                     }
                 },
                 { $sort: { timestamp: -1 }, },

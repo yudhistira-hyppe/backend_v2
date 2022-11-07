@@ -496,264 +496,90 @@ export class WithdrawsService {
 
     async findhistoryWithdrawer(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
 
-        if (startdate !== undefined && enddate !== undefined && status !== undefined) {
-            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
-            var dateend = currentdate.toISOString();
-            const query = await this.withdrawsModel.aggregate([
-                {
-                    $match: {
-                        status: status,
-                        idUser: iduser,
-                        timestamp: { $gte: startdate, $lte: dateend }
-                    }
-                },
-
-                {
-                    $addFields: {
-                        type: 'Withdrawal',
-
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idUser",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $project: {
-                        iduser: "$idUser",
-                        type: "$type",
-                        timestamp: "$timestamp",
-                        partnerTrxid: "$partnerTrxid",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-
-                    }
-                }, {
-                    $project: {
-                        iduser: "$iduser",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        type: "$type",
-                        timestamp: "$timestamp",
-                        partnerTrxid: "$partnerTrxid",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                    }
-                },
-                { $sort: { timestamp: -1 }, },
-                {
-                    $skip: skip
-                },
-                {
-                    $limit: limit
+        var dateend = currentdate.toISOString();
+        var pipeline=new Array<any>({
+                $addFields: {
+                    type: 'Withdrawal'
                 }
-            ]);
-            return query;
-        }
-        else if (startdate !== undefined && enddate !== undefined && status === undefined) {
-            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-
-            var dateend = currentdate.toISOString();
-            const query = await this.withdrawsModel.aggregate([
-                {
-                    $match: {
-
-                        idUser: iduser,
-                        timestamp: { $gte: startdate, $lte: dateend }
-                    }
-                },
-
-                {
-                    $addFields: {
-                        type: 'Withdrawal',
-
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idUser",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $project: {
-                        iduser: "$idUser",
-                        type: "$type",
-                        timestamp: "$timestamp",
-                        partnerTrxid: "$partnerTrxid",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-
-                    }
-                }, {
-                    $project: {
-                        iduser: "$iduser",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        type: "$type",
-                        timestamp: "$timestamp",
-                        partnerTrxid: "$partnerTrxid",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                    }
-                },
-                { $sort: { timestamp: -1 }, },
-                {
-                    $skip: skip
-                },
-                {
-                    $limit: limit
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "idUser",
+                    foreignField: "_id",
+                    as: "userbasics_data"
                 }
-            ]);
-            return query;
-        }
-        else if (startdate === undefined && enddate === undefined && status !== undefined) {
-
-            const query = await this.withdrawsModel.aggregate([
-                {
-                    $match: {
-                        status: status,
-                        idUser: iduser,
-
+            }, {
+                $project: {
+                    iduser: "$idUser",
+                    type: "$type",
+                    timestamp: "$timestamp",
+                    partnerTrxid: "$partnerTrxid",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    user: {
+                        $arrayElemAt: [
+                            "$userbasics_data",
+                            0
+                        ]
                     }
-                },
-
-                {
-                    $addFields: {
-                        type: 'Withdrawal',
-
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idUser",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $project: {
-                        iduser: "$idUser",
-                        type: "$type",
-                        timestamp: "$timestamp",
-                        partnerTrxid: "$partnerTrxid",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-
-                    }
-                }, {
-                    $project: {
-                        iduser: "$iduser",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        type: "$type",
-                        timestamp: "$timestamp",
-                        partnerTrxid: "$partnerTrxid",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                    }
-                },
-                { $sort: { timestamp: -1 }, },
-                {
-                    $skip: skip
-                },
-                {
-                    $limit: limit
                 }
-            ]);
-            return query;
-        }
-        else {
-            const query = await this.withdrawsModel.aggregate([
-                {
-                    $match: {
-
-                        idUser: iduser
-                    }
-                },
-
-                {
-                    $addFields: {
-                        type: 'Withdrawal',
-
-                    },
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idUser",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $project: {
-                        iduser: "$idUser",
-                        type: "$type",
-                        timestamp: "$timestamp",
-                        partnerTrxid: "$partnerTrxid",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-
-                    }
-                }, {
-                    $project: {
-                        iduser: "$iduser",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        type: "$type",
-                        timestamp: "$timestamp",
-                        partnerTrxid: "$partnerTrxid",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                    }
-                },
-                { $sort: { timestamp: -1 }, },
-                {
-                    $skip: skip
-                },
-                {
-                    $limit: limit
+            }, {
+                $project: {
+                    iduser: "$iduser",
+                    fullName: "$user.fullName",
+                    email: "$user.email",
+                    type: "$type",
+                    timestamp: "$timestamp",
+                    partnerTrxid: "$partnerTrxid",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status"
                 }
-            ]);
-            return query;
+            });
+        
+        if(status!==undefined){
+            pipeline.push({
+                $match:{
+                    status:status
+                }
+            });
         }
+        if(startdate!==undefined){
+            pipeline.push({
+                "$match":{
+                    timestamp:{$gte:startdate}
+                }
+            });
+        }
+        if(enddate!==undefined){
+            pipeline.push({
+                "$match":{
+                    timestamp:{$lte:enddate}
+                }
+            });
+        }
+        pipeline.push({
+            "$match": {
+                idUser: iduser
+            }
+        });
+        pipeline.push({ "$sort": { timestamp: -1 }});
+        if(skip>0){
+            pipeline.push({
+                "$skip": skip
+            });
+        }
+        if(limit>0){
+            pipeline.push({
+                "$limit": limit
+            });
+        }
+        const query = await this.withdrawsModel.aggregate(pipeline);
+        return query;
 
     }
 

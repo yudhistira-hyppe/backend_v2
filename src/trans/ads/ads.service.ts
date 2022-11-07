@@ -808,646 +808,150 @@ export class AdsService {
         } catch (e) {
             dateend = "";
         }
-
-        if (search !== undefined && startdate === undefined && enddate === undefined) {
-            let query = await this.adsModel.aggregate([
-                {
-                    $match: {
-                        userID: userid,
-                        $or: [{
-                            name: {
-                                $regex: search,
-                                $options: 'i'
-                            },
-
-                        }, {
-                            description: {
-                                $regex: search,
-                                $options: 'i'
-                            },
-
-                        }],
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "adsplaces",
-                        localField: "placingID",
-                        foreignField: "_id",
-                        as: "placeData"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "userID",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                },
-
-                {
-                    $project: {
-
-                        place: {
-                            $arrayElemAt: ['$placeData', 0]
-                        },
-                        timestamp: '$timestamp',
-                        expiredAt: '$expiredAt',
-                        gender: '$gender',
-                        liveAt: '$liveAt',
-                        name: '$name',
-                        objectifitas: '$objectifitas',
-                        status: '$status',
-                        totalClick: '$totalClick',
-                        totalUsedCredit: '$totalUsedCredit',
-                        totalView: '$totalView',
-                        urlLink: '$urlLink',
-                        isActive: '$isActive',
-                        type: "$type",
-                        idApsara: '$idApsara',
-                        duration: '$duration',
-                        tayang: '$tayang'
-                    }
-                },
-
-                {
-                    $project: {
-
-
-                        fullName: '$user.fullName',
-                        email: '$user.email',
-                        timestamp: '$timestamp',
-                        expiredAt: '$expiredAt',
-                        gender: '$gender',
-                        liveAt: '$liveAt',
-                        name: '$name',
-                        objectifitas: '$objectifitas',
-                        status: '$status',
-                        totalClick: '$totalClick',
-                        totalUsedCredit: '$totalUsedCredit',
-                        totalView: '$totalView',
-                        urlLink: '$urlLink',
-                        isActive: '$isActive',
-                        namePlace: '$place.namePlace',
-                        idApsara: '$idApsara',
-                        duration: '$duration',
-                        tayang: '$tayang',
-                        type: "$type",
-                    }
-                },
-                {
-                    $sort: {
-                        timestamp: - 1
-                    },
-
-                },
-                {
-                    $skip: skip
-                },
-                {
-                    $limit: limit
+        var pipeline=new Array<any>(
+            {
+                $lookup: {
+                    from: "adsplaces",
+                    localField: "placingID",
+                    foreignField: "_id",
+                    as: "placeData"
                 }
-
-            ]).exec();
-            var data = null;
-            var arrdata = [];
-            let pict: String[] = [];
-            var objk = {};
-            var type = null;
-            var idapsara = null;
-            for (var i = 0; i < query.length; i++) {
-                try {
-                    idapsara = query[i].idApsara;
-                } catch (e) {
-                    idapsara = "";
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "userID",
+                    foreignField: "_id",
+                    as: "userbasics_data"
                 }
-
-                var type = query[i].type;
-                pict = [idapsara];
-
-                if (idapsara === "") {
-                    data = [];
-                } else {
-                    if (type === "image" || type === "images") {
-
-                        try {
-                            data = await this.postContentService.getImageApsara(pict);
-                        } catch (e) {
-                            data = [];
-                        }
-                    }
-                    else if (type === "video") {
-                        try {
-                            data = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            data = [];
-                        }
-
-                    }
-
+            },
+            {
+                $project: {
+                    userID:1,
+                    fullName: '$user.fullName',
+                    email: '$user.email',
+                    timestamp: 1,
+                    expiredAt: 1,
+                    gender: 1,
+                    liveAt: 1,
+                    name: 1,
+                    description:1,
+                    objectifitas: 1,
+                    status: 1,
+                    totalClick: 1,
+                    totalUsedCredit: 1,
+                    totalView: 1,
+                    urlLink: 1,
+                    isActive: 1,
+                    namePlace: '$placeData[0].namePlace',
+                    idApsara: 1,
+                    duration: 1,
+                    tayang: 1,
+                    type: 1
                 }
-                objk = {
-                    _id: query[i]._id,
-                    fullName: query[i].fullName,
-                    email: query[i].email,
-                    timestamp: query[i].timestamp,
-                    expiredAt: query[i].expiredAt,
-                    gender: query[i].gender,
-                    liveAt: query[i].liveAt,
-                    name: query[i].name,
-                    objectifitas: query[i].objectifitas,
-                    status: query[i].status,
-                    totalClick: query[i].totalClick,
-                    totalUsedCredit: query[i].totalUsedCredit,
-                    totalView: query[i].totalView,
-                    urlLink: query[i].urlLink,
-                    isActive: query[i].isActive,
-                    namePlace: query[i].namePlace,
-                    idApsara: query[i].idApsara,
-                    duration: query[i].duration,
-                    tayang: query[i].tayang,
-                    media: data
-                };
-
-                arrdata.push(objk);
             }
-            return arrdata;
+        );
+        if(userid && userid!==undefined){
+            pipeline.push({$match:{userID: userid}});
         }
-        else if (search === undefined && startdate !== undefined && enddate !== undefined) {
-            let query = await this.adsModel.aggregate([
-                {
-                    $match: {
-                        userID: userid,
-                        timestamp: { $gte: startdate, $lte: dateend }
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "adsplaces",
-                        localField: "placingID",
-                        foreignField: "_id",
-                        as: "placeData"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "userID",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                },
-
-                {
-                    $project: {
-
-                        place: {
-                            $arrayElemAt: ['$placeData', 0]
+        if(search && search!==undefined && search!=""){
+            pipeline.push({$match: {
+                    $or: [{
+                        name: {
+                            $regex: search,
+                            $options: 'i'
                         },
-                        timestamp: '$timestamp',
-                        expiredAt: '$expiredAt',
-                        gender: '$gender',
-                        liveAt: '$liveAt',
-                        name: '$name',
-                        objectifitas: '$objectifitas',
-                        status: '$status',
-                        totalClick: '$totalClick',
-                        totalUsedCredit: '$totalUsedCredit',
-                        totalView: '$totalView',
-                        urlLink: '$urlLink',
-                        isActive: '$isActive',
-                        type: "$type",
-                        idApsara: '$idApsara',
-                        duration: '$duration',
-                        tayang: '$tayang'
-                    }
-                },
 
-                {
-                    $project: {
-
-
-                        fullName: '$user.fullName',
-                        email: '$user.email',
-                        timestamp: '$timestamp',
-                        expiredAt: '$expiredAt',
-                        gender: '$gender',
-                        liveAt: '$liveAt',
-                        name: '$name',
-                        objectifitas: '$objectifitas',
-                        status: '$status',
-                        totalClick: '$totalClick',
-                        totalUsedCredit: '$totalUsedCredit',
-                        totalView: '$totalView',
-                        urlLink: '$urlLink',
-                        isActive: '$isActive',
-                        namePlace: '$place.namePlace',
-                        idApsara: '$idApsara',
-                        duration: '$duration',
-                        tayang: '$tayang',
-                        type: "$type",
-                    }
-                },
-                {
-                    $sort: {
-                        timestamp: - 1
-                    },
-
-                },
-                {
-                    $skip: skip
-                },
-                {
-                    $limit: limit
-                }
-
-            ]).exec();
-            var data = null;
-            var arrdata = [];
-            let pict: String[] = [];
-            var objk = {};
-            var type = null;
-            var idapsara = null;
-            for (var i = 0; i < query.length; i++) {
-                try {
-                    idapsara = query[i].idApsara;
-                } catch (e) {
-                    idapsara = "";
-                }
-
-                var type = query[i].type;
-                pict = [idapsara];
-
-                if (idapsara === "") {
-                    data = [];
-                } else {
-                    if (type === "image" || type === "images") {
-
-                        try {
-                            data = await this.postContentService.getImageApsara(pict);
-                        } catch (e) {
-                            data = [];
-                        }
-                    }
-                    else if (type === "video") {
-                        try {
-                            data = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            data = [];
-                        }
-
-                    }
-
-                }
-                objk = {
-                    _id: query[i]._id,
-                    fullName: query[i].fullName,
-                    email: query[i].email,
-                    timestamp: query[i].timestamp,
-                    expiredAt: query[i].expiredAt,
-                    gender: query[i].gender,
-                    liveAt: query[i].liveAt,
-                    name: query[i].name,
-                    objectifitas: query[i].objectifitas,
-                    status: query[i].status,
-                    totalClick: query[i].totalClick,
-                    totalUsedCredit: query[i].totalUsedCredit,
-                    totalView: query[i].totalView,
-                    urlLink: query[i].urlLink,
-                    isActive: query[i].isActive,
-                    namePlace: query[i].namePlace,
-                    idApsara: query[i].idApsara,
-                    duration: query[i].duration,
-                    tayang: query[i].tayang,
-                    media: data
-                };
-
-                arrdata.push(objk);
-            }
-            return arrdata;
-        }
-        else if (search !== undefined && startdate !== undefined && enddate !== undefined) {
-            let query = await this.adsModel.aggregate([
-                {
-                    $match: {
-                        userID: userid,
-                        $or: [{
-                            name: {
-                                $regex: search,
-                                $options: 'i'
-                            },
-
-                        }, {
-                            description: {
-                                $regex: search,
-                                $options: 'i'
-                            },
-
-                        }],
-                        timestamp: { $gte: startdate, $lte: dateend }
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "adsplaces",
-                        localField: "placingID",
-                        foreignField: "_id",
-                        as: "placeData"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "userID",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                },
-
-                {
-                    $project: {
-
-                        place: {
-                            $arrayElemAt: ['$placeData', 0]
+                    }, {
+                        description: {
+                            $regex: search,
+                            $options: 'i'
                         },
-                        timestamp: '$timestamp',
-                        expiredAt: '$expiredAt',
-                        gender: '$gender',
-                        liveAt: '$liveAt',
-                        name: '$name',
-                        objectifitas: '$objectifitas',
-                        status: '$status',
-                        totalClick: '$totalClick',
-                        totalUsedCredit: '$totalUsedCredit',
-                        totalView: '$totalView',
-                        urlLink: '$urlLink',
-                        isActive: '$isActive',
-                        type: "$type",
-                        idApsara: '$idApsara',
-                        duration: '$duration',
-                        tayang: '$tayang'
-                    }
-                },
 
-                {
-                    $project: {
-
-
-                        fullName: '$user.fullName',
-                        email: '$user.email',
-                        timestamp: '$timestamp',
-                        expiredAt: '$expiredAt',
-                        gender: '$gender',
-                        liveAt: '$liveAt',
-                        name: '$name',
-                        objectifitas: '$objectifitas',
-                        status: '$status',
-                        totalClick: '$totalClick',
-                        totalUsedCredit: '$totalUsedCredit',
-                        totalView: '$totalView',
-                        urlLink: '$urlLink',
-                        isActive: '$isActive',
-                        namePlace: '$place.namePlace',
-                        idApsara: '$idApsara',
-                        duration: '$duration',
-                        tayang: '$tayang',
-                        type: "$type",
-                    }
-                },
-                {
-                    $sort: {
-                        timestamp: - 1
-                    },
-
-                },
-                {
-                    $skip: skip
-                },
-                {
-                    $limit: limit
+                    }],
                 }
-
-            ]).exec();
-            var data = null;
-            var arrdata = [];
-            let pict: String[] = [];
-            var objk = {};
-            var type = null;
-            var idapsara = null;
-            for (var i = 0; i < query.length; i++) {
-                try {
-                    idapsara = query[i].idApsara;
-                } catch (e) {
-                    idapsara = "";
-                }
-
-                var type = query[i].type;
-                pict = [idapsara];
-
-                if (idapsara === "") {
-                    data = [];
-                } else {
-                    if (type === "image" || type === "images") {
-
-                        try {
-                            data = await this.postContentService.getImageApsara(pict);
-                        } catch (e) {
-                            data = [];
-                        }
-                    }
-                    else if (type === "video") {
-                        try {
-                            data = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            data = [];
-                        }
-
-                    }
-
-                }
-                objk = {
-                    _id: query[i]._id,
-                    fullName: query[i].fullName,
-                    email: query[i].email,
-                    timestamp: query[i].timestamp,
-                    expiredAt: query[i].expiredAt,
-                    gender: query[i].gender,
-                    liveAt: query[i].liveAt,
-                    name: query[i].name,
-                    objectifitas: query[i].objectifitas,
-                    status: query[i].status,
-                    totalClick: query[i].totalClick,
-                    totalUsedCredit: query[i].totalUsedCredit,
-                    totalView: query[i].totalView,
-                    urlLink: query[i].urlLink,
-                    isActive: query[i].isActive,
-                    namePlace: query[i].namePlace,
-                    idApsara: query[i].idApsara,
-                    duration: query[i].duration,
-                    tayang: query[i].tayang,
-                    media: data
-                };
-
-                arrdata.push(objk);
-            }
-            return arrdata;
+            });
         }
-        else {
-            let query = await this.adsModel.aggregate([
-                {
-                    $match: {
-                        userID: userid,
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "adsplaces",
-                        localField: "placingID",
-                        foreignField: "_id",
-                        as: "placeData"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "userID",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                },
-
-                {
-                    $project: {
-
-                        place: {
-                            $arrayElemAt: ['$placeData', 0]
-                        },
-                        timestamp: '$timestamp',
-                        expiredAt: '$expiredAt',
-                        gender: '$gender',
-                        liveAt: '$liveAt',
-                        name: '$name',
-                        objectifitas: '$objectifitas',
-                        status: '$status',
-                        totalClick: '$totalClick',
-                        totalUsedCredit: '$totalUsedCredit',
-                        totalView: '$totalView',
-                        urlLink: '$urlLink',
-                        isActive: '$isActive',
-                        type: "$type",
-                        idApsara: '$idApsara',
-                        duration: '$duration',
-                        tayang: '$tayang'
-                    }
-                },
-
-                {
-                    $project: {
-
-
-                        fullName: '$user.fullName',
-                        email: '$user.email',
-                        timestamp: '$timestamp',
-                        expiredAt: '$expiredAt',
-                        gender: '$gender',
-                        liveAt: '$liveAt',
-                        name: '$name',
-                        objectifitas: '$objectifitas',
-                        status: '$status',
-                        totalClick: '$totalClick',
-                        totalUsedCredit: '$totalUsedCredit',
-                        totalView: '$totalView',
-                        urlLink: '$urlLink',
-                        isActive: '$isActive',
-                        namePlace: '$place.namePlace',
-                        idApsara: '$idApsara',
-                        duration: '$duration',
-                        tayang: '$tayang',
-                        type: "$type",
-                    }
-                },
-                {
-                    $sort: {
-                        timestamp: - 1
-                    },
-
-                },
-                {
-                    $skip: skip
-                },
-                {
-                    $limit: limit
-                }
-
-            ]).exec();
-
-            var data = null;
-            var arrdata = [];
-            let pict: String[] = [];
-            var objk = {};
-            var type = null;
-            var idapsara = null;
-            for (var i = 0; i < query.length; i++) {
-                try {
-                    idapsara = query[i].idApsara;
-                } catch (e) {
-                    idapsara = "";
-                }
-
-                var type = query[i].type;
-                pict = [idapsara];
-
-                if (idapsara === "") {
-                    data = [];
-                } else {
-                    if (type === "image" || type === "images") {
-
-                        try {
-                            data = await this.postContentService.getImageApsara(pict);
-                        } catch (e) {
-                            data = [];
-                        }
-                    }
-                    else if (type === "video") {
-                        try {
-                            data = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            data = [];
-                        }
-
-                    }
-
-                }
-                objk = {
-                    _id: query[i]._id,
-                    fullName: query[i].fullName,
-                    email: query[i].email,
-                    timestamp: query[i].timestamp,
-                    expiredAt: query[i].expiredAt,
-                    gender: query[i].gender,
-                    liveAt: query[i].liveAt,
-                    name: query[i].name,
-                    objectifitas: query[i].objectifitas,
-                    status: query[i].status,
-                    totalClick: query[i].totalClick,
-                    totalUsedCredit: query[i].totalUsedCredit,
-                    totalView: query[i].totalView,
-                    urlLink: query[i].urlLink,
-                    isActive: query[i].isActive,
-                    namePlace: query[i].namePlace,
-                    idApsara: query[i].idApsara,
-                    duration: query[i].duration,
-                    tayang: query[i].tayang,
-                    media: data
-                };
-
-                arrdata.push(objk);
-            }
-            return arrdata;
-
+        if(startdate && startdate!==undefined){
+            pipeline.push({$match:{timestamp: {$gte:startdate}}});
         }
+        if(enddate && enddate!==undefined){
+            pipeline.push({$match:{timestamp: {$lte:enddate}}});
+        }
+        if(skip>0){
+            pipeline.push({$skip:skip});
+        }
+        if(limit>0){
+            pipeline.push({$limit:limit});
+        }
+        pipeline.push({$sort:{timestamp:-1}});
+        // const util = require('util');
+        // console.log(util.inspect(pipeline, false, null, true));
+        
+        let query = await this.adsModel.aggregate(pipeline);
+        var data = null;
+        var arrdata = [];
+        let pict: String[] = [];
+        var objk = {};
+        var type = null;
+        var idapsara = null;
+        for (var i = 0; i < query.length; i++) {
+            try {
+                idapsara = query[i].idApsara;
+            } catch (e) {
+                idapsara = "";
+            }
 
+            var type = query[i].type;
+            pict = [idapsara];
+
+            if (idapsara === "") {
+                data = [];
+            } else {
+                if (type === "image" || type === "images") {
+
+                    try {
+                        data = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+                }
+                else if (type === "video") {
+                    try {
+                        data = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        data = [];
+                    }
+
+                }
+
+            }
+            objk = {
+                _id: query[i]._id,
+                fullName: query[i].fullName,
+                email: query[i].email,
+                timestamp: query[i].timestamp,
+                expiredAt: query[i].expiredAt,
+                gender: query[i].gender,
+                liveAt: query[i].liveAt,
+                name: query[i].name,
+                objectifitas: query[i].objectifitas,
+                status: query[i].status,
+                totalClick: query[i].totalClick,
+                totalUsedCredit: query[i].totalUsedCredit,
+                totalView: query[i].totalView,
+                urlLink: query[i].urlLink,
+                isActive: query[i].isActive,
+                namePlace: query[i].namePlace,
+                idApsara: query[i].idApsara,
+                duration: query[i].duration,
+                tayang: query[i].tayang,
+                media: data
+            };
+
+            arrdata.push(objk);
+        }
+        return arrdata;
     }
 
     async listcount(userid: ObjectID, search: string, startdate: string, enddate: string): Promise<Ads[]> {
@@ -3794,7 +3298,31 @@ export class AdsService {
         }
         return data;
     }
-
+    
+    async findAdsIDsByEmail(email:String) {
+        var pipeline=[
+            {$lookup:{
+                from:'userbasics',
+                localField:'userID',
+                foreignField:'_id',
+                as:'basic'
+            }},
+            {$match:{
+                'basic.email':email
+            }},
+            {$project:{
+                _id:1
+            }}
+        ];
+        // const util = require('util');
+        // console.log(util.inspect(pipeline, false, null, true /* enable colors */))
+        const query=await this.adsModel.aggregate(pipeline);
+        var adsIds=[];
+        for(var i=0;i<query.length;i++){
+            adsIds.push(query[i]._id);
+        }
+        return adsIds;
+    }
 
     async findreportadscount(keys: string, postType: string, startdate: string, enddate: string) {
         try {
@@ -4240,8 +3768,5 @@ export class AdsService {
         const query = await this.adsModel.aggregate(pipeline);
 
         return query;
-
-
-
     }
 }

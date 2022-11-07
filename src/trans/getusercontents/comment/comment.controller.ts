@@ -28,8 +28,10 @@ export class CommentController {
         };
 
         let data = await this.getcommentService.findlastcomment(email);
+        console.log(data.length);
+        var total_comment=data.length;
 
-        return { response_code: 202, data, messages };
+        return { response_code: 202, data, messages, total_comment };
     }
     @Post('disquslogs')
     @UseGuards(JwtAuthGuard)

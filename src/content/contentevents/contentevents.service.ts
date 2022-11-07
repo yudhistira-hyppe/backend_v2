@@ -892,4 +892,5 @@ export class ContenteventsService {
       },
     );
   }
+  
 }

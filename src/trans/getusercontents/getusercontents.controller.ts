@@ -251,45 +251,43 @@ export class GetusercontentsController {
         var latestpost = datalatepos[0];
         var datamonetize = await this.getusercontentsService.findmanagementcontentmonetize(email);
         var latestmonetize = datamonetize[0];
-        var dataoener = await this.getusercontentsService.findmanagementcontentowner(email);
-        var latestownership = dataoener[0];
+        var dataowner = await this.getusercontentsService.findmanagementcontentowner(email);
+        var latestownership = dataowner[0];
 
-        var datacountri = await this.countriesService.findAll();
+        // var datacountri = await this.countriesService.findAll();
+        // var lengcountri = datacountri.length;
+        // var dataregionall = await this.getusercontentsService.findmanagementcontentallregion(email);
+        // var totalpost = dataregionall.length;
+        // var datapost = [];
+        // for (var i = 0; i < lengcountri; i++) {
+        //     var countri = datacountri[i].country;
+        //     dataregion = await this.getusercontentsService.findmanagementcontentregion(email, countri);
+        //     var recentlyregion = dataregion;
+        //     var lengregion = dataregion.length;
+        //     var obj = {};
+        //     for (var x = 0; x < lengregion; x++) {
+        //         var tepost = dataregion[x].totalpost * 100 / totalpost;
+        //         var tpost = tepost.toFixed(2);
+        //         obj = { "_id": countri, "totalpost": tepost };
+        //         datapost.push(obj);
+        //     }
+        // }
+        // var datatraffic = await this.getusercontentsService.findmanagementcontenttrafic(email);
+        // var traffic = datatraffic[0];
 
-        var lengcountri = datacountri.length;
-        var dataregionall = await this.getusercontentsService.findmanagementcontentallregion(email);
-        var totalpost = dataregionall.length;
-        var datapost = [];
-        for (var i = 0; i < lengcountri; i++) {
-            var countri = datacountri[i].country;
-            dataregion = await this.getusercontentsService.findmanagementcontentregion(email, countri);
-            var recentlyregion = dataregion;
-            var lengregion = dataregion.length;
-
-
-            var obj = {};
-
-            for (var x = 0; x < lengregion; x++) {
-                var tepost = dataregion[x].totalpost * 100 / totalpost;
-                var tpost = tepost.toFixed(2);
-                obj = { "_id": countri, "totalpost": tepost };
-                datapost.push(obj);
-            }
-
-
-        }
-
-
-
-
-        var datatraffic = await this.getusercontentsService.findmanagementcontenttrafic(email);
-        var traffic = datatraffic[0];
+        var postIDs=await this.getusercontentsService.findPostIDsByEmail(email);
+        var events=await this.getcontenteventsService.findByPostID(postIDs,['VIEW']);
+        var byGenders=await this.getcontenteventsService.groupEventsBy(events,'gender');
+        var byYms=await this.getcontenteventsService.groupEventsBy(events,'ym');
         var datamoderate = await this.getusercontentsService.findmanagementcontentmoderate(email);
         var moderate = datamoderate[0];
+
         data = [{
             "popular": popular, "mostlikes": mostlikes, "mostshares": mostshares, "latestpost": latestpost, "latestmonetize": latestmonetize, "latestownership": latestownership,
-            "recentlyregion": datapost, "traffic": traffic, "moderate": moderate
+            "moderate": moderate, "byGenders": byGenders, "byYms":byYms
         }];
+        // console.log(data);
+        // console.log('returning data');
         return { response_code: 202, data, messages };
     }
 
@@ -688,60 +686,6 @@ export class GetusercontentsController {
         let data = await this.getusercontentsService.findpopularanalitic(email);
 
         return { response_code: 202, data, messages };
-    }
-    @Post('api/getusercontents/management/monetize')
-    @UseGuards(JwtAuthGuard)
-    async contentuserallmanagementkontenmonetis(@Req() request: Request): Promise<any> {
-        const mongoose = require('mongoose');
-        var ObjectId = require('mongodb').ObjectId;
-        var data = null;
-        var buy = null;
-        var postType = null;
-        var monetize = null;
-        var email = null;
-        var lastmonetize = null;
-        var skip = 0;
-        var limit = 0;
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["email"] !== undefined) {
-            email = request_json["email"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        if (request_json["skip"] !== undefined) {
-            skip = request_json["skip"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        buy = request_json["buy"];
-        monetize = request_json["monetize"];
-        postType = request_json["postType"];
-        lastmonetize = request_json["lastmonetize"];
-        var ubasic = await this.userbasicsService.findOne(email);
-        var iduser = ubasic._id;
-        var userid = mongoose.Types.ObjectId(iduser);
-        var startdate = request_json["startdate"];
-        var enddate = request_json["enddate"];
-
-        console.log(userid);
-        const messages = {
-            "info": ["The process successful"],
-        };
-
-        var datatotal = await this.getusercontentsService.findcountfilter(email);
-        var totalAll = datatotal[0].totalpost;
-        let dataFilter = await this.getusercontentsService.findalldatakontenmonetesbuy(userid, email, buy, monetize, postType, lastmonetize, startdate, enddate, 0, totalAll);
-        data = await this.getusercontentsService.findalldatakontenmonetesbuy(userid, email, buy, monetize, postType, lastmonetize, startdate, enddate, skip, limit);
-        var totalFilter = dataFilter.length;
-        return { response_code: 202, data, skip, limit, totalFilter, totalAll, messages };
     }
 
     @Post('api/getusercontents/management/analitic/follower')

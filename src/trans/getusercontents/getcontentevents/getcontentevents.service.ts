@@ -901,4 +901,93 @@ export class GetcontenteventsService {
         return query;
         //return this.getcontenteventsModel.find(CreateGetcontenteventsDto_).exec();
     }
+    
+    async findByPostID(postIDs:Array<String>,eventTypes:Array<String>){        
+        const query=await this.getcontenteventsModel.aggregate([
+            {
+                "$lookup" : {
+                    "localField" : "email",
+                    "from" : "userbasics",
+                    "foreignField" : "email",
+                    "as" : "userbasics"
+                }
+            }, 
+            {
+                "$match" : {
+                    "postID" : {
+                        "$in" : postIDs
+                    },
+                    "eventType" : {"$in":eventTypes}
+                }
+            },
+            {
+                 "$project":{
+                     "contentEventID" : 1,
+                    "email" : 1,
+                    "eventType" : 1,
+                    "active" : 1,
+                    "event" : 1,
+                    "createdAt" : 1,
+                    "updatedAt" : 1,
+                    "senderParty" : 1,
+                    "postID" : 1,
+                    "gender":"$userbasics.gender"
+                 }   
+            }
+        ]);
+
+        return query;
+    }
+    async findByReceiverParty(email:String,eventTypes:Array<String>){
+        const query=await this.getcontenteventsModel.find(
+            {"eventType":{$in:["VIEW_PROFILE"]},"receiverParty":"freeman27@getnada.com"}
+        );
+        return query;
+    }
+    async groupEventsBy(events:Array<any>,groupBy:String){
+        if(groupBy=='gender'){
+            var byGenders=[];
+            for(var i=0;i<events.length;i++){
+                if(events[i].gender[0]==null)
+                    continue;
+                var idx=byGenders.findIndex(x => x.gender==events[i].gender[0]);
+                if(idx==-1){
+                    byGenders.push({'gender':events[i].gender[0],'count':1});
+                }
+                else{
+                    byGenders[idx].count++;
+                }
+            }
+            return byGenders;
+        }
+        else if(groupBy=='ym'){
+            var byYms=[];
+            for(var i=0;i<events.length;i++){
+                var ym=events[i].createdAt.substring(0,7);
+                var idx=byYms.findIndex(x => x.ym==ym);
+                if(idx==-1){
+                    byYms.push({'ym':ym,'count':1});
+                }
+                else{
+                    byYms[idx].count++;
+                }
+            }
+            return byYms;
+        }
+        else if(groupBy=='date'){
+            var byDates=[];
+            for(var i=0;i<events.length;i++){
+                var dt=events[i].createdAt.substring(0,10);
+                var idx=byDates.findIndex(x => x.date==dt);
+                if(idx==-1){
+                    byDates.push({'date':dt,'count':1});
+                }
+                else{
+                    byDates[idx].count++;
+                }
+            }
+            return byDates;
+        }
+    }
+    
 }

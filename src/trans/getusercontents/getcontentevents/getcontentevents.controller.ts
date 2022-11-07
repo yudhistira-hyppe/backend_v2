@@ -258,4 +258,52 @@ export class GetcontenteventsController {
             );
         }
     }
+
+    @Post('api/getcontentevents/management/groupbydate')
+    @UseGuards(JwtAuthGuard)
+    async groupeventsbydate(@Req() request: Request): Promise<any> {
+        var data = null;
+        var email = null;
+        var eventTypes=[];
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["email"] !== undefined) {
+            email = request_json["email"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if(request_json['eventTypes']!==undefined && Array.isArray(request_json['eventTypes'])){
+            eventTypes=request_json['eventTypes'];
+        }
+        else{
+            throw new BadRequestException("eventTypes parameter invalid");
+        }
+        const messages = {
+            "info": ["The process successful"],
+        };
+        var events=await this.getcontenteventsService.findByReceiverParty(email,eventTypes);
+        var byDates=await this.getcontenteventsService.groupEventsBy(events,'date');
+
+        var mapByDates = [];
+        for (var i=29; i>=0; i--) {
+            var d = new Date();
+            d.setDate(d.getDate() - i);
+            var dt=await this.utilsService.formatDateString(d);
+            var count=0;
+            for(var j=0;j<byDates.length;j++){
+                if(byDates[j].date==dt){
+                    count=byDates[j].count;
+                    break;
+                }
+            }
+            mapByDates.push({
+                'date':dt,
+                'count':count
+            });
+            
+        }
+        // console.log(mapByDates);
+        data=[{mapByDates}];
+
+        return { response_code: 202, data, messages };
+    }
 }
