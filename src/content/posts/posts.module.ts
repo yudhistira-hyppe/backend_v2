@@ -37,6 +37,7 @@ import { BoostsessionModule } from '../boostsession/boostsession.module';
 import { OyPgModule } from '../../paymentgateway/oypg/oypg.module';
 import { MethodepaymentsModule } from '../../trans/methodepayments/methodepayments.module';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
+import { SocketModule } from '../socket/socket.module';
 @Module({
 
     imports: [
@@ -55,7 +56,7 @@ import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
         UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
         MediapictsModule,MediadiariesModule,MediaprofilepictsModule,PostPlayModule,TemplatesRepoModule,DisqusModule
-        ,DisquslogsModule,SettingsModule,NotificationsModule,InsightlogsModule, 
+        ,DisquslogsModule,SettingsModule,NotificationsModule,InsightlogsModule,SocketModule,
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_FULL')
     ],
     controllers: [PostsController],
