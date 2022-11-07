@@ -14,6 +14,10 @@ export class ReportreasonsService {
         return this.reportreasonsModel.find().exec();
     }
 
+    async findLanguage(lang: string): Promise<Reportreasons[]> {
+        return this.reportreasonsModel.find({ "language": lang }).exec();
+    }
+
     async findOne(id: string): Promise<Reportreasons> {
         return this.reportreasonsModel.findOne({ _id: id }).exec();
     }
