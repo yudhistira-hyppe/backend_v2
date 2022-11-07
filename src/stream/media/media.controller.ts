@@ -181,7 +181,7 @@ export class MediaController {
                 //Local path
                 profilePict_local_path = './temp/' + mongoose_gen_media.toString() + '/profilepict/' + profilePict_filename_new;
                 //SeaweedFs path
-                profilePict_seaweedfs_path = '/' + mongoose_gen_media.toString() + 'profilepict/';
+                profilePict_seaweedfs_path = '/' + mongoose_gen_media.toString() + '/profilepict/';
 
                 if (isNew) {
                     //Create Folder Id
