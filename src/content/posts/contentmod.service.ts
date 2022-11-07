@@ -87,6 +87,43 @@ export class ContentModService {
 
   }
 
+  async cmodVideo(postId: string, url: string) {
+    this.logger.log('cmodVideo >>> start');    
+    const accessKeyId = this.configService.get("APSARA_ACCESS_KEY");
+    const accessKeySecret = this.configService.get("APSARA_ACCESS_SECRET");
+    const greenVersion = '2017-01-12';
+    var hostname = 'green.ap-southeast-1.aliyuncs.com';
+    var path = '/green/image/asyncscan';
+
+    var clientInfo = {
+        "ip":"127.0.0.1"
+    };
+
+    let requestBody = JSON.stringify({  
+        //bizType:'Green',
+        scenes:['porn', 'terrorism', 'ad'],
+        callback: this.configService.get("APSARA_IMAGE_CMOD_CALLBACK"),
+        seed: uuidv4(),
+        tasks:[{
+            'dataId':postId,
+            'url':url
+        }]
+    }); 
+
+    let bizCfg = {
+        'accessKeyId' : accessKeyId,
+        'accessKeySecret' : accessKeySecret,
+        'path' : path,
+        'clientInfo' : clientInfo,
+        'requestBody' : requestBody,
+        'hostname' : hostname,
+        'greenVersion' : greenVersion
+    }
+
+    this.greenUpload(bizCfg, this.execute);
+
+  }  
+
   execute(chunk){
 	console.log('BODY: ' + chunk);
   }  
