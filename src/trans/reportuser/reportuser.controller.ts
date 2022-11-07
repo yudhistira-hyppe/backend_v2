@@ -499,6 +499,11 @@ export class ReportuserController {
         var objreportuser = {};
         var objreporthandle = {};
         var type = null;
+        var datahandel = null;
+        var objhandel = {};
+        var reportedHandel = null;
+
+        var reportCount = null;
 
         var request_json = JSON.parse(JSON.stringify(request.body));
 
@@ -527,6 +532,8 @@ export class ReportuserController {
             "info": ["Todo is not found!"],
         };
 
+
+
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
@@ -554,39 +561,68 @@ export class ReportuserController {
 
             if (datacontent !== null) {
 
+                try {
+                    reportCount = datacontent.reportedUserCount;
+                } catch (e) {
+                    reportCount = 0;
+                }
 
-                if (lengreporthandle > 0) {
-                    for (let i = 0; i < lengreporthandle; i++) {
+                try {
 
-                        let status = reportedUserHandle[i].status;
-                        let remark = reportedUserHandle[i].remark;
-                        let typeAppeal = reportedUserHandle[i].typeAppeal;
-                        objreporthandle = {
+                    datahandel = datacontent.reportedUserHandle;
 
-                            "type": typeAppeal,
-                            "remark": remark,
-                            "createdAt": dt.toISOString(),
-                            "updatedAt": dt.toISOString(),
-                            "status": status
-                        };
-                        arrayreportedHandle.push(objreporthandle);
+                } catch (e) {
+                    datahandel = null;
+                }
+
+                if (datahandel.length > 0) {
+                    for (let i = 0; i < datahandel.length; i++) {
+                        let status = datahandel[i].status;
+
+                        if (status === "BARU") {
+                            throw new BadRequestException("Appeal sudah diajukan...!");
+                        }
                     }
-                } else {
 
                 }
 
-
-                createPostsDto.reportedStatus = reportedStatus;
-                if (arrayreportedHandle.length > 0) {
-                    createPostsDto.reportedUserHandle = arrayreportedHandle;
+                if (reportCount >= 200) {
+                    throw new BadRequestException("Appeal tidak bisa diajukan...!");
                 } else {
+                    if (lengreporthandle > 0) {
+                        for (let i = 0; i < lengreporthandle; i++) {
+
+                            let status = reportedUserHandle[i].status;
+                            let remark = reportedUserHandle[i].remark;
+                            let typeAppeal = reportedUserHandle[i].typeAppeal;
+                            objreporthandle = {
+
+                                "type": typeAppeal,
+                                "remark": remark,
+                                "createdAt": dt.toISOString(),
+                                "updatedAt": dt.toISOString(),
+                                "status": status
+                            };
+                            arrayreportedHandle.push(objreporthandle);
+                        }
+                    } else {
+
+                    }
+
+
+                    createPostsDto.reportedStatus = reportedStatus;
+                    if (arrayreportedHandle.length > 0) {
+                        createPostsDto.reportedUserHandle = arrayreportedHandle;
+                    } else {
+
+                    }
+                    this.postsService.update(postID, createPostsDto);
+
+
+                    var data = request_json;
+                    return { response_code: 202, data, messages };
 
                 }
-                this.postsService.update(postID, createPostsDto);
-
-
-                var data = request_json;
-                return { response_code: 202, data, messages };
 
 
             } else {
@@ -609,37 +645,65 @@ export class ReportuserController {
 
             if (datacontent !== null) {
 
+                try {
+                    reportCount = datacontent.reportedUserCount;
+                } catch (e) {
+                    reportCount = 0;
+                }
 
-                if (lengreporthandle > 0) {
-                    for (let i = 0; i < lengreporthandle; i++) {
+                try {
 
-                        let status = reportedUserHandle[i].status;
-                        let remark = reportedUserHandle[i].remark;
-                        let typeAppeal = reportedUserHandle[i].typeAppeal;
-                        objreporthandle = {
+                    datahandel = datacontent.reportedUserHandle;
 
-                            "type": typeAppeal,
-                            "remark": remark,
-                            "createdAt": dt.toISOString(),
-                            "updatedAt": dt.toISOString(),
-                            "status": status
-                        };
-                        arrayreportedHandle.push(objreporthandle);
+                } catch (e) {
+                    datahandel = null;
+                }
+
+                if (datahandel.length > 0) {
+                    for (let i = 0; i < datahandel.length; i++) {
+                        let status = datahandel[i].status;
+
+                        if (status === "BARU") {
+                            throw new BadRequestException("Appeal sudah diajukan...!");
+                        }
                     }
-                } else {
 
                 }
 
-                if (arrayreportedHandle.length > 0) {
-                    createAdsDto.reportedUserHandle = arrayreportedHandle;
-                } else {
+                if (reportCount >= 200) {
+                    throw new BadRequestException("Appeal tidak bisa diajukan...!");
+                }
+                else {
+                    if (lengreporthandle > 0) {
+                        for (let i = 0; i < lengreporthandle; i++) {
+
+                            let status = reportedUserHandle[i].status;
+                            let remark = reportedUserHandle[i].remark;
+                            let typeAppeal = reportedUserHandle[i].typeAppeal;
+                            objreporthandle = {
+
+                                "type": typeAppeal,
+                                "remark": remark,
+                                "createdAt": dt.toISOString(),
+                                "updatedAt": dt.toISOString(),
+                                "status": status
+                            };
+                            arrayreportedHandle.push(objreporthandle);
+                        }
+                    } else {
+
+                    }
+
+                    if (arrayreportedHandle.length > 0) {
+                        createAdsDto.reportedUserHandle = arrayreportedHandle;
+                    } else {
+
+                    }
+                    this.adsService.update(postID, createAdsDto);
+                    var data = request_json;
+                    return { response_code: 202, data, messages };
 
                 }
-                this.adsService.update(postID, createAdsDto);
-                var data = request_json;
-                return { response_code: 202, data, messages };
-
-
             } else {
                 throw new BadRequestException("Ads ID is not found...!");
             }
@@ -657,41 +721,70 @@ export class ReportuserController {
 
             if (datacontent !== null) {
 
+                try {
+                    reportCount = datacontent.reportedUserCount;
+                } catch (e) {
+                    reportCount = 0;
+                }
 
-                if (lengreporthandle > 0) {
-                    for (let i = 0; i < lengreporthandle; i++) {
+                try {
 
-                        let status = reportedUserHandle[i].status;
-                        let remark = reportedUserHandle[i].remark;
-                        let typeAppeal = reportedUserHandle[i].typeAppeal;
-                        objreporthandle = {
+                    datahandel = datacontent.reportedUserHandle;
 
-                            "type": typeAppeal,
-                            "remark": remark,
-                            "createdAt": dt.toISOString(),
-                            "updatedAt": dt.toISOString(),
-                            "status": status
-                        };
-                        arrayreportedHandle.push(objreporthandle);
+                } catch (e) {
+                    datahandel = null;
+                }
+
+                if (datahandel.length > 0) {
+                    for (let i = 0; i < datahandel.length; i++) {
+                        let status = datahandel[i].status;
+
+                        if (status === "BARU") {
+                            throw new BadRequestException("Appeal sudah diajukan...!");
+                        }
                     }
-                } else {
 
                 }
 
-
-                createUserbasicDto.reportedStatus = reportedStatus;
-
-
-                if (arrayreportedHandle.length > 0) {
-                    createUserbasicDto.reportedUserHandle = arrayreportedHandle;
-                } else {
-
+                if (reportCount >= 200) {
+                    throw new BadRequestException("Appeal tidak bisa diajukan...!");
                 }
-                this.userbasicsService.update(postID, createUserbasicDto);
+                else {
+                    if (lengreporthandle > 0) {
+                        for (let i = 0; i < lengreporthandle; i++) {
+
+                            let status = reportedUserHandle[i].status;
+                            let remark = reportedUserHandle[i].remark;
+                            let typeAppeal = reportedUserHandle[i].typeAppeal;
+                            objreporthandle = {
+
+                                "type": typeAppeal,
+                                "remark": remark,
+                                "createdAt": dt.toISOString(),
+                                "updatedAt": dt.toISOString(),
+                                "status": status
+                            };
+                            arrayreportedHandle.push(objreporthandle);
+                        }
+                    } else {
+
+                    }
 
 
-                var data = request_json;
-                return { response_code: 202, data, messages };
+                    createUserbasicDto.reportedStatus = reportedStatus;
+
+
+                    if (arrayreportedHandle.length > 0) {
+                        createUserbasicDto.reportedUserHandle = arrayreportedHandle;
+                    } else {
+
+                    }
+                    this.userbasicsService.update(postID, createUserbasicDto);
+
+
+                    var data = request_json;
+                    return { response_code: 202, data, messages };
+                }
 
 
             } else {
