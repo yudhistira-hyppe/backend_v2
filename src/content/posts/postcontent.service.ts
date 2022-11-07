@@ -671,6 +671,30 @@ export class PostContentService {
 
         }
       });
+
+      if (st.mediaType == 'video') {
+        this.logger.log('updateNewPost >>> checking cmod');
+        let ids : string[] = [];
+        ids.push(body.videoId);
+        this.logger.log('updateNewPost >>> checking cmod video');
+        let aimg = await this.getVideoApsaraSingle(ids[0]);
+        if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
+          let aim = aimg.PlayUrl;
+          this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
+          this.cmodService.cmodVideo(body.postID, aim);
+        }              
+      } else {
+        this.logger.log('updateNewPost >>> checking cmod');
+        let ids : string[] = [];
+        ids.push(body.videoId);
+        this.logger.log('updateNewPost >>> checking cmod image');
+        let aimg = await this.getImageApsara(ids);
+        if (aimg != undefined && aimg.ImageInfo != undefined && aimg.ImageInfo.length > 0) {
+          let aim = aimg.ImageInfo[0];
+          this.logger.log('updateNewPost >>> checking cmod image img: ' + aim.URL);
+          this.cmodService.cmodImage(body.postID, aim.URL);
+        }
+      }
     } else if (ns == 'mediadiaries') {
       let dy = await this.diaryService.findOne(cm.oid);
       if (dy == undefined) {
@@ -693,6 +717,17 @@ export class PostContentService {
 
         }
       });
+
+      this.logger.log('updateNewPost >>> checking cmod');
+      let ids : string[] = [];
+      ids.push(body.videoId);
+      this.logger.log('updateNewPost >>> checking cmod video');
+      let aimg = await this.getVideoApsaraSingle(ids[0]);
+      if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
+        let aim = aimg.PlayUrl;
+        this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
+        this.cmodService.cmodVideo(body.postID, aim);
+      }      
     }
 
     let playlist = new CreateUserplaylistDto();
