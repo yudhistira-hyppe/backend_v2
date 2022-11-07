@@ -4704,6 +4704,44 @@ export class TransactionsController {
                 'Unabled to proceed type is required',
             );
         }
+        const price = await this.utilsService.getSetting_("636212286f07000023005ce2");
+        if (price == null) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, Setting Price not found',
+            );
+        }
+        const BankVaCharge = await this.utilsService.getSetting_("62bd40e0f37a00001a004366");
+        if (BankVaCharge == null) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, Setting Bank Va Charge not found',
+            );
+        }
+        const ExpiredVa = await this.utilsService.getSetting_("6332caeb0c7d00004f005175");
+        if (ExpiredVa == null) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, Setting Expired Va not found',
+            );
+        }
+        var post = await this.postsService.findByPostId(body.postID);
+        if (!(await this.utilsService.ceckData(post))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, post not found',
+            );
+        }
+        var media = await this.postsService.findOnepostID(body.postID);
+        if (!(await this.utilsService.ceckData(media))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, post not found',
+            );
+        }
+        var user = await this.userbasicsService.findOne(email);
+        if (!(await this.utilsService.ceckData(user))) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, user not found',
+            );
+        }
+        var countTransaction = (await this.transactionsService.findAll()).length;
+        var totalAmount = price + BankVaCharge;
         if (body.type.toLowerCase() == "manual") {
             if (body.interval == undefined) {
                 await this.errorHandler.generateBadRequestException(
@@ -4727,45 +4765,6 @@ export class TransactionsController {
                     'Unabled to proceed, session not found',
                 );
             }
-            const price = await this.utilsService.getSetting_("636212286f07000023005ce2");
-            if (price==null) {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed, Setting Price not found',
-                );
-            }
-            const BankVaCharge = await this.utilsService.getSetting_("62bd40e0f37a00001a004366");
-            if (BankVaCharge == null) {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed, Setting Bank Va Charge not found',
-                );
-            }
-            const ExpiredVa = await this.utilsService.getSetting_("6332caeb0c7d00004f005175");
-            if (ExpiredVa == null) {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed, Setting Expired Va not found',
-                );
-            }
-            var post = await this.postsService.findByPostId(body.postID);
-            if (!(await this.utilsService.ceckData(post))) {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed, post not found',
-                );
-            }
-            var media = await this.postsService.findOnepostID(body.postID);
-            if (!(await this.utilsService.ceckData(media))) {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed, post not found',
-                );
-            }
-            var user = await this.userbasicsService.findOne(email);
-            if (!(await this.utilsService.ceckData(user))) {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed, user not found',
-                );
-            }
-
-            var countTransaction = (await this.transactionsService.findAll()).length;
-            var totalAmount = price + BankVaCharge;
             if (body.bankcode != undefined) {
                 if (!(body.paymentmethod)) {
                     await this.errorHandler.generateNotAcceptableException(
@@ -4953,7 +4952,75 @@ export class TransactionsController {
                 return response;
             }
         } else if (body.type == "automatic") {
+            if (body.bankcode != undefined) {
 
+            }else{
+                var data = {};
+                var post_data = {};
+
+                if (media[0].datacontent[0].mediaBasePath != undefined) {
+                    post_data["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
+                }
+                if (post.postType != undefined) {
+                    post_data["postType"] = post.postType;
+                }
+                if (media[0].datacontent[0].mediaUri != undefined) {
+                    post_data["mediaUri"] = media[0].datacontent[0].mediaUri;
+                }
+                if (post.description != undefined) {
+                    post_data["description"] = post.description;
+                }
+                if (post.active != undefined) {
+                    post_data["active"] = post.active;
+                }
+                if (media[0].datacontent[0].mediaType != undefined) {
+                    post_data["mediaType"] = media[0].datacontent[0].mediaType;
+                }
+                if (post.postID != undefined) {
+                    post_data["postID"] = post.postID;
+                }
+                if (post.tags != undefined) {
+                    post_data["tags"] = post.tags;
+                }
+                if (post.allowComments != undefined) {
+                    post_data["allowComments"] = post.allowComments;
+                }
+                if (post.createdAt != undefined) {
+                    post_data["createdAt"] = post.createdAt;
+                }
+                if (media[0].datauser.insight != undefined) {
+                    post_data["insight"] = media[0].datauser.insight;
+                }
+                if (media[0].datauser.insight != undefined) {
+                    post_data["email"] = post.email;
+                }
+                if (media[0].datauser.insight != undefined) {
+                    post_data["updatedAt"] = post.updatedAt;
+                }
+                if (media[0].datauser.insight != undefined) {
+                    post_data["updatedAt"] = post.updatedAt;
+                }
+
+                data["post"] = post_data;
+                data["typeBoost"] = body.type;
+                // data["intervalBoost"] = interval;
+                // data["sessionBoost"] = session;
+                data["dateBoost"] = body.dateStart;
+                data["priceBoost"] = price;
+                data["priceBankVaCharge"] = BankVaCharge;
+                data["priceTotal"] = price + BankVaCharge;
+
+                var response = {
+                    "response_code": 202,
+                    "data": data,
+                    "messages": {
+                        info: [
+                            "Succesfully"
+                        ]
+                    }
+                }
+                return response;
+            }
         } else {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, type not found',
