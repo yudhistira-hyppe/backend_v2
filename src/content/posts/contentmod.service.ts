@@ -63,7 +63,7 @@ export class ContentModService {
     };
 
     let requestBody = JSON.stringify({  
-        //bizType:'Green',
+        bizType:'CoreModeration',
         scenes:['porn', 'terrorism', 'ad'],
         callback: this.configService.get("APSARA_IMAGE_CMOD_CALLBACK"),
         seed: uuidv4(),
@@ -100,7 +100,7 @@ export class ContentModService {
     };
 
     let requestBody = JSON.stringify({  
-        //bizType:'Green',
+        bizType:'CoreModeration',
         scenes:['porn', 'terrorism', 'ad'],
         callback: this.configService.get("APSARA_IMAGE_CMOD_CALLBACK"),
         seed: uuidv4(),
