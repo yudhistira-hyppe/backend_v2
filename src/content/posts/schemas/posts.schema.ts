@@ -18,7 +18,6 @@ export class Posts {
   description: String
   @Prop()
   active: boolean
-
   @Prop()
   createdAt: String
   @Prop()
@@ -45,7 +44,6 @@ export class Posts {
   saleLike: boolean
   @Prop()
   saleView: boolean
-
   @Prop({ type: Object })
   metadata: {
     duration: Number
@@ -56,7 +54,6 @@ export class Posts {
     postID: String
     email: String
   }
-
   @Prop()
   likes: Long;
   @Prop()
@@ -67,31 +64,22 @@ export class Posts {
   comments: Long;
   @Prop()
   reactions: Long;
-
   @Prop({ type: Object })
   userProfile: any;
-
   @Prop()
   contentMedias: any[];
-
   @Prop()
   _class: String
-
   @Prop()
   lat: number;
-
   @Prop()
   lon: number;
-
   @Prop()
   category: any[];
-
   @Prop()
   tagPeople: any[];
-
   @Prop()
   tagDescription: any[];
-
   @Prop()
   reportedStatus: string
   @Prop()
@@ -104,6 +92,30 @@ export class Posts {
   contentModerationResponse: string
   @Prop()
   reportedUserHandle: any[];
+  @Prop()
+  boostDate: Date;
+  @Prop({ type: Object })
+  boostInterval: {
+    _id: mongoose.Types.ObjectId,
+    value: number
+  };
+  @Prop({ type: Object })
+  boostSession: {
+    _id: mongoose.Types.ObjectId,
+    start: Date,
+    end: Date
+  };
+  @Prop()
+  isBoost: string;
+  @Prop({ type: [Object] })
+  boostViewer: [
+    {
+      email: string,
+      timestamp: Date
+    }
+  ];
+  @Prop()
+  boostCount: number
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

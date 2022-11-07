@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, BadRequestException, HttpStatus, Put, Headers, Req, NotAcceptableException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Res, Request, BadRequestException, HttpStatus, Put, Headers, Req, NotAcceptableException, HttpCode } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionsDto, CreateWithdraws, OyAccountInquirys, OyDisburseCallbacks, OyDisbursements, OyDisbursementStatus2, Uservoucher, VaCallback } from './dto/create-transactions.dto';
 import { Transactions } from './schemas/transactions.schema';
@@ -30,6 +30,9 @@ import { CreateUserplaylistDto } from '../userplaylist/dto/create-userplaylist.d
 import { LanguagesService } from '../../infra/languages/languages.service';
 import { ignoreElements } from 'rxjs';
 import { AdsService } from '../ads/ads.service';
+import { BoostsessionService } from '../../content/boostsession/boostsession.service';
+import { BoostintervalService } from '../../content/boostinterval/boostinterval.service';
+import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 
 @Controller()
 export class TransactionsController {
@@ -39,6 +42,8 @@ export class TransactionsController {
         private readonly methodepaymentsService: MethodepaymentsService,
         private readonly banksService: BanksService,
         private readonly postsService: PostsService,
+        private readonly boostintervalService: BoostintervalService,
+        private readonly boostsessionService: BoostsessionService,
         private readonly pph21sService: Pph21sService,
         private readonly accountbalancesService: AccountbalancesService,
         private readonly oyPgService: OyPgService,
@@ -923,7 +928,6 @@ export class TransactionsController {
         }
 
     }
-
 
     @Post('api/pg/oy/callback/va')
     async callbackVa(@Res() res, @Body() payload: VaCallback) {
@@ -2032,7 +2036,6 @@ export class TransactionsController {
 
 
     }
-
 
     async romawi(num: number) {
         if (typeof num !== 'number')
@@ -3180,6 +3183,7 @@ export class TransactionsController {
         }
 
     }
+
     async accontbalance(postid: string, idusersell: { oid: string }, amount: number) {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
@@ -3301,9 +3305,6 @@ export class TransactionsController {
 
         await this.accountbalancesService.createdata(dataacountbalance);
     }
-
-
-
 
     @Post('api/transactions/historys')
     @UseGuards(JwtAuthGuard)
@@ -3831,7 +3832,6 @@ export class TransactionsController {
         }
         return { response_code: 202, totalsaldo, fData, skip, limit, datacount, messages };
     }
-
 
     @Post('api/transactions/historys/details')
     @UseGuards(JwtAuthGuard)
@@ -4527,6 +4527,7 @@ export class TransactionsController {
 
         return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };
     }
+
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/historys/voucher/detail')
     async finddatadetail(@Req() request: Request): Promise<any> {
@@ -4670,6 +4671,344 @@ export class TransactionsController {
 
 
         return { response_code: 202, data, page, limit, total, totalsearch, totalpage, messages };
+    }
+
+    @Post('api/transactions/boostcontent')
+    @HttpCode(HttpStatus.ACCEPTED)
+    async postBost(@Headers() headers,@Body() body) {
+        // if (headers['x-auth-user'] == undefined) {
+        //   await this.errorHandler.generateNotAcceptableException(
+        //     'Unauthorized',
+        //   );
+        // }
+        // if (!(await this.utilsService.validasiTokenEmail(headers))) {
+        //   await this.errorHandler.generateNotAcceptableException(
+        //     'Unabled to proceed email header dan token not match',
+        //   );
+        // }
+
+        var DateTimeStamp = await this.utilsService.getDateTimeString();
+        var email = headers['x-auth-user'];
+        if (body.postID == undefined) {
+            await this.errorHandler.generateBadRequestException(
+                'Unabled to proceed postID is required',
+            );
+        }
+        if (body.dateStart == undefined) {
+            await this.errorHandler.generateBadRequestException(
+                'Unabled to proceed dateStart is required',
+            );
+        }
+        if (body.type == undefined) {
+            await this.errorHandler.generateBadRequestException(
+                'Unabled to proceed type is required',
+            );
+        }
+        if (body.type.toLowerCase() == "manual") {
+            if (body.interval == undefined) {
+                await this.errorHandler.generateBadRequestException(
+                    'Unabled to proceed interval is required',
+                );
+            }
+            if (body.session.toLowerCase() == undefined) {
+                await this.errorHandler.generateBadRequestException(
+                    'Unabled to proceed session is required',
+                );
+            }
+            const interval = await this.boostintervalService.findById(body.interval);
+            if (!(await this.utilsService.ceckData(interval))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, interval not found',
+                );
+            }
+            const session = await this.boostsessionService.findById(body.session);
+            if (!(await this.utilsService.ceckData(session))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, session not found',
+                );
+            }
+            const price = await this.utilsService.getSetting_("636212286f07000023005ce2");
+            if (price==null) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, Setting Price not found',
+                );
+            }
+            const BankVaCharge = await this.utilsService.getSetting_("62bd40e0f37a00001a004366");
+            if (BankVaCharge == null) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, Setting Bank Va Charge not found',
+                );
+            }
+            const ExpiredVa = await this.utilsService.getSetting_("6332caeb0c7d00004f005175");
+            if (ExpiredVa == null) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, Setting Expired Va not found',
+                );
+            }
+            var post = await this.postsService.findByPostId(body.postID);
+            if (!(await this.utilsService.ceckData(post))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, post not found',
+                );
+            }
+            var media = await this.postsService.findOnepostID(body.postID);
+            if (!(await this.utilsService.ceckData(media))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, post not found',
+                );
+            }
+            var user = await this.userbasicsService.findOne(email);
+            if (!(await this.utilsService.ceckData(user))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, user not found',
+                );
+            }
+
+            var countTransaction = (await this.transactionsService.findAll()).length;
+            var totalAmount = price + BankVaCharge;
+            if (body.bankcode != undefined) {
+                if (!(body.paymentmethod)) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed, paymentmethod is required',
+                    );
+                }
+                var payment_method = await this.methodepaymentsService.findmethodename(body.paymentmethod);
+                if (!(await this.utilsService.ceckData(payment_method))) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed, payment method not found',
+                    );
+                }
+                var bank = await this.utilsService.getBank(body.bankcode);
+                if (await this.utilsService.ceckData(bank)) {
+                    var dataCreateVa = {
+                        userId: user._id.toString(),
+                        amount: totalAmount,
+                        bankcode: body.bankcode,
+                        name: user.fullName,
+                        email: user.email,
+                        valueexpiredva: totalAmount,
+                    }
+                    var Va = await this.createVa(dataCreateVa);
+                    var transactionNumber = await this.utilsService.generateTransactionNumber(countTransaction);
+                    var typeTransaction = "BOOST_CONTENT";
+                    var date_trx_expiration_time = new Date(Va.trx_expiration_time);
+                    date_trx_expiration_time.setHours(date_trx_expiration_time.getHours() + 7);
+                    date_trx_expiration_time = new Date(date_trx_expiration_time);
+                    var transactionDetail = [
+                        {
+                            id: body.postID,
+                            interval: body.interval,
+                            type: body.type,
+                            session: body.session,
+                            dateStart: body.dateStart,
+                            qty: 1,
+                            totalAmount: totalAmount
+                        }
+                    ];
+                    if (Va.status.code == "000") {
+                        try {
+                            let cekstatusva = await this.oyPgService.staticVaInfo(Va.id);
+                            var createTransactionsDto_ = new CreateTransactionsDto();
+                            createTransactionsDto_.iduserbuyer = Object(user._id.toString());
+                            createTransactionsDto_.idusersell = Object(user._id.toString());
+                            createTransactionsDto_.timestamp = DateTimeStamp;
+                            createTransactionsDto_.updatedAt = DateTimeStamp;
+                            createTransactionsDto_.noinvoice = transactionNumber;
+                            createTransactionsDto_.amount = price;
+                            createTransactionsDto_.status = cekstatusva.va_status;
+                            createTransactionsDto_.bank = Object(bank._id.toString());
+                            createTransactionsDto_.idva = Va.id;
+                            createTransactionsDto_.nova = Va.va_number;
+                            createTransactionsDto_.accountbalance = null;
+                            createTransactionsDto_.paymentmethod = Object(payment_method._id.toString());
+                            createTransactionsDto_.ppn = null;
+                            createTransactionsDto_.totalamount = totalAmount;
+                            createTransactionsDto_.description = "buy " + typeTransaction + " pending";
+                            createTransactionsDto_.payload = null;
+                            createTransactionsDto_.expiredtimeva = date_trx_expiration_time.toISOString();
+                            createTransactionsDto_.detail = transactionDetail;
+                            createTransactionsDto_.postid = body.postID;
+                            createTransactionsDto_.response = Va;
+                            let transaction_boost = await this.transactionsService.create(createTransactionsDto_);
+                            this.sendTransactionFCM(email, "TRANSACTION", body.postID, email)
+
+                            var data_response_ = {
+                                "noinvoice": transaction_boost.noinvoice,
+                                "postid": transaction_boost,
+                                "idusersell": transaction_boost.idusersell,
+                                "iduserbuyer": transaction_boost.iduserbuyer,
+                                "NamaPembeli": user.fullName,
+                                "amount": transaction_boost.amount,
+                                "paymentmethod": payment_method.methodename,
+                                "status": transaction_boost.status,
+                                "description": transaction_boost.description,
+                                "idva": transaction_boost.idva,
+                                "nova": transaction_boost.nova,
+                                "expiredtimeva": transaction_boost.expiredtimeva,
+                                "salelike": transaction_boost.saleview,
+                                "saleview": transaction_boost.salelike,
+                                "bank": bank.bankname,
+                                "bankvacharge": BankVaCharge,
+                                "detail": transactionDetail,
+                                "totalamount": transaction_boost.totalamount,
+                                "accountbalance": transaction_boost.accountbalance,
+                                "timestamp": transaction_boost.timestamp,
+                                "_id": transaction_boost._id
+                            };
+                        } catch (e) {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed Error, ' + e
+                            );
+                        }
+                        return {
+                            response_code: 202,
+                            data_response_,
+                            messages: {
+                                info: ['successful'],
+                            },
+                        };
+                    } else if (Va.status.code == "208") {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Request is Rejected (API Key is not Valid)',
+                        );
+                    } else if (Va.status.code == "217") {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Request is Rejected (VA Number is still active for this partner user id)',
+                        );
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            '"Request is Rejected"',
+                        );
+                    }
+                } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed, Bank not found',
+                    );
+                }
+            } else {
+                var data = {};
+                var post_data = {};
+
+                if (media[0].datacontent[0].mediaBasePath != undefined) {
+                    post_data["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
+                }
+                if (post.postType != undefined) {
+                    post_data["postType"] = post.postType;
+                }
+                if (media[0].datacontent[0].mediaUri != undefined) {
+                    post_data["mediaUri"] = media[0].datacontent[0].mediaUri;
+                }
+                if (post.description != undefined) {
+                    post_data["description"] = post.description;
+                }
+                if (post.active != undefined) {
+                    post_data["active"] = post.active;
+                }
+                if (media[0].datacontent[0].mediaType != undefined) {
+                    post_data["mediaType"] = media[0].datacontent[0].mediaType;
+                }
+                if (post.postID != undefined) {
+                    post_data["postID"] = post.postID;
+                }
+                if (post.tags != undefined) {
+                    post_data["tags"] = post.tags;
+                }
+                if (post.allowComments != undefined) {
+                    post_data["allowComments"] = post.allowComments;
+                }
+                if (post.createdAt != undefined) {
+                    post_data["createdAt"] = post.createdAt;
+                }
+                if (media[0].datauser.insight != undefined) {
+                    post_data["insight"] = media[0].datauser.insight;
+                }
+                if (media[0].datauser.insight != undefined) {
+                    post_data["email"] = post.email;
+                }
+                if (media[0].datauser.insight != undefined) {
+                    post_data["updatedAt"] = post.updatedAt;
+                }
+                if (media[0].datauser.insight != undefined) {
+                    post_data["updatedAt"] = post.updatedAt;
+                }
+
+                data["post"] = post_data;
+                data["typeBoost"] = body.type;
+                data["intervalBoost"] = interval;
+                data["sessionBoost"] = session;
+                data["dateBoost"] = body.dateStart;
+                data["priceBoost"] = price;
+                data["priceBankVaCharge"] = BankVaCharge;
+                data["priceTotal"] = price + BankVaCharge;
+
+                var response = {
+                    "response_code": 202,
+                    "data": data,
+                    "messages": {
+                        info: [
+                            "Succesfully"
+                        ]
+                    }
+                }
+                return response;
+            }
+        } else if (body.type == "automatic") {
+
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, type not found',
+            );
+        }
+    }
+
+    async createVa(data: any) {
+        var stringId = (await this.utilsService.generateNumber()).toString();
+        var data_va = {
+            "partner_user_id": data.userId.toString() + stringId,
+            "amount": data.totalamount,
+            "bank_code": data.bankcode,
+            "is_open": false,
+            "is_single_use": true,
+            "is_lifetime": false,
+            "username_display": data.name.toString(),
+            "email": data.email,
+            "trx_expiration_time": data.valueexpiredva,
+        }
+
+        try {
+            var datareqva = await this.oyPgService.generateStaticVa(data_va);
+            return datareqva;
+        } catch (e) {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed, ' + e,
+            );
+        }
+    }
+
+    async sendTransactionFCM(email: string, type: string, postID: string, receiverParty: string) {
+        var Templates_ = new TemplatesRepo();
+        Templates_ = await this.utilsService.getTemplate_repo(type, 'NOTIFICATION');
+
+        var get_username_email = await this.utilsService.getUsertname(email);
+        var get_username_receiverParty = await this.utilsService.getUsertname(receiverParty);
+
+        var titlein = get_username_receiverParty?.toString() || '';
+        var titleen = get_username_receiverParty?.toString() || '';
+        var email_post = "";
+
+        var posts = await this.postsService.findByPostId(postID);
+        var bodyin = Templates_.body_detail_id.toString();
+        var bodyen = Templates_.body_detail.toString();
+
+        var post_type = "";
+        if (await this.utilsService.ceckData(posts)) {
+            post_type = posts.postType.toString();
+            email_post = posts.email.toString();
+        }
+
+        var eventType = type.toString();
+        var event = "TRANSACTION";
+        await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
     }
 }
 

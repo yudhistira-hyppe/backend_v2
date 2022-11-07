@@ -32,8 +32,6 @@ import { SettingsModule } from '../../trans/settings/settings.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { InsightlogsModule } from '../insightlogs/insightlogs.module';
 import { ContentModService } from './contentmod.service';
-import { BoostintervalModule } from '../boostinterval/boostinterval.module';
-import { BoostsessionModule } from '../boostsession/boostsession.module';
 import { OyPgModule } from '../../paymentgateway/oypg/oypg.module';
 import { MethodepaymentsModule } from '../../trans/methodepayments/methodepayments.module';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
@@ -42,8 +40,6 @@ import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
     imports: [
         MethodepaymentsModule,
         OyPgModule,
-        BoostintervalModule,
-        BoostsessionModule,
         BullModule.registerQueue({
             name: 'post-user-playlist',
         }),

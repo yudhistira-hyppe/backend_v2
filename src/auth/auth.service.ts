@@ -4472,8 +4472,8 @@ export class AuthService {
         if (mediaprofilepicts_json != null) {
           if (mediaprofilepicts_json.$id != undefined) {
             if (mediaprofilepicts_json.$id != id) {
-              await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed, Post Id not match',
+              await this.errorHandler.generateNotFoundException(
+                'Unabled to proceed, Id Medida not found',
               );
             }
           }
