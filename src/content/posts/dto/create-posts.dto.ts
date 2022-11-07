@@ -1,8 +1,7 @@
 import { Long } from "mongodb";
+import mongoose from "mongoose";
 
 export class CreatePostsDto {
-
-
     readonly _id: String;
     readonly postID: String;
     readonly email: String;
@@ -27,7 +26,6 @@ export class CreatePostsDto {
         postID: String;
         email: String;
     };
-
     readonly likes: Long;
     readonly views: Long;
     readonly shares: Long;
@@ -40,7 +38,6 @@ export class CreatePostsDto {
         };
         db: String;
     };
-
     readonly contentMedias: any[];
     readonly _class: String;
     reportedStatus: string
@@ -49,6 +46,24 @@ export class CreatePostsDto {
     contentModeration: boolean
     contentModerationResponse: string
     reportedUserHandle: any[];
+    boostDate: Date;
+    boostInterval: {
+        _id: mongoose.Types.ObjectId,
+        value: number
+    };
+    boostSession: {
+        _id: mongoose.Types.ObjectId,
+        start: Date,
+        end: Date
+    };
+    isBoost: string;
+    boostViewer: [
+        {
+            email: string,
+            timestamp: Date
+        }
+    ];
+    boostCount: number
 }
 
 export class CreatePostResponse {

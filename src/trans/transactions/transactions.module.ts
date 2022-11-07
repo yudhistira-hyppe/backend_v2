@@ -16,7 +16,8 @@ import { InsightsModule } from '../../content/insights/insights.module';
 import { UserbankaccountsModule } from '../userbankaccounts/userbankaccounts.module';
 import { WithdrawsModule } from '../withdraws/withdraws.module';
 import { GetusercontentsModule } from '../getusercontents/getusercontents.module';
-
+import { BoostintervalModule } from '../../content/boostinterval/boostinterval.module';
+import { BoostsessionModule } from '../../content/boostsession/boostsession.module';
 import { MediavideosModule } from '../../content/mediavideos/mediavideos.module';
 import { MediapictsModule } from '../../content/mediapicts/mediapicts.module';
 import { MediadiariesModule } from '../../content/mediadiaries/mediadiaries.module';
@@ -30,6 +31,8 @@ import { AdsModule } from '../ads/ads.module';
 @Module({
 
     imports: [
+        BoostintervalModule,
+        BoostsessionModule,
         UtilsModule,
         ConfigModule.forRoot(), GetusercontentsModule, UserbasicsModule, SettingsModule, MethodepaymentsModule, BanksModule, PostsModule, Pph21sModule, AccountbalancesModule, OyPgModule,
         InsightsModule, UserbankaccountsModule, WithdrawsModule, MediavideosModule, MediapictsModule, MediadiariesModule, UservouchersModule, VouchersModule, MediastoriesModule, LanguagesModule,
