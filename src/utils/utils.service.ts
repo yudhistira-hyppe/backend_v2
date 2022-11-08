@@ -801,41 +801,43 @@ export class UtilsService {
 
     var ProfileDTO_ = new ProfileDTO();
     if (datafor == 'FULL') {
-      if (get_userbasic.profileID != undefined) { ProfileDTO_.profileID = get_userbasic.profileID; }
-      if (get_userauth.regSrc != undefined) { ProfileDTO_.regSrc = get_userauth.regSrc; }
-      if (get_userbasic.bio != undefined) { ProfileDTO_.bio = get_userbasic.bio; }
-      if (get_userbasic.dob != undefined) { ProfileDTO_.dob = get_userbasic.dob; }
-      if (get_userbasic.gender != undefined) { ProfileDTO_.gender = get_userbasic.gender; }
-      if (get_userbasic.idProofNumber != undefined) { ProfileDTO_.idProofNumber = get_userbasic.idProofNumber; }
+      if (await this.ceckData(get_userbasic)) {
+        if (get_userbasic.profileID != undefined) { ProfileDTO_.profileID = get_userbasic.profileID; }
+        if (get_userauth.regSrc != undefined) { ProfileDTO_.regSrc = get_userauth.regSrc; }
+        if (get_userbasic.bio != undefined) { ProfileDTO_.bio = get_userbasic.bio; }
+        if (get_userbasic.dob != undefined) { ProfileDTO_.dob = get_userbasic.dob; }
+        if (get_userbasic.gender != undefined) { ProfileDTO_.gender = get_userbasic.gender; }
+        if (get_userbasic.idProofNumber != undefined) { ProfileDTO_.idProofNumber = get_userbasic.idProofNumber; }
 
-      if (get_cities != null) { ProfileDTO_.city = get_cities.cityName; }
-      if (get_states != null) { ProfileDTO_.area = get_states.stateName; }
-      ProfileDTO_.mobileNumber = get_userbasic.mobileNumber;
-      if (get_languages != null) {
-        var eula = await this.eulasService.findOnelangiso(get_languages.langIso);
-        if (await this.ceckData(eula)) {
-          ProfileDTO_.eulaID = eula.eulaID;
+        if (get_cities != null) { ProfileDTO_.city = get_cities.cityName; }
+        if (get_states != null) { ProfileDTO_.area = get_states.stateName; }
+        ProfileDTO_.mobileNumber = get_userbasic.mobileNumber;
+        if (get_languages != null) {
+          var eula = await this.eulasService.findOnelangiso(get_languages.langIso);
+          if (await this.ceckData(eula)) {
+            ProfileDTO_.eulaID = eula.eulaID;
+          }
         }
-      }
 
-      ProfileDTO_.isCelebrity = get_userbasic.isCelebrity.toString();
-      ProfileDTO_.isPrivate = get_userbasic.isPrivate.toString();
-      ProfileDTO_.isFollowPrivate = get_userbasic.isFollowPrivate.toString();
-      ProfileDTO_.isPostPrivate = get_userbasic.isPostPrivate.toString();
-      ProfileDTO_.otp = get_userauth.oneTimePassword;
-      ProfileDTO_.otpToken = get_userauth.otpToken;
-      ProfileDTO_.otpToken = get_userauth.otpToken;
-      ProfileDTO_.authEmail = get_userauth.email;
-      ProfileDTO_.iduser = get_userbasic._id;
-      ProfileDTO_.profileID = get_userbasic.profileID;
-      //ProfileDTO_.token =
-      //ProfileDTO_.refreshToken =
-      //ProfileDTO_.userProfile =
-      //ProfileDTO_.socmedSource =
-      //ProfileDTO_.referral =
-      //ProfileDTO_.imei = 
-      //ProfileDTO_.referralCount =
-      //ProfileDTO_.children = 
+        ProfileDTO_.isCelebrity = get_userbasic.isCelebrity.toString();
+        ProfileDTO_.isPrivate = get_userbasic.isPrivate.toString();
+        ProfileDTO_.isFollowPrivate = get_userbasic.isFollowPrivate.toString();
+        ProfileDTO_.isPostPrivate = get_userbasic.isPostPrivate.toString();
+        ProfileDTO_.otp = get_userauth.oneTimePassword;
+        ProfileDTO_.otpToken = get_userauth.otpToken;
+        ProfileDTO_.otpToken = get_userauth.otpToken;
+        ProfileDTO_.authEmail = get_userauth.email;
+        ProfileDTO_.iduser = get_userbasic._id;
+        ProfileDTO_.profileID = get_userbasic.profileID;
+        //ProfileDTO_.token =
+        //ProfileDTO_.refreshToken =
+        //ProfileDTO_.userProfile =
+        //ProfileDTO_.socmedSource =
+        //ProfileDTO_.referral =
+        //ProfileDTO_.imei = 
+        //ProfileDTO_.referralCount =
+        //ProfileDTO_.children = 
+      }
     }
 
     if (await this.ceckData(get_userbasic)) {

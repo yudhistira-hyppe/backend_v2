@@ -734,4 +734,120 @@ export class PostsController {
     }
     return response;
   }
+
+  @Get('thumb/:id')
+  @HttpCode(HttpStatus.OK)
+  async thumb(
+    @Param('id') id: string,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response) {
+    if ((id != undefined) && (token != undefined) && (email != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var dataMedia = await this.PostsService.findOnepostID(id);
+        if (await this.utilsService.ceckData(dataMedia)) {
+          var thum_data = "";
+          if (dataMedia[0].datacontent[0].fsTargetThumbUri != undefined) {
+            thum_data = dataMedia[0].datacontent[0].fsTargetThumbUri;
+          }
+          if (thum_data != '') {
+            var data = await this.PostsService.thum(thum_data);
+            if (data != null) {
+              response.set("Content-Type", "image/jpeg");
+              response.send(data);
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        } else {
+          response.send(null);
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
+
+  @Get('pict/:id')
+  @HttpCode(HttpStatus.OK)
+  async pict(
+    @Param('id') id: string,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response) {
+    if ((id != undefined) && (token != undefined) && (email != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var dataMedia = await this.PostsService.findOnepostID(id);
+        if (await this.utilsService.ceckData(dataMedia)) {
+          var image_data = "";
+          var mediaMime = "";
+          if (dataMedia[0].datacontent[0].fsSourceUri != undefined) {
+            image_data = dataMedia[0].datacontent[0].fsSourceUri;
+          }
+          if (dataMedia[0].datacontent[0].mediaMime != undefined) {
+            mediaMime = dataMedia[0].datacontent[0].mediaMime;
+          }else{
+            mediaMime = "image/jpeg";
+          }
+          if (image_data != '') {
+            var data = await this.PostsService.pict(image_data);
+            if (data != null) {
+              response.set("Content-Type", mediaMime);
+              response.send(data);
+              return data;
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        } else {
+          response.send(null);
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
+
+  @Get('stream/:id')
+  @HttpCode(HttpStatus.OK)
+  async stream(@Param('id') mediaFile: string, @Headers() headers, @Res() response) {
+    if ((headers['x-auth-user'] != undefined) && (headers['x-auth-token'] != undefined) && (headers['post-id'] != undefined) && (mediaFile != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(headers['x-auth-token'], headers['x-auth-user'])) {
+        var dataMedia = await this.PostsService.findOnepostID(headers['post-id']);
+        if (await this.utilsService.ceckData(dataMedia)) {
+          var mediaBasePath = "";
+          if (dataMedia!=null){
+            if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
+              mediaBasePath = dataMedia[0].datacontent[0].mediaBasePath;
+            }
+            if (mediaBasePath != "") {
+              var data = await this.PostsService.stream(mediaBasePath + mediaFile);
+              if (data != null) {
+                response.set("Content-Type", "application/octet-stream");
+                response.send(data);
+              } else {
+                response.send(null);
+              }
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        } else {
+          response.send(null);
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
 }
