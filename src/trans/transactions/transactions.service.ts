@@ -9969,9 +9969,7 @@ export class TransactionsService {
     }
 
     async findhistorySeller(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
-            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-
-            var dateend = currentdate.toISOString();
+            
             var pipeline=new Array<any>(
                 {
                     $addFields: {
@@ -11132,8 +11130,6 @@ export class TransactionsService {
     }
 
     async findhistoryBuyer(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
-        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-        var dateend = currentdate.toISOString();
         var pipeline=new Array<any>(
             {
                 $addFields: {
