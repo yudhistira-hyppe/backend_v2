@@ -808,7 +808,7 @@ export class AdsService {
         } catch (e) {
             dateend = "";
         }
-        var pipeline=new Array<any>(
+        var pipeline = new Array<any>(
             {
                 $lookup: {
                     from: "adsplaces",
@@ -827,7 +827,7 @@ export class AdsService {
             },
             {
                 $project: {
-                    userID:1,
+                    userID: 1,
                     fullName: '$user.fullName',
                     email: '$user.email',
                     timestamp: 1,
@@ -835,7 +835,7 @@ export class AdsService {
                     gender: 1,
                     liveAt: 1,
                     name: 1,
-                    description:1,
+                    description: 1,
                     objectifitas: 1,
                     status: 1,
                     totalClick: 1,
@@ -851,11 +851,12 @@ export class AdsService {
                 }
             }
         );
-        if(userid && userid!==undefined){
-            pipeline.push({$match:{userID: userid}});
+        if (userid && userid !== undefined) {
+            pipeline.push({ $match: { userID: userid } });
         }
-        if(search && search!==undefined && search!=""){
-            pipeline.push({$match: {
+        if (search && search !== undefined && search != "") {
+            pipeline.push({
+                $match: {
                     $or: [{
                         name: {
                             $regex: search,
@@ -872,22 +873,22 @@ export class AdsService {
                 }
             });
         }
-        if(startdate && startdate!==undefined){
-            pipeline.push({$match:{timestamp: {$gte:startdate}}});
+        if (startdate && startdate !== undefined) {
+            pipeline.push({ $match: { timestamp: { $gte: startdate } } });
         }
-        if(enddate && enddate!==undefined){
-            pipeline.push({$match:{timestamp: {$lte:enddate}}});
+        if (enddate && enddate !== undefined) {
+            pipeline.push({ $match: { timestamp: { $lte: enddate } } });
         }
-        if(skip>0){
-            pipeline.push({$skip:skip});
+        if (skip > 0) {
+            pipeline.push({ $skip: skip });
         }
-        if(limit>0){
-            pipeline.push({$limit:limit});
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
         }
-        pipeline.push({$sort:{timestamp:-1}});
+        pipeline.push({ $sort: { timestamp: -1 } });
         // const util = require('util');
         // console.log(util.inspect(pipeline, false, null, true));
-        
+
         let query = await this.adsModel.aggregate(pipeline);
         var data = null;
         var arrdata = [];
@@ -3298,252 +3299,36 @@ export class AdsService {
         }
         return data;
     }
-    
-    async findAdsIDsByEmail(email:String) {
-        var pipeline=[
-            {$lookup:{
-                from:'userbasics',
-                localField:'userID',
-                foreignField:'_id',
-                as:'basic'
-            }},
-            {$match:{
-                'basic.email':email
-            }},
-            {$project:{
-                _id:1
-            }}
+
+    async findAdsIDsByEmail(email: String) {
+        var pipeline = [
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    localField: 'userID',
+                    foreignField: '_id',
+                    as: 'basic'
+                }
+            },
+            {
+                $match: {
+                    'basic.email': email
+                }
+            },
+            {
+                $project: {
+                    _id: 1
+                }
+            }
         ];
         // const util = require('util');
         // console.log(util.inspect(pipeline, false, null, true /* enable colors */))
-        const query=await this.adsModel.aggregate(pipeline);
-        var adsIds=[];
-        for(var i=0;i<query.length;i++){
+        const query = await this.adsModel.aggregate(pipeline);
+        var adsIds = [];
+        for (var i = 0; i < query.length; i++) {
             adsIds.push(query[i]._id);
         }
         return adsIds;
-    }
-
-    async findreportadscount(keys: string, postType: string, startdate: string, enddate: string) {
-        try {
-            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-
-            var dateend = currentdate.toISOString();
-        } catch (e) {
-            dateend = "";
-        }
-        var pipeline = [];
-        pipeline = [{
-            $lookup: {
-                from: 'adsplaces',
-                localField: 'placingID',
-                foreignField: '_id',
-                as: 'places',
-
-            },
-
-        },
-        {
-            $lookup: {
-                from: 'adstypes',
-                localField: 'typeAdsID',
-                foreignField: '_id',
-                as: 'tipeads',
-
-            },
-
-        },
-        {
-            $project: {
-                tipeads: {
-                    $arrayElemAt: ['$tipeads', 0]
-                },
-                place: {
-                    $arrayElemAt: ['$places', 0]
-                },
-                userID: '$userID',
-                idApsara: '$idApsara',
-                name: '$name',
-                type: '$type',
-                status: "$status",
-                timestamp: "$timestamp",
-                totalUsedCredit: "$totalUsedCredit",
-                tayang: '$tayang',
-                usedCredit: '$usedCredit',
-                usedCreditFree: '$usedCreditFree',
-                creditFree: '$creditFree',
-                creditValue: '$creditValue',
-                totalCredit: '$totalCredit',
-                contentModeration: '$contentModeration',
-                contentModerationResponse: '$contentModerationResponse',
-                reportedStatus: '$reportedStatus',
-                reportedUserCount: '$reportedUserCount',
-                reportedUser: '$reportedUser',
-                reportedUserHandle: '$reportedUserHandle',
-                reportReasonIdLast: {
-                    $last: "$reportedUser.reportReasonId"
-                },
-                reasonLast: {
-                    $last: "$reportedUser.description"
-                },
-                createdAtReportLast: {
-                    $last: "$reportedUser.createdAt"
-                },
-
-            }
-        },
-        {
-
-            $project: {
-                userID: '$userID',
-                idApsara: '$idApsara',
-                name: '$name',
-                type: '$type',
-                status: "$status",
-                timestamp: "$timestamp",
-                totalUsedCredit: "$totalUsedCredit",
-                tayang: '$tayang',
-                usedCredit: '$usedCredit',
-                usedCreditFree: '$usedCreditFree',
-                creditFree: '$creditFree',
-                creditValue: '$creditValue',
-                totalCredit: '$totalCredit',
-                tipeads: '$tipeads.nameType',
-                contentModeration: '$contentModeration',
-                contentModerationResponse: '$contentModerationResponse',
-                reportedStatus: '$reportedStatus',
-                reportedUserCount: '$reportedUserCount',
-                reportedUser: '$reportedUser',
-                reportedUserHandle: '$reportedUserHandle',
-                reportReasonIdLast: {
-                    $last: "$reportedUser.reportReasonId"
-                },
-                reasonLast: {
-                    $last: "$reportedUser.description"
-                },
-                createdAtReportLast: {
-                    $last: "$reportedUser.createdAt"
-                },
-                place: '$place.namePlace',
-                reportStatusLast: {
-                    $last: "$reportedUserHandle.status"
-                },
-
-            }
-        },
-
-        {
-            $sort: {
-                createdAtReportLast: - 1
-            },
-
-        },
-        ];
-        if (keys !== undefined && postType === undefined && startdate === undefined && enddate === undefined) {
-
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    },
-
-                }
-            },);
-
-        }
-        else if (keys === undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    },
-
-                }
-            });
-        }
-        else if (keys === undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
-        }
-        else if (keys !== undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
-        }
-        else if (keys !== undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    }, tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    },
-
-                }
-            },);
-        }
-        else if (keys === undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
-        }
-        else if (keys !== undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    }, tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
-        }
-        else {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-
-
-                }
-            },);
-        }
-
-        const query = await this.adsModel.aggregate(pipeline);
-
-        return query;
-
-
-
     }
 
     async findreportads(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number) {
@@ -3660,12 +3445,15 @@ export class AdsService {
             },
 
         },
-        {
-            $skip: (page * limit)
-        },
-        {
-            $limit: limit
-        }];
+
+        ];
+
+        if (page > 0) {
+            pipeline.push({ $skip: (page * limit) });
+        }
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
+        }
         if (keys !== undefined && postType === undefined && startdate === undefined && enddate === undefined) {
 
             pipeline.push({

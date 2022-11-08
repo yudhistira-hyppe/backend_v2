@@ -12,6 +12,8 @@ import { CreateAdsDto } from '../ads/dto/create-ads.dto';
 import { CreatePostsDto } from 'src/content/posts/dto/create-posts.dto';
 import { CreateUserbasicDto } from '../userbasics/dto/create-userbasic.dto';
 import { PostContentService } from '../../content/posts/postcontent.service';
+import { TransactionsService } from '../transactions/transactions.service';
+import { UserauthsService } from '../userauths/userauths.service';
 @Controller('api/reportuser')
 export class ReportuserController {
 
@@ -21,7 +23,10 @@ export class ReportuserController {
         private readonly userbasicsService: UserbasicsService,
         private readonly postsService: PostsService,
         private readonly postContentService: PostContentService,
-        private readonly adsService: AdsService) { }
+        private readonly adsService: AdsService,
+        private readonly transactionsService: TransactionsService,
+        private readonly userauthsService: UserauthsService
+    ) { }
     @UseGuards(JwtAuthGuard)
     @Get('all')
     async findAll() {
@@ -199,7 +204,7 @@ export class ReportuserController {
         var objreportuser = {};
         var objreporthandle = {};
         var type = null;
-        var description = null;
+
 
         var request_json = JSON.parse(JSON.stringify(request.body));
 
@@ -219,7 +224,7 @@ export class ReportuserController {
         //reportedUserHandle = request_json["reportedUserHandle"];
         contentModeration = request_json["contentModeration"];
         contentModerationResponse = request_json["contentModerationResponse"];
-        description = request_json["description"];
+
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         const messages = {
@@ -264,6 +269,7 @@ export class ReportuserController {
                         let email = reportedUser[i].email;
                         let idreason = reportedUser[i].reportReasonId;
                         let userid = mongoose.Types.ObjectId(iduser);
+                        let description = reportedUser[i].description;
                         let reportReasonId = mongoose.Types.ObjectId(idreason);
                         objreportuser = {
                             "userID": userid,
@@ -348,6 +354,7 @@ export class ReportuserController {
                         let email = reportedUser[i].email;
                         let idreason = reportedUser[i].reportReasonId;
                         let userid = mongoose.Types.ObjectId(iduser);
+                        let description = reportedUser[i].description;
                         let reportReasonId = mongoose.Types.ObjectId(idreason);
                         objreportuser = {
                             "userID": userid,
@@ -420,7 +427,7 @@ export class ReportuserController {
                 }
                 if (lenguserreport > 0) {
                     for (let i = 0; i < lenguserreport; i++) {
-
+                        let description = reportedUser[i].description;
                         let iduser = reportedUser[i].userID;
                         let email = reportedUser[i].email;
                         let idreason = reportedUser[i].reportReasonId;
@@ -798,6 +805,325 @@ export class ReportuserController {
 
     }
 
+
+    @UseGuards(JwtAuthGuard)
+    @Post('approval')
+    async reportHandleAproval(@Req() request) {
+        var reportedStatus = null;
+        var reportedUserHandle = [];
+        var postID = null;
+        var data = null;
+        var reportedUserCount = null;
+        var lenguserreport = null
+        var lengreporthandle = null
+        var reportedUser = [];
+        var dataauth = null;
+        var arrayreportedUser = [];
+        var arrayreportedHandle = [];
+        var contentModeration = null;
+        var contentModerationResponse = null;
+        var datacontent = null;
+        var objreportuser = {};
+        var objreporthandle = {};
+        var type = null;
+        var datahandel = null;
+        var objhandel = {};
+        var reportedHandel = null;
+
+        var reportCount = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        reportedStatus = request_json["reportedStatus"];
+
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+
+        reportedUserHandle = request_json["reportedUserHandle"];
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        try {
+            lenguserreport = reportedUser.length;
+        } catch (e) {
+            lenguserreport = 0;
+        }
+
+        try {
+            lengreporthandle = reportedUserHandle.length;
+        } catch (e) {
+            lengreporthandle = 0;
+        }
+
+        if (type === "content") {
+            let createPostsDto = new CreatePostsDto();
+            try {
+                datacontent = await this.postsService.findByPostId(postID);
+
+
+            } catch (e) {
+                datacontent = null;
+            }
+
+            if (datacontent !== null) {
+
+                try {
+                    reportCount = datacontent.reportedUserCount;
+                } catch (e) {
+                    reportCount = 0;
+                }
+
+                try {
+
+                    datahandel = datacontent.reportedUserHandle;
+
+                } catch (e) {
+                    datahandel = null;
+                }
+
+                if (datahandel.length > 0) {
+                    for (let i = 0; i < datahandel.length; i++) {
+                        let status = datahandel[i].status;
+
+                        if (status === "BARU") {
+                            throw new BadRequestException("Appeal sudah diajukan...!");
+                        }
+                    }
+
+                }
+
+                if (reportCount >= 200) {
+                    throw new BadRequestException("Appeal tidak bisa diajukan...!");
+                } else {
+                    if (lengreporthandle > 0) {
+                        for (let i = 0; i < lengreporthandle; i++) {
+
+                            let status = reportedUserHandle[i].status;
+                            let remark = reportedUserHandle[i].remark;
+                            let typeAppeal = reportedUserHandle[i].typeAppeal;
+                            objreporthandle = {
+
+                                "type": typeAppeal,
+                                "remark": remark,
+                                "createdAt": dt.toISOString(),
+                                "updatedAt": dt.toISOString(),
+                                "status": status
+                            };
+                            arrayreportedHandle.push(objreporthandle);
+                        }
+                    } else {
+
+                    }
+
+
+                    createPostsDto.reportedStatus = reportedStatus;
+                    if (arrayreportedHandle.length > 0) {
+                        createPostsDto.reportedUserHandle = arrayreportedHandle;
+                    } else {
+
+                    }
+                    this.postsService.update(postID, createPostsDto);
+
+
+                    var data = request_json;
+                    return { response_code: 202, data, messages };
+
+                }
+
+
+            } else {
+                throw new BadRequestException("postID is not found...!");
+            }
+        }
+        else if (type === "ads") {
+
+
+            let createAdsDto = new CreateAdsDto();
+
+            let postid = mongoose.Types.ObjectId(postID);
+            try {
+                datacontent = await this.adsService.findOne(postID);
+
+
+            } catch (e) {
+                datacontent = null;
+            }
+
+            if (datacontent !== null) {
+
+                try {
+                    reportCount = datacontent.reportedUserCount;
+                } catch (e) {
+                    reportCount = 0;
+                }
+
+                try {
+
+                    datahandel = datacontent.reportedUserHandle;
+
+                } catch (e) {
+                    datahandel = null;
+                }
+
+                if (datahandel.length > 0) {
+                    for (let i = 0; i < datahandel.length; i++) {
+                        let status = datahandel[i].status;
+
+                        if (status === "BARU") {
+                            throw new BadRequestException("Appeal sudah diajukan...!");
+                        }
+                    }
+
+                }
+
+                if (reportCount >= 200) {
+                    throw new BadRequestException("Appeal tidak bisa diajukan...!");
+                }
+                else {
+                    if (lengreporthandle > 0) {
+                        for (let i = 0; i < lengreporthandle; i++) {
+
+                            let status = reportedUserHandle[i].status;
+                            let remark = reportedUserHandle[i].remark;
+                            let typeAppeal = reportedUserHandle[i].typeAppeal;
+                            objreporthandle = {
+
+                                "type": typeAppeal,
+                                "remark": remark,
+                                "createdAt": dt.toISOString(),
+                                "updatedAt": dt.toISOString(),
+                                "status": status
+                            };
+                            arrayreportedHandle.push(objreporthandle);
+                        }
+                    } else {
+
+                    }
+
+                    if (arrayreportedHandle.length > 0) {
+                        createAdsDto.reportedUserHandle = arrayreportedHandle;
+                    } else {
+
+                    }
+                    this.adsService.update(postID, createAdsDto);
+                    var data = request_json;
+                    return { response_code: 202, data, messages };
+
+                }
+            } else {
+                throw new BadRequestException("Ads ID is not found...!");
+            }
+        }
+        else if (type === "user") {
+            let createUserbasicDto = new CreateUserbasicDto();
+            let postid = mongoose.Types.ObjectId(postID);
+            try {
+                datacontent = await this.userbasicsService.findbyid(postID);
+                console.log(datacontent)
+
+            } catch (e) {
+                datacontent = null;
+            }
+
+            if (datacontent !== null) {
+
+                try {
+                    reportCount = datacontent.reportedUserCount;
+                } catch (e) {
+                    reportCount = 0;
+                }
+
+                try {
+
+                    datahandel = datacontent.reportedUserHandle;
+
+                } catch (e) {
+                    datahandel = null;
+                }
+
+                if (datahandel.length > 0) {
+                    for (let i = 0; i < datahandel.length; i++) {
+                        let status = datahandel[i].status;
+
+                        if (status === "BARU") {
+                            throw new BadRequestException("Appeal sudah diajukan...!");
+                        }
+                    }
+
+                }
+
+                if (reportCount >= 200) {
+                    throw new BadRequestException("Appeal tidak bisa diajukan...!");
+                }
+                else {
+                    if (lengreporthandle > 0) {
+                        for (let i = 0; i < lengreporthandle; i++) {
+
+                            let status = reportedUserHandle[i].status;
+                            let remark = reportedUserHandle[i].remark;
+                            let typeAppeal = reportedUserHandle[i].typeAppeal;
+                            objreporthandle = {
+
+                                "type": typeAppeal,
+                                "remark": remark,
+                                "createdAt": dt.toISOString(),
+                                "updatedAt": dt.toISOString(),
+                                "status": status
+                            };
+                            arrayreportedHandle.push(objreporthandle);
+                        }
+                    } else {
+
+                    }
+
+
+                    createUserbasicDto.reportedStatus = reportedStatus;
+
+
+                    if (arrayreportedHandle.length > 0) {
+                        createUserbasicDto.reportedUserHandle = arrayreportedHandle;
+                    } else {
+
+                    }
+                    this.userbasicsService.update(postID, createUserbasicDto);
+
+
+                    var data = request_json;
+                    return { response_code: 202, data, messages };
+                }
+
+
+            } else {
+                throw new BadRequestException("User ID is not found...!");
+            }
+        }
+
+
+        //deletetagpeople
+
+
+    }
     @UseGuards(JwtAuthGuard)
     @Post('listreport')
     async finddata(@Req() request: Request): Promise<any> {
@@ -942,7 +1268,7 @@ export class ReportuserController {
                 arrdata.push(objk);
             }
 
-            let datasearch = await this.postsService.findreportcount(key, postType, startdate, enddate,);
+            let datasearch = await this.postsService.findreport(key, postType, startdate, enddate, 0, 0);
             var totalsearch = datasearch.length;
 
             var tpage = null;
@@ -957,7 +1283,7 @@ export class ReportuserController {
                 totalpage = parseInt(tpage2);
             }
 
-            return { response_code: 202, arrdata, page, limit, totalsearch, totalpage, messages };
+
         }
 
         else if (type === "ads") {
@@ -1047,7 +1373,7 @@ export class ReportuserController {
                 arrdata.push(objk);
             }
 
-            let datasearch = await this.adsService.findreportadscount(key, postType, startdate, enddate,);
+            let datasearch = await this.adsService.findreportads(key, postType, startdate, enddate, 0, 0);
             var totalsearch = datasearch.length;
 
             var tpage = null;
@@ -1062,7 +1388,362 @@ export class ReportuserController {
                 totalpage = parseInt(tpage2);
             }
 
-            return { response_code: 202, arrdata, page, limit, totalsearch, totalpage, messages };
+
         }
+        return { response_code: 202, arrdata, page, limit, totalsearch, totalpage, messages };
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('listdetail')
+    async finddetail(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        var type = null;
+        var postID = null;
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var data = [];
+        var query = null;
+        var email = null;
+        var tagPeople = [];
+        var tagpeoples = [];
+        var reportedUserCount = null;
+        if (type === "content") {
+
+            try {
+                query = await this.postsService.findreportuserdetail(postID);
+            } catch (e) {
+                query = null;
+            }
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            var idapsara = null;
+            var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
+            var objauth = {};
+            var dataauth = null;
+            var idusersell = null;
+            var tgltransaksi = null;
+            var namapenjual = null;
+
+            let dataapsara = null;
+
+            if (query !== null) {
+                email = query[0].email;
+                tagPeople = query[0].tagPeople;
+                try {
+                    reportedUserCount = query[0].reportedUserCount;
+                } catch (e) {
+                    reportedUserCount = 0;
+                }
+                console.log(tagPeople);
+                if (tagPeople !== undefined) {
+
+                    for (let i = 0; i < tagPeople.length; i++) {
+                        var idauth = tagPeople[i].oid;
+
+                        dataauth = await this.userauthsService.findOneId(idauth);
+                        console.log(dataauth);
+
+                        objauth = {
+                            username: dataauth._doc.username
+                        }
+                        tagpeoples.push(objauth);
+                    }
+
+                } else {
+                    tagpeoples = [];
+                }
+
+                var ubasicpembeli = await this.userbasicsService.findOne(email);
+                var iduserbuyer = mongoose.Types.ObjectId(ubasicpembeli._id);
+                var namapembeli = ubasicpembeli.fullName;
+
+                var datatransaksi = await this.transactionsService.findpostidanduser(query[0].postID, iduserbuyer);
+                console.log(datatransaksi);
+
+                if (datatransaksi === null || datatransaksi === undefined) {
+                    namapenjual = "";
+                    tgltransaksi = "";
+                } else {
+                    idusersell = datatransaksi.idusersell;
+                    tgltransaksi = datatransaksi.timestamp;
+
+                    var ubasicpenjual = await this.userbasicsService.findbyid(idusersell.toString());
+                    namapenjual = ubasicpenjual.fullName;
+
+                }
+
+
+                try {
+                    idapsara = query[0].apsaraId;
+                } catch (e) {
+                    idapsara = "";
+                }
+                try {
+                    apsara = query[0].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+                var type = query[0].postType;
+                pict = [idapsara];
+
+                if (idapsara === "") {
+                    dataapsara = [];
+                }
+                else {
+                    if (type === "pict") {
+
+                        try {
+                            dataapsara = await this.postContentService.getImageApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
+                    }
+                    else if (type === "vid") {
+                        try {
+                            dataapsara = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
+
+                    }
+                    else if (type === "story") {
+                        try {
+                            dataapsara = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
+                    }
+                    else if (type === "diary") {
+                        try {
+                            dataapsara = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
+                    }
+                }
+
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
+                objk = {
+                    "_id": query[0]._id,
+                    "postID": query[0].postID,
+                    "email": query[0].email,
+                    "postType": query[0].postType,
+                    "description": query[0].description,
+                    "active": query[0].active,
+                    "createdAt": query[0].createdAt,
+                    "updatedAt": query[0].updatedAt,
+                    "visibility": query[0].visibility,
+                    "location": query[0].location,
+                    "tags": query[0].tags,
+                    "allowComments": query[0].allowComments,
+                    "isSafe": query[0].isSafe,
+                    "isOwned": query[0].isOwned,
+                    "saleLike": query[0].saleLike,
+                    "saleView": query[0].saleView,
+                    "metadata": query[0].metadata,
+                    "likes": query[0].likes,
+                    "views": query[0].views,
+                    "shares": query[0].shares,
+                    "comments": query[0].comments,
+                    "tagPeople": query[0].tagPeople,
+                    "proofpict": query[0].proofpict,
+                    "insight": query[0].insight,
+                    "avatar": query[0].avatar,
+                    "fullName": query[0].fullName,
+                    "username": query[0].username,
+                    "privacy": query[0].privacy,
+                    "isIdVerified": query[0].isIdVerified,
+                    "statusUser": query[0].statusUser,
+                    "isViewed": query[0].isViewed,
+                    "monetize": query[0].monetize,
+                    "saleAmount": query[0].saleAmount,
+                    "mediaref": query[0].mediaref,
+                    "mediaType": query[0].mediaType,
+                    "mediaThumbEndpoint": query[0].mediaThumbEndpoint,
+                    "mediaEndpoint": query[0].mediaEndpoint,
+                    "namapenjual": namapenjual,
+                    "pemiliksekarang": namapembeli,
+                    "tgltransaksi": tgltransaksi,
+                    "tagpeople": tagpeoples,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
+                    "media": dataapsara
+                };
+
+                data.push(objk);
+            } else {
+                data = [];
+            }
+
+
+
+            var datacount = null;
+            var objcoun = {};
+            var dataSum = [];
+            var totalReport = null;
+            try {
+
+                datacount = await this.postsService.countReason(postID);
+            } catch (e) {
+                datacount = null;
+            }
+
+            for (let i = 0; i < datacount.length; i++) {
+                let mycount = datacount[i].myCount;
+                let reason = datacount[i]._id;
+
+                let persen = mycount * 100 / reportedUserCount;
+                objcoun = {
+                    reason: reason,
+                    count: mycount,
+                    persen: persen.toFixed(2)
+                }
+                dataSum.push(objcoun);
+            }
+
+
+            console.log(datacount)
+
+
+            totalReport = reportedUserCount
+
+            return { response_code: 202, totalReport, dataSum, data, messages };
+        }
+
+        // else if (type === "ads") {
+
+
+        //     let query = await this.adsService.findreportads(key, postType, startdate, enddate, page, limit);
+        //     var data = null;
+        //     var arrdata = [];
+        //     let pict: String[] = [];
+        //     var objk = {};
+        //     var type = null;
+        //     var idapsara = null;
+        //     var apsara = null;
+        //     var idapsaradefine = null;
+        //     var apsaradefine = null;
+        //     for (var i = 0; i < query.length; i++) {
+        //         try {
+        //             idapsara = query[i].idApsara;
+        //         } catch (e) {
+        //             idapsara = "";
+        //         }
+
+        //         var type = query[i].type;
+        //         pict = [idapsara];
+
+        //         if (idapsara === "") {
+        //             data = [];
+        //         } else {
+        //             if (type === "image") {
+
+        //                 try {
+        //                     data = await this.postContentService.getImageApsara(pict);
+        //                 } catch (e) {
+        //                     data = [];
+        //                 }
+        //             }
+        //             else if (type === "video") {
+        //                 try {
+        //                     data = await this.postContentService.getVideoApsara(pict);
+        //                 } catch (e) {
+        //                     data = [];
+        //                 }
+
+        //             }
+
+        //         }
+
+
+
+        //         if (idapsara === undefined || idapsara === "" || idapsara === null) {
+        //             idapsaradefine = "";
+        //             apsaradefine = false
+        //         } else {
+        //             idapsaradefine = idapsara;
+        //             apsaradefine = true
+        //         }
+        //         objk = {
+        //             "_id": query[i]._id,
+        //             "userID": query[i].userID,
+        //             "idApsara": query[i].idApsara,
+        //             "name": query[i].name,
+        //             "status": query[i].status,
+        //             "timestamp": query[i].timestamp,
+        //             "totalUsedCredit": query[i].totalUsedCredit,
+        //             "tayang": query[i].tayang,
+        //             "usedCredit": query[i].usedCredit,
+        //             "usedCreditFree": query[i].usedCreditFree,
+        //             "creditFree": query[i].creditFree,
+        //             "creditValue": query[i].creditValue,
+        //             "totalCredit": query[i].totalCredit,
+        //             "tipeads": query[i].tipeads,
+        //             "contentModeration": query[i].contentModeration,
+        //             "contentModerationResponse": query[i].contentModerationResponse,
+        //             "reportedStatus": query[i].reportedStatus,
+        //             "reportedUserCount": query[i].reportedUserCount,
+        //             "reportedUser": query[i].reportedUser,
+        //             "reportReasonIdLast": query[i].reportReasonIdLast,
+        //             "reasonLast": query[i].reasonLast,
+        //             "createdAtReportLast": query[i].createdAtReportLast,
+        //             "place": query[i].place,
+        //             "reportStatusLast": query[i].reportStatusLast,
+        //             "apsaraId": idapsaradefine,
+        //             "apsara": apsaradefine,
+        //             "media": data
+        //         };
+
+        //         arrdata.push(objk);
+        //     }
+
+        //     let datasearch = await this.adsService.findreportadscount(key, postType, startdate, enddate,);
+        //     var totalsearch = datasearch.length;
+
+        //     var tpage = null;
+        //     var tpage2 = null;
+
+        //     tpage2 = (totalsearch / limit).toFixed(0);
+        //     tpage = (totalsearch % limit);
+        //     if (tpage > 0 && tpage < 5) {
+        //         totalpage = parseInt(tpage2) + 1;
+
+        //     } else {
+        //         totalpage = parseInt(tpage2);
+        //     }
+
+        //     return { response_code: 202, arrdata, page, limit, totalsearch, totalpage, messages };
+        // }
+    }
+
 }

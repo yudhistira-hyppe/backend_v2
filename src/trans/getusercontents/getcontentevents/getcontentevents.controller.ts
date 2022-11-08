@@ -93,84 +93,132 @@ export class GetcontenteventsController {
         var dataages = [];
         var objage14 = {};
 
-        let dataage14 = await this.getcontenteventsService.findage14(postID);
-        var lengage14 = dataage14.length;
-        for (var x = 0; x < lengage14; x++) {
+        var dataage14 = null;
+        try {
+            dataage14 = await this.getcontenteventsService.findage14(postID);
 
-            totalage14 += dataage14[x].totalpost;
+        } catch (e) {
+            dataage14 = null;
         }
-        var totalpostage14 = dataall.length;
-        var prosentage14 = totalage14 * 100 / totalpostage14;
-        var tpostage14 = prosentage14.toFixed(2);
+        if (dataage14 !== null) {
+            var lengage14 = dataage14.length;
+            for (var x = 0; x < lengage14; x++) {
 
-        if (parseInt(tpostage14) > 0) {
-            objage14 = { "_id": "<14", "totalpost": tpostage14 };
-            dataages.push(objage14);
+                totalage14 += dataage14[x].totalpost;
+            }
+            var totalpostage14 = dataall.length;
+            var prosentage14 = totalage14 * 100 / totalpostage14;
+            var tpostage14 = prosentage14.toFixed(2);
+
+            if (parseInt(tpostage14) > 0) {
+                objage14 = { "_id": "<14", "totalpost": tpostage14 };
+                dataages.push(objage14);
+
+            } else {
+                objage14 = { "_id": "<14", "totalpost": "0" };
+                dataages.push(objage14);
+
+            }
 
         } else {
-            objage14 = { "_id": "<14", "totalpost": "0" };
-            dataages.push(objage14);
-
+            dataages = [];
         }
+
 
         var objage = {};
         var objage40 = {};
+        var dataage = null;
+        try {
+            dataage = await this.getcontenteventsService.findage1440(postID);
 
-        let dataage = await this.getcontenteventsService.findage1440(postID);
-        var lengage = dataage.length;
-        for (var x = 0; x < lengage; x++) {
-
-            totalage += dataage[x].totalpost;
+        } catch (e) {
+            dataage = null;
         }
-        var totalpostage = dataall.length;
-        var prosentage1441 = totalage * 100 / totalpostage;
-        var tpostage = prosentage1441.toFixed(2);
 
-        if (parseInt(tpostage) > 0) {
-            objage = { "_id": "14-40", "totalpost": tpostage };
-            dataages.push(objage);
+        if (dataage !== null) {
+            var lengage = dataage.length;
+            for (var x = 0; x < lengage; x++) {
+
+                totalage += dataage[x].totalpost;
+            }
+            var totalpostage = dataall.length;
+            var prosentage1441 = totalage * 100 / totalpostage;
+            var tpostage = prosentage1441.toFixed(2);
+
+            if (parseInt(tpostage) > 0) {
+                objage = { "_id": "14-40", "totalpost": tpostage };
+                dataages.push(objage);
+            } else {
+                objage = { "_id": "14-40", "totalpost": "0" };
+                dataages.push(objage);
+            }
         } else {
-            objage = { "_id": "14-40", "totalpost": "0" };
-            dataages.push(objage);
+            dataages = [];
         }
 
 
 
 
-        let dataage40 = await this.getcontenteventsService.findage40(postID);
-        var lengage40 = dataage40.length;
-        for (var x = 0; x < lengage40; x++) {
+        var dataage40 = null;
 
-            totalage40 += dataage40[x].totalpost;
+
+        try {
+            dataage40 = await this.getcontenteventsService.findage40(postID);
+
+        } catch (e) {
+            dataage40 = null;
         }
-        var totalpostage40 = dataall.length;
-        var prosentage40 = totalage40 * 100 / totalpostage40;
-        var tpostage40 = prosentage40.toFixed(2);
 
-        if (parseInt(tpostage40) > 0) {
+        if (dataage40 !== null) {
+            var lengage40 = dataage40.length;
+            for (var x = 0; x < lengage40; x++) {
 
-            objage40 = { "_id": ">40", "totalpost": tpostage40 };
-            dataages.push(objage40);
+                totalage40 += dataage40[x].totalpost;
+            }
+            var totalpostage40 = dataall.length;
+            var prosentage40 = totalage40 * 100 / totalpostage40;
+            var tpostage40 = prosentage40.toFixed(2);
+
+            if (parseInt(tpostage40) > 0) {
+
+                objage40 = { "_id": ">40", "totalpost": tpostage40 };
+                dataages.push(objage40);
+            } else {
+                objage40 = { "_id": ">40", "totalpost": "0" };
+                dataages.push(objage40);
+            }
+
+
         } else {
-            objage40 = { "_id": ">40", "totalpost": "0" };
-            dataages.push(objage40);
+            dataages = [];
         }
 
-        let datalocation = await this.getcontenteventsService.findlocation(postID);
+        var datalocation = null;
 
+        try {
+            datalocation = await this.getcontenteventsService.findlocation(postID);
 
-        var lenglocation = datalocation.length;
-        var datapostloc = [];
-
-        var totalpostloc = dataall.length;
-        var objloc = {};
-        for (var x = 0; x < lenglocation; x++) {
-            var location = datalocation[x]._id;
-            var tepostloc = datalocation[x].totalpost * 100 / totalpostloc;
-            var tpostloc = tepostloc.toFixed(2);
-            objloc = { "_id": location, "totalpost": tpostloc };
-            datapostloc.push(objloc);
+        } catch (e) {
+            datalocation = null;
         }
+
+        if (datalocation !== null) {
+            var lenglocation = datalocation.length;
+            var datapostloc = [];
+
+            var totalpostloc = dataall.length;
+            var objloc = {};
+            for (var x = 0; x < lenglocation; x++) {
+                var location = datalocation[x]._id;
+                var tepostloc = datalocation[x].totalpost * 100 / totalpostloc;
+                var tpostloc = tepostloc.toFixed(2);
+                objloc = { "_id": location, "totalpost": tpostloc };
+                datapostloc.push(objloc);
+            }
+        } else {
+            datapostloc = [];
+        }
+
 
         var data = { "gender": datapost, "age": dataages, "location": datapostloc };
         return { response_code: 202, data, messages };
@@ -264,45 +312,45 @@ export class GetcontenteventsController {
     async groupeventsbydate(@Req() request: Request): Promise<any> {
         var data = null;
         var email = null;
-        var eventTypes=[];
+        var eventTypes = [];
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-        if(request_json['eventTypes']!==undefined && Array.isArray(request_json['eventTypes'])){
-            eventTypes=request_json['eventTypes'];
+        if (request_json['eventTypes'] !== undefined && Array.isArray(request_json['eventTypes'])) {
+            eventTypes = request_json['eventTypes'];
         }
-        else{
+        else {
             throw new BadRequestException("eventTypes parameter invalid");
         }
         const messages = {
             "info": ["The process successful"],
         };
-        var events=await this.getcontenteventsService.findByReceiverParty(email,eventTypes);
-        var byDates=await this.getcontenteventsService.groupEventsBy(events,'date');
+        var events = await this.getcontenteventsService.findByReceiverParty(email, eventTypes);
+        var byDates = await this.getcontenteventsService.groupEventsBy(events, 'date');
 
         var mapByDates = [];
-        for (var i=29; i>=0; i--) {
+        for (var i = 29; i >= 0; i--) {
             var d = new Date();
             d.setDate(d.getDate() - i);
-            var dt=await this.utilsService.formatDateString(d);
-            var count=0;
-            for(var j=0;j<byDates.length;j++){
-                if(byDates[j].date==dt){
-                    count=byDates[j].count;
+            var dt = await this.utilsService.formatDateString(d);
+            var count = 0;
+            for (var j = 0; j < byDates.length; j++) {
+                if (byDates[j].date == dt) {
+                    count = byDates[j].count;
                     break;
                 }
             }
             mapByDates.push({
-                'date':dt,
-                'count':count
+                'date': dt,
+                'count': count
             });
-            
+
         }
         // console.log(mapByDates);
-        data=[{mapByDates}];
+        data = [{ mapByDates }];
 
         return { response_code: 202, data, messages };
     }

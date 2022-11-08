@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ObjectId } from 'mongodb';
 import { Model } from 'mongoose';
 import { CreateUserauthDto } from './dto/create-userauth.dto';
 import { Userauth, UserauthDocument } from './schemas/userauth.schema';
@@ -28,6 +29,9 @@ export class UserauthsService {
 
   async findOneemail(email: String): Promise<Userauth> {
     return this.userauthModel.findOne({ email: email, isEmailVerified: true, isEnabled: true }).exec();
+  }
+  async findOneId(id: ObjectId): Promise<Userauth> {
+    return this.userauthModel.findOne({ _id: id }).exec();
   }
 
   async findById(id: String): Promise<Userauth> {
