@@ -8500,6 +8500,9 @@ export class GetusercontentsService {
     if(postType && postType!==undefined){
       pipeline.push({$match:{postType:postType}});
     }
+    if(monetesisasi && monetesisasi!==undefined){
+      pipeline.push({$match:{monetize:monetesisasi}});
+    }
     if(startdate && startdate!==undefined){
       pipeline.push({$match:{createdAt:{"$gte":startdate}}});
     }
