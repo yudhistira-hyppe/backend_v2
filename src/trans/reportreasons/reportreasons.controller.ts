@@ -8,13 +8,20 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 export class ReportreasonsController {
     constructor(private readonly reportreasonsService: ReportreasonsService) { }
     @UseGuards(JwtAuthGuard)
-    @Get('all')
-    async findAll() {
+    @Post('all')
+    async findAll(@Req() request: Request) {
+        var request_json = JSON.parse(JSON.stringify(request.body));
         const messages = {
             "info": ["The process successful"],
         };
+        var lang = null;
+        if (request_json["lang"] !== undefined) {
+            lang = request_json["lang"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
-        let data = await this.reportreasonsService.findAll();
+        let data = await this.reportreasonsService.findLanguage(lang);
 
         return { response_code: 202, data, messages };
     }

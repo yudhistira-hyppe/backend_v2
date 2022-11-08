@@ -39,6 +39,7 @@ import { TemplatesRepoService } from '../../infra/templates_repo/templates_repo.
 import { DisqusService } from '../disqus/disqus.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
 import { v4 as uuidv4 } from 'uuid';
+import { AppGateway } from 'src/content/socket/socket.gateway';
 
 
 @Injectable()
@@ -47,6 +48,7 @@ export class ContentModService {
 
   constructor(
     private postService: PostsService,
+    private gtw: AppGateway,
     private readonly configService: ConfigService,
   ) { }
 
@@ -63,7 +65,7 @@ export class ContentModService {
     };
 
     let requestBody = JSON.stringify({  
-        //bizType:'Green',
+        bizType:'CoreModeration',
         scenes:['porn', 'terrorism', 'ad'],
         callback: this.configService.get("APSARA_IMAGE_CMOD_CALLBACK"),
         seed: uuidv4(),
@@ -86,6 +88,45 @@ export class ContentModService {
     this.greenUpload(bizCfg, this.execute);
 
   }
+
+  async cmodVideo(postId: string, url: string) {
+    this.logger.log('cmodVideo >>> start');    
+    const accessKeyId = this.configService.get("APSARA_ACCESS_KEY");
+    const accessKeySecret = this.configService.get("APSARA_ACCESS_SECRET");
+    const greenVersion = '2017-01-12';
+    var hostname = 'green.ap-southeast-1.aliyuncs.com';
+    var path = '/green/video/asyncscan';
+
+    var clientInfo = {
+        "ip":"127.0.0.1"
+    };
+
+    let requestBody = JSON.stringify({  
+        bizType:'CoreModeration',
+        scenes:['porn', 'terrorism', 'ad'],
+        callback: this.configService.get("APSARA_IMAGE_CMOD_CALLBACK"),
+        seed: uuidv4(),
+        tasks:[{
+            'dataId':postId,
+            'url':url,
+            'interval':1,
+            'maxFrames': 20
+        }]
+    }); 
+
+    let bizCfg = {
+        'accessKeyId' : accessKeyId,
+        'accessKeySecret' : accessKeySecret,
+        'path' : path,
+        'clientInfo' : clientInfo,
+        'requestBody' : requestBody,
+        'hostname' : hostname,
+        'greenVersion' : greenVersion
+    }
+
+    this.greenUpload(bizCfg, this.execute);
+
+  }  
 
   execute(chunk){
 	console.log('BODY: ' + chunk);
@@ -205,11 +246,17 @@ export class ContentModService {
     this.logger.log('cmodResponse >>> pass: ' + pass);
     if (pass == false) {
       pd.contentModeration = true;
+      pd.reportedStatus = 'OWNED';
     } else {
       pd.contentModeration = false;
+      pd.reportedStatus = 'ALL';
     }
     pd.contentModerationResponse = JSON.stringify(body);
 
     await this.postService.create(pd);
+  }
+
+  async ws() {
+    this.gtw.coba('fssttertertet');
   }
 }

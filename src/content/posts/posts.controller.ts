@@ -21,23 +21,17 @@ import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import { GroupModuleService } from '../../trans/usermanagement/groupmodule/groupmodule.service';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { GlobalResponse } from '../../utils/data/globalResponse';
 import { PostContentService } from './postcontent.service';
 import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userplaylist.dto';
 import { ContenteventsService } from '../contentevents/contentevents.service';
 import { InsightsService } from '../insights/insights.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
-import { PostContentPlaylistService } from './postcontentplaylist.service';
 import mongoose from 'mongoose';
 import { PostCommentService } from './postcomment.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { DisqusService } from '../disqus/disqus.service';
-import { DisqusResponseApps } from '../disqus/dto/create-disqus.dto';
 import { ContentModService } from './contentmod.service';
-import { BoostsessionService } from '../boostsession/boostsession.service';
-import { BoostintervalService } from '../boostinterval/boostinterval.service';
 import { OyPgService } from '../../paymentgateway/oypg/oypg.service'; 
-import { CreateTransactionsDto } from '../../trans/transactions/dto/create-transactions.dto';
 import { MethodepaymentsService } from '../../trans/methodepayments/methodepayments.service';
 
 @Controller()
@@ -50,8 +44,6 @@ export class PostsController {
     private readonly utilsService: UtilsService, 
     private readonly errorHandler: ErrorHandler,
     private readonly oyPgService: OyPgService,
-    private readonly boostintervalService: BoostintervalService,
-    private readonly boostsessionService: BoostsessionService,
     private readonly contenteventsService: ContenteventsService,
     private readonly insightsService: InsightsService,
     private readonly userbasicsService: UserbasicsService,
@@ -422,7 +414,7 @@ export class PostsController {
   @Post('api/posts/cmod')
   async cmod(@Body() body, @Headers() headers) {
     this.logger.log("cmod >>> start: " + JSON.stringify(body));
-    //this.cmodService.cmod();
+    this.cmodService.ws();
     let t = { 'response': 'Done' };
     return JSON.stringify(t);
   }  
@@ -741,270 +733,5 @@ export class PostsController {
       }
     }
     return response;
-  }
-
-  @Post('api/posts/boost')
-  @HttpCode(HttpStatus.ACCEPTED)
-  async postBost(
-    @Headers() headers,
-    @Body() body
-  ) {
-    // if (headers['x-auth-user'] == undefined) {
-    //   await this.errorHandler.generateNotAcceptableException(
-    //     'Unauthorized',
-    //   );
-    // }
-    // if (!(await this.utilsService.validasiTokenEmail(headers))) {
-    //   await this.errorHandler.generateNotAcceptableException(
-    //     'Unabled to proceed email header dan token not match',
-    //   );
-    // }
-
-    var email = headers['x-auth-user'];
-    if (body.postID == undefined) {
-      await this.errorHandler.generateBadRequestException(
-        'Unabled to proceed postID is required',
-      );
-    } 
-    if (body.dateStart == undefined) {
-      await this.errorHandler.generateBadRequestException(
-        'Unabled to proceed dateStart is required',
-      );
-    }
-    if (body.type == undefined) {
-      await this.errorHandler.generateBadRequestException(
-        'Unabled to proceed type is required',
-      );
-    }
-    if (body.type.toLowerCase() =="manual"){
-      if (body.interval==undefined) {
-        await this.errorHandler.generateBadRequestException(
-          'Unabled to proceed interval is required',
-        );
-      }
-      if (body.session.toLowerCase() == undefined) {
-        await this.errorHandler.generateBadRequestException(
-          'Unabled to proceed session is required',
-        );
-      }
-      const interval = await this.boostintervalService.findById(body.interval);
-      if (!(await this.utilsService.ceckData(interval))) {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, interval not found',
-        );
-      }
-      const session = await this.boostsessionService.findById(body.session);
-      if (!(await this.utilsService.ceckData(session))) {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, session not found',
-        );
-      }
-      const price = await this.utilsService.getSetting_("636212286f07000023005ce2");
-      if (!(await this.utilsService.ceckData(price))) {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, Setting Price not found',
-        );
-      }
-      const BankVaCharge = await this.utilsService.getSetting_("62bd40e0f37a00001a004366");
-      if (!(await this.utilsService.ceckData(BankVaCharge))) {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, Setting Bank Va Charge not found',
-        );
-      }
-      const ExpiredVa = await this.utilsService.getSetting_("6332caeb0c7d00004f005175");
-      if (!(await this.utilsService.ceckData(BankVaCharge))) {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, Setting Expired Va not found',
-        );
-      }
-      var post = await this.PostsService.findByPostId(body.postID);
-      if (!(await this.utilsService.ceckData(post))) {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, post not found',
-        );
-      }
-      var media = await this.PostsService.findOnepostID(body.postID);
-      if (!(await this.utilsService.ceckData(media))) {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, post not found',
-        );
-      }
-      var user = await this.utilsService.generateProfile(email,"FULL")
-      if (!(await this.utilsService.ceckData(user))) {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, user not found',
-        );
-      }
-
-      
-
-      var totalAmount = price + BankVaCharge;
-      if (body.bankcode != undefined) {
-        if (!(body.paymentmethod)) {
-          await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed, paymentmethod is required',
-          );
-        }
-        var payment_method = await this.methodepaymentsService.findmethodename(body.paymentmethod);
-        if (!(await this.utilsService.ceckData(payment_method))) {
-          await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed, payment method not found',
-          );
-        }
-        var bank = await this.utilsService.getBank(body.bankcode);
-        if (await this.utilsService.ceckData(bank)) {
-          var dataCreateVa = {
-            userId: user.iduser.toString(),
-            amount: totalAmount,
-            bankcode: body.bankcode,
-            name: user.fullName,
-            email: user.email,
-            valueexpiredva: totalAmount,
-          }
-          var Va = await this.createVa(dataCreateVa);
-          if (Va.status.code == "000") {
-
-          } else if (Va.status.code == "208") {
-            await this.errorHandler.generateNotAcceptableException(
-              'Request is Rejected (API Key is not Valid)',
-            );
-          }else if (Va.status.code == "217") {
-            await this.errorHandler.generateNotAcceptableException(
-              'Request is Rejected (VA Number is still active for this partner user id)',
-            );
-          }else {
-            await this.errorHandler.generateNotAcceptableException(
-              '"Request is Rejected"',
-            );
-          }
-        } else {
-          await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed, Bank not found',
-          );
-        }
-      } else {
-        var data = {};
-        var post_data = {};
-
-        if (media[0].datacontent[0].mediaBasePath != undefined) {
-          post_data["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
-        }
-        if (post.postType != undefined) {
-          post_data["postType"] = post.postType;
-        }
-        if (media[0].datacontent[0].mediaUri != undefined) {
-          post_data["mediaUri"] = media[0].datacontent[0].mediaUri;
-        }
-        if (post.description != undefined) {
-          post_data["description"] = post.description;
-        }
-        if (post.active != undefined) {
-          post_data["active"] = post.active;
-        }
-        if (media[0].datacontent[0].mediaType != undefined) {
-          post_data["mediaType"] = media[0].datacontent[0].mediaType;
-        }
-        if (post.postID != undefined) {
-          post_data["postID"] = post.postID;
-        }
-        if (post.tags != undefined) {
-          post_data["tags"] = post.tags;
-        }
-        if (post.allowComments != undefined) {
-          post_data["allowComments"] = post.allowComments;
-        }
-        if (post.createdAt != undefined) {
-          post_data["createdAt"] = post.createdAt;
-        }
-        if (media[0].datauser.insight != undefined) {
-          post_data["insight"] = media[0].datauser.insight;
-        }
-        if (media[0].datauser.insight != undefined) {
-          post_data["email"] = post.email;
-        }
-        if (media[0].datauser.insight != undefined) {
-          post_data["updatedAt"] = post.updatedAt;
-        }
-        if (media[0].datauser.insight != undefined) {
-          post_data["updatedAt"] = post.updatedAt;
-        }
-
-        data["post"] = post_data;
-        data["typeBoost"] = body.type;
-        data["intervalBoost"] = interval;
-        data["sessionBoost"] = session;
-        data["dateBoost"] = body.dateStart;
-        data["priceBoost"] = price;
-        data["priceBankVaCharge"] = BankVaCharge;
-        data["priceTotal"] = price + BankVaCharge;
-
-        var response = {
-          "response_code": 202,
-          "data": data,
-          "messages": {
-            info: [
-              "Succesfully"
-            ]
-          }
-        }
-        return response;
-      }
-    } else if (body.type == "automatic") {
-
-    } else {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed, type not found',
-      );
-    }
-  }
-
-  async insertTransactionBoost(data: any) {
-    let cekstatusva = await this.oyPgService.staticVaInfo(data.id);
-    var CreateTransactionsDto_ = new CreateTransactionsDto()
-    CreateTransactionsDto_.iduserbuyer = data.iduser;
-    CreateTransactionsDto_.idusersell = data.iduser;
-    CreateTransactionsDto_.timestamp = data.dt.toISOString();
-    CreateTransactionsDto_.updatedAt = data.dt.toISOString();
-    CreateTransactionsDto_.noinvoice = data.no;
-    CreateTransactionsDto_.amount = data.saleAmount;
-    CreateTransactionsDto_.status = cekstatusva.va_status;
-    CreateTransactionsDto_.bank = data.idbank;
-    CreateTransactionsDto_.idva = data.id;
-    CreateTransactionsDto_.nova = data.va_number;
-    CreateTransactionsDto_.accountbalance = null;
-    CreateTransactionsDto_.paymentmethod = data.payment_method_id;
-    CreateTransactionsDto_.totalamount = data.totalamount;
-    CreateTransactionsDto_.description = "buy " + data.type + " pending";
-    // CreateTransactionsDto_.expiredtimeva = d1.toISOString();
-    CreateTransactionsDto_.detail = data.arrayDetail;
-    CreateTransactionsDto_.postid = data.postidTR;
-    CreateTransactionsDto_.response = data.datareqva;
-    // let datatr = await this.transactionsService.create(CreateTransactionsDto);
-    // await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
-    // await this.transactionsService.updatestatuscancel(idtransaction);
-  }
-
-  async createVa(data:any){
-    var stringId = (await this.utilsService.generateNumber()).toString();
-    var data_va = {
-      "partner_user_id": data.userId.toString() + stringId,
-      "amount": data.totalamount,
-      "bank_code": data.bankcode,
-      "is_open": false,
-      "is_single_use": true,
-      "is_lifetime": false,
-      "username_display": data.name.toString(),
-      "email": data.email,
-      "trx_expiration_time": data.valueexpiredva,
-    }
-
-    try {
-      var datareqva = await this.oyPgService.generateStaticVa(data_va);
-      return datareqva;
-    } catch (e) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed, ' + e,
-      );
-    }
   }
 }

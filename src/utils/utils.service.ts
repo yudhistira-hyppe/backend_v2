@@ -297,7 +297,12 @@ export class UtilsService {
   }
 
   async getSetting_(_id_setting: string) {
-    return (await this.settingsService.findOne(_id_setting)).value;
+    var getSetting = await this.settingsService.findOne(_id_setting);
+    if (getSetting!=null){
+      return getSetting.value;
+    }else{
+      return null;
+    }
   }
 
   async updateSetting_(_id_setting: string, value: any) {
@@ -594,12 +599,15 @@ export class UtilsService {
 
   async validasiTokenEmailParam(bearer_token: string, email: string): Promise<boolean> {
     var isTrue = false;
-    var email = email;
-    var token = bearer_token.split(" ")[1];
-    var data = await this.jwtService.decode(token);
-    if (data != undefined) {
-      if (data['email'] == email) {
-        isTrue = true;
+    if (bearer_token!=undefined){
+      var isTrue = false;
+      var email = email;
+      var token = bearer_token.split(" ")[1];
+      var data = await this.jwtService.decode(token);
+      if (data != undefined) {
+        if (data['email'] == email) {
+          isTrue = true;
+        }
       }
     }
     return isTrue;
@@ -931,5 +939,15 @@ export class UtilsService {
 
   async decrypt(text: string) {
     return cryptr.decrypt(text);
+  }
+
+  async generateTransactionNumber(No:number) {
+    var date_current = await this.getDateTimeString();
+    var tahun_nember = this.generateRomawi(parseInt(date_current.substring(0, 4)));
+    var bulan_number = this.generateRomawi(parseInt(date_current.substring(7, 5)));
+    var tanggal_number = this.generateRomawi(parseInt(date_current.substring(10, 8)));
+    var datatransaction = No + 1;
+    var TransactionNumber = "INV/" + (await tahun_nember).toString() + "/" + (await bulan_number).toString() + "/" + (await tanggal_number).toString() + "/" + datatransaction;
+    return TransactionNumber;
   }
 }

@@ -32,18 +32,15 @@ import { SettingsModule } from '../../trans/settings/settings.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { InsightlogsModule } from '../insightlogs/insightlogs.module';
 import { ContentModService } from './contentmod.service';
-import { BoostintervalModule } from '../boostinterval/boostinterval.module';
-import { BoostsessionModule } from '../boostsession/boostsession.module';
 import { OyPgModule } from '../../paymentgateway/oypg/oypg.module';
 import { MethodepaymentsModule } from '../../trans/methodepayments/methodepayments.module';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
+import { SocketModule } from '../socket/socket.module';
 @Module({
 
     imports: [
         MethodepaymentsModule,
         OyPgModule,
-        BoostintervalModule,
-        BoostsessionModule,
         BullModule.registerQueue({
             name: 'post-user-playlist',
         }),
@@ -55,7 +52,7 @@ import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
         UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
         MediapictsModule,MediadiariesModule,MediaprofilepictsModule,PostPlayModule,TemplatesRepoModule,DisqusModule
-        ,DisquslogsModule,SettingsModule,NotificationsModule,InsightlogsModule, 
+        ,DisquslogsModule,SettingsModule,NotificationsModule,InsightlogsModule,SocketModule,
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_FULL')
     ],
     controllers: [PostsController],
