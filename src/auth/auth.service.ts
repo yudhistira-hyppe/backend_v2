@@ -4453,66 +4453,9 @@ export class AuthService {
     }
   }
 
-  async profilePict(id: string, token: string, email: string): Promise<any> {
-    if (id != undefined || token != undefined || email != undefined) {
-      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
-        var user_email = email;
-        //Ceck User Userbasics
-        const datauserbasicsService = await this.userbasicsService.findOne(
-          user_email,
-        );
-
-        var mediaprofilepicts_json = null;
-        if (datauserbasicsService.profilePict != undefined) {
-          mediaprofilepicts_json = JSON.parse(
-            JSON.stringify(datauserbasicsService.profilePict),
-          );
-        }
-
-        if (mediaprofilepicts_json != null) {
-          if (mediaprofilepicts_json.$id != undefined) {
-            if (mediaprofilepicts_json.$id != id) {
-              await this.errorHandler.generateNotFoundException(
-                'Unabled to proceed, Id Medida not found',
-              );
-            }
-          }
-        }
-
-        let mediaprofilepicts = null;
-        if (mediaprofilepicts_json != null) {
-          mediaprofilepicts = await this.mediaprofilepictsService.findOne(
-            mediaprofilepicts_json.$id,
-          );
-        }
-
-        var mediaprofilepicts_fsSourceUri = ''
-        if (mediaprofilepicts != null) {
-          if (mediaprofilepicts.fsSourceUri != null) {
-            mediaprofilepicts_fsSourceUri = mediaprofilepicts.fsSourceUri;
-          }
-        }
-
-        if (mediaprofilepicts_fsSourceUri != '') {
-          var data = await this.seaweedfsService.read(mediaprofilepicts_fsSourceUri.replace('/localrepo',''));
-          if (data != null) {
-            return data;
-          }else{
-            return fs.readFileSync('./profile-default.jpg');
-          }
-        } else {
-          return fs.readFileSync('./profile-default.jpg');
-        }
-      } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed',
-        );
-      }
-    } else {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
-      );
-    }
+  async profilePict(mediaprofilepicts: string): Promise<any> {
+    var data = await this.seaweedfsService.read(mediaprofilepicts.replace('/localrepo', ''));
+    return data;
   }
 
   async updateRole(email: string, head: any, req: any) {
