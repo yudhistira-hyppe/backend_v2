@@ -5587,7 +5587,13 @@ export class PostsService {
 
 
         }
-      }]);
+      },
+
+      {
+        $match: { postID: postID }
+      }
+
+    ]);
 
     return query;
   }

@@ -1459,7 +1459,7 @@ export class ReportuserController {
                 } catch (e) {
                     reportedUserCount = 0;
                 }
-                console.log(tagPeople);
+
                 if (tagPeople !== undefined) {
 
                     for (let i = 0; i < tagPeople.length; i++) {
@@ -1483,7 +1483,6 @@ export class ReportuserController {
                 var namapembeli = ubasicpembeli.fullName;
 
                 var datatransaksi = await this.transactionsService.findpostidanduser(query[0].postID, iduserbuyer);
-                console.log(datatransaksi);
 
                 if (datatransaksi === null || datatransaksi === undefined) {
                     namapenjual = "";
@@ -1635,9 +1634,6 @@ export class ReportuserController {
                 }
                 dataSum.push(objcoun);
             }
-
-
-            console.log(datacount)
 
 
             totalReport = reportedUserCount
