@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UploadedFiles, Get, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Post, UploadedFiles, Logger, Headers, UseInterceptors, Req, BadRequestException, NotAcceptableException, Res, HttpException, HttpStatus, HttpCode, Request, Query, UseGuards } from "@nestjs/common";
 import { AnyFilesInterceptor, FileFieldsInterceptor } from "@nestjs/platform-express/multer";
 import * as fse from 'fs-extra';
 import * as fs from 'fs';
@@ -58,6 +58,9 @@ export const multerOptions = {
 
 @Controller()
 export class MediaController {
+
+    private readonly logger = new Logger(MediaController.name);
+
     constructor(
         private readonly mediaService: MediaService,
         private readonly errorHandler: ErrorHandler,
@@ -80,6 +83,9 @@ export class MediaController {
         },
         @Body() request,
         @Headers() headers) {
+
+            this.logger.log("uploadcomparing >>> start");
+
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed token and email not match',
@@ -175,7 +181,7 @@ export class MediaController {
                 //Local path
                 profilePict_local_path = './temp/' + mongoose_gen_media.toString() + '/profilepict/' + profilePict_filename_new;
                 //SeaweedFs path
-                profilePict_seaweedfs_path = '/' + mongoose_gen_media.toString() + 'profilepict/';
+                profilePict_seaweedfs_path = '/' + mongoose_gen_media.toString() + '/profilepict/';
 
                 if (isNew) {
                     //Create Folder Id

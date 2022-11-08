@@ -663,9 +663,7 @@ export class AccountbalancesService {
     }
 
     async findreward(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
-        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-
-        var dateend = currentdate.toISOString();
+        
         var pipeline=[];
         if(startdate!==undefined){
             pipeline.push({$match:{timestamp:{"$gte":startdate}}});

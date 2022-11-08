@@ -85,10 +85,11 @@ import { ReportreasonsModule } from './trans/reportreasons/reportreasons.module'
 import { ReportuserModule } from './trans/reportuser/reportuser.module';
 import { BullModule } from '@nestjs/bull';
 import { UserbasicsnewModule } from './trans/newuserbasic/userbasicsnew.module';
-import { AppGateway } from './app.gateway';
+import { AppGateway } from './content/socket/socket.gateway';
 import { PostDisqusModule } from './content/disqus/post/postdisqus.module';
 import { BoostsessionModule } from './content/boostsession/boostsession.module';
 import { BoostintervalModule } from './content/boostinterval/boostinterval.module';
+import { SocketModule } from './content/socket/socket.module';
 @Module({
   imports: [
     BullModule.forRootAsync({
@@ -200,7 +201,7 @@ import { BoostintervalModule } from './content/boostinterval/boostinterval.modul
     SagasModule,
     AdrolesModule,
     AuthModule,
-
-  ], providers: [AppGateway],
+    SocketModule,
+  ], providers: [],
 })
 export class AppModule { }

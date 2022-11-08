@@ -39,6 +39,7 @@ import { TemplatesRepoService } from '../../infra/templates_repo/templates_repo.
 import { DisqusService } from '../disqus/disqus.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
 import { v4 as uuidv4 } from 'uuid';
+import { AppGateway } from 'src/content/socket/socket.gateway';
 
 
 @Injectable()
@@ -47,6 +48,7 @@ export class ContentModService {
 
   constructor(
     private postService: PostsService,
+    private gtw: AppGateway,
     private readonly configService: ConfigService,
   ) { }
 
@@ -63,7 +65,7 @@ export class ContentModService {
     };
 
     let requestBody = JSON.stringify({  
-        //bizType:'Green',
+        bizType:'CoreModeration',
         scenes:['porn', 'terrorism', 'ad'],
         callback: this.configService.get("APSARA_IMAGE_CMOD_CALLBACK"),
         seed: uuidv4(),
@@ -100,7 +102,7 @@ export class ContentModService {
     };
 
     let requestBody = JSON.stringify({  
-        //bizType:'Green',
+        bizType:'CoreModeration',
         scenes:['porn', 'terrorism', 'ad'],
         callback: this.configService.get("APSARA_IMAGE_CMOD_CALLBACK"),
         seed: uuidv4(),
@@ -252,5 +254,9 @@ export class ContentModService {
     pd.contentModerationResponse = JSON.stringify(body);
 
     await this.postService.create(pd);
+  }
+
+  async ws() {
+    this.gtw.coba('fssttertertet');
   }
 }
