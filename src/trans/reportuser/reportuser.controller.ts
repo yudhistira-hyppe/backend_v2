@@ -601,10 +601,12 @@ export class ReportuserController {
 
                             let status = reportedUserHandle[i].status;
                             let remark = reportedUserHandle[i].remark;
-                            let typeAppeal = reportedUserHandle[i].typeAppeal;
+                            let reason = reportedUserHandle[i].reason;
+                            // let typeAppeal = reportedUserHandle[i].typeAppeal;
                             objreporthandle = {
 
-                                "type": typeAppeal,
+
+                                "reason": reason,
                                 "remark": remark,
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
@@ -686,10 +688,12 @@ export class ReportuserController {
 
                             let status = reportedUserHandle[i].status;
                             let remark = reportedUserHandle[i].remark;
-                            let typeAppeal = reportedUserHandle[i].typeAppeal;
+                            let reason = reportedUserHandle[i].reason;
+                            // let typeAppeal = reportedUserHandle[i].typeAppeal;
                             objreporthandle = {
 
-                                "type": typeAppeal,
+
+                                "reason": reason,
                                 "remark": remark,
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
@@ -762,10 +766,11 @@ export class ReportuserController {
 
                             let status = reportedUserHandle[i].status;
                             let remark = reportedUserHandle[i].remark;
-                            let typeAppeal = reportedUserHandle[i].typeAppeal;
+                            let reason = reportedUserHandle[i].reason;
+                            // let typeAppeal = reportedUserHandle[i].typeAppeal;
                             objreporthandle = {
 
-                                "type": typeAppeal,
+                                "reason": reason,
                                 "remark": remark,
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
