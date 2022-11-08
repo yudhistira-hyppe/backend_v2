@@ -5623,7 +5623,10 @@ export class PostsService {
     ]);
     return query;
   }
-
+  async thum(thum_data: string): Promise<any> {
+    var data = await this.seaweedfsService.read(thum_data.replace('/localrepo', ''));
+    return data;
+  }
   async pict(media: string): Promise<any> {
     var data = await this.seaweedfsService.read(media.replace('/localrepo', ''));
     return data;
