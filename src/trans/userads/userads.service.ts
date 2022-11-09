@@ -443,4 +443,66 @@ export class UserAdsService {
             return grouped;
         }
     }
+
+    async countViewads(adsID: ObjectId) {
+        let query = await this.userAdsModel.aggregate([
+
+            {
+                $match: {
+
+                    adsID: adsID,
+                    statusView: true
+                }
+            },
+
+            {
+                $group: {
+                    _id: "$adsID",
+
+                    myCount: {
+                        $sum: 1
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: "$_id",
+                    "totalView": "$myCount",
+
+                }
+            }
+        ]);
+        return query;
+    }
+
+    async countKlikads(adsID: ObjectId) {
+        let query = await this.userAdsModel.aggregate([
+
+            {
+                $match: {
+
+                    adsID: adsID,
+                    statusClick: true
+                }
+            },
+
+            {
+                $group: {
+                    _id: "$adsID",
+
+                    myCount: {
+                        $sum: 1
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: "$_id",
+                    "totalClick": "$myCount",
+
+                }
+            }
+        ]);
+        return query;
+    }
 }

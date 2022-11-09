@@ -14,6 +14,7 @@ import { CreateUserbasicDto } from '../userbasics/dto/create-userbasic.dto';
 import { PostContentService } from '../../content/posts/postcontent.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { UserauthsService } from '../userauths/userauths.service';
+import { UserAdsService } from '../userads/userads.service';
 @Controller('api/reportuser')
 export class ReportuserController {
 
@@ -25,7 +26,8 @@ export class ReportuserController {
         private readonly postContentService: PostContentService,
         private readonly adsService: AdsService,
         private readonly transactionsService: TransactionsService,
-        private readonly userauthsService: UserauthsService
+        private readonly userauthsService: UserauthsService,
+        private readonly userAdsService: UserAdsService
     ) { }
     @UseGuards(JwtAuthGuard)
     @Get('all')
@@ -1425,12 +1427,12 @@ export class ReportuserController {
         }
         var data = [];
         var query = null;
-        var email = null;
-        var tagPeople = [];
-        var tagpeoples = [];
+
         var reportedUserCount = null;
         if (type === "content") {
-
+            var email = null;
+            var tagPeople = [];
+            var tagpeoples = [];
             try {
                 query = await this.postsService.findreportuserdetail(postID);
             } catch (e) {
@@ -1598,6 +1600,7 @@ export class ReportuserController {
                     "namapenjual": namapenjual,
                     "pemiliksekarang": namapembeli,
                     "tgltransaksi": tgltransaksi,
+                    "reportStatusLast": query[0].reportStatusLast,
                     "tagpeople": tagpeoples,
                     "apsaraId": idapsaradefine,
                     "apsara": apsaradefine,
@@ -1640,111 +1643,163 @@ export class ReportuserController {
 
             return { response_code: 202, totalReport, dataSum, data, messages };
         }
-
-        // else if (type === "ads") {
-
-
-        //     let query = await this.adsService.findreportads(key, postType, startdate, enddate, page, limit);
-        //     var data = null;
-        //     var arrdata = [];
-        //     let pict: String[] = [];
-        //     var objk = {};
-        //     var type = null;
-        //     var idapsara = null;
-        //     var apsara = null;
-        //     var idapsaradefine = null;
-        //     var apsaradefine = null;
-        //     for (var i = 0; i < query.length; i++) {
-        //         try {
-        //             idapsara = query[i].idApsara;
-        //         } catch (e) {
-        //             idapsara = "";
-        //         }
-
-        //         var type = query[i].type;
-        //         pict = [idapsara];
-
-        //         if (idapsara === "") {
-        //             data = [];
-        //         } else {
-        //             if (type === "image") {
-
-        //                 try {
-        //                     data = await this.postContentService.getImageApsara(pict);
-        //                 } catch (e) {
-        //                     data = [];
-        //                 }
-        //             }
-        //             else if (type === "video") {
-        //                 try {
-        //                     data = await this.postContentService.getVideoApsara(pict);
-        //                 } catch (e) {
-        //                     data = [];
-        //                 }
-
-        //             }
-
-        //         }
+        else if (type === "ads") {
+            var adsId = mongoose.Types.ObjectId(postID);
+            try {
+                query = await this.adsService.detailadsreport(adsId);
+            } catch (e) {
+                query = null;
+            }
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            var idapsara = null;
+            var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
+            var dataapsara = null;
+            var dtcounview = null;
+            var dtcountclick = null;
+            var tView = null;
+            var tClick = null;
 
 
 
-        //         if (idapsara === undefined || idapsara === "" || idapsara === null) {
-        //             idapsaradefine = "";
-        //             apsaradefine = false
-        //         } else {
-        //             idapsaradefine = idapsara;
-        //             apsaradefine = true
-        //         }
-        //         objk = {
-        //             "_id": query[i]._id,
-        //             "userID": query[i].userID,
-        //             "idApsara": query[i].idApsara,
-        //             "name": query[i].name,
-        //             "status": query[i].status,
-        //             "timestamp": query[i].timestamp,
-        //             "totalUsedCredit": query[i].totalUsedCredit,
-        //             "tayang": query[i].tayang,
-        //             "usedCredit": query[i].usedCredit,
-        //             "usedCreditFree": query[i].usedCreditFree,
-        //             "creditFree": query[i].creditFree,
-        //             "creditValue": query[i].creditValue,
-        //             "totalCredit": query[i].totalCredit,
-        //             "tipeads": query[i].tipeads,
-        //             "contentModeration": query[i].contentModeration,
-        //             "contentModerationResponse": query[i].contentModerationResponse,
-        //             "reportedStatus": query[i].reportedStatus,
-        //             "reportedUserCount": query[i].reportedUserCount,
-        //             "reportedUser": query[i].reportedUser,
-        //             "reportReasonIdLast": query[i].reportReasonIdLast,
-        //             "reasonLast": query[i].reasonLast,
-        //             "createdAtReportLast": query[i].createdAtReportLast,
-        //             "place": query[i].place,
-        //             "reportStatusLast": query[i].reportStatusLast,
-        //             "apsaraId": idapsaradefine,
-        //             "apsara": apsaradefine,
-        //             "media": data
-        //         };
+            if (query !== null) {
 
-        //         arrdata.push(objk);
-        //     }
+                try {
+                    dtcounview = await this.userAdsService.countViewads(adsId);
+                    tView = dtcounview[0].totalView;
+                } catch (e) {
+                    dtcounview = null;
+                    tView = 0;
+                }
+                try {
+                    dtcountclick = await this.userAdsService.countKlikads(adsId);
+                    tClick = dtcountclick[0].totalClick;
+                } catch (e) {
+                    dtcountclick = null;
+                    tClick = 0;
+                }
 
-        //     let datasearch = await this.adsService.findreportadscount(key, postType, startdate, enddate,);
-        //     var totalsearch = datasearch.length;
+                try {
+                    reportedUserCount = query[0].reportedUserCount;
+                } catch (e) {
+                    reportedUserCount = 0;
+                }
 
-        //     var tpage = null;
-        //     var tpage2 = null;
+                try {
+                    idapsara = query[0].idApsara;
+                } catch (e) {
+                    idapsara = "";
+                }
+                try {
+                    apsara = query[0].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+                var type = query[0].type;
+                pict = [idapsara];
 
-        //     tpage2 = (totalsearch / limit).toFixed(0);
-        //     tpage = (totalsearch % limit);
-        //     if (tpage > 0 && tpage < 5) {
-        //         totalpage = parseInt(tpage2) + 1;
+                if (idapsara === "") {
+                    data = [];
+                } else {
+                    if (type === "image") {
 
-        //     } else {
-        //         totalpage = parseInt(tpage2);
-        //     }
+                        try {
+                            dataapsara = await this.postContentService.getImageApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
+                    }
+                    else if (type === "video") {
+                        try {
+                            dataapsara = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
 
-        //     return { response_code: 202, arrdata, page, limit, totalsearch, totalpage, messages };
-        // }
+                    }
+
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+
+                } else {
+                    idapsaradefine = idapsara;
+
+                }
+                objk = {
+                    "_id": query[0]._id,
+                    "userID": query[0].userID,
+                    "name": query[0].name,
+                    "status": query[0].status,
+                    "timestamp": query[0].timestamp,
+                    "totalUsedCredit": query[0].totalUsedCredit,
+                    "type": query[0].type,
+                    "tayang": query[0].tayang,
+                    "usedCredit": query[0].usedCredit,
+                    "usedCreditFree": query[0].usedCreditFree,
+                    "creditFree": query[0].creditFree,
+                    "creditValue": query[0].creditValue,
+                    "totalCredit": query[0].totalCredit,
+                    "totalView": tView,
+                    "totalClick": tClick,
+                    "idApsara": query[0].idApsara,
+                    "reportedStatus": query[0].reportedStatus,
+                    "reportedUserCount": query[0].reportedUserCount,
+                    "contentModeration": query[0].contentModeration,
+                    "contentModerationResponse": query[0].contentModerationResponse,
+                    "interest": query[0].interest,
+                    "place": query[0].place,
+                    "reportStatusLast": query[0].reportStatusLast,
+                    "fullName": query[0].fullName,
+                    "email": query[0].email,
+                    "proofpict": query[0].proofpict,
+                    "avatar": query[0].avatar,
+                    "statusUser": query[0].statusUser,
+                    "apsaraId": idapsaradefine,
+                    "media": dataapsara
+                };
+
+                data.push(objk);
+            } else {
+                data = [];
+            }
+
+
+
+            var datacount = null;
+            var objcoun = {};
+            var dataSum = [];
+            var totalReport = null;
+            try {
+
+                datacount = await this.adsService.countReason(adsId);
+            } catch (e) {
+                datacount = null;
+            }
+
+            for (let i = 0; i < datacount.length; i++) {
+                let mycount = datacount[i].myCount;
+                let reason = datacount[i]._id;
+
+                let persen = mycount * 100 / reportedUserCount;
+                objcoun = {
+                    reason: reason,
+                    count: mycount,
+                    persen: persen.toFixed(2)
+                }
+                dataSum.push(objcoun);
+            }
+
+
+            totalReport = reportedUserCount
+
+            return { response_code: 202, totalReport, dataSum, data, messages };
+        }
+
     }
 
 }
