@@ -2017,7 +2017,7 @@ export class ReportuserController {
                     data = [];
                 }
 
-                return { response_code: 202, data, messages };
+                return { response_code: 202, totalReport: reportedUserCount, data, messages };
 
             }
         }
