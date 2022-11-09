@@ -601,10 +601,12 @@ export class ReportuserController {
 
                             let status = reportedUserHandle[i].status;
                             let remark = reportedUserHandle[i].remark;
-                            let typeAppeal = reportedUserHandle[i].typeAppeal;
+                            let reason = reportedUserHandle[i].reason;
+                            // let typeAppeal = reportedUserHandle[i].typeAppeal;
                             objreporthandle = {
 
-                                "type": typeAppeal,
+
+                                "reason": reason,
                                 "remark": remark,
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
@@ -686,10 +688,12 @@ export class ReportuserController {
 
                             let status = reportedUserHandle[i].status;
                             let remark = reportedUserHandle[i].remark;
-                            let typeAppeal = reportedUserHandle[i].typeAppeal;
+                            let reason = reportedUserHandle[i].reason;
+                            // let typeAppeal = reportedUserHandle[i].typeAppeal;
                             objreporthandle = {
 
-                                "type": typeAppeal,
+
+                                "reason": reason,
                                 "remark": remark,
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
@@ -762,10 +766,11 @@ export class ReportuserController {
 
                             let status = reportedUserHandle[i].status;
                             let remark = reportedUserHandle[i].remark;
-                            let typeAppeal = reportedUserHandle[i].typeAppeal;
+                            let reason = reportedUserHandle[i].reason;
+                            // let typeAppeal = reportedUserHandle[i].typeAppeal;
                             objreporthandle = {
 
-                                "type": typeAppeal,
+                                "reason": reason,
                                 "remark": remark,
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
@@ -1454,7 +1459,7 @@ export class ReportuserController {
                 } catch (e) {
                     reportedUserCount = 0;
                 }
-                console.log(tagPeople);
+
                 if (tagPeople !== undefined) {
 
                     for (let i = 0; i < tagPeople.length; i++) {
@@ -1478,7 +1483,6 @@ export class ReportuserController {
                 var namapembeli = ubasicpembeli.fullName;
 
                 var datatransaksi = await this.transactionsService.findpostidanduser(query[0].postID, iduserbuyer);
-                console.log(datatransaksi);
 
                 if (datatransaksi === null || datatransaksi === undefined) {
                     namapenjual = "";
@@ -1630,9 +1634,6 @@ export class ReportuserController {
                 }
                 dataSum.push(objcoun);
             }
-
-
-            console.log(datacount)
 
 
             totalReport = reportedUserCount
