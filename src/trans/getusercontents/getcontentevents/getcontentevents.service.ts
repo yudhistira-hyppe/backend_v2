@@ -960,10 +960,32 @@ export class GetcontenteventsService {
             }
             return byGenders;
         }
+        else if(groupBy=='genderp'){
+            var byGenders=[];
+            var totalCount=0;
+            for(var i=0;i<events.length;i++){
+                if(events[i].gender[0]==null)
+                    continue;
+                var idx=byGenders.findIndex(x => x.gender==events[i].gender[0]);
+                if(idx==-1){
+                    byGenders.push({'gender':events[i].gender[0],'count':1,'percentage':0});
+                }
+                else{
+                    byGenders[idx].count++;
+                }
+                totalCount++;
+            }
+            for(var i=0;i<byGenders.length;i++){
+                byGenders[i].percentage=byGenders[i].count/totalCount*100;
+            }
+            return byGenders;
+        }
         else if(groupBy=='ym'){
             var byYms=[];
+
             for(var i=0;i<events.length;i++){
                 var ym=events[i].createdAt.substring(0,7);
+
                 var idx=byYms.findIndex(x => x.ym==ym);
                 if(idx==-1){
                     byYms.push({'ym':ym,'count':1});
@@ -972,6 +994,45 @@ export class GetcontenteventsService {
                     byYms[idx].count++;
                 }
             }
+            if(byYms.length>0){
+                var startYm=byYms[0].ym;
+                var endYm=byYms[byYms.length-1].ym;
+                var currYm=byYms[0].ym;
+                var i=0;
+                var allYms=[startYm];
+                // var maxi=10;
+                console.log("currYm "+currYm+" ");
+                while(true){
+                    var currYear=currYm.substr(0,4);
+                    var currMonth=currYm.substr(-2);
+                    console.log("currYear: "+currYear+" currMonth: "+currMonth);
+                    var nextMonth=parseInt(currMonth)+1;
+                    console.log("nextMonth: "+nextMonth);
+                    if(nextMonth>12){
+                        currYm=(parseInt(currYear)+1).toString()+"-01";
+                    }
+                    else{
+                        currYm=currYear.toString()+"-"+nextMonth.toString().padStart(2,'0');
+                    }
+                    console.log("is "+currYm+" ");
+                    allYms.push(currYm);
+                    i++;
+                    if(currYm==endYm)
+                        break;
+
+                }
+                allYms.forEach(currym=>{
+                    if(byYms.some(e => e.ym==currym)){
+
+                    }
+                    else{
+                        byYms.push({'ym':currym,'count':0})
+                    }
+                });
+                byYms.sort((a,b)=>(a.ym>=b.ym)?1:-1);
+            }
+            
+
             return byYms;
         }
         else if(groupBy=='date'){
