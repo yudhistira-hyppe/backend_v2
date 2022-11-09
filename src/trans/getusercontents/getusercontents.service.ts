@@ -8490,7 +8490,7 @@ export class GetusercontentsService {
           }}   
       );
       pipeline.push({$match:{email:email}});
-      if(ownership && ownership!==undefined){
+      if(ownership!==undefined){
         pipeline.push({$match:{isOwned:ownership}});
       }
       if(archived && archived!==undefined){
@@ -8501,7 +8501,7 @@ export class GetusercontentsService {
     if(postType && postType!==undefined){
       pipeline.push({$match:{postType:postType}});
     }
-    if(monetesisasi && monetesisasi!==undefined){
+    if(monetesisasi!==undefined){
       pipeline.push({$match:{monetize:monetesisasi}});
     }
     if(startdate && startdate!==undefined){
@@ -8510,12 +8510,14 @@ export class GetusercontentsService {
     if(enddate && enddate!==undefined){
       pipeline.push({$match:{createdAt:{"$lte":enddate}}});
     }
-    if(reported && reported!==undefined){
-      pipeline.push({$match:{"reportedUserCount":{$gt:0}}})
-      
+    if(reported!==undefined){
+      if(reported)
+        pipeline.push({$match:{"reportedUserCount":{$gt:0}}})
+      else
+        pipeline.push({$match:{"reportedUserCount":0}})
     }
 
-    if(buy && buy!==undefined){
+    if(buy!==undefined){
       pipeline.push({$sort: { "trans.createdAt": -1 }});
     }
     else{
