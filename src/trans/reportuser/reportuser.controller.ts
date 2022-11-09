@@ -15,6 +15,7 @@ import { PostContentService } from '../../content/posts/postcontent.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { UserauthsService } from '../userauths/userauths.service';
 import { UserAdsService } from '../userads/userads.service';
+import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 @Controller('api/reportuser')
 export class ReportuserController {
 
@@ -27,7 +28,8 @@ export class ReportuserController {
         private readonly adsService: AdsService,
         private readonly transactionsService: TransactionsService,
         private readonly userauthsService: UserauthsService,
-        private readonly userAdsService: UserAdsService
+        private readonly userAdsService: UserAdsService,
+        private readonly mediaprofilepictsService: MediaprofilepictsService
     ) { }
     @UseGuards(JwtAuthGuard)
     @Get('all')
@@ -1798,6 +1800,226 @@ export class ReportuserController {
             totalReport = reportedUserCount
 
             return { response_code: 202, totalReport, dataSum, data, messages };
+        }
+
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('listuserreport')
+    async finduserreport(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        var type = null;
+        var postID = null;
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var data = [];
+        var query = null;
+
+        var reportedUser = [];
+        var reportedUserCount = null;
+        var mediaprofilepicts = null;
+        var mediaprofilepicts_res = {};
+        if (type === "content") {
+
+            var objrepuser = {};
+            var arrRepuser = [];
+            var datauser = null;
+            try {
+                query = await this.postsService.findreportuserdetail(postID);
+            } catch (e) {
+                query = null;
+            }
+
+
+            if (query !== null) {
+
+                try {
+                    reportedUser = query[0].reportedUser;
+                } catch (e) {
+                    reportedUser = null;
+                }
+                try {
+                    reportedUserCount = query[0].reportedUserCount;
+                } catch (e) {
+                    reportedUserCount = 0;
+                }
+
+
+                if (reportedUser !== null || reportedUser !== undefined) {
+
+                    for (let i = 0; i < reportedUser.length; i++) {
+
+
+                        let createdAt = reportedUser[i].createdAt;
+                        let remark = reportedUser[i].description;
+                        let email = reportedUser[i].email;
+                        try {
+                            datauser = await this.userbasicsService.findOne(email);
+                        } catch (e) {
+                            datauser = null;
+                        }
+
+                        if (datauser !== null || datauser !== undefined) {
+                            var media = datauser._doc.profilePict.oid;
+                            var fullName = datauser._doc.fullName;
+
+
+                            try {
+
+                                mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
+                                console.log(mediaprofilepicts)
+                                var mediaUri = mediaprofilepicts.mediaUri;
+                                let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+                                mediaprofilepicts_res = {
+                                    mediaBasePath: mediaprofilepicts.mediaBasePath,
+                                    mediaUri: mediaprofilepicts.mediaUri,
+                                    mediaType: mediaprofilepicts.mediaType,
+                                    mediaEndpoint: result
+                                };
+                            } catch (e) {
+
+                                mediaprofilepicts_res = {
+                                    mediaBasePath: "",
+                                    mediaUri: "",
+                                    mediaType: "",
+                                    mediaEndpoint: ""
+                                };
+                            }
+                        }
+                        objrepuser = {
+                            "fullName": fullName,
+                            "email": email,
+                            "createdAt": createdAt,
+                            "description": remark,
+                            "avatar": mediaprofilepicts_res,
+
+                        }
+
+                        arrRepuser.push(objrepuser);
+
+                    }
+                    data = arrRepuser;
+
+                } else {
+                    data = [];
+                }
+
+
+
+
+
+
+
+                return { response_code: 202, data, messages };
+
+            }
+        }
+        else if (type === "ads") {
+            var adsId = mongoose.Types.ObjectId(postID);
+
+            var objrepuser = {};
+            var arrRepuser = [];
+            var datauser = null;
+            try {
+                query = await this.adsService.detailadsreport(adsId);
+            } catch (e) {
+                query = null;
+            }
+
+
+            if (query !== null) {
+
+                try {
+                    reportedUser = query[0].reportedUser;
+                } catch (e) {
+                    reportedUser = null;
+                }
+                try {
+                    reportedUserCount = query[0].reportedUserCount;
+                } catch (e) {
+                    reportedUserCount = 0;
+                }
+
+
+                if (reportedUser !== null || reportedUser !== undefined) {
+
+                    for (let i = 0; i < reportedUser.length; i++) {
+
+
+                        let createdAt = reportedUser[i].createdAt;
+                        let remark = reportedUser[i].description;
+                        let email = reportedUser[i].email;
+                        try {
+                            datauser = await this.userbasicsService.findOne(email);
+                        } catch (e) {
+                            datauser = null;
+                        }
+
+                        if (datauser !== null || datauser !== undefined) {
+                            var media = datauser._doc.profilePict.oid;
+                            var fullName = datauser._doc.fullName;
+
+
+                            try {
+
+                                mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
+                                console.log(mediaprofilepicts)
+                                var mediaUri = mediaprofilepicts.mediaUri;
+                                let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+                                mediaprofilepicts_res = {
+                                    mediaBasePath: mediaprofilepicts.mediaBasePath,
+                                    mediaUri: mediaprofilepicts.mediaUri,
+                                    mediaType: mediaprofilepicts.mediaType,
+                                    mediaEndpoint: result
+                                };
+                            } catch (e) {
+
+                                mediaprofilepicts_res = {
+                                    mediaBasePath: "",
+                                    mediaUri: "",
+                                    mediaType: "",
+                                    mediaEndpoint: ""
+                                };
+                            }
+                        }
+                        objrepuser = {
+                            "fullName": fullName,
+                            "email": email,
+                            "createdAt": createdAt,
+                            "description": remark,
+                            "avatar": mediaprofilepicts_res,
+
+                        }
+
+                        arrRepuser.push(objrepuser);
+
+                    }
+                    data = arrRepuser;
+
+                } else {
+                    data = [];
+                }
+
+                return { response_code: 202, data, messages };
+
+            }
         }
 
     }
