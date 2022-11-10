@@ -829,7 +829,7 @@ export class PostContentService {
           for (let i = 0; i < check.length; i++) {
             var ce = check[i];
             if (ce.receiverParty != undefined && ce.receiverParty.length > 1) {
-              following.push({ email: ce.receiverParty });
+              following.push(ce.receiverParty);
             }
           }
         }
