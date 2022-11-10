@@ -46,24 +46,7 @@ export class CreatePostsDto {
     contentModeration: boolean
     contentModerationResponse: string
     reportedUserHandle: any[];
-    boostDate: Date;
-    boostInterval: {
-        _id: mongoose.Types.ObjectId,
-        value: number
-    };
-    boostSession: {
-        _id: mongoose.Types.ObjectId,
-        start: Date,
-        end: Date
-    };
-    isBoost: string;
-    boostViewer: [
-        {
-            email: string,
-            timestamp: Date
-        }
-    ];
-    boostCount: number
+    musicId: mongoose.Types.ObjectId;
 }
 
 export class CreatePostResponse {
