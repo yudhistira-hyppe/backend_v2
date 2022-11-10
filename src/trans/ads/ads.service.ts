@@ -3708,8 +3708,8 @@ export class AdsService {
                     contentModeration: 1,
                     contentModerationResponse: 1,
                     reportedStatus: 1,
-                    reportedUser: 1,
                     reportedUserCount: 1,
+                    reportedUser: 1,
                     reportedUserHandle: 1,
                     interest: 1,
                     reportReasonIdLast: {
@@ -3745,6 +3745,7 @@ export class AdsService {
                     contentModerationResponse: 1,
                     reportedStatus: 1,
                     reportedUser: 1,
+                    reportedUserHandle: 1,
                     reportedUserCount: 1,
                     place: '$place.namePlace',
                     reportStatusLast: {
@@ -3817,6 +3818,7 @@ export class AdsService {
                     contentModerationResponse: 1,
                     reportedStatus: 1,
                     reportedUser: 1,
+                    reportedUserHandle: 1,
                     reportedUserCount: 1,
                     place: 1,
                     reportStatusLast: 1,
@@ -3858,6 +3860,7 @@ export class AdsService {
                     contentModerationResponse: 1,
                     reportedStatus: 1,
                     reportedUser: 1,
+                    reportedUserHandle: 1,
                     reportedUserCount: 1,
                     place: 1,
                     reportStatusLast: 1,
@@ -3895,6 +3898,30 @@ export class AdsService {
             },
         ]);
         return query;
+    }
+
+    async updateDitangguhkan(id: ObjectID, status: string, reason: string, updatedAt: string) {
+        let data = await this.adsModel.updateMany({ "_id": id },
+            { $set: { "reportedStatus": status, "updatedAt": updatedAt, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
+        return data;
+    }
+
+    async updateTidakditangguhkan(id: ObjectID, updatedAt: string) {
+        let data = await this.adsModel.updateMany({ "_id": id },
+            { $set: { "reportedStatus": "ALL", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle.$[].status": "TIDAK DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
+        return data;
+    }
+
+    async nonactive(id: ObjectID, updatedAt: string) {
+        let data = await this.adsModel.updateMany({ "_id": id },
+            {
+                $set: {
+                    "reportedUser.$[].active": false, "reportedUser.$[].updatedAt": updatedAt
+                }
+
+
+            });
+        return data;
     }
 
 }

@@ -4393,6 +4393,15 @@ export class PostsService {
         }
       },);
     }
+    else if (keys === undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
+      pipeline.push({
+        $match: {
+          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+          createdAtReportLast: { $gte: startdate, $lte: dateend }
+
+        }
+      },);
+    }
     else if (keys !== undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
       pipeline.push({
         $match: {
@@ -5585,6 +5594,7 @@ export class PostsService {
           apsara: 1,
           tagPeople: 1,
           reportedUserCount: 1,
+          reportedUserHandle: 1,
           reportedUser: 1,
           reportStatusLast: { $last: "$reportedUserHandle.status" },
 
@@ -5643,6 +5653,30 @@ export class PostsService {
 
   async stream(mediaFile: string): Promise<any> {
     var data = await this.seaweedfsService.read("/" + mediaFile);
+    return data;
+  }
+
+  async updateDitangguhkan(id: string, status: string, reason: string, updatedAt: string) {
+    let data = await this.PostsModel.updateMany({ "_id": id },
+      { $set: { "reportedStatus": status, "updatedAt": updatedAt, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
+    return data;
+  }
+
+  async updateTidakditangguhkan(id: string, updatedAt: string) {
+    let data = await this.PostsModel.updateMany({ "_id": id },
+      { $set: { "reportedStatus": "ALL", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle.$[].status": "TIDAK DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
+    return data;
+  }
+
+  async nonactive(id: string, updatedAt: string) {
+    let data = await this.PostsModel.updateMany({ "_id": id },
+      {
+        $set: {
+          "reportedUser.$[].active": false, "reportedUser.$[].updatedAt": updatedAt
+        }
+
+
+      });
     return data;
   }
 }
