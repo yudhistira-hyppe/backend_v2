@@ -834,10 +834,9 @@ export class PostContentService {
         }
 
         if (following.length > 0) {
-          query.where('visibility').in(['FRIEND', 'PUBLIC']).or(following);
-        } else {
-          query.where('visibility').in(['FRIEND', 'PUBLIC']);          
-        }
+          query.where('visibility').in(['FRIEND', 'PUBLIC']);
+          query.where('email').in(following);
+        } 
 
       } else if (body.visibility == 'FRIEND') {
         let friend: String[] = [];
