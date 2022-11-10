@@ -808,7 +808,7 @@ export class AdsService {
         } catch (e) {
             dateend = "";
         }
-        var pipeline=new Array<any>(
+        var pipeline = new Array<any>(
             {
                 $lookup: {
                     from: "adsplaces",
@@ -827,7 +827,7 @@ export class AdsService {
             },
             {
                 $project: {
-                    userID:1,
+                    userID: 1,
                     fullName: '$user.fullName',
                     email: '$user.email',
                     timestamp: 1,
@@ -835,7 +835,7 @@ export class AdsService {
                     gender: 1,
                     liveAt: 1,
                     name: 1,
-                    description:1,
+                    description: 1,
                     objectifitas: 1,
                     status: 1,
                     totalClick: 1,
@@ -851,11 +851,12 @@ export class AdsService {
                 }
             }
         );
-        if(userid && userid!==undefined){
-            pipeline.push({$match:{userID: userid}});
+        if (userid && userid !== undefined) {
+            pipeline.push({ $match: { userID: userid } });
         }
-        if(search && search!==undefined && search!=""){
-            pipeline.push({$match: {
+        if (search && search !== undefined && search != "") {
+            pipeline.push({
+                $match: {
                     $or: [{
                         name: {
                             $regex: search,
@@ -872,22 +873,22 @@ export class AdsService {
                 }
             });
         }
-        if(startdate && startdate!==undefined){
-            pipeline.push({$match:{timestamp: {$gte:startdate}}});
+        if (startdate && startdate !== undefined) {
+            pipeline.push({ $match: { timestamp: { $gte: startdate } } });
         }
-        if(enddate && enddate!==undefined){
-            pipeline.push({$match:{timestamp: {$lte:enddate}}});
+        if (enddate && enddate !== undefined) {
+            pipeline.push({ $match: { timestamp: { $lte: enddate } } });
         }
-        if(skip>0){
-            pipeline.push({$skip:skip});
+        if (skip > 0) {
+            pipeline.push({ $skip: skip });
         }
-        if(limit>0){
-            pipeline.push({$limit:limit});
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
         }
-        pipeline.push({$sort:{timestamp:-1}});
+        pipeline.push({ $sort: { timestamp: -1 } });
         // const util = require('util');
         // console.log(util.inspect(pipeline, false, null, true));
-        
+
         let query = await this.adsModel.aggregate(pipeline);
         var data = null;
         var arrdata = [];
@@ -3298,252 +3299,36 @@ export class AdsService {
         }
         return data;
     }
-    
-    async findAdsIDsByEmail(email:String) {
-        var pipeline=[
-            {$lookup:{
-                from:'userbasics',
-                localField:'userID',
-                foreignField:'_id',
-                as:'basic'
-            }},
-            {$match:{
-                'basic.email':email
-            }},
-            {$project:{
-                _id:1
-            }}
+
+    async findAdsIDsByEmail(email: String) {
+        var pipeline = [
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    localField: 'userID',
+                    foreignField: '_id',
+                    as: 'basic'
+                }
+            },
+            {
+                $match: {
+                    'basic.email': email
+                }
+            },
+            {
+                $project: {
+                    _id: 1
+                }
+            }
         ];
         // const util = require('util');
         // console.log(util.inspect(pipeline, false, null, true /* enable colors */))
-        const query=await this.adsModel.aggregate(pipeline);
-        var adsIds=[];
-        for(var i=0;i<query.length;i++){
+        const query = await this.adsModel.aggregate(pipeline);
+        var adsIds = [];
+        for (var i = 0; i < query.length; i++) {
             adsIds.push(query[i]._id);
         }
         return adsIds;
-    }
-
-    async findreportadscount(keys: string, postType: string, startdate: string, enddate: string) {
-        try {
-            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-
-            var dateend = currentdate.toISOString();
-        } catch (e) {
-            dateend = "";
-        }
-        var pipeline = [];
-        pipeline = [{
-            $lookup: {
-                from: 'adsplaces',
-                localField: 'placingID',
-                foreignField: '_id',
-                as: 'places',
-
-            },
-
-        },
-        {
-            $lookup: {
-                from: 'adstypes',
-                localField: 'typeAdsID',
-                foreignField: '_id',
-                as: 'tipeads',
-
-            },
-
-        },
-        {
-            $project: {
-                tipeads: {
-                    $arrayElemAt: ['$tipeads', 0]
-                },
-                place: {
-                    $arrayElemAt: ['$places', 0]
-                },
-                userID: '$userID',
-                idApsara: '$idApsara',
-                name: '$name',
-                type: '$type',
-                status: "$status",
-                timestamp: "$timestamp",
-                totalUsedCredit: "$totalUsedCredit",
-                tayang: '$tayang',
-                usedCredit: '$usedCredit',
-                usedCreditFree: '$usedCreditFree',
-                creditFree: '$creditFree',
-                creditValue: '$creditValue',
-                totalCredit: '$totalCredit',
-                contentModeration: '$contentModeration',
-                contentModerationResponse: '$contentModerationResponse',
-                reportedStatus: '$reportedStatus',
-                reportedUserCount: '$reportedUserCount',
-                reportedUser: '$reportedUser',
-                reportedUserHandle: '$reportedUserHandle',
-                reportReasonIdLast: {
-                    $last: "$reportedUser.reportReasonId"
-                },
-                reasonLast: {
-                    $last: "$reportedUser.description"
-                },
-                createdAtReportLast: {
-                    $last: "$reportedUser.createdAt"
-                },
-
-            }
-        },
-        {
-
-            $project: {
-                userID: '$userID',
-                idApsara: '$idApsara',
-                name: '$name',
-                type: '$type',
-                status: "$status",
-                timestamp: "$timestamp",
-                totalUsedCredit: "$totalUsedCredit",
-                tayang: '$tayang',
-                usedCredit: '$usedCredit',
-                usedCreditFree: '$usedCreditFree',
-                creditFree: '$creditFree',
-                creditValue: '$creditValue',
-                totalCredit: '$totalCredit',
-                tipeads: '$tipeads.nameType',
-                contentModeration: '$contentModeration',
-                contentModerationResponse: '$contentModerationResponse',
-                reportedStatus: '$reportedStatus',
-                reportedUserCount: '$reportedUserCount',
-                reportedUser: '$reportedUser',
-                reportedUserHandle: '$reportedUserHandle',
-                reportReasonIdLast: {
-                    $last: "$reportedUser.reportReasonId"
-                },
-                reasonLast: {
-                    $last: "$reportedUser.description"
-                },
-                createdAtReportLast: {
-                    $last: "$reportedUser.createdAt"
-                },
-                place: '$place.namePlace',
-                reportStatusLast: {
-                    $last: "$reportedUserHandle.status"
-                },
-
-            }
-        },
-
-        {
-            $sort: {
-                createdAtReportLast: - 1
-            },
-
-        },
-        ];
-        if (keys !== undefined && postType === undefined && startdate === undefined && enddate === undefined) {
-
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    },
-
-                }
-            },);
-
-        }
-        else if (keys === undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    },
-
-                }
-            });
-        }
-        else if (keys === undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
-        }
-        else if (keys !== undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
-        }
-        else if (keys !== undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    }, tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    },
-
-                }
-            },);
-        }
-        else if (keys === undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
-        }
-        else if (keys !== undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    }, tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
-        }
-        else {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-
-
-                }
-            },);
-        }
-
-        const query = await this.adsModel.aggregate(pipeline);
-
-        return query;
-
-
-
     }
 
     async findreportads(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number) {
@@ -3555,117 +3340,122 @@ export class AdsService {
             dateend = "";
         }
         var pipeline = [];
-        pipeline = [{
-            $lookup: {
-                from: 'adsplaces',
-                localField: 'placingID',
-                foreignField: '_id',
-                as: 'places',
+        pipeline = [
+
+            {
+                $lookup: {
+                    from: 'adsplaces',
+                    localField: 'placingID',
+                    foreignField: '_id',
+                    as: 'places',
+
+                },
+
+            },
+            {
+                $lookup: {
+                    from: 'adstypes',
+                    localField: 'typeAdsID',
+                    foreignField: '_id',
+                    as: 'tipeads',
+
+                },
+
+            },
+            {
+                $project: {
+                    tipeads: {
+                        $arrayElemAt: ['$tipeads', 0]
+                    },
+                    place: {
+                        $arrayElemAt: ['$places', 0]
+                    },
+                    userID: '$userID',
+                    idApsara: '$idApsara',
+                    name: '$name',
+                    type: '$type',
+                    status: "$status",
+                    timestamp: "$timestamp",
+                    totalUsedCredit: "$totalUsedCredit",
+                    tayang: '$tayang',
+                    usedCredit: '$usedCredit',
+                    usedCreditFree: '$usedCreditFree',
+                    creditFree: '$creditFree',
+                    creditValue: '$creditValue',
+                    totalCredit: '$totalCredit',
+                    contentModeration: '$contentModeration',
+                    contentModerationResponse: '$contentModerationResponse',
+                    reportedStatus: '$reportedStatus',
+                    reportedUserCount: '$reportedUserCount',
+                    reportedUser: '$reportedUser',
+                    reportedUserHandle: '$reportedUserHandle',
+                    reportReasonIdLast: {
+                        $last: "$reportedUser.reportReasonId"
+                    },
+                    reasonLast: {
+                        $last: "$reportedUser.description"
+                    },
+                    createdAtReportLast: {
+                        $last: "$reportedUser.createdAt"
+                    },
+
+                }
+            },
+            {
+
+                $project: {
+                    userID: '$userID',
+                    idApsara: '$idApsara',
+                    name: '$name',
+                    type: '$type',
+                    status: "$status",
+                    timestamp: "$timestamp",
+                    totalUsedCredit: "$totalUsedCredit",
+                    tayang: '$tayang',
+                    usedCredit: '$usedCredit',
+                    usedCreditFree: '$usedCreditFree',
+                    creditFree: '$creditFree',
+                    creditValue: '$creditValue',
+                    totalCredit: '$totalCredit',
+                    tipeads: '$tipeads.nameType',
+                    contentModeration: '$contentModeration',
+                    contentModerationResponse: '$contentModerationResponse',
+                    reportedStatus: '$reportedStatus',
+                    reportedUserCount: '$reportedUserCount',
+                    reportedUser: '$reportedUser',
+                    reportedUserHandle: '$reportedUserHandle',
+                    reportReasonIdLast: {
+                        $last: "$reportedUser.reportReasonId"
+                    },
+                    reasonLast: {
+                        $last: "$reportedUser.description"
+                    },
+                    createdAtReportLast: {
+                        $last: "$reportedUser.createdAt"
+                    },
+                    place: '$place.namePlace',
+                    reportStatusLast: {
+                        $last: "$reportedUserHandle.status"
+                    },
+
+                }
+            },
+
+            {
+                $sort: {
+                    createdAtReportLast: - 1
+                },
 
             },
 
-        },
-        {
-            $lookup: {
-                from: 'adstypes',
-                localField: 'typeAdsID',
-                foreignField: '_id',
-                as: 'tipeads',
+        ];
 
-            },
-
-        },
-        {
-            $project: {
-                tipeads: {
-                    $arrayElemAt: ['$tipeads', 0]
-                },
-                place: {
-                    $arrayElemAt: ['$places', 0]
-                },
-                userID: '$userID',
-                idApsara: '$idApsara',
-                name: '$name',
-                type: '$type',
-                status: "$status",
-                timestamp: "$timestamp",
-                totalUsedCredit: "$totalUsedCredit",
-                tayang: '$tayang',
-                usedCredit: '$usedCredit',
-                usedCreditFree: '$usedCreditFree',
-                creditFree: '$creditFree',
-                creditValue: '$creditValue',
-                totalCredit: '$totalCredit',
-                contentModeration: '$contentModeration',
-                contentModerationResponse: '$contentModerationResponse',
-                reportedStatus: '$reportedStatus',
-                reportedUserCount: '$reportedUserCount',
-                reportedUser: '$reportedUser',
-                reportedUserHandle: '$reportedUserHandle',
-                reportReasonIdLast: {
-                    $last: "$reportedUser.reportReasonId"
-                },
-                reasonLast: {
-                    $last: "$reportedUser.description"
-                },
-                createdAtReportLast: {
-                    $last: "$reportedUser.createdAt"
-                },
-
-            }
-        },
-        {
-
-            $project: {
-                userID: '$userID',
-                idApsara: '$idApsara',
-                name: '$name',
-                type: '$type',
-                status: "$status",
-                timestamp: "$timestamp",
-                totalUsedCredit: "$totalUsedCredit",
-                tayang: '$tayang',
-                usedCredit: '$usedCredit',
-                usedCreditFree: '$usedCreditFree',
-                creditFree: '$creditFree',
-                creditValue: '$creditValue',
-                totalCredit: '$totalCredit',
-                tipeads: '$tipeads.nameType',
-                contentModeration: '$contentModeration',
-                contentModerationResponse: '$contentModerationResponse',
-                reportedStatus: '$reportedStatus',
-                reportedUserCount: '$reportedUserCount',
-                reportedUser: '$reportedUser',
-                reportedUserHandle: '$reportedUserHandle',
-                reportReasonIdLast: {
-                    $last: "$reportedUser.reportReasonId"
-                },
-                reasonLast: {
-                    $last: "$reportedUser.description"
-                },
-                createdAtReportLast: {
-                    $last: "$reportedUser.createdAt"
-                },
-                place: '$place.namePlace',
-                reportStatusLast: {
-                    $last: "$reportedUserHandle.status"
-                },
-
-            }
-        },
-
-        {
-            $sort: {
-                createdAtReportLast: - 1
-            },
-
-        },
-        {
-            $skip: (page * limit)
-        },
-        {
-            $limit: limit
-        }];
+        if (page > 0) {
+            pipeline.push({ $skip: (page * limit) });
+        }
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
+        }
         if (keys !== undefined && postType === undefined && startdate === undefined && enddate === undefined) {
 
             pipeline.push({
@@ -3769,4 +3559,342 @@ export class AdsService {
 
         return query;
     }
+    async countReason(id: Object) {
+        let query = await this.adsModel.aggregate([
+            {
+                $match: {
+
+                    _id: id
+                }
+            },
+            {
+                $unwind: "$reportedUser"
+            },
+            {
+                $group: {
+                    _id: "$reportedUser.description",
+
+                    myCount: {
+                        $sum: 1
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: "$_id",
+                    "myCount": "$myCount",
+
+                }
+            }
+
+        ]);
+        return query;
+    }
+
+    async detailadsreport(adsID: Object) {
+        let query = await this.adsModel.aggregate([
+
+            {
+                $match: {
+                    _id: adsID
+
+                }
+            },
+            {
+                $lookup: {
+                    from: 'adsplaces',
+                    localField: 'placingID',
+                    foreignField: '_id',
+                    as: 'places',
+
+                },
+
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    as: "basicdata",
+                    let: {
+                        local_id: '$userID'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$_id', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                fullName: '$fullName',
+                                email: '$email',
+                                isIdVerified: '$isIdVerified',
+                                profilepictid: '$profilePict.$id',
+                                proofpictid: '$proofPict.$id'
+                            }
+                        }
+                    ],
+
+                }
+            },
+            {
+                $lookup: {
+                    from: 'adstypes',
+                    localField: 'typeAdsID',
+                    foreignField: '_id',
+                    as: 'tipeads',
+
+                },
+
+            },
+            {
+                $lookup: {
+                    from: "interests_repo",
+                    as: "interest",
+                    let: {
+                        local_id: '$interestID.$id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $in: ['$_id', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                interestName: '$interestName'
+                            }
+                        }
+                    ],
+
+                }
+            },
+
+            {
+                $project: {
+                    tipeads: {
+                        $arrayElemAt: ['$tipeads', 0]
+                    },
+                    place: {
+                        $arrayElemAt: ['$places', 0]
+                    },
+                    basic: {
+                        $arrayElemAt: ['$basicdata', 0]
+                    },
+                    userID: 1,
+                    idApsara: 1,
+                    name: 1,
+                    type: 1,
+                    status: 1,
+                    timestamp: 1,
+                    totalUsedCredit: 1,
+                    tayang: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    contentModeration: 1,
+                    contentModerationResponse: 1,
+                    reportedStatus: 1,
+                    reportedUser: 1,
+                    reportedUserCount: 1,
+                    reportedUserHandle: 1,
+                    interest: 1,
+                    reportReasonIdLast: {
+                        $last: "$reportedUser.reportReasonId"
+                    },
+                    reasonLast: {
+                        $last: "$reportedUser.description"
+                    },
+                    createdAtReportLast: {
+                        $last: "$reportedUser.createdAt"
+                    },
+
+                }
+            },
+            {
+
+                $project: {
+
+                    userID: 1,
+                    idApsara: 1,
+                    name: 1,
+                    type: 1,
+                    status: 1,
+                    timestamp: 1,
+                    totalUsedCredit: 1,
+                    tayang: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    contentModeration: 1,
+                    contentModerationResponse: 1,
+                    reportedStatus: 1,
+                    reportedUser: 1,
+                    reportedUserCount: 1,
+                    place: '$place.namePlace',
+                    reportStatusLast: {
+                        $last: "$reportedUserHandle.status"
+                    },
+                    interest: 1,
+                    fullName: '$basic.fullName',
+                    email: '$basic.email',
+                    isIdVerified: '$basic.isIdVerified',
+                    profilepictid: '$basic.profilepictid',
+                    proofpictid: '$basic.proofpictid',
+
+                }
+            },
+            {
+                $lookup: {
+                    from: 'mediaprofilepicts',
+                    localField: 'profilepictid',
+                    foreignField: '_id',
+                    as: 'avatardata',
+
+                }
+            },
+            {
+                "$lookup": {
+                    from: "mediaproofpicts",
+                    as: "proofpict",
+                    let: {
+                        local_id: '$proofpictid'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$_id', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: '$createdAt',
+                                nama: '$nama'
+                            }
+                        }
+                    ],
+
+                }
+            },
+            {
+
+                $project: {
+
+                    userID: 1,
+                    idApsara: 1,
+                    name: 1,
+                    type: 1,
+                    status: 1,
+                    timestamp: 1,
+                    totalUsedCredit: 1,
+                    tayang: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    contentModeration: 1,
+                    contentModerationResponse: 1,
+                    reportedStatus: 1,
+                    reportedUser: 1,
+                    reportedUserCount: 1,
+                    place: 1,
+                    reportStatusLast: 1,
+                    interest: 1,
+                    fullName: 1,
+                    email: 1,
+                    isIdVerified: 1,
+                    avatardata: 1,
+                    proofpict: 1,
+                }
+            },
+            {
+                $addFields: {
+                    avatar: {
+                        $arrayElemAt: ['$avatardata', 0]
+                    },
+                    pathavatar: '/profilepict',
+
+                }
+            },
+            {
+
+                $project: {
+
+                    userID: 1,
+                    idApsara: 1,
+                    name: 1,
+                    type: 1,
+                    status: 1,
+                    timestamp: 1,
+                    totalUsedCredit: 1,
+                    tayang: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    contentModeration: 1,
+                    contentModerationResponse: 1,
+                    reportedStatus: 1,
+                    reportedUser: 1,
+                    reportedUserCount: 1,
+                    place: 1,
+                    reportStatusLast: 1,
+                    interest: 1,
+                    fullName: 1,
+                    statusUser:
+                    {
+                        $cond: {
+                            if: {
+                                $eq: ["$isIdVerified", true]
+                            },
+                            then: "PREMIUM",
+                            else: "BASIC"
+                        }
+                    },
+
+                    email: 1,
+                    avatar: {
+                        mediaBasePath: '$avatar.mediaBasePath',
+                        mediaUri: '$avatar.mediaUri',
+                        mediaType: '$avatar.mediaType',
+                        mediaEndpoint: '$avatar.fsTargetUri',
+                        medreplace: {
+                            $replaceOne: {
+                                input: "$avatar.mediaUri",
+                                find: "_0001.jpeg",
+                                replacement: ""
+                            }
+                        },
+
+                    },
+                    proofpict: 1,
+
+                }
+            },
+        ]);
+        return query;
+    }
+
 }

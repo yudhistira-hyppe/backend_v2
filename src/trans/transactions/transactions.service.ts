@@ -37,7 +37,11 @@ export class TransactionsService {
     }
 
     async findpostid(postid: string): Promise<Transactions> {
-        return this.transactionsModel.findOne({ postid: postid, status: "success" }).exec();
+        return this.transactionsModel.findOne({ postid: postid, status: "Success" }).exec();
+    }
+
+    async findpostidanduser(postid: string, iduserbuyer: ObjectId): Promise<Transactions> {
+        return this.transactionsModel.findOne({ postid: postid, iduserbuyer: iduserbuyer, status: "Success" }).exec();
     }
 
     async findpostidpending(postid: string): Promise<Transactions> {
@@ -9969,259 +9973,257 @@ export class TransactionsService {
     }
 
     async findhistorySeller(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
-            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
-            var dateend = currentdate.toISOString();
-            var pipeline=new Array<any>(
-                {
-                    $addFields: {
-                        type: 'Sell',
-                        jenis: '$type'
+        var pipeline = new Array<any>(
+            {
+                $addFields: {
+                    type: 'Sell',
+                    jenis: '$type'
 
-                    },
                 },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "idusersell",
-                        foreignField: "_id",
-                        as: "userbasics_data"
-                    }
-                }, {
-                    $lookup: {
-                        from: "posts",
-                        localField: "postid",
-                        foreignField: "postID",
-                        as: "post_data"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "userbasics",
-                        localField: "iduserbuyer",
-                        foreignField: "_id",
-                        as: "userbasics_buy"
-                    }
-                },
-                {
-                    $project: {
-                        iduser: "$idusersell",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        user: {
-                            $arrayElemAt: [
-                                "$userbasics_data",
-                                0
-                            ]
-                        },
-                        userbuy: {
-                            $arrayElemAt: [
-                                "$userbasics_buy",
-                                0
-                            ]
-                        },
-                        postdata: {
-                            $arrayElemAt: [
-                                "$post_data",
-                                0
-                            ]
-                        },
-
-                    }
-                }, {
-                    $project: {
-                        contentMedias: "$postdata.contentMedias",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$user.fullName",
-                        email: "$user.email",
-                        pembeli: "$userbuy.fullName",
-                        emailpembeli: "$userbuy.email",
-                        postID: "$postdata.postID",
-                        postType: "$postdata.postType",
-                        descriptionContent: '$postdata.description',
-                        title: '$postdata.description',
-
-                    }
-                }, {
-                    $project: {
-                        refs: {
-                            $arrayElemAt: [
-                                "$contentMedias",
-                                0
-                            ]
-                        },
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs.$ref",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-                        refs: "$refs",
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
-                }, {
-                    $project: {
-
-                        iduser: "$iduser",
-                        type: "$type",
-                        jenis: "$jenis",
-                        timestamp: "$timestamp",
-                        description: "$description",
-                        noinvoice: "$noinvoice",
-                        nova: "$nova",
-                        expiredtimeva: "$expiredtimeva",
-                        salelike: "$salelike",
-                        saleview: "$saleview",
-                        bank: "$bank",
-                        amount: "$amount",
-                        totalamount: "$totalamount",
-                        status: "$status",
-                        fullName: "$fullName",
-                        email: "$email",
-                        pembeli: "$pembeli",
-                        emailpembeli: "$emailpembeli",
-                        postID: "$postID",
-                        postType: "$postType",
-                        descriptionContent: '$descriptionContent',
-                        title: '$title',
-
-                    }
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "idusersell",
+                    foreignField: "_id",
+                    as: "userbasics_data"
                 }
-            );
-            if(status!==undefined){
-                pipeline.push({
-                    $match:{
-                        status:status
-                    }
-                });
+            }, {
+            $lookup: {
+                from: "posts",
+                localField: "postid",
+                foreignField: "postID",
+                as: "post_data"
             }
-            if(startdate!==undefined){
-                pipeline.push({
-                    $match:{
-                        timestamp:{$gte:startdate}
-                    }
-                });
+        },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "iduserbuyer",
+                    foreignField: "_id",
+                    as: "userbasics_buy"
+                }
+            },
+            {
+                $project: {
+                    iduser: "$idusersell",
+                    type: "$type",
+                    jenis: "$jenis",
+                    timestamp: "$timestamp",
+                    description: "$description",
+                    noinvoice: "$noinvoice",
+                    nova: "$nova",
+                    expiredtimeva: "$expiredtimeva",
+                    salelike: "$salelike",
+                    saleview: "$saleview",
+                    bank: "$bank",
+                    amount: "$amount",
+                    totalamount: "$totalamount",
+                    status: "$status",
+                    user: {
+                        $arrayElemAt: [
+                            "$userbasics_data",
+                            0
+                        ]
+                    },
+                    userbuy: {
+                        $arrayElemAt: [
+                            "$userbasics_buy",
+                            0
+                        ]
+                    },
+                    postdata: {
+                        $arrayElemAt: [
+                            "$post_data",
+                            0
+                        ]
+                    },
+
+                }
+            }, {
+            $project: {
+                contentMedias: "$postdata.contentMedias",
+                iduser: "$iduser",
+                type: "$type",
+                jenis: "$jenis",
+                timestamp: "$timestamp",
+                description: "$description",
+                noinvoice: "$noinvoice",
+                nova: "$nova",
+                expiredtimeva: "$expiredtimeva",
+                salelike: "$salelike",
+                saleview: "$saleview",
+                bank: "$bank",
+                amount: "$amount",
+                totalamount: "$totalamount",
+                status: "$status",
+                fullName: "$user.fullName",
+                email: "$user.email",
+                pembeli: "$userbuy.fullName",
+                emailpembeli: "$userbuy.email",
+                postID: "$postdata.postID",
+                postType: "$postdata.postType",
+                descriptionContent: '$postdata.description',
+                title: '$postdata.description',
+
             }
-            if(enddate!==undefined){
-                pipeline.push({
-                    $match:{
-                        timestamp:{$lte:enddate}
-                    }
-                });
+        }, {
+            $project: {
+                refs: {
+                    $arrayElemAt: [
+                        "$contentMedias",
+                        0
+                    ]
+                },
+                iduser: "$iduser",
+                type: "$type",
+                jenis: "$jenis",
+                timestamp: "$timestamp",
+                description: "$description",
+                noinvoice: "$noinvoice",
+                nova: "$nova",
+                expiredtimeva: "$expiredtimeva",
+                salelike: "$salelike",
+                saleview: "$saleview",
+                bank: "$bank",
+                amount: "$amount",
+                totalamount: "$totalamount",
+                status: "$status",
+                fullName: "$fullName",
+                email: "$email",
+                pembeli: "$pembeli",
+                emailpembeli: "$emailpembeli",
+                postID: "$postID",
+                postType: "$postType",
+                descriptionContent: '$descriptionContent',
+                title: '$title',
+
             }
+        }, {
+            $project: {
+                refs: "$refs.$ref",
+                iduser: "$iduser",
+                type: "$type",
+                jenis: "$jenis",
+                timestamp: "$timestamp",
+                description: "$description",
+                noinvoice: "$noinvoice",
+                nova: "$nova",
+                expiredtimeva: "$expiredtimeva",
+                salelike: "$salelike",
+                saleview: "$saleview",
+                bank: "$bank",
+                amount: "$amount",
+                totalamount: "$totalamount",
+                status: "$status",
+                fullName: "$fullName",
+                email: "$email",
+                pembeli: "$pembeli",
+                emailpembeli: "$emailpembeli",
+                postID: "$postID",
+                postType: "$postType",
+                descriptionContent: '$descriptionContent',
+                title: '$title',
+
+            }
+        }, {
+            $project: {
+                refs: "$refs",
+                iduser: "$iduser",
+                type: "$type",
+                jenis: "$jenis",
+                timestamp: "$timestamp",
+                description: "$description",
+                noinvoice: "$noinvoice",
+                nova: "$nova",
+                expiredtimeva: "$expiredtimeva",
+                salelike: "$salelike",
+                saleview: "$saleview",
+                bank: "$bank",
+                amount: "$amount",
+                totalamount: "$totalamount",
+                status: "$status",
+                fullName: "$fullName",
+                email: "$email",
+                pembeli: "$pembeli",
+                emailpembeli: "$emailpembeli",
+                postID: "$postID",
+                postType: "$postType",
+                descriptionContent: '$descriptionContent',
+                title: '$title',
+
+            }
+        }, {
+            $project: {
+
+                iduser: "$iduser",
+                type: "$type",
+                jenis: "$jenis",
+                timestamp: "$timestamp",
+                description: "$description",
+                noinvoice: "$noinvoice",
+                nova: "$nova",
+                expiredtimeva: "$expiredtimeva",
+                salelike: "$salelike",
+                saleview: "$saleview",
+                bank: "$bank",
+                amount: "$amount",
+                totalamount: "$totalamount",
+                status: "$status",
+                fullName: "$fullName",
+                email: "$email",
+                pembeli: "$pembeli",
+                emailpembeli: "$emailpembeli",
+                postID: "$postID",
+                postType: "$postType",
+                descriptionContent: '$descriptionContent',
+                title: '$title',
+
+            }
+        }
+        );
+        if (status !== undefined) {
             pipeline.push({
-                $match:{
-                    idusersell:iduser
+                $match: {
+                    status: status
                 }
             });
-            pipeline.push({ $sort: { timestamp: -1 }});
-            if(skip>0){
-                pipeline.push({
-                    $skip: skip
-                });
+        }
+        if (startdate !== undefined) {
+            pipeline.push({
+                $match: {
+                    timestamp: { $gte: startdate }
+                }
+            });
+        }
+        if (enddate !== undefined) {
+            pipeline.push({
+                $match: {
+                    timestamp: { $lte: enddate }
+                }
+            });
+        }
+        pipeline.push({
+            $match: {
+                idusersell: iduser
             }
-            if(limit>0){
-                pipeline.push({
-                    $limit: limit
-                });
-            }
+        });
+        pipeline.push({ $sort: { timestamp: -1 } });
+        if (skip > 0) {
+            pipeline.push({
+                $skip: skip
+            });
+        }
+        if (limit > 0) {
+            pipeline.push({
+                $limit: limit
+            });
+        }
 
-            const query = await this.transactionsModel.aggregate(pipeline);
+        const query = await this.transactionsModel.aggregate(pipeline);
 
-            return query;
+        return query;
     }
     async findhistorySellercount(iduser: ObjectId, status: string, startdate: string, enddate: string) {
 
@@ -11132,9 +11134,7 @@ export class TransactionsService {
     }
 
     async findhistoryBuyer(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
-        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-        var dateend = currentdate.toISOString();
-        var pipeline=new Array<any>(
+        var pipeline = new Array<any>(
             {
                 $addFields: {
                     type: 'Buy',
@@ -11150,13 +11150,13 @@ export class TransactionsService {
                     as: "userbasics_data"
                 }
             }, {
-                $lookup: {
-                    from: "posts",
-                    localField: "postid",
-                    foreignField: "postID",
-                    as: "post_data"
-                }
-            },
+            $lookup: {
+                from: "posts",
+                localField: "postid",
+                foreignField: "postID",
+                as: "post_data"
+            }
+        },
             {
                 $lookup: {
                     from: "userbasics",
@@ -11202,175 +11202,175 @@ export class TransactionsService {
 
                 }
             }, {
-                $project: {
-                    contentMedias: "$postdata.contentMedias",
-                    iduser: "$iduser",
-                    type: "$type",
-                    jenis: "$jenis",
-                    timestamp: "$timestamp",
-                    description: "$description",
-                    noinvoice: "$noinvoice",
-                    nova: "$nova",
-                    expiredtimeva: "$expiredtimeva",
-                    salelike: "$salelike",
-                    saleview: "$saleview",
-                    bank: "$bank",
-                    amount: "$amount",
-                    totalamount: "$totalamount",
-                    status: "$status",
-                    fullName: "$user.fullName",
-                    email: "$user.email",
-                    penjual: "$usersell.fullName",
-                    emailpenjual: "$usersell.email",
-                    postID: "$postdata.postID",
-                    postType: "$postdata.postType",
-                    descriptionContent: '$postdata.description',
-                    title: '$postdata.description',
+            $project: {
+                contentMedias: "$postdata.contentMedias",
+                iduser: "$iduser",
+                type: "$type",
+                jenis: "$jenis",
+                timestamp: "$timestamp",
+                description: "$description",
+                noinvoice: "$noinvoice",
+                nova: "$nova",
+                expiredtimeva: "$expiredtimeva",
+                salelike: "$salelike",
+                saleview: "$saleview",
+                bank: "$bank",
+                amount: "$amount",
+                totalamount: "$totalamount",
+                status: "$status",
+                fullName: "$user.fullName",
+                email: "$user.email",
+                penjual: "$usersell.fullName",
+                emailpenjual: "$usersell.email",
+                postID: "$postdata.postID",
+                postType: "$postdata.postType",
+                descriptionContent: '$postdata.description',
+                title: '$postdata.description',
 
-                }
-            }, {
-                $project: {
-
-                    iduser: "$iduser",
-                    type: "$type",
-                    jenis: "$jenis",
-                    timestamp: "$timestamp",
-                    description: "$description",
-                    noinvoice: "$noinvoice",
-                    nova: "$nova",
-                    expiredtimeva: "$expiredtimeva",
-                    salelike: "$salelike",
-                    saleview: "$saleview",
-                    bank: "$bank",
-                    amount: "$amount",
-                    totalamount: "$totalamount",
-                    status: "$status",
-                    fullName: "$fullName",
-                    email: "$email",
-                    penjual: "$penjual",
-                    emailpenjual: "$emailpenjual",
-                    postID: "$postID",
-                    postType: "$postType",
-                    descriptionContent: '$descriptionContent',
-                    title: '$title',
-
-                }
-            }, {
-                $project: {
-
-                    iduser: "$iduser",
-                    type: "$type",
-                    jenis: "$jenis",
-                    timestamp: "$timestamp",
-                    description: "$description",
-                    noinvoice: "$noinvoice",
-                    nova: "$nova",
-                    expiredtimeva: "$expiredtimeva",
-                    salelike: "$salelike",
-                    saleview: "$saleview",
-                    bank: "$bank",
-                    amount: "$amount",
-                    totalamount: "$totalamount",
-                    status: "$status",
-                    fullName: "$fullName",
-                    email: "$email",
-                    penjual: "$penjual",
-                    emailpenjual: "$emailpenjual",
-                    postID: "$postID",
-                    postType: "$postType",
-                    descriptionContent: '$descriptionContent',
-                    title: '$title',
-
-                }
-            }, {
-                $project: {
-
-                    iduser: "$iduser",
-                    type: "$type",
-                    jenis: "$jenis",
-                    timestamp: "$timestamp",
-                    description: "$description",
-                    noinvoice: "$noinvoice",
-                    nova: "$nova",
-                    expiredtimeva: "$expiredtimeva",
-                    salelike: "$salelike",
-                    saleview: "$saleview",
-                    bank: "$bank",
-                    amount: "$amount",
-                    totalamount: "$totalamount",
-                    status: "$status",
-                    fullName: "$fullName",
-                    email: "$email",
-                    penjual: "$penjual",
-                    emailpenjual: "$emailpenjual",
-                    postID: "$postID",
-                    postType: "$postType",
-                    descriptionContent: '$descriptionContent',
-                    title: '$title',
-
-                }
-            }, {
-                $project: {
-
-                    iduser: "$iduser",
-                    type: "$type",
-                    jenis: "$jenis",
-                    timestamp: "$timestamp",
-                    description: "$description",
-                    noinvoice: "$noinvoice",
-                    nova: "$nova",
-                    expiredtimeva: "$expiredtimeva",
-                    salelike: "$salelike",
-                    saleview: "$saleview",
-                    bank: "$bank",
-                    amount: "$amount",
-                    totalamount: "$totalamount",
-                    status: "$status",
-                    fullName: "$fullName",
-                    email: "$email",
-                    penjual: "$penjual",
-                    emailpenjual: "$emailpenjual",
-                    postID: "$postID",
-                    postType: "$postType",
-                    descriptionContent: '$descriptionContent',
-                    title: '$title',
-
-                }
             }
+        }, {
+            $project: {
+
+                iduser: "$iduser",
+                type: "$type",
+                jenis: "$jenis",
+                timestamp: "$timestamp",
+                description: "$description",
+                noinvoice: "$noinvoice",
+                nova: "$nova",
+                expiredtimeva: "$expiredtimeva",
+                salelike: "$salelike",
+                saleview: "$saleview",
+                bank: "$bank",
+                amount: "$amount",
+                totalamount: "$totalamount",
+                status: "$status",
+                fullName: "$fullName",
+                email: "$email",
+                penjual: "$penjual",
+                emailpenjual: "$emailpenjual",
+                postID: "$postID",
+                postType: "$postType",
+                descriptionContent: '$descriptionContent',
+                title: '$title',
+
+            }
+        }, {
+            $project: {
+
+                iduser: "$iduser",
+                type: "$type",
+                jenis: "$jenis",
+                timestamp: "$timestamp",
+                description: "$description",
+                noinvoice: "$noinvoice",
+                nova: "$nova",
+                expiredtimeva: "$expiredtimeva",
+                salelike: "$salelike",
+                saleview: "$saleview",
+                bank: "$bank",
+                amount: "$amount",
+                totalamount: "$totalamount",
+                status: "$status",
+                fullName: "$fullName",
+                email: "$email",
+                penjual: "$penjual",
+                emailpenjual: "$emailpenjual",
+                postID: "$postID",
+                postType: "$postType",
+                descriptionContent: '$descriptionContent',
+                title: '$title',
+
+            }
+        }, {
+            $project: {
+
+                iduser: "$iduser",
+                type: "$type",
+                jenis: "$jenis",
+                timestamp: "$timestamp",
+                description: "$description",
+                noinvoice: "$noinvoice",
+                nova: "$nova",
+                expiredtimeva: "$expiredtimeva",
+                salelike: "$salelike",
+                saleview: "$saleview",
+                bank: "$bank",
+                amount: "$amount",
+                totalamount: "$totalamount",
+                status: "$status",
+                fullName: "$fullName",
+                email: "$email",
+                penjual: "$penjual",
+                emailpenjual: "$emailpenjual",
+                postID: "$postID",
+                postType: "$postType",
+                descriptionContent: '$descriptionContent',
+                title: '$title',
+
+            }
+        }, {
+            $project: {
+
+                iduser: "$iduser",
+                type: "$type",
+                jenis: "$jenis",
+                timestamp: "$timestamp",
+                description: "$description",
+                noinvoice: "$noinvoice",
+                nova: "$nova",
+                expiredtimeva: "$expiredtimeva",
+                salelike: "$salelike",
+                saleview: "$saleview",
+                bank: "$bank",
+                amount: "$amount",
+                totalamount: "$totalamount",
+                status: "$status",
+                fullName: "$fullName",
+                email: "$email",
+                penjual: "$penjual",
+                emailpenjual: "$emailpenjual",
+                postID: "$postID",
+                postType: "$postType",
+                descriptionContent: '$descriptionContent',
+                title: '$title',
+
+            }
+        }
         );
-        if(status!==undefined){
+        if (status !== undefined) {
             pipeline.push({
-                $match:{
-                    status:status
+                $match: {
+                    status: status
                 }
             });
         }
-        if(startdate!==undefined){
+        if (startdate !== undefined) {
             pipeline.push({
-                $match:{
-                    timestamp:{$gte:startdate}
+                $match: {
+                    timestamp: { $gte: startdate }
                 }
             });
         }
-        if(enddate!==undefined){
+        if (enddate !== undefined) {
             pipeline.push({
-                $match:{
-                    timestamp:{$lte:enddate}
+                $match: {
+                    timestamp: { $lte: enddate }
                 }
             });
         }
         pipeline.push({
-            $match:{
-                iduserbuyer:iduser
+            $match: {
+                iduserbuyer: iduser
             }
         });
         pipeline.push({ $sort: { timestamp: -1 } });
-        if(skip>0){
+        if (skip > 0) {
             pipeline.push({
                 $skip: skip
             });
         }
-        if(limit>0){
+        if (limit > 0) {
             pipeline.push({
                 $limit: limit
             });

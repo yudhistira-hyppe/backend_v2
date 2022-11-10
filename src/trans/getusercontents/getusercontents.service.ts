@@ -7940,7 +7940,7 @@ export class GetusercontentsService {
   }
 
 
-  async findalldatakontenmultiple(iduserbuy: Types.ObjectId, email: string, ownership: boolean, monetesisasi: boolean, buy: boolean, archived: boolean, postType: string, startdate: string, enddate: string, skip: number, limit: number) {
+  async findalldatakontenmultiple(iduserbuy: Types.ObjectId, email: string, ownership: boolean, monetesisasi: boolean, buy: boolean, archived: boolean, reported: boolean, postType: string, startdate: string, enddate: string, skip: number, limit: number) {
 
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -7951,7 +7951,7 @@ export class GetusercontentsService {
     }
     var pipeline=[];
     if(buy && buy!==undefined){
-      pipeline=[
+      pipeline=new Array<any>(
           {$lookup: {
               from: 'userbasics',
               localField: 'email',
@@ -8221,12 +8221,12 @@ export class GetusercontentsService {
                 }
               },
           }},
-      ];
+      );
       pipeline.push({$match:{"trans.iduserbuyer":iduserbuy,"trans.status":"success"}});
     }
     else{
       console.log("not monetized");
-      pipeline=[
+      pipeline=new Array<any>(
           {$lookup: {
               from: 'userbasics',
               localField: 'email',
@@ -8352,6 +8352,7 @@ export class GetusercontentsService {
                isSafe:1,
                saleLike:1,
                saleView:1,
+               reportedUserCount:1,
                monetize:"$monetize",
                salePrice:"$salePrice",
                mediaref:"$mediaref",
@@ -8487,10 +8488,10 @@ export class GetusercontentsService {
                 }
               },
           }}   
-      ];
+      );
       pipeline.push({$match:{email:email}});
-      if(ownership && ownership!==undefined){
-        pipeline.push({$match:{isOwned:true}});
+      if(ownership!==undefined){
+        pipeline.push({$match:{isOwned:ownership}});
       }
       if(archived && archived!==undefined){
         pipeline.push({$match:{postType:"story"}});
@@ -8500,14 +8501,23 @@ export class GetusercontentsService {
     if(postType && postType!==undefined){
       pipeline.push({$match:{postType:postType}});
     }
+    if(monetesisasi!==undefined){
+      pipeline.push({$match:{monetize:monetesisasi}});
+    }
     if(startdate && startdate!==undefined){
       pipeline.push({$match:{createdAt:{"$gte":startdate}}});
     }
     if(enddate && enddate!==undefined){
       pipeline.push({$match:{createdAt:{"$lte":enddate}}});
     }
+    if(reported!==undefined){
+      if(reported)
+        pipeline.push({$match:{"reportedUserCount":{$gt:0}}})
+      else
+        pipeline.push({$match:{"reportedUserCount":0}})
+    }
 
-    if(buy && buy!==undefined){
+    if(buy!==undefined){
       pipeline.push({$sort: { "trans.createdAt": -1 }});
     }
     else{

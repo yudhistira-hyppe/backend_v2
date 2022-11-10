@@ -277,7 +277,7 @@ export class GetusercontentsController {
 
         var postIDs=await this.getusercontentsService.findPostIDsByEmail(email);
         var events=await this.getcontenteventsService.findByPostID(postIDs,['VIEW']);
-        var byGenders=await this.getcontenteventsService.groupEventsBy(events,'gender');
+        var byGenders=await this.getcontenteventsService.groupEventsBy(events,'genderp');
         var byYms=await this.getcontenteventsService.groupEventsBy(events,'ym');
         var datamoderate = await this.getusercontentsService.findmanagementcontentmoderate(email);
         var moderate = datamoderate[0];
@@ -635,6 +635,7 @@ export class GetusercontentsController {
         var postType = request_json["postType"];
         var startdate = request_json["startdate"];
         var enddate = request_json["enddate"];
+        var reported = request_json["reported"];
 
 
         if (request_json["skip"] !== undefined) {
@@ -659,8 +660,8 @@ export class GetusercontentsController {
 
         var datatotal = await this.getusercontentsService.findcountfilter(email);
         var totalAll = datatotal[0].totalpost;
-        let dataFilter = await this.getusercontentsService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, postType, startdate, enddate, 0, totalAll);
-        let data = await this.getusercontentsService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, postType, startdate, enddate, skip, limit);
+        let dataFilter = await this.getusercontentsService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, reported, postType, startdate, enddate, 0, totalAll);
+        let data = await this.getusercontentsService.findalldatakontenmultiple(userid, email, ownership, monetesisasi, buy, archived, reported, postType, startdate, enddate, skip, limit);
         var totalFilter = dataFilter.length;
 
         return { response_code: 202, data, skip, limit, totalFilter, totalAll, messages };

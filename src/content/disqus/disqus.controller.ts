@@ -917,8 +917,6 @@ export class DisqusController {
     return this.DisqusService.deletedicuss(request);
   }
 
-
-
   async sendCommentFCM(email: string, type: string, postID: string, receiverParty: string) {
     var Templates_ = new TemplatesRepo();
     Templates_ = await this.utilsService.getTemplate_repo(type, 'NOTIFICATION');
@@ -926,9 +924,9 @@ export class DisqusController {
     var get_username_email = await this.utilsService.getUsertname(email);
     var get_username_receiverParty = await this.utilsService.getUsertname(receiverParty);
 
-    var email = email;
-    var titlein = get_username_receiverParty?.toString() || '';
-    var titleen = get_username_receiverParty?.toString() || '';
+    var email = receiverParty;
+    var titlein = get_username_email?.toString() || '';
+    var titleen = get_username_email?.toString() || '';
     var bodyin = "";
     var bodyen = "";
 
