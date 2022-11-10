@@ -90,8 +90,16 @@ import { PostDisqusModule } from './content/disqus/post/postdisqus.module';
 import { BoostsessionModule } from './content/boostsession/boostsession.module';
 import { BoostintervalModule } from './content/boostinterval/boostinterval.module';
 import { SocketModule } from './content/socket/socket.module';
+import { GenreModule } from './infra/genre/genre.module';
+import { MoodModule } from './infra/mood/mood.module';
+import { ThemeModule } from './infra/theme/theme.module';
+import { MediamusicModule } from './content/mediamusic/mediamusic.module';
 @Module({
   imports: [
+    MediamusicModule,
+    ThemeModule,
+    MoodModule,
+    GenreModule,
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

@@ -92,30 +92,8 @@ export class Posts {
   contentModerationResponse: string
   @Prop()
   reportedUserHandle: any[];
-  @Prop()
-  boostDate: Date;
   @Prop({ type: Object })
-  boostInterval: {
-    _id: mongoose.Types.ObjectId,
-    value: number
-  };
-  @Prop({ type: Object })
-  boostSession: {
-    _id: mongoose.Types.ObjectId,
-    start: Date,
-    end: Date
-  };
-  @Prop()
-  isBoost: string;
-  @Prop({ type: [Object] })
-  boostViewer: [
-    {
-      email: string,
-      timestamp: Date
-    }
-  ];
-  @Prop()
-  boostCount: number
+  musicId: mongoose.Types.ObjectId;;
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

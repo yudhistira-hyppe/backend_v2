@@ -66,7 +66,7 @@ export class DisqusController {
     return this.DisqusService.delete(id);
   }
 
-  //@UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @FormDataRequest()
   @Post('posts/disqus')
