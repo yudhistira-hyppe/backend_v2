@@ -20,11 +20,7 @@ export class CreateDisqusDto {
     lastestMessage: String;
     emailActive: boolean; 
     mateActive: boolean;
-    disqusLogs: [{
-      $ref:String;
-      $id:String;
-      $db:String;
-  }];
+    disqusLogs: any[];
      _class:String;
   }
 

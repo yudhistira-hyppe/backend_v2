@@ -833,7 +833,12 @@ export class PostContentService {
           }
         }
 
-        query.where('visibility').in(['FRIEND', 'PUBLIC']).or(following);
+        if (following.length > 0) {
+          query.where('visibility').in(['FRIEND', 'PUBLIC']).or(following);
+        } else {
+          query.where('visibility').in(['FRIEND', 'PUBLIC']);          
+        }
+
       } else if (body.visibility == 'FRIEND') {
         let friend: String[] = [];
         let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
