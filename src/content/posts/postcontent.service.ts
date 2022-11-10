@@ -818,6 +818,7 @@ export class PostContentService {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     let st = await this.utilService.getDateTimeDate();
     let query = this.PostsModel.find();
+    let con = true;
     if (body.visibility != undefined) {
       if (body.visibility == 'PRIVATE') {
         query.where('email', whoami.email);
@@ -828,12 +829,18 @@ export class PostContentService {
           for (let i = 0; i < check.length; i++) {
             var ce = check[i];
             if (ce.receiverParty != undefined && ce.receiverParty.length > 1) {
-              following.push({ email: ce.receiverParty });
+              following.push(ce.receiverParty);
             }
           }
         }
 
-        query.where('visibility').in(['FRIEND', 'PUBLIC']).or(following);
+        if (following.length > 0) {
+          query.where('visibility').in(['FRIEND', 'PUBLIC']);
+          query.where('email').in(following);
+        } else {
+          con = false;
+        }
+
       } else if (body.visibility == 'FRIEND') {
         let friend: String[] = [];
         let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
@@ -850,6 +857,7 @@ export class PostContentService {
           query.where('email').in(friend);
         } else {
           query.where('visibility', 'PUBLIC');
+          con = false;
         }
       } else {
         /*
@@ -874,42 +882,47 @@ export class PostContentService {
       }
     }
 
-    if (body.postID != undefined) {
-      query.where('postID', body.postID);
+    if (con == true) {
+      if (body.postID != undefined) {
+        query.where('postID', body.postID);
+      }
+  
+      if (body.postType != undefined) {
+        query.where('postType', body.postType);
+      } else {
+        query.where('postType').ne('advertise');
+      }
+  
+      if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
+        query.where('active', true);
+      }
+  
+      if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
+        this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
+        query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
+      }
+
+      let row = 20;
+      let page = 0;
+      if (body.pageNumber != undefined) {
+        page = body.pageNumber;
+      }
+      if (body.pageRow != undefined) {
+        row = body.pageRow;
+      }
+      let skip = this.paging(page, row);
+      query.skip(skip);
+      query.limit(row);
+      query.sort({ 'postType': 1, 'createdAt': -1 });
+      let res = await query.exec();
+      let ed = await this.utilService.getDateTimeDate();
+      let gap = ed.getTime() - st.getTime();
+      this.logger.log('doGetUserPost >>> exec time: ' + gap);
+      return res;      
     }
 
-    if (body.postType != undefined) {
-      query.where('postType', body.postType);
-    } else {
-      query.where('postType').ne('advertise');
-    }
+    return undefined;
 
-    if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
-      query.where('active', true);
-    }
-
-    if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
-      this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
-      query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
-    }
-
-    let row = 20;
-    let page = 0;
-    if (body.pageNumber != undefined) {
-      page = body.pageNumber;
-    }
-    if (body.pageRow != undefined) {
-      row = body.pageRow;
-    }
-    let skip = this.paging(page, row);
-    query.skip(skip);
-    query.limit(row);
-    query.sort({ 'postType': 1, 'createdAt': -1 });
-    let res = await query.exec();
-    let ed = await this.utilService.getDateTimeDate();
-    let gap = ed.getTime() - st.getTime();
-    this.logger.log('doGetUserPost >>> exec time: ' + gap);
-    return res;
   }
 
   private async doGetUserPostMy(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {

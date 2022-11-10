@@ -13,6 +13,7 @@ import { InsightsModule } from '../insights/insights.module';
 import { ContenteventsModule } from '../contentevents/contentevents.module';
 import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
 import { UserauthsModule } from '../../trans/userauths/userauths.module';
+import { SocketModule } from '../socket/socket.module';
 
 @Module({
 
@@ -26,6 +27,7 @@ import { UserauthsModule } from '../../trans/userauths/userauths.module';
         UserbasicsModule,
         UserauthsModule,
         UtilsModule,
+        SocketModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Disqus.name, schema: DisqusSchema }], 'SERVER_FULL')
     ],
