@@ -1922,13 +1922,6 @@ export class ReportuserController {
                 }
 
 
-
-
-
-
-
-                return { response_code: 202, data, messages };
-
             }
         }
         else if (type === "ads") {
@@ -2017,10 +2010,13 @@ export class ReportuserController {
                     data = [];
                 }
 
-                return { response_code: 202, totalReport: reportedUserCount, data, messages };
 
             }
+
+
         }
+
+        return { response_code: 202, totalReport: reportedUserCount, data, messages };
 
     }
 
