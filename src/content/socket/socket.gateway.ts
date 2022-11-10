@@ -24,6 +24,10 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         this.server.emit('msgToClient', payload);
     }
 
+    directMessage(email: string, payload: string): void {
+        this.server.emit(email, payload);
+    }        
+
     @SubscribeMessage('coba')
     coba(payload: string): void {
         this.server.emit('coba', payload);

@@ -90,6 +90,10 @@ export class DisqusController {
         if (type == "DIRECT_MSG") {
 
           let xres = await this.buildDisqus(ContentDto_, true);
+
+          console.log("processDisqus >>> receiver: ", xres.disqusLogs[0].receiver);
+          this.disqusService.sendDMNotif(String(xres.disqusLogs[0].receiver), JSON.stringify(xres));
+
           res.response_code = 202;
           let m = new Messages();
           m.info = ["The process successful"]
@@ -769,7 +773,9 @@ export class DisqusController {
     retVal.disqusLogs = arr;
   
     var usp = { "$ref": "disquslogs", "$id": String(ndl._id), "$db": "hyppe_trans_db" };
-    dis.disqusLogs.push(usp);
+    let usparr = [];
+    usparr.push(usp);
+    dis.disqusLogs = usparr;
 
     dis.updatedAt = dl.createdAt;
     dis.lastestMessage = dl.txtMessages.substring(0, 21);

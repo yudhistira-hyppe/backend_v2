@@ -9,6 +9,7 @@ import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
 import { DisquscontactsService } from '../disquscontacts/disquscontacts.service';
 import { Disquscontacts } from '../disquscontacts/schemas/disquscontacts.schema';
+import { AppGateway } from '../socket/socket.gateway';
 
 @Injectable()
 export class DisqusService {
@@ -22,6 +23,7 @@ export class DisqusService {
     private disquslogsService: DisquslogsService,
     private disqconService: DisquscontactsService,
     private userService: UserbasicsService,
+    private gtw: AppGateway,
   ) { }
 
   async create(CreateDisqusDto: CreateDisqusDto): Promise<Disqus> {
@@ -40,6 +42,10 @@ export class DisqusService {
   async findById(id: string): Promise<Disqus> {
     return this.DisqusModel.findOne({ _id: id }).exec();
   }
+
+  async sendDMNotif(email: string, payload: string) {
+    return this.gtw.directMessage(email, payload);
+  }  
 
   async delete(id: string) {
     const deletedCat = await this.DisqusModel.findByIdAndRemove({
