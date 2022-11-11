@@ -268,6 +268,7 @@ export class ProfileController {
     var datafrend = null;
     var emailfrend = null;
     var lengfrend = null;
+    var langiso = null;
     if (request_json["email"] !== undefined) {
       emails = request_json["email"];
     } else {
@@ -322,6 +323,7 @@ export class ProfileController {
       var objintetres = {};
       var arrinterest = [];
       var interests = null;
+      var languages = null;
       for (var i = 0; i < lenghtinteres; i++) {
         var idinter = interest_json[i].$id;
         interests = await this.interestsService.findOne(idinter);
@@ -381,7 +383,13 @@ export class ProfileController {
       } catch (e) {
         citi = "";
       }
-      var languages = await this.languagesService.findOne(languages_json.$id);
+      try {
+        languages = await this.languagesService.findOne(languages_json.$id);
+        langiso = languages.langIso;
+      } catch (e) {
+        languages = null;
+        langiso = "";
+      }
 
       try {
 
@@ -428,7 +436,7 @@ export class ProfileController {
         "isEmailVerified": datauserauthsService.isEmailVerified,
         "idProofStatus": datauserbasicsService.idProofStatus,
         "insight": insights_res,
-        "langIso": languages.langIso,
+        "langIso": langiso,
         "interest": interest,
         "dob": datauserbasicsService.dob,
         "event": datauserbasicsService.event,
