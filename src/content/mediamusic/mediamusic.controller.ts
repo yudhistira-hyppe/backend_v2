@@ -229,7 +229,23 @@ export class MediamusicController {
     const theme_ = theme;
     const mood_ = mood;
     const data = await this.mediamusicService.findCriteria(pageNumber_, pageRow_, search_, genre_, theme_, mood_);
-    var data_ = data.map(item => {
+    var data_ = await Promise.all(data.map(async item => {
+      console.log(item.apsaraMusic);
+      var dataApsaraMusic = await this.mediamusicService.getVideoApsaraSingle(item.apsaraMusic)
+      console.log(dataApsaraMusic);
+      var apsaraMusicData = {}
+      if (dataApsaraMusic != null && dataApsaraMusic.PlayInfoList != null && dataApsaraMusic.PlayInfoList.PlayInfo && dataApsaraMusic.PlayInfoList.PlayInfo.length > 0) {
+        apsaraMusicData = {
+          PlayURL: dataApsaraMusic.PlayInfoList.PlayInfo[0].PlayURL,
+          Duration: dataApsaraMusic.PlayInfoList.PlayInfo[0].Duration,
+        }
+      }
+      var dataApsaraThumnail = await this.mediamusicService.getImageApsara([item.apsaraThumnail])
+      //console.log(dataApsaraThumnail);
+      var apsaraThumnailUrl = null
+      if (dataApsaraThumnail != undefined && dataApsaraThumnail.ImageInfo != undefined && dataApsaraThumnail.ImageInfo.length > 0) {
+        apsaraThumnailUrl = dataApsaraThumnail.ImageInfo[0].URL
+      }
       return {
         _id: item._id,
         musicTitle: item.musicTitle,
@@ -245,9 +261,11 @@ export class MediamusicController {
         updatedAt: item.updatedAt,
         used: item.used,
         apsaraMusic: item.apsaraMusic,
-        apsaraThumnail: item.apsaraThumnail
+        apsaraMusicUrl: apsaraMusicData,
+        apsaraThumnail: item.apsaraThumnail,
+        apsaraThumnailUrl: apsaraThumnailUrl,
       };
-    });
+    }));
     var Response = {
       response_code: 202,
       total: data.length.toString(),
@@ -294,7 +312,7 @@ export class MediamusicController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('api/music/card/')
+  @Get('api/musiccard/')
   @HttpCode(HttpStatus.ACCEPTED)
   async getMusicCard(@Headers() headers) {
     const data = await this.mediamusicService.getMusicCard();
@@ -309,4 +327,21 @@ export class MediamusicController {
     }
     return Response;
   }
+
+  // @UseGuards(JwtAuthGuard)
+  // @Get('api/allmusic/')
+  // @HttpCode(HttpStatus.ACCEPTED)
+  // async getMusicFilter(@Headers() headers) {
+  //   const data = await this.mediamusicService.getMusicCard();
+  //   var Response = {
+  //     response_code: 202,
+  //     data: data,
+  //     messages: {
+  //       info: [
+  //         "Retrieved music card succesfully"
+  //       ]
+  //     }
+  //   }
+  //   return Response;
+  // }
 }

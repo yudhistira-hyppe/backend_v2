@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { MediamusicDto } from './dto/mediamusic.dto';
 import { Mediamusic, MediamusicDocument } from './schemas/mediamusic.schema';
 import mongoose, { Model } from 'mongoose';
+import { ApsaraImageResponse, ApsaraPlayResponse, ImageInfo } from '../posts/dto/create-posts.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MediamusicService {
@@ -10,6 +12,7 @@ export class MediamusicService {
   constructor(
     @InjectModel(Mediamusic.name, 'SERVER_FULL')
     private readonly MediamusicModel: Model<MediamusicDocument>,
+    private readonly configService: ConfigService,
   ) {}
 
   async createMusic(MediamusicDto_: MediamusicDto): Promise<Mediamusic> {
@@ -69,6 +72,7 @@ export class MediamusicService {
       }
     }
     where['isActive'] = true;
+    where['isDelete'] = false;
     const query = await this.MediamusicModel.find(where).limit(perPage).skip(perPage * page).sort({ musicTitle: 'desc' });
     return query;
   }
@@ -440,6 +444,72 @@ export class MediamusicService {
     const query = await this.MediamusicModel.aggregate([
       {
         $lookup: {
+          from: 'genre',
+          localField: 'genre',
+          foreignField: '_id',
+          as: 'genre_data',
+        },
+      },
+      {
+        $project: {
+          musicTitle: '$musicTitle',
+          artistName: '$artistName',
+          albumName: '$albumName',
+          genre: { $arrayElemAt: ['$genre_data', 0] },
+          theme: '$theme',
+          mood: '$mood',
+          releaseDate: '$releaseDate',
+          apsaraMusic: '$apsaraMusic',
+          apsaraThumnail: '$apsaraThumnail',
+          posts_data: '$posts_data',
+        }
+      },
+      {
+        $lookup: {
+          from: 'theme',
+          localField: 'theme',
+          foreignField: '_id',
+          as: 'theme_data',
+        },
+      },
+      {
+        $project: {
+          musicTitle: '$musicTitle',
+          artistName: '$artistName',
+          albumName: '$albumName',
+          genre: '$genre',
+          theme: { $arrayElemAt: ['$theme_data', 0] },
+          mood: '$mood',
+          releaseDate: '$releaseDate',
+          apsaraMusic: '$apsaraMusic',
+          apsaraThumnail: '$apsaraThumnail',
+          posts_data: '$posts_data',
+        }
+      },
+      {
+        $lookup: {
+          from: 'mood',
+          localField: 'mood',
+          foreignField: '_id',
+          as: 'mood_data',
+        },
+      },
+      {
+        $project: {
+          musicTitle: '$musicTitle',
+          artistName: '$artistName',
+          albumName: '$albumName',
+          genre: '$genre',
+          theme: '$theme',
+          mood: { $arrayElemAt: ['$mood_data', 0] },
+          releaseDate: '$releaseDate',
+          apsaraMusic: '$apsaraMusic',
+          apsaraThumnail: '$apsaraThumnail',
+          posts_data: '$posts_data',
+        }
+      },
+      {
+        $lookup: {
           from: 'posts',
           localField: '_id',
           foreignField: 'musicId',
@@ -466,19 +536,169 @@ export class MediamusicService {
           path: "$posts_data"
         }
       },
-      // {
-      //   $facet:
-      //   {
-      //     "artistPopuler": [
-      //       { $skip: 0 },
-      //       { $limit: 5 },
-      //       { $sort: { time_added: 1 } }
-      //     ],
-      //     "filterCount": [{ $match: {} }, { $group: { _id: null, count: { $sum: 1 } } }],
-      //     "totalCount": [{ $group: { _id: null, count: { $sum: 1 } } }]
-      //   }
-      // }
+      {
+        $facet:
+        {
+          "artistPopuler": [
+            {
+              "$group": {
+                "_id": {
+                  "artistName": "$artistName",
+                  "apsaraMusic": "$apsaraMusic",
+                  "apsaraThumnail": "$apsaraThumnail"
+                },
+                "count": { "$sum": 1 }
+              }
+            },
+            { $sort: { count: -1 } },
+            { $skip: 0 },
+            { $limit: 5 },
+          ],
+          "musicPopuler": [
+            {
+              "$group": {
+                "_id": {
+                  "musicTitle": "$musicTitle",
+                  "apsaraMusic": "$apsaraMusic",
+                  "apsaraThumnail": "$apsaraThumnail"
+                },
+                "count": { "$sum": 1 }
+              }
+            },
+            { $sort: { count: -1 } },
+            { $skip: 0 },
+            { $limit: 5 },
+          ],
+          "genrePopuler": [
+            {
+              "$group": {
+                "_id": "$genre",
+                "count": { "$sum": 1 }
+              }
+            },
+            { $sort: { count: -1 } },
+            { $skip: 0 },
+            { $limit: 5 },
+          ],
+          "themePopuler": [
+            {
+              "$group": {
+                "_id": "$theme",
+                "count": { "$sum": 1 }
+              }
+            },
+            { $sort: { count: -1 } },
+            { $skip: 0 },
+            { $limit: 5 },
+          ],
+          "moodPopuler": [
+            {
+              "$group": {
+                "_id": "$mood",
+                "count": { "$sum": 1 }
+              }
+            },
+            { $sort: { count: -1 } },
+            { $skip: 0 },
+            { $limit: 5 },
+          ],
+        }
+      },
+      {
+        $project: {
+          
+        }
+      }
     ]);
     return query;
+  }
+
+  async getVideoApsaraSingle(ids: String) {
+    //this.logger.log('getVideoApsaraSingle >>> start: ' + ids);
+    var RPCClient = require('@alicloud/pop-core').RPCClient;
+
+    let client = new RPCClient({
+      accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+      accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+      endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+      apiVersion: '2017-03-21'
+    });
+
+    let params = {
+      "RegionId": this.configService.get("APSARA_REGION_ID"),
+      "VideoId": ids,
+      "StreamType": "audio",
+    }
+
+    let requestOption = {
+      method: 'POST'
+    };
+
+    let result = await client.request('GetPlayInfo', params, requestOption);
+    let xres = new ApsaraPlayResponse();
+    //this.logger.log('getVideoApsaraSingle >>> response: ' + JSON.stringify(result));
+    if (result != null && result.PlayInfoList != null && result.PlayInfoList.PlayInfo && result.PlayInfoList.PlayInfo.length > 0) {
+      xres.PlayUrl = result.PlayInfoList.PlayInfo[0].PlayURL;
+    }
+    return result;
+  }
+
+  async getImageApsara(ids: String[]): Promise<ApsaraImageResponse> {
+    let san: String[] = [];
+    for (let i = 0; i < ids.length; i++) {
+      let obj = ids[i];
+      if (obj != undefined && obj != 'undefined') {
+        san.push(obj);
+      }
+    }
+
+    let tx = new ApsaraImageResponse();
+    let vl: ImageInfo[] = [];
+    let chunk = this.chunkify(san, 15);
+    for (let i = 0; i < chunk.length; i++) {
+      let c = chunk[i];
+
+      let vids = c.join(',');
+      //this.logger.log("getImageApsara >>> video id: " + vids);
+      var RPCClient = require('@alicloud/pop-core').RPCClient;
+
+      let client = new RPCClient({
+        accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+        accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+        endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+        apiVersion: '2017-03-21'
+      });
+
+      let params = {
+        "RegionId": this.configService.get("APSARA_REGION_ID"),
+        "ImageIds": vids
+      }
+
+      let requestOption = {
+        method: 'POST'
+      };
+
+      let dto = new ApsaraImageResponse();
+      let result = await client.request('GetImageInfos', params, requestOption);
+      let ty: ApsaraImageResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
+
+      if (ty.ImageInfo.length > 0) {
+        for (let x = 0; x < ty.ImageInfo.length; x++) {
+          let vv = ty.ImageInfo[x];
+          vl.push(vv);
+        }
+      }
+    }
+    tx.ImageInfo = vl;
+    return tx;
+  }
+
+  private chunkify(arr, chunkSize) {
+    const res = [];
+    for (let i = 0; i < arr.length; i += chunkSize) {
+      const chunk = arr.slice(i, i + chunkSize);
+      res.push(chunk);
+    }
+    return res;
   }
 }
