@@ -1386,6 +1386,7 @@ export class ReportuserController {
                     "namapenjual": namapenjual,
                     "pemiliksekarang": namapembeli,
                     "tgltransaksi": tgltransaksi,
+                    "reportedStatus": query[0].reportedStatus,
                     "reportStatusLast": query[0].reportStatusLast,
                     "reportedUser": query[0].reportedUser,
                     "reportedUserHandle": query[0].reportedUserHandle,

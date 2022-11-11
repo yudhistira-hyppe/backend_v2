@@ -5263,7 +5263,7 @@ export class PostsService {
           reportedUser: 1,
           isIdVerified: '$basic.isIdVerified',
           reportedUserHandle: 1,
-
+          reportedStatus: 1,
           statusUser:
           {
             $cond: {
@@ -5596,6 +5596,7 @@ export class PostsService {
           reportedUserCount: 1,
           reportedUserHandle: 1,
           reportedUser: 1,
+          reportedStatus: 1,
           reportStatusLast: { $last: "$reportedUserHandle.status" },
 
 
