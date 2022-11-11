@@ -10,7 +10,7 @@ export class MediamusicService {
   constructor(
     @InjectModel(Mediamusic.name, 'SERVER_FULL')
     private readonly MediamusicModel: Model<MediamusicDocument>,
-  ) { }
+  ) {}
 
   async createMusic(MediamusicDto_: MediamusicDto): Promise<Mediamusic> {
     const DataSave = await this.MediamusicModel.create(MediamusicDto_);
@@ -418,5 +418,67 @@ export class MediamusicService {
           console.log(docs);
         }
       });
+  }
+
+  async updateUsed(_id: string) {
+    this.MediamusicModel.updateOne(
+      {
+        _id: new mongoose.Types.ObjectId(_id),
+      },
+      { $inc: { used: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async getMusicCard(){
+    const query = await this.MediamusicModel.aggregate([
+      {
+        $lookup: {
+          from: 'posts',
+          localField: '_id',
+          foreignField: 'musicId',
+          as: 'posts_data',
+        },
+      },
+      {
+        $project: {
+          musicTitle: '$musicTitle',
+          artistName: '$artistName',
+          albumName: '$albumName',
+          genre: '$genre',
+          theme: '$theme',
+          mood: '$mood',
+          releaseDate: '$releaseDate',
+          apsaraMusic: '$apsaraMusic',
+          apsaraThumnail: '$apsaraThumnail',
+          usedMusic: { $size: "$posts_data" },
+          posts_data: '$posts_data',
+        }
+      },
+      {
+        $unwind: {
+          path: "$posts_data"
+        }
+      },
+      // {
+      //   $facet:
+      //   {
+      //     "artistPopuler": [
+      //       { $skip: 0 },
+      //       { $limit: 5 },
+      //       { $sort: { time_added: 1 } }
+      //     ],
+      //     "filterCount": [{ $match: {} }, { $group: { _id: null, count: { $sum: 1 } } }],
+      //     "totalCount": [{ $group: { _id: null, count: { $sum: 1 } } }]
+      //   }
+      // }
+    ]);
+    return query;
   }
 }
