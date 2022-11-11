@@ -921,6 +921,10 @@ export class ReportuserController {
         var iduser = null;
         var totalpage = null;
         var postType = null;
+        var totalallrow = null;
+        var datasearch = null;
+        var totalsearch = null;
+        var total = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -1036,6 +1040,7 @@ export class ReportuserController {
                     "reportedStatus": query[i].reportedStatus,
                     "reportedUserCount": query[i].reportedUserCount,
                     "reportedUser": query[i].reportedUser,
+                    "reportedUserHandle": query[i].reportedUserHandle,
                     "reportReasonIdLast": query[i].reportReasonIdLast,
                     "reasonLast": query[i].reasonLast,
                     "createdAtReportLast": query[i].createdAtReportLast,
@@ -1048,8 +1053,12 @@ export class ReportuserController {
                 arrdata.push(objk);
             }
 
+            total = query.length;
             let datasearch = await this.postsService.findreport(key, postType, startdate, enddate, 0, 0);
-            var totalsearch = datasearch.length;
+            totalsearch = datasearch.length;
+
+            let dataall = await this.postsService.findreport(undefined, undefined, undefined, undefined, 0, 0);
+            totalallrow = dataall.length;
 
             var tpage = null;
             var tpage2 = null;
@@ -1140,6 +1149,7 @@ export class ReportuserController {
                     "reportedStatus": query[i].reportedStatus,
                     "reportedUserCount": query[i].reportedUserCount,
                     "reportedUser": query[i].reportedUser,
+                    "reportedUserHandle": query[i].reportedUserHandle,
                     "reportReasonIdLast": query[i].reportReasonIdLast,
                     "reasonLast": query[i].reasonLast,
                     "createdAtReportLast": query[i].createdAtReportLast,
@@ -1152,9 +1162,11 @@ export class ReportuserController {
 
                 arrdata.push(objk);
             }
-
+            total = query.length;
             let datasearch = await this.adsService.findreportads(key, postType, startdate, enddate, 0, 0);
-            var totalsearch = datasearch.length;
+            totalsearch = datasearch.length;
+            let dataall = await this.adsService.findreportads(undefined, undefined, undefined, undefined, 0, 0);
+            totalallrow = dataall.length;
 
             var tpage = null;
             var tpage2 = null;
@@ -1170,7 +1182,7 @@ export class ReportuserController {
 
 
         }
-        return { response_code: 202, arrdata, page, limit, totalsearch, totalpage, messages };
+        return { response_code: 202, arrdata, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
 
     @UseGuards(JwtAuthGuard)
