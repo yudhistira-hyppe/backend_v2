@@ -132,6 +132,7 @@ export class PostContentService {
     post.updatedAt = await this.utilService.getDateTimeString();
     let big = BigInt(this.utilService.generateAddExpirationFromToday(1));
     post.expiration = Long.fromBigInt(big);
+    post.musicId = mongoose.Types.ObjectId(body.musicId)
     post._class = 'io.melody.hyppe.content.domain.ContentPost';
 
     if (body.description != undefined) {
