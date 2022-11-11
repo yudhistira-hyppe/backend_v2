@@ -292,4 +292,21 @@ export class MediamusicController {
     }
     return Response;
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('api/music/card/')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async getMusicCard(@Headers() headers) {
+    const data = await this.mediamusicService.getMusicCard();
+    var Response = {
+      response_code: 202,
+      data: data,
+      messages: {
+        info: [
+          "Retrieved music card succesfully"
+        ]
+      }
+    }
+    return Response;
+  }
 }

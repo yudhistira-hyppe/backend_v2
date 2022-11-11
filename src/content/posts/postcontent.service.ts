@@ -44,7 +44,7 @@ import { ContentModService } from './contentmod.service';
 import { threadId } from 'worker_threads';
 import { NotificationsService } from '../notifications/notifications.service';
 import { ContentDTO, CreateNotificationsDto, NotifResponseApps } from '../notifications/dto/create-notifications.dto';
-
+import { MediamusicService } from '../mediamusic/mediamusic.service';
 
 //import FormData from "form-data";
 var FormData = require('form-data');
@@ -75,7 +75,8 @@ export class PostContentService {
     private templateService: TemplatesRepoService,
     private settingsService: SettingsService,
     private readonly notifService: NotificationsService,
-    private errorHandler: ErrorHandler,
+    private errorHandler: ErrorHandler, 
+    private mediamusicService: MediamusicService,
   ) { }
 
   async createNewPost(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
@@ -132,6 +133,7 @@ export class PostContentService {
     post.updatedAt = await this.utilService.getDateTimeString();
     let big = BigInt(this.utilService.generateAddExpirationFromToday(1));
     post.expiration = Long.fromBigInt(big);
+    post.musicId = mongoose.Types.ObjectId(body.musicId)
     post._class = 'io.melody.hyppe.content.domain.ContentPost';
 
     if (body.description != undefined) {
@@ -406,6 +408,7 @@ export class PostContentService {
 
     post.contentMedias = cm;
     let apost = await this.PostsModel.create(post);
+    await this.mediamusicService.updateUsed(body.musicId);
 
     let fn = file.originalname;
     let ext = fn.split(".");

@@ -36,9 +36,11 @@ import { OyPgModule } from '../../paymentgateway/oypg/oypg.module';
 import { MethodepaymentsModule } from '../../trans/methodepayments/methodepayments.module';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import { SocketModule } from '../socket/socket.module';
+import { MediamusicModule } from '../mediamusic/mediamusic.module';
 @Module({
 
     imports: [
+        MediamusicModule,
         MethodepaymentsModule,
         OyPgModule,
         BullModule.registerQueue({
