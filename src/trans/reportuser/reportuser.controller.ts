@@ -818,7 +818,7 @@ export class ReportuserController {
     @UseGuards(JwtAuthGuard)
     @Post('approval')
     async reportHandleAproval(@Req() request) {
-        var reportedStatus = null;
+
         var reportedUserHandle = [];
         var postID = null;
         var data = null;
@@ -826,24 +826,12 @@ export class ReportuserController {
         var lenguserreport = null
         var lengreporthandle = null
         var reportedUser = [];
-        var dataauth = null;
-        var arrayreportedUser = [];
-        var arrayreportedHandle = [];
-        var contentModeration = null;
-        var contentModerationResponse = null;
-        var datacontent = null;
-        var objreportuser = {};
-        var objreporthandle = {};
+
         var type = null;
-        var datahandel = null;
-        var objhandel = {};
-        var reportedHandel = null;
-
-        var reportCount = null;
-
+        var status = null;
+        var ditangguhkan = null;
+        var reason = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
-
-        reportedStatus = request_json["reportedStatus"];
 
         if (request_json["postID"] !== undefined) {
             postID = request_json["postID"];
@@ -856,6 +844,14 @@ export class ReportuserController {
             throw new BadRequestException("Unabled to proceed");
         }
 
+        if (request_json["ditangguhkan"] !== undefined) {
+            ditangguhkan = request_json["ditangguhkan"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        status = request_json["status"];
+        reason = request_json["reason"];
 
         reportedUserHandle = request_json["reportedUserHandle"];
         const mongoose = require('mongoose');
@@ -873,11 +869,11 @@ export class ReportuserController {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
-        try {
-            lenguserreport = reportedUser.length;
-        } catch (e) {
-            lenguserreport = 0;
-        }
+        // try {
+        //     lenguserreport = reportedUser.length;
+        // } catch (e) {
+        //     lenguserreport = 0;
+        // }
 
         try {
             lengreporthandle = reportedUserHandle.length;
@@ -886,252 +882,27 @@ export class ReportuserController {
         }
 
         if (type === "content") {
-            let createPostsDto = new CreatePostsDto();
-            try {
-                datacontent = await this.postsService.findByPostId(postID);
 
-
-            } catch (e) {
-                datacontent = null;
-            }
-
-            if (datacontent !== null) {
-
-                try {
-                    reportCount = datacontent.reportedUserCount;
-                } catch (e) {
-                    reportCount = 0;
-                }
-
-                try {
-
-                    datahandel = datacontent.reportedUserHandle;
-
-                } catch (e) {
-                    datahandel = null;
-                }
-
-                if (datahandel.length > 0) {
-                    for (let i = 0; i < datahandel.length; i++) {
-                        let status = datahandel[i].status;
-
-                        if (status === "BARU") {
-                            throw new BadRequestException("Appeal sudah diajukan...!");
-                        }
-                    }
-
-                }
-
-                if (reportCount >= 200) {
-                    throw new BadRequestException("Appeal tidak bisa diajukan...!");
-                } else {
-                    if (lengreporthandle > 0) {
-                        for (let i = 0; i < lengreporthandle; i++) {
-
-                            let status = reportedUserHandle[i].status;
-                            let remark = reportedUserHandle[i].remark;
-                            let typeAppeal = reportedUserHandle[i].typeAppeal;
-                            objreporthandle = {
-
-                                "type": typeAppeal,
-                                "remark": remark,
-                                "createdAt": dt.toISOString(),
-                                "updatedAt": dt.toISOString(),
-                                "status": status
-                            };
-                            arrayreportedHandle.push(objreporthandle);
-                        }
-                    } else {
-
-                    }
-
-
-                    createPostsDto.reportedStatus = reportedStatus;
-                    if (arrayreportedHandle.length > 0) {
-                        createPostsDto.reportedUserHandle = arrayreportedHandle;
-                    } else {
-
-                    }
-                    this.postsService.update(postID, createPostsDto);
-
-
-                    var data = request_json;
-                    return { response_code: 202, data, messages };
-
-                }
-
-
+            if (ditangguhkan === true) {
+                await this.postsService.updateDitangguhkan(postID, status, reason, dt.toISOString());
             } else {
-                throw new BadRequestException("postID is not found...!");
+                await this.postsService.updateTidakditangguhkan(postID, dt.toISOString());
+                await this.postsService.nonactive(postID, dt.toISOString());
             }
+
         }
         else if (type === "ads") {
+            var adsId = mongoose.Types.ObjectId(postID);
 
-
-            let createAdsDto = new CreateAdsDto();
-
-            let postid = mongoose.Types.ObjectId(postID);
-            try {
-                datacontent = await this.adsService.findOne(postID);
-
-
-            } catch (e) {
-                datacontent = null;
-            }
-
-            if (datacontent !== null) {
-
-                try {
-                    reportCount = datacontent.reportedUserCount;
-                } catch (e) {
-                    reportCount = 0;
-                }
-
-                try {
-
-                    datahandel = datacontent.reportedUserHandle;
-
-                } catch (e) {
-                    datahandel = null;
-                }
-
-                if (datahandel.length > 0) {
-                    for (let i = 0; i < datahandel.length; i++) {
-                        let status = datahandel[i].status;
-
-                        if (status === "BARU") {
-                            throw new BadRequestException("Appeal sudah diajukan...!");
-                        }
-                    }
-
-                }
-
-                if (reportCount >= 200) {
-                    throw new BadRequestException("Appeal tidak bisa diajukan...!");
-                }
-                else {
-                    if (lengreporthandle > 0) {
-                        for (let i = 0; i < lengreporthandle; i++) {
-
-                            let status = reportedUserHandle[i].status;
-                            let remark = reportedUserHandle[i].remark;
-                            let typeAppeal = reportedUserHandle[i].typeAppeal;
-                            objreporthandle = {
-
-                                "type": typeAppeal,
-                                "remark": remark,
-                                "createdAt": dt.toISOString(),
-                                "updatedAt": dt.toISOString(),
-                                "status": status
-                            };
-                            arrayreportedHandle.push(objreporthandle);
-                        }
-                    } else {
-
-                    }
-
-                    if (arrayreportedHandle.length > 0) {
-                        createAdsDto.reportedUserHandle = arrayreportedHandle;
-                    } else {
-
-                    }
-                    this.adsService.update(postID, createAdsDto);
-                    var data = request_json;
-                    return { response_code: 202, data, messages };
-
-                }
+            if (ditangguhkan === true) {
+                await this.adsService.updateDitangguhkan(adsId, status, reason, dt.toISOString());
             } else {
-                throw new BadRequestException("Ads ID is not found...!");
-            }
-        }
-        else if (type === "user") {
-            let createUserbasicDto = new CreateUserbasicDto();
-            let postid = mongoose.Types.ObjectId(postID);
-            try {
-                datacontent = await this.userbasicsService.findbyid(postID);
-                console.log(datacontent)
-
-            } catch (e) {
-                datacontent = null;
-            }
-
-            if (datacontent !== null) {
-
-                try {
-                    reportCount = datacontent.reportedUserCount;
-                } catch (e) {
-                    reportCount = 0;
-                }
-
-                try {
-
-                    datahandel = datacontent.reportedUserHandle;
-
-                } catch (e) {
-                    datahandel = null;
-                }
-
-                if (datahandel.length > 0) {
-                    for (let i = 0; i < datahandel.length; i++) {
-                        let status = datahandel[i].status;
-
-                        if (status === "BARU") {
-                            throw new BadRequestException("Appeal sudah diajukan...!");
-                        }
-                    }
-
-                }
-
-                if (reportCount >= 200) {
-                    throw new BadRequestException("Appeal tidak bisa diajukan...!");
-                }
-                else {
-                    if (lengreporthandle > 0) {
-                        for (let i = 0; i < lengreporthandle; i++) {
-
-                            let status = reportedUserHandle[i].status;
-                            let remark = reportedUserHandle[i].remark;
-                            let typeAppeal = reportedUserHandle[i].typeAppeal;
-                            objreporthandle = {
-
-                                "type": typeAppeal,
-                                "remark": remark,
-                                "createdAt": dt.toISOString(),
-                                "updatedAt": dt.toISOString(),
-                                "status": status
-                            };
-                            arrayreportedHandle.push(objreporthandle);
-                        }
-                    } else {
-
-                    }
-
-
-                    createUserbasicDto.reportedStatus = reportedStatus;
-
-
-                    if (arrayreportedHandle.length > 0) {
-                        createUserbasicDto.reportedUserHandle = arrayreportedHandle;
-                    } else {
-
-                    }
-                    this.userbasicsService.update(postID, createUserbasicDto);
-
-
-                    var data = request_json;
-                    return { response_code: 202, data, messages };
-                }
-
-
-            } else {
-                throw new BadRequestException("User ID is not found...!");
+                await this.adsService.updateTidakditangguhkan(adsId, dt.toISOString());
+                await this.adsService.nonactive(adsId, dt.toISOString());
             }
         }
 
-
-        //deletetagpeople
-
-
+        return { response_code: 202, messages };
     }
     @UseGuards(JwtAuthGuard)
     @Post('listreport')
@@ -1430,6 +1201,7 @@ export class ReportuserController {
         var data = [];
         var query = null;
 
+
         var reportedUserCount = null;
         if (type === "content") {
             var email = null;
@@ -1603,6 +1375,8 @@ export class ReportuserController {
                     "pemiliksekarang": namapembeli,
                     "tgltransaksi": tgltransaksi,
                     "reportStatusLast": query[0].reportStatusLast,
+                    "reportedUser": query[0].reportedUser,
+                    "reportedUserHandle": query[0].reportedUserHandle,
                     "tagpeople": tagpeoples,
                     "apsaraId": idapsaradefine,
                     "apsara": apsaradefine,
@@ -1751,6 +1525,8 @@ export class ReportuserController {
                     "idApsara": query[0].idApsara,
                     "reportedStatus": query[0].reportedStatus,
                     "reportedUserCount": query[0].reportedUserCount,
+                    "reportedUser": query[0].reportedUser,
+                    "reportedUserHandle": query[0].reportedUserHandle,
                     "contentModeration": query[0].contentModeration,
                     "contentModerationResponse": query[0].contentModerationResponse,
                     "interest": query[0].interest,
