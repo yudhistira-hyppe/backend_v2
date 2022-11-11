@@ -653,7 +653,7 @@ export class UserticketsController {
     }
 
     data = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, page, limit, descending);
-    let datasearch = await this.userticketsService.filterdataCount(search, assignto, sumber, kategori, level, status, startdate, enddate, descending);
+    let datasearch = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, 0, 0, descending);
     var totalsearch = datasearch.length;
     var allrow = await this.userticketsService.totalcount();
     var totalallrow = allrow[0].countrow;
