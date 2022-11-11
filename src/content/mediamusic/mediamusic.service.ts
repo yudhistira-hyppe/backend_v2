@@ -39,8 +39,8 @@ export class MediamusicService {
       }
     }
     if (mood != undefined) {
-      if (theme != "") {
-        where['mood'] = new mongoose.Types.ObjectId(theme);
+      if (mood != "") {
+        where['mood'] = new mongoose.Types.ObjectId(mood);
       }
     }
     where['isActive'] = true;
@@ -414,7 +414,7 @@ export class MediamusicService {
   async deleteMusic(_id: string) {
     this.MediamusicModel.updateOne(
       { _id: Object(_id) },
-      { active: false },
+      { isActive: false, isDelete: false },
       function (err, docs) {
         if (err) {
           console.log(err);
@@ -603,13 +603,58 @@ export class MediamusicService {
             { $limit: 5 },
           ],
         }
-      },
-      {
-        $project: {
-          
-        }
       }
     ]);
+    return query;
+  }
+
+  async getMusicFilter(pageNumber: number, pageRow: number, genre: string, theme: string, mood: string, musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string) {
+    var perPage = pageRow, page = Math.max(0, pageNumber);
+    var where = {};
+    if (musicTitle != undefined) {
+      if (musicTitle != "") {
+        where['musicTitle'] = { $regex: musicTitle, $options: "i" };
+      }
+    }
+    if (artistName != undefined) {
+      if (artistName != "") {
+        where['artistName'] = { $regex: artistName, $options: "i" };
+      }
+    }
+    if (createdAtStart != undefined && createdAtEnd != undefined) {
+      if (createdAtStart != "" && createdAtEnd != "") {
+        var startDate = new Date(createdAtStart + 'T00:00:00');
+        var endDate = new Date(createdAtEnd + 'T23:59:59');
+        console.log(startDate);
+        console.log(endDate);
+        where['createdAt'] = {
+          $gte: new Date(startDate),
+          $lt: new Date(endDate) 
+        };
+      }
+    }
+    if (genre != undefined) {
+      if (genre != "") {
+        where['genre'] = new mongoose.Types.ObjectId(genre);
+      }
+    }
+    if (theme != undefined) {
+      if (theme != "") {
+        where['theme'] = new mongoose.Types.ObjectId(theme);
+      }
+    }
+    if (mood != undefined) {
+      if (mood != "") {
+        where['mood'] = new mongoose.Types.ObjectId(mood);
+      }
+    }
+    if (status != undefined) {
+      if (status != "") {
+        where['isActive'] = status;
+      }
+    }
+    where['isDelete'] = false;
+    const query = await this.MediamusicModel.find(where).limit(perPage).skip(perPage * page).sort({ musicTitle: 'desc' });
     return query;
   }
 

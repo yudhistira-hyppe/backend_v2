@@ -67,7 +67,8 @@ export class MediamusicController {
       );
     }
 
-    const currentDate = await this.utilsService.getDateTimeString();
+    //const currentDate = await this.utilsService.getDateTimeString();
+    const currentDate = new Date();
     var _MediamusicDto_ = new MediamusicDto();
     _MediamusicDto_._id = new mongoose.Types.ObjectId();
     _MediamusicDto_.musicTitle = MediamusicDto_.musicTitle;
@@ -153,7 +154,8 @@ export class MediamusicController {
       );
     }
 
-    const currentDate = await this.utilsService.getDateTimeString();
+    //const currentDate = await this.utilsService.getDateTimeString();
+    const currentDate = new Date();
     var _MediamusicDto_ = new MediamusicDto();
     _MediamusicDto_.musicTitle = MediamusicDto_.musicTitle;
     _MediamusicDto_.artistName = MediamusicDto_.artistName;
@@ -221,7 +223,17 @@ export class MediamusicController {
     @Query('genre') genre: string,
     @Query('theme') theme: string,
     @Query('mood') mood: string,
-    @Query('search') search: string) {
+    @Query('search') search: string, @Headers() headers) {
+    if (headers['x-auth-user'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
     const pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
     const pageRow_ = (pageRow != undefined) ? pageRow : 8;
     const search_ = search;
@@ -328,20 +340,53 @@ export class MediamusicController {
     return Response;
   }
 
-  // @UseGuards(JwtAuthGuard)
-  // @Get('api/allmusic/')
-  // @HttpCode(HttpStatus.ACCEPTED)
-  // async getMusicFilter(@Headers() headers) {
-  //   const data = await this.mediamusicService.getMusicCard();
-  //   var Response = {
-  //     response_code: 202,
-  //     data: data,
-  //     messages: {
-  //       info: [
-  //         "Retrieved music card succesfully"
-  //       ]
-  //     }
-  //   }
-  //   return Response;
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Get('api/allmusic/')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async getMusicFilter(
+    @Query('pageNumber') pageNumber: number,
+    @Query('pageRow') pageRow: number,
+    @Query('genre') genre: string,
+    @Query('theme') theme: string,
+    @Query('mood') mood: string,
+    @Query('musicTitle') musicTitle: string,
+    @Query('artistName') artistName: string,
+    @Query('createdAtStart') createdAtStart: string,
+    @Query('createdAtEnd') createdAtEnd: string,
+    @Query('status') status: string,
+    @Headers() headers) {
+    if (headers['x-auth-user'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+
+    const pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
+    const pageRow_ = (pageRow != undefined) ? pageRow : 10;
+    const genre_ = genre;
+    const theme_ = theme;
+    const mood_ = mood;
+    const musicTitle_ = musicTitle;
+    const artistName_ = artistName;
+    const createdAtStart_ = createdAtStart;
+    const createdAtEnd_ = createdAtEnd;
+    const status_ = status;
+
+    const data = await this.mediamusicService.getMusicFilter(pageNumber_, pageRow_, genre_, theme_, mood_, musicTitle_, artistName_, createdAtStart_, createdAtEnd_, status_);
+    var Response = {
+      response_code: 202,
+      data: data,
+      messages: {
+        info: [
+          "Retrieved music card succesfully"
+        ]
+      }
+    }
+    return Response;
+  }
 }
