@@ -51,6 +51,12 @@ export class AdsService {
         return deletedCat;
     }
 
+    async updateActive(id: Object, updatedAt: string) {
+        let data = await this.adsModel.updateOne({ "_id": id },
+            { $set: { "isActive": false, "updatedAt": updatedAt } });
+        return data;
+    }
+
     async update(
         id: string,
         createAdsDto: CreateAdsDto,

@@ -5656,6 +5656,11 @@ export class PostsService {
     return data;
   }
 
+  async updateActive(id: string, updatedAt: string) {
+    let data = await this.PostsModel.updateMany({ "_id": id },
+      { $set: { "active": false, "updatedAt": updatedAt } });
+    return data;
+  }
   async updateDitangguhkan(id: string, status: string, reason: string, updatedAt: string) {
     let data = await this.PostsModel.updateMany({ "_id": id },
       { $set: { "reportedStatus": status, "updatedAt": updatedAt, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });

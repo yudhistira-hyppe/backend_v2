@@ -1808,4 +1808,65 @@ export class ReportuserController {
 
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post('delete')
+    async delete(@Req() request) {
+
+        var postID = null;
+
+        var type = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+
+
+        if (type === "content") {
+
+            try {
+                await this.postsService.updateActive(postID, dt.toISOString());
+                return { response_code: 202, messages };
+            } catch (e) {
+                throw new BadRequestException("Unabled to proceed");
+            }
+
+        }
+        else if (type === "ads") {
+            var adsId = mongoose.Types.ObjectId(postID);
+            try {
+                await this.adsService.updateActive(adsId, dt.toISOString());
+                return { response_code: 202, messages };
+
+            } catch (e) {
+                throw new BadRequestException("Unabled to proceed");
+            }
+
+        }
+
+
+    }
 }
