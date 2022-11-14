@@ -3951,10 +3951,10 @@ export class AdsService {
         return data;
     }
 
-    async updateActive(id: ObjectID, updatedAt: string) {
+    async updateActive(id: ObjectID, updatedAt: string, remark: string) {
         let data = await this.adsModel.updateMany({ "_id": id },
 
-            { $set: { "isActive": false, "updatedAt": updatedAt, "reportedUserHandle.$[].status": "DELETE", "reportedUserHandle.$[].updatedAt": updatedAt } });
+            { $set: { "active": false, "updatedAt": updatedAt, "reportedUserHandle.$[].remark": remark, "reportedUserHandle.$[].status": "DELETE", "reportedUserHandle.$[].updatedAt": updatedAt } });
         return data;
     }
 

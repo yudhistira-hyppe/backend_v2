@@ -2010,7 +2010,7 @@ export class ReportuserController {
         var postID = null;
 
         var type = null;
-        var reason = null;
+        var remark = null;
         var reasonId = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
 
@@ -2026,6 +2026,7 @@ export class ReportuserController {
         }
 
         reasonId = request_json["reasonId"];
+        remark = request_json["remark"];
 
 
         const mongoose = require('mongoose');
@@ -2059,12 +2060,12 @@ export class ReportuserController {
             }
 
             if (reportedUserHandle.length > 0) {
-                await this.postsService.updateActive(postID, dt.toISOString());
+                await this.postsService.updateActive(postID, dt.toISOString(), remark);
 
             } else {
 
                 objreporthandle = {
-
+                    "remark": remark,
                     "createdAt": dt.toISOString(),
                     "updatedAt": dt.toISOString(),
                     "status": "DELETE"
@@ -2087,12 +2088,12 @@ export class ReportuserController {
             var adsId = mongoose.Types.ObjectId(postID);
 
             if (reportedUserHandle.length > 0) {
-                await this.adsService.updateActive(adsId, dt.toISOString());
+                await this.adsService.updateActive(adsId, dt.toISOString(), remark);
 
             } else {
 
                 objreporthandle = {
-
+                    "remark": remark,
                     "createdAt": dt.toISOString(),
                     "updatedAt": dt.toISOString(),
                     "status": "DELETE"
