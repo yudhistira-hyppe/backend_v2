@@ -4331,12 +4331,7 @@ export class PostsService {
     },
     ];
 
-    if (page > 0) {
-      pipeline.push({ $skip: (page * limit) });
-    }
-    if (limit > 0) {
-      pipeline.push({ $limit: limit });
-    }
+
     if (keys !== undefined && postType === undefined && startdate === undefined && enddate === undefined) {
 
       pipeline.push({
@@ -4428,6 +4423,13 @@ export class PostsService {
           active: true,
         }
       },);
+    }
+
+    if (page > 0) {
+      pipeline.push({ $skip: (page * limit) });
+    }
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
     }
     let query = await this.PostsModel.aggregate(pipeline);
 

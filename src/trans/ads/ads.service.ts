@@ -3443,12 +3443,7 @@ export class AdsService {
 
         ];
 
-        if (page > 0) {
-            pipeline.push({ $skip: (page * limit) });
-        }
-        if (limit > 0) {
-            pipeline.push({ $limit: limit });
-        }
+
         if (keys !== undefined && postType === undefined && startdate === undefined && enddate === undefined) {
 
             pipeline.push({
@@ -3555,7 +3550,12 @@ export class AdsService {
                 }
             },);
         }
-
+        if (page > 0) {
+            pipeline.push({ $skip: (page * limit) });
+        }
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
+        }
         const query = await this.adsModel.aggregate(pipeline);
 
         return query;
