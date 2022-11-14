@@ -5668,15 +5668,32 @@ export class PostsService {
     return data;
   }
 
-  async updateFlaging(id: string, reason: string, updatedAt: string, reasonId: ObjectId) {
+  async updateDitangguhkanEmpty(id: string, updatedAt: string, reportedUserHandle: any[]) {
     let data = await this.PostsModel.updateMany({ "_id": id },
-      { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "FLAGING", "reportedUserHandle.$[].updatedAt": updatedAt } });
+      { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle": reportedUserHandle } });
+    return data;
+  }
+
+  async updateFlaging(id: string, updatedAt: string) {
+    let data = await this.PostsModel.updateMany({ "_id": id },
+      { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserHandle.$[].status": "FLAGING", "reportedUserHandle.$[].updatedAt": updatedAt } });
+    return data;
+  }
+  async updateFlagingEmpty(id: string, updatedAt: string, reportedUserHandle: any[]) {
+    let data = await this.PostsModel.updateMany({ "_id": id },
+      { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserHandle": reportedUserHandle } });
     return data;
   }
 
   async updateTidakditangguhkan(id: string, updatedAt: string) {
     let data = await this.PostsModel.updateMany({ "_id": id },
       { $set: { "reportedStatus": "ALL", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle.$[].status": "TIDAK DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
+    return data;
+  }
+
+  async updateTidakditangguhkanEmpty(id: string, updatedAt: string, reportedUserHandle: any[]) {
+    let data = await this.PostsModel.updateMany({ "_id": id },
+      { $set: { "reportedStatus": "ALL", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle": reportedUserHandle } });
     return data;
   }
 
