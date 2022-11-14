@@ -818,8 +818,6 @@ export class ReportuserController {
     @UseGuards(JwtAuthGuard)
     @Post('approval')
     async reportHandleAproval(@Req() request) {
-
-        var reportedUserHandle = [];
         var postID = null;
 
         var type = null;
@@ -847,8 +845,6 @@ export class ReportuserController {
 
         reason = request_json["reason"];
         reasonId = request_json["reasonId"];
-
-        reportedUserHandle = request_json["reportedUserHandle"];
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         var idreason = mongoose.Types.ObjectId(reasonId);
@@ -865,25 +861,109 @@ export class ReportuserController {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
+        var datacontent = null;
+        var objreporthandle = {};
+        var arrayreportedHandle = [];
+        var reportedUserHandle = [];
+
 
         if (type === "content") {
+            try {
+                datacontent = await this.postsService.findByPostId(postID);
+                reportedUserHandle = datacontent._doc.reportedUserHandle;
 
+            } catch (e) {
+                datacontent = null;
+                reportedUserHandle = [];
+            }
             if (ditangguhkan === true) {
-                await this.postsService.updateDitangguhkan(postID, reason, dt.toISOString(), idreason);
+                if (reportedUserHandle.length > 0) {
+                    await this.postsService.updateDitangguhkan(postID, reason, dt.toISOString(), idreason);
+                } else {
+
+                    objreporthandle = {
+
+                        "reasonId": reasonId,
+                        "reason": reason,
+                        "remark": "",
+                        "createdAt": dt.toISOString(),
+                        "updatedAt": dt.toISOString(),
+                        "status": "DITANGGUHKAN"
+                    };
+                    arrayreportedHandle.push(objreporthandle);
+
+                    await this.postsService.updateDitangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
+                }
+
+
             } else {
-                await this.postsService.updateTidakditangguhkan(postID, dt.toISOString());
-                await this.postsService.nonactive(postID, dt.toISOString());
+                if (reportedUserHandle.length > 0) {
+                    await this.postsService.updateTidakditangguhkan(postID, dt.toISOString());
+                    await this.postsService.nonactive(postID, dt.toISOString());
+                } else {
+                    objreporthandle = {
+
+                        "reasonId": reasonId,
+                        "reason": reason,
+                        "remark": "",
+                        "createdAt": dt.toISOString(),
+                        "updatedAt": dt.toISOString(),
+                        "status": "TIDAK DITANGGUHKAN"
+                    };
+                    arrayreportedHandle.push(objreporthandle);
+
+                    await this.postsService.updateTidakditangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
+                    await this.postsService.nonactive(postID, dt.toISOString());
+                }
             }
 
         }
         else if (type === "ads") {
+            try {
+                datacontent = await this.adsService.findOne(postID);
+                reportedUserHandle = datacontent._doc.reportedUserHandle;
+
+            } catch (e) {
+                datacontent = null;
+                reportedUserHandle = [];
+            }
             var adsId = mongoose.Types.ObjectId(postID);
 
             if (ditangguhkan === true) {
-                await this.adsService.updateDitangguhkan(adsId, reason, dt.toISOString(), idreason);
+
+                if (reportedUserHandle.length > 0) {
+                    await this.adsService.updateDitangguhkan(adsId, reason, dt.toISOString(), idreason);
+                } else {
+
+                    objreporthandle = {
+
+                        "reasonId": reasonId,
+                        "reason": reason,
+                        "remark": "",
+                        "createdAt": dt.toISOString(),
+                        "updatedAt": dt.toISOString(),
+                        "status": "DITANGGUHKAN"
+                    };
+                    arrayreportedHandle.push(objreporthandle);
+
+                    await this.adsService.updateDitangguhkanEmpty(adsId, dt.toISOString(), arrayreportedHandle);
+                }
+
             } else {
-                await this.adsService.updateTidakditangguhkan(adsId, dt.toISOString());
+                objreporthandle = {
+
+                    "reasonId": reasonId,
+                    "reason": reason,
+                    "remark": "",
+                    "createdAt": dt.toISOString(),
+                    "updatedAt": dt.toISOString(),
+                    "status": "TIDAK DITANGGUHKAN"
+                };
+                arrayreportedHandle.push(objreporthandle);
+
+                await this.adsService.updateTidakditangguhkanEmpty(adsId, dt.toISOString(), arrayreportedHandle);
                 await this.adsService.nonactive(adsId, dt.toISOString());
+
             }
         }
 
@@ -931,15 +1011,65 @@ export class ReportuserController {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
+        var datacontent = null;
+        var objreporthandle = {};
+        var arrayreportedHandle = [];
+        var reportedUserHandle = [];
 
         if (type === "content") {
+            try {
+                datacontent = await this.postsService.findByPostId(postID);
+                reportedUserHandle = datacontent._doc.reportedUserHandle;
 
-            await this.postsService.updateFlaging(postID, reason, dt.toISOString(), idreason);
+            } catch (e) {
+                datacontent = null;
+                reportedUserHandle = [];
+            }
+
+            if (reportedUserHandle.length > 0) {
+                await this.postsService.updateFlaging(postID, dt.toISOString());
+
+            } else {
+
+                objreporthandle = {
+
+                    "createdAt": dt.toISOString(),
+                    "updatedAt": dt.toISOString(),
+                    "status": "FLAGING"
+                };
+                arrayreportedHandle.push(objreporthandle);
+
+                await this.postsService.updateFlagingEmpty(postID, dt.toISOString(), arrayreportedHandle);
+            }
 
         }
         else if (type === "ads") {
+            try {
+                datacontent = await this.adsService.findOne(postID);
+                reportedUserHandle = datacontent._doc.reportedUserHandle;
+
+            } catch (e) {
+                datacontent = null;
+                reportedUserHandle = [];
+            }
             var adsId = mongoose.Types.ObjectId(postID);
-            await this.adsService.updateFlaging(adsId, reason, dt.toISOString(), idreason);
+
+            if (reportedUserHandle.length > 0) {
+                await this.adsService.updateFlaging(adsId, dt.toISOString());
+
+            } else {
+
+                objreporthandle = {
+
+                    "createdAt": dt.toISOString(),
+                    "updatedAt": dt.toISOString(),
+                    "status": "FLAGING"
+                };
+                arrayreportedHandle.push(objreporthandle);
+
+                await this.adsService.updateFlagingEmpty(adsId, dt.toISOString(), arrayreportedHandle);
+            }
+
 
         }
 
