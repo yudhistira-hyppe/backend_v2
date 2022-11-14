@@ -44,6 +44,7 @@ export class MediamusicService {
       }
     }
     where['isActive'] = true;
+    where['isDelete'] = false;
     const query = await this.MediamusicModel.find(where).limit(perPage).skip(perPage * page).sort({ musicTitle: 'desc' });
     return query;
   }
@@ -252,148 +253,148 @@ export class MediamusicService {
           event: '$event',
           senderParty: '$senderParty',
           viewAt: '$viewAt',
-          dob: '$dob',
-          discount:{
-            $cond: { if: { $dob: ["$qty", 250] }, then: 30, else: 20 }
-          },
+          // dob: '$dob',
+          // discount:{
+          //   $cond: { if: { $dob: ["$qty", 250] }, then: 30, else: 20 }
+          // },
           gender: '$gender',
           states: '$states',
           stateName: '$areas_data.stateName'
         }
       },
-      // {
-      //   $facet: {
-      //     "musicTitle": [
-      //       {
-      //         "$group": {
-      //           "_id": "$musicTitle",
-      //         }
-      //       }
-      //     ],
-      //     "artistName": [
-      //       {
-      //         "$group": {
-      //           "_id": "$artistName",
-      //         }
-      //       }
-      //     ],
-      //     "albumName": [
-      //       {
-      //         "$group": {
-      //           "_id": "$albumName",
-      //         }
-      //       }
-      //     ],
-      //     "genre": [
-      //       {
-      //         "$group": {
-      //           "_id": "$genre",
-      //         }
-      //       }
-      //     ],
-      //     "theme": [
-      //       {
-      //         "$group": {
-      //           "_id": "$theme",
-      //         }
-      //       }
-      //     ],
-      //     "mood": [
-      //       {
-      //         "$group": {
-      //           "_id": "$mood",
-      //         }
-      //       }
-      //     ],
-      //     "releaseDate": [
-      //       {
-      //         "$group": {
-      //           "_id": "$releaseDate",
-      //         }
-      //       }
-      //     ],
-      //     "apsaraMusic": [
-      //       {
-      //         "$group": {
-      //           "_id": "$apsaraMusic",
-      //         }
-      //       }
-      //     ],
-      //     "apsaraThumnail": [
-      //       {
-      //         "$group": {
-      //           "_id": "$apsaraThumnail",
-      //         }
-      //       }
-      //     ],
-      //     "wilayah": [
-      //       {
-      //         "$group": {
-      //           "_id": "$stateName",
-      //           "count": { "$sum": 1 }
-      //         }
-      //       }
-      //     ],
-      //     "gender": [
-      //       {
-      //         "$group": {
-      //           "_id": "$gender",
-      //           "count": { "$sum": 1 }
-      //         }
-      //       }
-      //     ],
-      //     "used": [
-      //       {
-      //         "$group": {
-      //           "_id": "$postID",
-      //           "count": { "$sum": 1 }
-      //         }
-      //       }
-      //     ],
-      //     "view": [
-      //       {
-      //         "$group": {
-      //           "_id": "$senderParty",
-      //           "count": { "$sum": 1 }
-      //         }
-      //       }
-      //     ]
-      //   }
-      // },
-      // {
-      //   $project: {
-      //     musicTitle: { $arrayElemAt: ['$musicTitle', 0] },
-      //     artistName: { $arrayElemAt: ['$artistName', 0] },
-      //     albumName: { $arrayElemAt: ['$albumName', 0] },
-      //     genre: { $arrayElemAt: ['$genre', 0] },
-      //     theme: { $arrayElemAt: ['$theme', 0] },
-      //     mood: { $arrayElemAt: ['$mood', 0] },
-      //     releaseDate: { $arrayElemAt: ['$releaseDate', 0] },
-      //     apsaraMusic: { $arrayElemAt: ['$apsaraMusic', 0] },
-      //     apsaraThumnail: { $arrayElemAt: ['$apsaraThumnail', 0] },
-      //     view: { $size: '$view' },
-      //     used: { $size: '$used' },
-      //     gender: '$gender',
-      //     wilayah: '$wilayah'
-      //   }
-      // },
-      // {
-      //   $project: {
-      //     musicTitle: '$musicTitle._id',
-      //     artistName: '$artistName._id',
-      //     albumName: '$albumName._id',
-      //     genre: '$genre._id',
-      //     theme: '$theme._id',
-      //     mood: '$mood._id',
-      //     releaseDate: '$releaseDate._id',
-      //     apsaraMusic: '$apsaraMusic._id',
-      //     apsaraThumnail: '$apsaraThumnail._id',
-      //     view: '$view',
-      //     used: '$used',
-      //     gender: '$gender',
-      //     wilayah: '$wilayah'
-      //   }
-      // }
+      {
+        $facet: {
+          "musicTitle": [
+            {
+              "$group": {
+                "_id": "$musicTitle",
+              }
+            }
+          ],
+          "artistName": [
+            {
+              "$group": {
+                "_id": "$artistName",
+              }
+            }
+          ],
+          "albumName": [
+            {
+              "$group": {
+                "_id": "$albumName",
+              }
+            }
+          ],
+          "genre": [
+            {
+              "$group": {
+                "_id": "$genre",
+              }
+            }
+          ],
+          "theme": [
+            {
+              "$group": {
+                "_id": "$theme",
+              }
+            }
+          ],
+          "mood": [
+            {
+              "$group": {
+                "_id": "$mood",
+              }
+            }
+          ],
+          "releaseDate": [
+            {
+              "$group": {
+                "_id": "$releaseDate",
+              }
+            }
+          ],
+          "apsaraMusic": [
+            {
+              "$group": {
+                "_id": "$apsaraMusic",
+              }
+            }
+          ],
+          "apsaraThumnail": [
+            {
+              "$group": {
+                "_id": "$apsaraThumnail",
+              }
+            }
+          ],
+          "wilayah": [
+            {
+              "$group": {
+                "_id": "$stateName",
+                "count": { "$sum": 1 }
+              }
+            }
+          ],
+          "gender": [
+            {
+              "$group": {
+                "_id": "$gender",
+                "count": { "$sum": 1 }
+              }
+            }
+          ],
+          "used": [
+            {
+              "$group": {
+                "_id": "$postID",
+                "count": { "$sum": 1 }
+              }
+            }
+          ],
+          "view": [
+            {
+              "$group": {
+                "_id": "$senderParty",
+                "count": { "$sum": 1 }
+              }
+            }
+          ]
+        }
+      },
+      {
+        $project: {
+          musicTitle: { $arrayElemAt: ['$musicTitle', 0] },
+          artistName: { $arrayElemAt: ['$artistName', 0] },
+          albumName: { $arrayElemAt: ['$albumName', 0] },
+          genre: { $arrayElemAt: ['$genre', 0] },
+          theme: { $arrayElemAt: ['$theme', 0] },
+          mood: { $arrayElemAt: ['$mood', 0] },
+          releaseDate: { $arrayElemAt: ['$releaseDate', 0] },
+          apsaraMusic: { $arrayElemAt: ['$apsaraMusic', 0] },
+          apsaraThumnail: { $arrayElemAt: ['$apsaraThumnail', 0] },
+          view: { $size: '$view' },
+          used: { $size: '$used' },
+          gender: '$gender',
+          wilayah: '$wilayah'
+        }
+      },
+      {
+        $project: {
+          musicTitle: '$musicTitle._id',
+          artistName: '$artistName._id',
+          albumName: '$albumName._id',
+          genre: '$genre._id',
+          theme: '$theme._id',
+          mood: '$mood._id',
+          releaseDate: '$releaseDate._id',
+          apsaraMusic: '$apsaraMusic._id',
+          apsaraThumnail: '$apsaraThumnail._id',
+          view: '$view',
+          used: '$used',
+          gender: '$gender',
+          wilayah: '$wilayah'
+        }
+      }
     ]);
     return query;
   }
@@ -414,7 +415,7 @@ export class MediamusicService {
   async deleteMusic(_id: string) {
     this.MediamusicModel.updateOne(
       { _id: Object(_id) },
-      { isActive: false, isDelete: false },
+      { isActive: false, isDelete: true },
       function (err, docs) {
         if (err) {
           console.log(err);
@@ -422,6 +423,16 @@ export class MediamusicService {
           console.log(docs);
         }
       });
+  }
+
+  async statusMusic(_id: [Object], status: boolean) {
+    try {
+      this.MediamusicModel.updateMany(
+        { "_id": { $in: _id } },
+        { $set: { "isActive": status } })
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   async updateUsed(_id: string) {
@@ -655,6 +666,55 @@ export class MediamusicService {
     }
     where['isDelete'] = false;
     const query = await this.MediamusicModel.find(where).limit(perPage).skip(perPage * page).sort({ musicTitle: 'desc' });
+    return query;
+  }
+
+  async getMusicFilterWitoutSkipLimit(genre: string, theme: string, mood: string, musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string) {
+    var where = {};
+    if (musicTitle != undefined) {
+      if (musicTitle != "") {
+        where['musicTitle'] = { $regex: musicTitle, $options: "i" };
+      }
+    }
+    if (artistName != undefined) {
+      if (artistName != "") {
+        where['artistName'] = { $regex: artistName, $options: "i" };
+      }
+    }
+    if (createdAtStart != undefined && createdAtEnd != undefined) {
+      if (createdAtStart != "" && createdAtEnd != "") {
+        var startDate = new Date(createdAtStart + 'T00:00:00');
+        var endDate = new Date(createdAtEnd + 'T23:59:59');
+        console.log(startDate);
+        console.log(endDate);
+        where['createdAt'] = {
+          $gte: new Date(startDate),
+          $lt: new Date(endDate)
+        };
+      }
+    }
+    if (genre != undefined) {
+      if (genre != "") {
+        where['genre'] = new mongoose.Types.ObjectId(genre);
+      }
+    }
+    if (theme != undefined) {
+      if (theme != "") {
+        where['theme'] = new mongoose.Types.ObjectId(theme);
+      }
+    }
+    if (mood != undefined) {
+      if (mood != "") {
+        where['mood'] = new mongoose.Types.ObjectId(mood);
+      }
+    }
+    if (status != undefined) {
+      if (status != "") {
+        where['isActive'] = status;
+      }
+    }
+    where['isDelete'] = false;
+    const query = await this.MediamusicModel.find(where).sort({ musicTitle: 'desc' });
     return query;
   }
 

@@ -241,23 +241,42 @@ export class MediamusicController {
     const theme_ = theme;
     const mood_ = mood;
     const data = await this.mediamusicService.findCriteria(pageNumber_, pageRow_, search_, genre_, theme_, mood_);
-    var data_ = await Promise.all(data.map(async item => {
-      console.log(item.apsaraMusic);
-      var dataApsaraMusic = await this.mediamusicService.getVideoApsaraSingle(item.apsaraMusic)
-      console.log(dataApsaraMusic);
+
+    let thumnail_data: string[] = [];
+    for (let i = 0; i < data.length; i++) {
+      let data_item = data[i];
+      if (data_item.apsaraThumnail != undefined && data_item.apsaraThumnail != "" && data_item.apsaraMusic != null) {
+        thumnail_data.push(data_item.apsaraThumnail.toString());
+      }
+    }
+    var dataApsaraThumnail = await this.mediamusicService.getImageApsara(thumnail_data);
+    console.log(dataApsaraThumnail);
+    var data_ = await Promise.all(data.map(async (item, index) => {
+      //APSARA MUSIC
       var apsaraMusicData = {}
-      if (dataApsaraMusic != null && dataApsaraMusic.PlayInfoList != null && dataApsaraMusic.PlayInfoList.PlayInfo && dataApsaraMusic.PlayInfoList.PlayInfo.length > 0) {
-        apsaraMusicData = {
-          PlayURL: dataApsaraMusic.PlayInfoList.PlayInfo[0].PlayURL,
-          Duration: dataApsaraMusic.PlayInfoList.PlayInfo[0].Duration,
+      console.log(item.apsaraMusic);
+      if (item.apsaraMusic != undefined && item.apsaraMusic != "" && item.apsaraMusic != null){
+        var dataApsaraMusic = await this.mediamusicService.getVideoApsaraSingle(item.apsaraMusic)
+        console.log(dataApsaraMusic);
+        if (dataApsaraMusic != null && dataApsaraMusic.PlayInfoList != null && dataApsaraMusic.PlayInfoList.PlayInfo && dataApsaraMusic.PlayInfoList.PlayInfo.length > 0) {
+          apsaraMusicData = {
+            PlayURL: dataApsaraMusic.PlayInfoList.PlayInfo[0].PlayURL,
+            Duration: dataApsaraMusic.PlayInfoList.PlayInfo[0].Duration,
+          }
         }
       }
-      var dataApsaraThumnail = await this.mediamusicService.getImageApsara([item.apsaraThumnail])
-      //console.log(dataApsaraThumnail);
+      //APSARA THUMNAIL
       var apsaraThumnailUrl = null
-      if (dataApsaraThumnail != undefined && dataApsaraThumnail.ImageInfo != undefined && dataApsaraThumnail.ImageInfo.length > 0) {
+      if (item.apsaraThumnail != undefined && item.apsaraThumnail != "" && item.apsaraThumnail != null) {
         apsaraThumnailUrl = dataApsaraThumnail.ImageInfo[0].URL
       }
+      // if (item.apsaraThumnail != undefined && item.apsaraThumnail != "" && item.apsaraThumnail != null) {
+      //   var dataApsaraThumnail = await this.mediamusicService.getImageApsara([item.apsaraThumnail])
+      //   console.log(dataApsaraThumnail);
+      //   if (dataApsaraThumnail != undefined && dataApsaraThumnail.ImageInfo != undefined && dataApsaraThumnail.ImageInfo.length > 0) {
+      //     apsaraThumnailUrl = dataApsaraThumnail.ImageInfo[0].URL
+      //   }
+      // }
       return {
         _id: item._id,
         musicTitle: item.musicTitle,
@@ -324,6 +343,57 @@ export class MediamusicController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Post('api/music/active')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async activeNonAtiveMusicPost(@Headers() headers, @Body() body) {
+    if (headers['x-auth-user'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+    if (body._id == undefined) {
+      await this.errorHandler.generateBadRequestException(
+        'Unabled to proceed param _id is required',
+      );
+    }
+    if (body._id.length ==0) {
+      await this.errorHandler.generateBadRequestException(
+        'Unabled to proceed param _id is required',
+      );
+    }
+    if (body.status == undefined) {
+      await this.errorHandler.generateBadRequestException(
+        'Unabled to proceed param status is required',
+      );
+    }else{
+      if ((typeof body.status) != "boolean") {
+        await this.errorHandler.generateBadRequestException(
+          'Unabled to proceed param status type data only boolean',
+        );
+      }
+    }
+    var allId = body._id;
+    var dataId = allId.map(function (value) {
+      return new mongoose.Types.ObjectId(value);
+    });
+    await this.mediamusicService.statusMusic(dataId, body.status);
+    var Response = {
+      response_code: 202,
+      messages: {
+        info: [
+          "Update music succesfully"
+        ]
+      }
+    }
+    return Response;
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('api/musiccard/')
   @HttpCode(HttpStatus.ACCEPTED)
   async getMusicCard(@Headers() headers) {
@@ -377,9 +447,13 @@ export class MediamusicController {
     const createdAtEnd_ = createdAtEnd;
     const status_ = status;
 
+    const dataAll = await this.mediamusicService.getMusicFilterWitoutSkipLimit(genre_, theme_, mood_, musicTitle_, artistName_, createdAtStart_, createdAtEnd_, status_);
     const data = await this.mediamusicService.getMusicFilter(pageNumber_, pageRow_, genre_, theme_, mood_, musicTitle_, artistName_, createdAtStart_, createdAtEnd_, status_);
     var Response = {
       response_code: 202,
+      totalRow: dataAll.length.toString(),
+      pageRow: pageRow_,
+      pageNumber_: pageNumber_,
       data: data,
       messages: {
         info: [
