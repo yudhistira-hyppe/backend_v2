@@ -1798,11 +1798,13 @@ export class ReportuserController {
         var mediaprofilepicts = null;
         var mediaprofilepicts_res = {};
         var lengUser = null;
+        var media = null;
         if (type === "content") {
 
             var objrepuser = {};
             var arrRepuser = [];
             var datauser = null;
+
             try {
                 query = await this.postsService.findreportuserdetail(postID);
             } catch (e) {
@@ -1842,24 +1844,37 @@ export class ReportuserController {
                         }
 
                         if (datauser !== null || datauser !== undefined) {
-                            var media = datauser._doc.profilePict.oid;
+                            try {
+                                media = datauser._doc.profilePict.oid;
+                            } catch (e) {
+                                media = null;
+                            }
                             var fullName = datauser._doc.fullName;
 
+                            if (media !== null) {
 
-                            try {
+                                try {
 
-                                mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
-                                console.log(mediaprofilepicts)
-                                var mediaUri = mediaprofilepicts.mediaUri;
-                                let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
-                                mediaprofilepicts_res = {
-                                    mediaBasePath: mediaprofilepicts.mediaBasePath,
-                                    mediaUri: mediaprofilepicts.mediaUri,
-                                    mediaType: mediaprofilepicts.mediaType,
-                                    mediaEndpoint: result
-                                };
-                            } catch (e) {
+                                    mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
+                                    console.log(mediaprofilepicts)
+                                    var mediaUri = mediaprofilepicts.mediaUri;
+                                    let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+                                    mediaprofilepicts_res = {
+                                        mediaBasePath: mediaprofilepicts.mediaBasePath,
+                                        mediaUri: mediaprofilepicts.mediaUri,
+                                        mediaType: mediaprofilepicts.mediaType,
+                                        mediaEndpoint: result
+                                    };
+                                } catch (e) {
 
+                                    mediaprofilepicts_res = {
+                                        mediaBasePath: "",
+                                        mediaUri: "",
+                                        mediaType: "",
+                                        mediaEndpoint: ""
+                                    };
+                                }
+                            } else {
                                 mediaprofilepicts_res = {
                                     mediaBasePath: "",
                                     mediaUri: "",
@@ -1941,24 +1956,38 @@ export class ReportuserController {
                         }
 
                         if (datauser !== null || datauser !== undefined) {
-                            var media = datauser._doc.profilePict.oid;
-                            var fullName = datauser._doc.fullName;
-
 
                             try {
-
-                                mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
-                                console.log(mediaprofilepicts)
-                                var mediaUri = mediaprofilepicts.mediaUri;
-                                let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
-                                mediaprofilepicts_res = {
-                                    mediaBasePath: mediaprofilepicts.mediaBasePath,
-                                    mediaUri: mediaprofilepicts.mediaUri,
-                                    mediaType: mediaprofilepicts.mediaType,
-                                    mediaEndpoint: result
-                                };
+                                media = datauser._doc.profilePict.oid;
                             } catch (e) {
+                                media = null;
+                            }
+                            var fullName = datauser._doc.fullName;
 
+                            if (media !== null) {
+
+                                try {
+
+                                    mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
+                                    console.log(mediaprofilepicts)
+                                    var mediaUri = mediaprofilepicts.mediaUri;
+                                    let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+                                    mediaprofilepicts_res = {
+                                        mediaBasePath: mediaprofilepicts.mediaBasePath,
+                                        mediaUri: mediaprofilepicts.mediaUri,
+                                        mediaType: mediaprofilepicts.mediaType,
+                                        mediaEndpoint: result
+                                    };
+                                } catch (e) {
+
+                                    mediaprofilepicts_res = {
+                                        mediaBasePath: "",
+                                        mediaUri: "",
+                                        mediaType: "",
+                                        mediaEndpoint: ""
+                                    };
+                                }
+                            } else {
                                 mediaprofilepicts_res = {
                                     mediaBasePath: "",
                                     mediaUri: "",
