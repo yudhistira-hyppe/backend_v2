@@ -4342,6 +4342,7 @@ export class PostsService {
       pipeline.push({
         $match: {
           reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+          active: true,
           description: {
             $regex: keys,
             $options: 'i'
@@ -4355,6 +4356,7 @@ export class PostsService {
       pipeline.push({
         $match: {
           reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+          active: true,
           postType: postType
 
         }
@@ -4364,6 +4366,7 @@ export class PostsService {
       pipeline.push({
         $match: {
           reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+          active: true,
           description: {
             $regex: keys,
             $options: 'i'
@@ -4376,6 +4379,7 @@ export class PostsService {
       pipeline.push({
         $match: {
           reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+          active: true,
           description: {
             $regex: keys,
             $options: 'i'
@@ -4388,6 +4392,7 @@ export class PostsService {
       pipeline.push({
         $match: {
           reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+          active: true,
           postType: postType, createdAtReportLast: { $gte: startdate, $lte: dateend }
 
         }
@@ -4397,6 +4402,7 @@ export class PostsService {
       pipeline.push({
         $match: {
           reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+          active: true,
           createdAtReportLast: { $gte: startdate, $lte: dateend }
 
         }
@@ -4406,6 +4412,7 @@ export class PostsService {
       pipeline.push({
         $match: {
           reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+          active: true,
           description: {
             $regex: keys,
             $options: 'i'
@@ -4418,6 +4425,7 @@ export class PostsService {
       pipeline.push({
         $match: {
           reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+          active: true,
         }
       },);
     }
@@ -5612,6 +5620,8 @@ export class PostsService {
     return query;
   }
 
+
+
   async countReason(postID: string) {
     let query = await this.PostsModel.aggregate([
       {
@@ -5622,6 +5632,12 @@ export class PostsService {
       },
       {
         $unwind: "$reportedUser"
+      },
+      {
+        $match: {
+
+          'reportedUser.active': true
+        }
       },
       {
         $group: {
@@ -5659,9 +5675,18 @@ export class PostsService {
 
   async updateActive(id: string, updatedAt: string) {
     let data = await this.PostsModel.updateMany({ "_id": id },
-      { $set: { "active": false, "updatedAt": updatedAt } });
+
+      { $set: { "active": false, "updatedAt": updatedAt, "reportedUserHandle.$[].status": "DELETE", "reportedUserHandle.$[].updatedAt": updatedAt } });
     return data;
   }
+
+  async updateActiveEmpty(id: string, updatedAt: string, reportedUserHandle: any[]) {
+    let data = await this.PostsModel.updateMany({ "_id": id },
+
+      { $set: { "active": false, "updatedAt": updatedAt, "reportedUserHandle": reportedUserHandle } });
+    return data;
+  }
+
   async updateDitangguhkan(id: string, reason: string, updatedAt: string, reasonId: ObjectId) {
     let data = await this.PostsModel.updateMany({ "_id": id },
       { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });

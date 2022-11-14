@@ -51,12 +51,6 @@ export class AdsService {
         return deletedCat;
     }
 
-    async updateActive(id: Object, updatedAt: string) {
-        let data = await this.adsModel.updateOne({ "_id": id },
-            { $set: { "isActive": false, "updatedAt": updatedAt } });
-        return data;
-    }
-
     async update(
         id: string,
         createAdsDto: CreateAdsDto,
@@ -3460,6 +3454,7 @@ export class AdsService {
             pipeline.push({
                 $match: {
                     reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    isActive: true,
                     name: {
                         $regex: keys,
                         $options: 'i'
@@ -3473,6 +3468,7 @@ export class AdsService {
             pipeline.push({
                 $match: {
                     reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    isActive: true,
                     tipeads: {
                         $regex: postType,
                         $options: 'i'
@@ -3485,6 +3481,7 @@ export class AdsService {
             pipeline.push({
                 $match: {
                     reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    isActive: true,
                     createdAtReportLast: { $gte: startdate, $lte: dateend }
 
                 }
@@ -3494,6 +3491,7 @@ export class AdsService {
             pipeline.push({
                 $match: {
                     reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    isActive: true,
                     name: {
                         $regex: keys,
                         $options: 'i'
@@ -3506,6 +3504,7 @@ export class AdsService {
             pipeline.push({
                 $match: {
                     reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    isActive: true,
                     name: {
                         $regex: keys,
                         $options: 'i'
@@ -3521,6 +3520,7 @@ export class AdsService {
             pipeline.push({
                 $match: {
                     reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    isActive: true,
                     tipeads: {
                         $regex: postType,
                         $options: 'i'
@@ -3533,6 +3533,7 @@ export class AdsService {
             pipeline.push({
                 $match: {
                     reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    isActive: true,
                     name: {
                         $regex: keys,
                         $options: 'i'
@@ -3548,6 +3549,7 @@ export class AdsService {
             pipeline.push({
                 $match: {
                     reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    isActive: true,
 
 
                 }
@@ -3568,6 +3570,12 @@ export class AdsService {
             },
             {
                 $unwind: "$reportedUser"
+            },
+            {
+                $match: {
+
+                    'reportedUser.active': true
+                }
             },
             {
                 $group: {
@@ -3723,6 +3731,7 @@ export class AdsService {
 
                 }
             },
+
             {
 
                 $project: {
@@ -3939,6 +3948,20 @@ export class AdsService {
 
 
             });
+        return data;
+    }
+
+    async updateActive(id: ObjectID, updatedAt: string) {
+        let data = await this.adsModel.updateMany({ "_id": id },
+
+            { $set: { "isActive": false, "updatedAt": updatedAt, "reportedUserHandle.$[].status": "DELETE", "reportedUserHandle.$[].updatedAt": updatedAt } });
+        return data;
+    }
+
+    async updateActiveEmpty(id: ObjectID, updatedAt: string, reportedUserHandle: any[]) {
+        let data = await this.adsModel.updateMany({ "_id": id },
+
+            { $set: { "isActive": false, "updatedAt": updatedAt, "reportedUserHandle": reportedUserHandle } });
         return data;
     }
 

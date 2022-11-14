@@ -974,7 +974,6 @@ export class ReportuserController {
     @Post('flaging')
     async reportHandleFlaging(@Req() request) {
 
-        var reportedUserHandle = [];
         var postID = null;
 
         var type = null;
@@ -995,7 +994,7 @@ export class ReportuserController {
 
         reasonId = request_json["reasonId"];
 
-        reportedUserHandle = request_json["reportedUserHandle"];
+
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         const messages = {
@@ -1006,8 +1005,6 @@ export class ReportuserController {
             "info": ["Todo is not found!"],
         };
 
-
-        var idreason = mongoose.Types.ObjectId(reasonId);
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
@@ -1383,17 +1380,20 @@ export class ReportuserController {
         }
         var data = [];
         var query = null;
-
+        var totalReport = null;
 
         var reportedUserCount = null;
         if (type === "content") {
             var email = null;
             var tagPeople = [];
             var tagpeoples = [];
+            var lengUser = null;
             try {
                 query = await this.postsService.findreportuserdetail(postID);
+                lengUser = query.length;
             } catch (e) {
                 query = null;
+                lengUser = 0;
             }
             let pict: String[] = [];
             var objk = {};
@@ -1410,13 +1410,16 @@ export class ReportuserController {
 
             let dataapsara = null;
 
-            if (query !== null) {
+
+            if (lengUser > 0) {
                 email = query[0].email;
                 tagPeople = query[0].tagPeople;
                 try {
                     reportedUserCount = query[0].reportedUserCount;
+                    totalReport = reportedUserCount;
                 } catch (e) {
                     reportedUserCount = 0;
+                    totalReport = 0;
                 }
 
                 if (tagPeople !== undefined) {
@@ -1570,6 +1573,7 @@ export class ReportuserController {
                 data.push(objk);
             } else {
                 data = [];
+                totalReport = 0;
             }
 
 
@@ -1577,7 +1581,7 @@ export class ReportuserController {
             var datacount = null;
             var objcoun = {};
             var dataSum = [];
-            var totalReport = null;
+
             try {
 
                 datacount = await this.postsService.countReason(postID);
@@ -1597,9 +1601,6 @@ export class ReportuserController {
                 }
                 dataSum.push(objcoun);
             }
-
-
-            totalReport = reportedUserCount
 
             return { response_code: 202, totalReport, dataSum, data, messages };
         }
@@ -1644,8 +1645,10 @@ export class ReportuserController {
 
                 try {
                     reportedUserCount = query[0].reportedUserCount;
+                    totalReport = reportedUserCount;
                 } catch (e) {
                     reportedUserCount = 0;
+                    totalReport = 0;
                 }
 
                 try {
@@ -1728,6 +1731,7 @@ export class ReportuserController {
                 data.push(objk);
             } else {
                 data = [];
+                totalReport = 0;
             }
 
 
@@ -1755,9 +1759,6 @@ export class ReportuserController {
                 }
                 dataSum.push(objcoun);
             }
-
-
-            totalReport = reportedUserCount
 
             return { response_code: 202, totalReport, dataSum, data, messages };
         }
@@ -1796,6 +1797,7 @@ export class ReportuserController {
         var reportedUserCount = null;
         var mediaprofilepicts = null;
         var mediaprofilepicts_res = {};
+        var lengUser = null;
         if (type === "content") {
 
             var objrepuser = {};
@@ -1812,8 +1814,10 @@ export class ReportuserController {
 
                 try {
                     reportedUser = query[0].reportedUser;
+                    lengUser = reportedUser.length;
                 } catch (e) {
                     reportedUser = null;
+                    lengUser = 0;
                 }
                 try {
                     reportedUserCount = query[0].reportedUserCount;
@@ -1822,14 +1826,15 @@ export class ReportuserController {
                 }
 
 
-                if (reportedUser !== null || reportedUser !== undefined) {
+                if (reportedUser !== null || reportedUser !== undefined || lengUser > 0) {
 
-                    for (let i = 0; i < reportedUser.length; i++) {
+                    for (let i = 0; i < lengUser; i++) {
 
 
                         let createdAt = reportedUser[i].createdAt;
                         let remark = reportedUser[i].description;
                         let email = reportedUser[i].email;
+
                         try {
                             datauser = await this.userbasicsService.findOne(email);
                         } catch (e) {
@@ -1863,6 +1868,7 @@ export class ReportuserController {
                                 };
                             }
                         }
+
                         objrepuser = {
                             "fullName": fullName,
                             "email": email,
@@ -1872,10 +1878,19 @@ export class ReportuserController {
 
                         }
 
+
+
                         arrRepuser.push(objrepuser);
 
                     }
-                    data = arrRepuser;
+
+                    let active = reportedUser[lengUser - 1].active;
+
+                    if (active === true) {
+                        data = arrRepuser;
+                    } else {
+                        data = [];
+                    }
 
                 } else {
                     data = [];
@@ -1911,7 +1926,7 @@ export class ReportuserController {
                 }
 
 
-                if (reportedUser !== null || reportedUser !== undefined) {
+                if (reportedUser !== null || reportedUser !== undefined || reportedUser.length > 0) {
 
                     for (let i = 0; i < reportedUser.length; i++) {
 
@@ -1964,7 +1979,14 @@ export class ReportuserController {
                         arrRepuser.push(objrepuser);
 
                     }
-                    data = arrRepuser;
+
+                    let active = reportedUser[lengUser - 1].active;
+
+                    if (active === true) {
+                        data = arrRepuser;
+                    } else {
+                        data = [];
+                    }
 
                 } else {
                     data = [];
@@ -1981,13 +2003,15 @@ export class ReportuserController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard)
     @Post('delete')
-    async delete(@Req() request) {
+    async reportHandleDelete(@Req() request) {
 
         var postID = null;
 
         var type = null;
-
+        var reason = null;
+        var reasonId = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
 
         if (request_json["postID"] !== undefined) {
@@ -2000,6 +2024,10 @@ export class ReportuserController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+
+        reasonId = request_json["reasonId"];
+
+
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         const messages = {
@@ -2015,30 +2043,68 @@ export class ReportuserController {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
-
+        var datacontent = null;
+        var objreporthandle = {};
+        var arrayreportedHandle = [];
+        var reportedUserHandle = [];
 
         if (type === "content") {
-
             try {
-                await this.postsService.updateActive(postID, dt.toISOString());
-                return { response_code: 202, messages };
+                datacontent = await this.postsService.findByPostId(postID);
+                reportedUserHandle = datacontent._doc.reportedUserHandle;
+
             } catch (e) {
-                throw new BadRequestException("Unabled to proceed");
+                datacontent = null;
+                reportedUserHandle = [];
+            }
+
+            if (reportedUserHandle.length > 0) {
+                await this.postsService.updateActive(postID, dt.toISOString());
+
+            } else {
+
+                objreporthandle = {
+
+                    "createdAt": dt.toISOString(),
+                    "updatedAt": dt.toISOString(),
+                    "status": "DELETE"
+                };
+                arrayreportedHandle.push(objreporthandle);
+
+                await this.postsService.updateActiveEmpty(postID, dt.toISOString(), arrayreportedHandle);
             }
 
         }
         else if (type === "ads") {
-            var adsId = mongoose.Types.ObjectId(postID);
             try {
-                await this.adsService.updateActive(adsId, dt.toISOString());
-                return { response_code: 202, messages };
+                datacontent = await this.adsService.findOne(postID);
+                reportedUserHandle = datacontent._doc.reportedUserHandle;
 
             } catch (e) {
-                throw new BadRequestException("Unabled to proceed");
+                datacontent = null;
+                reportedUserHandle = [];
             }
+            var adsId = mongoose.Types.ObjectId(postID);
+
+            if (reportedUserHandle.length > 0) {
+                await this.adsService.updateActive(adsId, dt.toISOString());
+
+            } else {
+
+                objreporthandle = {
+
+                    "createdAt": dt.toISOString(),
+                    "updatedAt": dt.toISOString(),
+                    "status": "DELETE"
+                };
+                arrayreportedHandle.push(objreporthandle);
+
+                await this.adsService.updateActiveEmpty(adsId, dt.toISOString(), arrayreportedHandle);
+            }
+
 
         }
 
-
+        return { response_code: 202, messages };
     }
 }
