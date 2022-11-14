@@ -5662,9 +5662,15 @@ export class PostsService {
       { $set: { "active": false, "updatedAt": updatedAt } });
     return data;
   }
-  async updateDitangguhkan(id: string, status: string, reason: string, updatedAt: string) {
+  async updateDitangguhkan(id: string, reason: string, updatedAt: string, reasonId: ObjectId) {
     let data = await this.PostsModel.updateMany({ "_id": id },
-      { $set: { "reportedStatus": status, "updatedAt": updatedAt, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
+      { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
+    return data;
+  }
+
+  async updateFlaging(id: string, reason: string, updatedAt: string, reasonId: ObjectId) {
+    let data = await this.PostsModel.updateMany({ "_id": id },
+      { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "FLAGING", "reportedUserHandle.$[].updatedAt": updatedAt } });
     return data;
   }
 

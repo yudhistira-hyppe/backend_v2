@@ -3899,12 +3899,16 @@ export class AdsService {
         return query;
     }
 
-    async updateDitangguhkan(id: ObjectID, status: string, reason: string, updatedAt: string) {
+    async updateDitangguhkan(id: ObjectID, reason: string, updatedAt: string, reasonId: ObjectID) {
         let data = await this.adsModel.updateMany({ "_id": id },
-            { $set: { "reportedStatus": status, "updatedAt": updatedAt, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
+            { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
         return data;
     }
-
+    async updateFlaging(id: ObjectID, reason: string, updatedAt: string, reasonId: ObjectID) {
+        let data = await this.adsModel.updateMany({ "_id": id },
+            { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "FLAGING", "reportedUserHandle.$[].updatedAt": updatedAt } });
+        return data;
+    }
     async updateTidakditangguhkan(id: ObjectID, updatedAt: string) {
         let data = await this.adsModel.updateMany({ "_id": id },
             { $set: { "reportedStatus": "ALL", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle.$[].status": "TIDAK DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
