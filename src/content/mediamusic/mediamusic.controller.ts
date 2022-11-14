@@ -270,13 +270,6 @@ export class MediamusicController {
       if (item.apsaraThumnail != undefined && item.apsaraThumnail != "" && item.apsaraThumnail != null) {
         apsaraThumnailUrl = dataApsaraThumnail.ImageInfo[0].URL
       }
-      // if (item.apsaraThumnail != undefined && item.apsaraThumnail != "" && item.apsaraThumnail != null) {
-      //   var dataApsaraThumnail = await this.mediamusicService.getImageApsara([item.apsaraThumnail])
-      //   console.log(dataApsaraThumnail);
-      //   if (dataApsaraThumnail != undefined && dataApsaraThumnail.ImageInfo != undefined && dataApsaraThumnail.ImageInfo.length > 0) {
-      //     apsaraThumnailUrl = dataApsaraThumnail.ImageInfo[0].URL
-      //   }
-      // }
       return {
         _id: item._id,
         musicTitle: item.musicTitle,
