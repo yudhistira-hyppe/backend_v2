@@ -821,16 +821,11 @@ export class ReportuserController {
 
         var reportedUserHandle = [];
         var postID = null;
-        var data = null;
-        var reportedUserCount = null;
-        var lenguserreport = null
-        var lengreporthandle = null
-        var reportedUser = [];
 
         var type = null;
-        var status = null;
         var ditangguhkan = null;
         var reason = null;
+        var reasonId = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
 
         if (request_json["postID"] !== undefined) {
@@ -850,12 +845,13 @@ export class ReportuserController {
             throw new BadRequestException("Unabled to proceed");
         }
 
-        status = request_json["status"];
         reason = request_json["reason"];
+        reasonId = request_json["reasonId"];
 
         reportedUserHandle = request_json["reportedUserHandle"];
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
+        var idreason = mongoose.Types.ObjectId(reasonId);
         const messages = {
             "info": ["The update successful"],
         };
@@ -869,22 +865,11 @@ export class ReportuserController {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
-        // try {
-        //     lenguserreport = reportedUser.length;
-        // } catch (e) {
-        //     lenguserreport = 0;
-        // }
-
-        try {
-            lengreporthandle = reportedUserHandle.length;
-        } catch (e) {
-            lengreporthandle = 0;
-        }
 
         if (type === "content") {
 
             if (ditangguhkan === true) {
-                await this.postsService.updateDitangguhkan(postID, status, reason, dt.toISOString());
+                await this.postsService.updateDitangguhkan(postID, reason, dt.toISOString(), idreason);
             } else {
                 await this.postsService.updateTidakditangguhkan(postID, dt.toISOString());
                 await this.postsService.nonactive(postID, dt.toISOString());
@@ -895,11 +880,67 @@ export class ReportuserController {
             var adsId = mongoose.Types.ObjectId(postID);
 
             if (ditangguhkan === true) {
-                await this.adsService.updateDitangguhkan(adsId, status, reason, dt.toISOString());
+                await this.adsService.updateDitangguhkan(adsId, reason, dt.toISOString(), idreason);
             } else {
                 await this.adsService.updateTidakditangguhkan(adsId, dt.toISOString());
                 await this.adsService.nonactive(adsId, dt.toISOString());
             }
+        }
+
+        return { response_code: 202, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('flaging')
+    async reportHandleFlaging(@Req() request) {
+
+        var reportedUserHandle = [];
+        var postID = null;
+
+        var type = null;
+        var reason = null;
+        var reasonId = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["type"] !== undefined) {
+            type = request_json["type"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        reasonId = request_json["reasonId"];
+
+        reportedUserHandle = request_json["reportedUserHandle"];
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+
+        var idreason = mongoose.Types.ObjectId(reasonId);
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+
+        if (type === "content") {
+
+            await this.postsService.updateFlaging(postID, reason, dt.toISOString(), idreason);
+
+        }
+        else if (type === "ads") {
+            var adsId = mongoose.Types.ObjectId(postID);
+            await this.adsService.updateFlaging(adsId, reason, dt.toISOString(), idreason);
+
         }
 
         return { response_code: 202, messages };
