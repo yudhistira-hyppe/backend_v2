@@ -4882,7 +4882,7 @@ export class TransactionsController {
                     bankcode: body.bankcode,
                     name: user.fullName,
                     email: user.email,
-                    valueexpiredva: totalAmount,
+                    valueexpiredva: ExpiredVa,
                 }
                 var Va = await this.createVa(dataCreateVa);
 
@@ -4980,7 +4980,7 @@ export class TransactionsController {
                     );
                 } else {
                     await this.errorHandler.generateNotAcceptableException(
-                        '"Request is Rejected"',
+                        'Request is Rejected',
                     );
                 }
             } else {
@@ -5017,7 +5017,7 @@ export class TransactionsController {
         var stringId = (await this.utilsService.generateNumber()).toString();
         var data_va = {
             "partner_user_id": data.userId.toString() + stringId,
-            "amount": data.totalamount,
+            "amount": data.amount,
             "bank_code": data.bankcode,
             "is_open": false,
             "is_single_use": true,
