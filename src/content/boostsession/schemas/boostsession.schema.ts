@@ -15,5 +15,7 @@ export class Boostsession {
     end: String;
     @Prop()
     type: String;
+    @Prop()
+    langIso: String;
 }
 export const BoostsessionSchema = SchemaFactory.createForClass(Boostsession);

@@ -37,10 +37,19 @@ export class BoostsessionController {
         'Unabled to proceed email header dan token not match',
       );
     }
+    var profile = await this.utilsService.generateProfile(headers['x-auth-user'], "FULL");
+    if (!(await this.utilsService.ceckData(profile))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed user not found',
+      );
+    }
+    const langIso = (profile.langIso != undefined) ? profile.langIso : "id";
     var BoostsessionDto_ = new BoostsessionDto();
     BoostsessionDto_.type = "manual";
+    BoostsessionDto_.langIso = langIso;
     var BoostintervalDto_ = new BoostintervalDto();
     BoostintervalDto_.type = "manual";
+    BoostintervalDto_.langIso = langIso;
     var interval_data = await this.boostintervalService.findWhere(BoostintervalDto_);
     var session_data = await this.boostsessionService.findWhere(BoostsessionDto_);
     var Response = {

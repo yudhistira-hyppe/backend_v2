@@ -5,6 +5,7 @@ export class BoostintervalDto {
   value: String;
   remark: String;
   type: String;
+  langIso: String;
 }
 
 

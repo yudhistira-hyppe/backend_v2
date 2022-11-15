@@ -1148,8 +1148,7 @@ export class TransactionsController {
                             "message": messagesnull
                         });
                     }
-                }
-                else if (type === "VOUCHER") {
+                }else if (type === "VOUCHER") {
                     var datavoucher = null;
                     var saleAmountVoucher = 0;
                     var voucherID = null;
@@ -1267,6 +1266,12 @@ export class TransactionsController {
                             response_code: 202,
                             "message": messagesnull
                         });
+                    }
+                } else if (type === "BOOST") {
+                    const dataPost = await this.getusercontentsService.findcontenbuy(postid);
+                    if (status == "WAITING_PAYMENT") {
+
+
                     }
                 }
 
@@ -4895,6 +4900,7 @@ export class TransactionsController {
                         createTransactionsDto_.totalamount = totalAmount;
                         createTransactionsDto_.description = "buy " + typeTransaction + " pending";
                         createTransactionsDto_.payload = null;
+                        createTransactionsDto_.type = "BOOST";
                         createTransactionsDto_.expiredtimeva = date_trx_expiration_time.toISOString();
                         createTransactionsDto_.detail = transactionDetail;
                         createTransactionsDto_.postid = body.postID;
