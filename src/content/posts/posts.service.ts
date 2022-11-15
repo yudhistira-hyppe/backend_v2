@@ -3950,7 +3950,7 @@ export class PostsService {
     return query;
   }
 
-  async findreport(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[]) {
+  async findreport(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean) {
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -3960,6 +3960,13 @@ export class PostsService {
     }
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
+    var order = null;
+
+    if (descending === true) {
+      order = -1;
+    } else {
+      order = 1;
+    }
     var pipeline = [];
     pipeline = [{
       $project: {
@@ -4501,7 +4508,7 @@ export class PostsService {
     }
     pipeline.push({
       $sort: {
-        createdAtReportLast: - 1
+        createdAtReportLast: order
       },
 
     });
