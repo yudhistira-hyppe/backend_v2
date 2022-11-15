@@ -3375,6 +3375,7 @@ export class AdsService {
                     name: 1,
                     type: 1,
                     status: 1,
+                    isActive: 1,
                     timestamp: 1,
                     totalUsedCredit: 1,
                     tayang: 1,
@@ -3409,6 +3410,7 @@ export class AdsService {
                     name: 1,
                     type: 1,
                     status: 1,
+                    isActive: 1,
                     timestamp: 1,
                     totalUsedCredit: 1,
                     tayang: 1,
@@ -3433,23 +3435,21 @@ export class AdsService {
 
                 }
             },
-
             {
-                $sort: {
-                    createdAtReportLast: - 1
-                },
-
-            },
-
-        ];
-
-
-        if (keys !== undefined && postType === undefined && startdate === undefined && enddate === undefined) {
-
-            pipeline.push({
                 $match: {
                     reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
                     isActive: true,
+
+
+                }
+            }
+        ];
+
+
+        if (keys && keys !== undefined) {
+
+            pipeline.push({
+                $match: {
                     name: {
                         $regex: keys,
                         $options: 'i'
@@ -3459,11 +3459,9 @@ export class AdsService {
             },);
 
         }
-        else if (keys === undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
+        if (postType && postType !== undefined) {
             pipeline.push({
                 $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    isActive: true,
                     tipeads: {
                         $regex: postType,
                         $options: 'i'
@@ -3472,84 +3470,19 @@ export class AdsService {
                 }
             });
         }
-        else if (keys === undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    isActive: true,
-                    createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
+        if (startdate && startdate !== undefined) {
+            pipeline.push({ $match: { createdAtReportLast: { "$gte": startdate } } });
         }
-        else if (keys !== undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    isActive: true,
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
+        if (enddate && enddate !== undefined) {
+            pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
         }
-        else if (keys !== undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    isActive: true,
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    }, tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    },
 
-                }
-            },);
-        }
-        else if (keys === undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    isActive: true,
-                    tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
+        pipeline.push({
+            $sort: {
+                createdAtReportLast: - 1
+            },
 
-                }
-            },);
-        }
-        else if (keys !== undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    isActive: true,
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    }, tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
-        }
-        else {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    isActive: true,
-
-
-                }
-            },);
-        }
+        });
         if (page > 0) {
             pipeline.push({ $skip: (page * limit) });
         }

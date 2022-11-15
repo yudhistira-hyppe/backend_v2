@@ -4324,20 +4324,19 @@ export class PostsService {
       }
     },
     {
-      $sort: {
-        createdAtReportLast: - 1
-      },
+      $match: {
+        reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+        active: true
 
+      }
     },
+
     ];
 
-
-    if (keys !== undefined && postType === undefined && startdate === undefined && enddate === undefined) {
+    if (keys && keys !== undefined) {
 
       pipeline.push({
         $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-          active: true,
           description: {
             $regex: keys,
             $options: 'i'
@@ -4347,84 +4346,28 @@ export class PostsService {
       },);
 
     }
-    else if (keys === undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
+
+    if (postType && postType !== undefined) {
       pipeline.push({
         $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-          active: true,
           postType: postType
 
         }
       },);
     }
-    else if (keys !== undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
-      pipeline.push({
-        $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-          active: true,
-          description: {
-            $regex: keys,
-            $options: 'i'
-          }, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-        }
-      },);
+    if (startdate && startdate !== undefined) {
+      pipeline.push({ $match: { createdAtReportLast: { "$gte": startdate } } });
     }
-    else if (keys !== undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
-      pipeline.push({
-        $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-          active: true,
-          description: {
-            $regex: keys,
-            $options: 'i'
-          }, postType: postType
-
-        }
-      },);
-    }
-    else if (keys === undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
-      pipeline.push({
-        $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-          active: true,
-          postType: postType, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-        }
-      },);
-    }
-    else if (keys === undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
-      pipeline.push({
-        $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-          active: true,
-          createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-        }
-      },);
-    }
-    else if (keys !== undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
-      pipeline.push({
-        $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-          active: true,
-          description: {
-            $regex: keys,
-            $options: 'i'
-          }, postType: postType, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-        }
-      },);
-    }
-    else {
-      pipeline.push({
-        $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-          active: true,
-        }
-      },);
+    if (enddate && enddate !== undefined) {
+      pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
     }
 
+    pipeline.push({
+      $sort: {
+        createdAtReportLast: - 1
+      },
+
+    });
     if (page > 0) {
       pipeline.push({ $skip: (page * limit) });
     }
