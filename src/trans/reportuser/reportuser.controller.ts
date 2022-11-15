@@ -1093,6 +1093,10 @@ export class ReportuserController {
         var datasearch = null;
         var totalsearch = null;
         var total = null;
+        var startreport = null;
+        var endreport = null;
+        var status = null;
+        var reason = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -1115,11 +1119,14 @@ export class ReportuserController {
 
         startdate = request_json["startdate"];
         enddate = request_json["enddate"];
-
+        startreport = request_json["startreport"];
+        endreport = request_json["endreport"];
+        status = request_json["status"];
+        reason = request_json["reason"];
         if (type === "content") {
 
 
-            let query = await this.postsService.findreport(key, postType, startdate, enddate, page, limit);
+            let query = await this.postsService.findreport(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason);
             var data = null;
             var arrdata = [];
             let pict: String[] = [];
@@ -1222,10 +1229,10 @@ export class ReportuserController {
             }
 
             total = query.length;
-            let datasearch = await this.postsService.findreport(key, postType, startdate, enddate, 0, 0);
+            let datasearch = await this.postsService.findreport(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason);
             totalsearch = datasearch.length;
 
-            let dataall = await this.postsService.findreport(undefined, undefined, undefined, undefined, 0, 0);
+            let dataall = await this.postsService.findreport(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason);
             totalallrow = dataall.length;
 
             var tpage = null;
@@ -1246,7 +1253,7 @@ export class ReportuserController {
         else if (type === "ads") {
 
 
-            let query = await this.adsService.findreportads(key, postType, startdate, enddate, page, limit);
+            let query = await this.adsService.findreportads(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason);
             var data = null;
             var arrdata = [];
             let pict: String[] = [];
@@ -1331,9 +1338,9 @@ export class ReportuserController {
                 arrdata.push(objk);
             }
             total = query.length;
-            let datasearch = await this.adsService.findreportads(key, postType, startdate, enddate, 0, 0);
+            let datasearch = await this.adsService.findreportads(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason);
             totalsearch = datasearch.length;
-            let dataall = await this.adsService.findreportads(undefined, undefined, undefined, undefined, 0, 0);
+            let dataall = await this.adsService.findreportads(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason);
             totalallrow = dataall.length;
 
             var tpage = null;
@@ -1931,8 +1938,10 @@ export class ReportuserController {
 
                 try {
                     reportedUser = query[0].reportedUser;
+                    lengUser = reportedUser.length;
                 } catch (e) {
                     reportedUser = null;
+                    lengUser = 0;
                 }
                 try {
                     reportedUserCount = query[0].reportedUserCount;

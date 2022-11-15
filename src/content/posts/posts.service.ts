@@ -3931,7 +3931,7 @@ export class PostsService {
     return query;
   }
 
-  async findreport(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number) {
+  async findreport(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[]) {
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -3939,7 +3939,8 @@ export class PostsService {
     } catch (e) {
       dateend = "";
     }
-
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
     var pipeline = [];
     pipeline = [{
       $project: {
@@ -4320,7 +4321,76 @@ export class PostsService {
         reportReasonIdLast: { $last: "$reportedUser.reportReasonId" },
         reasonLast: { $last: "$reportedUser.description" },
         createdAtReportLast: { $last: "$reportedUser.createdAt" },
-        reportStatusLast: { $last: "$reportedUserHandle.status" },
+        statusLast: {
+          $cond: {
+            if: {
+              $or: [{
+                $eq: ["$reportedUserHandle", null]
+              }, {
+                $eq: ["$reportedUserHandle", ""]
+              }, {
+                $eq: ["$reportedUserHandle", []]
+              }]
+            },
+            then: "BARU",
+            else: {
+              $last: "$reportedUserHandle.status"
+            }
+          },
+
+        },
+      }
+    },
+    {
+      $project: {
+        rotate: 1,
+        mediaBasePath: 1,
+        mediaUri: 1,
+        mediaType: 1,
+        mediaThumbEndpoint: 1,
+        mediaEndpoint: 1,
+        mediaThumbUri: 1,
+        apsaraId: 1,
+        idmedia: 1,
+        apsara: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        postID: 1,
+        email: 1,
+        postType: 1,
+        description: 1,
+        title: 1,
+        active: 1,
+        contentModeration: 1,
+        contentModerationResponse: 1,
+        reportedStatus: 1,
+        reportedUserCount: 1,
+        reportedUser: 1,
+        reportedUserHandle: 1,
+        reportReasonIdLast: 1,
+        reasonLast: 1,
+        createdAtReportLast: 1,
+        statusLast: 1,
+        reportStatusLast: {
+          $cond: {
+            if: {
+              $or: [{
+                $eq: ["$statusLast", null]
+              }, {
+                $eq: ["$statusLast", ""]
+              }, {
+                $eq: ["$statusLast", []]
+              }, {
+                $eq: ["$statusLast", "BARU"]
+              }]
+            },
+            then: "BARU",
+            else: {
+              $last: "$reportedUserHandle.status"
+            }
+          },
+
+        },
       }
     },
     {
@@ -4361,7 +4431,55 @@ export class PostsService {
     if (enddate && enddate !== undefined) {
       pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
     }
+    if (startreport && startreport !== undefined) {
+      pipeline.push({ $match: { reportedUserCount: { "$gte": startreport } } });
+    }
+    if (endreport && endreport !== undefined) {
+      pipeline.push({ $match: { reportedUserCount: { "$lte": endreport } } });
+    }
 
+    if (status && status !== undefined) {
+
+      pipeline.push(
+        {
+          $match: {
+            $or: [
+              {
+                reportStatusLast: {
+                  $in: status
+                }
+              },
+
+            ]
+          }
+        },
+      );
+
+    }
+    if (reason && reason !== undefined) {
+
+      let reasonsleng = reason.length;
+      let arrayReason = [];
+      for (var i = 0; i < reasonsleng; i++) {
+        var id = reason[i];
+        var idreason = mongoose.Types.ObjectId(id);
+        arrayReason.push(idreason);
+      }
+      pipeline.push(
+        {
+          $match: {
+            $or: [
+              {
+                reportReasonIdLast: {
+                  $in: arrayReason
+                }
+              },
+
+            ]
+          }
+        });
+
+    }
     pipeline.push({
       $sort: {
         createdAtReportLast: - 1
@@ -5550,8 +5668,99 @@ export class PostsService {
           reportedUserHandle: 1,
           reportedUser: 1,
           reportedStatus: 1,
-          reportStatusLast: { $last: "$reportedUserHandle.status" },
+          statusLast: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$reportedUserHandle", null]
+                }, {
+                  $eq: ["$reportedUserHandle", ""]
+                }, {
+                  $eq: ["$reportedUserHandle", []]
+                }]
+              },
+              then: "BARU",
+              else: {
+                $last: "$reportedUserHandle.status"
+              }
+            },
 
+          },
+
+
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          insight: 1,
+          avatar: 1,
+          fullName: 1,
+          proofpict: 1,
+          username: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          metadata: 1,
+          location: 1,
+          visibility: 1,
+          isIdVerified: 1,
+          statusUser: 1,
+          tags: 1,
+          likes: 1,
+          views: 1,
+          shares: 1,
+          comments: 1,
+          isOwned: 1,
+          privacy: 1,
+          isViewed: 1,
+          allowComments: 1,
+          isSafe: 1,
+          saleLike: 1,
+          saleView: 1,
+          monetize: 1,
+          saleAmount: 1,
+          mediaref: 1,
+          rotate: 1,
+          mediaBasePath: 1,
+          mediaUri: 1,
+          mediaType: 1,
+          mediaThumbEndpoint: 1,
+          mediaEndpoint: 1,
+          mediaThumbUri: 1,
+          apsaraId: 1,
+          apsara: 1,
+          tagPeople: 1,
+          reportedUserCount: 1,
+          reportedUserHandle: 1,
+          reportedUser: 1,
+          reportedStatus: 1,
+          statusLast: 1,
+          reportStatusLast: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$statusLast", null]
+                }, {
+                  $eq: ["$statusLast", ""]
+                }, {
+                  $eq: ["$statusLast", []]
+                }, {
+                  $eq: ["$statusLast", "BARU"]
+                }]
+              },
+              then: "BARU",
+              else: {
+                $last: "$reportedUserHandle.status"
+              }
+            },
+
+          },
 
         }
       },

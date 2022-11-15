@@ -3331,7 +3331,7 @@ export class AdsService {
         return adsIds;
     }
 
-    async findreportads(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number) {
+    async findreportads(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[]) {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -3339,6 +3339,8 @@ export class AdsService {
         } catch (e) {
             dateend = "";
         }
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
         var pipeline = [];
         pipeline = [
 
@@ -3429,8 +3431,74 @@ export class AdsService {
                     reasonLast: 1,
                     createdAtReportLast: 1,
                     place: '$place.namePlace',
+                    statusLast: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$reportedUserHandle", null]
+                                }, {
+                                    $eq: ["$reportedUserHandle", ""]
+                                }, {
+                                    $eq: ["$reportedUserHandle", []]
+                                }]
+                            },
+                            then: "BARU",
+                            else: {
+                                $last: "$reportedUserHandle.status"
+                            }
+                        },
+
+                    },
+
+                }
+            },
+            {
+
+                $project: {
+                    userID: 1,
+                    idApsara: 1,
+                    name: 1,
+                    type: 1,
+                    status: 1,
+                    isActive: 1,
+                    timestamp: 1,
+                    totalUsedCredit: 1,
+                    tayang: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    contentModeration: 1,
+                    contentModerationResponse: 1,
+                    reportedStatus: 1,
+                    reportedUserCount: 1,
+                    reportedUser: 1,
+                    reportedUserHandle: 1,
+                    reportReasonIdLast: 1,
+                    reasonLast: 1,
+                    createdAtReportLast: 1,
+                    place: 1,
+                    statusLast: 1,
                     reportStatusLast: {
-                        $last: "$reportedUserHandle.status"
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$statusLast", null]
+                                }, {
+                                    $eq: ["$statusLast", ""]
+                                }, {
+                                    $eq: ["$statusLast", []]
+                                }, {
+                                    $eq: ["$statusLast", "BARU"]
+                                }]
+                            },
+                            then: "BARU",
+                            else: {
+                                $last: "$reportedUserHandle.status"
+                            }
+                        },
+
                     },
 
                 }
@@ -3476,7 +3544,54 @@ export class AdsService {
         if (enddate && enddate !== undefined) {
             pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
         }
+        if (startreport && startreport !== undefined) {
+            pipeline.push({ $match: { reportedUserCount: { "$gte": startreport } } });
+        }
+        if (endreport && endreport !== undefined) {
+            pipeline.push({ $match: { reportedUserCount: { "$lte": endreport } } });
+        }
+        if (status && status !== undefined) {
 
+            pipeline.push(
+                {
+                    $match: {
+                        $or: [
+                            {
+                                reportStatusLast: {
+                                    $in: status
+                                }
+                            },
+
+                        ]
+                    }
+                },
+            );
+
+        }
+        if (reason && reason !== undefined) {
+
+            let reasonsleng = reason.length;
+            let arrayReason = [];
+            for (var i = 0; i < reasonsleng; i++) {
+                var id = reason[i];
+                var idreason = mongoose.Types.ObjectId(id);
+                arrayReason.push(idreason);
+            }
+            pipeline.push(
+                {
+                    $match: {
+                        $or: [
+                            {
+                                reportReasonIdLast: {
+                                    $in: arrayReason
+                                }
+                            },
+
+                        ]
+                    }
+                });
+
+        }
         pipeline.push({
             $sort: {
                 createdAtReportLast: - 1
@@ -3689,8 +3804,23 @@ export class AdsService {
                     reportedUserHandle: 1,
                     reportedUserCount: 1,
                     place: '$place.namePlace',
-                    reportStatusLast: {
-                        $last: "$reportedUserHandle.status"
+                    statusLast: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$reportedUserHandle", null]
+                                }, {
+                                    $eq: ["$reportedUserHandle", ""]
+                                }, {
+                                    $eq: ["$reportedUserHandle", []]
+                                }]
+                            },
+                            then: "BARU",
+                            else: {
+                                $last: "$reportedUserHandle.status"
+                            }
+                        },
+
                     },
                     interest: 1,
                     fullName: '$basic.fullName',
@@ -3762,7 +3892,27 @@ export class AdsService {
                     reportedUserHandle: 1,
                     reportedUserCount: 1,
                     place: 1,
-                    reportStatusLast: 1,
+                    statusLast: 1,
+                    reportStatusLast: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$statusLast", null]
+                                }, {
+                                    $eq: ["$statusLast", ""]
+                                }, {
+                                    $eq: ["$statusLast", []]
+                                }, {
+                                    $eq: ["$statusLast", "BARU"]
+                                }]
+                            },
+                            then: "BARU",
+                            else: {
+                                $last: "$reportedUserHandle.status"
+                            }
+                        },
+
+                    },
                     interest: 1,
                     fullName: 1,
                     email: 1,
