@@ -4324,24 +4324,19 @@ export class PostsService {
       }
     },
     {
-      $sort: {
-        createdAtReportLast: - 1
-      },
+      $match: {
+        reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+        active: true
 
+      }
     },
+
     ];
 
-    if (page > 0) {
-      pipeline.push({ $skip: (page * limit) });
-    }
-    if (limit > 0) {
-      pipeline.push({ $limit: limit });
-    }
-    if (keys !== undefined && postType === undefined && startdate === undefined && enddate === undefined) {
+    if (keys && keys !== undefined) {
 
       pipeline.push({
         $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
           description: {
             $regex: keys,
             $options: 'i'
@@ -4351,75 +4346,33 @@ export class PostsService {
       },);
 
     }
-    else if (keys === undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
+
+    if (postType && postType !== undefined) {
       pipeline.push({
         $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
           postType: postType
 
         }
       },);
     }
-    else if (keys !== undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
-      pipeline.push({
-        $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-          description: {
-            $regex: keys,
-            $options: 'i'
-          }, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-        }
-      },);
+    if (startdate && startdate !== undefined) {
+      pipeline.push({ $match: { createdAtReportLast: { "$gte": startdate } } });
     }
-    else if (keys !== undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
-      pipeline.push({
-        $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-          description: {
-            $regex: keys,
-            $options: 'i'
-          }, postType: postType
-
-        }
-      },);
+    if (enddate && enddate !== undefined) {
+      pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
     }
-    else if (keys === undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
-      pipeline.push({
-        $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-          postType: postType, createdAtReportLast: { $gte: startdate, $lte: dateend }
 
-        }
-      },);
-    }
-    else if (keys === undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
-      pipeline.push({
-        $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-          createdAtReportLast: { $gte: startdate, $lte: dateend }
+    pipeline.push({
+      $sort: {
+        createdAtReportLast: - 1
+      },
 
-        }
-      },);
+    });
+    if (page > 0) {
+      pipeline.push({ $skip: (page * limit) });
     }
-    else if (keys !== undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
-      pipeline.push({
-        $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-          description: {
-            $regex: keys,
-            $options: 'i'
-          }, postType: postType, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-        }
-      },);
-    }
-    else {
-      pipeline.push({
-        $match: {
-          reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-        }
-      },);
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
     }
     let query = await this.PostsModel.aggregate(pipeline);
 
@@ -5612,6 +5565,8 @@ export class PostsService {
     return query;
   }
 
+
+
   async countReason(postID: string) {
     let query = await this.PostsModel.aggregate([
       {
@@ -5622,6 +5577,12 @@ export class PostsService {
       },
       {
         $unwind: "$reportedUser"
+      },
+      {
+        $match: {
+
+          'reportedUser.active': true
+        }
       },
       {
         $group: {
@@ -5657,11 +5618,20 @@ export class PostsService {
     return data;
   }
 
-  async updateActive(id: string, updatedAt: string) {
+  async updateActive(id: string, updatedAt: string, remark: string) {
     let data = await this.PostsModel.updateMany({ "_id": id },
-      { $set: { "active": false, "updatedAt": updatedAt } });
+
+      { $set: { "active": false, "updatedAt": updatedAt, "reportedUserHandle.$[].remark": remark, "reportedUserHandle.$[].status": "DELETE", "reportedUserHandle.$[].updatedAt": updatedAt } });
     return data;
   }
+
+  async updateActiveEmpty(id: string, updatedAt: string, reportedUserHandle: any[]) {
+    let data = await this.PostsModel.updateMany({ "_id": id },
+
+      { $set: { "active": false, "updatedAt": updatedAt, "reportedUserHandle": reportedUserHandle } });
+    return data;
+  }
+
   async updateDitangguhkan(id: string, reason: string, updatedAt: string, reasonId: ObjectId) {
     let data = await this.PostsModel.updateMany({ "_id": id },
       { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });

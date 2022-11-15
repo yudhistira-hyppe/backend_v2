@@ -51,12 +51,6 @@ export class AdsService {
         return deletedCat;
     }
 
-    async updateActive(id: Object, updatedAt: string) {
-        let data = await this.adsModel.updateOne({ "_id": id },
-            { $set: { "isActive": false, "updatedAt": updatedAt } });
-        return data;
-    }
-
     async update(
         id: string,
         createAdsDto: CreateAdsDto,
@@ -3381,6 +3375,7 @@ export class AdsService {
                     name: 1,
                     type: 1,
                     status: 1,
+                    isActive: 1,
                     timestamp: 1,
                     totalUsedCredit: 1,
                     tayang: 1,
@@ -3415,6 +3410,7 @@ export class AdsService {
                     name: 1,
                     type: 1,
                     status: 1,
+                    isActive: 1,
                     timestamp: 1,
                     totalUsedCredit: 1,
                     tayang: 1,
@@ -3439,27 +3435,21 @@ export class AdsService {
 
                 }
             },
-
             {
-                $sort: {
-                    createdAtReportLast: - 1
-                },
+                $match: {
+                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    isActive: true,
 
-            },
 
+                }
+            }
         ];
 
-        if (page > 0) {
-            pipeline.push({ $skip: (page * limit) });
-        }
-        if (limit > 0) {
-            pipeline.push({ $limit: limit });
-        }
-        if (keys !== undefined && postType === undefined && startdate === undefined && enddate === undefined) {
+
+        if (keys && keys !== undefined) {
 
             pipeline.push({
                 $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
                     name: {
                         $regex: keys,
                         $options: 'i'
@@ -3469,10 +3459,9 @@ export class AdsService {
             },);
 
         }
-        else if (keys === undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
+        if (postType && postType !== undefined) {
             pipeline.push({
                 $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
                     tipeads: {
                         $regex: postType,
                         $options: 'i'
@@ -3481,79 +3470,25 @@ export class AdsService {
                 }
             });
         }
-        else if (keys === undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
+        if (startdate && startdate !== undefined) {
+            pipeline.push({ $match: { createdAtReportLast: { "$gte": startdate } } });
         }
-        else if (keys !== undefined && postType === undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
-        }
-        else if (keys !== undefined && postType !== undefined && startdate === undefined && enddate === undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    }, tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    },
-
-                }
-            },);
-        }
-        else if (keys === undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
-        }
-        else if (keys !== undefined && postType !== undefined && startdate !== undefined && enddate !== undefined) {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-                    name: {
-                        $regex: keys,
-                        $options: 'i'
-                    }, tipeads: {
-                        $regex: postType,
-                        $options: 'i'
-                    }, createdAtReportLast: { $gte: startdate, $lte: dateend }
-
-                }
-            },);
-        }
-        else {
-            pipeline.push({
-                $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
-
-
-                }
-            },);
+        if (enddate && enddate !== undefined) {
+            pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
         }
 
+        pipeline.push({
+            $sort: {
+                createdAtReportLast: - 1
+            },
+
+        });
+        if (page > 0) {
+            pipeline.push({ $skip: (page * limit) });
+        }
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
+        }
         const query = await this.adsModel.aggregate(pipeline);
 
         return query;
@@ -3568,6 +3503,12 @@ export class AdsService {
             },
             {
                 $unwind: "$reportedUser"
+            },
+            {
+                $match: {
+
+                    'reportedUser.active': true
+                }
             },
             {
                 $group: {
@@ -3723,6 +3664,7 @@ export class AdsService {
 
                 }
             },
+
             {
 
                 $project: {
@@ -3939,6 +3881,20 @@ export class AdsService {
 
 
             });
+        return data;
+    }
+
+    async updateActive(id: ObjectID, updatedAt: string, remark: string) {
+        let data = await this.adsModel.updateMany({ "_id": id },
+
+            { $set: { "active": false, "updatedAt": updatedAt, "reportedUserHandle.$[].remark": remark, "reportedUserHandle.$[].status": "DELETE", "reportedUserHandle.$[].updatedAt": updatedAt } });
+        return data;
+    }
+
+    async updateActiveEmpty(id: ObjectID, updatedAt: string, reportedUserHandle: any[]) {
+        let data = await this.adsModel.updateMany({ "_id": id },
+
+            { $set: { "isActive": false, "updatedAt": updatedAt, "reportedUserHandle": reportedUserHandle } });
         return data;
     }
 
