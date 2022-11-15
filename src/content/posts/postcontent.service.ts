@@ -449,6 +449,7 @@ export class PostContentService {
     var pd = new PostData();
     pd.postID = String(apost.postID);
     pd.email = String(apost.email);
+    res.data = pd;
 
     return res;
   }
@@ -565,6 +566,7 @@ export class PostContentService {
     var pd = new PostData();
     pd.postID = String(apost.postID);
     pd.email = String(apost.email);
+    res.data = pd;
 
     return res;
   }

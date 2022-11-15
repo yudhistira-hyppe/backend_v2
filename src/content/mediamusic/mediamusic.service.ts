@@ -255,146 +255,200 @@ export class MediamusicService {
           viewAt: '$viewAt',
           dob: '$dob',
           age:{
-            $cond: { if: { dob: { "$ne": '' } }, then: 30, else: 20 }
+            $cond: { 
+              if: {
+                $and: ['$dob', { $ne: ["$dob", ""] }]
+              }, 
+              then: {$toInt: { $divide: [{ $subtract: [new Date(), { $toDate: "$dob" }] },(365 * 24 * 60 * 60 * 1000)]}}, 
+              else: 0 
+            }
           },
           gender: '$gender',
           states: '$states',
           stateName: '$areas_data.stateName'
         }
       },
-      // {
-      //   $facet: {
-      //     "musicTitle": [
-      //       {
-      //         "$group": {
-      //           "_id": "$musicTitle",
-      //         }
-      //       }
-      //     ],
-      //     "artistName": [
-      //       {
-      //         "$group": {
-      //           "_id": "$artistName",
-      //         }
-      //       }
-      //     ],
-      //     "albumName": [
-      //       {
-      //         "$group": {
-      //           "_id": "$albumName",
-      //         }
-      //       }
-      //     ],
-      //     "genre": [
-      //       {
-      //         "$group": {
-      //           "_id": "$genre",
-      //         }
-      //       }
-      //     ],
-      //     "theme": [
-      //       {
-      //         "$group": {
-      //           "_id": "$theme",
-      //         }
-      //       }
-      //     ],
-      //     "mood": [
-      //       {
-      //         "$group": {
-      //           "_id": "$mood",
-      //         }
-      //       }
-      //     ],
-      //     "releaseDate": [
-      //       {
-      //         "$group": {
-      //           "_id": "$releaseDate",
-      //         }
-      //       }
-      //     ],
-      //     "apsaraMusic": [
-      //       {
-      //         "$group": {
-      //           "_id": "$apsaraMusic",
-      //         }
-      //       }
-      //     ],
-      //     "apsaraThumnail": [
-      //       {
-      //         "$group": {
-      //           "_id": "$apsaraThumnail",
-      //         }
-      //       }
-      //     ],
-      //     "wilayah": [
-      //       {
-      //         "$group": {
-      //           "_id": "$stateName",
-      //           "count": { "$sum": 1 }
-      //         }
-      //       }
-      //     ],
-      //     "gender": [
-      //       {
-      //         "$group": {
-      //           "_id": "$gender",
-      //           "count": { "$sum": 1 }
-      //         }
-      //       }
-      //     ],
-      //     "used": [
-      //       {
-      //         "$group": {
-      //           "_id": "$postID",
-      //           "count": { "$sum": 1 }
-      //         }
-      //       }
-      //     ],
-      //     "view": [
-      //       {
-      //         "$group": {
-      //           "_id": "$senderParty",
-      //           "count": { "$sum": 1 }
-      //         }
-      //       }
-      //     ]
-      //   }
-      // },
-      // {
-      //   $project: {
-      //     musicTitle: { $arrayElemAt: ['$musicTitle', 0] },
-      //     artistName: { $arrayElemAt: ['$artistName', 0] },
-      //     albumName: { $arrayElemAt: ['$albumName', 0] },
-      //     genre: { $arrayElemAt: ['$genre', 0] },
-      //     theme: { $arrayElemAt: ['$theme', 0] },
-      //     mood: { $arrayElemAt: ['$mood', 0] },
-      //     releaseDate: { $arrayElemAt: ['$releaseDate', 0] },
-      //     apsaraMusic: { $arrayElemAt: ['$apsaraMusic', 0] },
-      //     apsaraThumnail: { $arrayElemAt: ['$apsaraThumnail', 0] },
-      //     view: { $size: '$view' },
-      //     used: { $size: '$used' },
-      //     gender: '$gender',
-      //     wilayah: '$wilayah'
-      //   }
-      // },
-      // {
-      //   $project: {
-      //     musicTitle: '$musicTitle._id',
-      //     artistName: '$artistName._id',
-      //     albumName: '$albumName._id',
-      //     genre: '$genre._id',
-      //     theme: '$theme._id',
-      //     mood: '$mood._id',
-      //     releaseDate: '$releaseDate._id',
-      //     apsaraMusic: '$apsaraMusic._id',
-      //     apsaraThumnail: '$apsaraThumnail._id',
-      //     view: '$view',
-      //     used: '$used',
-      //     gender: '$gender',
-      //     wilayah: '$wilayah'
-      //   }
-      // }
+      {
+        $project: {
+          musicTitle: '$musicTitle',
+          artistName: '$artistName',
+          albumName: '$albumName',
+          genre: '$genre',
+          theme: '$theme',
+          mood: '$mood',
+          releaseDate: '$releaseDate',
+          apsaraMusic: '$apsaraMusic',
+          apsaraThumnail: '$apsaraThumnail',
+          usedMusic: '$usedMusic',
+          postID: '$postID',
+          views: '$views',
+          musicView: "$musicView",
+          eventType: '$eventType',
+          event: '$event',
+          senderParty: '$senderParty',
+          viewAt: '$viewAt',
+          dob: '$dob',
+          age: "$age",
+          ageQualication: {
+            $switch: {
+              branches: [
+                { case: { $gt: ["$age", 44] }, then: "< 44 Tahun" },
+                { case: { $and: [{ $gte: ["$age", 36] }, { $lte: ["$age", 44] }] }, then: "35-44 Tahun" },
+                { case: { $and: [{ $gte: ["$age", 25] }, { $lte: ["$age", 35] }] }, then: "24-35 Tahun" },
+                { case: { $and: [{ $gte: ["$age", 14] }, { $lte: ["$age", 24] }] }, then: "14-24 Tahun" },
+                { case: { $lt: ["$age", 14] }, then: "< 14 Tahun" }
+              ],
+              "default": "Other"
+            }
+          },
+          gender: '$gender',
+          states: '$states',
+          stateName: '$areas_data.stateName'
+        }
+      },
+      {
+        $facet: {
+          "musicTitle": [
+            {
+              "$group": {
+                "_id": "$musicTitle",
+              }
+            }
+          ],
+          "artistName": [
+            {
+              "$group": {
+                "_id": "$artistName",
+              }
+            }
+          ],
+          "albumName": [
+            {
+              "$group": {
+                "_id": "$albumName",
+              }
+            }
+          ],
+          "genre": [
+            {
+              "$group": {
+                "_id": "$genre",
+              }
+            }
+          ],
+          "theme": [
+            {
+              "$group": {
+                "_id": "$theme",
+              }
+            }
+          ],
+          "mood": [
+            {
+              "$group": {
+                "_id": "$mood",
+              }
+            }
+          ],
+          "releaseDate": [
+            {
+              "$group": {
+                "_id": "$releaseDate",
+              }
+            }
+          ],
+          "apsaraMusic": [
+            {
+              "$group": {
+                "_id": "$apsaraMusic",
+              }
+            }
+          ],
+          "apsaraThumnail": [
+            {
+              "$group": {
+                "_id": "$apsaraThumnail",
+              }
+            }
+          ],
+          "wilayah": [
+            {
+              "$group": {
+                "_id": "$stateName",
+                "count": { "$sum": 1 }
+              }
+            }
+          ],
+          "gender": [
+            {
+              "$group": {
+                "_id": "$gender",
+                "count": { "$sum": 1 }
+              }
+            }
+          ],
+          "used": [
+            {
+              "$group": {
+                "_id": "$postID",
+                "count": { "$sum": 1 }
+              }
+            }
+          ],
+          "view": [
+            {
+              "$group": {
+                "_id": "$senderParty",
+                "count": { "$sum": 1 }
+              }
+            }
+          ],
+          "age": [
+            {
+              "$group": {
+                "_id": "$ageQualication",
+                "count": { "$sum": 1 }
+              }
+            }
+          ]
+        }
+      },
+      {
+        $project: {
+          musicTitle: { $arrayElemAt: ['$musicTitle', 0] },
+          artistName: { $arrayElemAt: ['$artistName', 0] },
+          albumName: { $arrayElemAt: ['$albumName', 0] },
+          genre: { $arrayElemAt: ['$genre', 0] },
+          theme: { $arrayElemAt: ['$theme', 0] },
+          mood: { $arrayElemAt: ['$mood', 0] },
+          releaseDate: { $arrayElemAt: ['$releaseDate', 0] },
+          apsaraMusic: { $arrayElemAt: ['$apsaraMusic', 0] },
+          apsaraThumnail: { $arrayElemAt: ['$apsaraThumnail', 0] },
+          view: { $size: '$view' },
+          used: { $size: '$used' },
+          gender: '$gender',
+          wilayah: '$wilayah',
+          age: '$age'
+        }
+      },
+      {
+        $project: {
+          musicTitle: '$musicTitle._id',
+          artistName: '$artistName._id',
+          albumName: '$albumName._id',
+          genre: '$genre._id',
+          theme: '$theme._id',
+          mood: '$mood._id',
+          releaseDate: '$releaseDate._id',
+          apsaraMusic: '$apsaraMusic._id',
+          apsaraThumnail: '$apsaraThumnail._id',
+          view: '$view',
+          used: '$used',
+          gender: '$gender',
+          wilayah: '$wilayah',
+          age: '$age'
+        }
+      }
     ]);
     return query;
   }

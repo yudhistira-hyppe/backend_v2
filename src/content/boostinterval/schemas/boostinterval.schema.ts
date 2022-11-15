@@ -11,5 +11,9 @@ export class Boostinterval {
     value: String
     @Prop()
     remark: String
+    @Prop()
+    type: String;
+    @Prop()
+    langIso: String;
 }
 export const BoostintervalSchema = SchemaFactory.createForClass(Boostinterval);
