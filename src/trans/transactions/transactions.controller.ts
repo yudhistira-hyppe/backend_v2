@@ -4705,6 +4705,11 @@ export class TransactionsController {
                 'Unabled to proceed dateStart is required',
             );
         }
+        if (body.dateEnd == undefined) {
+            await this.errorHandler.generateBadRequestException(
+                'Unabled to proceed dateEnd is required',
+            );
+        }
         if (body.type == undefined) {
             await this.errorHandler.generateBadRequestException(
                 'Unabled to proceed type is required',
@@ -4860,8 +4865,9 @@ export class TransactionsController {
                         id: body.postID,
                         interval: interval,
                         session: session,
-                        type: body.type,
+                        type: body.type, 
                         dateStart: body.dateStart,
+                        datedateEnd: body.dateEnd,
                         totalAmount: totalAmount,
                         qty: 1
                     }
@@ -4955,7 +4961,8 @@ export class TransactionsController {
             data["typeBoost"] = body.type;
             data["intervalBoost"] = interval;
             data["sessionBoost"] = session;
-            data["dateBoost"] = body.dateStart;
+            data["dateBoostStart"] = body.dateStart;
+            data["dateBoostEnd"] = body.dateEnd;
             data["priceBoost"] = price;
             data["priceBankVaCharge"] = BankVaCharge;
             data["priceTotal"] = totalAmount;
