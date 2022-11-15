@@ -5,10 +5,12 @@ import { BoostsessionController } from './boostsession.controller';
 import { ConfigModule } from '@nestjs/config';
 import { Boostsession, BoostsessionSchema } from './schemas/boostsession.schema';
 import { BoostintervalModule } from '../boostinterval/boostinterval.module';
+import { UtilsModule } from '../../utils/utils.module';
 
 @Module({
 
     imports: [
+        UtilsModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Boostsession.name, schema: BoostsessionSchema }],'SERVER_FULL'),
         BoostintervalModule

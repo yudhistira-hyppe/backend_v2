@@ -47,6 +47,7 @@ export class CreatePostsDto {
     contentModerationResponse: string
     reportedUserHandle: any[];
     musicId: mongoose.Types.ObjectId;
+    boosted: any[];
 }
 
 export class CreatePostResponse {

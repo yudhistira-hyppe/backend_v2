@@ -5,6 +5,7 @@ export class BoostsessionDto {
   name: String;
   start: String;
   end: String;
+  type: String;
 }
 
 
