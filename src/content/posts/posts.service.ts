@@ -92,6 +92,24 @@ export class PostsService {
   async findByPostId(postID: string): Promise<Posts> {
     return this.PostsModel.findOne({ postID: postID }).exec();
   }
+  async updateByPostId(
+    postID: string,
+    CreatePostsDto: CreatePostsDto,
+  ): Promise<Object> {
+    let data = await this.PostsModel.updateOne(
+      { postID: postID },
+      CreatePostsDto,
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      }
+    );
+    return data;
+  }
+
   async update(
     id: string,
     CreatePostsDto: CreatePostsDto,
@@ -107,6 +125,7 @@ export class PostsService {
     }
     return data;
   }
+
   async findOnepostID(postID: string): Promise<Object> {
     var datacontent = null;
     var CreatePostsDto_ = await this.PostsModel.findOne({ postID: postID }).exec();

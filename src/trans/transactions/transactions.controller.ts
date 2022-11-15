@@ -33,6 +33,7 @@ import { AdsService } from '../ads/ads.service';
 import { BoostsessionService } from '../../content/boostsession/boostsession.service';
 import { BoostintervalService } from '../../content/boostinterval/boostinterval.service';
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
+import { CreatePostsDto } from 'src/content/posts/dto/create-posts.dto';
 
 @Controller()
 export class TransactionsController {
@@ -1267,11 +1268,37 @@ export class TransactionsController {
                             "message": messagesnull
                         });
                     }
-                } else if (type === "BOOST") {
-                    const dataPost = await this.getusercontentsService.findcontenbuy(postid);
+                } else if (type === "BOOST_CONTENT") {
                     if (status == "WAITING_PAYMENT") {
-
-
+                        var boost = [];
+                        var dataBost = {
+                            boostDate: new Date(detail.session.dateStart.toString()),
+                            boostInterval: {
+                                id: Object(detail.interval._id.toString()),
+                                value: Object(detail.interval.value.toString()),
+                            },
+                            boostSession: {
+                                id: Object(detail.session._id.toString()),
+                                start: new Date(detail.session.dateStart.toString() + " " + detail.session.start),
+                                end: new Date(detail.session.datedateEnd.toString() + " " + detail.session.end),
+                                timeStart: detail.session.start,
+                                timeEnd: detail.session.end,
+                            },
+                            boostViewer:[],
+                        }
+                        boost.push(dataBost);
+                        var CreatePostsDto_ = new CreatePostsDto();
+                        CreatePostsDto_.boosted = boost;
+                        await this.postsService.updateByPostId(postid,CreatePostsDto_)
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "message": messages
+                        });
+                    } else {
+                        res.status(HttpStatus.OK).json({
+                            response_code: 202,
+                            "message": messagesnull
+                        });
                     }
                 }
 
@@ -4900,7 +4927,7 @@ export class TransactionsController {
                         createTransactionsDto_.totalamount = totalAmount;
                         createTransactionsDto_.description = "buy " + typeTransaction + " pending";
                         createTransactionsDto_.payload = null;
-                        createTransactionsDto_.type = "BOOST";
+                        createTransactionsDto_.type = typeTransaction;
                         createTransactionsDto_.expiredtimeva = date_trx_expiration_time.toISOString();
                         createTransactionsDto_.detail = transactionDetail;
                         createTransactionsDto_.postid = body.postID;
