@@ -1594,6 +1594,11 @@ export class ReportuserController {
                     "reportStatusLast": query[0].reportStatusLast,
                     "reportedUser": query[0].reportedUser,
                     "reportedUserHandle": query[0].reportedUserHandle,
+                    "createdAtReportLast": query[0].createdAtReportLast,
+                    "createdAtAppealLast": query[0].createdAtAppealLast,
+                    "reasonLastAppeal": query[0].reasonLastAppeal,
+                    "reasonLastAppealAdmin": query[0].reasonLastAppealAdmin,
+                    "reasonLastReport": query[0].reasonLastReport,
                     "tagpeople": tagpeoples,
                     "apsaraId": idapsaradefine,
                     "apsara": apsaradefine,
@@ -1603,7 +1608,7 @@ export class ReportuserController {
                 data.push(objk);
             } else {
                 data = [];
-                totalReport = 0;
+
             }
 
 
@@ -1749,6 +1754,11 @@ export class ReportuserController {
                     "interest": query[0].interest,
                     "place": query[0].place,
                     "reportStatusLast": query[0].reportStatusLast,
+                    "createdAtReportLast": query[0].createdAtReportLast,
+                    "createdAtAppealLast": query[0].createdAtAppealLast,
+                    "reasonLastReport": query[0].reasonLastReport,
+                    "reasonLastAppeal": query[0].reasonLastAppeal,
+                    "reasonLastAppealAdmin": query[0].reasonLastAppealAdmin,
                     "fullName": query[0].fullName,
                     "email": query[0].email,
                     "proofpict": query[0].proofpict,
@@ -1761,7 +1771,7 @@ export class ReportuserController {
                 data.push(objk);
             } else {
                 data = [];
-                totalReport = 0;
+
             }
 
 
@@ -1769,7 +1779,7 @@ export class ReportuserController {
             var datacount = null;
             var objcoun = {};
             var dataSum = [];
-            var totalReport = null;
+
             try {
 
                 datacount = await this.adsService.countReason(adsId);

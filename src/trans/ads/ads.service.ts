@@ -3939,7 +3939,6 @@ export class AdsService {
 
                 }
             },
-
             {
                 $project: {
                     tipeads: {
@@ -3971,19 +3970,21 @@ export class AdsService {
                     reportedUser: 1,
                     reportedUserHandle: 1,
                     interest: 1,
+                    createdAtReportLast: {
+                        $last: "$reportedUser.createdAt"
+                    },
+                    createdAtAppealLast: {
+                        $last: "$reportedUserHandle.createdAt"
+                    },
                     reportReasonIdLast: {
                         $last: "$reportedUser.reportReasonId"
                     },
                     reasonLast: {
                         $last: "$reportedUser.description"
                     },
-                    createdAtReportLast: {
-                        $last: "$reportedUser.createdAt"
-                    },
 
                 }
             },
-
             {
 
                 $project: {
@@ -4008,6 +4009,62 @@ export class AdsService {
                     reportedUserHandle: 1,
                     reportedUserCount: 1,
                     place: '$place.namePlace',
+                    lastReasonReport: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$reportedUser", null]
+                                }, {
+                                    $eq: ["$reportedUser", ""]
+                                }, {
+                                    $eq: ["$reportedUser", []]
+                                },]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUser.description"
+                            }
+                        },
+
+                    },
+                    lastAppeal: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$reportedUserHandle", null]
+                                }, {
+                                    $eq: ["$reportedUserHandle", ""]
+                                }, {
+                                    $eq: ["$reportedUserHandle", []]
+                                },]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUserHandle.reason"
+                            }
+                        },
+
+                    },
+                    lastAppealAdmin: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$reportedUserHandle", null]
+                                }, {
+                                    $eq: ["$reportedUserHandle", ""]
+                                }, {
+                                    $eq: ["$reportedUserHandle", []]
+                                },]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUserHandle.reasonAdmin"
+                            }
+                        },
+
+                    },
+                    createdAtReportLast: 1,
+                    createdAtAppealLast: 1,
                     statusLast: {
                         $cond: {
                             if: {
@@ -4097,6 +4154,65 @@ export class AdsService {
                     reportedUserCount: 1,
                     place: 1,
                     statusLast: 1,
+                    createdAtReportLast: 1,
+                    createdAtAppealLast: 1,
+                    lastAppeal: 1,
+                    lastAppealAdmin: 1,
+                    lastReasonReport: 1,
+                    reasonLastReport: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$lastReasonReport", null]
+                                }, {
+                                    $eq: ["$lastReasonReport", ""]
+                                }, {
+                                    $eq: ["$lastReasonReport", "Lainnya"]
+                                }]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUser.description"
+                            }
+                        },
+
+                    },
+                    reasonLastAppeal: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$lastAppeal", null]
+                                }, {
+                                    $eq: ["$lastAppeal", ""]
+                                }, {
+                                    $eq: ["$lastAppeal", "Lainnya"]
+                                }]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUserHandle.reason"
+                            }
+                        },
+
+                    },
+                    reasonLastAppealAdmin: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$lastAppealAdmin", null]
+                                }, {
+                                    $eq: ["$lastAppealAdmin", ""]
+                                }, {
+                                    $eq: ["$lastAppealAdmin", "Lainnya"]
+                                }]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUserHandle.reasonAdmin"
+                            }
+                        },
+
+                    },
                     reportStatusLast: {
                         $cond: {
                             if: {
@@ -4117,12 +4233,14 @@ export class AdsService {
                         },
 
                     },
+
                     interest: 1,
                     fullName: 1,
                     email: 1,
                     isIdVerified: 1,
                     avatardata: 1,
                     proofpict: 1,
+
                 }
             },
             {
@@ -4159,6 +4277,11 @@ export class AdsService {
                     reportedUserCount: 1,
                     place: 1,
                     reportStatusLast: 1,
+                    reasonLastReport: 1,
+                    reasonLastAppeal: 1,
+                    reasonLastAppealAdmin: 1,
+                    createdAtReportLast: 1,
+                    createdAtAppealLast: 1,
                     interest: 1,
                     fullName: 1,
                     statusUser:
@@ -4171,7 +4294,6 @@ export class AdsService {
                             else: "BASIC"
                         }
                     },
-
                     email: 1,
                     avatar: {
                         mediaBasePath: '$avatar.mediaBasePath',
