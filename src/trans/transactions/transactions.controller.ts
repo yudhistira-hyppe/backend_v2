@@ -14,7 +14,7 @@ import { UserbankaccountsService } from '../userbankaccounts/userbankaccounts.se
 import { OyPgService } from '../../paymentgateway/oypg/oypg.service';
 import { InsightsService } from '../../content/insights/insights.service';
 import { WithdrawsService } from '../withdraws/withdraws.service';
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { GetusercontentsService } from '../getusercontents/getusercontents.service';
 import { UservouchersService } from '../uservouchers/uservouchers.service';
 import { VouchersService } from '../vouchers/vouchers.service';
@@ -1271,18 +1271,20 @@ export class TransactionsController {
                 } else if (type === "BOOST_CONTENT") {
                     if (status == "WAITING_PAYMENT") {
                         var boost = [];
+                        var dateStartdata = (detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() +".000Z")
+                        console.log("date String", dateStartdata);
                         var dataBost = {
-                            boostDate: new Date(detail.session.dateStart.toString()),
+                            boostDate: new Date(detail[0].dateStart.toString()),
                             boostInterval: {
-                                id: Object(detail.interval._id.toString()),
-                                value: Object(detail.interval.value.toString()),
+                                id: new mongoose.Types.ObjectId(detail[0].interval._id.toString()),
+                                value: Object(detail[0].interval.value.toString()),
                             },
                             boostSession: {
-                                id: Object(detail.session._id.toString()),
-                                start: new Date(detail.session.dateStart.toString() + " " + detail.session.start),
-                                end: new Date(detail.session.datedateEnd.toString() + " " + detail.session.end),
-                                timeStart: detail.session.start,
-                                timeEnd: detail.session.end,
+                                id: new mongoose.Types.ObjectId(detail[0].session._id.toString()),
+                                start: new Date((detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() + ".000Z")),
+                                end: new Date((detail[0].datedateEnd.toString() + "T" + detail[0].session.end.toString() + ".000Z")),
+                                timeStart: detail[0].session.start,
+                                timeEnd: detail[0].session.end,
                             },
                             boostViewer:[],
                         }

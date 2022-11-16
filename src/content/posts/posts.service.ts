@@ -96,18 +96,10 @@ export class PostsService {
     postID: string,
     CreatePostsDto: CreatePostsDto,
   ): Promise<Object> {
-    let data = await this.PostsModel.updateOne(
+    return await this.PostsModel.updateOne(
       { postID: postID },
-      CreatePostsDto,
-      function (err, docs) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log(docs);
-        }
-      }
+      CreatePostsDto
     );
-    return data;
   }
 
   async update(
