@@ -3942,7 +3942,7 @@ export class PostsService {
     return query;
   }
 
-  async findreport(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean, reasonAppeal: any[]) {
+  async findreport(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean, reasonAppeal: any[], username: string) {
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -3960,626 +3960,645 @@ export class PostsService {
       order = 1;
     }
     var pipeline = [];
-    pipeline = [{
-      $lookup: {
-        from: 'userbasics',
-        localField: 'email',
-        foreignField: 'email',
-        as: 'basicdata',
+    pipeline = [
+      {
+        $lookup: {
+          from: 'userbasics',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'basicdata',
 
-      }
-    },
-    {
-      $addFields: {
+        }
+      },
 
-        'profilepictid': {
-          $arrayElemAt: ['$basicdata.profilePict.$id', 0]
+      {
+        $addFields: {
+
+          'profilepictid': {
+            $arrayElemAt: ['$basicdata.profilePict.$id', 0]
+          },
+          'userAuth_id': { $arrayElemAt: ['$basicdata.userAuth.$id', 0] }
+
+        }
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts',
+          localField: 'profilepictid',
+          foreignField: '_id',
+          as: 'avatardata',
+
+        }
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+        },
+      },
+      {
+        $addFields: {
+          'avatar': {
+            $arrayElemAt: ['$avatardata', 0]
+          },
+          'basic': {
+            $arrayElemAt: ['$basicdata', 0]
+          },
+          'auth': {
+            $arrayElemAt: ['$userAuth_data', 0]
+          },
+
+        }
+      },
+      {
+        $project: {
+          refs: {
+            $arrayElemAt: ['$contentMedias', 0]
+          },
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          contentModeration: 1,
+          contentModerationResponse: 1,
+          reportedStatus: 1,
+          reportedUserCount: 1,
+          reportedUserHandle: 1,
+          reportedUser: 1,
+          fullName: '$basic.fullName',
+          username: '$auth.username',
+          avatar: {
+            mediaBasePath: '$avatar.mediaBasePath',
+            mediaUri: '$avatar.mediaUri',
+            mediaType: '$avatar.mediaType',
+            mediaEndpoint: '$avatar.fsTargetUri',
+            medreplace: {
+              $replaceOne: {
+                input: "$avatar.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+          },
+        }
+      },
+      {
+        $project: {
+          refs: '$refs.$ref',
+          idmedia: '$refs.$id',
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          fullName: 1,
+          username: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          contentModeration: 1,
+          contentModerationResponse: 1,
+          reportedStatus: 1,
+          reportedUserCount: 1,
+          reportedUserHandle: 1,
+          reportedUser: 1,
+          avatar: 1
+        }
+      },
+      {
+        $addFields: {
+
+          concat: '/profilepict',
+          pict: { $replaceOne: { input: "$avatar.mediaUri", find: "_0001.jpeg", replacement: "" } },
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediapicts',
+          localField: 'idmedia',
+          foreignField: '_id',
+          as: 'mediaPict_data',
+
         },
 
+      },
+      {
+        $lookup: {
+          from: 'mediadiaries',
+          localField: 'idmedia',
+          foreignField: '_id',
+          as: 'mediadiaries_data',
 
-      }
-    },
-    {
-      $lookup: {
-        from: 'mediaprofilepicts',
-        localField: 'profilepictid',
-        foreignField: '_id',
-        as: 'avatardata',
-
-      }
-    },
-    {
-      $addFields: {
-        'avatar': {
-          $arrayElemAt: ['$avatardata', 0]
-        },
-        'basic': {
-          $arrayElemAt: ['$basicdata', 0]
         },
 
-      }
-    },
-    {
-      $project: {
-        refs: {
-          $arrayElemAt: ['$contentMedias', 0]
+      },
+      {
+        $lookup: {
+          from: 'mediavideos',
+          localField: 'idmedia',
+          foreignField: '_id',
+          as: 'mediavideos_data',
+
         },
-        createdAt: 1,
-        updatedAt: 1,
-        postID: 1,
-        email: 1,
-        postType: 1,
-        description: 1,
-        title: 1,
-        active: 1,
-        contentModeration: 1,
-        contentModerationResponse: 1,
-        reportedStatus: 1,
-        reportedUserCount: 1,
-        reportedUserHandle: 1,
-        reportedUser: 1,
-        fullName: '$basic.fullName',
-        avatar: {
-          mediaBasePath: '$avatar.mediaBasePath',
-          mediaUri: '$avatar.mediaUri',
-          mediaType: '$avatar.mediaType',
-          mediaEndpoint: '$avatar.fsTargetUri',
-          medreplace: {
+
+      },
+      {
+        $project: {
+          mediapict: {
+            $arrayElemAt: ['$mediaPict_data', 0]
+          },
+          mediadiaries: {
+            $arrayElemAt: ['$mediadiaries_data', 0]
+          },
+          mediavideos: {
+            $arrayElemAt: ['$mediavideos_data', 0]
+          },
+          mediapictPath: '$mediapict.mediaBasePath',
+          mediadiariPath: '$mediadiaries.mediaBasePath',
+          mediavideoPath: '$mediavideos.mediaBasePath',
+          refs: '$refs',
+          idmedia: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          fullName: 1,
+          username: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          contentModeration: 1,
+          contentModerationResponse: 1,
+          reportedStatus: 1,
+          reportedUserCount: 1,
+          reportedUserHandle: 1,
+          reportedUser: 1,
+          avatar: {
+            mediaBasePath: '$profilpict.mediaBasePath',
+            mediaUri: '$profilpict.mediaUri',
+            mediaType: '$profilpict.mediaType',
+            mediaEndpoint: { $concat: ["$concat", "/", "$pict"] },
+
+          },
+        }
+      },
+      {
+        $addFields: {
+
+          concatmediapict: '/pict',
+          media_pict: {
             $replaceOne: {
-              input: "$avatar.mediaUri",
+              input: "$mediapict.mediaUri",
               find: "_0001.jpeg",
               replacement: ""
             }
           },
-
+          concatmediadiari: '/stream',
+          concatthumbdiari: '/thumb',
+          media_diari: '$mediadiaries.mediaUri',
+          concatmediavideo: '/stream',
+          concatthumbvideo: '/thumb',
+          media_video: '$mediavideos.mediaUri'
         },
-      }
-    },
-    {
-      $project: {
-        refs: '$refs.$ref',
-        idmedia: '$refs.$id',
-        createdAt: 1,
-        updatedAt: 1,
-        postID: 1,
-        email: 1,
-        fullName: 1,
-        postType: 1,
-        description: 1,
-        title: 1,
-        active: 1,
-        contentModeration: 1,
-        contentModerationResponse: 1,
-        reportedStatus: 1,
-        reportedUserCount: 1,
-        reportedUserHandle: 1,
-        reportedUser: 1,
-        avatar: 1
-      }
-    },
-    {
-      $addFields: {
-
-        concat: '/profilepict',
-        pict: { $replaceOne: { input: "$avatar.mediaUri", find: "_0001.jpeg", replacement: "" } },
-      },
-    },
-    {
-      $lookup: {
-        from: 'mediapicts',
-        localField: 'idmedia',
-        foreignField: '_id',
-        as: 'mediaPict_data',
 
       },
-
-    },
-    {
-      $lookup: {
-        from: 'mediadiaries',
-        localField: 'idmedia',
-        foreignField: '_id',
-        as: 'mediadiaries_data',
-
-      },
-
-    },
-    {
-      $lookup: {
-        from: 'mediavideos',
-        localField: 'idmedia',
-        foreignField: '_id',
-        as: 'mediavideos_data',
-
-      },
-
-    },
-    {
-      $project: {
-        mediapict: {
-          $arrayElemAt: ['$mediaPict_data', 0]
-        },
-        mediadiaries: {
-          $arrayElemAt: ['$mediadiaries_data', 0]
-        },
-        mediavideos: {
-          $arrayElemAt: ['$mediavideos_data', 0]
-        },
-        mediapictPath: '$mediapict.mediaBasePath',
-        mediadiariPath: '$mediadiaries.mediaBasePath',
-        mediavideoPath: '$mediavideos.mediaBasePath',
-        refs: '$refs',
-        idmedia: 1,
-        createdAt: 1,
-        updatedAt: 1,
-        postID: 1,
-        email: 1,
-        fullName: 1,
-        postType: 1,
-        description: 1,
-        title: 1,
-        active: 1,
-        contentModeration: 1,
-        contentModerationResponse: 1,
-        reportedStatus: 1,
-        reportedUserCount: 1,
-        reportedUserHandle: 1,
-        reportedUser: 1,
-        avatar: {
-          mediaBasePath: '$profilpict.mediaBasePath',
-          mediaUri: '$profilpict.mediaUri',
-          mediaType: '$profilpict.mediaType',
-          mediaEndpoint: { $concat: ["$concat", "/", "$pict"] },
-
-        },
-      }
-    },
-    {
-      $addFields: {
-
-        concatmediapict: '/pict',
-        media_pict: {
-          $replaceOne: {
-            input: "$mediapict.mediaUri",
-            find: "_0001.jpeg",
-            replacement: ""
-          }
-        },
-        concatmediadiari: '/stream',
-        concatthumbdiari: '/thumb',
-        media_diari: '$mediadiaries.mediaUri',
-        concatmediavideo: '/stream',
-        concatthumbvideo: '/thumb',
-        media_video: '$mediavideos.mediaUri'
-      },
-
-    },
-    {
-      $project: {
-        rotate: '$mediadiaries.rotate',
-        mediaBasePath: {
-          $switch: {
-            branches: [
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediapicts']
+      {
+        $project: {
+          rotate: '$mediadiaries.rotate',
+          mediaBasePath: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediapict.mediaBasePath'
                 },
-                'then': '$mediapict.mediaBasePath'
-              },
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediadiaries']
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': '$mediadiaries.mediaBasePath'
                 },
-                'then': '$mediadiaries.mediaBasePath'
-              },
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediavideos']
-                },
-                'then': '$mediavideos.mediaBasePath'
-              }
-            ],
-            default: ''
-          }
-        },
-        mediaUri: {
-          $switch: {
-            branches: [
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediapicts']
-                },
-                'then': '$mediapict.mediaUri'
-              },
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediadiaries']
-                },
-                'then': '$mediadiaries.mediaUri'
-              },
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediavideos']
-                },
-                'then': '$mediavideos.mediaUri'
-              }
-            ],
-            default: ''
-          }
-        },
-        mediaType: {
-          $switch: {
-            branches: [
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediapicts']
-                },
-                'then': '$mediapict.mediaType'
-              },
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediadiaries']
-                },
-                'then': '$mediadiaries.mediaType'
-              },
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediavideos']
-                },
-                'then': '$mediavideos.mediaType'
-              }
-            ],
-            default: ''
-          }
-        },
-        mediaThumbEndpoint: {
-          $switch: {
-            branches: [
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediapicts']
-                },
-                'then': '$mediadiaries.mediaThumb'
-              },
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediadiaries']
-                },
-                'then': {
-                  $concat: ["$concatthumbdiari", "/", "$postID"]
-                },
-
-              },
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediavideos']
-                },
-                'then': {
-                  $concat: ["$concatthumbvideo", "/", "$postID"]
-                },
-
-              }
-            ],
-            default: ''
-          }
-        },
-        mediaEndpoint: {
-          $switch: {
-            branches: [
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediapicts']
-                },
-                'then': {
-                  $concat: ["$concatmediapict", "/", "$postID"]
-                },
-
-              },
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediadiaries']
-                },
-                'then': {
-                  $concat: ["$concatmediadiari", "/", "$postID"]
-                },
-
-              },
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediavideos']
-                },
-                'then': {
-                  $concat: ["$concatmediavideo", "/", "$postID"]
-                },
-
-              }
-            ],
-            default: ''
-          }
-        },
-        mediaThumbUri: {
-          $switch: {
-            branches: [
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediapicts']
-                },
-                'then': '$mediadiaries.mediaThumb'
-              },
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediadiaries']
-                },
-                'then': '$mediadiaries.mediaThumb'
-              },
-              {
-                'case': {
-                  '$eq': ['$refs', 'mediavideos']
-                },
-                'then': '$mediavideos.mediaThumb'
-              }
-            ],
-            default: ''
-          }
-        },
-        apsaraId: {
-          $switch: {
-            branches: [
-              {
-                case: {
-                  $eq: [
-                    "$refs",
-                    "mediapicts"
-                  ]
-                },
-                then: "$mediapict.apsaraId"
-              },
-              {
-                case: {
-                  $eq: [
-                    "$refs",
-                    "mediadiaries"
-                  ]
-                },
-                then: "$mediadiaries.apsaraId"
-              },
-              {
-                case: {
-                  $eq: [
-                    "$refs",
-                    "mediavideos"
-                  ]
-                },
-                then: "$mediavideos.apsaraId"
-              }
-            ],
-            default: ""
-          }
-        },
-        idmedia: '$idmedia',
-        apsara: {
-          $switch: {
-            branches: [
-              {
-                case: {
-                  $eq: [
-                    "$refs",
-                    "mediapicts"
-                  ]
-                },
-                then: "$mediapict.apsara"
-              },
-              {
-                case: {
-                  $eq: [
-                    "$refs",
-                    "mediadiaries"
-                  ]
-                },
-                then: "$mediadiaries.apsara"
-              },
-              {
-                case: {
-                  $eq: [
-                    "$refs",
-                    "mediavideos"
-                  ]
-                },
-                then: "$mediavideos.apsara"
-              }
-            ],
-            default: false
-          }
-        },
-        createdAt: 1,
-        updatedAt: 1,
-        postID: 1,
-        email: 1,
-        fullName: 1,
-        postType: 1,
-        description: 1,
-        title: 1,
-        active: 1,
-        contentModeration: 1,
-        contentModerationResponse: 1,
-        reportedStatus: 1,
-        reportedUserCount: 1,
-        reportedUser: 1,
-        avatar: 1,
-        reportedUserHandle: 1,
-        reportReasonIdLast: {
-          $last: "$reportedUser.reportReasonId"
-        },
-        reasonLast: {
-          $last: "$reportedUser.description"
-        },
-        lastAppeal: {
-          $cond: {
-            if: {
-              $or: [{
-                $eq: ["$reportedUserHandle", null]
-              }, {
-                $eq: ["$reportedUserHandle", ""]
-              }, {
-                $eq: ["$reportedUserHandle", []]
-              }, {
-                $eq: ["$reportedUserHandle", "Lainnya"]
-              }]
-            },
-            then: "Lainnya",
-            else: {
-              $last: "$reportedUserHandle.reason"
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': '$mediavideos.mediaBasePath'
+                }
+              ],
+              default: ''
             }
           },
-
-        },
-        createdAtReportLast: {
-          $last: "$reportedUser.createdAt"
-        },
-        statusLast: {
-          $cond: {
-            if: {
-              $or: [{
-                $eq: ["$reportedUserHandle", null]
-              }, {
-                $eq: ["$reportedUserHandle", ""]
-              }, {
-                $eq: ["$reportedUserHandle", []]
-              }]
-            },
-            then: "BARU",
-            else: {
-              $last: "$reportedUserHandle.status"
+          mediaUri: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediapict.mediaUri'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': '$mediadiaries.mediaUri'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': '$mediavideos.mediaUri'
+                }
+              ],
+              default: ''
             }
           },
-
-        },
-
-      }
-    },
-    {
-      $project: {
-        rotate: 1,
-        mediaBasePath: 1,
-        mediaUri: 1,
-        mediaType: 1,
-        mediaThumbEndpoint: 1,
-        mediaEndpoint: 1,
-        mediaThumbUri: 1,
-        apsaraId: 1,
-        idmedia: 1,
-        apsara: 1,
-        createdAt: 1,
-        updatedAt: 1,
-        postID: 1,
-        email: 1,
-        fullName: 1,
-        postType: 1,
-        description: 1,
-        title: 1,
-        active: 1,
-        contentModeration: 1,
-        contentModerationResponse: 1,
-        reportedStatus: 1,
-        reportedUserCount: 1,
-        reportedUser: 1,
-        avatar: 1,
-        reportedUserHandle: 1,
-        reportReasonIdLast: 1,
-        reasonLast: 1,
-        createdAtReportLast: 1,
-        statusLast: 1,
-        lastAppeal: 1,
-        reasonLastAppeal: {
-          $cond: {
-            if: {
-              $or: [{
-                $eq: ["$lastAppeal", null]
-              }, {
-                $eq: ["$lastAppeal", ""]
-              }, {
-                $eq: ["$lastAppeal", "Lainnya"]
-              }]
-            },
-            then: "Lainnya",
-            else: {
-              $last: "$reportedUserHandle.reason"
+          mediaType: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediapict.mediaType'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': '$mediadiaries.mediaType'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': '$mediavideos.mediaType'
+                }
+              ],
+              default: ''
             }
           },
+          mediaThumbEndpoint: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediadiaries.mediaThumb'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': {
+                    $concat: ["$concatthumbdiari", "/", "$postID"]
+                  },
 
-        },
-        reportStatusLast: {
-          $cond: {
-            if: {
-              $or: [{
-                $eq: ["$statusLast", null]
-              }, {
-                $eq: ["$statusLast", ""]
-              }, {
-                $eq: ["$statusLast", []]
-              }, {
-                $eq: ["$statusLast", "BARU"]
-              }]
-            },
-            then: "BARU",
-            else: {
-              $last: "$reportedUserHandle.status"
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': {
+                    $concat: ["$concatthumbvideo", "/", "$postID"]
+                  },
+
+                }
+              ],
+              default: ''
             }
           },
+          mediaEndpoint: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': {
+                    $concat: ["$concatmediapict", "/", "$postID"]
+                  },
 
-        },
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': {
+                    $concat: ["$concatmediadiari", "/", "$postID"]
+                  },
 
-      }
-    },
-    {
-      $project: {
-        rotate: 1,
-        mediaBasePath: 1,
-        mediaUri: 1,
-        mediaType: 1,
-        mediaThumbEndpoint: 1,
-        mediaEndpoint: 1,
-        mediaThumbUri: 1,
-        apsaraId: 1,
-        idmedia: 1,
-        apsara: 1,
-        createdAt: 1,
-        updatedAt: 1,
-        postID: 1,
-        email: 1,
-        fullName: 1,
-        postType: 1,
-        description: 1,
-        title: 1,
-        active: 1,
-        contentModeration: 1,
-        contentModerationResponse: 1,
-        reportedStatus: 1,
-        reportedUserCount: 1,
-        reportedUser: 1,
-        reportedUserHandle: 1,
-        reportReasonIdLast: 1,
-        reasonLast: 1,
-        createdAtReportLast: 1,
-        statusLast: 1,
-        reportStatusLast: 1,
-        reasonLastAppeal: 1,
-        avatar: 1,
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': {
+                    $concat: ["$concatmediavideo", "/", "$postID"]
+                  },
+
+                }
+              ],
+              default: ''
+            }
+          },
+          mediaThumbUri: {
+            $switch: {
+              branches: [
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediadiaries.mediaThumb'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': '$mediadiaries.mediaThumb'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': '$mediavideos.mediaThumb'
+                }
+              ],
+              default: ''
+            }
+          },
+          apsaraId: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediapicts"
+                    ]
+                  },
+                  then: "$mediapict.apsaraId"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediadiaries"
+                    ]
+                  },
+                  then: "$mediadiaries.apsaraId"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediavideos"
+                    ]
+                  },
+                  then: "$mediavideos.apsaraId"
+                }
+              ],
+              default: ""
+            }
+          },
+          idmedia: '$idmedia',
+          apsara: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediapicts"
+                    ]
+                  },
+                  then: "$mediapict.apsara"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediadiaries"
+                    ]
+                  },
+                  then: "$mediadiaries.apsara"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediavideos"
+                    ]
+                  },
+                  then: "$mediavideos.apsara"
+                }
+              ],
+              default: false
+            }
+          },
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          fullName: 1,
+          username: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          contentModeration: 1,
+          contentModerationResponse: 1,
+          reportedStatus: 1,
+          reportedUserCount: 1,
+          reportedUser: 1,
+          avatar: 1,
+          reportedUserHandle: 1,
+          reportReasonIdLast: {
+            $last: "$reportedUser.reportReasonId"
+          },
+          reasonLast: {
+            $last: "$reportedUser.description"
+          },
+          lastAppeal: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$reportedUserHandle", null]
+                }, {
+                  $eq: ["$reportedUserHandle", ""]
+                }, {
+                  $eq: ["$reportedUserHandle", []]
+                }, {
+                  $eq: ["$reportedUserHandle", "Lainnya"]
+                }]
+              },
+              then: "Lainnya",
+              else: {
+                $last: "$reportedUserHandle.reason"
+              }
+            },
+
+          },
+          createdAtReportLast: {
+            $last: "$reportedUser.createdAt"
+          },
+          statusLast: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$reportedUserHandle", null]
+                }, {
+                  $eq: ["$reportedUserHandle", ""]
+                }, {
+                  $eq: ["$reportedUserHandle", []]
+                }]
+              },
+              then: "BARU",
+              else: {
+                $last: "$reportedUserHandle.status"
+              }
+            },
+
+          },
+
+        }
+      },
+      {
+        $project: {
+          rotate: 1,
+          mediaBasePath: 1,
+          mediaUri: 1,
+          mediaType: 1,
+          mediaThumbEndpoint: 1,
+          mediaEndpoint: 1,
+          mediaThumbUri: 1,
+          apsaraId: 1,
+          idmedia: 1,
+          apsara: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          fullName: 1,
+          username: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          contentModeration: 1,
+          contentModerationResponse: 1,
+          reportedStatus: 1,
+          reportedUserCount: 1,
+          reportedUser: 1,
+          avatar: 1,
+          reportedUserHandle: 1,
+          reportReasonIdLast: 1,
+          reasonLast: 1,
+          createdAtReportLast: 1,
+          statusLast: 1,
+          lastAppeal: 1,
+          reasonLastAppeal: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$lastAppeal", null]
+                }, {
+                  $eq: ["$lastAppeal", ""]
+                }, {
+                  $eq: ["$lastAppeal", "Lainnya"]
+                }]
+              },
+              then: "Lainnya",
+              else: {
+                $last: "$reportedUserHandle.reason"
+              }
+            },
+
+          },
+          reportStatusLast: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$statusLast", null]
+                }, {
+                  $eq: ["$statusLast", ""]
+                }, {
+                  $eq: ["$statusLast", []]
+                }, {
+                  $eq: ["$statusLast", "BARU"]
+                }]
+              },
+              then: "BARU",
+              else: {
+                $last: "$reportedUserHandle.status"
+              }
+            },
+
+          },
+
+        }
+      },
+      {
+        $project: {
+          rotate: 1,
+          mediaBasePath: 1,
+          mediaUri: 1,
+          mediaType: 1,
+          mediaThumbEndpoint: 1,
+          mediaEndpoint: 1,
+          mediaThumbUri: 1,
+          apsaraId: 1,
+          idmedia: 1,
+          apsara: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          fullName: 1,
+          username: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          contentModeration: 1,
+          contentModerationResponse: 1,
+          reportedStatus: 1,
+          reportedUserCount: 1,
+          reportedUser: 1,
+          reportedUserHandle: 1,
+          reportReasonIdLast: 1,
+          reasonLast: 1,
+          createdAtReportLast: 1,
+          statusLast: 1,
+          reportStatusLast: 1,
+          reasonLastAppeal: 1,
+          avatar: 1,
 
 
-      }
-    },
-    {
-      $match: {
-        reportedUser: {
-          $ne: null
-        },
-        reportReasonIdLast: {
-          $ne: null
-        },
-        active: true
-      }
-    },
+        }
+      },
+      {
+        $match: {
+          reportedUser: {
+            $ne: null
+          },
+          reportReasonIdLast: {
+            $ne: null
+          },
+          active: true
+        }
+      },
 
 
     ];
@@ -4590,6 +4609,19 @@ export class PostsService {
         $match: {
           description: {
             $regex: keys,
+            $options: 'i'
+          },
+
+        }
+      },);
+
+    }
+    if (username && username !== undefined) {
+
+      pipeline.push({
+        $match: {
+          username: {
+            $regex: username,
             $options: 'i'
           },
 

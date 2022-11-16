@@ -1099,6 +1099,7 @@ export class ReportuserController {
         var reason = null;
         var descending = null;
         var reasonAppeal = null;
+        var username = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -1127,10 +1128,11 @@ export class ReportuserController {
         reason = request_json["reason"];
         descending = request_json["descending"];
         reasonAppeal = request_json["reasonAppeal"];
+        username = request_json["username"];
         if (type === "content") {
 
 
-            let query = await this.postsService.findreport(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal);
+            let query = await this.postsService.findreport(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal, username);
             var data = null;
             var arrdata = [];
             let pict: String[] = [];
@@ -1236,10 +1238,10 @@ export class ReportuserController {
             }
 
             total = query.length;
-            let datasearch = await this.postsService.findreport(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal);
+            let datasearch = await this.postsService.findreport(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username);
             totalsearch = datasearch.length;
 
-            let dataall = await this.postsService.findreport(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal);
+            let dataall = await this.postsService.findreport(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username);
             totalallrow = dataall.length;
 
             var tpage = null;
@@ -1260,7 +1262,7 @@ export class ReportuserController {
         else if (type === "ads") {
 
 
-            let query = await this.adsService.findreportads(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal);
+            let query = await this.adsService.findreportads(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal, username);
             var data = null;
             var arrdata = [];
             let pict: String[] = [];
@@ -1349,9 +1351,9 @@ export class ReportuserController {
                 arrdata.push(objk);
             }
             total = query.length;
-            let datasearch = await this.adsService.findreportads(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal);
+            let datasearch = await this.adsService.findreportads(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username);
             totalsearch = datasearch.length;
-            let dataall = await this.adsService.findreportads(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal);
+            let dataall = await this.adsService.findreportads(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username);
             totalallrow = dataall.length;
 
             var tpage = null;

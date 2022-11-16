@@ -3331,7 +3331,7 @@ export class AdsService {
         return adsIds;
     }
 
-    async findreportads(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean, reasonAppeal: any[]) {
+    async findreportads(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean, reasonAppeal: any[], username: string) {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -3366,8 +3366,7 @@ export class AdsService {
                     'profilepictid': {
                         $arrayElemAt: ['$basicdata.profilePict.$id', 0]
                     },
-
-
+                    'userAuth_id': { $arrayElemAt: ['$basicdata.userAuth.$id', 0] }
                 }
             },
             {
@@ -3380,12 +3379,23 @@ export class AdsService {
                 }
             },
             {
+                $lookup: {
+                    from: 'userauths',
+                    localField: 'userAuth_id',
+                    foreignField: '_id',
+                    as: 'userAuth_data',
+                },
+            },
+            {
                 $addFields: {
                     'avatar': {
                         $arrayElemAt: ['$avatardata', 0]
                     },
                     'basic': {
                         $arrayElemAt: ['$basicdata', 0]
+                    },
+                    'auth': {
+                        $arrayElemAt: ['$userAuth_data', 0]
                     },
 
                 }
@@ -3421,6 +3431,7 @@ export class AdsService {
                     userID: 1,
                     email: '$basic.email',
                     fullName: '$basic.fullName',
+                    username: '$auth.username',
                     idApsara: 1,
                     name: 1,
                     type: 1,
@@ -3449,7 +3460,6 @@ export class AdsService {
                     createdAtReportLast: {
                         $last: "$reportedUser.createdAt"
                     },
-
                     avatar: {
                         mediaBasePath: '$avatar.mediaBasePath',
                         mediaUri: '$avatar.mediaUri',
@@ -3488,6 +3498,7 @@ export class AdsService {
                     userID: 1,
                     email: 1,
                     fullName: 1,
+                    username: 1,
                     idApsara: 1,
                     name: 1,
                     type: 1,
@@ -3520,7 +3531,6 @@ export class AdsService {
                         },
 
                     },
-
                     lastAppeal: {
                         $cond: {
                             if: {
@@ -3568,6 +3578,7 @@ export class AdsService {
                     userID: 1,
                     email: 1,
                     fullName: 1,
+                    username: 1,
                     idApsara: 1,
                     name: 1,
                     type: 1,
@@ -3645,7 +3656,6 @@ export class AdsService {
                     },
                     isActive: true,
 
-
                 }
             }
         ];
@@ -3657,6 +3667,19 @@ export class AdsService {
                 $match: {
                     name: {
                         $regex: keys,
+                        $options: 'i'
+                    },
+
+                }
+            },);
+
+        }
+        if (username && username !== undefined) {
+
+            pipeline.push({
+                $match: {
+                    username: {
+                        $regex: username,
                         $options: 'i'
                     },
 
