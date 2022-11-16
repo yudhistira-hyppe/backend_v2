@@ -96,6 +96,10 @@ export class Posts {
   musicId: mongoose.Types.ObjectId;
   @Prop()
   boosted: any[];
+  @Prop()
+  boostCount: number;
+  @Prop()
+  isBoost: number;
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

@@ -48,6 +48,8 @@ export class CreatePostsDto {
     reportedUserHandle: any[];
     musicId: mongoose.Types.ObjectId;
     boosted: any[];
+    boostCount: number;
+    isBoost: number;
 }
 
 export class CreatePostResponse {

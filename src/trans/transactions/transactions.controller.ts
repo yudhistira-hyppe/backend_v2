@@ -1379,6 +1379,8 @@ export class TransactionsController {
         }
         boost.push(dataBost);
         var CreatePostsDto_ = new CreatePostsDto();
+        CreatePostsDto_.boostCount = 0;
+        CreatePostsDto_.isBoost = 5;
         CreatePostsDto_.boosted = boost;
         await this.postsService.updateByPostId(postid, CreatePostsDto_)
     }
@@ -5002,10 +5004,12 @@ export class TransactionsController {
                 if (Va.status.code == "000") {
                     //INSERT DATA TRANSACTION
                     try {
+                        var id_user_sell = await this.userbasicsService.findOne("tjikaljedy@hyppe.id")
+
                         let cekstatusva = await this.oyPgService.staticVaInfo(Va.id);
                         var createTransactionsDto_ = new CreateTransactionsDto();
                         createTransactionsDto_.iduserbuyer = Object(user._id.toString());
-                        createTransactionsDto_.idusersell = Object(user._id.toString());
+                        createTransactionsDto_.idusersell = Object(id_user_sell._id.toString());
                         createTransactionsDto_.timestamp = DateTimeStamp;
                         createTransactionsDto_.updatedAt = DateTimeStamp;
                         createTransactionsDto_.noinvoice = transactionNumber;
