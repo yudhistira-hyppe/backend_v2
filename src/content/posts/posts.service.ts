@@ -5925,6 +5925,66 @@ export class PostsService {
           reportedUserHandle: 1,
           reportedUser: 1,
           reportedStatus: 1,
+          lastReasonReport: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$reportedUser", null]
+                }, {
+                  $eq: ["$reportedUser", ""]
+                }, {
+                  $eq: ["$reportedUser", []]
+                },]
+              },
+              then: "Lainnya",
+              else: {
+                $last: "$reportedUser.description"
+              }
+            },
+
+          },
+          lastAppeal: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$reportedUserHandle", null]
+                }, {
+                  $eq: ["$reportedUserHandle", ""]
+                }, {
+                  $eq: ["$reportedUserHandle", []]
+                },]
+              },
+              then: "Lainnya",
+              else: {
+                $last: "$reportedUserHandle.reason"
+              }
+            },
+
+          },
+          lastAppealAdmin: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$reportedUserHandle", null]
+                }, {
+                  $eq: ["$reportedUserHandle", ""]
+                }, {
+                  $eq: ["$reportedUserHandle", []]
+                },]
+              },
+              then: "Lainnya",
+              else: {
+                $last: "$reportedUserHandle.reasonAdmin"
+              }
+            },
+
+          },
+          createdAtReportLast: {
+            $last: "$reportedUser.createdAt"
+          },
+          createdAtAppealLast: {
+            $last: "$reportedUserHandle.createdAt"
+          },
           statusLast: {
             $cond: {
               if: {
@@ -5997,7 +6057,66 @@ export class PostsService {
           reportedUserHandle: 1,
           reportedUser: 1,
           reportedStatus: 1,
+          createdAtReportLast: 1,
+          createdAtAppealLast: 1,
+          lastAppeal: 1,
+          lastAppealAdmin: 1,
+          lastReasonReport: 1,
           statusLast: 1,
+          reasonLastReport: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$lastReasonReport", null]
+                }, {
+                  $eq: ["$lastReasonReport", ""]
+                }, {
+                  $eq: ["$lastReasonReport", "Lainnya"]
+                }]
+              },
+              then: "Lainnya",
+              else: {
+                $last: "$reportedUser.description"
+              }
+            },
+
+          },
+          reasonLastAppeal: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$lastAppeal", null]
+                }, {
+                  $eq: ["$lastAppeal", ""]
+                }, {
+                  $eq: ["$lastAppeal", "Lainnya"]
+                }]
+              },
+              then: "Lainnya",
+              else: {
+                $last: "$reportedUserHandle.reason"
+              }
+            },
+
+          },
+          reasonLastAppealAdmin: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$lastAppealAdmin", null]
+                }, {
+                  $eq: ["$lastAppealAdmin", ""]
+                }, {
+                  $eq: ["$lastAppealAdmin", "Lainnya"]
+                }]
+              },
+              then: "Lainnya",
+              else: {
+                $last: "$reportedUserHandle.reasonAdmin"
+              }
+            },
+
+          },
           reportStatusLast: {
             $cond: {
               if: {
