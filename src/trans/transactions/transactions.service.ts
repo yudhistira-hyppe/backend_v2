@@ -108,6 +108,12 @@ export class TransactionsService {
         return data;
     }
 
+    async updateoneBoost(id: Types.ObjectId, idaccountbalance: Types.ObjectId, payload: VaCallback): Promise<Object> {
+        let data = await this.transactionsModel.updateOne({ "_id": id },
+            { $set: { "status": "Success", "description": "buy BOOST CONTENT success", "accountbalance": idaccountbalance, payload: payload } });
+        return data;
+    }
+
     async updatestatuscancel(id: Types.ObjectId): Promise<Object> {
         let data = await this.transactionsModel.updateOne({ "_id": id },
             { $set: { "status": "Cancel", "description": "VA expired time" } });

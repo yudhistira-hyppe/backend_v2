@@ -526,14 +526,22 @@ export class UtilsService {
     }
     return isTrue;
   }
+
   async formatDateString(date:Date): Promise<string> {
     var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
     return DateTime.substring(0, 10);
   }
+
   async getDateTimeString(): Promise<string> {
     var date = new Date();
     var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
     return DateTime.substring(0, DateTime.lastIndexOf('.'));
+  }
+
+  async getDateTimeISOString(): Promise<string> {
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+    return DateTime;
   }
 
   async getDateTimeDate(): Promise<Date> {
