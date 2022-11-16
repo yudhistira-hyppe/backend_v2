@@ -5058,7 +5058,7 @@ export class TransactionsController {
                     }
                     return {
                         response_code: 202,
-                        data_response_,
+                        data: data_response_,
                         messages: {
                             info: ['successfuly'],
                         },
