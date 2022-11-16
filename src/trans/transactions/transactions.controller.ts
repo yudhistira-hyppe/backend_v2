@@ -34,6 +34,7 @@ import { BoostsessionService } from '../../content/boostsession/boostsession.ser
 import { BoostintervalService } from '../../content/boostinterval/boostinterval.service';
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 import { CreatePostsDto } from 'src/content/posts/dto/create-posts.dto';
+import { Accountbalances } from '../accountbalances/schemas/accountbalances.schema';
 
 @Controller()
 export class TransactionsController {
@@ -1269,29 +1270,42 @@ export class TransactionsController {
                         });
                     }
                 } else if (type === "BOOST_CONTENT") {
+                    //GET TOTAL AMOUNT
+                    var totalAmount = tamount;
+                    //GET PRICE CONTENT BOOST
+                    let priceContent = 0;
+                    priceContent = await this.utilsService.getSetting_("636212286f07000023005ce2");
+                    //GET VA PRICE
+                    var vaAdmin = 0;
+                    if (bankcode === "014") {
+                        vaAdmin = valuevaBCA;
+                    } else {
+                        vaAdmin = valuevalainya;
+                    }
+                    //GET ADMIN PRICE
+                    var priceAdmin = 0;
+                    priceAdmin = totalAmount - priceContent - vaAdmin;
+
+                    //GET CECK STATUS
                     if (status == "WAITING_PAYMENT") {
-                        var boost = [];
-                        var dateStartdata = (detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() +".000Z")
-                        console.log("date String", dateStartdata);
-                        var dataBost = {
-                            boostDate: new Date(detail[0].dateStart.toString()),
-                            boostInterval: {
-                                id: new mongoose.Types.ObjectId(detail[0].interval._id.toString()),
-                                value: Object(detail[0].interval.value.toString()),
-                            },
-                            boostSession: {
-                                id: new mongoose.Types.ObjectId(detail[0].session._id.toString()),
-                                start: new Date((detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() + ".000Z")),
-                                end: new Date((detail[0].datedateEnd.toString() + "T" + detail[0].session.end.toString() + ".000Z")),
-                                timeStart: detail[0].session.start,
-                                timeEnd: detail[0].session.end,
-                            },
-                            boostViewer:[],
-                        }
-                        boost.push(dataBost);
-                        var CreatePostsDto_ = new CreatePostsDto();
-                        CreatePostsDto_.boosted = boost;
-                        await this.postsService.updateByPostId(postid,CreatePostsDto_)
+                        //EDIT CONTENT TO BOOST
+                        this.editPostBost(postid, detail);
+                        //CREATE ACCOUNT BALANCE CONTENT BOOST
+                        var Accountbalances = await this.accontbalanceBoost(postid, idusersell, priceContent);
+                        //CREATE ACCOUNT BALANCE VA ADMIN
+                        await this.accontbalanceAdmin("Bank VA", idadmin, idusersell, vaAdmin);
+                        //CREATE ACCOUNT BALANCE ADMIN
+                        await this.accontbalanceAdmin("Admin", idadmin, idusersell, priceAdmin);
+
+                        //GET ID ACCOUNT BALANCE CONTENT BOOST
+                        var idbalance = Accountbalances._id;
+                        //UPDATE TRANSACTION SUCCES PAYMENT
+                        await this.transactionsService.updateoneBoost(idtransaction, idbalance, payload);
+                        
+                        //SEND FCM SUCCES TRANSACTION
+                        this.sendCommentFCM("BOOST_CONTENT", postid, emailseller.toString())
+
+                        //RESPONSE SUCCES
                         res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "message": messages
@@ -1303,16 +1317,88 @@ export class TransactionsController {
                         });
                     }
                 }
-
-
             } catch (e) {
                 throw new BadRequestException("Unabled to proceed");
             }
-
         }
-
-
     }
+
+    async sendCommentFCM(type: string, postID: string, receiverParty: string) {
+        var Templates_ = new TemplatesRepo();
+        Templates_ = await this.utilsService.getTemplate_repo(type, 'NOTIFICATION');
+
+        var email = receiverParty;
+        var titlein = Templates_.subject.toString();
+        var titleen = Templates_.subject.toString();
+        var bodyin = "";
+        var bodyen = "";
+
+        var email_post = "";
+        var posts = await this.postsService.findid(postID);
+        var bodyin_get = Templates_.body_detail_id.toString();
+        var bodyen_get = Templates_.body_detail.toString();
+        var post_type = "";
+        if (await this.utilsService.ceckData(posts)) {
+            post_type = posts.postType.toString();
+            email_post = posts.email.toString();
+        }
+        var new_bodyin_get = bodyin_get.replace("${post_type}", "Hypper" + post_type[0].toUpperCase() + post_type.substring(1));
+        var new_bodyen_get = bodyen_get.replace("${post_type}", "Hypper" + post_type[0].toUpperCase() + post_type.substring(1));
+
+        var bodyin = new_bodyin_get;
+        var bodyen = new_bodyen_get;
+
+        var eventType = type.toString();
+        var event = "ACCEPT";
+        await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
+    }
+
+    async editPostBost(postid:string, detail:any){
+        var boost = [];
+        var dateStartdata = (detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() + ".000Z")
+        console.log("date String", dateStartdata);
+        var dataBost = {
+            boostDate: new Date(detail[0].dateStart.toString()),
+            boostInterval: {
+                id: new mongoose.Types.ObjectId(detail[0].interval._id.toString()),
+                value: Object(detail[0].interval.value.toString()),
+            },
+            boostSession: {
+                id: new mongoose.Types.ObjectId(detail[0].session._id.toString()),
+                start: new Date((detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() + ".000Z")),
+                end: new Date((detail[0].datedateEnd.toString() + "T" + detail[0].session.end.toString() + ".000Z")),
+                timeStart: detail[0].session.start,
+                timeEnd: detail[0].session.end,
+            },
+            boostViewer: [],
+        }
+        boost.push(dataBost);
+        var CreatePostsDto_ = new CreatePostsDto();
+        CreatePostsDto_.boosted = boost;
+        await this.postsService.updateByPostId(postid, CreatePostsDto_)
+    }
+
+    async accontbalanceBoost(postid: string, idusersell: { oid: string }, amount: number): Promise<Accountbalances> {
+        try{
+            var currentDate = await this.utilsService.getDateTimeISOString();
+            var desccontent = postid;
+            var dataacountbalance = {
+                iduser: idusersell,
+                debet: 0,
+                kredit: amount,
+                type: "sell",
+                timestamp: currentDate,
+                description: "sell boost content: " + desccontent,
+            };
+            return await this.accountbalancesService.createdata(dataacountbalance);
+        }catch(e){
+            console.log("--------------------------------START ERROR--------------------------------");
+            console.log(e);
+            console.log("--------------------------------END ERROR--------------------------------");
+            return null;
+        }
+    }
+
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/withdraw')
     async createwithdraw(@Res() res, @Headers('x-auth-token') auth: string, @Body() OyDisbursements: OyDisbursements, @Request() request) {
