@@ -3942,7 +3942,7 @@ export class PostsService {
     return query;
   }
 
-  async findreport(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean, reasonAppeal: any[], username: string) {
+  async findreport(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean, reasonAppeal: any[], username: string, jenis: string) {
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -4453,6 +4453,9 @@ export class PostsService {
           createdAtReportLast: {
             $last: "$reportedUser.createdAt"
           },
+          createdAtAppealLast: {
+            $last: "$reportedUserHandle.createdAt"
+          },
           statusLast: {
             $cond: {
               if: {
@@ -4506,6 +4509,7 @@ export class PostsService {
           reportReasonIdLast: 1,
           reasonLast: 1,
           createdAtReportLast: 1,
+          createdAtAppealLast: 1,
           statusLast: 1,
           lastAppeal: 1,
           reasonLastAppeal: {
@@ -4580,6 +4584,7 @@ export class PostsService {
           reportReasonIdLast: 1,
           reasonLast: 1,
           createdAtReportLast: 1,
+          createdAtAppealLast: 1,
           statusLast: 1,
           reportStatusLast: 1,
           reasonLastAppeal: 1,
@@ -4639,10 +4644,22 @@ export class PostsService {
       },);
     }
     if (startdate && startdate !== undefined) {
-      pipeline.push({ $match: { createdAtReportLast: { "$gte": startdate } } });
+      if (jenis === "report") {
+        pipeline.push({ $match: { createdAtReportLast: { "$gte": startdate } } });
+      }
+      else if (jenis === "appeal") {
+        pipeline.push({ $match: { createdAtAppealLast: { "$gte": startdate } } });
+      }
     }
     if (enddate && enddate !== undefined) {
-      pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
+
+
+      if (jenis === "report") {
+        pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
+      }
+      else if (jenis === "appeal") {
+        pipeline.push({ $match: { createdAtAppealLast: { "$lte": dateend } } });
+      }
     }
     if (startreport && startreport !== undefined) {
       pipeline.push({ $match: { reportedUserCount: { "$gte": startreport } } });
@@ -4710,12 +4727,22 @@ export class PostsService {
         });
 
     }
-    pipeline.push({
-      $sort: {
-        createdAtReportLast: order
-      },
+    if (jenis === "report") {
+      pipeline.push({
+        $sort: {
+          createdAtReportLast: order
+        },
 
-    });
+      });
+    }
+    else if (jenis === "appeal") {
+      pipeline.push({
+        $sort: {
+          createdAtAppealLast: order
+        },
+
+      });
+    }
     if (page > 0) {
       pipeline.push({ $skip: (page * limit) });
     }

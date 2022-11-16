@@ -1100,6 +1100,7 @@ export class ReportuserController {
         var descending = null;
         var reasonAppeal = null;
         var username = null;
+        var jenis = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -1114,6 +1115,11 @@ export class ReportuserController {
         }
         if (request_json["type"] !== undefined) {
             type = request_json["type"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["jenis"] !== undefined) {
+            jenis = request_json["jenis"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
@@ -1132,7 +1138,7 @@ export class ReportuserController {
         if (type === "content") {
 
 
-            let query = await this.postsService.findreport(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal, username);
+            let query = await this.postsService.findreport(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis);
             var data = null;
             var arrdata = [];
             let pict: String[] = [];
@@ -1227,6 +1233,7 @@ export class ReportuserController {
                     "reportReasonIdLast": query[i].reportReasonIdLast,
                     "reasonLast": query[i].reasonLast,
                     "createdAtReportLast": query[i].createdAtReportLast,
+                    "createdAtAppealLast": query[i].createdAtAppealLast,
                     "reportStatusLast": query[i].reportStatusLast,
                     "reasonLastAppeal": query[i].reasonLastAppeal,
                     "apsaraId": idapsaradefine,
@@ -1239,10 +1246,10 @@ export class ReportuserController {
             }
 
             total = query.length;
-            let datasearch = await this.postsService.findreport(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username);
+            let datasearch = await this.postsService.findreport(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis);
             totalsearch = datasearch.length;
 
-            let dataall = await this.postsService.findreport(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username);
+            let dataall = await this.postsService.findreport(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis);
             totalallrow = dataall.length;
 
             var tpage = null;
@@ -1263,7 +1270,7 @@ export class ReportuserController {
         else if (type === "ads") {
 
 
-            let query = await this.adsService.findreportads(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal, username);
+            let query = await this.adsService.findreportads(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis);
             var data = null;
             var arrdata = [];
             let pict: String[] = [];
@@ -1341,6 +1348,7 @@ export class ReportuserController {
                     "reportReasonIdLast": query[i].reportReasonIdLast,
                     "reasonLast": query[i].reasonLast,
                     "createdAtReportLast": query[i].createdAtReportLast,
+                    "createdAtAppealLast": query[i].createdAtAppealLast,
                     "place": query[i].place,
                     "reportStatusLast": query[i].reportStatusLast,
                     "reasonLastAppeal": query[i].reasonLastAppeal,
@@ -1353,9 +1361,9 @@ export class ReportuserController {
                 arrdata.push(objk);
             }
             total = query.length;
-            let datasearch = await this.adsService.findreportads(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username);
+            let datasearch = await this.adsService.findreportads(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis);
             totalsearch = datasearch.length;
-            let dataall = await this.adsService.findreportads(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username);
+            let dataall = await this.adsService.findreportads(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis);
             totalallrow = dataall.length;
 
             var tpage = null;
