@@ -33,6 +33,7 @@ import { DisqusService } from '../disqus/disqus.service';
 import { ContentModService } from './contentmod.service';
 import { OyPgService } from '../../paymentgateway/oypg/oypg.service'; 
 import { MethodepaymentsService } from '../../trans/methodepayments/methodepayments.service';
+import { PostBoostService } from './postboost.service';
 
 @Controller()
 export class PostsController {
@@ -43,7 +44,7 @@ export class PostsController {
     private readonly userauthsService: UserauthsService,
     private readonly utilsService: UtilsService, 
     private readonly errorHandler: ErrorHandler,
-    private readonly oyPgService: OyPgService,
+    private readonly bootsService: PostBoostService,
     private readonly contenteventsService: ContenteventsService,
     private readonly insightsService: InsightsService,
     private readonly userbasicsService: UserbasicsService,
@@ -375,7 +376,8 @@ export class PostsController {
   async getUserPostLandingPage(@Body() body, @Headers() headers): Promise<PostLandingResponseApps> {
     console.log(body);
     this.logger.log("getUserPostLandingPage >>> start: " + JSON.stringify(body));
-    return this.postContentService.getUserPostLandingPage(body, headers);
+    //return this.postContentService.getUserPostLandingPage(body, headers);
+    return this.bootsService.getBoost(body, headers);
   }
 
   @UseGuards(JwtAuthGuard)
