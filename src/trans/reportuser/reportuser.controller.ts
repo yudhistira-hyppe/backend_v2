@@ -612,6 +612,7 @@ export class ReportuserController {
 
                                 "reason": reason,
                                 "remark": remark,
+                                "reasonAdmin": "",
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -699,6 +700,7 @@ export class ReportuserController {
 
                                 "reason": reason,
                                 "remark": remark,
+                                "reasonAdmin": "",
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -776,6 +778,7 @@ export class ReportuserController {
 
                                 "reason": reason,
                                 "remark": remark,
+                                "reasonAdmin": "",
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -884,7 +887,7 @@ export class ReportuserController {
                     objreporthandle = {
 
                         "reasonId": reasonId,
-                        "reason": reason,
+                        "reasonAdmin": reason,
                         "remark": "",
                         "createdAt": dt.toISOString(),
                         "updatedAt": dt.toISOString(),
@@ -903,8 +906,7 @@ export class ReportuserController {
                 } else {
                     objreporthandle = {
 
-                        "reasonId": reasonId,
-                        "reason": reason,
+
                         "remark": "",
                         "createdAt": dt.toISOString(),
                         "updatedAt": dt.toISOString(),
@@ -938,7 +940,7 @@ export class ReportuserController {
                     objreporthandle = {
 
                         "reasonId": reasonId,
-                        "reason": reason,
+                        "reasonAdmin": reason,
                         "remark": "",
                         "createdAt": dt.toISOString(),
                         "updatedAt": dt.toISOString(),
@@ -952,8 +954,6 @@ export class ReportuserController {
             } else {
                 objreporthandle = {
 
-                    "reasonId": reasonId,
-                    "reason": reason,
                     "remark": "",
                     "createdAt": dt.toISOString(),
                     "updatedAt": dt.toISOString(),
@@ -1208,6 +1208,7 @@ export class ReportuserController {
                     "updatedAt": query[i].updatedAt,
                     "postID": query[i].postID,
                     "email": query[i].email,
+                    "fullName": query[i].fullName,
                     "postType": query[i].postType,
                     "description": query[i].description,
                     "title": query[i].title,
@@ -1222,8 +1223,10 @@ export class ReportuserController {
                     "reasonLast": query[i].reasonLast,
                     "createdAtReportLast": query[i].createdAtReportLast,
                     "reportStatusLast": query[i].reportStatusLast,
+                    "reasonLastAppeal": query[i].reasonLastAppeal,
                     "apsaraId": idapsaradefine,
                     "apsara": apsaradefine,
+                    "avatar": query[i].avatar,
                     "media": data
                 };
 
@@ -1309,6 +1312,8 @@ export class ReportuserController {
                 objk = {
                     "_id": query[i]._id,
                     "userID": query[i].userID,
+                    "email": query[i].email,
+                    "fullName": query[i].fullName,
                     "idApsara": query[i].idApsara,
                     "name": query[i].name,
                     "status": query[i].status,
@@ -1332,8 +1337,10 @@ export class ReportuserController {
                     "createdAtReportLast": query[i].createdAtReportLast,
                     "place": query[i].place,
                     "reportStatusLast": query[i].reportStatusLast,
+                    "reasonLastAppeal": query[i].reasonLastAppeal,
                     "apsaraId": idapsaradefine,
                     "apsara": apsaradefine,
+                    "avatar": query[i].avatar,
                     "media": data
                 };
 

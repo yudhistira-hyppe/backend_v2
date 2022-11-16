@@ -3353,6 +3353,45 @@ export class AdsService {
 
             {
                 $lookup: {
+                    from: 'userbasics',
+                    localField: 'userID',
+                    foreignField: '_id',
+                    as: 'basicdata',
+
+                }
+            },
+            {
+                $addFields: {
+
+                    'profilepictid': {
+                        $arrayElemAt: ['$basicdata.profilePict.$id', 0]
+                    },
+
+
+                }
+            },
+            {
+                $lookup: {
+                    from: 'mediaprofilepicts',
+                    localField: 'profilepictid',
+                    foreignField: '_id',
+                    as: 'avatardata',
+
+                }
+            },
+            {
+                $addFields: {
+                    'avatar': {
+                        $arrayElemAt: ['$avatardata', 0]
+                    },
+                    'basic': {
+                        $arrayElemAt: ['$basicdata', 0]
+                    },
+
+                }
+            },
+            {
+                $lookup: {
                     from: 'adsplaces',
                     localField: 'placingID',
                     foreignField: '_id',
@@ -3380,6 +3419,8 @@ export class AdsService {
                         $arrayElemAt: ['$places', 0]
                     },
                     userID: 1,
+                    email: '$basic.email',
+                    fullName: '$basic.fullName',
                     idApsara: 1,
                     name: 1,
                     type: 1,
@@ -3409,12 +3450,44 @@ export class AdsService {
                         $last: "$reportedUser.createdAt"
                     },
 
+                    avatar: {
+                        mediaBasePath: '$avatar.mediaBasePath',
+                        mediaUri: '$avatar.mediaUri',
+                        mediaType: '$avatar.mediaType',
+                        mediaEndpoint: '$avatar.fsTargetUri',
+                        medreplace: {
+                            $replaceOne: {
+                                input: "$avatar.mediaUri",
+                                find: "_0001.jpeg",
+                                replacement: ""
+                            }
+                        },
+
+                    },
+
                 }
+            },
+            {
+                $addFields: {
+
+                    concat: '/profilepict',
+                    pict: {
+                        $replaceOne: {
+                            input: "$avatar.mediaUri",
+                            find: "_0001.jpeg",
+                            replacement: ""
+                        }
+                    },
+
+                },
+
             },
             {
 
                 $project: {
                     userID: 1,
+                    email: 1,
+                    fullName: 1,
                     idApsara: 1,
                     name: 1,
                     type: 1,
@@ -3438,6 +3511,34 @@ export class AdsService {
                     reasonLast: 1,
                     createdAtReportLast: 1,
                     place: '$place.namePlace',
+                    avatar: {
+                        mediaBasePath: '$profilpict.mediaBasePath',
+                        mediaUri: '$profilpict.mediaUri',
+                        mediaType: '$profilpict.mediaType',
+                        mediaEndpoint: {
+                            $concat: ["$concat", "/", "$pict"]
+                        },
+
+                    },
+
+                    lastAppeal: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$reportedUserHandle.reason", null]
+                                }, {
+                                    $eq: ["$reportedUserHandle.reason", ""]
+                                }, {
+                                    $eq: ["$reportedUserHandle.reason", "Lainnya"]
+                                }]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUserHandle.reason"
+                            }
+                        },
+
+                    },
                     statusLast: {
                         $cond: {
                             if: {
@@ -3463,6 +3564,8 @@ export class AdsService {
 
                 $project: {
                     userID: 1,
+                    email: 1,
+                    fullName: 1,
                     idApsara: 1,
                     name: 1,
                     type: 1,
@@ -3486,7 +3589,27 @@ export class AdsService {
                     reasonLast: 1,
                     createdAtReportLast: 1,
                     place: 1,
+                    avatar: 1,
                     statusLast: 1,
+                    lastAppeal: 1,
+                    reasonLastAppeal: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$lastAppeal", null]
+                                }, {
+                                    $eq: ["$lastAppeal", ""]
+                                }, {
+                                    $eq: ["$lastAppeal", "Lainnya"]
+                                }]
+                            },
+                            then: "Lainnya",
+                            else: {
+                                $last: "$reportedUserHandle.reason"
+                            }
+                        },
+
+                    },
                     reportStatusLast: {
                         $cond: {
                             if: {
@@ -3512,7 +3635,12 @@ export class AdsService {
             },
             {
                 $match: {
-                    reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+                    reportedUser: {
+                        $ne: null
+                    },
+                    reportReasonIdLast: {
+                        $ne: null
+                    },
                     isActive: true,
 
 
@@ -4000,7 +4128,7 @@ export class AdsService {
 
     async updateDitangguhkan(id: ObjectID, reason: string, updatedAt: string, reasonId: ObjectID) {
         let data = await this.adsModel.updateMany({ "_id": id },
-            { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
+            { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reasonAdmin": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
         return data;
     }
 

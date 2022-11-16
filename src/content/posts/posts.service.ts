@@ -3969,6 +3969,45 @@ export class PostsService {
     }
     var pipeline = [];
     pipeline = [{
+      $lookup: {
+        from: 'userbasics',
+        localField: 'email',
+        foreignField: 'email',
+        as: 'basicdata',
+
+      }
+    },
+    {
+      $addFields: {
+
+        'profilepictid': {
+          $arrayElemAt: ['$basicdata.profilePict.$id', 0]
+        },
+
+
+      }
+    },
+    {
+      $lookup: {
+        from: 'mediaprofilepicts',
+        localField: 'profilepictid',
+        foreignField: '_id',
+        as: 'avatardata',
+
+      }
+    },
+    {
+      $addFields: {
+        'avatar': {
+          $arrayElemAt: ['$avatardata', 0]
+        },
+        'basic': {
+          $arrayElemAt: ['$basicdata', 0]
+        },
+
+      }
+    },
+    {
       $project: {
         refs: {
           $arrayElemAt: ['$contentMedias', 0]
@@ -3986,7 +4025,22 @@ export class PostsService {
         reportedStatus: 1,
         reportedUserCount: 1,
         reportedUserHandle: 1,
-        reportedUser: 1
+        reportedUser: 1,
+        fullName: '$basic.fullName',
+        avatar: {
+          mediaBasePath: '$avatar.mediaBasePath',
+          mediaUri: '$avatar.mediaUri',
+          mediaType: '$avatar.mediaType',
+          mediaEndpoint: '$avatar.fsTargetUri',
+          medreplace: {
+            $replaceOne: {
+              input: "$avatar.mediaUri",
+              find: "_0001.jpeg",
+              replacement: ""
+            }
+          },
+
+        },
       }
     },
     {
@@ -3997,6 +4051,7 @@ export class PostsService {
         updatedAt: 1,
         postID: 1,
         email: 1,
+        fullName: 1,
         postType: 1,
         description: 1,
         title: 1,
@@ -4006,10 +4061,17 @@ export class PostsService {
         reportedStatus: 1,
         reportedUserCount: 1,
         reportedUserHandle: 1,
-        reportedUser: 1
+        reportedUser: 1,
+        avatar: 1
       }
     },
+    {
+      $addFields: {
 
+        concat: '/profilepict',
+        pict: { $replaceOne: { input: "$avatar.mediaUri", find: "_0001.jpeg", replacement: "" } },
+      },
+    },
     {
       $lookup: {
         from: 'mediapicts',
@@ -4060,6 +4122,7 @@ export class PostsService {
         updatedAt: 1,
         postID: 1,
         email: 1,
+        fullName: 1,
         postType: 1,
         description: 1,
         title: 1,
@@ -4069,8 +4132,14 @@ export class PostsService {
         reportedStatus: 1,
         reportedUserCount: 1,
         reportedUserHandle: 1,
-        reportedUser: 1
+        reportedUser: 1,
+        avatar: {
+          mediaBasePath: '$profilpict.mediaBasePath',
+          mediaUri: '$profilpict.mediaUri',
+          mediaType: '$profilpict.mediaType',
+          mediaEndpoint: { $concat: ["$concat", "/", "$pict"] },
 
+        },
       }
     },
     {
@@ -4334,6 +4403,7 @@ export class PostsService {
         updatedAt: 1,
         postID: 1,
         email: 1,
+        fullName: 1,
         postType: 1,
         description: 1,
         title: 1,
@@ -4343,10 +4413,35 @@ export class PostsService {
         reportedStatus: 1,
         reportedUserCount: 1,
         reportedUser: 1,
+        avatar: 1,
         reportedUserHandle: 1,
-        reportReasonIdLast: { $last: "$reportedUser.reportReasonId" },
-        reasonLast: { $last: "$reportedUser.description" },
-        createdAtReportLast: { $last: "$reportedUser.createdAt" },
+        reportReasonIdLast: {
+          $last: "$reportedUser.reportReasonId"
+        },
+        reasonLast: {
+          $last: "$reportedUser.description"
+        },
+        lastAppeal: {
+          $cond: {
+            if: {
+              $or: [{
+                $eq: ["$reportedUserHandle.reason", null]
+              }, {
+                $eq: ["$reportedUserHandle.reason", ""]
+              }, {
+                $eq: ["$reportedUserHandle.reason", "Lainnya"]
+              }]
+            },
+            then: "Lainnya",
+            else: {
+              $last: "$reportedUserHandle.reason"
+            }
+          },
+
+        },
+        createdAtReportLast: {
+          $last: "$reportedUser.createdAt"
+        },
         statusLast: {
           $cond: {
             if: {
@@ -4365,6 +4460,7 @@ export class PostsService {
           },
 
         },
+
       }
     },
     {
@@ -4383,6 +4479,7 @@ export class PostsService {
         updatedAt: 1,
         postID: 1,
         email: 1,
+        fullName: 1,
         postType: 1,
         description: 1,
         title: 1,
@@ -4392,11 +4489,31 @@ export class PostsService {
         reportedStatus: 1,
         reportedUserCount: 1,
         reportedUser: 1,
+        avatar: 1,
         reportedUserHandle: 1,
         reportReasonIdLast: 1,
         reasonLast: 1,
         createdAtReportLast: 1,
         statusLast: 1,
+        lastAppeal: 1,
+        reasonLastAppeal: {
+          $cond: {
+            if: {
+              $or: [{
+                $eq: ["$lastAppeal", null]
+              }, {
+                $eq: ["$lastAppeal", ""]
+              }, {
+                $eq: ["$lastAppeal", "Lainnya"]
+              }]
+            },
+            then: "Lainnya",
+            else: {
+              $last: "$reportedUserHandle.reason"
+            }
+          },
+
+        },
         reportStatusLast: {
           $cond: {
             if: {
@@ -4417,15 +4534,59 @@ export class PostsService {
           },
 
         },
+
+      }
+    },
+    {
+      $project: {
+        rotate: 1,
+        mediaBasePath: 1,
+        mediaUri: 1,
+        mediaType: 1,
+        mediaThumbEndpoint: 1,
+        mediaEndpoint: 1,
+        mediaThumbUri: 1,
+        apsaraId: 1,
+        idmedia: 1,
+        apsara: 1,
+        createdAt: 1,
+        updatedAt: 1,
+        postID: 1,
+        email: 1,
+        fullName: 1,
+        postType: 1,
+        description: 1,
+        title: 1,
+        active: 1,
+        contentModeration: 1,
+        contentModerationResponse: 1,
+        reportedStatus: 1,
+        reportedUserCount: 1,
+        reportedUser: 1,
+        reportedUserHandle: 1,
+        reportReasonIdLast: 1,
+        reasonLast: 1,
+        createdAtReportLast: 1,
+        statusLast: 1,
+        reportStatusLast: 1,
+        reasonLastAppeal: 1,
+        avatar: 1,
+
+
       }
     },
     {
       $match: {
-        reportedUser: { $ne: null }, reportReasonIdLast: { $ne: null },
+        reportedUser: {
+          $ne: null
+        },
+        reportReasonIdLast: {
+          $ne: null
+        },
         active: true
-
       }
     },
+
 
     ];
 
@@ -5869,7 +6030,7 @@ export class PostsService {
 
   async updateDitangguhkan(id: string, reason: string, updatedAt: string, reasonId: ObjectId) {
     let data = await this.PostsModel.updateMany({ "_id": id },
-      { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reason": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
+      { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].reasonId": reasonId, "reportedUserHandle.$[].reasonAdmin": reason, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
     return data;
   }
 
