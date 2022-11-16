@@ -36,6 +36,7 @@ import { OyPgModule } from '../../paymentgateway/oypg/oypg.module';
 import { MethodepaymentsModule } from '../../trans/methodepayments/methodepayments.module';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import { SocketModule } from '../socket/socket.module';
+import { PostBoostService } from './postboost.service';
 @Module({
 
     imports: [
@@ -56,7 +57,7 @@ import { SocketModule } from '../socket/socket.module';
         MongooseModule.forFeature([{ name: Posts.name, schema: PostsSchema }], 'SERVER_FULL')
     ],
     controllers: [PostsController],
-    providers: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService, ContentModService],
-    exports: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService, ContentModService],
+    providers: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService, ContentModService, PostBoostService],
+    exports: [PostsService, PostContentService, PostContentPlaylistService, PostCommentService, ContentModService, PostBoostService],
 })
 export class PostsModule { }
