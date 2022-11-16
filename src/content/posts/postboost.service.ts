@@ -83,6 +83,10 @@ export class PostBoostService {
     if (body.pageRow != undefined) {
       row = parseInt(body.pageRow);
     }
+
+    if (body.postType == undefined) {
+        body.postType = 'ALL';
+    }
     let skip = this.paging(page, row);    
 
     let pipeline = new Array<any>(
