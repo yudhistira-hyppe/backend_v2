@@ -612,6 +612,7 @@ export class ReportuserController {
 
                                 "reason": reason,
                                 "remark": remark,
+                                "reasonAdmin": "",
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -699,6 +700,7 @@ export class ReportuserController {
 
                                 "reason": reason,
                                 "remark": remark,
+                                "reasonAdmin": "",
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -776,6 +778,7 @@ export class ReportuserController {
 
                                 "reason": reason,
                                 "remark": remark,
+                                "reasonAdmin": "",
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -884,7 +887,7 @@ export class ReportuserController {
                     objreporthandle = {
 
                         "reasonId": reasonId,
-                        "reason": reason,
+                        "reasonAdmin": reason,
                         "remark": "",
                         "createdAt": dt.toISOString(),
                         "updatedAt": dt.toISOString(),
@@ -903,8 +906,7 @@ export class ReportuserController {
                 } else {
                     objreporthandle = {
 
-                        "reasonId": reasonId,
-                        "reason": reason,
+
                         "remark": "",
                         "createdAt": dt.toISOString(),
                         "updatedAt": dt.toISOString(),
@@ -938,7 +940,7 @@ export class ReportuserController {
                     objreporthandle = {
 
                         "reasonId": reasonId,
-                        "reason": reason,
+                        "reasonAdmin": reason,
                         "remark": "",
                         "createdAt": dt.toISOString(),
                         "updatedAt": dt.toISOString(),
@@ -952,8 +954,6 @@ export class ReportuserController {
             } else {
                 objreporthandle = {
 
-                    "reasonId": reasonId,
-                    "reason": reason,
                     "remark": "",
                     "createdAt": dt.toISOString(),
                     "updatedAt": dt.toISOString(),
@@ -1098,6 +1098,8 @@ export class ReportuserController {
         var status = null;
         var reason = null;
         var descending = null;
+        var reasonAppeal = null;
+        var username = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -1125,10 +1127,12 @@ export class ReportuserController {
         status = request_json["status"];
         reason = request_json["reason"];
         descending = request_json["descending"];
+        reasonAppeal = request_json["reasonAppeal"];
+        username = request_json["username"];
         if (type === "content") {
 
 
-            let query = await this.postsService.findreport(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending);
+            let query = await this.postsService.findreport(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal, username);
             var data = null;
             var arrdata = [];
             let pict: String[] = [];
@@ -1208,6 +1212,7 @@ export class ReportuserController {
                     "updatedAt": query[i].updatedAt,
                     "postID": query[i].postID,
                     "email": query[i].email,
+                    "fullName": query[i].fullName,
                     "postType": query[i].postType,
                     "description": query[i].description,
                     "title": query[i].title,
@@ -1222,8 +1227,10 @@ export class ReportuserController {
                     "reasonLast": query[i].reasonLast,
                     "createdAtReportLast": query[i].createdAtReportLast,
                     "reportStatusLast": query[i].reportStatusLast,
+                    "reasonLastAppeal": query[i].reasonLastAppeal,
                     "apsaraId": idapsaradefine,
                     "apsara": apsaradefine,
+                    "avatar": query[i].avatar,
                     "media": data
                 };
 
@@ -1231,10 +1238,10 @@ export class ReportuserController {
             }
 
             total = query.length;
-            let datasearch = await this.postsService.findreport(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending);
+            let datasearch = await this.postsService.findreport(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username);
             totalsearch = datasearch.length;
 
-            let dataall = await this.postsService.findreport(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending);
+            let dataall = await this.postsService.findreport(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username);
             totalallrow = dataall.length;
 
             var tpage = null;
@@ -1255,7 +1262,7 @@ export class ReportuserController {
         else if (type === "ads") {
 
 
-            let query = await this.adsService.findreportads(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending);
+            let query = await this.adsService.findreportads(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal, username);
             var data = null;
             var arrdata = [];
             let pict: String[] = [];
@@ -1309,6 +1316,8 @@ export class ReportuserController {
                 objk = {
                     "_id": query[i]._id,
                     "userID": query[i].userID,
+                    "email": query[i].email,
+                    "fullName": query[i].fullName,
                     "idApsara": query[i].idApsara,
                     "name": query[i].name,
                     "status": query[i].status,
@@ -1332,17 +1341,19 @@ export class ReportuserController {
                     "createdAtReportLast": query[i].createdAtReportLast,
                     "place": query[i].place,
                     "reportStatusLast": query[i].reportStatusLast,
+                    "reasonLastAppeal": query[i].reasonLastAppeal,
                     "apsaraId": idapsaradefine,
                     "apsara": apsaradefine,
+                    "avatar": query[i].avatar,
                     "media": data
                 };
 
                 arrdata.push(objk);
             }
             total = query.length;
-            let datasearch = await this.adsService.findreportads(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending);
+            let datasearch = await this.adsService.findreportads(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username);
             totalsearch = datasearch.length;
-            let dataall = await this.adsService.findreportads(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending);
+            let dataall = await this.adsService.findreportads(undefined, undefined, undefined, undefined, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username);
             totalallrow = dataall.length;
 
             var tpage = null;
