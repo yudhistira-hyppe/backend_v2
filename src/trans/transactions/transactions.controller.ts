@@ -1270,6 +1270,9 @@ export class TransactionsController {
                         });
                     }
                 } else if (type === "BOOST_CONTENT") {
+                    //GET USER BUY
+                    var ubasic = await this.userbasicsService.findid(iduserbuy);
+                    var emailbuyer = ubasic.email;
                     //GET TOTAL AMOUNT
                     var totalAmount = tamount;
                     //GET PRICE CONTENT BOOST
@@ -1303,7 +1306,7 @@ export class TransactionsController {
                         await this.transactionsService.updateoneBoost(idtransaction, idbalance, payload);
 
                         //SEND FCM SUCCES TRANSACTION
-                        this.sendCommentFCM("BOOST_CONTENT", postid, emailseller.toString())
+                        this.sendCommentFCM("BOOST_CONTENT", postid, emailbuyer.toString())
 
                         //RESPONSE SUCCES
                         res.status(HttpStatus.OK).json({
@@ -1318,7 +1321,7 @@ export class TransactionsController {
                     }
                 }
             } catch (e) {
-                throw new BadRequestException("Unabled to proceed");
+                throw new BadRequestException("Unabled to proceed" + e);
             }
         }
     }
@@ -1364,7 +1367,6 @@ export class TransactionsController {
                 id: new mongoose.Types.ObjectId(detail[0].interval._id.toString()),
                 value: detail[0].interval.value.toString(),
                 remark: detail[0].interval.remark.toString(),
-                langIso: detail[0].interval.langIso.toString(),
             },
             boostSession: {
                 id: new mongoose.Types.ObjectId(detail[0].session._id.toString()),
@@ -1373,7 +1375,6 @@ export class TransactionsController {
                 timeStart: detail[0].session.start,
                 timeEnd: detail[0].session.end,
                 name: detail[0].session.name,
-                langIso: detail[0].session.langIso.toString(),
             },
             boostViewer: [],
         }
@@ -4803,7 +4804,7 @@ export class TransactionsController {
     @Post('api/transactions/boostcontent')
     @HttpCode(HttpStatus.ACCEPTED)
     async postBost(@Headers() headers, @Body() body) {
-        var DateTimeStamp = await this.utilsService.getDateTimeString();
+        var DateTimeStamp = await this.utilsService.getDateTimeISOString();
 
         //VALIDASI HEADER
         if (headers['x-auth-user'] == undefined) {
