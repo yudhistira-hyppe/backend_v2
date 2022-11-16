@@ -154,7 +154,7 @@ export class DisqusController {
 
             retVal.disqusID = con.disqus_data[0].disqusID;
             if ((aDisqusContacts[0].disqus_data[0].email != undefined) && (aDisqusContacts[0].disqus_data[0].mate != undefined)) {
-              if (detailOnly == undefined || detailOnly == false) {
+              //if (detailOnly == undefined || detailOnly == false) {
                 retVal.email = aDisqusContacts[0].disqus_data[0].email;
                 retVal.room = aDisqusContacts[0].disqus_data[0].room;
   
@@ -218,7 +218,7 @@ export class DisqusController {
                   // retVal['disqusLogs'] = profile.avatar;
                   // retVal.put("disqusLogs", streamSupplier.get().collect(Collectors.toList()));
                 }
-              }            
+              //}            
 
               tmp.push(retVal);
           }

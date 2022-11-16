@@ -48,6 +48,8 @@ export class CreatePostsDto {
     reportedUserHandle: any[];
     musicId: mongoose.Types.ObjectId;
     boosted: any[];
+    boostCount: number;
+    isBoost: number;
 }
 
 export class CreatePostResponse {
@@ -131,6 +133,7 @@ export class PostData {
     isViewed: boolean;
     isLiked: boolean;
     avatar: Avatar;
+    boostViewer: any[];
 }
 
 export class Messages {
