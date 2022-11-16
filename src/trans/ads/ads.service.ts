@@ -3331,7 +3331,7 @@ export class AdsService {
         return adsIds;
     }
 
-    async findreportads(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean) {
+    async findreportads(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean, reasonAppeal: any[]) {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -3525,11 +3525,13 @@ export class AdsService {
                         $cond: {
                             if: {
                                 $or: [{
-                                    $eq: ["$reportedUserHandle.reason", null]
+                                    $eq: ["$reportedUserHandle", null]
                                 }, {
-                                    $eq: ["$reportedUserHandle.reason", ""]
+                                    $eq: ["$reportedUserHandle", ""]
                                 }, {
-                                    $eq: ["$reportedUserHandle.reason", "Lainnya"]
+                                    $eq: ["$reportedUserHandle", []]
+                                }, {
+                                    $eq: ["$reportedUserHandle", "Lainnya"]
                                 }]
                             },
                             then: "Lainnya",
@@ -3719,6 +3721,23 @@ export class AdsService {
                             {
                                 reportReasonIdLast: {
                                     $in: arrayReason
+                                }
+                            },
+
+                        ]
+                    }
+                });
+
+        }
+        if (reasonAppeal && reasonAppeal !== undefined) {
+
+            pipeline.push(
+                {
+                    $match: {
+                        $or: [
+                            {
+                                reasonLastAppeal: {
+                                    $in: reasonAppeal
                                 }
                             },
 

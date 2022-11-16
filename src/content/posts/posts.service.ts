@@ -3942,7 +3942,7 @@ export class PostsService {
     return query;
   }
 
-  async findreport(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean) {
+  async findreport(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean, reasonAppeal: any[]) {
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -4417,11 +4417,13 @@ export class PostsService {
           $cond: {
             if: {
               $or: [{
-                $eq: ["$reportedUserHandle.reason", null]
+                $eq: ["$reportedUserHandle", null]
               }, {
-                $eq: ["$reportedUserHandle.reason", ""]
+                $eq: ["$reportedUserHandle", ""]
               }, {
-                $eq: ["$reportedUserHandle.reason", "Lainnya"]
+                $eq: ["$reportedUserHandle", []]
+              }, {
+                $eq: ["$reportedUserHandle", "Lainnya"]
               }]
             },
             then: "Lainnya",
@@ -4651,6 +4653,23 @@ export class PostsService {
               {
                 reportReasonIdLast: {
                   $in: arrayReason
+                }
+              },
+
+            ]
+          }
+        });
+
+    }
+    if (reasonAppeal && reasonAppeal !== undefined) {
+
+      pipeline.push(
+        {
+          $match: {
+            $or: [
+              {
+                reasonLastAppeal: {
+                  $in: reasonAppeal
                 }
               },
 
