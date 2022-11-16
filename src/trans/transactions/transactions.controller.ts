@@ -1301,7 +1301,7 @@ export class TransactionsController {
                         var idbalance = Accountbalances._id;
                         //UPDATE TRANSACTION SUCCES PAYMENT
                         await this.transactionsService.updateoneBoost(idtransaction, idbalance, payload);
-                        
+
                         //SEND FCM SUCCES TRANSACTION
                         this.sendCommentFCM("BOOST_CONTENT", postid, emailseller.toString())
 
@@ -1358,10 +1358,13 @@ export class TransactionsController {
         var dateStartdata = (detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() + ".000Z")
         console.log("date String", dateStartdata);
         var dataBost = {
+            type: detail[0].type.toString(),
             boostDate: new Date(detail[0].dateStart.toString()),
             boostInterval: {
                 id: new mongoose.Types.ObjectId(detail[0].interval._id.toString()),
-                value: Object(detail[0].interval.value.toString()),
+                value: detail[0].interval.value.toString(),
+                remark: detail[0].interval.remark.toString(),
+                langIso: detail[0].interval.langIso.toString(),
             },
             boostSession: {
                 id: new mongoose.Types.ObjectId(detail[0].session._id.toString()),
@@ -1369,6 +1372,8 @@ export class TransactionsController {
                 end: new Date((detail[0].datedateEnd.toString() + "T" + detail[0].session.end.toString() + ".000Z")),
                 timeStart: detail[0].session.start,
                 timeEnd: detail[0].session.end,
+                name: detail[0].session.name,
+                langIso: detail[0].session.langIso.toString(),
             },
             boostViewer: [],
         }
@@ -5053,7 +5058,7 @@ export class TransactionsController {
                     }
                     return {
                         response_code: 202,
-                        data_response_,
+                        data: data_response_,
                         messages: {
                             info: ['successfuly'],
                         },
