@@ -26,9 +26,9 @@ export class Mediamusic{
     @Prop()
     isActive: boolean
     @Prop()
-    createdAt: String
+    createdAt: Date
     @Prop()
-    updatedAt: String
+    updatedAt: Date
     @Prop()
     used: number;
     @Prop()

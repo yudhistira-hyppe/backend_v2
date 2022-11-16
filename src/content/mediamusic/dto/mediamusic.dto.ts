@@ -11,8 +11,8 @@ export class MediamusicDto {
   mood: mongoose.Types.ObjectId;
   isDelete: boolean
   isActive: boolean
-  createdAt: String
-  updatedAt: String
+  createdAt: Date
+  updatedAt: Date
   used: number;
   apsaraMusic: String;
   apsaraThumnail: String

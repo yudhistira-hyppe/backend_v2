@@ -21,7 +21,15 @@ export class BoostintervalService {
     return this.BoostintervalModel.find().exec();
   }
 
+  async findWhere(BoostintervalDto_: BoostintervalDto): Promise<Boostinterval[]> {
+    return this.BoostintervalModel.find(BoostintervalDto_).exec();
+  }
+
   async findById(_id:String): Promise<Boostinterval> {
     return this.BoostintervalModel.findOne({ _id: new mongoose.Types.ObjectId(_id.toString()) }).exec();
+  }
+
+  async findByType(type: String): Promise<Boostinterval> {
+    return this.BoostintervalModel.findOne({ type: type }).exec();
   }
 }

@@ -93,7 +93,13 @@ export class Posts {
   @Prop()
   reportedUserHandle: any[];
   @Prop({ type: Object })
-  musicId: mongoose.Types.ObjectId;;
+  musicId: mongoose.Types.ObjectId;
+  @Prop()
+  boosted: any[];
+  @Prop()
+  boostCount: number;
+  @Prop()
+  isBoost: number;
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

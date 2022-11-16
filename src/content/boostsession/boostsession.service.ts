@@ -21,7 +21,15 @@ export class BoostsessionService {
     return this.BoostsessionModel.find().exec();
   }
 
+  async findWhere(BoostsessionDto_: BoostsessionDto): Promise<Boostsession[]> {
+    return this.BoostsessionModel.find(BoostsessionDto_).exec();
+  }
+
   async findById(_id: String): Promise<Boostsession> {
     return this.BoostsessionModel.findOne({ _id: new mongoose.Types.ObjectId(_id.toString()) }).exec();
+  }
+
+  async findByType(type: String): Promise<Boostsession> {
+    return this.BoostsessionModel.findOne({ type: type }).exec();
   }
 }
