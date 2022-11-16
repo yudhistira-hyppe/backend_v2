@@ -1686,7 +1686,7 @@ export class PostBoostService {
                             $match: 
                             {
                                 $expr: {
-                                    $in: ['$_id', '$$localID']
+                                    $eq: ['$_id', '$$localID']
                                 }
                             }
                         },
@@ -1841,7 +1841,7 @@ export class PostBoostService {
                     ],                    
                 }
             },
-                            {
+            {
                 "$lookup": {
                     from: "contentevents",
                     as: "isView",
@@ -1955,7 +1955,7 @@ export class PostBoostService {
     let wrapper = {$facet: facet};
 
     pipeline.push(wrapper);
-    //console.log(JSON.stringify(pipeline));
+    console.log(JSON.stringify(pipeline));
 
     let xvids: string[] = [];
     let xpics: string[] = [];
