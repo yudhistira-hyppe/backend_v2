@@ -2104,7 +2104,13 @@ export class PostBoostService {
     let pld = new PostLandingData();
     pld.diary = resDiary;
     pld.pict = resPic;
-    pld.story = resStory;
+
+    if (resStory.length > 0) {
+        pld.story = resStory;
+    } else {
+        pld.story = null;
+    }
+
     pld.video = resVideo;
     
     res.data = pld;
