@@ -62,7 +62,8 @@ export class PostBoostService {
     private userService: UserbasicsService,
     private utilService: UtilsService,
     private userAuthService: UserauthsService,
-  ) { }
+    private settingsService: SettingsService,
+    ) { }
 
   async getBoost(body: any, headers: any): Promise<PostLandingResponseApps> {
     let st = await this.utilService.getDateTimeDate();
@@ -2114,6 +2115,10 @@ export class PostBoostService {
     pld.video = resVideo;
     
     res.data = pld;
+
+    var ver = await this.settingsService.findOneByJenis('AppsVersion');
+    ver.value;
+    res.version = String(ver.value);    
     
     return res;
   }
@@ -2203,6 +2208,12 @@ export class PostBoostService {
                 xpics.push(String(pd.apsaraThumbId));                
             }
         }
+
+        let privacy = new Privacy();
+        privacy.isPostPrivate = false;
+        privacy.isPrivate = false;
+        privacy.isCelebrity = false;
+        pd.privacy = privacy;        
 
         res.push(pd);
 
