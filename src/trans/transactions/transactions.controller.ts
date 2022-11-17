@@ -4970,7 +4970,15 @@ export class TransactionsController {
 
             //CECK BANK CODE
             var bank = await this.utilsService.getBank(body.bankcode);
-            if (await this.utilsService.ceckData(bank)) {
+            if (!(await this.utilsService.ceckData(bank))) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, Bank not found',
+                );
+            }
+
+            //CECK PENDING TRANSACTION
+            var daftarPending = await this.transactionsService.findpostidpending(body.postID);
+            if (!(await this.utilsService.ceckData(daftarPending))) {
                 //CREATE VA PAYMENT
                 var dataCreateVa = {
                     userId: user._id.toString(),
@@ -4993,7 +5001,7 @@ export class TransactionsController {
                         id: body.postID,
                         interval: interval,
                         session: session,
-                        type: body.type, 
+                        type: body.type,
                         dateStart: body.dateStart,
                         datedateEnd: body.dateEnd,
                         totalAmount: totalAmount,
@@ -5081,10 +5089,129 @@ export class TransactionsController {
                         'Request is Rejected',
                     );
                 }
-            } else {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed, Bank not found',
-                );
+            }else{
+                const cekStatusVa = await this.oyPgService.staticVaInfo(daftarPending.idva);
+                var expiredva = cekStatusVa.trx_expiration_time;
+                var dex = new Date(expiredva);
+                dex.setHours(dex.getHours() + 7);
+                dex = new Date(dex);
+
+                if (cekStatusVa.va_status === "WAITING_PAYMENT") {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Tidak dapat melanjutkan. Status konten ini dalan waiting payment',
+                    );
+                } else if (cekStatusVa.va_status === "STATIC_TRX_EXPIRED" || cekStatusVa.va_status === "EXPIRED") {
+                    //CREATE VA PAYMENT
+                    var dataCreateVa = {
+                        userId: user._id.toString(),
+                        amount: totalAmount,
+                        bankcode: body.bankcode,
+                        name: user.fullName,
+                        email: user.email,
+                        valueexpiredva: ExpiredVa,
+                    }
+                    var Va = await this.createVa(dataCreateVa);
+
+                    //CREATE DATA TRANSACTION
+                    var transactionNumber = await this.utilsService.generateTransactionNumber(countTransaction);
+                    var typeTransaction = "BOOST_CONTENT";
+                    var date_trx_expiration_time = new Date(Va.trx_expiration_time);
+                    date_trx_expiration_time.setHours(date_trx_expiration_time.getHours() + 7);
+                    date_trx_expiration_time = new Date(date_trx_expiration_time);
+                    var transactionDetail = [
+                        {
+                            id: body.postID,
+                            interval: interval,
+                            session: session,
+                            type: body.type,
+                            dateStart: body.dateStart,
+                            datedateEnd: body.dateEnd,
+                            totalAmount: totalAmount,
+                            qty: 1
+                        }
+                    ];
+
+                    //CECK VA STATUS
+                    if (Va.status.code == "000") {
+                        //INSERT DATA TRANSACTION
+                        try {
+                            var id_user_sell = await this.userbasicsService.findOne("tjikaljedy@hyppe.id")
+
+                            let cekstatusva = await this.oyPgService.staticVaInfo(Va.id);
+                            var createTransactionsDto_ = new CreateTransactionsDto();
+                            createTransactionsDto_.iduserbuyer = Object(user._id.toString());
+                            createTransactionsDto_.idusersell = Object(id_user_sell._id.toString());
+                            createTransactionsDto_.timestamp = DateTimeStamp;
+                            createTransactionsDto_.updatedAt = DateTimeStamp;
+                            createTransactionsDto_.noinvoice = transactionNumber;
+                            createTransactionsDto_.amount = price;
+                            createTransactionsDto_.status = cekstatusva.va_status;
+                            createTransactionsDto_.bank = Object(bank._id.toString());
+                            createTransactionsDto_.idva = Va.id;
+                            createTransactionsDto_.nova = Va.va_number;
+                            createTransactionsDto_.accountbalance = null;
+                            createTransactionsDto_.paymentmethod = Object(payment_method._id.toString());
+                            createTransactionsDto_.ppn = null;
+                            createTransactionsDto_.totalamount = totalAmount;
+                            createTransactionsDto_.description = "buy " + typeTransaction + " pending";
+                            createTransactionsDto_.payload = null;
+                            createTransactionsDto_.type = typeTransaction;
+                            createTransactionsDto_.expiredtimeva = date_trx_expiration_time.toISOString();
+                            createTransactionsDto_.detail = transactionDetail;
+                            createTransactionsDto_.postid = body.postID;
+                            createTransactionsDto_.response = Va;
+                            let transaction_boost = await this.transactionsService.create(createTransactionsDto_);
+                            this.sendTransactionFCM(email, "TRANSACTION", body.postID, email)
+
+                            var data_response_ = {
+                                "noinvoice": transaction_boost.noinvoice,
+                                "postid": transaction_boost,
+                                "idusersell": transaction_boost.idusersell,
+                                "iduserbuyer": transaction_boost.iduserbuyer,
+                                "NamaPembeli": user.fullName,
+                                "amount": transaction_boost.amount,
+                                "paymentmethod": payment_method.methodename,
+                                "status": transaction_boost.status,
+                                "description": transaction_boost.description,
+                                "idva": transaction_boost.idva,
+                                "nova": transaction_boost.nova,
+                                "expiredtimeva": transaction_boost.expiredtimeva,
+                                "salelike": transaction_boost.saleview,
+                                "saleview": transaction_boost.salelike,
+                                "bank": bank.bankname,
+                                "bankvacharge": BankVaCharge,
+                                "detail": transactionDetail,
+                                "totalamount": transaction_boost.totalamount,
+                                "accountbalance": transaction_boost.accountbalance,
+                                "timestamp": transaction_boost.timestamp,
+                                "_id": transaction_boost._id
+                            };
+                        } catch (e) {
+                            await this.errorHandler.generateNotAcceptableException(
+                                'Unabled to proceed Error, ' + e
+                            );
+                        }
+                        return {
+                            response_code: 202,
+                            data: data_response_,
+                            messages: {
+                                info: ['successfuly'],
+                            },
+                        };
+                    } else if (Va.status.code == "208") {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Request is Rejected (API Key is not Valid)',
+                        );
+                    } else if (Va.status.code == "217") {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Request is Rejected (VA Number is still active for this partner user id)',
+                        );
+                    } else {
+                        await this.errorHandler.generateNotAcceptableException(
+                            'Request is Rejected',
+                        );
+                    }
+                }
             }
         } else {
             //CREATE RESPONSE

@@ -62,7 +62,8 @@ export class PostBoostService {
     private userService: UserbasicsService,
     private utilService: UtilsService,
     private userAuthService: UserauthsService,
-  ) { }
+    private settingsService: SettingsService,
+    ) { }
 
   async getBoost(body: any, headers: any): Promise<PostLandingResponseApps> {
     let st = await this.utilService.getDateTimeDate();
@@ -2114,6 +2115,10 @@ export class PostBoostService {
     pld.video = resVideo;
     
     res.data = pld;
+
+    var ver = await this.settingsService.findOneByJenis('AppsVersion');
+    ver.value;
+    res.version = String(ver.value);    
     
     return res;
   }
@@ -2128,18 +2133,19 @@ export class PostBoostService {
     for (let i = 0; i < src.length; i++) {
         let obj = src[i];
         let pd = new PostData();
-        console.log(JSON.stringify(obj));
         pd.active = obj.active;
         pd.allowComments = obj.allowComments;
         pd.apsaraId = obj.apsaraId;
         pd.apsaraThumbId = obj.apsaraThumbId;
-        pd.avatar = obj.avatar;
+        pd.avatar = obj.avatar[0];
+
         pd.cats = obj.cats;
         pd.certified = obj.certified;
         pd.createdAt = obj.createdAt;
         pd.description = obj.description;
         pd.email = obj.email;
-        pd.insight = obj.insight;
+        pd.insight = obj.insight[0];            
+
         pd.isApsara = obj.apsara;
         
         //pd.isLiked =
@@ -2203,6 +2209,12 @@ export class PostBoostService {
                 xpics.push(String(pd.apsaraThumbId));                
             }
         }
+
+        let privacy = new Privacy();
+        privacy.isPostPrivate = false;
+        privacy.isPrivate = false;
+        privacy.isCelebrity = false;
+        pd.privacy = privacy;        
 
         res.push(pd);
 
