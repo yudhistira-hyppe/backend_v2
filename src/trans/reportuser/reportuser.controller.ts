@@ -613,6 +613,7 @@ export class ReportuserController {
                                 "reason": reason,
                                 "remark": remark,
                                 "reasonAdmin": "",
+                                "reasonId": "",
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -701,6 +702,7 @@ export class ReportuserController {
                                 "reason": reason,
                                 "remark": remark,
                                 "reasonAdmin": "",
+                                "reasonId": "",
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -779,6 +781,7 @@ export class ReportuserController {
                                 "reason": reason,
                                 "remark": remark,
                                 "reasonAdmin": "",
+                                "reasonId": "",
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -888,6 +891,7 @@ export class ReportuserController {
 
                         "reasonId": reasonId,
                         "reasonAdmin": reason,
+                        "reason": "",
                         "remark": "",
                         "createdAt": dt.toISOString(),
                         "updatedAt": dt.toISOString(),
@@ -906,7 +910,9 @@ export class ReportuserController {
                 } else {
                     objreporthandle = {
 
-
+                        "reasonId": "",
+                        "reasonAdmin": "",
+                        "reason": "",
                         "remark": "",
                         "createdAt": dt.toISOString(),
                         "updatedAt": dt.toISOString(),
@@ -941,6 +947,7 @@ export class ReportuserController {
 
                         "reasonId": reasonId,
                         "reasonAdmin": reason,
+                        "reason": "",
                         "remark": "",
                         "createdAt": dt.toISOString(),
                         "updatedAt": dt.toISOString(),
@@ -953,7 +960,9 @@ export class ReportuserController {
 
             } else {
                 objreporthandle = {
-
+                    "reasonId": "",
+                    "reasonAdmin": "",
+                    "reason": "",
                     "remark": "",
                     "createdAt": dt.toISOString(),
                     "updatedAt": dt.toISOString(),
