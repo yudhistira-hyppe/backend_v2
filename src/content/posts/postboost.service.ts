@@ -2133,18 +2133,27 @@ export class PostBoostService {
     for (let i = 0; i < src.length; i++) {
         let obj = src[i];
         let pd = new PostData();
-        console.log(JSON.stringify(obj));
         pd.active = obj.active;
         pd.allowComments = obj.allowComments;
         pd.apsaraId = obj.apsaraId;
         pd.apsaraThumbId = obj.apsaraThumbId;
-        pd.avatar = obj.avatar;
+        if (obj.avatar.prop && obj.avatar.prop.constructor === Array) {
+            pd.avatar = obj.avatar[0];
+        } else {
+            pd.avatar = obj.avatar;
+        }
+
         pd.cats = obj.cats;
         pd.certified = obj.certified;
         pd.createdAt = obj.createdAt;
         pd.description = obj.description;
         pd.email = obj.email;
-        pd.insight = obj.insight;
+        if (obj.insight.prop && obj.insight.prop.constructor === Array) {
+            pd.insight = obj.insight[0];            
+        } else {
+            pd.insight = obj.insight;
+        }
+
         pd.isApsara = obj.apsara;
         
         //pd.isLiked =
