@@ -613,7 +613,7 @@ export class ReportuserController {
                                 "reason": reason,
                                 "remark": remark,
                                 "reasonAdmin": "",
-                                "reasonId": "",
+                                "reasonId": null,
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -702,7 +702,7 @@ export class ReportuserController {
                                 "reason": reason,
                                 "remark": remark,
                                 "reasonAdmin": "",
-                                "reasonId": "",
+                                "reasonId": null,
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -781,7 +781,7 @@ export class ReportuserController {
                                 "reason": reason,
                                 "remark": remark,
                                 "reasonAdmin": "",
-                                "reasonId": "",
+                                "reasonId": null,
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -910,7 +910,7 @@ export class ReportuserController {
                 } else {
                     objreporthandle = {
 
-                        "reasonId": "",
+                        "reasonId": null,
                         "reasonAdmin": "",
                         "reason": "",
                         "remark": "",
@@ -960,7 +960,7 @@ export class ReportuserController {
 
             } else {
                 objreporthandle = {
-                    "reasonId": "",
+                    "reasonId": null,
                     "reasonAdmin": "",
                     "reason": "",
                     "remark": "",
@@ -1338,6 +1338,7 @@ export class ReportuserController {
                     "username": query[i].username,
                     "idApsara": query[i].idApsara,
                     "name": query[i].name,
+                    "nameType": query[i].nameType,
                     "status": query[i].status,
                     "timestamp": query[i].timestamp,
                     "totalUsedCredit": query[i].totalUsedCredit,
@@ -1741,6 +1742,7 @@ export class ReportuserController {
                     "_id": query[0]._id,
                     "userID": query[0].userID,
                     "name": query[0].name,
+                    "nameType": query[0].nameType,
                     "status": query[0].status,
                     "timestamp": query[0].timestamp,
                     "totalUsedCredit": query[0].totalUsedCredit,
