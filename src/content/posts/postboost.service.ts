@@ -83,6 +83,10 @@ export class PostBoostService {
     if (body.pageRow != undefined) {
       row = parseInt(body.pageRow);
     }
+
+    if (body.postType == undefined) {
+        body.postType = 'ALL';
+    }
     let skip = this.paging(page, row);    
 
     let pipeline = new Array<any>(
@@ -584,6 +588,7 @@ export class PostBoostService {
                     "fullName": "$userBasic.fullName",
                     "username": "$username.username",
                     "avatar": 1,
+                    "boosted": 1,
                     "privacy":[{"isCelebrity":"$userBasic.isCelebrity"},{"isIdVerified":"$userBasic.isIdVerified"},{"isPrivate":"$userBasic.isPrivate"}]                    
                 }
             }
@@ -1021,6 +1026,7 @@ export class PostBoostService {
                     "fullName": "$userBasic.fullName",
                     "username": "$username.username",
                     "avatar": 1,
+                    "boosted": 1,
                     "privacy":[{"isCelebrity":"$userBasic.isCelebrity"},{"isIdVerified":"$userBasic.isIdVerified"},{"isPrivate":"$userBasic.isPrivate"}]
                 }
             }
@@ -1456,6 +1462,7 @@ export class PostBoostService {
                     "fullName": "$userBasic.fullName",
                     "username": "$username.username",
                     "avatar": 1,
+                    "boosted": 1,
                     "privacy":[{"isCelebrity":"$userBasic.isCelebrity"},{"isIdVerified":"$userBasic.isIdVerified"},{"isPrivate":"$userBasic.isPrivate"}]
                 }
             }
@@ -1679,7 +1686,7 @@ export class PostBoostService {
                             $match: 
                             {
                                 $expr: {
-                                    $in: ['$_id', '$$localID']
+                                    $eq: ['$_id', '$$localID']
                                 }
                             }
                         },
@@ -1834,7 +1841,7 @@ export class PostBoostService {
                     ],                    
                 }
             },
-                            {
+            {
                 "$lookup": {
                     from: "contentevents",
                     as: "isView",
@@ -1925,6 +1932,7 @@ export class PostBoostService {
                     "fullName": "$userBasic.fullName",
                     "username": "$username.username",
                     "avatar": 1,
+                    "boosted": 1,
                     "privacy":[{"isCelebrity":"$userBasic.isCelebrity"},{"isIdVerified":"$userBasic.isIdVerified"},{"isPrivate":"$userBasic.isPrivate"}]
                 }
             }
@@ -1947,7 +1955,7 @@ export class PostBoostService {
     let wrapper = {$facet: facet};
 
     pipeline.push(wrapper);
-    //console.log(JSON.stringify(pipeline));
+    console.log(JSON.stringify(pipeline));
 
     let xvids: string[] = [];
     let xpics: string[] = [];
@@ -2096,11 +2104,17 @@ export class PostBoostService {
     let pld = new PostLandingData();
     pld.diary = resDiary;
     pld.pict = resPic;
-    pld.story = resStory;
+
+    if (resStory.length > 0) {
+        pld.story = resStory;
+    } else {
+        pld.story = null;
+    }
+
     pld.video = resVideo;
     
     res.data = pld;
-
+    
     return res;
   }
 
@@ -2114,6 +2128,7 @@ export class PostBoostService {
     for (let i = 0; i < src.length; i++) {
         let obj = src[i];
         let pd = new PostData();
+        console.log(JSON.stringify(obj));
         pd.active = obj.active;
         pd.allowComments = obj.allowComments;
         pd.apsaraId = obj.apsaraId;
@@ -2150,6 +2165,30 @@ export class PostBoostService {
         pd.updatedAt = obj.updatedAt;
         pd.username = obj.username;
         pd.visibility = obj.visibility;
+        pd.boostViewer = obj.boostViewer;
+
+        pd.isViewed = false;
+        if (obj.isView != undefined && obj.isView.length > 0) {
+            pd.isViewed = true;
+        }
+
+        pd.isLiked = false;
+        if (obj.isLike != undefined && obj.isLike.length > 0) {
+            pd.isLiked = true;
+        }        
+
+        if (obj.tagPeople != undefined && obj.tagPeople.length > 0) {
+            let atp1 = Array<TagPeople>();
+            for (let i = 0; i < obj.tagPeople.length; i++) {
+                let x = obj.tagPeople[i];
+                let us = x.username;
+
+                let tg = new TagPeople();
+                tg.username = us;
+                atp1.push(tg);
+            }
+            pd.tagPeople = atp1;
+        }
 
         if (pd.isApsara == true) {
             if (pd.apsaraId != undefined) {

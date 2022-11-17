@@ -133,6 +133,7 @@ export class PostData {
     isViewed: boolean;
     isLiked: boolean;
     avatar: Avatar;
+    boostViewer: any[];
 }
 
 export class Messages {

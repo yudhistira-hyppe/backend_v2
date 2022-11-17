@@ -613,6 +613,7 @@ export class ReportuserController {
                                 "reason": reason,
                                 "remark": remark,
                                 "reasonAdmin": "",
+                                "reasonId": null,
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -701,6 +702,7 @@ export class ReportuserController {
                                 "reason": reason,
                                 "remark": remark,
                                 "reasonAdmin": "",
+                                "reasonId": null,
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -779,6 +781,7 @@ export class ReportuserController {
                                 "reason": reason,
                                 "remark": remark,
                                 "reasonAdmin": "",
+                                "reasonId": null,
                                 "createdAt": dt.toISOString(),
                                 "updatedAt": dt.toISOString(),
                                 "status": status
@@ -888,6 +891,7 @@ export class ReportuserController {
 
                         "reasonId": reasonId,
                         "reasonAdmin": reason,
+                        "reason": "",
                         "remark": "",
                         "createdAt": dt.toISOString(),
                         "updatedAt": dt.toISOString(),
@@ -906,7 +910,9 @@ export class ReportuserController {
                 } else {
                     objreporthandle = {
 
-
+                        "reasonId": null,
+                        "reasonAdmin": "",
+                        "reason": "",
                         "remark": "",
                         "createdAt": dt.toISOString(),
                         "updatedAt": dt.toISOString(),
@@ -941,6 +947,7 @@ export class ReportuserController {
 
                         "reasonId": reasonId,
                         "reasonAdmin": reason,
+                        "reason": "",
                         "remark": "",
                         "createdAt": dt.toISOString(),
                         "updatedAt": dt.toISOString(),
@@ -953,7 +960,9 @@ export class ReportuserController {
 
             } else {
                 objreporthandle = {
-
+                    "reasonId": null,
+                    "reasonAdmin": "",
+                    "reason": "",
                     "remark": "",
                     "createdAt": dt.toISOString(),
                     "updatedAt": dt.toISOString(),
@@ -1329,6 +1338,7 @@ export class ReportuserController {
                     "username": query[i].username,
                     "idApsara": query[i].idApsara,
                     "name": query[i].name,
+                    "nameType": query[i].nameType,
                     "status": query[i].status,
                     "timestamp": query[i].timestamp,
                     "totalUsedCredit": query[i].totalUsedCredit,
@@ -1594,6 +1604,11 @@ export class ReportuserController {
                     "reportStatusLast": query[0].reportStatusLast,
                     "reportedUser": query[0].reportedUser,
                     "reportedUserHandle": query[0].reportedUserHandle,
+                    "createdAtReportLast": query[0].createdAtReportLast,
+                    "createdAtAppealLast": query[0].createdAtAppealLast,
+                    "reasonLastAppeal": query[0].reasonLastAppeal,
+                    "reasonLastAppealAdmin": query[0].reasonLastAppealAdmin,
+                    "reasonLastReport": query[0].reasonLastReport,
                     "tagpeople": tagpeoples,
                     "apsaraId": idapsaradefine,
                     "apsara": apsaradefine,
@@ -1603,7 +1618,7 @@ export class ReportuserController {
                 data.push(objk);
             } else {
                 data = [];
-                totalReport = 0;
+
             }
 
 
@@ -1727,6 +1742,7 @@ export class ReportuserController {
                     "_id": query[0]._id,
                     "userID": query[0].userID,
                     "name": query[0].name,
+                    "nameType": query[0].nameType,
                     "status": query[0].status,
                     "timestamp": query[0].timestamp,
                     "totalUsedCredit": query[0].totalUsedCredit,
@@ -1749,6 +1765,11 @@ export class ReportuserController {
                     "interest": query[0].interest,
                     "place": query[0].place,
                     "reportStatusLast": query[0].reportStatusLast,
+                    "createdAtReportLast": query[0].createdAtReportLast,
+                    "createdAtAppealLast": query[0].createdAtAppealLast,
+                    "reasonLastReport": query[0].reasonLastReport,
+                    "reasonLastAppeal": query[0].reasonLastAppeal,
+                    "reasonLastAppealAdmin": query[0].reasonLastAppealAdmin,
                     "fullName": query[0].fullName,
                     "email": query[0].email,
                     "proofpict": query[0].proofpict,
@@ -1761,7 +1782,7 @@ export class ReportuserController {
                 data.push(objk);
             } else {
                 data = [];
-                totalReport = 0;
+
             }
 
 
@@ -1769,7 +1790,7 @@ export class ReportuserController {
             var datacount = null;
             var objcoun = {};
             var dataSum = [];
-            var totalReport = null;
+
             try {
 
                 datacount = await this.adsService.countReason(adsId);
