@@ -136,16 +136,14 @@ export class GetuserprofilesController {
       totalrow = 0;
     }
 
-    if (username === undefined && gender === undefined && roles === undefined && age === undefined && startdate === undefined && enddate === undefined && interest === undefined) {
+
+    try {
+      datafilter = await this.getuserprofilesService.findataNew(username, gender, roles, age, startdate, enddate, interest, 0, 0);
+      totalfilter = datafilter.length;
+    } catch (e) {
       totalfilter = 0;
-    } else {
-      try {
-        datafilter = await this.getuserprofilesService.findataNewCount(username, gender, roles, age, startdate, enddate, interest);
-        totalfilter = datafilter.length;
-      } catch (e) {
-        totalfilter = 0;
-      }
     }
+
     try {
       allrow = await this.getuserprofilesService.totalcount();
       totalallrow = allrow[0].countrow;
