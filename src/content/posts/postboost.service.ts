@@ -2137,22 +2137,14 @@ export class PostBoostService {
         pd.allowComments = obj.allowComments;
         pd.apsaraId = obj.apsaraId;
         pd.apsaraThumbId = obj.apsaraThumbId;
-        if (obj.avatar.prop && obj.avatar.prop.constructor === Array) {
-            pd.avatar = obj.avatar[0];
-        } else {
-            pd.avatar = obj.avatar;
-        }
+        pd.avatar = obj.avatar[0];
 
         pd.cats = obj.cats;
         pd.certified = obj.certified;
         pd.createdAt = obj.createdAt;
         pd.description = obj.description;
         pd.email = obj.email;
-        if (obj.insight.prop && obj.insight.prop.constructor === Array) {
-            pd.insight = obj.insight[0];            
-        } else {
-            pd.insight = obj.insight;
-        }
+        pd.insight = obj.insight[0];            
 
         pd.isApsara = obj.apsara;
         
