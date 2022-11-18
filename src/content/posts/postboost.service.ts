@@ -62,7 +62,8 @@ export class PostBoostService {
     private userService: UserbasicsService,
     private utilService: UtilsService,
     private userAuthService: UserauthsService,
-  ) { }
+    private settingsService: SettingsService,
+    ) { }
 
   async getBoost(body: any, headers: any): Promise<PostLandingResponseApps> {
     let st = await this.utilService.getDateTimeDate();
@@ -74,6 +75,9 @@ export class PostBoostService {
     let res = new PostLandingResponseApps();
     let data = new PostLandingData();
     res.response_code = 202;
+
+    let today = new Date('2022-11-18T15:20:00');
+    console.log(today);
 
     let row = 20;
     let page = 0;
@@ -114,7 +118,7 @@ export class PostBoostService {
                                 {
                                     $dateToString: {
                                         format: "%Y-%m-%d",
-                                        date: new Date()
+                                        date: today
                                     }
                                 },
                                 "T",
@@ -135,7 +139,7 @@ export class PostBoostService {
                                 {
                                     $dateToString: {
                                         format: "%Y-%m-%d",
-                                        date: new Date()
+                                        date: today
                                     }
                                 },
                                 "T",
@@ -181,22 +185,22 @@ export class PostBoostService {
                                 },
                                 {
                                     "boosted.boostSession.start": {
-                                        $lt: new Date()
+                                        $lt: today
                                     }
                                 },
                                 {
                                     "timeEnd": {
-                                        $gt: new Date()
+                                        $gt: today
                                     }
                                 },
                                 {
                                     "timeStart": {
-                                        $lt: new Date()
+                                        $lt: today
                                     }
                                 },
                                 {
                                     "boosted.boostSession.end": {
-                                        $gt: new Date()
+                                        $gt: today
                                     }
                                 },
                                 {
@@ -627,22 +631,22 @@ export class PostBoostService {
                                 },
                                 {
                                     "boosted.boostSession.start": {
-                                        $lt: new Date()
+                                        $lt: today
                                     }
                                 },
                                 {
                                     "timeEnd": {
-                                        $gt: new Date()
+                                        $gt: today
                                     }
                                 },
                                 {
                                     "timeStart": {
-                                        $lt: new Date()
+                                        $lt: today
                                     }
                                 },
                                 {
                                     "boosted.boostSession.end": {
-                                        $gt: new Date()
+                                        $gt: today
                                     }
                                 },
                                 {
@@ -657,14 +661,14 @@ export class PostBoostService {
                                         {
                                             $and: [
                                                 {
-                                                    "boosted.boostViewer.email": "1@1.com"
+                                                    "boosted.boostViewer.email": profile.email
                                                 },
                                                 {
                                                     "boosted.boostViewer.isLast": true
                                                 },
                                                 {
                                                     "boosted.boostViewer.timeEnd": {
-                                                        $gt: new Date()
+                                                        $gt: today
                                                     }
                                                 },
                                             ]
@@ -1064,22 +1068,22 @@ export class PostBoostService {
                                 },
                                 {
                                     "boosted.boostSession.start": {
-                                        $lt: new Date()
+                                        $lt: today
                                     }
                                 },
                                 {
                                     "timeEnd": {
-                                        $gt: new Date()
+                                        $gt: today
                                     }
                                 },
                                 {
                                     "timeStart": {
-                                        $lt: new Date()
+                                        $lt: today
                                     }
                                 },
                                 {
                                     "boosted.boostSession.end": {
-                                        $gt: new Date()
+                                        $gt: today
                                     }
                                 },
                                 {
@@ -1101,7 +1105,7 @@ export class PostBoostService {
                                                 },
                                                 {
                                                     "boosted.boostViewer.timeEnd": {
-                                                        $gt: new Date()
+                                                        $gt: today
                                                     }
                                                 },
                                             ]
@@ -2114,6 +2118,10 @@ export class PostBoostService {
     pld.video = resVideo;
     
     res.data = pld;
+
+    var ver = await this.settingsService.findOneByJenis('AppsVersion');
+    ver.value;
+    res.version = String(ver.value);    
     
     return res;
   }
@@ -2128,18 +2136,19 @@ export class PostBoostService {
     for (let i = 0; i < src.length; i++) {
         let obj = src[i];
         let pd = new PostData();
-        console.log(JSON.stringify(obj));
         pd.active = obj.active;
         pd.allowComments = obj.allowComments;
         pd.apsaraId = obj.apsaraId;
         pd.apsaraThumbId = obj.apsaraThumbId;
-        pd.avatar = obj.avatar;
+        pd.avatar = obj.avatar[0];
+
         pd.cats = obj.cats;
         pd.certified = obj.certified;
         pd.createdAt = obj.createdAt;
         pd.description = obj.description;
         pd.email = obj.email;
-        pd.insight = obj.insight;
+        pd.insight = obj.insight[0];            
+
         pd.isApsara = obj.apsara;
         
         //pd.isLiked =
@@ -2203,6 +2212,12 @@ export class PostBoostService {
                 xpics.push(String(pd.apsaraThumbId));                
             }
         }
+
+        let privacy = new Privacy();
+        privacy.isPostPrivate = false;
+        privacy.isPrivate = false;
+        privacy.isCelebrity = false;
+        pd.privacy = privacy;        
 
         res.push(pd);
 

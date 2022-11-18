@@ -15,13 +15,15 @@ export class ReportreasonsController {
             "info": ["The process successful"],
         };
         var lang = null;
-        if (request_json["lang"] !== undefined) {
-            lang = request_json["lang"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
 
-        let data = await this.reportreasonsService.findLanguage(lang);
+        lang = request_json["lang"];
+
+        var data = null;
+        if (lang !== undefined) {
+            data = await this.reportreasonsService.findLanguage(lang);
+        } else {
+            data = await this.reportreasonsService.findAll();
+        }
 
         return { response_code: 202, data, messages };
     }
