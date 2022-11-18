@@ -10,6 +10,8 @@ export class Reportreasons {
     @Prop()
     reason: string;
     @Prop()
+    reasonEn: string;
+    @Prop()
     class: string;
     @Prop()
     description: string;
