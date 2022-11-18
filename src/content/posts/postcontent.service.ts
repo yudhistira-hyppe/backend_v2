@@ -801,6 +801,44 @@ export class PostContentService {
     return res;
   }
 
+  async getUserPostBoost(pageNumber: number, pageRow: number, headers: any) {
+    var token = headers['x-auth-token'];
+    var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
+    var profile = await this.userService.findOne(auth.email);
+
+    let res = new PostResponseApps();
+    res.response_code = 202;
+    let posts = await this.doGetUserPostBoost(pageNumber,pageRow,headers, profile);
+    // let pd = await this.loadPostData(posts, profile);
+    // res.data = pd;
+
+    return posts;
+  }
+
+  private async doGetUserPostBoost(pageNumber: number, pageRow: number, headers: any, whoami: Userbasic): Promise<Posts[]> {
+    var perPage = pageRow, page = Math.max(0, pageNumber);
+    const query = await this.PostsModel.aggregate([
+      { $match: { "boosted": { $exists: true } }},
+      {
+        $addFields: {
+          coutBoost: { $size: "$boosted" }
+        }
+      },
+      { $match: { "coutBoost": { $exists: true } } },
+      { $skip: 0 },
+      { $limit: 5 },
+    ])
+
+
+    // var where = {};
+    // where['email'] = whoami.email;
+    // where['active'] = true;
+    // where['boosted'] = { $ne: null };
+    // where['boosted.1'] = { $exists: true };
+    // const query = await this.PostsModel.find(where).limit(perPage).skip(perPage * page).sort({ 'postType': 1, 'createdAt': -1 });
+    return query;
+  }
+
 
   async getUserPostByProfile(body: any, headers: any): Promise<PostResponseApps> {
 

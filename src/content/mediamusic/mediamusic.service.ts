@@ -134,7 +134,8 @@ export class MediamusicService {
             {
               $match: { 
                 $expr: { $eq: ["$postID", "$$postID"] },
-                'eventType': 'VIEW', 'event': 'ACCEPT' }
+                'eventType': 'VIEW', 'event': 'ACCEPT' 
+              }
             }
           ],
           as: 'contentevents_data'

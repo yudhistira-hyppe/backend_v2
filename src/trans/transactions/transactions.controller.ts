@@ -4977,7 +4977,7 @@ export class TransactionsController {
             }
 
             //CECK PENDING TRANSACTION
-            var daftarPending = await this.transactionsService.findpostidpending(body.postID);
+            var daftarPending = await this.transactionsService.findPendingByUser(user._id.toString());
             if (!(await this.utilsService.ceckData(daftarPending))) {
                 //CREATE VA PAYMENT
                 var dataCreateVa = {
