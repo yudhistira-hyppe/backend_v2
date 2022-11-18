@@ -261,11 +261,20 @@ export class ReportuserController {
 
             if (datacontent !== null) {
 
+                var reportedUserNew = [];
+                try {
+                    reportedUserNew = datacontent.reportedUser;
+                } catch (e) {
+                    reportedUserNew = [];
+                }
+
+
                 try {
                     reportedUserCount = datacontent._doc.reportedUserCount;
                 } catch (e) {
                     reportedUserCount = 0;
                 }
+
                 if (lenguserreport > 0) {
                     for (let i = 0; i < lenguserreport; i++) {
 
@@ -284,7 +293,8 @@ export class ReportuserController {
                             "description": description,
                             "updatedAt": dt.toISOString(),
                         };
-                        arrayreportedUser.push(objreportuser);
+                        reportedUserNew.push(objreportuser);
+
                     }
                 } else {
 
@@ -299,8 +309,8 @@ export class ReportuserController {
                     createPostsDto.contentModeration = contentModeration;
                     createPostsDto.contentModerationResponse = contentModerationResponse;
                     createPostsDto.reportedUserCount = lenguserreport;
-                    if (arrayreportedUser.length > 0) {
-                        createPostsDto.reportedUser = arrayreportedUser;
+                    if (reportedUserNew.length > 0) {
+                        createPostsDto.reportedUser = reportedUserNew;
                     } else {
 
                     }
@@ -311,8 +321,8 @@ export class ReportuserController {
                     createPostsDto.contentModeration = contentModeration;
                     createPostsDto.contentModerationResponse = contentModerationResponse;
                     createPostsDto.reportedUserCount = parseInt(reportedUserCount) + parseInt(lenguserreport);
-                    if (arrayreportedUser.length > 0) {
-                        createPostsDto.reportedUser = arrayreportedUser;
+                    if (reportedUserNew.length > 0) {
+                        createPostsDto.reportedUser = reportedUserNew;
                     } else {
 
                     }
@@ -343,6 +353,14 @@ export class ReportuserController {
             }
 
             if (datacontent !== null) {
+
+                var reportedUserNew = [];
+                try {
+                    reportedUserNew = datacontent.reportedUser;
+                } catch (e) {
+                    reportedUserNew = [];
+                }
+
                 try {
                     reportedUserCount = datacontent._doc.reportedUserCount;
                 } catch (e) {
@@ -369,7 +387,7 @@ export class ReportuserController {
                             "description": description,
                             "updatedAt": dt.toISOString(),
                         };
-                        arrayreportedUser.push(objreportuser);
+                        reportedUserNew.push(objreportuser);
                     }
                 } else {
 
@@ -384,8 +402,8 @@ export class ReportuserController {
                     createAdsDto.contentModerationResponse = contentModerationResponse;
                     createAdsDto.reportedUserCount = lenguserreport;
 
-                    if (arrayreportedUser.length > 0) {
-                        createAdsDto.reportedUser = arrayreportedUser;
+                    if (reportedUserNew.length > 0) {
+                        createAdsDto.reportedUser = reportedUserNew;
                     } else {
 
                     }
@@ -395,8 +413,8 @@ export class ReportuserController {
                     createAdsDto.contentModeration = contentModeration;
                     createAdsDto.contentModerationResponse = contentModerationResponse;
                     createAdsDto.reportedUserCount = parseInt(reportedUserCount) + parseInt(lenguserreport);
-                    if (arrayreportedUser.length > 0) {
-                        createAdsDto.reportedUser = arrayreportedUser;
+                    if (reportedUserNew.length > 0) {
+                        createAdsDto.reportedUser = reportedUserNew;
                     } else {
 
                     }
@@ -424,6 +442,12 @@ export class ReportuserController {
             }
 
             if (datacontent !== null) {
+                var reportedUserNew = [];
+                try {
+                    reportedUserNew = datacontent.reportedUser;
+                } catch (e) {
+                    reportedUserNew = [];
+                }
                 try {
                     reportedUserCount = datacontent._doc.reportedUserCount;
                 } catch (e) {
@@ -446,7 +470,7 @@ export class ReportuserController {
                             "description": description,
                             "updatedAt": dt.toISOString(),
                         };
-                        arrayreportedUser.push(objreportuser);
+                        reportedUserNew.push(objreportuser);
                     }
                 } else {
 
@@ -457,8 +481,8 @@ export class ReportuserController {
                     createUserbasicDto.reportedStatus = reportedStatus;
                     createUserbasicDto.reportedUserCount = lenguserreport;
 
-                    if (arrayreportedUser.length > 0) {
-                        createUserbasicDto.reportedUser = arrayreportedUser;
+                    if (reportedUserNew.length > 0) {
+                        createUserbasicDto.reportedUser = reportedUserNew;
                     } else {
 
                     }
@@ -467,8 +491,8 @@ export class ReportuserController {
                 } else {
                     createUserbasicDto.reportedStatus = reportedStatus;
                     createUserbasicDto.reportedUserCount = parseInt(reportedUserCount) + parseInt(lenguserreport);
-                    if (arrayreportedUser.length > 0) {
-                        createUserbasicDto.reportedUser = arrayreportedUser;
+                    if (reportedUserNew.length > 0) {
+                        createUserbasicDto.reportedUser = reportedUserNew;
                     } else {
 
                     }
