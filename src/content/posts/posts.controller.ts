@@ -388,6 +388,19 @@ export class PostsController {
     return this.postContentService.getUserPostMy(body, headers);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('api/posts/getboost')
+  @UseInterceptors(FileInterceptor('postContent'))
+  async getPostBoost(
+    @Query('pageNumber') pageNumber: number,
+    @Query('pageRow') pageRow: number,
+    @Query('search') search: string,
+    @Headers() headers) {
+    const pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
+    const pageRow_ = (pageRow != undefined) ? pageRow : 10;
+    return this.postContentService.getUserPostBoost(pageNumber_, pageRow_,headers);
+  }
+
   @Post('api/posts/getnotification')
   @UseInterceptors(FileInterceptor('postContent'))
   async getNotification(@Body() body, @Headers() headers) {

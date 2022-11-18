@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { Model, Types } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { CreateTransactionsDto, VaCallback } from './dto/create-transactions.dto';
 import { Transactions, TransactionsDocument } from './schemas/transactions.schema';
 import { PostsService } from '../../content/posts/posts.service';
@@ -46,6 +46,10 @@ export class TransactionsService {
 
     async findpostidpending(postid: string): Promise<Transactions> {
         return this.transactionsModel.findOne({ postid: postid, status: "WAITING_PAYMENT" }).exec();
+    }
+
+    async findPendingByUser(iduserbuyer: string): Promise<Transactions> {
+        return this.transactionsModel.findOne({ iduserbuyer: new mongoose.Types.ObjectId(iduserbuyer), status: "WAITING_PAYMENT" }).exec();
     }
 
     async findExpired(iduserbuyer: ObjectId): Promise<Transactions[]> {

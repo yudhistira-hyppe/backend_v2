@@ -76,6 +76,9 @@ export class PostBoostService {
     let data = new PostLandingData();
     res.response_code = 202;
 
+    let today = new Date('2022-11-18T15:20:00');
+    console.log(today);
+
     let row = 20;
     let page = 0;
     if (body.pageNumber != undefined) {
@@ -115,7 +118,7 @@ export class PostBoostService {
                                 {
                                     $dateToString: {
                                         format: "%Y-%m-%d",
-                                        date: new Date()
+                                        date: today
                                     }
                                 },
                                 "T",
@@ -136,7 +139,7 @@ export class PostBoostService {
                                 {
                                     $dateToString: {
                                         format: "%Y-%m-%d",
-                                        date: new Date()
+                                        date: today
                                     }
                                 },
                                 "T",
@@ -182,22 +185,22 @@ export class PostBoostService {
                                 },
                                 {
                                     "boosted.boostSession.start": {
-                                        $lt: new Date()
+                                        $lt: today
                                     }
                                 },
                                 {
                                     "timeEnd": {
-                                        $gt: new Date()
+                                        $gt: today
                                     }
                                 },
                                 {
                                     "timeStart": {
-                                        $lt: new Date()
+                                        $lt: today
                                     }
                                 },
                                 {
                                     "boosted.boostSession.end": {
-                                        $gt: new Date()
+                                        $gt: today
                                     }
                                 },
                                 {
@@ -628,22 +631,22 @@ export class PostBoostService {
                                 },
                                 {
                                     "boosted.boostSession.start": {
-                                        $lt: new Date()
+                                        $lt: today
                                     }
                                 },
                                 {
                                     "timeEnd": {
-                                        $gt: new Date()
+                                        $gt: today
                                     }
                                 },
                                 {
                                     "timeStart": {
-                                        $lt: new Date()
+                                        $lt: today
                                     }
                                 },
                                 {
                                     "boosted.boostSession.end": {
-                                        $gt: new Date()
+                                        $gt: today
                                     }
                                 },
                                 {
@@ -658,14 +661,14 @@ export class PostBoostService {
                                         {
                                             $and: [
                                                 {
-                                                    "boosted.boostViewer.email": "1@1.com"
+                                                    "boosted.boostViewer.email": profile.email
                                                 },
                                                 {
                                                     "boosted.boostViewer.isLast": true
                                                 },
                                                 {
                                                     "boosted.boostViewer.timeEnd": {
-                                                        $gt: new Date()
+                                                        $gt: today
                                                     }
                                                 },
                                             ]
@@ -1065,22 +1068,22 @@ export class PostBoostService {
                                 },
                                 {
                                     "boosted.boostSession.start": {
-                                        $lt: new Date()
+                                        $lt: today
                                     }
                                 },
                                 {
                                     "timeEnd": {
-                                        $gt: new Date()
+                                        $gt: today
                                     }
                                 },
                                 {
                                     "timeStart": {
-                                        $lt: new Date()
+                                        $lt: today
                                     }
                                 },
                                 {
                                     "boosted.boostSession.end": {
-                                        $gt: new Date()
+                                        $gt: today
                                     }
                                 },
                                 {
@@ -1102,7 +1105,7 @@ export class PostBoostService {
                                                 },
                                                 {
                                                     "boosted.boostViewer.timeEnd": {
-                                                        $gt: new Date()
+                                                        $gt: today
                                                     }
                                                 },
                                             ]
