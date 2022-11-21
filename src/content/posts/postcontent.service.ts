@@ -993,6 +993,7 @@ export class PostContentService {
           },
         }
       },
+      { $sort: { status : -1}},
       { $skip: (perPage * page) },
       { $limit: perPage },
     ])
