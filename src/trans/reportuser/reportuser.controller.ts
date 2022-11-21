@@ -300,10 +300,6 @@ export class ReportuserController {
 
                 }
 
-
-
-
-
                 if (reportedUserCount === 0 || reportedUserCount === undefined) {
                     createPostsDto.reportedStatus = reportedStatus;
                     createPostsDto.contentModeration = contentModeration;

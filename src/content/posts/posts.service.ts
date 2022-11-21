@@ -3960,6 +3960,8 @@ export class PostsService {
       order = 1;
     }
     var pipeline = [];
+
+
     pipeline = [
       {
         $lookup: {
@@ -4593,7 +4595,13 @@ export class PostsService {
 
         }
       },
-      {
+
+
+
+    ];
+
+    if (jenis === "report") {
+      pipeline.push({
         $match: {
           reportedUser: {
             $ne: null
@@ -4603,10 +4611,20 @@ export class PostsService {
           },
           active: true
         }
-      },
-
-
-    ];
+      },);
+    } else if (jenis === "appeal") {
+      pipeline.push({
+        $match: {
+          reportedUserHandle: {
+            $ne: null
+          },
+          reasonLastAppeal: {
+            $ne: null
+          },
+          active: true
+        }
+      },);
+    }
 
     if (keys && keys !== undefined) {
 
