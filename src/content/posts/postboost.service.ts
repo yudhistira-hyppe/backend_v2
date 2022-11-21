@@ -78,7 +78,8 @@ export class PostBoostService {
 
     let x = Date.now();
     x = x + (7 * 3600 * 1000);
-    let today = new Date(x);
+    console.log(x);
+    let today = new Date();
     //today.setHours(today.getHours() + 4);
     console.log(today);
 
@@ -100,7 +101,7 @@ export class PostBoostService {
         {
             $set: {
                 "testDate": {
-                    $add: [today]
+                    $add: [today, 25200000]
                 }
             }
         },
