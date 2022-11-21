@@ -97,7 +97,13 @@ export class PostBoostService {
     let skip = this.paging(page, row);    
 
     let pipeline = new Array<any>(
-
+        {
+            $set: {
+                "testDate": {
+                    $add: [today]
+                }
+            }
+        },
         {
             $unwind: {
                 path: "$boosted",
@@ -121,7 +127,7 @@ export class PostBoostService {
                                 {
                                     $dateToString: {
                                         format: "%Y-%m-%d",
-                                        date: today
+                                        date: "$testDate"
                                     }
                                 },
                                 "T",
@@ -142,7 +148,7 @@ export class PostBoostService {
                                 {
                                     $dateToString: {
                                         format: "%Y-%m-%d",
-                                        date: today
+                                        date: "$testDate"
                                     }
                                 },
                                 "T",
@@ -160,8 +166,9 @@ export class PostBoostService {
         
             {
                 $sort: {
-                    "isBoost": - 1,
-                    "createdAt": - 1
+                    "timeStart":-1,
+                    "isBoost": -1,
+                    "createdAt": -1
                 }
             },
             {
@@ -187,23 +194,35 @@ export class PostBoostService {
                                     "postType": "pict"
                                 },
                                 {
-                                    "boosted.boostSession.start": {
-                                        $lt: today
+                                    $expr: {
+                                        $lte: ["$boosted.boostSession.start", "$testDate"]
                                     }
                                 },
                                 {
-                                    "timeEnd": {
-                                        $gt: today
+                                    $expr: {
+                                        $gt: ["$boosted.boostSession.end", "$testDate", ]
                                     }
                                 },
                                 {
+                                    $expr: {
+                                        $lte: ["$timeStart", "$testDate"]
+                                    }
+                                },
+                                {
+                                    $expr: {
+                                        $gt: ["$timeEnd", "$testDate"]
+                                    }
+                                },
+                                {
+                                    
                                     "timeStart": {
-                                        $lt: today
+                                        $ne: null
                                     }
                                 },
                                 {
-                                    "boosted.boostSession.end": {
-                                        $gt: today
+                                    
+                                    "timeEnd": {
+                                        $ne: null
                                     }
                                 },
                                 {
@@ -225,7 +244,7 @@ export class PostBoostService {
                                                 },
                                                 {
                                                     "boosted.boostViewer.timeEnd": {
-                                                        $gt: today
+                                                        $gt: "$testDate"
                                                     }
                                                 },
                                             ]
@@ -733,8 +752,9 @@ export class PostBoostService {
         
             {
                 $sort: {
-                    "isBoost": - 1,
-                    "createdAt": - 1
+                    "timeStart":-1,
+                    "isBoost": -1,
+                    "createdAt": -1
                 }
             },
             {
@@ -759,23 +779,35 @@ export class PostBoostService {
                                     "postType": "vid"
                                 },
                                 {
-                                    "boosted.boostSession.start": {
-                                        $lt: today
+                                    $expr: {
+                                        $lte: ["$boosted.boostSession.start", "$testDate"]
                                     }
                                 },
                                 {
-                                    "timeEnd": {
-                                        $gt: today
+                                    $expr: {
+                                        $gt: ["$boosted.boostSession.end", "$testDate", ]
                                     }
                                 },
                                 {
+                                    $expr: {
+                                        $lte: ["$timeStart", "$testDate"]
+                                    }
+                                },
+                                {
+                                    $expr: {
+                                        $gt: ["$timeEnd", "$testDate"]
+                                    }
+                                },
+                                {
+                                    
                                     "timeStart": {
-                                        $lt: today
+                                        $ne: null
                                     }
                                 },
                                 {
-                                    "boosted.boostSession.end": {
-                                        $gt: today
+                                    
+                                    "timeEnd": {
+                                        $ne: null
                                     }
                                 },
                                 {
@@ -797,7 +829,7 @@ export class PostBoostService {
                                                 },
                                                 {
                                                     "boosted.boostViewer.timeEnd": {
-                                                        $gt: today
+                                                        $gt: "$testDate"
                                                     }
                                                 },
                                             ]
@@ -1300,8 +1332,9 @@ export class PostBoostService {
         
             {
                 $sort: {
-                    "isBoost": - 1,
-                    "createdAt": - 1
+                    "timeStart":-1,
+                    "isBoost": -1,
+                    "createdAt": -1
                 }
             },
             {
@@ -1326,23 +1359,35 @@ export class PostBoostService {
                                     "postType": "diary"
                                 },
                                 {
-                                    "boosted.boostSession.start": {
-                                        $lt: today
+                                    $expr: {
+                                        $lte: ["$boosted.boostSession.start", "$testDate"]
                                     }
                                 },
                                 {
-                                    "timeEnd": {
-                                        $gt: today
+                                    $expr: {
+                                        $gt: ["$boosted.boostSession.end", "$testDate", ]
                                     }
                                 },
                                 {
+                                    $expr: {
+                                        $lte: ["$timeStart", "$testDate"]
+                                    }
+                                },
+                                {
+                                    $expr: {
+                                        $gt: ["$timeEnd", "$testDate"]
+                                    }
+                                },
+                                {
+                                    
                                     "timeStart": {
-                                        $lt: today
+                                        $ne: null
                                     }
                                 },
                                 {
-                                    "boosted.boostSession.end": {
-                                        $gt: today
+                                    
+                                    "timeEnd": {
+                                        $ne: null
                                     }
                                 },
                                 {
@@ -1364,7 +1409,7 @@ export class PostBoostService {
                                                 },
                                                 {
                                                     "boosted.boostViewer.timeEnd": {
-                                                        $gt: today
+                                                        $gt: "$testDate"
                                                     }
                                                 },
                                             ]
@@ -1867,8 +1912,9 @@ export class PostBoostService {
         
             {
                 $sort: {
-                    "isBoost": - 1,
-                    "createdAt": - 1
+                    "timeStart":-1,
+                    "isBoost": -1,
+                    "createdAt": -1
                 }
             },
             {
@@ -2654,9 +2700,6 @@ export class PostBoostService {
 
     for (let i = 0; i < src.length; i++) {
         let obj = src[i];
-
-        console.log(obj.apsaraMusic);
-        console.log(obj.musicId);
 
         let pd = new PostData();
         pd.active = obj.active;
