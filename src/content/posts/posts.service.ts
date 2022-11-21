@@ -4606,24 +4606,38 @@ export class PostsService {
           reportedUser: {
             $ne: null
           },
-          reportReasonIdLast: {
-            $ne: null
-          },
+
           active: true
         }
-      },);
+      },
+        {
+          $match: {
+            reportedUser: {
+              $ne: []
+            },
+
+
+          }
+        });
     } else if (jenis === "appeal") {
       pipeline.push({
         $match: {
           reportedUserHandle: {
             $ne: null
           },
-          reasonLastAppeal: {
-            $ne: null
-          },
+
           active: true
         }
-      },);
+      },
+        {
+          $match: {
+            reportedUserHandle: {
+              $ne: []
+            },
+
+
+          }
+        });
     }
 
     if (keys && keys !== undefined) {
@@ -6169,6 +6183,25 @@ export class PostsService {
   }
 
 
+  async countPostAppeal() {
+    let query = await this.PostsModel.aggregate([
+      {
+        $match: {
+
+          'reportedUserHandle': { $ne: null }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalpost: {
+            $sum: 1
+          }
+        }
+      }
+    ]);
+    return query;
+  }
 
   async countReason(postID: string) {
     let query = await this.PostsModel.aggregate([
@@ -6207,6 +6240,148 @@ export class PostsService {
     ]);
     return query;
   }
+
+  async countReportStatusAll(startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+
+    var pipeline = [];
+
+    pipeline.push(
+      {
+        $addFields: {
+          createdAtReportLast: {
+            $last: "$reportedUser.createdAt"
+          },
+          statusLast: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$reportedUserHandle", null]
+                }, {
+                  $eq: ["$reportedUserHandle", ""]
+                }, {
+                  $eq: ["$reportedUserHandle", []]
+                }]
+              },
+              then: "BARU",
+              else: {
+                $last: "$reportedUserHandle.status"
+              }
+            },
+
+          },
+
+        }
+      },
+      {
+        $match: {
+
+          statusLast: { $ne: null }, active: true,
+
+        }
+      },
+    );
+    if (startdate && startdate !== undefined) {
+
+      pipeline.push({ $match: { createdAtReportLast: { "$gte": startdate } } });
+
+    }
+    if (enddate && enddate !== undefined) {
+
+      pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
+
+    }
+
+    pipeline.push({
+      $group: {
+        _id: null,
+
+        myCount: {
+          $sum: 1
+        }
+      }
+    },);
+    let query = await this.PostsModel.aggregate(pipeline);
+
+    return query;
+  }
+  async countReportStatus(startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+
+    var pipeline = [];
+
+    pipeline.push(
+      {
+        $addFields: {
+          createdAtReportLast: {
+            $last: "$reportedUser.createdAt"
+          },
+          statusLast: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$reportedUserHandle", null]
+                }, {
+                  $eq: ["$reportedUserHandle", ""]
+                }, {
+                  $eq: ["$reportedUserHandle", []]
+                }]
+              },
+              then: "BARU",
+              else: {
+                $last: "$reportedUserHandle.status"
+              }
+            },
+
+          },
+
+        }
+      },
+      {
+        $match: {
+
+          statusLast: { $ne: null }, active: true,
+
+        }
+      },
+    );
+    if (startdate && startdate !== undefined) {
+
+      pipeline.push({ $match: { createdAtReportLast: { "$gte": startdate } } });
+
+    }
+    if (enddate && enddate !== undefined) {
+
+      pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
+
+    }
+
+    pipeline.push({
+      $group: {
+        _id: "$statusLast",
+
+        myCount: {
+          $sum: 1
+        }
+      }
+    },);
+    let query = await this.PostsModel.aggregate(pipeline);
+
+    return query;
+  }
+
   async thum(thum_data: string): Promise<any> {
     var data = await this.seaweedfsService.read(thum_data.replace('/localrepo', ''));
     return data;
