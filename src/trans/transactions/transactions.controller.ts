@@ -35,6 +35,7 @@ import { BoostintervalService } from '../../content/boostinterval/boostinterval.
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 import { CreatePostsDto } from 'src/content/posts/dto/create-posts.dto';
 import { Accountbalances } from '../accountbalances/schemas/accountbalances.schema';
+import { Templates } from 'src/infra/templates/schemas/templates.schema';
 
 @Controller()
 export class TransactionsController {
@@ -1306,7 +1307,9 @@ export class TransactionsController {
                         await this.transactionsService.updateoneBoost(idtransaction, idbalance, payload);
 
                         //SEND FCM SUCCES TRANSACTION
-                        this.sendCommentFCM("BOOST_CONTENT", postid, emailbuyer.toString())
+                        this.sendCommentFCM("BOOST_SUCCES", postid, emailbuyer.toString())
+                        //this.sendCommentFCM("BOOST_CONTENT", postid, emailbuyer.toString())
+                        this.sendemail(emailbuyer.toString(), "BOOST_SUCCES");
 
                         //RESPONSE SUCCES
                         res.status(HttpStatus.OK).json({
@@ -5415,7 +5418,8 @@ export class TransactionsController {
                         createTransactionsDto_.postid = body.postID;
                         createTransactionsDto_.response = Va;
                         let transaction_boost = await this.transactionsService.create(createTransactionsDto_);
-                        this.sendTransactionFCM(email, "TRANSACTION", body.postID, email)
+                        this.sendTransactionFCM(email, "BOOST_BUY", body.postID, email)
+                        this.sendemail(email, "BOOST_BUY");
 
                         var data_response_ = {
                             "noinvoice": transaction_boost.noinvoice,
@@ -5537,7 +5541,8 @@ export class TransactionsController {
                             createTransactionsDto_.postid = body.postID;
                             createTransactionsDto_.response = Va;
                             let transaction_boost = await this.transactionsService.create(createTransactionsDto_);
-                            this.sendTransactionFCM(email, "TRANSACTION", body.postID, email)
+                            this.sendTransactionFCM(email, "BOOST_BUY", body.postID, email)
+                            this.sendemail(email, "BOOST_BUY");
 
                             var data_response_ = {
                                 "noinvoice": transaction_boost.noinvoice,
@@ -5662,6 +5667,42 @@ export class TransactionsController {
         var eventType = type.toString();
         var event = "TRANSACTION";
         await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
+    }
+
+    async sendemail(email: string, type: string) {
+        //Send Email
+        try {
+            var Templates_ = new TemplatesRepo();
+            var profile = await this.utilsService.generateProfile(email, "FULL");
+            if (!(await this.utilsService.ceckData(profile))) {
+                console.log('ERROR', 'Unabled to proceed user not found, ' + email);
+            }
+            const langIso = (profile.langIso != undefined) ? profile.langIso : "id";
+            Templates_ = await this.utilsService.getTemplate_repo(type, 'EMAIL');
+            var html_body = "";
+            if (langIso=="en"){
+                html_body = Templates_.body_detail.toString();
+            } else {
+                html_body = Templates_.body_detail_id.toString();
+            }
+
+            //var to = email;
+            var to = email;
+            var from = '"no-reply" <' + Templates_.from.toString() + '>';
+            var subject = Templates_.subject.toString();
+            var html_body_ = html_body;
+            var send = await this.utilsService.sendEmail(
+                to,
+                from,
+                subject,
+                html_body_,
+            );
+            if (!send) {
+                console.log('ERROR', 'Unabled to proceed Send Email, ' + email);
+            }
+        } catch (error) {
+            console.log('ERROR', 'Unabled to proceed Send Email, ' + error);
+        }
     }
 }
 

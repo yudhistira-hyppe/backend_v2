@@ -140,6 +140,9 @@ export class PostData {
     isBoost: number; 
     boostJangkauan: number; 
     statusBoost: string;
+    music: any;
+    apsaraMusic: string;
+    apsaraThumnail: string;    
     
 }
 
