@@ -988,7 +988,7 @@ export class PostContentService {
                 { case: { $and: [{ $lte: ["$boostStart", currentDate] }, { $gte: ["$boostEnd", currentDate] }] }, then: "BERLANGSUNG" },
                 { case: { $and: [{ $gte: ["$boostStart", currentDate] }, { $gte: ["$boostEnd", currentDate] }] }, then: "AKAN DATANG" }
               ],
-              "default": "Other"
+              "default": "AKAN DATANG"
             }
           },
         }
