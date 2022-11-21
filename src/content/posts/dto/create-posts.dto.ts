@@ -134,6 +134,12 @@ export class PostData {
     isLiked: boolean;
     avatar: Avatar;
     boostViewer: any[];
+    musicId: mongoose.Types.ObjectId;
+    boosted: any[];
+    boostCount: number;
+    isBoost: number; 
+    boostJangkauan: number; 
+    statusBoost: string;
 }
 
 export class Messages {
