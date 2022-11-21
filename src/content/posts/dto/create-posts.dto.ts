@@ -140,6 +140,7 @@ export class PostData {
     isBoost: number; 
     boostJangkauan: number; 
     statusBoost: string;
+    
 }
 
 export class Messages {
