@@ -76,7 +76,10 @@ export class PostBoostService {
     let data = new PostLandingData();
     res.response_code = 202;
 
-    let today = new Date('2022-11-18T15:20:00');
+    let x = Date.now();
+    x = x + (7 * 3600 * 1000);
+    let today = new Date(x);
+    //today.setHours(today.getHours() + 4);
     console.log(today);
 
     let row = 20;
@@ -222,10 +225,9 @@ export class PostBoostService {
                                                 },
                                                 {
                                                     "boosted.boostViewer.timeEnd": {
-                                                        $gt: new Date()
+                                                        $gt: today
                                                     }
                                                 },
-                                                
                                             ]
                                         },
                                         {
@@ -235,11 +237,10 @@ export class PostBoostService {
                                                         $ne: profile.email
                                                     }
                                                 },
-                                                
                                             ]
                                         }
                                     ]
-                                }
+                                }                                
                             ]
                         },
                         {
@@ -376,8 +377,6 @@ export class PostBoostService {
                         {
                             $match: 
                             {
-                                
-                                
                                 $expr: {
                                     $in: ['$_id', '$$localID']
                                 }
@@ -485,6 +484,127 @@ export class PostBoostService {
                 }
             },
             {
+                "$lookup": {
+                    from: "mediamusic",
+                    as: "music",
+                    let: {
+                        localID: '$musicId'
+                    },
+                    pipeline: [
+                        {
+                            "$lookup": {
+                                from: "genre",
+                                as: "genre",
+                                let: {
+                                    localID: '$genre'
+                                },
+                                pipeline: [
+                                    {
+                                        $match: 
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "name": 1
+                                        }
+                                    }
+                                ],
+                            }
+                        },                        
+                        {
+                            "$lookup": {
+                                from: "theme",
+                                as: "theme",
+                                let: {
+                                    localID: '$theme'
+                                },
+                                pipeline: [
+                                    {
+                                        $match: 
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "name": 1
+                                        }
+                                    }
+                                ],
+                            }
+                        },
+                        {
+                            "$lookup": {
+                                from: "mood",
+                                as: "mood",
+                                let: {
+                                    localID: '$mood'
+                                },
+                                pipeline: [
+                                    {
+                                        $match: 
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "name": 1
+                                        }
+                                    }
+                                ],
+                            }
+                        },                        
+                        {
+                            $match: 
+                            {
+                                $expr: {
+                                    $eq: ['$_id', '$$localID']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "musicTitle": 1,
+                                "artistName": 1,
+                                "albumName": 1,
+                                "apsaraMusic": 1,
+                                "apsaraThumnail": 1,
+                                "genre": "$genre.name",
+                                "theme": "$theme.name",
+                                "mood": "$mood.name",
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$genre",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$theme",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$mood",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },                                                                        
+                    ],
+                }
+            },            
+            {
                 $skip: skip
             },            
             {
@@ -502,6 +622,12 @@ export class PostBoostService {
                     preserveNullAndEmptyArrays: true
                 }
             },
+            {
+                $unwind: {
+                    path: "$music",
+                    preserveNullAndEmptyArrays: true
+                }
+            },            
             {
                 "$lookup": {
                     from: "contentevents",
@@ -542,6 +668,8 @@ export class PostBoostService {
                     "isLike":"$isLike",	
                     "tagPeople":"$userTag",                    
                     "mediaType":"$media.mediaType",
+                    "music":1,
+                    "musicId": 1,
                     "email": 1,
                     "postType": 1,
                     "description": 1,
@@ -587,6 +715,8 @@ export class PostBoostService {
                     "mediaUri": "$media.mediaUri",
                     "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                     "mediaThumbUri": "$media.mediaThumbUri",
+                    "apsaraMusic": "$music.apsaraMusic",
+                    "apsaraThumnail": "$music.apsaraThumnail",                    
                     "cats": 1,
                     "insight": 1,
                     "fullName": "$userBasic.fullName",
@@ -595,8 +725,7 @@ export class PostBoostService {
                     "boosted": 1,
                     "privacy":[{"isCelebrity":"$userBasic.isCelebrity"},{"isIdVerified":"$userBasic.isIdVerified"},{"isPrivate":"$userBasic.isPrivate"}]                    
                 }
-            }
-        
+            }        
     );
 
 
@@ -923,6 +1052,127 @@ export class PostBoostService {
                 }
             },
             {
+                "$lookup": {
+                    from: "mediamusic",
+                    as: "music",
+                    let: {
+                        localID: '$musicId'
+                    },
+                    pipeline: [
+                        {
+                            "$lookup": {
+                                from: "genre",
+                                as: "genre",
+                                let: {
+                                    localID: '$genre'
+                                },
+                                pipeline: [
+                                    {
+                                        $match: 
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "name": 1
+                                        }
+                                    }
+                                ],
+                            }
+                        },                        
+                        {
+                            "$lookup": {
+                                from: "theme",
+                                as: "theme",
+                                let: {
+                                    localID: '$theme'
+                                },
+                                pipeline: [
+                                    {
+                                        $match: 
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "name": 1
+                                        }
+                                    }
+                                ],
+                            }
+                        },
+                        {
+                            "$lookup": {
+                                from: "mood",
+                                as: "mood",
+                                let: {
+                                    localID: '$mood'
+                                },
+                                pipeline: [
+                                    {
+                                        $match: 
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "name": 1
+                                        }
+                                    }
+                                ],
+                            }
+                        },                        
+                        {
+                            $match: 
+                            {
+                                $expr: {
+                                    $eq: ['$_id', '$$localID']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "musicTitle": 1,
+                                "artistName": 1,
+                                "albumName": 1,
+                                "apsaraMusic": 1,
+                                "apsaraThumnail": 1,
+                                "genre": "$genre.name",
+                                "theme": "$theme.name",
+                                "mood": "$mood.name",
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$genre",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$theme",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$mood",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },                                                                        
+                    ],
+                }
+            },                        
+            {
                 $skip: skip
             },            
             {
@@ -940,6 +1190,12 @@ export class PostBoostService {
                     preserveNullAndEmptyArrays: true
                 }
             },
+            {
+                $unwind: {
+                    path: "$music",
+                    preserveNullAndEmptyArrays: true
+                }
+            },                        
             {
                 "$lookup": {
                     from: "contentevents",
@@ -980,6 +1236,8 @@ export class PostBoostService {
                     "isLike":"$isLike",	
                     "tagPeople":"$userTag",                    
                     "mediaType":"$media.mediaType",
+                    "music":1,
+                    "musicId": 1,
                     "email": 1,
                     "postType": 1,
                     "description": 1,
@@ -1025,16 +1283,17 @@ export class PostBoostService {
                     "mediaUri": "$media.mediaUri",
                     "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                     "mediaThumbUri": "$media.mediaThumbUri",
+                    "apsaraMusic": "$music.apsaraMusic",
+                    "apsaraThumnail": "$music.apsaraThumnail",                    
                     "cats": 1,
                     "insight": 1,
                     "fullName": "$userBasic.fullName",
                     "username": "$username.username",
                     "avatar": 1,
                     "boosted": 1,
-                    "privacy":[{"isCelebrity":"$userBasic.isCelebrity"},{"isIdVerified":"$userBasic.isIdVerified"},{"isPrivate":"$userBasic.isPrivate"}]
+                    "privacy":[{"isCelebrity":"$userBasic.isCelebrity"},{"isIdVerified":"$userBasic.isIdVerified"},{"isPrivate":"$userBasic.isPrivate"}]                    
                 }
-            }
-        
+            }        
     );
 
     let diary = new Array<any>(
@@ -1359,6 +1618,127 @@ export class PostBoostService {
                 }
             },
             {
+                "$lookup": {
+                    from: "mediamusic",
+                    as: "music",
+                    let: {
+                        localID: '$musicId'
+                    },
+                    pipeline: [
+                        {
+                            "$lookup": {
+                                from: "genre",
+                                as: "genre",
+                                let: {
+                                    localID: '$genre'
+                                },
+                                pipeline: [
+                                    {
+                                        $match: 
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "name": 1
+                                        }
+                                    }
+                                ],
+                            }
+                        },                        
+                        {
+                            "$lookup": {
+                                from: "theme",
+                                as: "theme",
+                                let: {
+                                    localID: '$theme'
+                                },
+                                pipeline: [
+                                    {
+                                        $match: 
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "name": 1
+                                        }
+                                    }
+                                ],
+                            }
+                        },
+                        {
+                            "$lookup": {
+                                from: "mood",
+                                as: "mood",
+                                let: {
+                                    localID: '$mood'
+                                },
+                                pipeline: [
+                                    {
+                                        $match: 
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "name": 1
+                                        }
+                                    }
+                                ],
+                            }
+                        },                        
+                        {
+                            $match: 
+                            {
+                                $expr: {
+                                    $eq: ['$_id', '$$localID']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "musicTitle": 1,
+                                "artistName": 1,
+                                "albumName": 1,
+                                "apsaraMusic": 1,
+                                "apsaraThumnail": 1,
+                                "genre": "$genre.name",
+                                "theme": "$theme.name",
+                                "mood": "$mood.name",
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$genre",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$theme",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$mood",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },                                                                        
+                    ],
+                }
+            },                        
+            {
                 $skip: skip
             },            
             {
@@ -1376,6 +1756,12 @@ export class PostBoostService {
                     preserveNullAndEmptyArrays: true
                 }
             },
+            {
+                $unwind: {
+                    path: "$music",
+                    preserveNullAndEmptyArrays: true
+                }
+            },                        
             {
                 "$lookup": {
                     from: "contentevents",
@@ -1413,9 +1799,11 @@ export class PostBoostService {
             },            
             {
                 $project: {
-                    "isLike":"$isLike",									
+                    "isLike":"$isLike",	
                     "tagPeople":"$userTag",                    
                     "mediaType":"$media.mediaType",
+                    "music":1,
+                    "musicId": 1,
                     "email": 1,
                     "postType": 1,
                     "description": 1,
@@ -1461,13 +1849,15 @@ export class PostBoostService {
                     "mediaUri": "$media.mediaUri",
                     "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                     "mediaThumbUri": "$media.mediaThumbUri",
+                    "apsaraMusic": "$music.apsaraMusic",
+                    "apsaraThumnail": "$music.apsaraThumnail",                    
                     "cats": 1,
                     "insight": 1,
                     "fullName": "$userBasic.fullName",
                     "username": "$username.username",
                     "avatar": 1,
                     "boosted": 1,
-                    "privacy":[{"isCelebrity":"$userBasic.isCelebrity"},{"isIdVerified":"$userBasic.isIdVerified"},{"isPrivate":"$userBasic.isPrivate"}]
+                    "privacy":[{"isCelebrity":"$userBasic.isCelebrity"},{"isIdVerified":"$userBasic.isIdVerified"},{"isPrivate":"$userBasic.isPrivate"}]                    
                 }
             }
               
@@ -1794,6 +2184,127 @@ export class PostBoostService {
                 }
             },
             {
+                "$lookup": {
+                    from: "mediamusic",
+                    as: "music",
+                    let: {
+                        localID: '$musicId'
+                    },
+                    pipeline: [
+                        {
+                            "$lookup": {
+                                from: "genre",
+                                as: "genre",
+                                let: {
+                                    localID: '$genre'
+                                },
+                                pipeline: [
+                                    {
+                                        $match: 
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "name": 1
+                                        }
+                                    }
+                                ],
+                            }
+                        },                        
+                        {
+                            "$lookup": {
+                                from: "theme",
+                                as: "theme",
+                                let: {
+                                    localID: '$theme'
+                                },
+                                pipeline: [
+                                    {
+                                        $match: 
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "name": 1
+                                        }
+                                    }
+                                ],
+                            }
+                        },
+                        {
+                            "$lookup": {
+                                from: "mood",
+                                as: "mood",
+                                let: {
+                                    localID: '$mood'
+                                },
+                                pipeline: [
+                                    {
+                                        $match: 
+                                        {
+                                            $expr: {
+                                                $eq: ['$_id', '$$localID']
+                                            }
+                                        }
+                                    },
+                                    {
+                                        $project: {
+                                            "name": 1
+                                        }
+                                    }
+                                ],
+                            }
+                        },                        
+                        {
+                            $match: 
+                            {
+                                $expr: {
+                                    $eq: ['$_id', '$$localID']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "musicTitle": 1,
+                                "artistName": 1,
+                                "albumName": 1,
+                                "apsaraMusic": 1,
+                                "apsaraThumnail": 1,
+                                "genre": "$genre.name",
+                                "theme": "$theme.name",
+                                "mood": "$mood.name",
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$genre",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$theme",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$mood",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },                                                                        
+                    ],
+                }
+            },                        
+            {
                 $skip: skip
             },            
             {
@@ -1811,6 +2322,12 @@ export class PostBoostService {
                     preserveNullAndEmptyArrays: true
                 }
             },
+            {
+                $unwind: {
+                    path: "$music",
+                    preserveNullAndEmptyArrays: true
+                }
+            },                        
             {
                 "$lookup": {
                     from: "contentevents",
@@ -1882,10 +2399,11 @@ export class PostBoostService {
             },            
             {
                 $project: {
-                    "isView" :"$isView",
-                    "isLike" :"$isLike",
+                    "isLike":"$isLike",	
                     "tagPeople":"$userTag",                    
                     "mediaType":"$media.mediaType",
+                    "music":1,
+                    "musicId": 1,
                     "email": 1,
                     "postType": 1,
                     "description": 1,
@@ -1931,16 +2449,17 @@ export class PostBoostService {
                     "mediaUri": "$media.mediaUri",
                     "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                     "mediaThumbUri": "$media.mediaThumbUri",
+                    "apsaraMusic": "$music.apsaraMusic",
+                    "apsaraThumnail": "$music.apsaraThumnail",                    
                     "cats": 1,
                     "insight": 1,
                     "fullName": "$userBasic.fullName",
                     "username": "$username.username",
                     "avatar": 1,
                     "boosted": 1,
-                    "privacy":[{"isCelebrity":"$userBasic.isCelebrity"},{"isIdVerified":"$userBasic.isIdVerified"},{"isPrivate":"$userBasic.isPrivate"}]
+                    "privacy":[{"isCelebrity":"$userBasic.isCelebrity"},{"isIdVerified":"$userBasic.isIdVerified"},{"isPrivate":"$userBasic.isPrivate"}]                    
                 }
             }
-        
     );
 
     let facet = {};
@@ -2135,6 +2654,10 @@ export class PostBoostService {
 
     for (let i = 0; i < src.length; i++) {
         let obj = src[i];
+
+        console.log(obj.apsaraMusic);
+        console.log(obj.musicId);
+
         let pd = new PostData();
         pd.active = obj.active;
         pd.allowComments = obj.allowComments;
@@ -2218,6 +2741,10 @@ export class PostBoostService {
         privacy.isPrivate = false;
         privacy.isCelebrity = false;
         pd.privacy = privacy;        
+
+        pd.apsaraThumnail = obj.apsaraThumnail;
+        pd.apsaraMusic = obj.apsaraMusic;
+        pd.music = obj.music;
 
         res.push(pd);
 
