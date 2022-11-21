@@ -822,7 +822,14 @@ export class PostContentService {
     var perPage = Math.max(0, pageRow), page = Math.max(0, pageNumber);
     
     const query = await this.PostsModel.aggregate([
-      { $match: { "boosted": { $exists: true } }},
+      {
+        $match: {
+          "boosted": {
+            $exists: true,
+            $ne: null
+          } 
+        }
+      },
       {
         $addFields: {
           coutBoost: { $size: "$boosted" },
