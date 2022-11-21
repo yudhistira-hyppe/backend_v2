@@ -3653,7 +3653,10 @@ export class AdsService {
 
                 }
             },
-            {
+
+        ];
+        if (jenis === "report") {
+            pipeline.push({
                 $match: {
                     reportedUser: {
                         $ne: null
@@ -3661,12 +3664,22 @@ export class AdsService {
                     reportReasonIdLast: {
                         $ne: null
                     },
-                    isActive: true,
-
+                    active: true
                 }
-            }
-        ];
-
+            },);
+        } else if (jenis === "appeal") {
+            pipeline.push({
+                $match: {
+                    reportedUserHandle: {
+                        $ne: null
+                    },
+                    reasonLastAppeal: {
+                        $ne: null
+                    },
+                    active: true
+                }
+            },);
+        }
 
         if (keys && keys !== undefined) {
 
