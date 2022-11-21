@@ -809,10 +809,10 @@ export class PostContentService {
     let res = new PostResponseApps();
     res.response_code = 202;
     let posts = await this.doGetUserPostBoost(pageNumber,pageRow, profile);
-    // let pd = await this.loadPostBoostData(posts, profile);
-    // res.data = pd;
+    let pd = await this.loadPostBoostData(posts, profile);
+    res.data = pd;
 
-    return posts;
+    return res;
   }
 
   private async doGetUserPostBoost(pageNumber: number, pageRow: number, whoami: Userbasic): Promise<Posts[]> {
