@@ -969,13 +969,17 @@ export class PostContentService {
       {
         $addFields: {
           boostJangkauan: { $size: "$boosted.boostViewer" },
+          boostStart: "$boosted.boostSession.start",
+          boostEnd: "$boosted.boostSession.end",
+        }
+      },
+      {
+        $addFields: {
           status: {
             $switch: {
               branches: [
-                // { case: { $and: [{ $lte: ["$boosted.boostSession.start", currentDate] }, { $gte: ["$boosted.boostSession.start", currentDate] }] }, then: "BERLANGSUNG" },
-                // { case: { $and: [{ $gte: ["$boosted.boostSession.start", currentDate] }, { $gte: ["$boosted.boostSession.start", currentDate] }] }, then: "AKAN DATANG" },
-                { case: { $and: [{ "$boosted.boostSession.start": { $lte: currentDate } }, { "$boosted.boostSession.end": { $gte: currentDate } }] }, then: "BERLANGSUNG" },
-                { case: { $and: [{ "$boosted.boostSession.start": { $gte: currentDate } }, { "$boosted.boostSession.end": { $gte: currentDate } }] }, then: "AKAN DATANG" }
+                { case: { $and: [{ $lte: ["$boostStart", currentDate] }, { $gte: ["$boostEnd", currentDate] }] }, then: "BERLANGSUNG" },
+                { case: { $and: [{ $gte: ["$boostStart", currentDate] }, { $gte: ["$boostEnd", currentDate] }] }, then: "AKAN DATANG" }
               ],
               "default": "Other"
             }
@@ -1019,9 +1023,9 @@ export class PostContentService {
         pa.email = String(ps.email);
         pa.boosted = ps.boosted;
         pa.boostCount = ps.boostCount;
-        pa.isBoost = ps.isBoost; status
+        pa.isBoost = ps.isBoost; 
         pa.boostJangkauan = ps['boostJangkauan'];
-        //pa.status = ps['status']; 
+        pa.statusBoost = ps['status']; 
 
         let following = await this.contentEventService.findFollowing(pa.email);
 
