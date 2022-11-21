@@ -2318,4 +2318,36 @@ export class ReportuserController {
 
 
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('landingpage')
+    async finddetailtest(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        var type = null;
+        var postID = null;
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+        var data = [];
+        var query = null;
+        var totalReport = null;
+
+
+        try {
+            query = await this.postsService.testLandingpage();
+
+        } catch (e) {
+            query = null;
+
+        }
+
+        return { response_code: 202, query, messages };
+
+    }
 }
