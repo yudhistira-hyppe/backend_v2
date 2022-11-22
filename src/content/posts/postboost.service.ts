@@ -2871,7 +2871,7 @@ export class PostBoostService {
                       {
                         $dateToString: {
                           format: "%Y-%m-%d",
-                          date: "$testDate"
+                          date: today
                         }
                       },
                       "T",
@@ -2937,30 +2937,21 @@ export class PostBoostService {
                           },
                           {
                             "boosted.boostSession.start": {
-                              $lte: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $lte: today
                             }
                           },
                           {
                             "boosted.boostSession.end": {
-                              $gt: {
-                                $add: [new Date(), 25200000]
-                              }
-                            }
+                              $gt: today
                           },
                           {
                             "timeStart": {
-                              $lte: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $lte: today
                             }
                           },
                           {
                             "timeEnd": {
-                              $gte: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $gte: today
                             }
                           },
                           {
@@ -2994,7 +2985,7 @@ export class PostBoostService {
                                   },
                                   {
                                     "boosted.boostViewer.timeEnd": {
-                                      $gt: "$testDate"
+                                      $gt: today
                                     }
                                   },
     
@@ -3537,30 +3528,22 @@ export class PostBoostService {
                           },
                           {
                             "boosted.boostSession.start": {
-                              $lte: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $lte: today
                             }
                           },
                           {
                             "boosted.boostSession.end": {
-                              $gt: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $gt: today
                             }
                           },
                           {
                             "timeStart": {
-                              $lte: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $lte: today
                             }
                           },
                           {
                             "timeEnd": {
-                              $gte: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $gte: today
                             }
                           },
                           {
@@ -3594,7 +3577,7 @@ export class PostBoostService {
                                   },
                                   {
                                     "boosted.boostViewer.timeEnd": {
-                                      $gt: "$testDate"
+                                      $gt: today
                                     }
                                   },
     
@@ -4149,30 +4132,22 @@ export class PostBoostService {
                           },
                           {
                             "boosted.boostSession.start": {
-                              $lte: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $lte: today
                             }
                           },
                           {
                             "boosted.boostSession.end": {
-                              $gt: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $gt: today
                             }
                           },
                           {
                             "timeStart": {
-                              $lte: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $lte: today
                             }
                           },
                           {
                             "timeEnd": {
-                              $gte: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $gte: today
                             }
                           },
                           {
@@ -4205,9 +4180,7 @@ export class PostBoostService {
                                     "boosted.boostViewer.isLast": true
                                   },
                                   {
-                                    "boosted.boostViewer.timeEnd": {
-                                      $gt: "$testDate"
-                                    }
+                                    "boosted.boostViewer.timeEnd": today
                                   },
     
                                 ]
@@ -4753,30 +4726,22 @@ export class PostBoostService {
                           },
                           {
                             "boosted.boostSession.start": {
-                              $lte: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $lte: today
                             }
                           },
                           {
                             "boosted.boostSession.end": {
-                              $gt: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $gt: today
                             }
                           },
                           {
                             "timeStart": {
-                              $lte: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $lte: today
                             }
                           },
                           {
                             "timeEnd": {
-                              $gte: {
-                                $add: [new Date(), 25200000]
-                              }
+                              $gte: today
                             }
                           },
                           {
@@ -4810,7 +4775,7 @@ export class PostBoostService {
                                   },
                                   {
                                     "boosted.boostViewer.timeEnd": {
-                                      $gt: "$testDate"
+                                      $gt: today
                                     }
                                   },
     
@@ -5408,12 +5373,14 @@ export class PostBoostService {
                         let vi = vapsara.VideoList[i];
                         if (pdvv.apsaraId == vi.VideoId) {
                             pdvv.mediaThumbEndpoint = vi.CoverURL;
-                        }
-                    }
 
-                    if (valPost.has(pdvv.postID) == false) {
-                      resVideo.push(pdvv);
-                      valPost.set(pdvv.postID, pdvv.postID);
+                            if (valPost.has(pdvv.postID) == false) {
+                              resVideo.push(pdvv);
+                              valPost.set(pdvv.postID, pdvv.postID);
+                            }
+
+                            break;
+                        }
                     }
                 }
             }
@@ -5424,14 +5391,15 @@ export class PostBoostService {
                         let vi = vapsara.VideoList[i];
                         if (pdss.apsaraId == vi.VideoId) {
                             pdss.mediaThumbEndpoint = vi.CoverURL;
+
+                            if (valPost.has(pdss.postID) == false) {
+                              resStory.push(pdss);
+                              valPost.set(pdss.postID, pdss.postID);
+                            }
+                            
+                            break;
                         }
                     }
-
-                    if (valPost.has(pdss.postID) == false) {
-                      resStory.push(pdss);
-                      valPost.set(pdss.postID, pdss.postID);
-                    }
-
                 }
             }
             if (odia.length > 0) {
@@ -5441,15 +5409,36 @@ export class PostBoostService {
                         let vi = vapsara.VideoList[i];
                         if (pddd.apsaraId == vi.VideoId) {
                             pddd.mediaThumbEndpoint = vi.CoverURL;
+
+                            if (valPost.has(pddd.postID) == false) {
+                              resDiary.push(pddd);
+                              valPost.set(pddd.postID, pddd.postID);                            
+                            }
+
+                            break;
                         }
                     }
-                    if (valPost.has(pddd.postID) == false) {
-                      resDiary.push(pddd);
-                      valPost.set(pddd.postID, pddd.postID);                            
-                    }
-
                 }
             }
+            if (opic.length > 0) {
+              for (let i = 0; i < opic.length; i++) {
+                  let pdpp = opic[i];
+                  for (let i = 0; i < vapsara.VideoList.length; i++) {
+                    let vi = vapsara.VideoList[i];
+                    if (pdpp.apsaraId == vi.VideoId) {
+                        pdpp.mediaThumbEndpoint = vi.CoverURL;
+
+                        if (valPost.has(pdpp.postID) == false) {
+                          resPic.push(pdpp);
+                          valPost.set(pdpp.postID, pdpp.postID);                            
+                        }
+
+                        break;
+                    }
+                }
+
+              }
+          }            
         }
 
         if (papsara != undefined) {
@@ -5461,13 +5450,15 @@ export class PostBoostService {
                         if (pdvv.apsaraId == vi.ImageId) {
                             pdvv.mediaThumbEndpoint = vi.URL;
                             pdvv.mediaThumbUri = vi.URL;
+
+                            if (valPost.has(pdvv.postID) == false) {
+                              resVideo.push(pdvv);
+                              valPost.set(pdvv.postID, pdvv.postID);                            
+                            }
+
+                            break;
                         }
                     }
-                    if (valPost.has(pdvv.postID) == false) {
-                      resVideo.push(pdvv);
-                      valPost.set(pdvv.postID, pdvv.postID);                            
-                    }
-
                 }
             }
             if (osto.length > 0) {
@@ -5481,12 +5472,14 @@ export class PostBoostService {
 
                             pdss.mediaThumbEndpoint = vi.URL;
                             pdss.mediaThumbUri = vi.URL;
-                        }
-                    }
 
-                    if (valPost.has(pdss.postID) == false) {
-                      resStory.push(pdss);
-                      valPost.set(pdss.postID, pdss.postID);
+                            if (valPost.has(pdss.postID) == false) {
+                              resStory.push(pdss);
+                              valPost.set(pdss.postID, pdss.postID);
+                            }
+
+                            break;
+                        }
                     }
                 }
             }
@@ -5499,41 +5492,76 @@ export class PostBoostService {
                             pddd.mediaThumbEndpoint = vi.URL;
                             pddd.mediaThumbUri = vi.URL;
                             resDiary.push(pddd);
+
+                            if (valPost.has(pddd.postID) == false) {
+                              resDiary.push(pddd);
+                              valPost.set(pddd.postID, pddd.postID);                            
+                            }
+
+                            break;
                         }
                     }
-                    if (valPost.has(pddd.postID) == false) {
-                      resDiary.push(pddd);
-                      valPost.set(pddd.postID, pddd.postID);                            
-                    }
+
                 }
             }
             if (opic.length > 0) {
                 for (let i = 0; i < opic.length; i++) {
                     let pdpp = opic[i];
-                    let found = false;
                     for (let i = 0; i < papsara.ImageInfo.length; i++) {
                         let vi = papsara.ImageInfo[i];
-                        if (pdpp.apsaraId == vi.ImageId) {
-                            pdpp.mediaEndpoint = vi.URL;
-                            pdpp.mediaUri = vi.URL;
-
-                            pdpp.mediaThumbEndpoint = vi.URL;
-                            pdpp.mediaThumbUri = vi.URL;
-                        }
                         if (pdpp.apsaraThumbId == vi.ImageId) {
                             pdpp.mediaThumbEndpoint = vi.URL;
                             pdpp.mediaThumbUri = vi.URL;
                         }
-                    }
+                        if (pdpp.apsaraId == vi.ImageId) {
+                          pdpp.mediaEndpoint = vi.URL;
+                          pdpp.mediaUri = vi.URL;
 
-                    if (valPost.has(pdpp.postID) == false) {
-                      resPic.push(pdpp);
-                      valPost.set(pdpp.postID, pdpp.postID);                            
+                          pdpp.mediaThumbEndpoint = vi.URL;
+                          pdpp.mediaThumbUri = vi.URL;
+
+                          if (valPost.has(pdpp.postID) == false) {
+                            resPic.push(pdpp);
+                            valPost.set(pdpp.postID, pdpp.postID);                            
+                          }                            
+                      }                        
                     }
                 }
             }
         }
 
+        if (ovid.length > 0) {
+          for (let i = 0; i < ovid.length; i++) {
+              let pdvv = ovid[i];
+              if (valPost.has(pdvv.postID) == false) {
+                resDiary.push(pdvv);
+              }
+          }
+        }        
+        if (osto.length > 0) {
+          for (let i = 0; i < osto.length; i++) {
+              let pdss = osto[i];
+              if (valPost.has(pdss.postID) == false) {
+                resStory.push(pdss);
+              }
+          }
+        }
+        if (odia.length > 0) {
+          for (let i = 0; i < odia.length; i++) {
+              let pddd = odia[i];
+              if (valPost.has(pddd.postID) == false) {
+                resDiary.push(pddd);
+              }              
+          }
+        }        
+        if (opic.length > 0) {
+          for (let i = 0; i < opic.length; i++) {
+              let pdpp = opic[i];
+              if (valPost.has(pdpp.postID) == false) {
+                resPic.push(pdpp);
+              }                            
+          }
+        }        
 
         let pld = new PostLandingData();
         pld.diary = resDiary;
