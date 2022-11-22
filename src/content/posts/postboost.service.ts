@@ -5398,6 +5398,8 @@ export class PostBoostService {
             ubs = await this.userService.findIn(xuser);
         }
 
+        let valPost = new Map();
+
         if (vapsara != undefined) {
             if (ovid.length > 0) {
                 for (let i = 0; i < ovid.length; i++) {
@@ -5406,8 +5408,12 @@ export class PostBoostService {
                         let vi = vapsara.VideoList[i];
                         if (pdvv.apsaraId == vi.VideoId) {
                             pdvv.mediaThumbEndpoint = vi.CoverURL;
-                            resVideo.push(pdvv);
                         }
+                    }
+
+                    if (valPost.has(pdvv.postID) == false) {
+                      resVideo.push(pdvv);
+                      valPost.set(pdvv.postID, pdvv.postID);
                     }
                 }
             }
@@ -5418,9 +5424,14 @@ export class PostBoostService {
                         let vi = vapsara.VideoList[i];
                         if (pdss.apsaraId == vi.VideoId) {
                             pdss.mediaThumbEndpoint = vi.CoverURL;
-                            resStory.push(pdss);                            
                         }
                     }
+
+                    if (valPost.has(pdss.postID) == false) {
+                      resStory.push(pdss);
+                      valPost.set(pdss.postID, pdss.postID);
+                    }
+
                 }
             }
             if (odia.length > 0) {
@@ -5430,9 +5441,13 @@ export class PostBoostService {
                         let vi = vapsara.VideoList[i];
                         if (pddd.apsaraId == vi.VideoId) {
                             pddd.mediaThumbEndpoint = vi.CoverURL;
-                            resDiary.push(pddd);                            
                         }
                     }
+                    if (valPost.has(pddd.postID) == false) {
+                      resDiary.push(pddd);
+                      valPost.set(pddd.postID, pddd.postID);                            
+                    }
+
                 }
             }
         }
@@ -5446,9 +5461,13 @@ export class PostBoostService {
                         if (pdvv.apsaraId == vi.ImageId) {
                             pdvv.mediaThumbEndpoint = vi.URL;
                             pdvv.mediaThumbUri = vi.URL;
-                            resVideo.push(pdvv);                            
                         }
                     }
+                    if (valPost.has(pdvv.postID) == false) {
+                      resVideo.push(pdvv);
+                      valPost.set(pdvv.postID, pdvv.postID);                            
+                    }
+
                 }
             }
             if (osto.length > 0) {
@@ -5462,8 +5481,12 @@ export class PostBoostService {
 
                             pdss.mediaThumbEndpoint = vi.URL;
                             pdss.mediaThumbUri = vi.URL;
-                            resStory.push(pdss);
                         }
+                    }
+
+                    if (valPost.has(pdss.postID) == false) {
+                      resStory.push(pdss);
+                      valPost.set(pdss.postID, pdss.postID);
                     }
                 }
             }
@@ -5478,7 +5501,10 @@ export class PostBoostService {
                             resDiary.push(pddd);
                         }
                     }
-
+                    if (valPost.has(pddd.postID) == false) {
+                      resDiary.push(pddd);
+                      valPost.set(pddd.postID, pddd.postID);                            
+                    }
                 }
             }
             if (opic.length > 0) {
@@ -5500,8 +5526,9 @@ export class PostBoostService {
                         }
                     }
 
-                    if (found) {
+                    if (valPost.has(pdpp.postID) == false) {
                       resPic.push(pdpp);
+                      valPost.set(pdpp.postID, pdpp.postID);                            
                     }
                 }
             }
