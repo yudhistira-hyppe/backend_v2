@@ -4615,7 +4615,7 @@ export class PostsService {
             reportedUser: {
               $ne: []
             },
-
+            active: true
 
           }
         });
@@ -4634,7 +4634,7 @@ export class PostsService {
             reportedUserHandle: {
               $ne: []
             },
-
+            active: true
 
           }
         });
@@ -6241,76 +6241,7 @@ export class PostsService {
     return query;
   }
 
-  async countReportStatusAll(startdate: string, enddate: string) {
-    try {
-      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
-      var dateend = currentdate.toISOString();
-    } catch (e) {
-      dateend = "";
-    }
-
-    var pipeline = [];
-
-    pipeline.push(
-      {
-        $addFields: {
-          createdAtReportLast: {
-            $last: "$reportedUser.createdAt"
-          },
-          statusLast: {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$reportedUserHandle", null]
-                }, {
-                  $eq: ["$reportedUserHandle", ""]
-                }, {
-                  $eq: ["$reportedUserHandle", []]
-                }]
-              },
-              then: "BARU",
-              else: {
-                $last: "$reportedUserHandle.status"
-              }
-            },
-
-          },
-
-        }
-      },
-      {
-        $match: {
-
-          statusLast: { $ne: null }, active: true,
-
-        }
-      },
-    );
-    if (startdate && startdate !== undefined) {
-
-      pipeline.push({ $match: { createdAtReportLast: { "$gte": startdate } } });
-
-    }
-    if (enddate && enddate !== undefined) {
-
-      pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
-
-    }
-
-    pipeline.push({
-      $group: {
-        _id: null,
-
-        myCount: {
-          $sum: 1
-        }
-      }
-    },);
-    let query = await this.PostsModel.aggregate(pipeline);
-
-    return query;
-  }
   async countReportStatus(startdate: string, enddate: string) {
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -6322,12 +6253,211 @@ export class PostsService {
 
     var pipeline = [];
 
-    pipeline.push(
-      {
-        $addFields: {
-          createdAtReportLast: {
-            $last: "$reportedUser.createdAt"
+    if (startdate === undefined && enddate === undefined) {
+      pipeline.push(
+        {
+          $addFields: {
+
+            statusLast: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$reportedUserHandle", null]
+                  }, {
+                    $eq: ["$reportedUserHandle", ""]
+                  }, {
+                    $eq: ["$reportedUserHandle", []]
+                  }]
+                },
+                then: "BARU",
+                else: {
+                  $last: "$reportedUserHandle.status"
+                }
+              },
+
+            },
+
+          }
+        },
+        {
+          $facet: {
+            "moderation": [
+              {
+                $addFields: {
+                  createdAtReportLast: "$createdAt",
+
+                  reportStatusLast: {
+                    $cond: {
+                      if: {
+                        $or: [{
+                          $eq: ["$statusLast", null]
+                        }, {
+                          $eq: ["$statusLast", ""]
+                        }, {
+                          $eq: ["$statusLast", []]
+                        }, {
+                          $eq: ["$statusLast", "BARU"]
+                        }]
+                      },
+                      then: "BARU",
+                      else: {
+                        $last: "$reportedUserHandle.status"
+                      }
+                    },
+
+                  },
+
+                }
+              },
+              {
+                $match: {
+
+
+                  active: true,
+                  contentModeration: true
+                }
+              },
+
+              {
+                $group: {
+                  _id: "$reportStatusLast",
+                  myCount: {
+                    $sum: 1
+                  },
+
+                }
+              },
+
+            ],
+
+            "report": [
+              {
+                $addFields: {
+                  createdAtReportLast: {
+                    $last: "$reportedUser.createdAt"
+                  },
+                  reportStatusLast: {
+                    $cond: {
+                      if: {
+                        $or: [{
+                          $eq: ["$statusLast", null]
+                        }, {
+                          $eq: ["$statusLast", ""]
+                        }, {
+                          $eq: ["$statusLast", []]
+                        }, {
+                          $eq: ["$statusLast", "BARU"]
+                        }]
+                      },
+                      then: "BARU",
+                      else: {
+                        $last: "$reportedUserHandle.status"
+                      }
+                    },
+
+                  },
+
+                }
+              },
+              {
+                $match: {
+
+                  reportedUser: {
+                    $ne: null
+                  },
+                  active: true,
+                  contentModeration: false
+                }
+              },
+              {
+                $match: {
+                  reportedUser: {
+                    $ne: []
+                  },
+                  active: true,
+                  contentModeration: false
+                }
+              },
+
+              {
+                $group: {
+                  _id: "$reportStatusLast",
+                  myCount: {
+                    $sum: 1
+                  },
+
+                }
+              },
+
+            ],
+            "appeal": [
+              {
+                $addFields: {
+                  createdAtReportLast: {
+                    $last: "$reportedUserHandle.createdAt"
+                  },
+                  reportStatusLast: {
+                    $cond: {
+                      if: {
+                        $or: [{
+                          $eq: ["$statusLast", null]
+                        }, {
+                          $eq: ["$statusLast", ""]
+                        }, {
+                          $eq: ["$statusLast", []]
+                        }, {
+                          $eq: ["$statusLast", "BARU"]
+                        }]
+                      },
+                      then: "BARU",
+                      else: {
+                        $last: "$reportedUserHandle.status"
+                      }
+                    },
+
+                  },
+
+                }
+              },
+              {
+                $match: {
+
+                  reportedUserHandle: {
+                    $ne: null
+                  },
+                  active: true,
+                  contentModeration: false
+                }
+              },
+              {
+                $match: {
+                  reportedUserHandle: {
+                    $ne: []
+                  },
+                  active: true,
+                  contentModeration: false
+                }
+              },
+
+              {
+                $group: {
+                  _id: "$reportStatusLast",
+                  myCount: {
+                    $sum: 1
+                  }
+                }
+              },
+
+            ]
           },
+
+        }
+      );
+    }
+    else if (startdate !== undefined && enddate !== undefined) {
+      pipeline.push({
+        $addFields: {
+
           statusLast: {
             $cond: {
               if: {
@@ -6349,40 +6479,191 @@ export class PostsService {
 
         }
       },
-      {
-        $match: {
+        {
+          $facet: {
+            "moderation": [
+              {
+                $addFields: {
+                  createdAtReportLast: "$createdAt",
 
-          statusLast: { $ne: null }, active: true,
+                  reportStatusLast: {
+                    $cond: {
+                      if: {
+                        $or: [{
+                          $eq: ["$statusLast", null]
+                        }, {
+                          $eq: ["$statusLast", ""]
+                        }, {
+                          $eq: ["$statusLast", []]
+                        }, {
+                          $eq: ["$statusLast", "BARU"]
+                        }]
+                      },
+                      then: "BARU",
+                      else: {
+                        $last: "$reportedUserHandle.status"
+                      }
+                    },
 
-        }
-      },
-    );
-    if (startdate && startdate !== undefined) {
+                  },
 
-      pipeline.push({ $match: { createdAtReportLast: { "$gte": startdate } } });
+                }
+              },
+              {
+                $match: {
 
+
+                  active: true,
+                  contentModeration: true
+                }
+              },
+              { $match: { createdAtReportLast: { "$gte": startdate, "$lte": dateend } } },
+              {
+                $group: {
+                  _id: "$reportStatusLast",
+                  myCount: {
+                    $sum: 1
+                  },
+
+                }
+              },
+
+            ],
+
+            "report": [
+              {
+                $addFields: {
+                  createdAtReportLast: {
+                    $last: "$reportedUser.createdAt"
+                  },
+                  reportStatusLast: {
+                    $cond: {
+                      if: {
+                        $or: [{
+                          $eq: ["$statusLast", null]
+                        }, {
+                          $eq: ["$statusLast", ""]
+                        }, {
+                          $eq: ["$statusLast", []]
+                        }, {
+                          $eq: ["$statusLast", "BARU"]
+                        }]
+                      },
+                      then: "BARU",
+                      else: {
+                        $last: "$reportedUserHandle.status"
+                      }
+                    },
+
+                  },
+
+                }
+              },
+              {
+                $match: {
+
+                  reportedUser: {
+                    $ne: null
+                  },
+                  active: true,
+                  contentModeration: false
+                }
+              },
+              {
+                $match: {
+                  reportedUser: {
+                    $ne: []
+                  },
+                  active: true,
+                  contentModeration: false
+                }
+              },
+              { $match: { createdAtReportLast: { "$gte": startdate, "$lte": dateend } } },
+              {
+                $group: {
+                  _id: "$reportStatusLast",
+                  myCount: {
+                    $sum: 1
+                  },
+
+                }
+              },
+
+            ],
+            "appeal": [
+              {
+                $addFields: {
+                  createdAtReportLast: {
+                    $last: "$reportedUserHandle.createdAt"
+                  },
+                  reportStatusLast: {
+                    $cond: {
+                      if: {
+                        $or: [{
+                          $eq: ["$statusLast", null]
+                        }, {
+                          $eq: ["$statusLast", ""]
+                        }, {
+                          $eq: ["$statusLast", []]
+                        }, {
+                          $eq: ["$statusLast", "BARU"]
+                        }]
+                      },
+                      then: "BARU",
+                      else: {
+                        $last: "$reportedUserHandle.status"
+                      }
+                    },
+
+                  },
+
+                }
+              },
+              {
+                $match: {
+
+                  reportedUserHandle: {
+                    $ne: null
+                  },
+                  active: true,
+                  contentModeration: false
+                }
+              },
+              {
+                $match: {
+                  reportedUserHandle: {
+                    $ne: []
+                  },
+                  active: true,
+                  contentModeration: false
+                }
+              },
+              { $match: { createdAtReportLast: { "$gte": startdate, "$lte": dateend } } },
+              {
+                $group: {
+                  _id: "$reportStatusLast",
+                  myCount: {
+                    $sum: 1
+                  }
+                }
+              },
+
+            ]
+          },
+
+        });
     }
-    if (enddate && enddate !== undefined) {
 
-      pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
-
-    }
-
-    pipeline.push({
-      $group: {
-        _id: "$statusLast",
-
-        myCount: {
-          $sum: 1
-        }
-      }
-    },);
     let query = await this.PostsModel.aggregate(pipeline);
 
     return query;
   }
 
   async testLandingpage() {
+
+    let today = new Date();
+    // today.setHours(today.getHours() + 7);
+    // console.log(today);
     let query = await this.PostsModel.aggregate([
       {
         $unwind: {
@@ -6390,13 +6671,11 @@ export class PostsService {
           preserveNullAndEmptyArrays: true
         }
       },
-      //{
-      //    $set: {
-      //        "testDate": {
-      //            $add: [new Date(), 25200000]
-      //        }
-      //    }
-      //},
+      // {
+      //   $set: {
+      //     "testDate": today
+      //   }
+      // },
 
       {
         $unwind: {
@@ -6437,7 +6716,7 @@ export class PostsService {
                   {
                     $dateToString: {
                       format: "%Y-%m-%d",
-                      date: "$testDate"
+                      date: today
                     }
                   },
                   "T",
@@ -6966,16 +7245,12 @@ export class PostsService {
                       },
                       {
                         "boosted.boostSession.start": {
-                          $lte: {
-                            $add: [new Date(), 25200000]
-                          }
+                          $lte: today
                         }
                       },
                       {
                         "boosted.boostSession.end": {
-                          $gt: {
-                            $add: [new Date(), 25200000]
-                          }
+                          $gt: today
                         }
                         //$expr: {
                         //    $gt: ["$boosted.boostSession.end", "$testDate", ]
@@ -6983,16 +7258,12 @@ export class PostsService {
                       },
                       {
                         "timeStart": {
-                          $lte: {
-                            $add: [new Date(), 25200000]
-                          }
+                          $lte: today
                         }
                       },
                       {
                         "timeEnd": {
-                          $gte: {
-                            $add: [new Date(), 25200000]
-                          }
+                          $gte: today
                         }
                       },
                       {
@@ -7026,7 +7297,7 @@ export class PostsService {
                               },
                               {
                                 "boosted.boostViewer.timeEnd": {
-                                  $gt: "$testDate"
+                                  $gt: today
                                 }
                               },
 
@@ -7465,16 +7736,12 @@ export class PostsService {
                       },
                       {
                         "boosted.boostSession.start": {
-                          $lte: {
-                            $add: [new Date(), 25200000]
-                          }
+                          $lte: today
                         }
                       },
                       {
                         "boosted.boostSession.end": {
-                          $gt: {
-                            $add: [new Date(), 25200000]
-                          }
+                          $gt: today
                         }
                         //$expr: {
                         //    $gt: ["$boosted.boostSession.end", "$testDate", ]
@@ -7482,16 +7749,12 @@ export class PostsService {
                       },
                       {
                         "timeStart": {
-                          $lte: {
-                            $add: [new Date(), 25200000]
-                          }
+                          $lte: today
                         }
                       },
                       {
                         "timeEnd": {
-                          $gte: {
-                            $add: [new Date(), 25200000]
-                          }
+                          $gte: today
                         }
                       },
                       {
@@ -7525,7 +7788,7 @@ export class PostsService {
                               },
                               {
                                 "boosted.boostViewer.timeEnd": {
-                                  $gt: "$testDate"
+                                  $gt: today
                                 }
                               },
 
@@ -7958,9 +8221,7 @@ export class PostsService {
                       },
                       {
                         "boosted.boostSession.end": {
-                          $gt: {
-                            $add: [new Date(), 25200000]
-                          }
+                          $gt: today
                         }
                         //$expr: {
                         //    $gt: ["$boosted.boostSession.end", "$testDate", ]
@@ -7968,16 +8229,12 @@ export class PostsService {
                       },
                       {
                         "timeStart": {
-                          $lte: {
-                            $add: [new Date(), 25200000]
-                          }
+                          $lte: today
                         }
                       },
                       {
                         "timeEnd": {
-                          $gte: {
-                            $add: [new Date(), 25200000]
-                          }
+                          $gte: today
                         }
                       },
                       {
@@ -8011,7 +8268,7 @@ export class PostsService {
                               },
                               {
                                 "boosted.boostViewer.timeEnd": {
-                                  $gt: "$testDate"
+                                  $gt: today
                                 }
                               },
 

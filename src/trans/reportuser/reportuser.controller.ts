@@ -2228,92 +2228,92 @@ export class ReportuserController {
         enddate = request_json["enddate"];
 
         // Content
-        var datacountreport = null;
+        var datacontentreport = null;
         var datacountstatus = null;
         var objcoun = {};
         var dataSum = [];
         var totalAllreport = null;
+        var reportContent = [];
+        var appealContent = [];
+        var moderationContent = [];
+        var lengreportContent = null;
+        var lengappealContent = null;
+        var lengmoderationContent = null;
+        var sumreportContent = null;
+        var sumappealContent = null;
+        var summoderationContent = null;
+        var objreport = {}
         try {
 
-            datacountreport = await this.postsService.countReportStatusAll(startdate, enddate);
-            totalAllreport = datacountreport[0].myCount;
+            datacontentreport = await this.postsService.countReportStatus(startdate, enddate);
+            reportContent = datacontentreport[0].report;
+            appealContent = datacontentreport[0].appeal;
+            moderationContent = datacontentreport[0].moderation;
+
         } catch (e) {
-            datacountreport = null;
-            totalAllreport = 0;
+            datacontentreport = null;
+            reportContent = [];
+            appealContent = [];
+            moderationContent = [];
+        }
+
+        try {
+            lengreportContent = reportContent.length;
+        } catch (e) {
+            lengreportContent = 0;
         }
         try {
-
-            datacountstatus = await this.postsService.countReportStatus(startdate, enddate);
+            lengappealContent = appealContent.length;
         } catch (e) {
-            datacountstatus = null;
+            lengappealContent = 0;
         }
 
-        for (let i = 0; i < datacountstatus.length; i++) {
-            let mycount = datacountstatus[i].myCount;
-            let status = datacountstatus[i]._id;
+        try {
+            lengmoderationContent = moderationContent.length;
+        } catch (e) {
+            lengmoderationContent = 0;
+        }
 
-            let persen = mycount * 100 / totalAllreport;
-            objcoun = {
-                status: status,
-                count: mycount,
-                persen: persen.toFixed(2)
+
+
+        if (lengreportContent > 0) {
+
+            for (let i = 0; i < lengreportContent; i++) {
+                sumreportContent += reportContent[i].myCount;
+
             }
-            dataSum.push(objcoun);
+
+        } else {
+            sumreportContent = 0;
         }
 
-        var content = [];
-        var objcontent = {
+        if (lengappealContent > 0) {
 
-            totalReport: totalAllreport,
-            dataSum: dataSum
-        };
-        content.push(objcontent);
+            for (let i = 0; i < lengappealContent; i++) {
+                sumappealContent += appealContent[i].myCount;
 
-        // Ads
-
-        var datacountreportads = null;
-        var datacountstatusads = null;
-        var objcounads = {};
-        var dataSumads = [];
-        var totalAllreportads = null;
-        try {
-
-            datacountreportads = await this.adsService.countReportStatusAll(startdate, enddate);
-            totalAllreportads = datacountreportads[0].myCount;
-        } catch (e) {
-            datacountreportads = null;
-            totalAllreportads = 0;
-        }
-        try {
-
-            datacountstatusads = await this.adsService.countReportStatus(startdate, enddate);
-        } catch (e) {
-            datacountstatusads = null;
-        }
-
-        for (let i = 0; i < datacountstatusads.length; i++) {
-            let mycount = datacountstatusads[i].myCount;
-            let status = datacountstatusads[i]._id;
-
-            let persen = mycount * 100 / totalAllreportads;
-            objcounads = {
-                status: status,
-                count: mycount,
-                persen: persen.toFixed(2)
             }
-            dataSumads.push(objcounads);
+        } else {
+            sumappealContent = 0;
         }
 
-        var ads = [];
-        var objads = {
+        if (lengmoderationContent > 0) {
 
-            totalReport: totalAllreportads,
-            dataSum: dataSumads
-        };
-        ads.push(objads);
+            for (let i = 0; i < lengmoderationContent; i++) {
+                summoderationContent += moderationContent[i].myCount;
+
+            }
+
+        } else {
+            summoderationContent = 0;
+        }
+
+        var content = null;
 
 
-        return { response_code: 202, content, ads, messages };
+
+
+        return { response_code: 202, reportContent, appealContent, moderationContent, messages };
 
 
 
