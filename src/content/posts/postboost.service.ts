@@ -2774,6 +2774,10 @@ export class PostBoostService {
             }
 
             if (pd.isApsara == true) {
+              if (pd.apsaraId == '519d4fa97d83458b95f718d805c3e8d1') {
+                console.log(obj);
+              }
+
                 if (pd.apsaraId != undefined) {
                     if (obj.mediaType == 'video') {
                         xvids.push(String(pd.apsaraId));
@@ -4271,7 +4275,7 @@ export class PostBoostService {
                           "mediaUri": 1,
                           "mediaThumbEndpoint": 1,
                           "mediaThumbUri": 1,
-    
+                          "mediaType": 1,
                         }
                       }
                     ],
