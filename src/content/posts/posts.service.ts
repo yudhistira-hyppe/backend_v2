@@ -4606,24 +4606,38 @@ export class PostsService {
           reportedUser: {
             $ne: null
           },
-          reportReasonIdLast: {
-            $ne: null
-          },
+
           active: true
         }
-      },);
+      },
+        {
+          $match: {
+            reportedUser: {
+              $ne: []
+            },
+
+
+          }
+        });
     } else if (jenis === "appeal") {
       pipeline.push({
         $match: {
           reportedUserHandle: {
             $ne: null
           },
-          reasonLastAppeal: {
-            $ne: null
-          },
+
           active: true
         }
-      },);
+      },
+        {
+          $match: {
+            reportedUserHandle: {
+              $ne: []
+            },
+
+
+          }
+        });
     }
 
     if (keys && keys !== undefined) {
@@ -6169,6 +6183,25 @@ export class PostsService {
   }
 
 
+  async countPostAppeal() {
+    let query = await this.PostsModel.aggregate([
+      {
+        $match: {
+
+          'reportedUserHandle': { $ne: null }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          totalpost: {
+            $sum: 1
+          }
+        }
+      }
+    ]);
+    return query;
+  }
 
   async countReason(postID: string) {
     let query = await this.PostsModel.aggregate([
@@ -6207,6 +6240,2221 @@ export class PostsService {
     ]);
     return query;
   }
+
+  async countReportStatusAll(startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+
+    var pipeline = [];
+
+    pipeline.push(
+      {
+        $addFields: {
+          createdAtReportLast: {
+            $last: "$reportedUser.createdAt"
+          },
+          statusLast: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$reportedUserHandle", null]
+                }, {
+                  $eq: ["$reportedUserHandle", ""]
+                }, {
+                  $eq: ["$reportedUserHandle", []]
+                }]
+              },
+              then: "BARU",
+              else: {
+                $last: "$reportedUserHandle.status"
+              }
+            },
+
+          },
+
+        }
+      },
+      {
+        $match: {
+
+          statusLast: { $ne: null }, active: true,
+
+        }
+      },
+    );
+    if (startdate && startdate !== undefined) {
+
+      pipeline.push({ $match: { createdAtReportLast: { "$gte": startdate } } });
+
+    }
+    if (enddate && enddate !== undefined) {
+
+      pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
+
+    }
+
+    pipeline.push({
+      $group: {
+        _id: null,
+
+        myCount: {
+          $sum: 1
+        }
+      }
+    },);
+    let query = await this.PostsModel.aggregate(pipeline);
+
+    return query;
+  }
+  async countReportStatus(startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+
+    var pipeline = [];
+
+    pipeline.push(
+      {
+        $addFields: {
+          createdAtReportLast: {
+            $last: "$reportedUser.createdAt"
+          },
+          statusLast: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$reportedUserHandle", null]
+                }, {
+                  $eq: ["$reportedUserHandle", ""]
+                }, {
+                  $eq: ["$reportedUserHandle", []]
+                }]
+              },
+              then: "BARU",
+              else: {
+                $last: "$reportedUserHandle.status"
+              }
+            },
+
+          },
+
+        }
+      },
+      {
+        $match: {
+
+          statusLast: { $ne: null }, active: true,
+
+        }
+      },
+    );
+    if (startdate && startdate !== undefined) {
+
+      pipeline.push({ $match: { createdAtReportLast: { "$gte": startdate } } });
+
+    }
+    if (enddate && enddate !== undefined) {
+
+      pipeline.push({ $match: { createdAtReportLast: { "$lte": dateend } } });
+
+    }
+
+    pipeline.push({
+      $group: {
+        _id: "$statusLast",
+
+        myCount: {
+          $sum: 1
+        }
+      }
+    },);
+    let query = await this.PostsModel.aggregate(pipeline);
+
+    return query;
+  }
+
+  async testLandingpage() {
+    let query = await this.PostsModel.aggregate([
+      {
+        $unwind: {
+          path: "$boosted",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      //{
+      //    $set: {
+      //        "testDate": {
+      //            $add: [new Date(), 25200000]
+      //        }
+      //    }
+      //},
+
+      {
+        $unwind: {
+          path: "$boosted.boostSession",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $set:
+        {
+
+          "timeStart": {
+            $dateFromString: {
+              dateString:
+              {
+                $concat: [
+                  {
+                    $dateToString: {
+                      format: "%Y-%m-%d",
+                      date: "$testDate"
+                    }
+                  },
+                  "T",
+                  "$boosted.boostSession.timeStart"
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        $set: {
+          "timeEnd": {
+            $dateFromString: {
+              dateString:
+              {
+                $concat: [
+                  {
+                    $dateToString: {
+                      format: "%Y-%m-%d",
+                      date: "$testDate"
+                    }
+                  },
+                  "T",
+                  "$boosted.boostSession.timeEnd"
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        $facet:
+        {
+          "pict": [
+            {
+              $sort: {
+                "timeStart": - 1,
+                "isBoost": - 1,
+                "createdAt": - 1
+              }
+            },
+            {
+              $match:
+              {
+                $or: [
+                  {
+                    $and: [
+
+                      {
+                        "visibility": "PUBLIC"
+                      },
+                      {
+                        "active": true
+                      },
+                      {
+                        "postType": "pict"
+                      },
+                      {
+                        "boosted.boostSession.start": {
+                          $lte: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                      },
+                      {
+                        "boosted.boostSession.end": {
+                          $gt: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                        //$expr: {
+                        //    $gt: ["$boosted.boostSession.end", "$testDate", ]
+                        //}
+                      },
+                      {
+                        "timeStart": {
+                          $lte: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                      },
+                      {
+                        "timeEnd": {
+                          $gte: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                      },
+                      {
+
+                        "timeStart": {
+                          $ne: null
+                        }
+                      },
+                      {
+
+                        "timeEnd": {
+                          $ne: null
+                        }
+                      },
+                      {
+                        "reportedUser.email": {
+                          $not: {
+                            $regex: "1@1.com"
+                          }
+                        }
+                      },
+                      {
+                        $or: [
+                          {
+                            $and: [
+                              {
+                                "boosted.boostViewer.email": "1@1.com"
+                              },
+                              {
+                                "boosted.boostViewer.isLast": true
+                              },
+                              {
+                                "boosted.boostViewer.timeEnd": {
+                                  $gt: "$testDate"
+                                }
+                              },
+
+                            ]
+                          },
+                          {
+                            $and: [
+                              {
+                                "boosted.boostViewer.email": {
+                                  $ne: "1@1.com"
+                                }
+                              },
+
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    $and: [
+                      {
+                        $or: [
+                          {
+                            "reportedStatus": "ALL"
+                          },
+                          {
+                            "reportedStatus": null
+                          },
+
+                        ]
+                      },
+                      {
+                        "visibility": "PUBLIC"
+                      },
+                      {
+                        "active": true
+                      },
+                      {
+                        "postType": "pict"
+                      },
+
+                    ]
+                  },
+
+                ]
+              }
+            },
+            {
+              "$lookup": {
+                from: "mediapicts",
+                as: "media",
+                let: {
+                  localID: '$postID'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$postID', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+
+                      "apsara": 1,
+                      "apsaraId": 1,
+                      "apsaraThumbId": 1,
+                      "mediaEndpoint": 1,
+                      "mediaUri": 1,
+                      "mediaThumbEndpoint": 1,
+                      "mediaThumbUri": 1,
+
+                    }
+                  }
+                ],
+
+              },
+
+            },
+            {
+              "$lookup": {
+                from: "interests_repo",
+                as: "cats",
+                let: {
+                  localID: '$category.id'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$id', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "interestName": 1,
+                      "langIso": 1,
+                      "icon": 1,
+                      "createdAt": 1,
+                      "updatedAt": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "insights",
+                as: "insight",
+                let: {
+                  localID: '$email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "followers": 1,
+                      "followings": 1,
+                      "unfollows": 1,
+                      "likes": 1,
+                      "views": 1,
+                      "comments": 1,
+                      "posts": 1,
+                      "shares": 1,
+                      "reactions": 1,
+                      "views_profile": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userauths",
+                as: "userTag",
+                let: {
+                  localID: '$tagPeople.$id'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$_id', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+
+                      "username": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userauths",
+                as: "username",
+                let: {
+                  localID: '$email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+
+                      "username": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userbasics",
+                as: "userBasic",
+                let: {
+                  localID: '$email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "fullName": 1,
+                      "profilePict": 1,
+                      "isCelebrity": 1,
+                      "isIdVerified": 1,
+                      "isPrivate": 1,
+
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              $unwind: {
+                path: "$userBasic",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              "$lookup": {
+                from: "mediaprofilepicts",
+                as: "avatar",
+                let: {
+                  localID: '$userBasic.profilePict.$id'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$mediaID', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "mediaBasePath": 1,
+                      "mediaUri": 1,
+                      "originalName": 1,
+                      "fsSourceUri": 1,
+                      "fsSourceName": 1,
+                      "fsTargetUri": 1,
+                      "mediaType": 1,
+
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              $skip: 0
+            },
+            {
+              $limit: 15
+            },
+            {
+              $unwind: {
+                path: "$media",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              $unwind: {
+                path: "$username",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              "$lookup": {
+                from: "contentevents",
+                as: "isLike",
+                let: {
+                  localID: '$postID'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$localID']
+                          }
+                        },
+                        {
+                          "email": "randyaji.ra@gmail.com"
+                        },
+                        {
+                          "eventType": "LIKE"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    $project: {
+                      "email": 1,
+
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              $project: {
+                "isLike": "$isLike",
+                "tagPeople": "$userTag",
+                "mediaType": "$media.mediaType",
+                "email": 1,
+                "postType": 1,
+                "description": 1,
+                "active": 1,
+                "createdAt": 1,
+                "updatedAt": 1,
+                "expiration": 1,
+                "visibility": 1,
+                "location": 1,
+                "tags": 1,
+                "allowComments": 1,
+                "isSafe": 1,
+                "isOwned": 1,
+                "certified": 1,
+                "saleAmount": 1,
+                "saleLike": 1,
+                "saleView": 1,
+                "likes": 1,
+                "views": 1,
+                "shares": 1,
+                "userProfile": 1,
+                "contentMedias": 1,
+                "category": 1,
+                "tagDescription": 1,
+                "metadata": 1,
+                "boostDate": 1,
+                "boostInterval": 1,
+                "boostSession": 1,
+                "isBoost": 1,
+                "boostViewer": 1,
+                "boostCount": 1,
+                "contentModeration": 1,
+                "reportedStatus": 1,
+                "reportedUserCount": 1,
+                "contentModerationResponse": 1,
+                "reportedUser": 1,
+                "timeStart": 1,
+                "timeEnd": 1,
+                "apsara": "$media.apsara",
+                "apsaraId": "$media.apsaraId",
+                "apsaraThumbId": "$media.apsaraThumbId",
+                "mediaEndpoint": "$media.mediaEndpoint",
+                "mediaUri": "$media.mediaUri",
+                "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
+                "mediaThumbUri": "$media.mediaThumbUri",
+                "cats": 1,
+                "insight": 1,
+                "fullName": "$userBasic.fullName",
+                "username": "$username.username",
+                "avatar": 1,
+                "privacy": [{
+                  "isCelebrity": "$userBasic.isCelebrity"
+                }, {
+                  "isIdVerified": "$userBasic.isIdVerified"
+                }, {
+                  "isPrivate": "$userBasic.isPrivate"
+                }]
+              }
+            }
+          ],
+          //video 
+
+          "video": [
+            {
+              $sort: {
+
+                "timeStart": - 1,
+                "isBoost": - 1,
+                "createdAt": - 1,
+
+              }
+            },
+            {
+              $match:
+              {
+                $or: [
+                  {
+                    $and: [
+
+                      {
+                        "visibility": "PUBLIC"
+                      },
+                      {
+                        "active": true
+                      },
+                      {
+                        "postType": "vid"
+                      },
+                      {
+                        "boosted.boostSession.start": {
+                          $lte: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                      },
+                      {
+                        "boosted.boostSession.end": {
+                          $gt: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                        //$expr: {
+                        //    $gt: ["$boosted.boostSession.end", "$testDate", ]
+                        //}
+                      },
+                      {
+                        "timeStart": {
+                          $lte: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                      },
+                      {
+                        "timeEnd": {
+                          $gte: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                      },
+                      {
+
+                        "timeStart": {
+                          $ne: null
+                        }
+                      },
+                      {
+
+                        "timeEnd": {
+                          $ne: null
+                        }
+                      },
+                      {
+                        "reportedUser.email": {
+                          $not: {
+                            $regex: "1@1.com"
+                          }
+                        }
+                      },
+                      {
+                        $or: [
+                          {
+                            $and: [
+                              {
+                                "boosted.boostViewer.email": "1@1.com"
+                              },
+                              {
+                                "boosted.boostViewer.isLast": true
+                              },
+                              {
+                                "boosted.boostViewer.timeEnd": {
+                                  $gt: "$testDate"
+                                }
+                              },
+
+                            ]
+                          },
+                          {
+                            $and: [
+                              {
+                                "boosted.boostViewer.email": {
+                                  $ne: "1@1.com"
+                                }
+                              },
+
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    $and: [
+                      {
+                        $or: [
+                          {
+                            "reportedStatus": "ALL"
+                          },
+                          {
+                            "reportedStatus": null
+                          },
+
+                        ]
+                      },
+                      {
+                        "visibility": "PUBLIC"
+                      },
+                      {
+                        "active": true
+                      },
+                      {
+                        "postType": "vid"
+                      },
+
+                    ]
+                  },
+
+                ]
+              }
+            },
+            {
+              "$lookup": {
+                from: "mediavideos",
+                as: "media",
+                let: {
+                  localID: '$postID'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$postID', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+
+                      "apsara": 1,
+                      "apsaraId": 1,
+                      "apsaraThumbId": 1,
+                      "mediaEndpoint": 1,
+                      "mediaUri": 1,
+                      "mediaThumbEndpoint": 1,
+                      "mediaThumbUri": 1,
+
+                    }
+                  }
+                ],
+
+              },
+
+            },
+            {
+              "$lookup": {
+                from: "interests_repo",
+                as: "cats",
+                let: {
+                  localID: '$category.id'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$id', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "interestName": 1,
+                      "langIso": 1,
+                      "icon": 1,
+                      "createdAt": 1,
+                      "updatedAt": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "insights",
+                as: "insight",
+                let: {
+                  localID: '$email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "followers": 1,
+                      "followings": 1,
+                      "unfollows": 1,
+                      "likes": 1,
+                      "views": 1,
+                      "comments": 1,
+                      "posts": 1,
+                      "shares": 1,
+                      "reactions": 1,
+                      "views_profile": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userauths",
+                as: "userTag",
+                let: {
+                  localID: '$tagPeople.$id'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$_id', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+
+                      "username": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userauths",
+                as: "username",
+                let: {
+                  localID: '$email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+
+                      "username": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userbasics",
+                as: "userBasic",
+                let: {
+                  localID: '$email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "fullName": 1,
+                      "profilePict": 1,
+                      "isCelebrity": 1,
+                      "isIdVerified": 1,
+                      "isPrivate": 1,
+
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              $unwind: {
+                path: "$userBasic",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              "$lookup": {
+                from: "mediaprofilepicts",
+                as: "avatar",
+                let: {
+                  localID: '$userBasic.profilePict.$id'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$mediaID', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "mediaBasePath": 1,
+                      "mediaUri": 1,
+                      "originalName": 1,
+                      "fsSourceUri": 1,
+                      "fsSourceName": 1,
+                      "fsTargetUri": 1,
+                      "mediaType": 1,
+
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              $skip: 0
+            },
+            {
+              $limit: 15
+            },
+            {
+              $unwind: {
+                path: "$media",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              $unwind: {
+                path: "$username",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              "$lookup": {
+                from: "contentevents",
+                as: "isLike",
+                let: {
+                  localID: '$postID'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $and: [
+                        {
+                          $or: [
+                            {
+                              "reportedStatus": "ALL"
+                            },
+                            {
+                              "reportedStatus": null
+                            },
+
+                          ]
+                        },
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$localID']
+                          }
+                        },
+                        {
+                          "email": "randyaji.ra@gmail.com"
+                        },
+                        {
+                          "eventType": "LIKE"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    $project: {
+                      "email": 1,
+
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              $project: {
+                "testDate": 1,
+                "testing": "$boosted.boostSession.end",
+                "isLike": "$isLike",
+                "tagPeople": "$userTag",
+                "mediaType": "$media.mediaType",
+                "email": 1,
+                "postType": 1,
+                "description": 1,
+                "active": 1,
+                "createdAt": 1,
+                "updatedAt": 1,
+                "expiration": 1,
+                "visibility": 1,
+                "location": 1,
+                "tags": 1,
+                "allowComments": 1,
+                "isSafe": 1,
+                "isOwned": 1,
+                "certified": 1,
+                "saleAmount": 1,
+                "saleLike": 1,
+                "saleView": 1,
+                "likes": 1,
+                "views": 1,
+                "shares": 1,
+                "userProfile": 1,
+                "contentMedias": 1,
+                "category": 1,
+                "tagDescription": 1,
+                "metadata": 1,
+                "boostDate": 1,
+                "boostInterval": 1,
+                "boostSession": 1,
+                "isBoost": 1,
+                "boostViewer": 1,
+                "boostCount": 1,
+                "contentModeration": 1,
+                "reportedStatus": 1,
+                "reportedUserCount": 1,
+                "contentModerationResponse": 1,
+                "reportedUser": 1,
+                "timeStart": 1,
+                "timeEnd": 1,
+                "apsara": "$media.apsara",
+                "apsaraId": "$media.apsaraId",
+                "apsaraThumbId": "$media.apsaraThumbId",
+                "mediaEndpoint": "$media.mediaEndpoint",
+                "mediaUri": "$media.mediaUri",
+                "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
+                "mediaThumbUri": "$media.mediaThumbUri",
+                "cats": 1,
+                "insight": 1,
+                "fullName": "$userBasic.fullName",
+                "username": "$username.username",
+                "avatar": 1,
+                "privacy": [{
+                  "isCelebrity": "$userBasic.isCelebrity"
+                }, {
+                  "isIdVerified": "$userBasic.isIdVerified"
+                }, {
+                  "isPrivate": "$userBasic.isPrivate"
+                }]
+              }
+            }
+          ],
+          //diary  
+
+          "diary": [
+            {
+              $sort: {
+                "isBoost": - 1,
+                "createdAt": - 1
+              }
+            },
+            {
+              $match:
+              {
+                $or: [
+                  {
+                    $and: [
+
+                      {
+                        "visibility": "PUBLIC"
+                      },
+                      {
+                        "active": true
+                      },
+                      {
+                        "postType": "diary"
+                      },
+                      {
+                        "boosted.boostSession.start": {
+                          $lte: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                      },
+                      {
+                        "boosted.boostSession.end": {
+                          $gt: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                        //$expr: {
+                        //    $gt: ["$boosted.boostSession.end", "$testDate", ]
+                        //}
+                      },
+                      {
+                        "timeStart": {
+                          $lte: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                      },
+                      {
+                        "timeEnd": {
+                          $gte: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                      },
+                      {
+
+                        "timeStart": {
+                          $ne: null
+                        }
+                      },
+                      {
+
+                        "timeEnd": {
+                          $ne: null
+                        }
+                      },
+                      {
+                        "reportedUser.email": {
+                          $not: {
+                            $regex: "1@1.com"
+                          }
+                        }
+                      },
+                      {
+                        $or: [
+                          {
+                            $and: [
+                              {
+                                "boosted.boostViewer.email": "1@1.com"
+                              },
+                              {
+                                "boosted.boostViewer.isLast": true
+                              },
+                              {
+                                "boosted.boostViewer.timeEnd": {
+                                  $gt: "$testDate"
+                                }
+                              },
+
+                            ]
+                          },
+                          {
+                            $and: [
+                              {
+                                "boosted.boostViewer.email": {
+                                  $ne: "1@1.com"
+                                }
+                              },
+
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    $and: [
+                      {
+                        $or: [
+                          {
+                            "reportedStatus": "ALL"
+                          },
+                          {
+                            "reportedStatus": null
+                          },
+
+                        ]
+                      },
+                      {
+                        "visibility": "PUBLIC"
+                      },
+                      {
+                        "active": true
+                      },
+                      {
+                        "postType": "diary"
+                      },
+
+                    ]
+                  },
+
+                ]
+              }
+            },
+            {
+              "$lookup": {
+                from: "mediadiaries",
+                as: "media",
+                let: {
+                  localID: '$postID'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$postID', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+
+                      "apsara": 1,
+                      "apsaraId": 1,
+                      "apsaraThumbId": 1,
+                      "mediaEndpoint": 1,
+                      "mediaUri": 1,
+                      "mediaThumbEndpoint": 1,
+                      "mediaThumbUri": 1,
+
+                    }
+                  }
+                ],
+
+              },
+
+            },
+            {
+              "$lookup": {
+                from: "interests_repo",
+                as: "cats",
+                let: {
+                  localID: '$category.id'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$id', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "interestName": 1,
+                      "langIso": 1,
+                      "icon": 1,
+                      "createdAt": 1,
+                      "updatedAt": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "insights",
+                as: "insight",
+                let: {
+                  localID: '$email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "followers": 1,
+                      "followings": 1,
+                      "unfollows": 1,
+                      "likes": 1,
+                      "views": 1,
+                      "comments": 1,
+                      "posts": 1,
+                      "shares": 1,
+                      "reactions": 1,
+                      "views_profile": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userauths",
+                as: "userTag",
+                let: {
+                  localID: '$tagPeople.$id'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$_id', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+
+                      "username": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userauths",
+                as: "username",
+                let: {
+                  localID: '$email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+
+                      "username": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userbasics",
+                as: "userBasic",
+                let: {
+                  localID: '$email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "fullName": 1,
+                      "profilePict": 1,
+                      "isCelebrity": 1,
+                      "isIdVerified": 1,
+                      "isPrivate": 1,
+
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              $unwind: {
+                path: "$userBasic",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              "$lookup": {
+                from: "mediaprofilepicts",
+                as: "avatar",
+                let: {
+                  localID: '$userBasic.profilePict.$id'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$mediaID', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "mediaBasePath": 1,
+                      "mediaUri": 1,
+                      "originalName": 1,
+                      "fsSourceUri": 1,
+                      "fsSourceName": 1,
+                      "fsTargetUri": 1,
+                      "mediaType": 1,
+
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              $skip: 0
+            },
+            {
+              $limit: 15
+            },
+            {
+              $unwind: {
+                path: "$media",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              $unwind: {
+                path: "$username",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              "$lookup": {
+                from: "contentevents",
+                as: "isLike",
+                let: {
+                  localID: '$postID'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$localID']
+                          }
+                        },
+                        {
+                          "email": "randyaji.ra@gmail.com"
+                        },
+                        {
+                          "eventType": "LIKE"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    $project: {
+                      "email": 1,
+
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              $project: {
+                "isLike": "$isLike",
+                "tagPeople": "$userTag",
+                "mediaType": "$media.mediaType",
+                "email": 1,
+                "postType": 1,
+                "description": 1,
+                "active": 1,
+                "createdAt": 1,
+                "updatedAt": 1,
+                "expiration": 1,
+                "visibility": 1,
+                "location": 1,
+                "tags": 1,
+                "allowComments": 1,
+                "isSafe": 1,
+                "isOwned": 1,
+                "certified": 1,
+                "saleAmount": 1,
+                "saleLike": 1,
+                "saleView": 1,
+                "likes": 1,
+                "views": 1,
+                "shares": 1,
+                "userProfile": 1,
+                "contentMedias": 1,
+                "category": 1,
+                "tagDescription": 1,
+                "metadata": 1,
+                "boostDate": 1,
+                "boostInterval": 1,
+                "boostSession": 1,
+                "isBoost": 1,
+                "boostViewer": 1,
+                "boostCount": 1,
+                "contentModeration": 1,
+                "reportedStatus": 1,
+                "reportedUserCount": 1,
+                "contentModerationResponse": 1,
+                "reportedUser": 1,
+                "timeStart": 1,
+                "timeEnd": 1,
+                "apsara": "$media.apsara",
+                "apsaraId": "$media.apsaraId",
+                "apsaraThumbId": "$media.apsaraThumbId",
+                "mediaEndpoint": "$media.mediaEndpoint",
+                "mediaUri": "$media.mediaUri",
+                "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
+                "mediaThumbUri": "$media.mediaThumbUri",
+                "cats": 1,
+                "insight": 1,
+                "fullName": "$userBasic.fullName",
+                "username": "$username.username",
+                "avatar": 1,
+                "privacy": [{
+                  "isCelebrity": "$userBasic.isCelebrity"
+                }, {
+                  "isIdVerified": "$userBasic.isIdVerified"
+                }, {
+                  "isPrivate": "$userBasic.isPrivate"
+                }]
+              }
+            }
+          ],
+          //story  
+
+          "story": [
+            {
+              $sort: {
+                "isBoost": - 1,
+                "createdAt": - 1
+              }
+            },
+            {
+              $match:
+              {
+                $or: [
+                  {
+                    $and: [
+
+                      {
+                        "visibility": "PUBLIC"
+                      },
+                      {
+                        "active": true
+                      },
+                      {
+                        "postType": "story"
+                      },
+                      {
+                        "boosted.boostSession.start": {
+                          $lte: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                      },
+                      {
+                        "boosted.boostSession.end": {
+                          $gt: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                        //$expr: {
+                        //    $gt: ["$boosted.boostSession.end", "$testDate", ]
+                        //}
+                      },
+                      {
+                        "timeStart": {
+                          $lte: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                      },
+                      {
+                        "timeEnd": {
+                          $gte: {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                      },
+                      {
+
+                        "timeStart": {
+                          $ne: null
+                        }
+                      },
+                      {
+
+                        "timeEnd": {
+                          $ne: null
+                        }
+                      },
+                      {
+                        "reportedUser.email": {
+                          $not: {
+                            $regex: "1@1.com"
+                          }
+                        }
+                      },
+                      {
+                        $or: [
+                          {
+                            $and: [
+                              {
+                                "boosted.boostViewer.email": "1@1.com"
+                              },
+                              {
+                                "boosted.boostViewer.isLast": true
+                              },
+                              {
+                                "boosted.boostViewer.timeEnd": {
+                                  $gt: "$testDate"
+                                }
+                              },
+
+                            ]
+                          },
+                          {
+                            $and: [
+                              {
+                                "boosted.boostViewer.email": {
+                                  $ne: "1@1.com"
+                                }
+                              },
+
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    $and: [
+                      {
+                        $or: [
+                          {
+                            "reportedStatus": "ALL"
+                          },
+                          {
+                            "reportedStatus": null
+                          },
+
+                        ]
+                      },
+                      {
+                        "visibility": "PUBLIC"
+                      },
+                      {
+                        "active": true
+                      },
+                      {
+                        "postType": "story"
+                      },
+
+                    ]
+                  },
+
+                ]
+              }
+            },
+            {
+              "$lookup": {
+                from: "mediastories",
+                as: "media",
+                let: {
+                  localID: '$postID'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$postID', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+
+                      "apsara": 1,
+                      "apsaraId": 1,
+                      "apsaraThumbId": 1,
+                      "mediaEndpoint": 1,
+                      "mediaUri": 1,
+                      "mediaThumbEndpoint": 1,
+                      "mediaThumbUri": 1,
+
+                    }
+                  }
+                ],
+
+              },
+
+            },
+            {
+              "$lookup": {
+                from: "interests_repo",
+                as: "cats",
+                let: {
+                  localID: '$category.id'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$id', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "interestName": 1,
+                      "langIso": 1,
+                      "icon": 1,
+                      "createdAt": 1,
+                      "updatedAt": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "insights",
+                as: "insight",
+                let: {
+                  localID: '$email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "followers": 1,
+                      "followings": 1,
+                      "unfollows": 1,
+                      "likes": 1,
+                      "views": 1,
+                      "comments": 1,
+                      "posts": 1,
+                      "shares": 1,
+                      "reactions": 1,
+                      "views_profile": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userauths",
+                as: "userTag",
+                let: {
+                  localID: '$tagPeople.$id'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$_id', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+
+                      "username": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userauths",
+                as: "username",
+                let: {
+                  localID: '$email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+
+                      "username": 1
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "userbasics",
+                as: "userBasic",
+                let: {
+                  localID: '$email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$email', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "fullName": 1,
+                      "profilePict": 1,
+                      "isCelebrity": 1,
+                      "isIdVerified": 1,
+                      "isPrivate": 1,
+
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              $unwind: {
+                path: "$userBasic",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              "$lookup": {
+                from: "mediaprofilepicts",
+                as: "avatar",
+                let: {
+                  localID: '$userBasic.profilePict.$id'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $eq: ['$mediaID', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "mediaBasePath": 1,
+                      "mediaUri": 1,
+                      "originalName": 1,
+                      "fsSourceUri": 1,
+                      "fsSourceName": 1,
+                      "fsTargetUri": 1,
+                      "mediaType": 1,
+
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "contentevents",
+                as: "isLike",
+                let: {
+                  localID: '$postID'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$localID']
+                          }
+                        },
+                        {
+                          "email": "randyaji.ra@gmail.com"
+                        },
+                        {
+                          "eventType": "LIKE"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    $project: {
+                      "email": 1,
+
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              "$lookup": {
+                from: "contentevents",
+                as: "isView",
+                let: {
+                  localID: '$postID'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$localID']
+                          }
+                        },
+                        {
+                          "email": "randyaji.ra@gmail.com"
+                        },
+                        {
+                          "eventType": "VIEW"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    $project: {
+                      "email": 1,
+
+                    }
+                  }
+                ],
+
+              }
+            },
+            {
+              $skip: 0
+            },
+            {
+              $limit: 15
+            },
+            {
+              $unwind: {
+                path: "$media",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              $unwind: {
+                path: "$username",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              $project: {
+                "isView": "$isView",
+                "isLike": "$isLike",
+                "tagPeople": "$userTag",
+                "mediaType": "$media.mediaType",
+                "email": 1,
+                "postType": 1,
+                "description": 1,
+                "active": 1,
+                "createdAt": 1,
+                "updatedAt": 1,
+                "expiration": 1,
+                "visibility": 1,
+                "location": 1,
+                "tags": 1,
+                "allowComments": 1,
+                "isSafe": 1,
+                "isOwned": 1,
+                "certified": 1,
+                "saleAmount": 1,
+                "saleLike": 1,
+                "saleView": 1,
+                "likes": 1,
+                "views": 1,
+                "shares": 1,
+                "userProfile": 1,
+                "contentMedias": 1,
+                "category": 1,
+                "tagDescription": 1,
+                "metadata": 1,
+                "boostDate": 1,
+                "boostInterval": 1,
+                "boostSession": 1,
+                "isBoost": 1,
+                "boostViewer": 1,
+                "boostCount": 1,
+                "contentModeration": 1,
+                "reportedStatus": 1,
+                "reportedUserCount": 1,
+                "contentModerationResponse": 1,
+                "reportedUser": 1,
+                "timeStart": 1,
+                "timeEnd": 1,
+                "apsara": "$media.apsara",
+                "apsaraId": "$media.apsaraId",
+                "apsaraThumbId": "$media.apsaraThumbId",
+                "mediaEndpoint": "$media.mediaEndpoint",
+                "mediaUri": "$media.mediaUri",
+                "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
+                "mediaThumbUri": "$media.mediaThumbUri",
+                "cats": 1,
+                "insight": 1,
+                "fullName": "$userBasic.fullName",
+                "username": "$username.username",
+                "avatar": 1,
+                "privacy": [{
+                  "isCelebrity": "$userBasic.isCelebrity"
+                }, {
+                  "isIdVerified": "$userBasic.isIdVerified"
+                }, {
+                  "isPrivate": "$userBasic.isPrivate"
+                }]
+              }
+            }
+          ],
+
+        }
+      }
+    ]);
+
+    return query;
+  }
+
   async thum(thum_data: string): Promise<any> {
     var data = await this.seaweedfsService.read(thum_data.replace('/localrepo', ''));
     return data;

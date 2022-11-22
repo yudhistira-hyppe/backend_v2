@@ -2210,4 +2210,144 @@ export class ReportuserController {
 
         return { response_code: 202, messages };
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('summary')
+    async findsummary(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+
+        var startdate = null;
+        var enddate = null;
+
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+
+        // Content
+        var datacountreport = null;
+        var datacountstatus = null;
+        var objcoun = {};
+        var dataSum = [];
+        var totalAllreport = null;
+        try {
+
+            datacountreport = await this.postsService.countReportStatusAll(startdate, enddate);
+            totalAllreport = datacountreport[0].myCount;
+        } catch (e) {
+            datacountreport = null;
+            totalAllreport = 0;
+        }
+        try {
+
+            datacountstatus = await this.postsService.countReportStatus(startdate, enddate);
+        } catch (e) {
+            datacountstatus = null;
+        }
+
+        for (let i = 0; i < datacountstatus.length; i++) {
+            let mycount = datacountstatus[i].myCount;
+            let status = datacountstatus[i]._id;
+
+            let persen = mycount * 100 / totalAllreport;
+            objcoun = {
+                status: status,
+                count: mycount,
+                persen: persen.toFixed(2)
+            }
+            dataSum.push(objcoun);
+        }
+
+        var content = [];
+        var objcontent = {
+
+            totalReport: totalAllreport,
+            dataSum: dataSum
+        };
+        content.push(objcontent);
+
+        // Ads
+
+        var datacountreportads = null;
+        var datacountstatusads = null;
+        var objcounads = {};
+        var dataSumads = [];
+        var totalAllreportads = null;
+        try {
+
+            datacountreportads = await this.adsService.countReportStatusAll(startdate, enddate);
+            totalAllreportads = datacountreportads[0].myCount;
+        } catch (e) {
+            datacountreportads = null;
+            totalAllreportads = 0;
+        }
+        try {
+
+            datacountstatusads = await this.adsService.countReportStatus(startdate, enddate);
+        } catch (e) {
+            datacountstatusads = null;
+        }
+
+        for (let i = 0; i < datacountstatusads.length; i++) {
+            let mycount = datacountstatusads[i].myCount;
+            let status = datacountstatusads[i]._id;
+
+            let persen = mycount * 100 / totalAllreportads;
+            objcounads = {
+                status: status,
+                count: mycount,
+                persen: persen.toFixed(2)
+            }
+            dataSumads.push(objcounads);
+        }
+
+        var ads = [];
+        var objads = {
+
+            totalReport: totalAllreportads,
+            dataSum: dataSumads
+        };
+        ads.push(objads);
+
+
+        return { response_code: 202, content, ads, messages };
+
+
+
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('landingpage')
+    async finddetailtest(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        var type = null;
+        var postID = null;
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+        var data = [];
+        var query = null;
+        var totalReport = null;
+
+
+        try {
+            query = await this.postsService.testLandingpage();
+
+        } catch (e) {
+            query = null;
+
+        }
+
+        return { response_code: 202, query, messages };
+
+    }
 }
