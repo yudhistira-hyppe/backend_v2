@@ -6662,40 +6662,31 @@ export class PostsService {
   async testLandingpage() {
 
     let today = new Date();
-    // today.setHours(today.getHours() + 7);
+    //today.setHours(today.getHours() + 7);
     // console.log(today);
     let query = await this.PostsModel.aggregate([
       {
-        $unwind: {
-          path: "$boosted",
-          preserveNullAndEmptyArrays: true
-        }
-      },
-      // {
-      //   $set: {
-      //     "testDate": today
-      //   }
-      // },
-
-      {
-        $unwind: {
-          path: "$boosted.boostSession",
-          preserveNullAndEmptyArrays: true
+        "$unwind": {
+          "path": "$boosted",
+          "preserveNullAndEmptyArrays": true
         }
       },
       {
-        $set:
-        {
-
+        "$unwind": {
+          "path": "$boosted.boostSession",
+          "preserveNullAndEmptyArrays": true
+        }
+      },
+      {
+        "$set": {
           "timeStart": {
-            $dateFromString: {
-              dateString:
-              {
-                $concat: [
+            "$dateFromString": {
+              "dateString": {
+                "$concat": [
                   {
-                    $dateToString: {
-                      format: "%Y-%m-%d",
-                      date: today
+                    "$dateToString": {
+                      "format": "%Y-%m-%d",
+                      "date": new Date()
                     }
                   },
                   "T",
@@ -6707,16 +6698,15 @@ export class PostsService {
         }
       },
       {
-        $set: {
+        "$set": {
           "timeEnd": {
-            $dateFromString: {
-              dateString:
-              {
-                $concat: [
+            "$dateFromString": {
+              "dateString": {
+                "$concat": [
                   {
-                    $dateToString: {
-                      format: "%Y-%m-%d",
-                      date: today
+                    "$dateToString": {
+                      "format": "%Y-%m-%d",
+                      "date": new Date()
                     }
                   },
                   "T",
@@ -6728,8 +6718,16 @@ export class PostsService {
         }
       },
       {
+        $set: {
+          "testDate": {
+            $add: [new Date(), 25200000]
+          }
+        }
+      },
+      {
         $facet:
         {
+          //pic
           "pict": [
             {
               $sort: {
@@ -6765,32 +6763,23 @@ export class PostsService {
                         "postType": "pict"
                       },
                       {
-                        "boosted.boostSession.start": {
-                          $lte: {
-                            $add: [new Date(), 25200000]
-                          }
+                        $expr: {
+                          $lte: ["$boosted.boostSession.start", "$testDate",]
                         }
                       },
                       {
-                        "boosted.boostSession.end": {
-                          $gt: today
-                        }
-                        //$expr: {
-                        //    $gt: ["$boosted.boostSession.end", "$testDate", ]
-                        //}
-                      },
-                      {
-                        "timeStart": {
-                          $lte: {
-                            $add: [new Date(), 25200000]
-                          }
+                        $expr: {
+                          $gt: ["$boosted.boostSession.end", "$testDate",]
                         }
                       },
                       {
-                        "timeEnd": {
-                          $gte: {
-                            $add: [new Date(), 25200000]
-                          }
+                        $expr: {
+                          $lte: ["$timeStart", "$testDate",]
+                        }
+                      },
+                      {
+                        $expr: {
+                          $gt: ["$timeEnd", "$testDate",]
                         }
                       },
                       {
@@ -6823,8 +6812,8 @@ export class PostsService {
                                 "boosted.boostViewer.isLast": true
                               },
                               {
-                                "boosted.boostViewer.timeEnd": {
-                                  $gt: today
+                                $expr: {
+                                  $gt: ["$boosted.boostViewer.timeEnd", "$testDate",]
                                 }
                               },
 
@@ -6866,10 +6855,12 @@ export class PostsService {
                       {
                         "postType": "pict"
                       },
+                      {
+                        "timeStart": null
+                      },
 
                     ]
                   },
-
                 ]
               }
             },
@@ -7123,45 +7114,9 @@ export class PostsService {
               }
             },
             {
-              "$lookup": {
-                from: "contentevents",
-                as: "isLike",
-                let: {
-                  localID: '$postID'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$postID', '$$localID']
-                          }
-                        },
-                        {
-                          "email": "randyaji.ra@gmail.com"
-                        },
-                        {
-                          "eventType": "LIKE"
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    $project: {
-                      "email": 1,
-
-                    }
-                  }
-                ],
-
-              }
-            },
-            {
               $project: {
+                "testDate": 1,
                 "musicId": 1,
-                "isLike": "$isLike",
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
                 "email": 1,
@@ -7190,8 +7145,8 @@ export class PostsService {
                 "tagDescription": 1,
                 "metadata": 1,
                 "boostDate": 1,
-                "boostInterval": 1,
-                "boostSession": 1,
+                "end": "$boosted.boostSession.end",
+                "start": "$boosted.boostSession.start",
                 "isBoost": 1,
                 "boostViewer": 1,
                 "boostCount": 1,
@@ -7224,16 +7179,14 @@ export class PostsService {
               }
             }
           ],
-          //video 
 
+          //video
           "video": [
             {
               $sort: {
-
                 "timeStart": - 1,
                 "isBoost": - 1,
-                "createdAt": - 1,
-
+                "createdAt": - 1
               }
             },
             {
@@ -7263,26 +7216,23 @@ export class PostsService {
                         "postType": "vid"
                       },
                       {
-                        "boosted.boostSession.start": {
-                          $lte: today
+                        $expr: {
+                          $lte: ["$boosted.boostSession.start", "$testDate",]
                         }
                       },
                       {
-                        "boosted.boostSession.end": {
-                          $gt: today
-                        }
-                        //$expr: {
-                        //    $gt: ["$boosted.boostSession.end", "$testDate", ]
-                        //}
-                      },
-                      {
-                        "timeStart": {
-                          $lte: today
+                        $expr: {
+                          $gt: ["$boosted.boostSession.end", "$testDate",]
                         }
                       },
                       {
-                        "timeEnd": {
-                          $gte: today
+                        $expr: {
+                          $lte: ["$timeStart", "$testDate",]
+                        }
+                      },
+                      {
+                        $expr: {
+                          $gt: ["$timeEnd", "$testDate",]
                         }
                       },
                       {
@@ -7315,8 +7265,8 @@ export class PostsService {
                                 "boosted.boostViewer.isLast": true
                               },
                               {
-                                "boosted.boostViewer.timeEnd": {
-                                  $gt: today
+                                $expr: {
+                                  $gt: ["$boosted.boostViewer.timeEnd", "$testDate",]
                                 }
                               },
 
@@ -7358,10 +7308,12 @@ export class PostsService {
                       {
                         "postType": "vid"
                       },
+                      {
+                        "timeStart": null
+                      },
 
                     ]
                   },
-
                 ]
               }
             },
@@ -7615,58 +7567,9 @@ export class PostsService {
               }
             },
             {
-              "$lookup": {
-                from: "contentevents",
-                as: "isLike",
-                let: {
-                  localID: '$postID'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-                      $and: [
-                        {
-                          $or: [
-                            {
-                              "reportedStatus": "ALL"
-                            },
-                            {
-                              "reportedStatus": null
-                            },
-
-                          ]
-                        },
-                        {
-                          $expr: {
-                            $eq: ['$postID', '$$localID']
-                          }
-                        },
-                        {
-                          "email": "randyaji.ra@gmail.com"
-                        },
-                        {
-                          "eventType": "LIKE"
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    $project: {
-                      "email": 1,
-
-                    }
-                  }
-                ],
-
-              }
-            },
-            {
               $project: {
-                "musicId": 1,
                 "testDate": 1,
-                "testing": "$boosted.boostSession.end",
-                "isLike": "$isLike",
+                "musicId": 1,
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
                 "email": 1,
@@ -7695,8 +7598,8 @@ export class PostsService {
                 "tagDescription": 1,
                 "metadata": 1,
                 "boostDate": 1,
-                "boostInterval": 1,
-                "boostSession": 1,
+                "end": "$boosted.boostSession.end",
+                "start": "$boosted.boostSession.start",
                 "isBoost": 1,
                 "boostViewer": 1,
                 "boostCount": 1,
@@ -7729,11 +7632,12 @@ export class PostsService {
               }
             }
           ],
-          //diary  
 
+          //diary
           "diary": [
             {
               $sort: {
+                "timeStart": - 1,
                 "isBoost": - 1,
                 "createdAt": - 1
               }
@@ -7765,26 +7669,23 @@ export class PostsService {
                         "postType": "diary"
                       },
                       {
-                        "boosted.boostSession.start": {
-                          $lte: today
+                        $expr: {
+                          $lte: ["$boosted.boostSession.start", "$testDate",]
                         }
                       },
                       {
-                        "boosted.boostSession.end": {
-                          $gt: today
-                        }
-                        //$expr: {
-                        //    $gt: ["$boosted.boostSession.end", "$testDate", ]
-                        //}
-                      },
-                      {
-                        "timeStart": {
-                          $lte: today
+                        $expr: {
+                          $gt: ["$boosted.boostSession.end", "$testDate",]
                         }
                       },
                       {
-                        "timeEnd": {
-                          $gte: today
+                        $expr: {
+                          $lte: ["$timeStart", "$testDate",]
+                        }
+                      },
+                      {
+                        $expr: {
+                          $gt: ["$timeEnd", "$testDate",]
                         }
                       },
                       {
@@ -7817,8 +7718,8 @@ export class PostsService {
                                 "boosted.boostViewer.isLast": true
                               },
                               {
-                                "boosted.boostViewer.timeEnd": {
-                                  $gt: today
+                                $expr: {
+                                  $gt: ["$boosted.boostViewer.timeEnd", "$testDate",]
                                 }
                               },
 
@@ -7860,10 +7761,12 @@ export class PostsService {
                       {
                         "postType": "diary"
                       },
+                      {
+                        "timeStart": null
+                      },
 
                     ]
                   },
-
                 ]
               }
             },
@@ -8117,45 +8020,9 @@ export class PostsService {
               }
             },
             {
-              "$lookup": {
-                from: "contentevents",
-                as: "isLike",
-                let: {
-                  localID: '$postID'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$postID', '$$localID']
-                          }
-                        },
-                        {
-                          "email": "randyaji.ra@gmail.com"
-                        },
-                        {
-                          "eventType": "LIKE"
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    $project: {
-                      "email": 1,
-
-                    }
-                  }
-                ],
-
-              }
-            },
-            {
               $project: {
+                "testDate": 1,
                 "musicId": 1,
-                "isLike": "$isLike",
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
                 "email": 1,
@@ -8184,8 +8051,8 @@ export class PostsService {
                 "tagDescription": 1,
                 "metadata": 1,
                 "boostDate": 1,
-                "boostInterval": 1,
-                "boostSession": 1,
+                "end": "$boosted.boostSession.end",
+                "start": "$boosted.boostSession.start",
                 "isBoost": 1,
                 "boostViewer": 1,
                 "boostCount": 1,
@@ -8218,11 +8085,12 @@ export class PostsService {
               }
             }
           ],
-          //story  
 
+          //story
           "story": [
             {
               $sort: {
+                "timeStart": - 1,
                 "isBoost": - 1,
                 "createdAt": - 1
               }
@@ -8254,28 +8122,23 @@ export class PostsService {
                         "postType": "story"
                       },
                       {
-                        "boosted.boostSession.start": {
-                          $lte: {
-                            $add: [new Date(), 25200000]
-                          }
+                        $expr: {
+                          $lte: ["$boosted.boostSession.start", "$testDate",]
                         }
                       },
                       {
-                        "boosted.boostSession.end": {
-                          $gt: today
-                        }
-                        //$expr: {
-                        //    $gt: ["$boosted.boostSession.end", "$testDate", ]
-                        //}
-                      },
-                      {
-                        "timeStart": {
-                          $lte: today
+                        $expr: {
+                          $gt: ["$boosted.boostSession.end", "$testDate",]
                         }
                       },
                       {
-                        "timeEnd": {
-                          $gte: today
+                        $expr: {
+                          $lte: ["$timeStart", "$testDate",]
+                        }
+                      },
+                      {
+                        $expr: {
+                          $gt: ["$timeEnd", "$testDate",]
                         }
                       },
                       {
@@ -8308,8 +8171,8 @@ export class PostsService {
                                 "boosted.boostViewer.isLast": true
                               },
                               {
-                                "boosted.boostViewer.timeEnd": {
-                                  $gt: today
+                                $expr: {
+                                  $gt: ["$boosted.boostViewer.timeEnd", "$testDate",]
                                 }
                               },
 
@@ -8351,10 +8214,12 @@ export class PostsService {
                       {
                         "postType": "story"
                       },
+                      {
+                        "timeStart": null
+                      },
 
                     ]
                   },
-
                 ]
               }
             },
@@ -8590,78 +8455,6 @@ export class PostsService {
               }
             },
             {
-              "$lookup": {
-                from: "contentevents",
-                as: "isLike",
-                let: {
-                  localID: '$postID'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$postID', '$$localID']
-                          }
-                        },
-                        {
-                          "email": "randyaji.ra@gmail.com"
-                        },
-                        {
-                          "eventType": "LIKE"
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    $project: {
-                      "email": 1,
-
-                    }
-                  }
-                ],
-
-              }
-            },
-            {
-              "$lookup": {
-                from: "contentevents",
-                as: "isView",
-                let: {
-                  localID: '$postID'
-                },
-                pipeline: [
-                  {
-                    $match:
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$postID', '$$localID']
-                          }
-                        },
-                        {
-                          "email": "randyaji.ra@gmail.com"
-                        },
-                        {
-                          "eventType": "VIEW"
-                        }
-                      ]
-                    }
-                  },
-                  {
-                    $project: {
-                      "email": 1,
-
-                    }
-                  }
-                ],
-
-              }
-            },
-            {
               $skip: 0
             },
             {
@@ -8681,9 +8474,8 @@ export class PostsService {
             },
             {
               $project: {
+                "testDate": 1,
                 "musicId": 1,
-                "isView": "$isView",
-                "isLike": "$isLike",
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
                 "email": 1,
@@ -8712,8 +8504,8 @@ export class PostsService {
                 "tagDescription": 1,
                 "metadata": 1,
                 "boostDate": 1,
-                "boostInterval": 1,
-                "boostSession": 1,
+                "end": "$boosted.boostSession.end",
+                "start": "$boosted.boostSession.start",
                 "isBoost": 1,
                 "boostViewer": 1,
                 "boostCount": 1,
@@ -8748,7 +8540,7 @@ export class PostsService {
           ],
 
         }
-      }
+      },
     ]);
 
     return query;
