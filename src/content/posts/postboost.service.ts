@@ -693,6 +693,7 @@ export class PostBoostService {
                     "musicId": 1,
                     "email": 1,
                     "postType": 1,
+                    "postID": 1,
                     "description": 1,
                     "active": 1,
                     "createdAt": 1,
@@ -1276,6 +1277,7 @@ export class PostBoostService {
                     "musicId": 1,
                     "email": 1,
                     "postType": 1,
+                    "postID": 1,
                     "description": 1,
                     "active": 1,
                     "createdAt": 1,
@@ -1855,6 +1857,7 @@ export class PostBoostService {
                     "musicId": 1,
                     "email": 1,
                     "postType": 1,
+                    "postID": 1,
                     "description": 1,
                     "active": 1,
                     "createdAt": 1,
@@ -2456,6 +2459,7 @@ export class PostBoostService {
                     "musicId": 1,
                     "email": 1,
                     "postType": 1,
+                    "postID": 1,
                     "description": 1,
                     "active": 1,
                     "createdAt": 1,
@@ -3443,6 +3447,7 @@ export class PostBoostService {
                     "musicId": 1,
                     "email": 1,
                     "postType": 1,
+                    "postID": 1,
                     "description": 1,
                     "active": 1,
                     "createdAt": 1,
@@ -4049,6 +4054,7 @@ export class PostBoostService {
                     "mediaType": "$media.mediaType",
                     "email": 1,
                     "postType": 1,
+                    "postID": 1,
                     "description": 1,
                     "active": 1,
                     "createdAt": 1,
@@ -4652,6 +4658,7 @@ export class PostBoostService {
                     "mediaType": "$media.mediaType",
                     "email": 1,
                     "postType": 1,
+                    "postID": 1,
                     "description": 1,
                     "active": 1,
                     "createdAt": 1,
@@ -5294,6 +5301,7 @@ export class PostBoostService {
                     "mediaType": "$media.mediaType",
                     "email": 1,
                     "postType": 1,
+                    "postID": 1,
                     "description": 1,
                     "active": 1,
                     "createdAt": 1,
@@ -5398,9 +5406,9 @@ export class PostBoostService {
                         let vi = vapsara.VideoList[i];
                         if (pdvv.apsaraId == vi.VideoId) {
                             pdvv.mediaThumbEndpoint = vi.CoverURL;
+                            resVideo.push(pdvv);
                         }
                     }
-                    resVideo.push(pdvv);
                 }
             }
             if (osto.length > 0) {
@@ -5410,9 +5418,9 @@ export class PostBoostService {
                         let vi = vapsara.VideoList[i];
                         if (pdss.apsaraId == vi.VideoId) {
                             pdss.mediaThumbEndpoint = vi.CoverURL;
+                            resStory.push(pdss);                            
                         }
                     }
-                    resStory.push(pdss);
                 }
             }
             if (odia.length > 0) {
@@ -5422,9 +5430,9 @@ export class PostBoostService {
                         let vi = vapsara.VideoList[i];
                         if (pddd.apsaraId == vi.VideoId) {
                             pddd.mediaThumbEndpoint = vi.CoverURL;
+                            resDiary.push(pddd);                            
                         }
                     }
-                    resDiary.push(pddd);
                 }
             }
         }
@@ -5438,9 +5446,9 @@ export class PostBoostService {
                         if (pdvv.apsaraId == vi.ImageId) {
                             pdvv.mediaThumbEndpoint = vi.URL;
                             pdvv.mediaThumbUri = vi.URL;
+                            resVideo.push(pdvv);                            
                         }
                     }
-                    resVideo.push(pdvv);
                 }
             }
             if (osto.length > 0) {
@@ -5454,10 +5462,9 @@ export class PostBoostService {
 
                             pdss.mediaThumbEndpoint = vi.URL;
                             pdss.mediaThumbUri = vi.URL;
-
+                            resStory.push(pdss);
                         }
                     }
-                    resStory.push(pdss);
                 }
             }
             if (odia.length > 0) {
@@ -5468,10 +5475,10 @@ export class PostBoostService {
                         if (pddd.apsaraId == vi.ImageId) {
                             pddd.mediaThumbEndpoint = vi.URL;
                             pddd.mediaThumbUri = vi.URL;
-
+                            resDiary.push(pddd);
                         }
                     }
-                    resDiary.push(pddd);
+
                 }
             }
             if (opic.length > 0) {
@@ -5490,10 +5497,12 @@ export class PostBoostService {
                         if (pdpp.apsaraThumbId == vi.ImageId) {
                             pdpp.mediaThumbEndpoint = vi.URL;
                             pdpp.mediaThumbUri = vi.URL;
-
                         }
                     }
-                    resPic.push(pdpp);
+
+                    if (found) {
+                      resPic.push(pdpp);
+                    }
                 }
             }
         }
