@@ -6695,7 +6695,7 @@ export class PostsService {
                   {
                     $dateToString: {
                       format: "%Y-%m-%d",
-                      date: "$testDate"
+                      date: today
                     }
                   },
                   "T",
@@ -6744,7 +6744,17 @@ export class PostsService {
                 $or: [
                   {
                     $and: [
+                      {
+                        $or: [
+                          {
+                            "reportedStatus": "ALL"
+                          },
+                          {
+                            "reportedStatus": null
+                          },
 
+                        ]
+                      },
                       {
                         "visibility": "PUBLIC"
                       },
@@ -6763,9 +6773,7 @@ export class PostsService {
                       },
                       {
                         "boosted.boostSession.end": {
-                          $gt: {
-                            $add: [new Date(), 25200000]
-                          }
+                          $gt: today
                         }
                         //$expr: {
                         //    $gt: ["$boosted.boostSession.end", "$testDate", ]
@@ -6816,7 +6824,7 @@ export class PostsService {
                               },
                               {
                                 "boosted.boostViewer.timeEnd": {
-                                  $gt: "$testDate"
+                                  $gt: today
                                 }
                               },
 
@@ -7152,6 +7160,7 @@ export class PostsService {
             },
             {
               $project: {
+                "musicId": 1,
                 "isLike": "$isLike",
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
@@ -7233,7 +7242,17 @@ export class PostsService {
                 $or: [
                   {
                     $and: [
+                      {
+                        $or: [
+                          {
+                            "reportedStatus": "ALL"
+                          },
+                          {
+                            "reportedStatus": null
+                          },
 
+                        ]
+                      },
                       {
                         "visibility": "PUBLIC"
                       },
@@ -7644,6 +7663,7 @@ export class PostsService {
             },
             {
               $project: {
+                "musicId": 1,
                 "testDate": 1,
                 "testing": "$boosted.boostSession.end",
                 "isLike": "$isLike",
@@ -7724,7 +7744,17 @@ export class PostsService {
                 $or: [
                   {
                     $and: [
+                      {
+                        $or: [
+                          {
+                            "reportedStatus": "ALL"
+                          },
+                          {
+                            "reportedStatus": null
+                          },
 
+                        ]
+                      },
                       {
                         "visibility": "PUBLIC"
                       },
@@ -8124,6 +8154,7 @@ export class PostsService {
             },
             {
               $project: {
+                "musicId": 1,
                 "isLike": "$isLike",
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
@@ -8202,7 +8233,17 @@ export class PostsService {
                 $or: [
                   {
                     $and: [
+                      {
+                        $or: [
+                          {
+                            "reportedStatus": "ALL"
+                          },
+                          {
+                            "reportedStatus": null
+                          },
 
+                        ]
+                      },
                       {
                         "visibility": "PUBLIC"
                       },
@@ -8640,6 +8681,7 @@ export class PostsService {
             },
             {
               $project: {
+                "musicId": 1,
                 "isView": "$isView",
                 "isLike": "$isLike",
                 "tagPeople": "$userTag",
