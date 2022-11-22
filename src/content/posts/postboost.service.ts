@@ -2943,6 +2943,7 @@ export class PostBoostService {
                           {
                             "boosted.boostSession.end": {
                               $gt: today
+                            }
                           },
                           {
                             "timeStart": {
