@@ -99,9 +99,7 @@ export class PostBoostService {
         let pipeline = new Array<any>(
             {
                 $set: {
-                    "testDate": {
-                        $add: [new Date(), 25200000]
-                    }
+                    "testDate": today
                 }
             },
             {
