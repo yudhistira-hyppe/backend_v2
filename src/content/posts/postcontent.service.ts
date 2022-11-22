@@ -404,6 +404,33 @@ export class PostContentService {
       cm.push(diaries);
 
       mediaId = String(retr.mediaID);
+    } else if (postType == 'pict') {
+
+      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0 };
+      post.metadata = metadata;
+
+      var med = new Mediavideos();
+      med._id = await this.utilService.generateId();
+      med.mediaID = med._id;
+      med.postID = post.postID;
+      med.active = false;
+      med.createdAt = await this.utilService.getDateTimeString();
+      med.updatedAt = await this.utilService.getDateTimeString();
+      med.mediaMime = file.mimetype;
+      med.mediaType = 'video';
+      med.originalName = file.originalname;
+      med.apsara = true;
+      med._class = 'io.melody.hyppe.content.domain.MediaVideo';
+
+      this.logger.log('createNewPostVideo >>> prepare save');
+      var retd = await this.videoService.create(med);
+
+      this.logger.log('createNewPostVideo >>> ' + retd);
+
+      var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
+      cm.push(vids);
+
+      mediaId = String(retd.mediaID);
     }
 
     post.contentMedias = cm;
@@ -2419,6 +2446,7 @@ export class PostContentService {
       let dto = new ApsaraImageResponse();
       let result = await client.request('GetImageInfos', params, requestOption);
       let ty: ApsaraImageResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
+      this.logger.log("getImageApsara >>> result: " + ty);
 
       if (ty.ImageInfo.length > 0) {
         for (let x = 0; x < ty.ImageInfo.length; x++) {
