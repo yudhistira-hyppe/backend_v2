@@ -411,7 +411,7 @@ export class PostContentService {
 
       var medx = new Mediapicts();
       medx._id = await this.utilService.generateId();
-      medx.mediaID = med._id;
+      medx.mediaID = medx._id;
       medx.postID = post.postID;
       medx.active = false;
       medx.createdAt = await this.utilService.getDateTimeString();
