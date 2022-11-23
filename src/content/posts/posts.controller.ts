@@ -377,7 +377,7 @@ export class PostsController {
     console.log(body);
     this.logger.log("getUserPostLandingPage >>> start: " + JSON.stringify(body));
     //return this.postContentService.getUserPostLandingPage(body, headers);
-    return this.bootsService.getBoost(body, headers);
+    return this.bootsService.getBoostV2(body, headers);
   }
 
   @UseGuards(JwtAuthGuard)
