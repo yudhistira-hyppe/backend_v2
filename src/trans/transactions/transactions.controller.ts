@@ -5704,33 +5704,108 @@ export class TransactionsController {
 
             //GET DATA BOOST
             var typeBoost = "-";
-            var hargaBoost = "Rp 0";
             if (transaction_boost.detail.length>0){
                 if (transaction_boost.detail[0].type != undefined) {
-                    var DatapostTypeBoost = DataPost.postType;
+                    var DatapostTypeBoost = transaction_boost.detail[0].type;
                     typeBoost = DatapostTypeBoost[0].toUpperCase() + DatapostTypeBoost.slice(1).toLowerCase();
                 }
-                
+            }
+            var hargaBoost = "Rp 0,00";
+            if (transaction_boost.amount != undefined) {
+                hargaBoost = await this.utilsService.formatMoney(Number(transaction_boost.amount));
+            }
+            var biayaAdmin = "Rp 0,00";
+            if (transaction_boost.amount != undefined) {
+                var totalamount = 0;
+                if (transaction_boost.totalamount != undefined) {
+                    totalamount = Number(transaction_boost.totalamount);
+                }
+                var databiayaAdmin = (totalamount - Number(transaction_boost.amount));
+                biayaAdmin = await this.utilsService.formatMoney(databiayaAdmin);
+            }
+            var tanggalPemesanan = "24/10/2022 16:00 PM";
+            if (transaction_boost.timestamp != undefined) {
+                var Datetimestamp = new Date(transaction_boost.timestamp);
+                tanggalPemesanan = await this.utilsService.formatAMPM(Datetimestamp,true);
+            }
+            var kodePemesanan = "INV/MMXXII/XI/XXII/00000";
+            if (transaction_boost.noinvoice != undefined) {
+                kodePemesanan = transaction_boost.noinvoice;
+            }
+            var tanggalMulai = "24/10/2022";
+            if (transaction_boost.detail.length > 0) {
+                if (transaction_boost.detail[0].dateStart != undefined) {
+                    var DatatanggalMulai = transaction_boost.detail[0].dateStart;
+                    tanggalMulai = await this.utilsService.dateFormat(DatatanggalMulai);
+                }
+            }
+            var waktuBoost = "-";
+            if (typeBoost.toLowerCase()=="manual"){
+                if (transaction_boost.detail.length > 0) {
+                    if (transaction_boost.detail[0].session != undefined) {
+                        var name = transaction_boost.detail[0].session.name;
+                        var start = transaction_boost.detail[0].session.start;
+                        var end = transaction_boost.detail[0].session.end;
+                        waktuBoost = name + "(" + start.slice(0, -3) + "-" + end.slice(0, -3) +" WIB)";
+                    }
+                }
+            }
+            
+            var selangWaktu = "-";
+            if (typeBoost.toLowerCase() == "manual") {
+                if (transaction_boost.detail.length > 0) {
+                    if (transaction_boost.detail[0].interval != undefined) {
+                        var vale = transaction_boost.detail[0].interval.value;
+                        var remark = transaction_boost.detail[0].interval.remark;
+                        selangWaktu = vale + " " + remark;
+                    }
+                }
             }
 
             //INSER VAR TO TEMPLATE
-            $_('#fullname').text(profile.fullName);
-            $_('#username').text(profile.username);
-            $_('#postType').text("Hyppe" + postType);
+            $_('#fullname').text(profile.fullName.toString());
+            $_('#username').text(profile.username.toString());
+            $_('#postType').text("Hyppe" + postType.toString());
             $_('#typeBoost').text(typeBoost);
-            // $_('#hargaBoost').text(data.username);
-            // $_('#biayaAdmin').text(data.username);
-            // $_('#tanggalPemesanan').text(data.username);
-            // $_('#kodePemesanan').text(data.username);
-            // $_('#tanggalMulai').text(data.username);
-            // $_('#waktuBoost').text(data.username);
-            // $_('#selangWaktu').text(data.username);
+            $_('#hargaBoost').text(hargaBoost.toString());
+            $_('#biayaAdmin').text(biayaAdmin.toString());
+            $_('#tanggalPemesanan').text(tanggalPemesanan.toString());
+            $_('#kodePemesanan').text(kodePemesanan.toString());
+            $_('#tanggalMulai').text(tanggalMulai.toString());
+            $_('#waktuBoost').text(waktuBoost.toString());
+            $_('#selangWaktu').text(selangWaktu.toString());
 
-            //var to = email;
+            if (type == "BOOST_BUY") {
+                var timeMinute = ""
+                var dateVA = ""
+                if (langIso == "en") {
+                    timeMinute = "0 Minutes"
+                    var dateVA = "Friday, 04 November 2022, 10:00"
+                } else {
+                    timeMinute = "0 Menit"
+                    var dateVA = "Jumat, 04 November 2022, 10:00"
+                }
+                if ((transaction_boost.timestamp != undefined) && (transaction_boost.expiredtimeva != undefined)){
+                    var DataTimeStamp = (new Date(transaction_boost.timestamp)).getTime();
+                    var DataTimestampExpiredTimeVa = (new Date(transaction_boost.expiredtimeva)).getTime();
+                    var DataMinute = Math.round(Math.round((DataTimestampExpiredTimeVa - DataTimeStamp) / 60000));
+                    if (langIso == "en") {
+                        timeMinute = DataMinute+" Minutes"
+                    } else {
+                        timeMinute = DataMinute + " Menit"
+                    }
+                    dateVA = await this.utilsService.getDateFormat(langIso.toString(), transaction_boost.expiredtimeva)
+                }
+                $_('#timeMinute').text(timeMinute.toString()); 
+                $_('#dateVA').text(dateVA.toString());
+            }
+            var string_html = $_.html().toString();
+            
+            //SEND TO EMAIL
             var to = email;
             var from = '"no-reply" <' + Templates_.from.toString() + '>';
             var subject = Templates_.subject.toString();
-            var html_body_ = html_body;
+            var html_body_ = string_html;
             var send = await this.utilsService.sendEmail(
                 to,
                 from,

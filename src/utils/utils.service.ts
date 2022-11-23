@@ -966,4 +966,82 @@ export class UtilsService {
     var TransactionNumber = "INV/" + (await tahun_nember).toString() + "/" + (await bulan_number).toString() + "/" + (await tanggal_number).toString() + "/" + datatransaction;
     return TransactionNumber;
   }
+
+  async formatMoney(num:number) {
+    var p = num.toFixed(2).split(".");
+    return "Rp " + p[0].split("").reverse().reduce(function (acc, num, i, orig) {
+      return num + (num != "-" && i && !(i % 3) ? "." : "") + acc;
+    }, "");
+  }
+
+  async formatAMPM(date: Date, dateShow: boolean) {
+    var hours = date.getHours()-7;
+    var minutes = date.getMinutes();
+    var ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    var strTime = (hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes:minutes) + ' ' + ampm;
+    var DataDate = "";
+    if (dateShow){
+      var day = date.getDate();
+      var month = date.getMonth();
+      var year = date.getFullYear();
+      DataDate = (day < 10 ? '0' + day : day) + "/" + (month < 10 ? '0' + month : month) + "/" + year;
+    }
+    var DateReturn = (DataDate != "") ? DataDate + " " + strTime : strTime;
+    return DateReturn;
+  }
+
+  async dateFormat(date: string) {
+    var dateSplit = date.split("-");
+    return dateSplit[2] + "/" + dateSplit[1] + "/" + dateSplit[0];
+  }
+
+  async getDayName(lang: string, dateString: string){
+    var day_list = [];
+    if (lang=="en"){
+      day_list = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    }else{
+      day_list = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    }
+    var d = new Date(dateString);
+    var dayName = day_list[d.getDay()];
+    return dayName;
+  }
+
+  async getMontName(lang: string, dateString: string) {
+    var month_list = [];
+    if (lang == "en") {
+      month_list = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    } else {
+      month_list = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+    }
+    var d = new Date(dateString);
+    var monthName = month_list[d.getMonth()-1];
+    return monthName;
+  }
+
+  async getDateFormat(lang: string, dateString: string) {
+    // var dataSplite = (dateString.substring(0, dateString.lastIndexOf('.'))).split("T")
+    // var DateSplite = dataSplite[0];
+    // var DateSpliteplite = DateSplite.split("-");
+    // var TimeSplite = dataSplite[1];
+
+    // var day = DateSpliteplite[2];
+    // var month = DateSpliteplite[1];
+    // var year = DateSpliteplite[0];
+
+    var d = new Date(dateString);
+    var day = d.getDate();
+    var month = d.getMonth();
+    var year = d.getFullYear();
+
+    var hours = d.getHours();
+    var minute = d.getMinutes();
+    var timeData = (hours < 10 ? '0' + hours : hours) + ":" + (minute < 10 ? '0' + minute : minute)
+
+    var DayName = await this.getDayName(lang, dateString);
+    var MonthName = await this.getMontName(lang, dateString);
+    return DayName + ", " + (day < 10 ? '0' + day : day) + " " + MonthName + " " + year + ", " + timeData;
+  }
 }
