@@ -430,7 +430,7 @@ export class PostContentService {
       var vids = { "$ref": "mediapicts", "$id": retdx.mediaID, "$db": "hyppe_content_db" };
       cm.push(vids);
 
-      mediaId = String(retd.mediaID);
+      mediaId = String(retdx.mediaID);
     }
 
     post.contentMedias = cm;
