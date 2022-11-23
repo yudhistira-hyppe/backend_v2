@@ -2809,9 +2809,21 @@ export class PostBoostService {
       privacy.isCelebrity = false;
       pd.privacy = privacy;
 
-      pd.apsaraThumnail = obj.apsaraThumnail;
-      pd.apsaraMusic = obj.apsaraMusic;
-      pd.music = obj.music;
+      pd.apsaraThumnail = null;
+      pd.apsaraMusic = null;
+
+      pd.music = null;
+      if (obj.music != undefined) {
+        if (Array.isArray(obj.music)) {
+          if (obj.music.length > 0) {
+            pd.music = obj.music[0];
+          }
+        } else {
+          pd.music = obj.music;
+        }
+
+      }
+
 
       res.push(pd);
 
@@ -3096,6 +3108,7 @@ export class PostBoostService {
                                         "mediaUri": 1,
                                         "mediaThumbEndpoint": 1,
                                         "mediaThumbUri": 1,
+                                        "mediaType": 1,
                                         
                                     }
                                 }
@@ -3327,7 +3340,25 @@ export class PostBoostService {
                                         "mood":  "$mood.name",
                                         
                                     }
-                                }
+                                },
+                                {
+                                  $unwind: {
+                                      path: "$genre",
+                                      preserveNullAndEmptyArrays: true
+                                  }                                
+                                },
+                                {
+                                  $unwind: {
+                                      path: "$theme",
+                                      preserveNullAndEmptyArrays: true
+                                  }                                
+                                },
+                                {
+                                  $unwind: {
+                                      path: "$mood",
+                                      preserveNullAndEmptyArrays: true
+                                  }                                
+                                }                                                                              
                             ],
                             
                         }
@@ -3593,6 +3624,7 @@ export class PostBoostService {
                                         "mediaUri": 1,
                                         "mediaThumbEndpoint": 1,
                                         "mediaThumbUri": 1,
+                                        "mediaType": 1,
                                         
                                     }
                                 }
@@ -3824,7 +3856,25 @@ export class PostBoostService {
                                         "mood":  "$mood.name",
                                         
                                     }
-                                }
+                                },
+                                {
+                                  $unwind: {
+                                      path: "$genre",
+                                      preserveNullAndEmptyArrays: true
+                                  }                                
+                                },
+                                {
+                                  $unwind: {
+                                      path: "$theme",
+                                      preserveNullAndEmptyArrays: true
+                                  }                                
+                                },
+                                {
+                                  $unwind: {
+                                      path: "$mood",
+                                      preserveNullAndEmptyArrays: true
+                                  }                                
+                                }                                                                              
                             ],
                             
                         }
@@ -4084,6 +4134,7 @@ export class PostBoostService {
                                         "mediaUri": 1,
                                         "mediaThumbEndpoint": 1,
                                         "mediaThumbUri": 1,
+                                        "mediaType": 1,
                                         
                                     }
                                 }
@@ -4315,7 +4366,25 @@ export class PostBoostService {
                                         "mood":  "$mood.name",
                                         
                                     }
-                                }
+                                },
+                                {
+                                  $unwind: {
+                                      path: "$genre",
+                                      preserveNullAndEmptyArrays: true
+                                  }                                
+                                },
+                                {
+                                  $unwind: {
+                                      path: "$theme",
+                                      preserveNullAndEmptyArrays: true
+                                  }                                
+                                },
+                                {
+                                  $unwind: {
+                                      path: "$mood",
+                                      preserveNullAndEmptyArrays: true
+                                  }                                
+                                }                                              
                             ],
                             
                         }
@@ -4490,6 +4559,7 @@ export class PostBoostService {
                                         "mediaUri": 1,
                                         "mediaThumbEndpoint": 1,
                                         "mediaThumbUri": 1,
+                                        "mediaType": 1,
                                         
                                     }
                                 }
