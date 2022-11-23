@@ -8586,6 +8586,12 @@ export class PostsService {
     return data;
   }
 
+  async updateStatusOwned(id: string, updatedAt: string) {
+    let data = await this.PostsModel.updateMany({ "_id": id },
+      { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
+    return data;
+  }
+
   async updateFlaging(id: string, updatedAt: string) {
     let data = await this.PostsModel.updateMany({ "_id": id },
       { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserHandle.$[].status": "FLAGING", "reportedUserHandle.$[].updatedAt": updatedAt } });
@@ -8619,6 +8625,10 @@ export class PostsService {
 
       });
     return data;
+  }
+
+  async find200(): Promise<Posts[]> {
+    return this.PostsModel.find({ reportedUserCount: { $gte: 200 } }).exec();
   }
 }
 
