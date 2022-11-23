@@ -142,7 +142,9 @@ export class PostData {
     statusBoost: string;
     music: any;
     apsaraMusic: string;
-    apsaraThumnail: string;    
+    apsaraThumnail: string;   
+    reportedStatus: string;
+    reportedUserCount: number;     
     
 }
 
