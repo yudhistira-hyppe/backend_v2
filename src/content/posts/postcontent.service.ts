@@ -430,7 +430,7 @@ export class PostContentService {
       var vids = { "$ref": "mediapicts", "$id": retdx.mediaID, "$db": "hyppe_content_db" };
       cm.push(vids);
 
-      mediaId = String(retd.mediaID);
+      mediaId = String(retdx.mediaID);
     }
 
     post.contentMedias = cm;
@@ -611,7 +611,7 @@ export class PostContentService {
     let cm = post.contentMedias[0];
     let ns = cm.namespace;
     this.logger.log('updateNewPost >>> namespace: ' + ns);
-    if (ns == 'mediavideos') {
+    if (ns == 'mediavideos' || post.musicId != undefined) {
       let vid = await this.videoService.findOne(cm.oid);
       if (vid == undefined) {
         return;
@@ -645,6 +645,10 @@ export class PostContentService {
       post.active = true;
       this.postService.create(post);
     } else if (ns == 'mediapicts') {
+      if (post.musicId != undefined) {
+
+      }
+
       let pic = await this.picService.findOne(cm.oid);
       if (pic == undefined) {
         return;
@@ -1622,36 +1626,36 @@ export class PostContentService {
         pa.updatedAt = String(ps.updatedAt);
         pa.description = String(ps.description);
         pa.email = String(ps.email);
-        if (ps.boosted != undefined) {
-          if (ps.boosted.length > 0) {
-            pa.boosted = ps.boosted;
-            pa.isBoost = ps.isBoost;
-            for (var p = 0; p<ps.boosted.length;p++){
-              var CurrentDate = new Date(await (await this.utilService.getDateTime()).toISOString());
-              console.log("CurrentDate", CurrentDate);
+        // if (ps.boosted != undefined) {
+        //   if (ps.boosted.length > 0) {
+        //     pa.boosted = ps.boosted;
+        //     pa.isBoost = ps.isBoost;
+        //     for (var p = 0; p<ps.boosted.length;p++){
+        //       var CurrentDate = new Date(await (await this.utilService.getDateTime()).toISOString());
+        //       console.log("CurrentDate", CurrentDate);
 
-              var GetDate = new Date("2022-11-22T17:19:54.000Z");
-              console.log("GetDate", GetDate);
+        //       var GetDate = new Date("2022-11-22T17:19:54.000Z");
+        //       console.log("GetDate", GetDate);
 
-              console.log("Ceck", (CurrentDate > GetDate));
-              // console.log("ceck", GetDate);
-              // console.log("BoostDate", GetDate);
-              // console.log("BoostDate", typeof GetDate);
-              // var BoostDate = new Date(GetDate);
-              // console.log("BoostDate", BoostDate);
+        //       console.log("Ceck", (CurrentDate > GetDate));
+        //       // console.log("ceck", GetDate);
+        //       // console.log("BoostDate", GetDate);
+        //       // console.log("BoostDate", typeof GetDate);
+        //       // var BoostDate = new Date(GetDate);
+        //       // console.log("BoostDate", BoostDate);
 
-              // var GetDate = (ps.boosted[p].boostDate.toString()).split("T")[0];
-              // var CurrentDate = await (await this.utilService.getDateTime());
+        //       // var GetDate = (ps.boosted[p].boostDate.toString()).split("T")[0];
+        //       // var CurrentDate = await (await this.utilService.getDateTime());
               
               
-            }
+        //     }
 
 
-            pa.boostJangkauan = ps['boostJangkauan'];
-            pa.statusBoost = ps['status']; 
+        //     pa.boostJangkauan = ps['boostJangkauan'];
+        //     pa.statusBoost = ps['status']; 
 
-          }
-        }
+        //   }
+        // }
 
         let following = await this.contentEventService.findFollowing(pa.email);
 
