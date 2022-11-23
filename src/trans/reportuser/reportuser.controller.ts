@@ -261,10 +261,15 @@ export class ReportuserController {
 
             if (datacontent !== null) {
 
+
                 var reportedUserNew = [];
                 try {
                     reportedUserNew = datacontent.reportedUser;
                 } catch (e) {
+                    reportedUserNew = [];
+                }
+
+                if (reportedUserNew === null || reportedUserNew === undefined) {
                     reportedUserNew = [];
                 }
 
@@ -357,6 +362,10 @@ export class ReportuserController {
                     reportedUserNew = [];
                 }
 
+                if (reportedUserNew === null || reportedUserNew === undefined) {
+                    reportedUserNew = [];
+                }
+
                 try {
                     reportedUserCount = datacontent._doc.reportedUserCount;
                 } catch (e) {
@@ -444,6 +453,10 @@ export class ReportuserController {
                 } catch (e) {
                     reportedUserNew = [];
                 }
+                if (reportedUserNew === null || reportedUserNew === undefined) {
+                    reportedUserNew = [];
+                }
+
                 try {
                     reportedUserCount = datacontent._doc.reportedUserCount;
                 } catch (e) {
@@ -2315,13 +2328,49 @@ export class ReportuserController {
                 let id = reportContent[i]._id;
                 persen = count * 100 / sumreportContent;
 
-                objreportContent = {
-                    "_id": id,
-                    "myCount": count,
-                    "persen": persen.toFixed(2)
+
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#E31D41"
+                    };
+                    arrDataContent.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DITANGGUHKAN") {
+                    objditangguhkan = {
+                        "_id": "DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#8DCD03"
+                    };
+                    arrDataContent.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "TIDAK DITANGGUHKAN") {
+                    objtidakditangguhkan = {
+                        "_id": "TIDAK DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8800"
+                    };
+                    arrDataContent.push(objtidakditangguhkan);
                 }
 
-                arrDataContent.push(objreportContent);
+                let objflagging = {}
+                if (id === "FLAGING") {
+                    objflagging = {
+                        "_id": "DITANDAI SENSITIF",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataContent.push(objflagging);
+                }
+
             }
 
         } else {
@@ -2346,13 +2395,49 @@ export class ReportuserController {
                 let id = appealContent[i]._id;
                 persen = count * 100 / sumappealContent;
 
-                objappealContent = {
-                    "_id": id,
-                    "myCount": count,
-                    "persen": persen.toFixed(2)
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#E31D41"
+                    };
+                    arrDataContentAppeal.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DITANGGUHKAN") {
+                    objditangguhkan = {
+                        "_id": "DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#8DCD03"
+                    };
+                    arrDataContentAppeal.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "TIDAK DITANGGUHKAN") {
+                    objtidakditangguhkan = {
+                        "_id": "TIDAK DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8800"
+                    };
+                    arrDataContentAppeal.push(objtidakditangguhkan);
                 }
 
-                arrDataContentAppeal.push(objappealContent);
+                let objflagging = {}
+                if (id === "FLAGING") {
+                    objflagging = {
+                        "_id": "DITANDAI SENSITIF",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataContentAppeal.push(objflagging);
+                }
+
+
             }
         } else {
             arrDataContentAppeal = [];
@@ -2383,7 +2468,49 @@ export class ReportuserController {
                     "persen": persen.toFixed(2)
                 }
 
-                arrDataContentModeration.push(objmoderationContent);
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#E31D41"
+                    };
+                    arrDataContentModeration.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DITANGGUHKAN") {
+                    objditangguhkan = {
+                        "_id": "DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#8DCD03"
+                    };
+                    arrDataContentModeration.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "TIDAK DITANGGUHKAN") {
+                    objtidakditangguhkan = {
+                        "_id": "TIDAK DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8800"
+                    };
+                    arrDataContentModeration.push(objtidakditangguhkan);
+                }
+
+                let objflagging = {}
+                if (id === "FLAGING") {
+                    objflagging = {
+                        "_id": "DITANDAI SENSITIF",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataContentModeration.push(objflagging);
+                }
+
+
             }
         } else {
             arrDataContentModeration = [];
@@ -2398,12 +2525,12 @@ export class ReportuserController {
             }
             ],
             appeal: [{
-                totalReport: summoderationContent,
+                totalReport: sumappealContent,
                 data: arrDataContentAppeal
             }
             ],
             moderation: [{
-                totalReport: sumappealContent,
+                totalReport: summoderationContent,
                 data: arrDataContentModeration
             }
             ],
@@ -2468,7 +2595,48 @@ export class ReportuserController {
                     "persen": persen.toFixed(2)
                 }
 
-                arrDataAds.push(objreportAds);
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#E31D41"
+                    };
+                    arrDataAds.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DITANGGUHKAN") {
+                    objditangguhkan = {
+                        "_id": "DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#8DCD03"
+                    };
+                    arrDataAds.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "TIDAK DITANGGUHKAN") {
+                    objtidakditangguhkan = {
+                        "_id": "TIDAK DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8800"
+                    };
+                    arrDataAds.push(objtidakditangguhkan);
+                }
+
+                let objflagging = {}
+                if (id === "FLAGING") {
+                    objflagging = {
+                        "_id": "DITANDAI SENSITIF",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataAds.push(objflagging);
+                }
+
             }
 
         } else {
@@ -2492,14 +2660,48 @@ export class ReportuserController {
                 let count = appealAds[i].myCount;
                 let id = appealAds[i]._id;
                 persen = count * 100 / sumappealAds;
-
-                objappealAds = {
-                    "_id": id,
-                    "myCount": count,
-                    "persen": persen.toFixed(2)
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#E31D41"
+                    };
+                    arrDataAdsAppeal.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DITANGGUHKAN") {
+                    objditangguhkan = {
+                        "_id": "DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#8DCD03"
+                    };
+                    arrDataAdsAppeal.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "TIDAK DITANGGUHKAN") {
+                    objtidakditangguhkan = {
+                        "_id": "TIDAK DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8800"
+                    };
+                    arrDataAdsAppeal.push(objtidakditangguhkan);
                 }
 
-                arrDataAdsAppeal.push(objappealAds);
+                let objflagging = {}
+                if (id === "FLAGING") {
+                    objflagging = {
+                        "_id": "DITANDAI SENSITIF",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataAdsAppeal.push(objflagging);
+                }
+
             }
         } else {
             arrDataAdsAppeal = [];
@@ -2524,13 +2726,50 @@ export class ReportuserController {
                 let id = moderationAds[i]._id;
                 persen = count * 100 / summoderationAds;
 
-                objmoderationAds = {
-                    "_id": id,
-                    "myCount": count,
-                    "persen": persen.toFixed(2)
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#E31D41"
+                    };
+                    arrDataAdsModeration.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DITANGGUHKAN") {
+                    objditangguhkan = {
+                        "_id": "DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#8DCD03"
+                    };
+                    arrDataAdsModeration.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "TIDAK DITANGGUHKAN") {
+                    objtidakditangguhkan = {
+                        "_id": "TIDAK DITANGGUHKAN",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8800"
+                    };
+                    arrDataAdsModeration.push(objtidakditangguhkan);
                 }
 
-                arrDataAdsModeration.push(objmoderationAds);
+                let objflagging = {}
+                if (id === "FLAGING") {
+                    objflagging = {
+                        "_id": "DITANDAI SENSITIF",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrDataAdsModeration.push(objflagging);
+                }
+
+
+
             }
         } else {
             arrDataAdsModeration = [];
@@ -2545,12 +2784,12 @@ export class ReportuserController {
             }
             ],
             appeal: [{
-                totalReport: summoderationAds,
+                totalReport: sumappealAds,
                 data: arrDataAdsAppeal
             }
             ],
             moderation: [{
-                totalReport: sumappealAds,
+                totalReport: summoderationAds,
                 data: arrDataAdsModeration
             }
             ],
