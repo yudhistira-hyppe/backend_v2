@@ -4406,7 +4406,16 @@ export class AdsService {
         return data;
     }
 
+    async updateStatusOwned(id: ObjectID, updatedAt: string) {
+        let data = await this.adsModel.updateMany({ "_id": id },
+            { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle.$[].status": "DITANGGUHKAN", "reportedUserHandle.$[].updatedAt": updatedAt } });
+        return data;
+    }
 
+
+    async find200(): Promise<Ads[]> {
+        return this.adsModel.find({ reportedUserCount: { $gte: 200 } }).exec();
+    }
     async countReportStatus(startdate: string, enddate: string) {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -4824,5 +4833,7 @@ export class AdsService {
 
         return query;
     }
+
+
 
 }
