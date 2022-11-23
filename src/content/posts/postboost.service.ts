@@ -3426,6 +3426,12 @@ export class PostBoostService {
                     }
                 },
                 {
+                  $unwind: {
+                      path: "$music",
+                      preserveNullAndEmptyArrays: true
+                  }
+              },                
+                {
                     $project: {
                         "testDate": 1,
                         "musicId": 1,
@@ -3994,6 +4000,12 @@ export class PostBoostService {
                     }
                 },
                 {
+                  $unwind: {
+                      path: "$username",
+                      preserveNullAndEmptyArrays: true
+                  }
+              },                
+                {
                     $project: {
                         "testDate": 1,
                         "musicId": 1,
@@ -4556,6 +4568,12 @@ export class PostBoostService {
                     }
                 },
                 {
+                  $unwind: {
+                      path: "$music",
+                      preserveNullAndEmptyArrays: true
+                  }
+              },                
+                {
                     $project: {
                         "testDate": 1,
                         "musicId": 1,
@@ -5042,6 +5060,12 @@ export class PostBoostService {
                         preserveNullAndEmptyArrays: true
                     }
                 },
+                {
+                  $unwind: {
+                      path: "$music",
+                      preserveNullAndEmptyArrays: true
+                  }
+              },                
                 {
                     $project: {
                         "testDate": 1,
