@@ -423,7 +423,7 @@ export class PostContentService {
       medx._class = 'io.melody.hyppe.content.domain.MediaPict';
 
       this.logger.log('createNewPostVideo >>> prepare save music');
-      var retdx = await this.picService.create(med);
+      var retdx = await this.picService.create(medx);
 
       this.logger.log('createNewPostVideo >>> ' + retdx);
 
