@@ -2229,10 +2229,7 @@ export class ReportuserController {
 
         // Content
         var datacontentreport = null;
-        var datacountstatus = null;
-        var objcoun = {};
-        var dataSum = [];
-        var totalAllreport = null;
+
         var reportContent = [];
         var appealContent = [];
         var moderationContent = [];
@@ -2242,7 +2239,31 @@ export class ReportuserController {
         var sumreportContent = null;
         var sumappealContent = null;
         var summoderationContent = null;
-        var objreport = {}
+        var objreportContent = {}
+        var arrDataContent = [];
+        var objappealContent = {}
+        var arrDataContentAppeal = [];
+        var objmoderationContent = {}
+        var arrDataContentModeration = [];
+
+        //ads
+        var dataadsreport = null;
+        var reportAds = [];
+        var appealAds = [];
+        var moderationAds = [];
+        var lengreportAds = null;
+        var lengappealAds = null;
+        var lengmoderationAds = null;
+        var sumreportAds = null;
+        var sumappealAds = null;
+        var summoderationAds = null;
+        var objreportAds = {}
+        var arrDataAds = [];
+        var objappealAds = {}
+        var arrDataAdsAppeal = [];
+        var objmoderationAds = {}
+        var arrDataAdsModeration = [];
+        var persen = null;
         try {
 
             datacontentreport = await this.postsService.countReportStatus(startdate, enddate);
@@ -2287,6 +2308,26 @@ export class ReportuserController {
             sumreportContent = 0;
         }
 
+        if (lengreportContent > 0) {
+
+            for (let i = 0; i < lengreportContent; i++) {
+                let count = reportContent[i].myCount;
+                let id = reportContent[i]._id;
+                persen = count * 100 / sumreportContent;
+
+                objreportContent = {
+                    "_id": id,
+                    "myCount": count,
+                    "persen": persen.toFixed(2)
+                }
+
+                arrDataContent.push(objreportContent);
+            }
+
+        } else {
+            arrDataContent = [];
+        }
+
         if (lengappealContent > 0) {
 
             for (let i = 0; i < lengappealContent; i++) {
@@ -2295,6 +2336,26 @@ export class ReportuserController {
             }
         } else {
             sumappealContent = 0;
+        }
+
+        if (lengappealContent > 0) {
+
+
+            for (let i = 0; i < lengappealContent; i++) {
+                let count = appealContent[i].myCount;
+                let id = appealContent[i]._id;
+                persen = count * 100 / sumappealContent;
+
+                objappealContent = {
+                    "_id": id,
+                    "myCount": count,
+                    "persen": persen.toFixed(2)
+                }
+
+                arrDataContentAppeal.push(objappealContent);
+            }
+        } else {
+            arrDataContentAppeal = [];
         }
 
         if (lengmoderationContent > 0) {
@@ -2308,12 +2369,194 @@ export class ReportuserController {
             summoderationContent = 0;
         }
 
+        if (lengmoderationContent > 0) {
+
+
+            for (let i = 0; i < lengmoderationContent; i++) {
+                let count = moderationContent[i].myCount;
+                let id = moderationContent[i]._id;
+                persen = count * 100 / summoderationContent;
+
+                objmoderationContent = {
+                    "_id": id,
+                    "myCount": count,
+                    "persen": persen.toFixed(2)
+                }
+
+                arrDataContentModeration.push(objmoderationContent);
+            }
+        } else {
+            arrDataContentModeration = [];
+        }
+
         var content = null;
 
+        content = {
+            report: [{
+                totalReport: sumreportContent,
+                data: arrDataContent
+            }
+            ],
+            appeal: [{
+                totalReport: summoderationContent,
+                data: arrDataContentAppeal
+            }
+            ],
+            moderation: [{
+                totalReport: sumappealContent,
+                data: arrDataContentModeration
+            }
+            ],
+        };
 
 
 
-        return { response_code: 202, reportContent, appealContent, moderationContent, messages };
+        try {
+
+            dataadsreport = await this.adsService.countReportStatus(startdate, enddate);
+            reportAds = dataadsreport[0].report;
+            appealAds = dataadsreport[0].appeal;
+            moderationAds = dataadsreport[0].moderation;
+
+        } catch (e) {
+            dataadsreport = null;
+            reportAds = [];
+            appealAds = [];
+            moderationAds = [];
+        }
+
+        try {
+            lengreportAds = reportAds.length;
+        } catch (e) {
+            lengreportAds = 0;
+        }
+        try {
+            lengappealAds = appealAds.length;
+        } catch (e) {
+            lengappealAds = 0;
+        }
+
+        try {
+            lengmoderationAds = moderationAds.length;
+        } catch (e) {
+            lengmoderationAds = 0;
+        }
+
+
+
+        if (lengreportAds > 0) {
+
+            for (let i = 0; i < lengreportAds; i++) {
+                sumreportAds += reportAds[i].myCount;
+
+            }
+
+        } else {
+            sumreportAds = 0;
+        }
+
+        if (lengreportAds > 0) {
+
+            for (let i = 0; i < lengreportAds; i++) {
+                let count = reportAds[i].myCount;
+                let id = reportAds[i]._id;
+                persen = count * 100 / sumreportAds;
+
+                objreportAds = {
+                    "_id": id,
+                    "myCount": count,
+                    "persen": persen.toFixed(2)
+                }
+
+                arrDataAds.push(objreportAds);
+            }
+
+        } else {
+            arrDataAds = [];
+        }
+
+        if (lengappealAds > 0) {
+
+            for (let i = 0; i < lengappealAds; i++) {
+                sumappealAds += appealAds[i].myCount;
+
+            }
+        } else {
+            sumappealAds = 0;
+        }
+
+        if (lengappealAds > 0) {
+
+
+            for (let i = 0; i < lengappealAds; i++) {
+                let count = appealAds[i].myCount;
+                let id = appealAds[i]._id;
+                persen = count * 100 / sumappealAds;
+
+                objappealAds = {
+                    "_id": id,
+                    "myCount": count,
+                    "persen": persen.toFixed(2)
+                }
+
+                arrDataAdsAppeal.push(objappealAds);
+            }
+        } else {
+            arrDataAdsAppeal = [];
+        }
+
+        if (lengmoderationAds > 0) {
+
+            for (let i = 0; i < lengmoderationAds; i++) {
+                summoderationAds += moderationAds[i].myCount;
+
+            }
+
+        } else {
+            summoderationAds = 0;
+        }
+
+        if (lengmoderationAds > 0) {
+
+
+            for (let i = 0; i < lengmoderationAds; i++) {
+                let count = moderationAds[i].myCount;
+                let id = moderationAds[i]._id;
+                persen = count * 100 / summoderationAds;
+
+                objmoderationAds = {
+                    "_id": id,
+                    "myCount": count,
+                    "persen": persen.toFixed(2)
+                }
+
+                arrDataAdsModeration.push(objmoderationAds);
+            }
+        } else {
+            arrDataAdsModeration = [];
+        }
+
+        var ads = null;
+
+        ads = {
+            report: [{
+                totalReport: sumreportAds,
+                data: arrDataAds
+            }
+            ],
+            appeal: [{
+                totalReport: summoderationAds,
+                data: arrDataAdsAppeal
+            }
+            ],
+            moderation: [{
+                totalReport: sumappealAds,
+                data: arrDataAdsModeration
+            }
+            ],
+        };
+
+        return { response_code: 202, content, ads, messages };
 
 
 
