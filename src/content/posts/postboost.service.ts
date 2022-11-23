@@ -5227,7 +5227,7 @@ export class PostBoostService {
       for (let i = 0; i < ovid.length; i++) {
         let pdvv = ovid[i];
         if (valPost.has(pdvv.postID) == false) {
-          resDiary.push(pdvv);
+          resVideo.push(pdvv);
         }
       }
     }
