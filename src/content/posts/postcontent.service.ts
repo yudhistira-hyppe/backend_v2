@@ -411,7 +411,7 @@ export class PostContentService {
 
       var medx = new Mediapicts();
       medx._id = await this.utilService.generateId();
-      medx.mediaID = med._id;
+      medx.mediaID = medx._id;
       medx.postID = post.postID;
       medx.active = false;
       medx.createdAt = await this.utilService.getDateTimeString();
@@ -423,14 +423,14 @@ export class PostContentService {
       medx._class = 'io.melody.hyppe.content.domain.MediaPict';
 
       this.logger.log('createNewPostVideo >>> prepare save music');
-      var retdx = await this.picService.create(med);
+      var retdx = await this.picService.create(medx);
 
       this.logger.log('createNewPostVideo >>> ' + retdx);
 
       var vids = { "$ref": "mediapicts", "$id": retdx.mediaID, "$db": "hyppe_content_db" };
       cm.push(vids);
 
-      mediaId = String(retd.mediaID);
+      mediaId = String(retdx.mediaID);
     }
 
     post.contentMedias = cm;
@@ -611,7 +611,7 @@ export class PostContentService {
     let cm = post.contentMedias[0];
     let ns = cm.namespace;
     this.logger.log('updateNewPost >>> namespace: ' + ns);
-    if (ns == 'mediavideos') {
+    if (ns == 'mediavideos' || post.musicId != undefined) {
       let vid = await this.videoService.findOne(cm.oid);
       if (vid == undefined) {
         return;
@@ -645,6 +645,10 @@ export class PostContentService {
       post.active = true;
       this.postService.create(post);
     } else if (ns == 'mediapicts') {
+      if (post.musicId != undefined) {
+
+      }
+
       let pic = await this.picService.findOne(cm.oid);
       if (pic == undefined) {
         return;
