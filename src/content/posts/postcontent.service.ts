@@ -611,7 +611,7 @@ export class PostContentService {
     let cm = post.contentMedias[0];
     let ns = cm.namespace;
     this.logger.log('updateNewPost >>> namespace: ' + ns);
-    if (ns == 'mediavideos') {
+    if (ns == 'mediavideos' || post.musicId != undefined) {
       let vid = await this.videoService.findOne(cm.oid);
       if (vid == undefined) {
         return;
@@ -645,6 +645,10 @@ export class PostContentService {
       post.active = true;
       this.postService.create(post);
     } else if (ns == 'mediapicts') {
+      if (post.musicId != undefined) {
+
+      }
+
       let pic = await this.picService.findOne(cm.oid);
       if (pic == undefined) {
         return;
