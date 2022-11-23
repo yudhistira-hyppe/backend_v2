@@ -538,6 +538,12 @@ export class UtilsService {
     return DateTime.substring(0, DateTime.lastIndexOf('.'));
   }
 
+  async getDateTime(): Promise<Date> {
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
+    return DateTime;
+  }
+
   async getDateTimeISOString(): Promise<string> {
     var date = new Date();
     var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();

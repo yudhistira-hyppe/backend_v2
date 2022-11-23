@@ -37,6 +37,8 @@ import { CreatePostsDto } from 'src/content/posts/dto/create-posts.dto';
 import { Accountbalances } from '../accountbalances/schemas/accountbalances.schema';
 import { Templates } from 'src/infra/templates/schemas/templates.schema';
 
+const cheerio = require('cheerio');
+const nodeHtmlToImage = require('node-html-to-image');
 @Controller()
 export class TransactionsController {
     constructor(private readonly transactionsService: TransactionsService,
@@ -1309,7 +1311,7 @@ export class TransactionsController {
                         //SEND FCM SUCCES TRANSACTION
                         this.sendCommentFCM("BOOST_SUCCES", postid, emailbuyer.toString())
                         //this.sendCommentFCM("BOOST_CONTENT", postid, emailbuyer.toString())
-                        this.sendemail(emailbuyer.toString(), "BOOST_SUCCES");
+                        this.sendemail(emailbuyer.toString(), "BOOST_SUCCES", datatransaksi);
 
                         //RESPONSE SUCCES
                         res.status(HttpStatus.OK).json({
@@ -1391,14 +1393,14 @@ export class TransactionsController {
 
     async accontbalanceBoost(postid: string, idusersell: { oid: string }, amount: number): Promise<Accountbalances> {
         try {
-            var currentDate = await this.utilsService.getDateTimeISOString();
+            var currentDate = await this.utilsService.getDateTime();
             var desccontent = postid;
             var dataacountbalance = {
                 iduser: idusersell,
                 debet: 0,
                 kredit: amount,
                 type: "sell",
-                timestamp: currentDate,
+                timestamp: currentDate.toISOString(),
                 description: "sell boost content: " + desccontent,
             };
             return await this.accountbalancesService.createdata(dataacountbalance);
@@ -5183,7 +5185,7 @@ export class TransactionsController {
     @Post('api/transactions/boostcontent')
     @HttpCode(HttpStatus.ACCEPTED)
     async postBost(@Headers() headers, @Body() body) {
-        var DateTimeStamp = await this.utilsService.getDateTimeISOString();
+        var DateTimeStamp = await this.utilsService.getDateTime();
 
         //VALIDASI HEADER
         if (headers['x-auth-user'] == undefined) {
@@ -5398,8 +5400,8 @@ export class TransactionsController {
                         var createTransactionsDto_ = new CreateTransactionsDto();
                         createTransactionsDto_.iduserbuyer = Object(user._id.toString());
                         createTransactionsDto_.idusersell = Object(id_user_sell._id.toString());
-                        createTransactionsDto_.timestamp = DateTimeStamp;
-                        createTransactionsDto_.updatedAt = DateTimeStamp;
+                        createTransactionsDto_.timestamp = DateTimeStamp.toISOString();
+                        createTransactionsDto_.updatedAt = DateTimeStamp.toISOString();
                         createTransactionsDto_.noinvoice = transactionNumber;
                         createTransactionsDto_.amount = price;
                         createTransactionsDto_.status = cekstatusva.va_status;
@@ -5419,7 +5421,7 @@ export class TransactionsController {
                         createTransactionsDto_.response = Va;
                         let transaction_boost = await this.transactionsService.create(createTransactionsDto_);
                         this.sendTransactionFCM(email, "BOOST_BUY", body.postID, email)
-                        this.sendemail(email, "BOOST_BUY");
+                        this.sendemail(email, "BOOST_BUY", transaction_boost);
 
                         var data_response_ = {
                             "noinvoice": transaction_boost.noinvoice,
@@ -5521,8 +5523,8 @@ export class TransactionsController {
                             var createTransactionsDto_ = new CreateTransactionsDto();
                             createTransactionsDto_.iduserbuyer = Object(user._id.toString());
                             createTransactionsDto_.idusersell = Object(id_user_sell._id.toString());
-                            createTransactionsDto_.timestamp = DateTimeStamp;
-                            createTransactionsDto_.updatedAt = DateTimeStamp;
+                            createTransactionsDto_.timestamp = DateTimeStamp.toISOString();
+                            createTransactionsDto_.updatedAt = DateTimeStamp.toISOString();
                             createTransactionsDto_.noinvoice = transactionNumber;
                             createTransactionsDto_.amount = price;
                             createTransactionsDto_.status = cekstatusva.va_status;
@@ -5542,7 +5544,7 @@ export class TransactionsController {
                             createTransactionsDto_.response = Va;
                             let transaction_boost = await this.transactionsService.create(createTransactionsDto_);
                             this.sendTransactionFCM(email, "BOOST_BUY", body.postID, email)
-                            this.sendemail(email, "BOOST_BUY");
+                            this.sendemail(email, "BOOST_BUY", transaction_boost);
 
                             var data_response_ = {
                                 "noinvoice": transaction_boost.noinvoice,
@@ -5669,22 +5671,60 @@ export class TransactionsController {
         await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
     }
 
-    async sendemail(email: string, type: string) {
+    async sendemail(email: string, type: string, transaction_boost:any) {
         //Send Email
         try {
+            //GET TEMPLATE HTML
             var Templates_ = new TemplatesRepo();
+            Templates_ = await this.utilsService.getTemplate_repo(type, 'EMAIL');
+
+            //GET USER LANGUAGE
             var profile = await this.utilsService.generateProfile(email, "FULL");
             if (!(await this.utilsService.ceckData(profile))) {
                 console.log('ERROR', 'Unabled to proceed user not found, ' + email);
             }
             const langIso = (profile.langIso != undefined) ? profile.langIso : "id";
-            Templates_ = await this.utilsService.getTemplate_repo(type, 'EMAIL');
+
+            //GET USER LANGUAGE
+            var DataPost = await this.postsService.findByPostId(transaction_boost.postid);
+            var postType = "-";
+            if (await this.utilsService.ceckData(DataPost)){
+                var DatapostType = DataPost.postType;
+                postType = DatapostType[0].toUpperCase() + DatapostType.slice(1).toLowerCase();
+            }
+
+            //TEMPLATE HTML TO CHEERIO
             var html_body = "";
             if (langIso=="en"){
-                html_body = Templates_.body_detail.toString();
+                html_body = Templates_.body_detail.trim().toString();
             } else {
-                html_body = Templates_.body_detail_id.toString();
+                html_body = Templates_.body_detail_id.trim().toString();
             }
+            const $_ = cheerio.load(html_body);
+
+            //GET DATA BOOST
+            var typeBoost = "-";
+            var hargaBoost = "Rp 0";
+            if (transaction_boost.detail.length>0){
+                if (transaction_boost.detail[0].type != undefined) {
+                    var DatapostTypeBoost = DataPost.postType;
+                    typeBoost = DatapostTypeBoost[0].toUpperCase() + DatapostTypeBoost.slice(1).toLowerCase();
+                }
+                
+            }
+
+            //INSER VAR TO TEMPLATE
+            $_('#fullname').text(profile.fullName);
+            $_('#username').text(profile.username);
+            $_('#postType').text("Hyppe" + postType);
+            $_('#typeBoost').text(typeBoost);
+            // $_('#hargaBoost').text(data.username);
+            // $_('#biayaAdmin').text(data.username);
+            // $_('#tanggalPemesanan').text(data.username);
+            // $_('#kodePemesanan').text(data.username);
+            // $_('#tanggalMulai').text(data.username);
+            // $_('#waktuBoost').text(data.username);
+            // $_('#selangWaktu').text(data.username);
 
             //var to = email;
             var to = email;

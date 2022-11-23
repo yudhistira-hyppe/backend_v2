@@ -94,8 +94,10 @@ import { GenreModule } from './infra/genre/genre.module';
 import { MoodModule } from './infra/mood/mood.module';
 import { ThemeModule } from './infra/theme/theme.module';
 import { MediamusicModule } from './content/mediamusic/mediamusic.module';
+import { IntervalSessionModule } from './content/boostsession/intervarsession/intervarsession.module';
 @Module({
   imports: [
+    IntervalSessionModule,
     MediamusicModule,
     ThemeModule,
     MoodModule,

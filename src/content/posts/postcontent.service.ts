@@ -409,25 +409,25 @@ export class PostContentService {
       let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0 };
       post.metadata = metadata;
 
-      var med = new Mediavideos();
-      med._id = await this.utilService.generateId();
-      med.mediaID = med._id;
-      med.postID = post.postID;
-      med.active = false;
-      med.createdAt = await this.utilService.getDateTimeString();
-      med.updatedAt = await this.utilService.getDateTimeString();
-      med.mediaMime = file.mimetype;
-      med.mediaType = 'video';
-      med.originalName = file.originalname;
-      med.apsara = true;
-      med._class = 'io.melody.hyppe.content.domain.MediaVideo';
+      var medx = new Mediapicts();
+      medx._id = await this.utilService.generateId();
+      medx.mediaID = medx._id;
+      medx.postID = post.postID;
+      medx.active = false;
+      medx.createdAt = await this.utilService.getDateTimeString();
+      medx.updatedAt = await this.utilService.getDateTimeString();
+      medx.mediaMime = file.mimetype;
+      medx.mediaType = 'video';
+      medx.originalName = file.originalname;
+      medx.apsara = true;
+      medx._class = 'io.melody.hyppe.content.domain.MediaPict';
 
-      this.logger.log('createNewPostVideo >>> prepare save');
-      var retd = await this.videoService.create(med);
+      this.logger.log('createNewPostVideo >>> prepare save music');
+      var retdx = await this.picService.create(med);
 
-      this.logger.log('createNewPostVideo >>> ' + retd);
+      this.logger.log('createNewPostVideo >>> ' + retdx);
 
-      var vids = { "$ref": "mediavideos", "$id": retd.mediaID, "$db": "hyppe_content_db" };
+      var vids = { "$ref": "mediapicts", "$id": retdx.mediaID, "$db": "hyppe_content_db" };
       cm.push(vids);
 
       mediaId = String(retd.mediaID);
@@ -1057,7 +1057,6 @@ export class PostContentService {
         pa.description = String(ps.description);
         pa.email = String(ps.email);
         pa.boosted = ps.boosted;
-        pa.boostCount = ps.boostCount;
         pa.isBoost = ps.isBoost; 
         pa.boostJangkauan = ps['boostJangkauan'];
         pa.statusBoost = ps['status']; 
@@ -1623,6 +1622,36 @@ export class PostContentService {
         pa.updatedAt = String(ps.updatedAt);
         pa.description = String(ps.description);
         pa.email = String(ps.email);
+        if (ps.boosted != undefined) {
+          if (ps.boosted.length > 0) {
+            pa.boosted = ps.boosted;
+            pa.isBoost = ps.isBoost;
+            for (var p = 0; p<ps.boosted.length;p++){
+              var CurrentDate = new Date(await (await this.utilService.getDateTime()).toISOString());
+              console.log("CurrentDate", CurrentDate);
+
+              var GetDate = new Date("2022-11-22T17:19:54.000Z");
+              console.log("GetDate", GetDate);
+
+              console.log("Ceck", (CurrentDate > GetDate));
+              // console.log("ceck", GetDate);
+              // console.log("BoostDate", GetDate);
+              // console.log("BoostDate", typeof GetDate);
+              // var BoostDate = new Date(GetDate);
+              // console.log("BoostDate", BoostDate);
+
+              // var GetDate = (ps.boosted[p].boostDate.toString()).split("T")[0];
+              // var CurrentDate = await (await this.utilService.getDateTime());
+              
+              
+            }
+
+
+            pa.boostJangkauan = ps['boostJangkauan'];
+            pa.statusBoost = ps['status']; 
+
+          }
+        }
 
         let following = await this.contentEventService.findFollowing(pa.email);
 
