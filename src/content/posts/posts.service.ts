@@ -8652,7 +8652,7 @@ export class PostsService {
 
               console.log(st + " " + d);
 
-              let ted = d;
+              let ted = d + (7 * 60 * 1000);
               let bv : any[] = bbs.boostViewer;
               if (bv != undefined) {
                 if (bv.length > 0) {
