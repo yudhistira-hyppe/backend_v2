@@ -674,9 +674,10 @@ export class MediamusicService {
     return query;
   }
 
-  async getMusicFilter(pageNumber: number, pageRow: number, genre: string[], theme: string[], mood: string[], musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string) {
+  async getMusicFilter(pageNumber: number, pageRow: number, genre: string[], theme: string[], mood: string[], musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string[], sort: string) {
     var perPage = pageRow, page = Math.max(0, pageNumber);
     var where = {};
+    var sortData = {};
     if (musicTitle != undefined) {
       if (musicTitle != "") {
         where['musicTitle'] = { $regex: musicTitle, $options: "i" };
@@ -691,8 +692,6 @@ export class MediamusicService {
       if (createdAtStart != "" && createdAtEnd != "") {
         var startDate = new Date(createdAtStart + 'T00:00:00');
         var endDate = new Date(createdAtEnd + 'T23:59:59');
-        console.log(startDate);
-        console.log(endDate);
         where['createdAt'] = {
           $gte: new Date(startDate),
           $lt: new Date(endDate) 
@@ -727,17 +726,30 @@ export class MediamusicService {
       }
     }
     if (status != undefined) {
-      if (status != "") {
-        where['isActive'] = status;
+      if (status.length == 1) {
+        for (var s = 0; s < status.length; s++) {
+          where['isActive'] = status[s];
+        }
       }
     }
     where['isDelete'] = false;
-    const query = await this.MediamusicModel.find(where).limit(perPage).skip(perPage * page).sort({ musicTitle: 'desc' });
+    if (sortData != undefined) {
+      if (sort == "desc") {
+        sortData['createdAt'] = -1;
+      }
+      if (sort == "asc") {
+        sortData['createdAt'] = 1;
+      }
+    }else{
+      sortData['createdAt'] = -1;
+    }
+    const query = await this.MediamusicModel.find(where).sort(sortData).limit(perPage).skip(perPage * page);
     return query;
   }
 
-  async getMusicFilterWitoutSkipLimit(genre: string[], theme: string[], mood: string[], musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string) {
+  async getMusicFilterWitoutSkipLimit(genre: string[], theme: string[], mood: string[], musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string[], sort:string) {
     var where = {};
+    var sortData = {};
     if (musicTitle != undefined) {
       if (musicTitle != "") {
         where['musicTitle'] = { $regex: musicTitle, $options: "i" };
@@ -788,12 +800,24 @@ export class MediamusicService {
       }
     }
     if (status != undefined) {
-      if (status != "") {
-        where['isActive'] = status;
+      if (status.length == 1) {
+        for (var s = 0; s < status.length; s++) {
+          where['isActive'] = status[s];
+        }
       }
     }
     where['isDelete'] = false;
-    const query = await this.MediamusicModel.find(where).sort({ musicTitle: 'desc' });
+    if (sortData != undefined) {
+      if (sort == "desc") {
+        sortData['createdAt'] = -1;
+      }
+      if (sort == "asc") {
+        sortData['createdAt'] = 1;
+      }
+    } else {
+      sortData['createdAt'] = -1;
+    }
+    const query = await this.MediamusicModel.find(where).sort(sortData).sort({ musicTitle: 'desc' });
     return query;
   }
 

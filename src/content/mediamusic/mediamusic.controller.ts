@@ -477,6 +477,7 @@ export class MediamusicController {
     @Query('createdAtStart') createdAtStart: string,
     @Query('createdAtEnd') createdAtEnd: string,
     @Query('status') status: string,
+    @Query('sort') sort: string,
     @Headers() headers) {
     if (headers['x-auth-user'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
@@ -497,10 +498,11 @@ export class MediamusicController {
     const artistName_ = artistName;
     const createdAtStart_ = createdAtStart;
     const createdAtEnd_ = createdAtEnd;
-    const status_ = status;
+    const status_ = (status != undefined) ? status.toString().split(',') : [];
+    const sort_ = sort;
 
-    const dataAll = await this.mediamusicService.getMusicFilterWitoutSkipLimit(genre_, theme_, mood_, musicTitle_, artistName_, createdAtStart_, createdAtEnd_, status_);
-    const data = await this.mediamusicService.getMusicFilter(pageNumber_, pageRow_, genre_, theme_, mood_, musicTitle_, artistName_, createdAtStart_, createdAtEnd_, status_);
+    const dataAll = await this.mediamusicService.getMusicFilterWitoutSkipLimit(genre_, theme_, mood_, musicTitle_, artistName_, createdAtStart_, createdAtEnd_, status_, sort_);
+    const data = await this.mediamusicService.getMusicFilter(pageNumber_, pageRow_, genre_, theme_, mood_, musicTitle_, artistName_, createdAtStart_, createdAtEnd_, status_, sort_);
     
     let thumnail_data: string[] = [];
     for (let i = 0; i < data.length; i++) {
