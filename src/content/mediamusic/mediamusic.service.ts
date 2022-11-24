@@ -480,11 +480,18 @@ export class MediamusicService {
       });
   }
 
-  async statusMusic(_id: [Object], status: boolean) {
+  async statusMusic(_id_data: [Object], status: boolean) {
     try {
       this.MediamusicModel.updateMany(
-        { "_id": { $in: _id } },
-        { $set: { "isActive": status } })
+        { _id: { $in: _id_data } },
+        { $set: { isActive: status } }, function (err, docs) {
+          if (err) {
+            console.log(err)
+          }
+          else {
+            console.log("Updated Docs : ", docs);
+          }
+        });
     } catch (e) {
       console.log(e);
     }
@@ -675,7 +682,7 @@ export class MediamusicService {
   }
 
   async getMusicFilter(pageNumber: number, pageRow: number, genre: string[], theme: string[], mood: string[], musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string[], sort: string) {
-    var perPage = pageRow, page = Math.max(0, pageNumber);
+    var perPage = pageRow, page = Math.max(0, pageNumber-1);
     var where = {};
     var sortData = {};
     if (musicTitle != undefined) {
