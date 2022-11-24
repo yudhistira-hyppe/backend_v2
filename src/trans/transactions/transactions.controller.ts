@@ -5242,7 +5242,7 @@ export class TransactionsController {
         }
 
         //GET VA EXPIRED
-        const ExpiredVa = await this.utilsService.getSetting_("6332caeb0c7d00004f005175");
+        const ExpiredVa = await this.utilsService.getSetting_("637df99e95400000ce004fd3");
         if (ExpiredVa == null) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, Setting Expired Va not found',
@@ -5543,7 +5543,7 @@ export class TransactionsController {
                             createTransactionsDto_.postid = body.postID;
                             createTransactionsDto_.response = Va;
                             let transaction_boost = await this.transactionsService.create(createTransactionsDto_);
-                            this.sendTransactionFCM(email, "BOOST_BUY", body.postID, email)
+                            //this.sendTransactionFCM(email, "BOOST_BUY", body.postID, email)
                             this.sendemail(email, "BOOST_BUY", transaction_boost);
 
                             var data_response_ = {
