@@ -275,16 +275,16 @@ export class GetusercontentsController {
         // var datatraffic = await this.getusercontentsService.findmanagementcontenttrafic(email);
         // var traffic = datatraffic[0];
 
-        var postIDs=await this.getusercontentsService.findPostIDsByEmail(email);
-        var events=await this.getcontenteventsService.findByPostID(postIDs,['VIEW']);
-        var byGenders=await this.getcontenteventsService.groupEventsBy(events,'genderp');
-        var byYms=await this.getcontenteventsService.groupEventsBy(events,'ym');
+        var postIDs = await this.getusercontentsService.findPostIDsByEmail(email);
+        var events = await this.getcontenteventsService.findByPostID(postIDs, ['VIEW']);
+        var byGenders = await this.getcontenteventsService.groupEventsBy(events, 'genderp');
+        var byYms = await this.getcontenteventsService.groupEventsBy(events, 'ym');
         var datamoderate = await this.getusercontentsService.findmanagementcontentmoderate(email);
         var moderate = datamoderate[0];
 
         data = [{
             "popular": popular, "mostlikes": mostlikes, "mostshares": mostshares, "latestpost": latestpost, "latestmonetize": latestmonetize, "latestownership": latestownership,
-            "moderate": moderate, "byGenders": byGenders, "byYms":byYms
+            "moderate": moderate, "byGenders": byGenders, "byYms": byYms
         }];
         // console.log(data);
         // console.log('returning data');
@@ -842,6 +842,7 @@ export class GetusercontentsController {
         var totalFilterPict = null;
         var totalFilterPostUser = null;
         var totalFilterUser = null;
+        var email = null;
 
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["skip"] !== undefined) {
@@ -856,7 +857,7 @@ export class GetusercontentsController {
             throw new BadRequestException("Unabled to proceed");
         }
 
-
+        email = request_json["email"];
         keys = request_json["keys"];
 
 
@@ -929,7 +930,7 @@ export class GetusercontentsController {
 
         try {
             let query = null;
-            query = await this.postsService.findcontentfilters(keys, "vid", skip, limit);
+            query = await this.postsService.findcontentfilters(keys, "vid", skip, limit, email);
 
             var datas = null;
             var arrdata = [];
@@ -1026,6 +1027,8 @@ export class GetusercontentsController {
                     "insight": query[i].insight,
                     "apsaraId": idapsaradefine,
                     "isApsara": apsaradefine,
+                    "reportedStatus": query[i].reportedStatus,
+                    "reportedUserCount": query[i].reportedUserCount,
                     "media": datas
                 };
 
@@ -1038,7 +1041,7 @@ export class GetusercontentsController {
 
         try {
             let query = null;
-            query = await this.postsService.findcontentfilters(keys, "diary", skip, limit);
+            query = await this.postsService.findcontentfilters(keys, "diary", skip, limit, email);
             var datas = null;
             var arrdata = [];
             let pict: String[] = [];
@@ -1134,6 +1137,8 @@ export class GetusercontentsController {
                     "insight": query[i].insight,
                     "apsaraId": idapsaradefine,
                     "isApsara": apsaradefine,
+                    "reportedStatus": query[i].reportedStatus,
+                    "reportedUserCount": query[i].reportedUserCount,
                     "media": datas
                 };
 
@@ -1146,7 +1151,7 @@ export class GetusercontentsController {
 
         try {
             let query = null;
-            query = await this.postsService.findcontentfilters(keys, "pict", skip, limit);
+            query = await this.postsService.findcontentfilters(keys, "pict", skip, limit, email);
 
             var datas = null;
             var arrdata = [];
@@ -1243,6 +1248,8 @@ export class GetusercontentsController {
                     "insight": query[i].insight,
                     "apsaraId": idapsaradefine,
                     "isApsara": apsaradefine,
+                    "reportedStatus": query[i].reportedStatus,
+                    "reportedUserCount": query[i].reportedUserCount,
                     "media": datas
                 };
 
@@ -1287,21 +1294,21 @@ export class GetusercontentsController {
         // }
 
         try {
-            totalFilterPostVid = await this.postsService.findcountfilterall(keys, "vid");
+            totalFilterPostVid = await this.postsService.findcountfilterall(keys, "vid", email);
             totalFilterVid = totalFilterPostVid[0].totalpost;
         } catch (e) {
             totalFilterVid = 0;
         }
 
         try {
-            totalFilterPostDiary = await this.postsService.findcountfilterall(keys, "diary");
+            totalFilterPostDiary = await this.postsService.findcountfilterall(keys, "diary", email);
             totalFilterDiary = totalFilterPostDiary[0].totalpost;
         } catch (e) {
             totalFilterDiary = 0;
         }
 
         try {
-            totalFilterPostPic = await this.postsService.findcountfilterall(keys, "pict");
+            totalFilterPostPic = await this.postsService.findcountfilterall(keys, "pict", email);
             totalFilterPict = totalFilterPostPic[0].totalpost;
         } catch (e) {
             totalFilterPict = 0;

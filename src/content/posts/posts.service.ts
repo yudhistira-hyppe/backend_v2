@@ -2775,16 +2775,42 @@ export class PostsService {
     }
   }
 
-  async findcontentfilters(keys: string, postType: string, skip: number, limit: number) {
+  async findcontentfilters(keys: string, postType: string, skip: number, limit: number, email: string) {
 
     if (keys !== undefined) {
       const query = await this.PostsModel.aggregate([
-        {
-          $match: {
 
-            description: {
-              $regex: keys, $options: 'i'
-            }, postType: postType, visibility: "PUBLIC", active: true
+        {
+          $lookup: {
+            from: "userbasics",
+            as: "ubasic",
+            let: {
+              local_id: '$reportedUser.email'
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      {
+                        $in: ['$email', {
+                          $ifNull: ['$$local_id', []]
+                        }]
+                      },
+
+                    ]
+                  }
+                }
+              },
+              {
+                $project: {
+                  fullName: 1,
+                  email: 1
+                }
+              },
+
+            ],
+
           }
         },
 
@@ -2801,30 +2827,33 @@ export class PostsService {
         {
           $project: {
             refs: { $arrayElemAt: ['$contentMedias', 0] },
-            createdAt: '$createdAt',
-            updatedAt: '$updatedAt',
-            postID: '$postID',
-            email: '$email',
-            postType: '$postType',
-            description: '$description',
-            title: '$description',
-            active: '$active',
-            metadata: '$metadata',
-            location: '$location',
-            tags: '$tags',
-            likes: '$likes',
-            shares: '$shares',
-            reaction: '$reaction',
-            comments: '$comments',
-            isOwned: '$isOwned',
-            views: '$views',
-            visibility: '$visibility',
+            createdAt: 1,
+            reportedStatus: 1,
+            reportedUserCount: 1,
+            updatedAt: 1,
+            postID: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            metadata: 1,
+            location: 1,
+            tags: 1,
+            likes: 1,
+            shares: 1,
+            reaction: 1,
+            comments: 1,
+            isOwned: 1,
+            views: 1,
+            visibility: 1,
+            allowComments: 1,
+            isCertified: 1,
             isViewed:
             {
               $cond: { if: { $eq: ["$views", 0] }, then: false, else: true }
             },
-            allowComments: '$allowComments',
-            isCertified: '$isCertified',
+
             saleLike: {
               $cond: { if: { $eq: ["$saleLike", -1] }, then: false, else: "$saleLike" }
             },
@@ -2845,26 +2874,28 @@ export class PostsService {
           $project: {
             refs: '$refs.$ref',
             idmedia: '$refs.$id',
-            createdAt: '$createdAt',
-            updatedAt: '$updatedAt',
-            postID: '$postID',
-            email: '$email',
-            postType: '$postType',
-            description: '$description',
-            title: '$description',
-            active: '$active',
-            metadata: '$metadata',
-            location: '$location',
-            tags: '$tags',
-            isOwned: '$isOwned',
-            visibility: '$visibility',
-            isViewed: '$isViewed',
-            allowComments: '$allowComments',
-            isCertified: '$isCertified',
-            saleLike: '$saleLike',
-            saleView: '$saleView',
-            saleAmount: '$saleAmount',
-            monetize: '$monetize',
+            reportedStatus: 1,
+            reportedUserCount: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            metadata: 1,
+            location: 1,
+            tags: 1,
+            isOwned: 1,
+            visibility: 1,
+            isViewed: 1,
+            allowComments: 1,
+            isCertified: 1,
+            saleLike: 1,
+            saleView: 1,
+            saleAmount: 1,
+            monetize: 1,
             refe: '$refs.ref',
             insight: {
               shares: '$shares',
@@ -2908,31 +2939,33 @@ export class PostsService {
             mediapictPath: '$mediapict.mediaBasePath',
             mediadiariPath: '$mediadiaries.mediaBasePath',
             mediavideoPath: '$mediavideos.mediaBasePath',
-            refs: '$refs',
-            idmedia: '$idmedia',
+            refs: 1,
+            reportedStatus: 1,
+            reportedUserCount: 1,
+            idmedia: 1,
             rotate: '$mediadiaries.rotate',
-            createdAt: '$createdAt',
-            updatedAt: '$updatedAt',
-            postID: '$postID',
-            email: '$email',
-            postType: '$postType',
-            description: '$description',
-            title: '$description',
-            active: '$active',
-            metadata: '$metadata',
-            location: '$location',
-            tags: '$tags',
-            isOwned: '$isOwned',
-            visibility: '$visibility',
-            privacy: '$privacy',
-            isViewed: '$isViewed',
-            allowComments: '$allowComments',
-            isCertified: '$isCertified',
-            saleLike: '$saleLike',
-            saleView: '$saleView',
-            saleAmount: '$saleAmount',
-            monetize: '$monetize',
-            insight: '$insight',
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            metadata: 1,
+            location: 1,
+            tags: 1,
+            isOwned: 1,
+            visibility: 1,
+            privacy: 1,
+            isViewed: 1,
+            allowComments: 1,
+            isCertified: 1,
+            saleLike: 1,
+            saleView: 1,
+            saleAmount: 1,
+            monetize: 1,
+            insight: 1,
 
 
 
@@ -3091,31 +3124,44 @@ export class PostsService {
                 default: false
               }
             },
-            fullName: '$fullName',
+            reportedStatus: 1,
+            reportedUserCount: 1,
+            fullName: 1,
             username: '$auth.username',
-            createdAt: '$createdAt',
-            updatedAt: '$updatedAt',
-            postID: '$postID',
-            email: '$email',
-            postType: '$postType',
-            description: '$description',
-            title: '$description',
-            active: '$active',
-            metadata: '$metadata',
-            location: '$location',
-            tags: '$tags',
-            isOwned: '$isOwned',
-            visibility: '$visibility',
-            privacy: '$privacy',
-            isViewed: '$isViewed',
-            allowComments: '$allowComments',
-            isCertified: '$isCertified',
-            saleLike: '$saleLike',
-            saleView: '$saleView',
-            saleAmount: '$saleAmount',
-            monetize: '$monetize',
-            insight: '$insight',
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            metadata: 1,
+            location: 1,
+            tags: 1,
+            isOwned: 1,
+            visibility: 1,
+            privacy: 1,
+            isViewed: 1,
+            allowComments: 1,
+            isCertified: 1,
+            saleLike: 1,
+            saleView: 1,
+            saleAmount: 1,
+            monetize: 1,
+            insight: 1,
 
+          }
+        },
+
+        {
+          $match: {
+
+            description: {
+              $regex: keys, $options: 'i'
+            }, postType: postType, visibility: "PUBLIC", active: true, reportedStatus: { $ne: "OWNED" }, 'ubasic.email': {
+              $ne: email
+            },
           }
         },
         { $sort: { description: -1 }, },
@@ -3126,15 +3172,41 @@ export class PostsService {
       return query;
     } else {
       const query = await this.PostsModel.aggregate([
-        {
-          $match: {
 
-            postType: postType, visibility: "PUBLIC", active: true
+
+        {
+          $lookup: {
+            from: "userbasics",
+            as: "ubasic",
+            let: {
+              local_id: '$reportedUser.email'
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      {
+                        $in: ['$email', {
+                          $ifNull: ['$$local_id', []]
+                        }]
+                      },
+
+                    ]
+                  }
+                }
+              },
+              {
+                $project: {
+                  fullName: 1,
+                  email: 1
+                }
+              },
+
+            ],
 
           }
         },
-
-
         {
           $addFields: {
 
@@ -3147,30 +3219,33 @@ export class PostsService {
         {
           $project: {
             refs: { $arrayElemAt: ['$contentMedias', 0] },
-            createdAt: '$createdAt',
-            updatedAt: '$updatedAt',
-            postID: '$postID',
-            email: '$email',
-            postType: '$postType',
-            description: '$description',
-            title: '$description',
-            active: '$active',
-            metadata: '$metadata',
-            location: '$location',
-            tags: '$tags',
-            likes: '$likes',
-            shares: '$shares',
-            reaction: '$reaction',
-            comments: '$comments',
-            isOwned: '$isOwned',
-            views: '$views',
-            visibility: '$visibility',
+            createdAt: 1,
+            reportedStatus: 1,
+            reportedUserCount: 1,
+            updatedAt: 1,
+            postID: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            metadata: 1,
+            location: 1,
+            tags: 1,
+            likes: 1,
+            shares: 1,
+            reaction: 1,
+            comments: 1,
+            isOwned: 1,
+            views: 1,
+            visibility: 1,
+            allowComments: 1,
+            isCertified: 1,
             isViewed:
             {
               $cond: { if: { $eq: ["$views", 0] }, then: false, else: true }
             },
-            allowComments: '$allowComments',
-            isCertified: '$isCertified',
+
             saleLike: {
               $cond: { if: { $eq: ["$saleLike", -1] }, then: false, else: "$saleLike" }
             },
@@ -3191,26 +3266,28 @@ export class PostsService {
           $project: {
             refs: '$refs.$ref',
             idmedia: '$refs.$id',
-            createdAt: '$createdAt',
-            updatedAt: '$updatedAt',
-            postID: '$postID',
-            email: '$email',
-            postType: '$postType',
-            description: '$description',
-            title: '$description',
-            active: '$active',
-            metadata: '$metadata',
-            location: '$location',
-            tags: '$tags',
-            isOwned: '$isOwned',
-            visibility: '$visibility',
-            isViewed: '$isViewed',
-            allowComments: '$allowComments',
-            isCertified: '$isCertified',
-            saleLike: '$saleLike',
-            saleView: '$saleView',
-            saleAmount: '$saleAmount',
-            monetize: '$monetize',
+            reportedStatus: 1,
+            reportedUserCount: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            metadata: 1,
+            location: 1,
+            tags: 1,
+            isOwned: 1,
+            visibility: 1,
+            isViewed: 1,
+            allowComments: 1,
+            isCertified: 1,
+            saleLike: 1,
+            saleView: 1,
+            saleAmount: 1,
+            monetize: 1,
             refe: '$refs.ref',
             insight: {
               shares: '$shares',
@@ -3254,31 +3331,33 @@ export class PostsService {
             mediapictPath: '$mediapict.mediaBasePath',
             mediadiariPath: '$mediadiaries.mediaBasePath',
             mediavideoPath: '$mediavideos.mediaBasePath',
-            refs: '$refs',
-            idmedia: '$idmedia',
+            refs: 1,
+            reportedStatus: 1,
+            reportedUserCount: 1,
+            idmedia: 1,
             rotate: '$mediadiaries.rotate',
-            createdAt: '$createdAt',
-            updatedAt: '$updatedAt',
-            postID: '$postID',
-            email: '$email',
-            postType: '$postType',
-            description: '$description',
-            title: '$description',
-            active: '$active',
-            metadata: '$metadata',
-            location: '$location',
-            tags: '$tags',
-            isOwned: '$isOwned',
-            visibility: '$visibility',
-            privacy: '$privacy',
-            isViewed: '$isViewed',
-            allowComments: '$allowComments',
-            isCertified: '$isCertified',
-            saleLike: '$saleLike',
-            saleView: '$saleView',
-            saleAmount: '$saleAmount',
-            monetize: '$monetize',
-            insight: '$insight',
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            metadata: 1,
+            location: 1,
+            tags: 1,
+            isOwned: 1,
+            visibility: 1,
+            privacy: 1,
+            isViewed: 1,
+            allowComments: 1,
+            isCertified: 1,
+            saleLike: 1,
+            saleView: 1,
+            saleAmount: 1,
+            monetize: 1,
+            insight: 1,
 
 
 
@@ -3437,30 +3516,41 @@ export class PostsService {
                 default: false
               }
             },
-            fullName: '$fullName',
+            reportedStatus: 1,
+            reportedUserCount: 1,
+            fullName: 1,
             username: '$auth.username',
-            createdAt: '$createdAt',
-            updatedAt: '$updatedAt',
-            postID: '$postID',
-            email: '$email',
-            postType: '$postType',
-            description: '$description',
-            title: '$description',
-            active: '$active',
-            metadata: '$metadata',
-            location: '$location',
-            tags: '$tags',
-            isOwned: '$isOwned',
-            visibility: '$visibility',
-            privacy: '$privacy',
-            isViewed: '$isViewed',
-            allowComments: '$allowComments',
-            isCertified: '$isCertified',
-            saleLike: '$saleLike',
-            saleView: '$saleView',
-            saleAmount: '$saleAmount',
-            monetize: '$monetize',
-            insight: '$insight',
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            metadata: 1,
+            location: 1,
+            tags: 1,
+            isOwned: 1,
+            visibility: 1,
+            privacy: 1,
+            isViewed: 1,
+            allowComments: 1,
+            isCertified: 1,
+            saleLike: 1,
+            saleView: 1,
+            saleAmount: 1,
+            monetize: 1,
+            insight: 1,
+
+          }
+        },
+        {
+          $match: {
+
+            postType: postType, visibility: "PUBLIC", active: true, reportedStatus: { $ne: "OWNED" }, 'ubasic.email': {
+              $ne: email
+            },
 
           }
         },
@@ -3554,16 +3644,51 @@ export class PostsService {
     ]);
     return query;
   }
-  async findcountfilterall(keys: string, postType: string) {
+  async findcountfilterall(keys: string, postType: string, email: string) {
 
     if (keys !== undefined) {
       const query = await this.PostsModel.aggregate([
+        {
+          $lookup: {
+            from: "userbasics",
+            as: "ubasic",
+            let: {
+              local_id: '$reportedUser.email'
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      {
+                        $in: ['$email', {
+                          $ifNull: ['$$local_id', []]
+                        }]
+                      },
+
+                    ]
+                  }
+                }
+              },
+              {
+                $project: {
+                  fullName: 1,
+                  email: 1
+                }
+              },
+
+            ],
+
+          }
+        },
         {
           $match: {
 
             description: {
               $regex: keys, $options: 'i'
-            }, postType: postType, visibility: "PUBLIC", active: true
+            }, postType: postType, visibility: "PUBLIC", active: true, reportedStatus: { $ne: "OWNED" }, 'ubasic.email': {
+              $ne: email
+            },
           }
         },
         {
@@ -3579,9 +3704,44 @@ export class PostsService {
     } else {
       const query = await this.PostsModel.aggregate([
         {
+          $lookup: {
+            from: "userbasics",
+            as: "ubasic",
+            let: {
+              local_id: '$reportedUser.email'
+            },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $and: [
+                      {
+                        $in: ['$email', {
+                          $ifNull: ['$$local_id', []]
+                        }]
+                      },
+
+                    ]
+                  }
+                }
+              },
+              {
+                $project: {
+                  fullName: 1,
+                  email: 1
+                }
+              },
+
+            ],
+
+          }
+        },
+        {
           $match: {
 
-            postType: postType, visibility: "PUBLIC", active: true
+            postType: postType, visibility: "PUBLIC", active: true, reportedStatus: { $ne: "OWNED" }, 'ubasic.email': {
+              $ne: email
+            },
           }
         },
         {
@@ -8652,7 +8812,7 @@ export class PostsService {
 
               let ted = d + (7 * 3600 * 1000);
               console.log(st + " " + d + " " + ted);
-              let bv : any[] = bbs.boostViewer;
+              let bv: any[] = bbs.boostViewer;
               if (bv != undefined) {
                 if (bv.length > 0) {
                   for (let x = 0; x < bv.length; x++) {
@@ -8671,7 +8831,7 @@ export class PostsService {
                     isLast: true
                   };
 
-                  bv.push(o);                  
+                  bv.push(o);
                 } else {
                   let o = {
                     email: email,
@@ -8690,7 +8850,7 @@ export class PostsService {
 
         console.log(JSON.stringify(bs));
 
-        this.PostsModel.updateOne(        
+        this.PostsModel.updateOne(
           {
             "_id": id,
           },
@@ -8699,7 +8859,7 @@ export class PostsService {
               "boosted": bs
             }
           },
-          function(err, docs) {
+          function (err, docs) {
             if (err) {
               console.log(err);
             } else {
@@ -8710,8 +8870,8 @@ export class PostsService {
       }
 
     });
-  }  
-  
+  }
+
 }
 
 

@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { MediamusicDto } from './dto/mediamusic.dto';
 import { Mediamusic, MediamusicDocument } from './schemas/mediamusic.schema';
 import mongoose, { Model } from 'mongoose';
-import { ApsaraImageResponse, ApsaraPlayResponse, ImageInfo } from '../posts/dto/create-posts.dto';
+import { ApsaraImageResponse, ApsaraPlayResponse, ApsaraVideoResponse, ImageInfo, VideoList } from '../posts/dto/create-posts.dto';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -674,9 +674,10 @@ export class MediamusicService {
     return query;
   }
 
-  async getMusicFilter(pageNumber: number, pageRow: number, genre: string, theme: string, mood: string, musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string) {
+  async getMusicFilter(pageNumber: number, pageRow: number, genre: string[], theme: string[], mood: string[], musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string[], sort: string) {
     var perPage = pageRow, page = Math.max(0, pageNumber);
     var where = {};
+    var sortData = {};
     if (musicTitle != undefined) {
       if (musicTitle != "") {
         where['musicTitle'] = { $regex: musicTitle, $options: "i" };
@@ -691,8 +692,6 @@ export class MediamusicService {
       if (createdAtStart != "" && createdAtEnd != "") {
         var startDate = new Date(createdAtStart + 'T00:00:00');
         var endDate = new Date(createdAtEnd + 'T23:59:59');
-        console.log(startDate);
-        console.log(endDate);
         where['createdAt'] = {
           $gte: new Date(startDate),
           $lt: new Date(endDate) 
@@ -700,32 +699,57 @@ export class MediamusicService {
       }
     }
     if (genre != undefined) {
-      if (genre != "") {
-        where['genre'] = new mongoose.Types.ObjectId(genre);
+      if (genre.length > 0) {
+        var genreArray = []
+        for (var g = 0; g < genre.length; g++) {
+          genreArray.push({ genre: new mongoose.Types.ObjectId(genre[g]) });
+        }
+        where['$or'] = genreArray;
       }
     }
     if (theme != undefined) {
-      if (theme != "") {
-        where['theme'] = new mongoose.Types.ObjectId(theme);
+      if (theme.length > 0) {
+        var themeArray = []
+        for (var t = 0; t < theme.length; t++) {
+          themeArray.push({ theme: new mongoose.Types.ObjectId(theme[t]) });
+        }
+        where['$or'] = themeArray;
       }
     }
     if (mood != undefined) {
-      if (mood != "") {
-        where['mood'] = new mongoose.Types.ObjectId(mood);
+      if (mood.length > 0) {
+        var moodArray = []
+        for (var m = 0; m < mood.length; m++) {
+          moodArray.push({ mood: new mongoose.Types.ObjectId(mood[m]) });
+        }
+        where['$or'] = moodArray;
       }
     }
     if (status != undefined) {
-      if (status != "") {
-        where['isActive'] = status;
+      if (status.length == 1) {
+        for (var s = 0; s < status.length; s++) {
+          where['isActive'] = status[s];
+        }
       }
     }
     where['isDelete'] = false;
-    const query = await this.MediamusicModel.find(where).limit(perPage).skip(perPage * page).sort({ musicTitle: 'desc' });
+    if (sortData != undefined) {
+      if (sort == "desc") {
+        sortData['createdAt'] = -1;
+      }
+      if (sort == "asc") {
+        sortData['createdAt'] = 1;
+      }
+    }else{
+      sortData['createdAt'] = -1;
+    }
+    const query = await this.MediamusicModel.find(where).sort(sortData).limit(perPage).skip(perPage * page);
     return query;
   }
 
-  async getMusicFilterWitoutSkipLimit(genre: string, theme: string, mood: string, musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string) {
+  async getMusicFilterWitoutSkipLimit(genre: string[], theme: string[], mood: string[], musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string[], sort:string) {
     var where = {};
+    var sortData = {};
     if (musicTitle != undefined) {
       if (musicTitle != "") {
         where['musicTitle'] = { $regex: musicTitle, $options: "i" };
@@ -749,27 +773,51 @@ export class MediamusicService {
       }
     }
     if (genre != undefined) {
-      if (genre != "") {
-        where['genre'] = new mongoose.Types.ObjectId(genre);
+      if (genre.length > 0) {
+        var genreArray = []
+        for (var g = 0; g < genre.length; g++) {
+          genreArray.push({ genre: new mongoose.Types.ObjectId(genre[g]) });
+        }
+        where['$or'] = genreArray;
       }
     }
     if (theme != undefined) {
-      if (theme != "") {
-        where['theme'] = new mongoose.Types.ObjectId(theme);
+      if (theme.length > 0) {
+        var themeArray = []
+        for (var t = 0; t < theme.length; t++) {
+          themeArray.push({ theme: new mongoose.Types.ObjectId(theme[t]) });
+        }
+        where['$or'] = themeArray;
       }
     }
     if (mood != undefined) {
-      if (mood != "") {
-        where['mood'] = new mongoose.Types.ObjectId(mood);
+      if (mood.length > 0) {
+        var moodArray = []
+        for (var m = 0; m < mood.length; m++) {
+          moodArray.push({ mood: new mongoose.Types.ObjectId(mood[m]) });
+        }
+        where['$or'] = moodArray;
       }
     }
     if (status != undefined) {
-      if (status != "") {
-        where['isActive'] = status;
+      if (status.length == 1) {
+        for (var s = 0; s < status.length; s++) {
+          where['isActive'] = status[s];
+        }
       }
     }
     where['isDelete'] = false;
-    const query = await this.MediamusicModel.find(where).sort({ musicTitle: 'desc' });
+    if (sortData != undefined) {
+      if (sort == "desc") {
+        sortData['createdAt'] = -1;
+      }
+      if (sort == "asc") {
+        sortData['createdAt'] = 1;
+      }
+    } else {
+      sortData['createdAt'] = -1;
+    }
+    const query = await this.MediamusicModel.find(where).sort(sortData).sort({ musicTitle: 'desc' });
     return query;
   }
 
@@ -850,6 +898,57 @@ export class MediamusicService {
       }
     }
     tx.ImageInfo = vl;
+    return tx;
+  }
+
+  public async getVideoApsara(ids: String[]): Promise<ApsaraVideoResponse> {
+    let san: String[] = [];
+    for (let i = 0; i < ids.length; i++) {
+      let obj = ids[i];
+      if (obj != undefined && obj != 'undefined') {
+        san.push(obj);
+      }
+    }
+
+    let tx = new ApsaraVideoResponse();
+    let vl: VideoList[] = [];
+    let chunk = this.chunkify(san, 15);
+    for (let i = 0; i < chunk.length; i++) {
+      let c = chunk[i];
+
+      let vids = c.join(',');
+      this.logger.log("getVideoApsara >>> video id: " + vids);
+      var RPCClient = require('@alicloud/pop-core').RPCClient;
+
+      let client = new RPCClient({
+        accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+        accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+        endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+        apiVersion: '2017-03-21'
+      });
+
+      let params = {
+        "RegionId": this.configService.get("APSARA_REGION_ID"),
+        "VideoIds": vids
+      }
+
+      let requestOption = {
+        method: 'POST'
+      };
+
+      let dto = new ApsaraVideoResponse();
+      let result = await client.request('GetVideoInfos', params, requestOption);
+      let ty: ApsaraVideoResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
+      if (ty.VideoList.length > 0) {
+        for (let x = 0; x < ty.VideoList.length; x++) {
+          let vv = ty.VideoList[x];
+          vl.push(vv);
+        }
+      }
+
+    }
+    tx.VideoList = vl;
+
     return tx;
   }
 
