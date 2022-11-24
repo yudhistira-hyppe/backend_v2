@@ -498,7 +498,7 @@ export class MediamusicController {
     const artistName_ = artistName;
     const createdAtStart_ = createdAtStart;
     const createdAtEnd_ = createdAtEnd;
-    const status_ = status;
+    const status_ = (status != undefined) ? status.toString().split(',') : [];
     const sort_ = sort;
 
     const dataAll = await this.mediamusicService.getMusicFilterWitoutSkipLimit(genre_, theme_, mood_, musicTitle_, artistName_, createdAtStart_, createdAtEnd_, status_, sort_);

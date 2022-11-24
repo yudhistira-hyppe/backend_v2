@@ -674,7 +674,7 @@ export class MediamusicService {
     return query;
   }
 
-  async getMusicFilter(pageNumber: number, pageRow: number, genre: string[], theme: string[], mood: string[], musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string, sort: string) {
+  async getMusicFilter(pageNumber: number, pageRow: number, genre: string[], theme: string[], mood: string[], musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string[], sort: string) {
     var perPage = pageRow, page = Math.max(0, pageNumber);
     var where = {};
     var sortData = {};
@@ -726,8 +726,10 @@ export class MediamusicService {
       }
     }
     if (status != undefined) {
-      if (status != "") {
-        where['isActive'] = status;
+      if (status.length == 1) {
+        for (var s = 0; s < status.length; s++) {
+          where['isActive'] = status[s];
+        }
       }
     }
     where['isDelete'] = false;
@@ -745,7 +747,7 @@ export class MediamusicService {
     return query;
   }
 
-  async getMusicFilterWitoutSkipLimit(genre: string[], theme: string[], mood: string[], musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string, sort:string) {
+  async getMusicFilterWitoutSkipLimit(genre: string[], theme: string[], mood: string[], musicTitle: string, artistName: string, createdAtStart: string, createdAtEnd: string, status: string[], sort:string) {
     var where = {};
     var sortData = {};
     if (musicTitle != undefined) {
@@ -798,8 +800,10 @@ export class MediamusicService {
       }
     }
     if (status != undefined) {
-      if (status != "") {
-        where['isActive'] = status;
+      if (status.length == 1) {
+        for (var s = 0; s < status.length; s++) {
+          where['isActive'] = status[s];
+        }
       }
     }
     where['isDelete'] = false;
