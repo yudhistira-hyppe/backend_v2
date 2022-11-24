@@ -8630,6 +8630,88 @@ export class PostsService {
   async find200(): Promise<Posts[]> {
     return this.PostsModel.find({ reportedUserCount: { $gte: 200 } }).exec();
   }
+
+  async updateBoostViewer(id: string, email: string) {
+    this.PostsModel.findOne({ _id: id }).exec().then((ps) => {
+      console.log("post boost: " + ps.postID);
+      let bs = ps.boosted;
+      if (bs != undefined) {
+        for (let i = 0; i < bs.length; i++) {
+          let bbs = bs[i];
+          if (bbs.boostSession != undefined) {
+            let bootSession = bbs.boostSession;
+            let today = new Date().getTime();
+            let st = new Date(String(bootSession.start)).getTime();
+            let ed = new Date(String(bootSession.end)).getTime();
+
+            if (today >= st && today <= ed) {
+              let interval = Number(bbs.boostInterval.value);
+              let a = (today - st) / 1000 / 60;
+              let c = Math.round(a / interval);
+              let d = st + ((interval * 1000 * 60) * c);
+
+              let ted = d + (7 * 3600 * 1000);
+              console.log(st + " " + d + " " + ted);
+              let bv : any[] = bbs.boostViewer;
+              if (bv != undefined) {
+                if (bv.length > 0) {
+                  for (let x = 0; x < bv.length; x++) {
+                    let bbv = bv[x];
+                    if (String(bbv.email) == email) {
+                      if (bbv.isLast == true) {
+                        bbv.isLast = false;
+                      }
+                    }
+                  }
+
+                  let o = {
+                    email: email,
+                    createAt: new Date(),
+                    timeEnd: new Date(ted),
+                    isLast: true
+                  };
+
+                  bv.push(o);                  
+                } else {
+                  let o = {
+                    email: email,
+                    createAt: new Date(),
+                    timeEnd: new Date(ted),
+                    isLast: true
+                  };
+
+                  bv.push(o);
+                }
+              }
+            }
+          }
+
+        }
+
+        console.log(JSON.stringify(bs));
+
+        this.PostsModel.updateOne(        
+          {
+            "_id": id,
+          },
+          {
+            $set: {
+              "boosted": bs
+            }
+          },
+          function(err, docs) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(docs);
+            }
+          }
+        );
+      }
+
+    });
+  }  
+  
 }
 
 
