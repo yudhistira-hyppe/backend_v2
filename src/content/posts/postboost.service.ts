@@ -46,6 +46,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { ContentDTO, CreateNotificationsDto, NotifResponseApps } from '../notifications/dto/create-notifications.dto';
 import { use } from 'passport';
 import { PostContentService } from './postcontent.service';
+import { profile } from 'console';
 
 
 //import FormData from "form-data";
@@ -59,6 +60,7 @@ export class PostBoostService {
     @InjectModel(Posts.name, 'SERVER_FULL')
     private readonly PostsModel: Model<PostsDocument>,
     private postService: PostContentService,
+    private postxService: PostsService,
     private userService: UserbasicsService,
     private utilService: UtilsService,
     private userAuthService: UserauthsService,
@@ -2834,7 +2836,7 @@ export class PostBoostService {
     return res;
   }
 
-  private processDataV2(src: any[], xvids: string[], xpics: string[], isLike: any[], isView: any[]): PostData[] {
+  private processDataV2(src: any[], xvids: string[], xpics: string[], isLike: any[], isView: any[], email: string): PostData[] {
     let res: PostData[] = [];
 
     if (src == undefined) {
@@ -2942,8 +2944,8 @@ export class PostBoostService {
       privacy.isCelebrity = false;
       pd.privacy = privacy;
 
-      pd.apsaraThumnail = null;
-      pd.apsaraMusic = null;
+      pd.apsaraThumnail = undefined;
+      pd.apsaraMusic = undefined;
 
       pd.isBoost = obj.isBoost;
 
@@ -2952,11 +2954,20 @@ export class PostBoostService {
         if (Array.isArray(obj.music)) {
           if (obj.music.length > 0) {
             pd.music = obj.music[0];
+
+            if (pd.music.apsaraThumnail != undefined) {
+              xpics.push(String(pd.music.apsaraThumnail));
+            }
           }
         } else {
           pd.music = obj.music;
         }
 
+      }
+
+      if (obj.boosted != undefined) {
+        console.log("boosted: " + pd.postID);
+        this.postxService.updateBoostViewer(pd.postID, email);
       }
 
 
@@ -3569,6 +3580,7 @@ export class PostBoostService {
                             "isBoost": 1,
                             "boostViewer": 1,
                             "boostCount": 1,
+                            "boosted": 1,
                             "contentModeration": 1,
                             "reportedStatus": 1,
                             "reportedUserCount": 1,
@@ -4079,6 +4091,7 @@ export class PostBoostService {
                             "isBoost": 1,
                             "boostViewer": 1,
                             "boostCount": 1,
+                            "boosted": 1,
                             "contentModeration": 1,
                             "reportedStatus": 1,
                             "reportedUserCount": 1,
@@ -4589,6 +4602,7 @@ export class PostBoostService {
                             "isBoost": 1,
                             "boostViewer": 1,
                             "boostCount": 1,
+                            "boosted": 1,
                             "contentModeration": 1,
                             "reportedStatus": 1,
                             "reportedUserCount": 1,
@@ -4992,6 +5006,7 @@ export class PostBoostService {
                             "tagDescription": 1,
                             "metadata": 1,
                             "boostDate": 1,
+                            "boosted": 1,
                             "end": "$boosted.boostSession.end",
                             "start": "$boosted.boostSession.start",
                             "isBoost": 1,
@@ -5229,16 +5244,16 @@ export class PostBoostService {
     let isView : [] = obj.isView;
 
     if (body.postType == 'ALL' || body.postType == 'pict') {
-      opic = this.processDataV2(obj.pict, xvids, xpics, isLike, isView);
+      opic = this.processDataV2(obj.pict, xvids, xpics, isLike, isView, String(profile.email));
     }
     if (body.postType == 'ALL' || body.postType == 'vid') {
-      ovid = this.processDataV2(obj.video, xvids, xpics, isLike, isView);
+      ovid = this.processDataV2(obj.video, xvids, xpics, isLike, isView, String(profile.email));
     }
     if (body.postType == 'ALL' || body.postType == 'diary') {
-      odia = this.processDataV2(obj.diary, xvids, xpics, isLike, isView);
+      odia = this.processDataV2(obj.diary, xvids, xpics, isLike, isView, String(profile.email));
     }
     if (body.postType == 'ALL' || body.postType == 'story') {
-      osto = this.processDataV2(obj.story, xvids, xpics, isLike, isView);
+      osto = this.processDataV2(obj.story, xvids, xpics, isLike, isView, String(profile.email));
     }            
 
     let vapsara = undefined;
@@ -5414,6 +5429,12 @@ export class PostBoostService {
               pdpp.mediaThumbEndpoint = vi.URL;
               pdpp.mediaThumbUri = vi.URL;
             }
+            if (pdpp.music != undefined && pdpp.music.apsaraThumnail != undefined) {
+              let m = String(pdpp.music.apsaraThumnail);
+              if (m == String(vi.ImageId)) {
+                pdpp.music.apsaraThumnailUrl = vi.URL;
+              }
+            }            
             if (pdpp.apsaraId == vi.ImageId) {
               pdpp.mediaEndpoint = vi.URL;
               pdpp.mediaUri = vi.URL;
