@@ -598,8 +598,6 @@ export class PostContentService {
     return res;
   }
 
-
-
   async updateNewPost(body: any, headers: any) {
     this.logger.log('updateNewPost >>> start');
     let post = await this.postService.findid(body.postID);

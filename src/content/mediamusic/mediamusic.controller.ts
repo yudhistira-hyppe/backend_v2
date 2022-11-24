@@ -201,6 +201,20 @@ export class MediamusicController {
       );
     }
     var data = await this.mediamusicService.findOneDetail(id);
+    if (data.length>0){
+      if (data[0].apsaraMusic != undefined) {
+        var dataApsaraMusic = await this.mediamusicService.getVideoApsaraSingle(data[0].apsaraMusic)
+        var apsaraMusicData = {
+          PlayURL: dataApsaraMusic.PlayInfoList.PlayInfo[0].PlayURL,
+          Duration: dataApsaraMusic.PlayInfoList.PlayInfo[0].Duration,
+        }
+        data[0]["music"] = apsaraMusicData;
+      }
+      if (data[0].apsaraThumnail != undefined) {
+        var dataApsaraThumnail = await this.mediamusicService.getImageApsara([data[0].apsaraThumnail])
+        data[0]["apsaraThumnailUrl"] = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == data[0].apsaraThumnail).URL;
+      }
+    }
     console.log("data",data);
     var Response = {
       data: data,
@@ -439,7 +453,7 @@ export class MediamusicController {
 
       return {
         _id: {
-          artistName: item._id.artistName,
+          musicTitle: item._id.musicTitle,
           apsaraMusic: item._id.apsaraMusic,
           apsaraThumnail: item._id.apsaraThumnail,
           apsaraThumnailUrl: apsaraThumnailUrl

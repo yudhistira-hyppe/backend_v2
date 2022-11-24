@@ -60,6 +60,11 @@ export class PostsService {
     private readonly seaweedfsService: SeaweedfsService,
   ) { }
 
+  async findChild(): Promise<Posts[]> {
+    return this.PostsModel.find(
+      { $or: [{ reportedUser: { $elemMatch: { email: { $ne: "tjikaljedy@hyppe.id" } } } }, { reportedUser: { $exists: false } }] }).exec();
+  }
+
   async create(CreatePostsDto: CreatePostsDto): Promise<Posts> {
     const createPostsDto = await this.PostsModel.create(CreatePostsDto);
     return createPostsDto;
@@ -3644,51 +3649,16 @@ export class PostsService {
     ]);
     return query;
   }
-  async findcountfilterall(keys: string, postType: string, email: string) {
+  async findcountfilterall(keys: string, postType: string) {
 
     if (keys !== undefined) {
       const query = await this.PostsModel.aggregate([
-        {
-          $lookup: {
-            from: "userbasics",
-            as: "ubasic",
-            let: {
-              local_id: '$reportedUser.email'
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      {
-                        $in: ['$email', {
-                          $ifNull: ['$$local_id', []]
-                        }]
-                      },
-
-                    ]
-                  }
-                }
-              },
-              {
-                $project: {
-                  fullName: 1,
-                  email: 1
-                }
-              },
-
-            ],
-
-          }
-        },
         {
           $match: {
 
             description: {
               $regex: keys, $options: 'i'
-            }, postType: postType, visibility: "PUBLIC", active: true, reportedStatus: { $ne: "OWNED" }, 'ubasic.email': {
-              $ne: email
-            },
+            }, postType: postType, visibility: "PUBLIC", active: true, reportedStatus: { $ne: "OWNED" }
           }
         },
         {
@@ -3704,44 +3674,9 @@ export class PostsService {
     } else {
       const query = await this.PostsModel.aggregate([
         {
-          $lookup: {
-            from: "userbasics",
-            as: "ubasic",
-            let: {
-              local_id: '$reportedUser.email'
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      {
-                        $in: ['$email', {
-                          $ifNull: ['$$local_id', []]
-                        }]
-                      },
-
-                    ]
-                  }
-                }
-              },
-              {
-                $project: {
-                  fullName: 1,
-                  email: 1
-                }
-              },
-
-            ],
-
-          }
-        },
-        {
           $match: {
 
-            postType: postType, visibility: "PUBLIC", active: true, reportedStatus: { $ne: "OWNED" }, 'ubasic.email': {
-              $ne: email
-            },
+            postType: postType, visibility: "PUBLIC", active: true, reportedStatus: { $ne: "OWNED" }
           }
         },
         {
@@ -8812,7 +8747,7 @@ export class PostsService {
 
               let ted = d + (7 * 3600 * 1000);
               console.log(st + " " + d + " " + ted);
-              let bv: any[] = bbs.boostViewer;
+              let bv : any[] = bbs.boostViewer;
               if (bv != undefined) {
                 if (bv.length > 0) {
                   for (let x = 0; x < bv.length; x++) {
@@ -8831,7 +8766,7 @@ export class PostsService {
                     isLast: true
                   };
 
-                  bv.push(o);
+                  bv.push(o);                  
                 } else {
                   let o = {
                     email: email,
@@ -8850,7 +8785,7 @@ export class PostsService {
 
         console.log(JSON.stringify(bs));
 
-        this.PostsModel.updateOne(
+        this.PostsModel.updateOne(        
           {
             "_id": id,
           },
@@ -8859,7 +8794,7 @@ export class PostsService {
               "boosted": bs
             }
           },
-          function (err, docs) {
+          function(err, docs) {
             if (err) {
               console.log(err);
             } else {
@@ -8870,8 +8805,8 @@ export class PostsService {
       }
 
     });
-  }
-
+  }  
+  
 }
 
 
