@@ -8650,9 +8650,8 @@ export class PostsService {
               let c = Math.round(a / interval);
               let d = st + ((interval * 1000 * 60) * c);
 
-              console.log(st + " " + d);
-
               let ted = d + (7 * 60 * 1000);
+              console.log(st + " " + d + " " + ted);
               let bv : any[] = bbs.boostViewer;
               if (bv != undefined) {
                 if (bv.length > 0) {
