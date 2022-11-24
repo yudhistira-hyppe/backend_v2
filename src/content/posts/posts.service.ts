@@ -61,8 +61,7 @@ export class PostsService {
   ) { }
 
   async findChild(): Promise<Posts[]> {
-    return this.PostsModel.find(
-      { $or: [{ reportedUser: { $elemMatch: { email: { $ne: "tjikaljedy@hyppe.id" } } } }, { reportedUser: { $exists: false } }] }).exec();
+    return this.PostsModel.find({ $or: [{ reportedUser: { $elemMatch: { email: { $ne: "tjikaljedy@hyppe.id" } } } }, { reportedUser: { $exists: false } }] }).exec();
   }
 
   async create(CreatePostsDto: CreatePostsDto): Promise<Posts> {
