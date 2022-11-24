@@ -2954,13 +2954,15 @@ export class PostBoostService {
         if (Array.isArray(obj.music)) {
           if (obj.music.length > 0) {
             pd.music = obj.music[0];
-
             if (pd.music.apsaraThumnail != undefined) {
               xpics.push(String(pd.music.apsaraThumnail));
             }
           }
         } else {
           pd.music = obj.music;
+          if (pd.music.apsaraThumnail != undefined) {
+            xpics.push(String(pd.music.apsaraThumnail));
+          }          
         }
 
       }
@@ -5367,6 +5369,13 @@ export class PostBoostService {
               pdvv.mediaThumbEndpoint = vi.URL;
               pdvv.mediaThumbUri = vi.URL;
 
+              if (pdvv.music != undefined && pdvv.music.apsaraThumnail != undefined) {
+                let m = String(pdvv.music.apsaraThumnail);
+                if (m == String(vi.ImageId)) {
+                  pdvv.music.apsaraThumnailUrl = vi.URL;
+                }
+              }                          
+
               if (valPost.has(pdvv.postID) == false) {
                 resVideo.push(pdvv);
                 valPost.set(pdvv.postID, pdvv.postID);
@@ -5389,6 +5398,13 @@ export class PostBoostService {
               pdss.mediaThumbEndpoint = vi.URL;
               pdss.mediaThumbUri = vi.URL;
 
+              if (pdss.music != undefined && pdss.music.apsaraThumnail != undefined) {
+                let m = String(pdss.music.apsaraThumnail);
+                if (m == String(vi.ImageId)) {
+                  pdss.music.apsaraThumnailUrl = vi.URL;
+                }
+              }                          
+
               if (valPost.has(pdss.postID) == false) {
                 resStory.push(pdss);
                 valPost.set(pdss.postID, pdss.postID);
@@ -5407,6 +5423,14 @@ export class PostBoostService {
             if (pddd.apsaraId == vi.ImageId) {
               pddd.mediaThumbEndpoint = vi.URL;
               pddd.mediaThumbUri = vi.URL;
+
+              if (pddd.music != undefined && pddd.music.apsaraThumnail != undefined) {
+                let m = String(pddd.music.apsaraThumnail);
+                if (m == String(vi.ImageId)) {
+                  pddd.music.apsaraThumnailUrl = vi.URL;
+                }
+              }            
+
               resDiary.push(pddd);
 
               if (valPost.has(pddd.postID) == false) {
