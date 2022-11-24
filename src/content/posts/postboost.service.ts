@@ -2956,12 +2956,14 @@ export class PostBoostService {
             pd.music = obj.music[0];
             if (pd.music.apsaraThumnail != undefined) {
               xpics.push(String(pd.music.apsaraThumnail));
+              this.logger.log("music : " + String(pd.music.apsaraThumnail));
             }
           }
         } else {
           pd.music = obj.music;
           if (pd.music.apsaraThumnail != undefined) {
             xpics.push(String(pd.music.apsaraThumnail));
+            this.logger.log("music : " + String(pd.music.apsaraThumnail));
           }          
         }
 
