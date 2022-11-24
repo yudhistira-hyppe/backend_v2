@@ -2910,26 +2910,17 @@ export class ReportuserController {
             throw new BadRequestException("Unabled to proceed");
         }
         var data = null;
-        var query = null;
-        var reportedUser = null;
+        var peaks = null;
 
-        var email = null;
-
-        var lengUser = null;
         try {
-            query = await this.postsService.countReason(postID);
-
-
-            data = Math.max(query.map(d => d.myCount))
+            peaks = await this.postsService.countReason(postID);
+            data = peaks.reduce((maxPeak, peak) => !maxPeak || maxPeak.myCount < peak.myCount ? peak : maxPeak, null);
 
         } catch (e) {
-            query = null;
+            peaks = null;
             data = null;
 
         }
-
-
-
 
         return { response_code: 202, data, messages };
 
