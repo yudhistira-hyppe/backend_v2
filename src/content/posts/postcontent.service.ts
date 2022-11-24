@@ -79,10 +79,6 @@ export class PostContentService {
     private mediamusicService: MediamusicService,
   ) { }
 
-  async testGetContent(email:string){
-    return await this.PostsModel.find();
-  }
-
   async createNewPost(file: Express.Multer.File, body: any, headers: any): Promise<CreatePostResponse> {
     this.logger.log('createNewPost >>> start: ' + JSON.stringify(body));
     var res = new CreatePostResponse();

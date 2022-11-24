@@ -95,7 +95,8 @@ export class MediamusicService {
           musicTitle: '$musicTitle',
           artistName: '$artistName',
           albumName: '$albumName',
-          genre: '$genre',
+          isActive: '$isActive',
+          genre: '$genre', 
           theme: '$theme',
           mood: '$mood',
           releaseDate: '$releaseDate',
@@ -117,6 +118,7 @@ export class MediamusicService {
           albumName: '$albumName',
           genre: '$genre',
           theme: '$theme',
+          isActive: '$isActive',
           mood: '$mood',
           releaseDate: '$releaseDate',
           apsaraMusic: '$apsaraMusic',
@@ -149,6 +151,7 @@ export class MediamusicService {
           genre: '$genre',
           theme: '$theme',
           mood: '$mood',
+          isActive: '$isActive',
           releaseDate: '$releaseDate',
           apsaraMusic: '$apsaraMusic',
           apsaraThumnail: '$apsaraThumnail',
@@ -172,6 +175,7 @@ export class MediamusicService {
           genre: '$genre',
           theme: '$theme',
           mood: '$mood',
+          isActive: '$isActive',
           releaseDate: '$releaseDate',
           apsaraMusic: '$apsaraMusic',
           apsaraThumnail: '$apsaraThumnail',
@@ -206,6 +210,7 @@ export class MediamusicService {
           genre: '$genre',
           theme: '$theme',
           mood: '$mood',
+          isActive: '$isActive',
           releaseDate: '$releaseDate',
           apsaraMusic: '$apsaraMusic',
           apsaraThumnail: '$apsaraThumnail',
@@ -240,6 +245,7 @@ export class MediamusicService {
           musicTitle: '$musicTitle',
           artistName: '$artistName',
           albumName: '$albumName',
+          isActive: '$isActive',
           genre: '$genre',
           theme: '$theme',
           mood: '$mood',
@@ -274,6 +280,7 @@ export class MediamusicService {
           musicTitle: '$musicTitle',
           artistName: '$artistName',
           albumName: '$albumName',
+          isActive: '$isActive',
           genre: '$genre',
           theme: '$theme',
           mood: '$mood',
@@ -313,6 +320,13 @@ export class MediamusicService {
             {
               "$group": {
                 "_id": "$musicTitle",
+              }
+            }
+          ],
+          "isActive": [
+            {
+              "$group": {
+                "_id": "$isActive",
               }
             }
           ],
@@ -419,6 +433,7 @@ export class MediamusicService {
           musicTitle: { $arrayElemAt: ['$musicTitle', 0] },
           artistName: { $arrayElemAt: ['$artistName', 0] },
           albumName: { $arrayElemAt: ['$albumName', 0] },
+          isActive: { $arrayElemAt: ['$isActive', 0] },
           genre: { $arrayElemAt: ['$genre', 0] },
           theme: { $arrayElemAt: ['$theme', 0] },
           mood: { $arrayElemAt: ['$mood', 0] },
@@ -437,6 +452,7 @@ export class MediamusicService {
           musicTitle: '$musicTitle._id',
           artistName: '$artistName._id',
           albumName: '$albumName._id',
+          isActive: '$isActive._id',
           genre: '$genre._id',
           theme: '$theme._id',
           mood: '$mood._id',

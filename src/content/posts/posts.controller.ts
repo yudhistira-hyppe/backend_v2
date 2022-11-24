@@ -164,8 +164,6 @@ export class PostsController {
     }
   }
 
-
-
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/deletetag')
   async deleteTag(@Req() request) {
