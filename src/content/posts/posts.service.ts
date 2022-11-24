@@ -8646,7 +8646,13 @@ export class PostsService {
 
             if (today >= st && today <= ed) {
               let interval = Number(bbs.boostInterval.value);
-              let ted = new Date().getTime() + (1000 * 60 * interval);
+              let a = (today - st) / 1000 / 60;
+              let c = Math.round(a / interval);
+              let d = st + ((interval * 1000 * 60) * c);
+
+              console.log(st + " " + d);
+
+              let ted = d;
               let bv : any[] = bbs.boostViewer;
               if (bv != undefined) {
                 if (bv.length > 0) {
