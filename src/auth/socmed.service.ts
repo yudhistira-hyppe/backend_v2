@@ -484,6 +484,7 @@ export class SocmedService {
             event: "UPDATE_BIO",
             email: user_email,
             username: username_,
+            idUser: String(datauserbasicsService._id),
             isComplete: "false",
             status: "INITIAL",
             refreshToken: datajwtrefreshtoken_data.refresh_token_id

@@ -1294,21 +1294,21 @@ export class GetusercontentsController {
         // }
 
         try {
-            totalFilterPostVid = await this.postsService.findcountfilterall(keys, "vid");
+            totalFilterPostVid = await this.postsService.findcountfilterall(keys, "vid", email);
             totalFilterVid = totalFilterPostVid[0].totalpost;
         } catch (e) {
             totalFilterVid = 0;
         }
 
         try {
-            totalFilterPostDiary = await this.postsService.findcountfilterall(keys, "diary");
+            totalFilterPostDiary = await this.postsService.findcountfilterall(keys, "diary", email);
             totalFilterDiary = totalFilterPostDiary[0].totalpost;
         } catch (e) {
             totalFilterDiary = 0;
         }
 
         try {
-            totalFilterPostPic = await this.postsService.findcountfilterall(keys, "pict");
+            totalFilterPostPic = await this.postsService.findcountfilterall(keys, "pict", email);
             totalFilterPict = totalFilterPostPic[0].totalpost;
         } catch (e) {
             totalFilterPict = 0;
