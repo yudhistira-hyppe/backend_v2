@@ -2890,4 +2890,49 @@ export class ReportuserController {
         return { response_code: 202, query, messages };
 
     }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('detailreason')
+    async finddetailreason(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+
+        var postID = null;
+
+
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        var data = null;
+        var query = null;
+        var reportedUser = null;
+
+        var email = null;
+
+        var lengUser = null;
+        try {
+            query = await this.postsService.countReason(postID);
+
+
+            data = Math.max(query.map(d => d.myCount))
+
+        } catch (e) {
+            query = null;
+            data = null;
+
+        }
+
+
+
+
+        return { response_code: 202, data, messages };
+
+
+    }
 }
