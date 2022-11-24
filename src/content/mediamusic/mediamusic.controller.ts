@@ -242,22 +242,23 @@ export class MediamusicController {
     const mood_ = mood;
     const data = await this.mediamusicService.findCriteria(pageNumber_, pageRow_, search_, genre_, theme_, mood_);
 
+    //CREATE ARRAY APSARA THUMNAIL
     let thumnail_data: string[] = [];
     for (let i = 0; i < data.length; i++) {
       let data_item = data[i];
-      if (data_item.apsaraThumnail != undefined && data_item.apsaraThumnail != "" && data_item.apsaraMusic != null) {
+      if (data_item.apsaraThumnail != undefined && data_item.apsaraThumnail != "" && data_item.apsaraThumnail != null) {
         thumnail_data.push(data_item.apsaraThumnail.toString());
       }
     }
+
+    //GET DATA APSARA THUMNAIL
     var dataApsaraThumnail = await this.mediamusicService.getImageApsara(thumnail_data);
-    console.log(dataApsaraThumnail);
+    
     var data_ = await Promise.all(data.map(async (item, index) => {
       //APSARA MUSIC
       var apsaraMusicData = {}
-      console.log(item.apsaraMusic);
       if (item.apsaraMusic != undefined && item.apsaraMusic != "" && item.apsaraMusic != null){
         var dataApsaraMusic = await this.mediamusicService.getVideoApsaraSingle(item.apsaraMusic)
-        console.log(dataApsaraMusic);
         if (dataApsaraMusic != null && dataApsaraMusic.PlayInfoList != null && dataApsaraMusic.PlayInfoList.PlayInfo && dataApsaraMusic.PlayInfoList.PlayInfo.length > 0) {
           apsaraMusicData = {
             PlayURL: dataApsaraMusic.PlayInfoList.PlayInfo[0].PlayURL,
@@ -268,7 +269,7 @@ export class MediamusicController {
       //APSARA THUMNAIL
       var apsaraThumnailUrl = null
       if (item.apsaraThumnail != undefined && item.apsaraThumnail != "" && item.apsaraThumnail != null) {
-        apsaraThumnailUrl = dataApsaraThumnail.ImageInfo[0].URL
+        apsaraThumnailUrl = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == item.apsaraThumnail).URL;
       }
       return {
         _id: item._id,
@@ -391,6 +392,65 @@ export class MediamusicController {
   @HttpCode(HttpStatus.ACCEPTED)
   async getMusicCard(@Headers() headers) {
     const data = await this.mediamusicService.getMusicCard();
+
+    //CREATE ARRAY APSARA THUMNAIL
+    let thumnail_data_artist: string[] = [];
+    for (let i = 0; i < data[0].artistPopuler.length; i++) {
+      let data_item = data[0].artistPopuler[i];
+      if (data_item._id.apsaraThumnail != undefined && data_item._id.apsaraThumnail != "" && data_item._id.apsaraThumnail != null) {
+        thumnail_data_artist.push(data_item._id.apsaraThumnail.toString());
+      }
+    }
+    let thumnail_data_music: string[] = [];
+    for (let i = 0; i < data[0].musicPopuler.length; i++) {
+      let data_item = data[0].musicPopuler[i];
+      if (data_item._id.apsaraThumnail != undefined && data_item._id.apsaraThumnail != "" && data_item._id.apsaraThumnail != null) {
+        thumnail_data_music.push(data_item._id.apsaraThumnail.toString());
+      }
+    }
+
+    //GET DATA APSARA THUMNAIL
+    var dataApsaraThumnail_artist = await this.mediamusicService.getImageApsara(thumnail_data_artist);
+    var dataApsaraThumnail_music = await this.mediamusicService.getImageApsara(thumnail_data_music);
+
+    var data_artist = await Promise.all(data[0].artistPopuler.map(async (item, index) => {
+      //APSARA THUMNAIL
+      var apsaraThumnailUrl = null
+      if (item._id.apsaraThumnail != undefined && item._id.apsaraThumnail != "" && item._id.apsaraThumnail != null) {
+        apsaraThumnailUrl = dataApsaraThumnail_artist.ImageInfo.find(x => x.ImageId == item._id.apsaraThumnail).URL;
+      }
+
+      return {
+        _id: {
+          artistName: item._id.artistName,
+          apsaraMusic: item._id.apsaraMusic,
+          apsaraThumnail: item._id.apsaraThumnail,
+          apsaraThumnailUrl: apsaraThumnailUrl
+        }
+      };
+    }));
+
+    var data_music = await Promise.all(data[0].musicPopuler.map(async (item, index) => {
+      //APSARA THUMNAIL
+      var apsaraThumnailUrl = null
+      if (item._id.apsaraThumnail != undefined && item._id.apsaraThumnail != "" && item._id.apsaraThumnail != null) {
+        apsaraThumnailUrl = dataApsaraThumnail_music.ImageInfo.find(x => x.ImageId == item._id.apsaraThumnail).URL;
+      }
+
+      return {
+        _id: {
+          artistName: item._id.artistName,
+          apsaraMusic: item._id.apsaraMusic,
+          apsaraThumnail: item._id.apsaraThumnail,
+          apsaraThumnailUrl: apsaraThumnailUrl
+        }
+      };
+    }));
+
+    data[0].artistPopuler = data_artist;
+    data[0].musicPopuler = data_music;
+
+
     var Response = {
       response_code: 202,
       data: data,
@@ -428,12 +488,11 @@ export class MediamusicController {
         'Unabled to proceed email header dan token not match',
       );
     }
-
     const pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
     const pageRow_ = (pageRow != undefined) ? pageRow : 10;
-    const genre_ = genre;
-    const theme_ = theme;
-    const mood_ = mood;
+    const genre_ = (genre != undefined) ? genre.toString().split(',') : []; 
+    const theme_ = (theme != undefined) ? theme.toString().split(',') : []; 
+    const mood_ = (mood != undefined) ? mood.toString().split(',') : []; 
     const musicTitle_ = musicTitle;
     const artistName_ = artistName;
     const createdAtStart_ = createdAtStart;
@@ -442,12 +501,48 @@ export class MediamusicController {
 
     const dataAll = await this.mediamusicService.getMusicFilterWitoutSkipLimit(genre_, theme_, mood_, musicTitle_, artistName_, createdAtStart_, createdAtEnd_, status_);
     const data = await this.mediamusicService.getMusicFilter(pageNumber_, pageRow_, genre_, theme_, mood_, musicTitle_, artistName_, createdAtStart_, createdAtEnd_, status_);
+    
+    let thumnail_data: string[] = [];
+    for (let i = 0; i < data.length; i++) {
+      let data_item = data[i];
+      if (data_item.apsaraThumnail != undefined && data_item.apsaraThumnail != "" && data_item.apsaraThumnail != null) {
+        thumnail_data.push(data_item.apsaraThumnail.toString());
+      }
+    }
+    var dataApsaraThumnail = await this.mediamusicService.getImageApsara(thumnail_data);
+    var data_ = await Promise.all(data.map(async (item, index) => {
+      //APSARA THUMNAIL
+      var apsaraThumnailUrl = null
+      if (item.apsaraThumnail != undefined && item.apsaraThumnail != "" && item.apsaraThumnail != null) {
+        apsaraThumnailUrl = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == item.apsaraThumnail).URL;
+      }
+      
+      return {
+        _id: item._id,
+        musicTitle: item.musicTitle,
+        artistName: item.artistName,
+        albumName: item.albumName,
+        releaseDate: item.releaseDate,
+        genre: item.genre,
+        theme: item.theme,
+        mood: item.mood,
+        isDelete: item.isDelete,
+        isActive: item.isActive,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        used: item.used,
+        apsaraMusic: item.apsaraMusic,
+        apsaraThumnail: item.apsaraThumnail,
+        apsaraThumnailUrl: apsaraThumnailUrl,
+      };
+    }));
+    
     var Response = {
       response_code: 202,
       totalRow: dataAll.length.toString(),
       pageRow: pageRow_,
       pageNumber_: pageNumber_,
-      data: data,
+      data: data_,
       messages: {
         info: [
           "Retrieved music card succesfully"

@@ -46,6 +46,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { ContentDTO, CreateNotificationsDto, NotifResponseApps } from '../notifications/dto/create-notifications.dto';
 import { use } from 'passport';
 import { PostContentService } from './postcontent.service';
+import { profile } from 'console';
 
 
 //import FormData from "form-data";
@@ -59,6 +60,7 @@ export class PostBoostService {
     @InjectModel(Posts.name, 'SERVER_FULL')
     private readonly PostsModel: Model<PostsDocument>,
     private postService: PostContentService,
+    private postxService: PostsService,
     private userService: UserbasicsService,
     private utilService: UtilsService,
     private userAuthService: UserauthsService,
@@ -2812,6 +2814,8 @@ export class PostBoostService {
       pd.apsaraThumnail = null;
       pd.apsaraMusic = null;
 
+      pd.isBoost = obj.isBoost;
+
       pd.music = null;
       if (obj.music != undefined) {
         if (Array.isArray(obj.music)) {
@@ -2831,6 +2835,152 @@ export class PostBoostService {
 
     return res;
   }
+
+  private processDataV2(src: any[], xvids: string[], xpics: string[], isLike: any[], isView: any[], email: string): PostData[] {
+    let res: PostData[] = [];
+
+    if (src == undefined) {
+      return res;
+    }
+
+    for (let i = 0; i < src.length; i++) {
+      let obj = src[i];
+
+      let pd = new PostData();
+      pd.active = obj.active;
+      pd.allowComments = obj.allowComments;
+      pd.apsaraId = obj.apsaraId;
+      pd.apsaraThumbId = obj.apsaraThumbId;
+      pd.avatar = obj.avatar[0];
+
+      pd.cats = obj.cats;
+      pd.certified = obj.certified;
+      pd.createdAt = obj.createdAt;
+      pd.description = obj.description;
+      pd.email = obj.email;
+      pd.insight = obj.insight[0];
+
+      pd.isApsara = obj.apsara;
+      pd.apsaraId = obj.apsaraId;
+      //pd.isLiked =
+      //pd.isViewed
+
+      pd.location = obj.location;
+      pd.mediaBasePath = obj.mediaBasePath;
+      pd.mediaEndpoint = obj.mediaEndpoint;
+      pd.mediaThumbEndpoint = obj.mediaThumbEndpoint;
+      pd.mediaThumbUri = obj.mediaThumbUri;
+      pd.mediaType = obj.mediaType;
+      pd.mediaUri = obj.mediaUri;
+
+      pd.postID = obj.postID;
+      pd.postType = obj.postType;
+      pd.privacy = obj.privacy;
+      pd.saleAmount = obj.saleAmount;
+      pd.saleLike = obj.saleLike;
+      pd.saleView = obj.saleView;
+      pd.tagPeople = obj.tagPeople;
+      pd.tags = obj.tags;
+      pd.title = obj.title;
+      pd.updatedAt = obj.updatedAt;
+      pd.username = obj.username;
+      pd.visibility = obj.visibility;
+      pd.boostViewer = obj.boostViewer;
+
+      pd.isViewed = false;
+      if (isView != undefined && isView.length > 0) {
+        for (let x = 0; x < isView.length; x++) {
+          let ox = isView[x];
+          if (ox.postID == obj.postID) {
+            pd.isViewed = true;
+            break;
+          }
+        }
+
+      }
+
+      pd.isLiked = false;
+      if (isLike != undefined && isLike.length > 0) {
+        for (let x = 0; x < isLike.length; x++) {
+          let ox = isLike[x];
+          if (ox.postID == obj.postID) {
+            pd.isLiked = true;
+            break;
+          }
+        }
+
+      }
+
+      if (obj.tagPeople != undefined && obj.tagPeople.length > 0) {
+        let atp1 = Array<TagPeople>();
+        for (let i = 0; i < obj.tagPeople.length; i++) {
+          let x = obj.tagPeople[i];
+          let us = x.username;
+
+          let tg = new TagPeople();
+          tg.username = us;
+          atp1.push(tg);
+        }
+        pd.tagPeople = atp1;
+      }
+
+      if (pd.isApsara == true) {
+        if (pd.apsaraId != undefined) {
+          if (obj.mediaType == 'video') {
+            xvids.push(String(pd.apsaraId));
+          } else {
+            xpics.push(String(pd.apsaraId));
+          }
+
+        }
+        if (pd.apsaraThumbId != undefined) {
+          xpics.push(String(pd.apsaraThumbId));
+        }
+      }
+
+      let privacy = new Privacy();
+      privacy.isPostPrivate = false;
+      privacy.isPrivate = false;
+      privacy.isCelebrity = false;
+      pd.privacy = privacy;
+
+      pd.apsaraThumnail = undefined;
+      pd.apsaraMusic = undefined;
+
+      pd.isBoost = obj.isBoost;
+
+      pd.music = null;
+      if (obj.music != undefined) {
+        if (Array.isArray(obj.music)) {
+          if (obj.music.length > 0) {
+            pd.music = obj.music[0];
+            if (pd.music.apsaraThumnail != undefined) {
+              xpics.push(String(pd.music.apsaraThumnail));
+              this.logger.log("music : " + String(pd.music.apsaraThumnail));
+            }
+          }
+        } else {
+          pd.music = obj.music;
+          if (pd.music.apsaraThumnail != undefined) {
+            xpics.push(String(pd.music.apsaraThumnail));
+            this.logger.log("music : " + String(pd.music.apsaraThumnail));
+          }          
+        }
+
+      }
+
+      if (obj.boosted != undefined) {
+        console.log("boosted: " + pd.postID);
+        this.postxService.updateBoostViewer(pd.postID, email);
+      }
+
+
+      res.push(pd);
+
+    }
+
+    return res;
+  }  
 
   async getBoostV2(body: any, headers: any): Promise<PostLandingResponseApps> {
     this.logger.log('getBoostV2 >>> started');
@@ -3434,6 +3584,7 @@ export class PostBoostService {
                             "isBoost": 1,
                             "boostViewer": 1,
                             "boostCount": 1,
+                            "boosted": 1,
                             "contentModeration": 1,
                             "reportedStatus": 1,
                             "reportedUserCount": 1,
@@ -3944,6 +4095,7 @@ export class PostBoostService {
                             "isBoost": 1,
                             "boostViewer": 1,
                             "boostCount": 1,
+                            "boosted": 1,
                             "contentModeration": 1,
                             "reportedStatus": 1,
                             "reportedUserCount": 1,
@@ -4454,6 +4606,7 @@ export class PostBoostService {
                             "isBoost": 1,
                             "boostViewer": 1,
                             "boostCount": 1,
+                            "boosted": 1,
                             "contentModeration": 1,
                             "reportedStatus": 1,
                             "reportedUserCount": 1,
@@ -4857,6 +5010,7 @@ export class PostBoostService {
                             "tagDescription": 1,
                             "metadata": 1,
                             "boostDate": 1,
+                            "boosted": 1,
                             "end": "$boosted.boostSession.end",
                             "start": "$boosted.boostSession.start",
                             "isBoost": 1,
@@ -5090,17 +5244,20 @@ export class PostBoostService {
     let odia : PostData[] = [];
     let osto : PostData[] = [];
 
+    let isLike : [] = obj.isLike;
+    let isView : [] = obj.isView;
+
     if (body.postType == 'ALL' || body.postType == 'pict') {
-      opic = this.processData(obj.pict, xvids, xpics, xuser);
+      opic = this.processDataV2(obj.pict, xvids, xpics, isLike, isView, String(profile.email));
     }
     if (body.postType == 'ALL' || body.postType == 'vid') {
-      ovid = this.processData(obj.video, xvids, xpics, xuser);
+      ovid = this.processDataV2(obj.video, xvids, xpics, isLike, isView, String(profile.email));
     }
     if (body.postType == 'ALL' || body.postType == 'diary') {
-      odia = this.processData(obj.diary, xvids, xpics, xuser);
+      odia = this.processDataV2(obj.diary, xvids, xpics, isLike, isView, String(profile.email));
     }
     if (body.postType == 'ALL' || body.postType == 'story') {
-      osto = this.processData(obj.story, xvids, xpics, xuser);
+      osto = this.processDataV2(obj.story, xvids, xpics, isLike, isView, String(profile.email));
     }            
 
     let vapsara = undefined;
@@ -5214,6 +5371,13 @@ export class PostBoostService {
               pdvv.mediaThumbEndpoint = vi.URL;
               pdvv.mediaThumbUri = vi.URL;
 
+              if (pdvv.music != undefined && pdvv.music.apsaraThumnail != undefined) {
+                let m = String(pdvv.music.apsaraThumnail);
+                if (m == String(vi.ImageId)) {
+                  pdvv.music.apsaraThumnailUrl = vi.URL;
+                }
+              }                          
+
               if (valPost.has(pdvv.postID) == false) {
                 resVideo.push(pdvv);
                 valPost.set(pdvv.postID, pdvv.postID);
@@ -5236,6 +5400,13 @@ export class PostBoostService {
               pdss.mediaThumbEndpoint = vi.URL;
               pdss.mediaThumbUri = vi.URL;
 
+              if (pdss.music != undefined && pdss.music.apsaraThumnail != undefined) {
+                let m = String(pdss.music.apsaraThumnail);
+                if (m == String(vi.ImageId)) {
+                  pdss.music.apsaraThumnailUrl = vi.URL;
+                }
+              }                          
+
               if (valPost.has(pdss.postID) == false) {
                 resStory.push(pdss);
                 valPost.set(pdss.postID, pdss.postID);
@@ -5254,6 +5425,14 @@ export class PostBoostService {
             if (pddd.apsaraId == vi.ImageId) {
               pddd.mediaThumbEndpoint = vi.URL;
               pddd.mediaThumbUri = vi.URL;
+
+              if (pddd.music != undefined && pddd.music.apsaraThumnail != undefined) {
+                let m = String(pddd.music.apsaraThumnail);
+                if (m == String(vi.ImageId)) {
+                  pddd.music.apsaraThumnailUrl = vi.URL;
+                }
+              }            
+
               resDiary.push(pddd);
 
               if (valPost.has(pddd.postID) == false) {
@@ -5276,6 +5455,12 @@ export class PostBoostService {
               pdpp.mediaThumbEndpoint = vi.URL;
               pdpp.mediaThumbUri = vi.URL;
             }
+            if (pdpp.music != undefined && pdpp.music.apsaraThumnail != undefined) {
+              let m = String(pdpp.music.apsaraThumnail);
+              if (m == String(vi.ImageId)) {
+                pdpp.music.apsaraThumnailUrl = vi.URL;
+              }
+            }            
             if (pdpp.apsaraId == vi.ImageId) {
               pdpp.mediaEndpoint = vi.URL;
               pdpp.mediaUri = vi.URL;

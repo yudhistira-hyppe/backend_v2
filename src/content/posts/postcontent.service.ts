@@ -1060,7 +1060,7 @@ export class PostContentService {
         pa.updatedAt = String(ps.updatedAt);
         pa.description = String(ps.description);
         pa.email = String(ps.email);
-        pa.boosted = ps.boosted;
+        pa.boosted = [ps.boosted];
         pa.isBoost = ps.isBoost; 
         pa.boostJangkauan = ps['boostJangkauan'];
         pa.statusBoost = ps['status']; 
@@ -1626,36 +1626,50 @@ export class PostContentService {
         pa.updatedAt = String(ps.updatedAt);
         pa.description = String(ps.description);
         pa.email = String(ps.email);
-        // if (ps.boosted != undefined) {
-        //   if (ps.boosted.length > 0) {
-        //     pa.boosted = ps.boosted;
-        //     pa.isBoost = ps.isBoost;
-        //     for (var p = 0; p<ps.boosted.length;p++){
-        //       var CurrentDate = new Date(await (await this.utilService.getDateTime()).toISOString());
-        //       console.log("CurrentDate", CurrentDate);
+        var boostedRes=[];
+        if (ps.boosted != undefined) {
+          if (ps.boosted.length > 0) {
+            pa.boosted = ps.boosted;
+            pa.isBoost = ps.isBoost;
+            for (var p = 0; p<ps.boosted.length;p++){
+              var CurrentDate = new Date(await (await this.utilService.getDateTime()).toISOString());
+              console.log("CurrentDate", CurrentDate);
 
-        //       var GetDate = new Date("2022-11-22T17:19:54.000Z");
-        //       console.log("GetDate", GetDate);
+              var DateBoostStart = ps.boosted[p].boostSession.start
+              var DateBoostEnd = ps.boosted[p].boostSession.end
+              console.log("GetDate", DateBoostStart);
+              console.log("GetDate", DateBoostEnd);
+              var boostedData = {};
+              var boostedStatus = "AKAN DATANG";
+              if (DateBoostStart < CurrentDate < DateBoostEnd){
+                boostedStatus = "BERLANGSUNG";
+                boostedData["type"] = ps.boosted[p].type
+                boostedData["boostDate"] = ps.boosted[p].boostDate
+                boostedData["boostInterval"] = ps.boosted[p].boostInterval
+                boostedData["boostSession"] = ps.boosted[p].boostSession
+                boostedData["boostViewer"] = ps.boosted[p].boostViewer
+              } else if ((DateBoostStart > CurrentDate) && (DateBoostEnd > CurrentDate)){
+                boostedStatus = "AKAN DATANG";
+                boostedData["type"] = ps.boosted[p].type
+                boostedData["boostDate"] = ps.boosted[p].boostDate
+                boostedData["boostInterval"] = ps.boosted[p].boostInterval
+                boostedData["boostSession"] = ps.boosted[p].boostSession
+                boostedData["boostViewer"] = ps.boosted[p].boostViewer
+              }
+              boostedRes.push(boostedData);
+            }
 
-        //       console.log("Ceck", (CurrentDate > GetDate));
-        //       // console.log("ceck", GetDate);
-        //       // console.log("BoostDate", GetDate);
-        //       // console.log("BoostDate", typeof GetDate);
-        //       // var BoostDate = new Date(GetDate);
-        //       // console.log("BoostDate", BoostDate);
-
-        //       // var GetDate = (ps.boosted[p].boostDate.toString()).split("T")[0];
-        //       // var CurrentDate = await (await this.utilService.getDateTime());
-              
-              
-        //     }
-
-
-        //     pa.boostJangkauan = ps['boostJangkauan'];
-        //     pa.statusBoost = ps['status']; 
-
-        //   }
-        // }
+            pa.boosted = boostedRes;
+            pa.boostJangkauan = boostedRes[0].boostViewer.length;
+            pa.statusBoost = boostedStatus; 
+          }
+        }
+        if (ps.reportedStatus != undefined) {
+          pa.reportedStatus = ps.reportedStatus;
+        }
+        if (ps.reportedUserCount != undefined) {
+          pa.reportedUserCount = Number(ps.reportedUserCount);
+        }
 
         let following = await this.contentEventService.findFollowing(pa.email);
 
