@@ -609,7 +609,7 @@ export class PostContentService {
     let cm = post.contentMedias[0];
     let ns = cm.namespace;
     this.logger.log('updateNewPost >>> namespace: ' + ns);
-    if (ns == 'mediavideos' || post.musicId != undefined) {
+    if (ns == 'mediavideos') {
       let vid = await this.videoService.findOne(cm.oid);
       if (vid == undefined) {
         return;
