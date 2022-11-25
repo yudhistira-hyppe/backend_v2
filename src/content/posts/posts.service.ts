@@ -8744,7 +8744,7 @@ export class PostsService {
             let st = new Date(String(bootSession.start)).getTime();
             let ed = new Date(String(bootSession.end)).getTime();
 
-            if (today >= st && today <= ed) {
+            if (bootSession.start < today < bootSession.end) {
               let interval = Number(bbs.boostInterval.value);
               let a = (today - st) / 1000 / 60;
               let c = Math.round(a / interval);
