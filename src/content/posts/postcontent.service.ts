@@ -3294,6 +3294,8 @@ export class PostContentService {
               ndat.push(ndy);
             }
           }
+        }else{
+          ndat.push(ndy);
         }
       }
 

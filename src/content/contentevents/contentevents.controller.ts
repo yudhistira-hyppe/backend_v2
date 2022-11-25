@@ -455,10 +455,14 @@ export class ContenteventsController {
     var event = "ACCEPT";
     if (type == "LIKE") {
       if (receiverParty != email_post) {
-        await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
+        await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event, postID, post_type);
       }
     } else {
-      await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
+      if (type == "REACTION") {
+        await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event, postID, post_type);
+      } else {
+        await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
+      }
     }
   }
 }

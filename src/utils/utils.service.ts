@@ -139,8 +139,7 @@ export class UtilsService {
   }
 
 
-  async sendFcm(email: string, titlein: string, titleen: string, bodyin: string, bodyen: string, eventType: string, event: string) {
-
+  async sendFcm(email: string, titlein: string, titleen: string, bodyin: string, bodyen: string, eventType: string, event: string, postID?: string, postType?: string) {
     var emailuserbasic = null;
     var datadevice = null;
     var languages = null;
@@ -277,6 +276,15 @@ export class UtilsService {
         createNotificationsDto.actionButtons = null;
         createNotificationsDto.contentEventID = null;
         createNotificationsDto.senderOrReceiverInfo = senderreceiver;
+
+        if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION") {
+          if (postID != undefined) {
+            createNotificationsDto.postID = postID;
+          }
+          if (postID != undefined) {
+            createNotificationsDto.postType = postType;
+          }
+        }
         await this.notificationsService.create(createNotificationsDto);
       }
 
