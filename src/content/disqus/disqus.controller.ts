@@ -950,6 +950,6 @@ export class DisqusController {
     
     var eventType = type.toString();
     var event = "ACCEPT";
-    await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
+    await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event, postID, post_type);
   }
 }
