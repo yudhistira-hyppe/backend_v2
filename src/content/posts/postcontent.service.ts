@@ -1670,6 +1670,20 @@ export class PostContentService {
         if (ps.reportedUserCount != undefined) {
           pa.reportedUserCount = Number(ps.reportedUserCount);
         }
+        var music = {}
+        if (ps.musicId!=undefined){
+          var dataMusic = await this.mediamusicService.findOneDetail(ps.musicId.toString());
+          if (await this.utilService.ceckData(dataMusic)) {
+            music["_id"] = ps.musicId.toString()
+            music["musicTitle"] = dataMusic[0].musicTitle;
+            music["artistName"] = dataMusic[0].artistName;
+            music["albumName"] = dataMusic[0].albumName;
+            music["apsaraMusic"] = dataMusic[0].apsaraMusic;
+            music["apsaraThumnail"] = dataMusic[0].apsaraThumnail;
+            music["apsaraThumnailUrl"] = dataMusic[0].apsaraThumnailUrl;
+          }
+        }
+        pa.music = music;
 
         let following = await this.contentEventService.findFollowing(pa.email);
 
@@ -3294,6 +3308,7 @@ export class PostContentService {
               ndat.push(ndy);
             }
           }
+          //let pt = await this.findByPostId(pid);
         }else{
           ndat.push(ndy);
         }

@@ -144,7 +144,7 @@ export class PostData {
     apsaraMusic: string;
     apsaraThumnail: string;   
     reportedStatus: string;
-    reportedUserCount: number;     
+    reportedUserCount: number;   
     
 }
 
