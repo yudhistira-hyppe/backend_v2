@@ -192,17 +192,13 @@ export class MediaproofpictsService {
         $match: {
           $and: [
             {
-              idcardnumber: {
-                $ne: null
-              },
+
               status: {
                 $ne: null
               }
             },
             {
-              idcardnumber: {
-                $ne: ""
-              },
+
               status: {
                 $ne: ""
               }
@@ -234,7 +230,7 @@ export class MediaproofpictsService {
                 }
               },
 
-            ], active: true,
+            ]
           }
         });
     }
