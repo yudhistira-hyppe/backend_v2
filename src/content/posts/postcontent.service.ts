@@ -3308,7 +3308,6 @@ export class PostContentService {
               ndat.push(ndy);
             }
           }
-          //let pt = await this.findByPostId(pid);
         }else{
           ndat.push(ndy);
         }
