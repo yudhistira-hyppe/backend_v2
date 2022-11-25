@@ -3168,20 +3168,20 @@ export class PostBoostService {
                                         {
                                             $or: [
                                                 {
-                                                    $and: [
-                                                        {
-                                                            "boosted.boostViewer.email": profile.email
-                                                        },
-                                                        {
-                                                            "boosted.boostViewer.isLast": true
-                                                        },
-                                                        {
-                                                            $expr: {
-                                                                $gt: ["$boosted.boostViewer.timeEnd", "$testDate", ]
-                                                            }
-                                                        },
-                                                        
-                                                    ]
+                                                  "boosted.boostViewer":
+                                                  [
+                                                    {
+                                                        "boosted.boostViewer.email": profile.email
+                                                    },
+                                                    {
+                                                        "$boosted.boostViewer.isLast": true
+                                                    },
+                                                    {
+                                                        $expr: {
+                                                            $lt: ["$boosted.boostViewer.timeEnd", "$testDate", ]
+                                                        }
+                                                    },
+                                                  ]
                                                 },
                                                 {
                                                     $and: [
@@ -3685,20 +3685,20 @@ export class PostBoostService {
                                         {
                                             $or: [
                                                 {
-                                                    $and: [
-                                                        {
-                                                            "boosted.boostViewer.email": profile.email
-                                                        },
-                                                        {
-                                                            "boosted.boostViewer.isLast": true
-                                                        },
-                                                        {
-                                                            $expr: {
-                                                                $gt: ["$boosted.boostViewer.timeEnd", "$testDate", ]
-                                                            }
-                                                        },
-                                                        
-                                                    ]
+                                                  "boosted.boostViewer":
+                                                  [
+                                                    {
+                                                        "boosted.boostViewer.email": profile.email
+                                                    },
+                                                    {
+                                                        "$boosted.boostViewer.isLast": true
+                                                    },
+                                                    {
+                                                        $expr: {
+                                                            $lt: ["$boosted.boostViewer.timeEnd", "$testDate", ]
+                                                        }
+                                                    },
+                                                  ]
                                                 },
                                                 {
                                                     $and: [
@@ -4196,20 +4196,20 @@ export class PostBoostService {
                                         {
                                             $or: [
                                                 {
-                                                    $and: [
-                                                        {
-                                                            "boosted.boostViewer.email": profile.email
-                                                        },
-                                                        {
-                                                            "boosted.boostViewer.isLast": true
-                                                        },
-                                                        {
-                                                            $expr: {
-                                                                $gt: ["$boosted.boostViewer.timeEnd", "$testDate", ]
-                                                            }
-                                                        },
-                                                        
-                                                    ]
+                                                  "boosted.boostViewer":
+                                                  [
+                                                    {
+                                                        "boosted.boostViewer.email": profile.email
+                                                    },
+                                                    {
+                                                        "$boosted.boostViewer.isLast": true
+                                                    },
+                                                    {
+                                                        $expr: {
+                                                            $lt: ["$boosted.boostViewer.timeEnd", "$testDate", ]
+                                                        }
+                                                    },
+                                                  ]
                                                 },
                                                 {
                                                     $and: [
@@ -5246,6 +5246,8 @@ export class PostBoostService {
 
     let isLike : [] = obj.isLike;
     let isView : [] = obj.isView;
+
+    console.log(JSON.stringify(obj.pict));
 
     if (body.postType == 'ALL' || body.postType == 'pict') {
       opic = this.processDataV2(obj.pict, xvids, xpics, isLike, isView, String(profile.email));
