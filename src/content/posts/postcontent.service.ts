@@ -598,8 +598,6 @@ export class PostContentService {
     return res;
   }
 
-
-
   async updateNewPost(body: any, headers: any) {
     this.logger.log('updateNewPost >>> start');
     let post = await this.postService.findid(body.postID);
@@ -1404,7 +1402,8 @@ export class PostContentService {
   private async doGetUserPost(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     let st = await this.utilService.getDateTimeDate();
-    let query = this.PostsModel.find();
+    var emailUser = headers['x-auth-user'];
+    let query = this.PostsModel.find({ $or: [{ reportedUser: { $elemMatch: { email: { $ne: emailUser } } } }, { reportedUser: { $exists: false } }] });
     let con = true;
     if (body.visibility != undefined) {
       if (body.visibility == 'PRIVATE') {
@@ -1514,7 +1513,8 @@ export class PostContentService {
 
   private async doGetUserPostMy(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
     //this.logger.log('doGetUserPost >>> start: ' + body);
-    let query = this.PostsModel.find();
+    var emailUser = headers['x-auth-user'];
+    let query = this.PostsModel.find({ $or: [{ reportedUser: { $elemMatch: { email: { $ne: emailUser } } } }, { reportedUser: { $exists: false } }] });
     query.where('email', whoami.email);
     if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
       query.where('active', true);

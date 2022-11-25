@@ -60,6 +60,10 @@ export class PostsService {
     private readonly seaweedfsService: SeaweedfsService,
   ) { }
 
+  async findChild(): Promise<Posts[]> {
+    return this.PostsModel.find({ $or: [{ reportedUser: { $elemMatch: { email: { $ne: "tjikaljedy@hyppe.id" } } } }, { reportedUser: { $exists: false } }] }).exec();
+  }
+
   async create(CreatePostsDto: CreatePostsDto): Promise<Posts> {
     const createPostsDto = await this.PostsModel.create(CreatePostsDto);
     return createPostsDto;
@@ -3170,7 +3174,8 @@ export class PostsService {
       ]);
 
       return query;
-    } else {
+    }
+    else {
       const query = await this.PostsModel.aggregate([
 
 
@@ -3649,39 +3654,6 @@ export class PostsService {
     if (keys !== undefined) {
       const query = await this.PostsModel.aggregate([
         {
-          $lookup: {
-            from: "userbasics",
-            as: "ubasic",
-            let: {
-              local_id: '$reportedUser.email'
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      {
-                        $in: ['$email', {
-                          $ifNull: ['$$local_id', []]
-                        }]
-                      },
-
-                    ]
-                  }
-                }
-              },
-              {
-                $project: {
-                  fullName: 1,
-                  email: 1
-                }
-              },
-
-            ],
-
-          }
-        },
-        {
           $match: {
 
             description: {
@@ -3704,44 +3676,12 @@ export class PostsService {
     } else {
       const query = await this.PostsModel.aggregate([
         {
-          $lookup: {
-            from: "userbasics",
-            as: "ubasic",
-            let: {
-              local_id: '$reportedUser.email'
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      {
-                        $in: ['$email', {
-                          $ifNull: ['$$local_id', []]
-                        }]
-                      },
-
-                    ]
-                  }
-                }
-              },
-              {
-                $project: {
-                  fullName: 1,
-                  email: 1
-                }
-              },
-
-            ],
-
-          }
-        },
-        {
           $match: {
 
             postType: postType, visibility: "PUBLIC", active: true, reportedStatus: { $ne: "OWNED" }, 'ubasic.email': {
               $ne: email
             },
+
           }
         },
         {
@@ -3756,7 +3696,6 @@ export class PostsService {
       return query;
     }
   }
-
 
   async findhistorySell(postID: string) {
 
@@ -4761,43 +4700,44 @@ export class PostsService {
     ];
 
     if (jenis === "report") {
-      pipeline.push({
-        $match: {
-          reportedUser: {
-            $ne: null
-          },
-
-          active: true
-        }
-      },
+      pipeline.push(
         {
           $match: {
-            reportedUser: {
-              $ne: []
-            },
-            active: true
+            $and: [
+              {
+                reportedUser: {
+                  $ne: null
+                }, isActive: true
+              },
+              {
+                reportedUser: {
+                  $ne: []
+                }, isActive: true
+              },
 
+            ]
           }
-        });
+        },
+
+      );
     } else if (jenis === "appeal") {
       pipeline.push({
         $match: {
-          reportedUserHandle: {
-            $ne: null
-          },
-
-          active: true
-        }
-      },
-        {
-          $match: {
-            reportedUserHandle: {
-              $ne: []
+          $and: [
+            {
+              reportedUserHandle: {
+                $ne: null
+              }, isActive: true
             },
-            active: true
+            {
+              reportedUserHandle: {
+                $ne: []
+              }, isActive: true
+            },
 
-          }
-        });
+          ]
+        }
+      },);
     }
 
     if (keys && keys !== undefined) {

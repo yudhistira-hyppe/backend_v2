@@ -3656,43 +3656,44 @@ export class AdsService {
 
         ];
         if (jenis === "report") {
-            pipeline.push({
-                $match: {
-                    reportedUser: {
-                        $ne: null
-                    },
-
-                    isActive: true
-                }
-            },
+            pipeline.push(
                 {
                     $match: {
-                        reportedUser: {
-                            $ne: []
-                        },
+                        $and: [
+                            {
+                                reportedUser: {
+                                    $ne: null
+                                }, isActive: true
+                            },
+                            {
+                                reportedUser: {
+                                    $ne: []
+                                }, isActive: true
+                            },
 
-                        isActive: true
+                        ]
                     }
-                });
+                },
+
+            );
         } else if (jenis === "appeal") {
             pipeline.push({
                 $match: {
-                    reportedUserHandle: {
-                        $ne: null
-                    },
-
-                    isActive: true
-                }
-            },
-                {
-                    $match: {
-                        reportedUserHandle: {
-                            $ne: []
+                    $and: [
+                        {
+                            reportedUserHandle: {
+                                $ne: null
+                            }, isActive: true
                         },
-                        isActive: true
+                        {
+                            reportedUserHandle: {
+                                $ne: []
+                            }, isActive: true
+                        },
 
-                    }
-                });
+                    ]
+                }
+            },);
         }
 
         if (keys && keys !== undefined) {
