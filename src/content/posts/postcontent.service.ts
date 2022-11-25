@@ -699,6 +699,8 @@ export class PostContentService {
         let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll };
         post.metadata = metadata;
       }
+
+      post.active = true;
       this.postService.create(post);
 
       let todel = body.filedel + "";
