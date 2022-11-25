@@ -26,6 +26,7 @@ export class CreateNotificationsDto {
     updatedAt: String;
     contentEventID: String;
     postID: String;
+    postType: String;
     content: ContentDTO;
     devices: any[];
     actionButtons: String;
