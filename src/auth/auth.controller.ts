@@ -36,6 +36,7 @@ import { InterestsRepoService } from '../infra/interests_repo/interests_repo.ser
 import { LanguagesService } from '../infra/languages/languages.service';
 import { ErrorHandler } from '../utils/error.handler';
 import { MediaprofilepictsService } from '../content/mediaprofilepicts/mediaprofilepicts.service';
+import { MediaproofpictsService } from '../content/mediaproofpicts/mediaproofpicts.service';
 import mongoose from 'mongoose';
 import { Int32 } from 'mongodb';
 import { ProfileDTO } from '../utils/data/Profile';
@@ -71,8 +72,9 @@ export class AuthController {
     private settingsService: SettingsService,
     private contenteventsService: ContenteventsService,
     private insightsService: InsightsService,
-    private socmed: SocmedService, 
+    private socmed: SocmedService,
     private mediaprofilepictsService: MediaprofilepictsService,
+    private mediaproofpictsService: MediaproofpictsService,
   ) { }
 
   @UseGuards(LocalAuthGuard)
@@ -876,7 +878,7 @@ export class AuthController {
     if ((id != undefined) && (token != undefined) && (email != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var mediaprofilepicts = await this.mediaprofilepictsService.findOne(id);
-        if (await this.utilsService.ceckData(mediaprofilepicts)){
+        if (await this.utilsService.ceckData(mediaprofilepicts)) {
           var mediaprofilepicts_fsSourceUri = '';
           var mediaMime = "";
           if (mediaprofilepicts != null) {
@@ -896,6 +898,55 @@ export class AuthController {
             // const arrayBuffer = await blob.arrayBuffer();
             // const buffer = Buffer.from(arrayBuffer);
             var data = await this.authService.profilePict(mediaprofilepicts_fsSourceUri);
+            if (data != null) {
+              response.set("Content-Type", "image/png");
+              response.send(data);
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        } else {
+          response.send(null);
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
+
+  @Get('proofpict/:id')
+  @HttpCode(HttpStatus.OK)
+  async proofpict(
+    @Param('id') id: string,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response) {
+    if ((id != undefined) && (token != undefined) && (email != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
+        if (await this.utilsService.ceckData(mediaproofpicts)) {
+          var mediaproofpicts_fsSourceUri = '';
+          var mediaMime = "";
+          if (mediaproofpicts != null) {
+            if (mediaproofpicts.fsSourceUri != null) {
+              mediaproofpicts_fsSourceUri = mediaproofpicts.fsSourceUri.toString();
+            }
+          }
+          if (mediaproofpicts.mediaMime != undefined) {
+            mediaMime = mediaproofpicts.mediaMime.toString();
+          } else {
+            mediaMime = "image/jpeg";
+          }
+          if (mediaproofpicts_fsSourceUri != '') {
+            // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
+            // const response_ = await fetch(url);
+            // const blob = await response_.blob();
+            // const arrayBuffer = await blob.arrayBuffer();
+            // const buffer = Buffer.from(arrayBuffer);
+            var data = await this.authService.profilePict(mediaproofpicts_fsSourceUri);
             if (data != null) {
               response.set("Content-Type", "image/png");
               response.send(data);
@@ -1046,8 +1097,8 @@ export class AuthController {
         await this.authService.viewProfile(SearchUserbasicDto_.search.toString(), user_view);
         var Data = await this.utilsService.generateProfile(SearchUserbasicDto_.search.toString(), 'PROFILE');
         var numPost = await this.postsService.findUserPost(SearchUserbasicDto_.search.toString());
-        let aNumPost = <any> numPost;
-        Data.insight.posts = <Long> aNumPost;
+        let aNumPost = <any>numPost;
+        Data.insight.posts = <Long>aNumPost;
         return {
           "response_code": 202,
           "data": [Data],
@@ -1198,7 +1249,7 @@ export class AuthController {
     }
     var user_email = headers['x-auth-user'];
     var user_otp = null;
-    var type = null; 
+    var type = null;
     var otp_attemp = null;
     var current_date_string = await this.utilsService.getDateTimeString();
     var current_date = new Date();
@@ -1214,7 +1265,7 @@ export class AuthController {
     var ID_child_ActivityEvent = (await this.utilsService.generateId()).toLowerCase();
     var ID_child_ActivityEvent_2 = (await this.utilsService.generateId()).toLowerCase();
 
-    if (body_.type =="CREATE_PIN"){
+    if (body_.type == "CREATE_PIN") {
       type = "CREATE_PIN";
     } else if (body_.type == "CHANGE_PIN") {
       type = "CHANGE_PIN";
@@ -1239,13 +1290,13 @@ export class AuthController {
     if (await this.utilsService.ceckData(datauserbasicsService)) {
       if (await this.utilsService.ceckData(user_userAuth)) {
         //Ceck User ActivityEvent Parent
-        const user_activityevents = await this.activityeventsService.findParentWitoutDevice(user_email, type, false, );
+        const user_activityevents = await this.activityeventsService.findParentWitoutDevice(user_email, type, false,);
         if (Object.keys(user_activityevents).length > 0) {
           if (type == "FORGOT_PIN") {
             let last;
             const count_transition = user_activityevents[0].transitions.length;
             if (user_activityevents[0].transitions.length > 0) {
-              last = await this.activityeventsService.findbyactivityEventID(user_email, user_activityevents[0].transitions[count_transition-1].oid, type, false,);
+              last = await this.activityeventsService.findbyactivityEventID(user_email, user_activityevents[0].transitions[count_transition - 1].oid, type, false,);
             } else {
               last = user_activityevents;
             }
@@ -1267,7 +1318,7 @@ export class AuthController {
             if ('otp' in body_) {
               user_otp = body_.otp;
             }
-            
+
             const StatusCurrent = body_.status;
             const EventCurrent = body_.event;
 
@@ -1412,184 +1463,184 @@ export class AuthController {
               StatusNext == 'INITIAL' &&
               StatusNext == StatusCurrent &&
               EventNext == EventCurrent
-            ){
+            ) {
 
-                let data_transitions = user_activityevents[0].transitions;
+              let data_transitions = user_activityevents[0].transitions;
 
-                //Create ActivityEvent child
-                try {
-                  var id_child = new mongoose.Types.ObjectId();
-                  data_CreateActivityeventsDto_child._id = id_child;
-                  data_CreateActivityeventsDto_child.activityEventID =
-                    ID_child_ActivityEvent;
-                  data_CreateActivityeventsDto_child.activityType = type;
-                  data_CreateActivityeventsDto_child.active = true;
-                  data_CreateActivityeventsDto_child.status = 'INITIAL';
-                  data_CreateActivityeventsDto_child.target = 'COMPLETE';
-                  data_CreateActivityeventsDto_child.event = 'CREATE_PIN';
-                  data_CreateActivityeventsDto_child._class =
-                    'io.melody.hyppe.trans.domain.ActivityEvent';
-                  data_CreateActivityeventsDto_child.payload = {
-                    login_location: {
-                      latitude: undefined,
-                      longitude: undefined,
-                    },
-                    logout_date: undefined,
-                    login_date: undefined,
-                    login_device: undefined,
-                    email: user_email,
-                  };
-                  data_CreateActivityeventsDto_child.createdAt = current_date_string;
-                  data_CreateActivityeventsDto_child.updatedAt = current_date_string;
-                  data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
-                    3,
-                  );
-                  data_CreateActivityeventsDto_child.flowIsDone = false;
-                  data_CreateActivityeventsDto_child.parentActivityEventID =
-                    user_activityevents[0].activityEventID;
-                  data_CreateActivityeventsDto_child.userbasic =
-                    datauserbasicsService._id;
-
-                  //Insert ActivityEvent child
-                  await this.activityeventsService.create(
-                    data_CreateActivityeventsDto_child,
-                  );
-                } catch (error) {
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Create Activity events Child. Error:' +
-                    error,
-                  );
-                }
-
-                //Update ActivityEvent Parent
-                try {
-                  data_transitions = user_activityevents[0].transitions;
-                  data_transitions.push({
-                    $ref: 'activityevents',
-                    $id: new Object(ID_child_ActivityEvent),
-                    $db: 'hyppe_trans_db',
-                  });
-
-                  //Update ActivityEvent Parent
-                  const update_activityevents_parent =
-                    await this.activityeventsService.update(
-                      {
-                        _id: user_activityevents[0]._id,
-                      },
-                      {
-                        transitions: data_transitions,
-                      },
-                    );
-                } catch (error) {
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Update Activity events Parent. Error:' +
-                    error,
-                  );
-                }
-
-                //Update Pin
-                try {
-                  var encrypt_pin = await this.utilsService.encrypt(body_.pin.toString());
-                  var createUserbasicDto_ = new CreateUserbasicDto();
-                  createUserbasicDto_.pin = encrypt_pin;
-                  await this.userbasicsService.updateData(user_email, createUserbasicDto_);
-                } catch (error) {
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Create Pin. Error: ' +
-                    error,
-                  );
-                }
-
-                //Create ActivityEvent child
-                try {
-                  var id_child = new mongoose.Types.ObjectId();
-                  data_CreateActivityeventsDto_child._id = id_child;
-                  data_CreateActivityeventsDto_child.activityEventID =
-                    ID_child_ActivityEvent_2;
-                  data_CreateActivityeventsDto_child.activityType = type;
-                  data_CreateActivityeventsDto_child.active = true;
-                  data_CreateActivityeventsDto_child.status = 'COMPLETE';
-                  data_CreateActivityeventsDto_child.target = 'COMPLETE';
-                  data_CreateActivityeventsDto_child.event = 'COMPLETE';
-                  data_CreateActivityeventsDto_child.action =
-                    'VerifyActivityCommand';
-                  data_CreateActivityeventsDto_child._class =
-                    'io.melody.hyppe.trans.domain.ActivityEvent';
-                  data_CreateActivityeventsDto_child.payload = {
-                    login_location: {
-                      latitude: undefined,
-                      longitude: undefined,
-                    },
-                    logout_date: undefined,
-                    login_date: undefined,
-                    login_device: undefined,
-                    email: user_email,
-                  };
-                  data_CreateActivityeventsDto_child.createdAt = current_date_string;
-                  data_CreateActivityeventsDto_child.updatedAt = current_date_string;
-                  data_CreateActivityeventsDto_child.sequenceNumber =
-                    new Int32(4);
-                  data_CreateActivityeventsDto_child.flowIsDone = false;
-                  data_CreateActivityeventsDto_child.parentActivityEventID =
-                    user_activityevents[0].activityEventID;
-                  data_CreateActivityeventsDto_child.userbasic =
-                    datauserbasicsService._id;
-
-                  //Insert ActivityEvent child
-                  await this.activityeventsService.create(
-                    data_CreateActivityeventsDto_child,
-                  );
-                } catch (error) {
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Create Activity events Child. Error:' +
-                    error,
-                  );
-                }
-
-                //Update ActivityEvent Parent
-                try {
-                  data_transitions.push({
-                    $ref: 'activityevents',
-                    $id: new Object(ID_child_ActivityEvent_2),
-                    $db: 'hyppe_trans_db',
-                  });
-
-                  //Update ActivityEvent Parent
-                  const update_activityevents_parent =
-                    await this.activityeventsService.update(
-                      {
-                        _id: user_activityevents[0]._id,
-                      },
-                      {
-                        transitions: data_transitions,
-                      },
-                    );
-                } catch (error) {
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Update Activity events Parent. Error:' +
-                    error,
-                  );
-                }
-
-                //Update ActivityEvent All Child True
-                try {
-                  await this.activityeventsService.updateFlowDone(
-                    user_activityevents[0].activityEventID,
-                  );
-                } catch (error) {
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed Update ActivityEvent All Child True. Error:' +
-                    error,
-                  );
-                }
-
-                return {
-                  response_code: 202,
-                  messages: {
-                    info: ['Create PIN request successful'],
+              //Create ActivityEvent child
+              try {
+                var id_child = new mongoose.Types.ObjectId();
+                data_CreateActivityeventsDto_child._id = id_child;
+                data_CreateActivityeventsDto_child.activityEventID =
+                  ID_child_ActivityEvent;
+                data_CreateActivityeventsDto_child.activityType = type;
+                data_CreateActivityeventsDto_child.active = true;
+                data_CreateActivityeventsDto_child.status = 'INITIAL';
+                data_CreateActivityeventsDto_child.target = 'COMPLETE';
+                data_CreateActivityeventsDto_child.event = 'CREATE_PIN';
+                data_CreateActivityeventsDto_child._class =
+                  'io.melody.hyppe.trans.domain.ActivityEvent';
+                data_CreateActivityeventsDto_child.payload = {
+                  login_location: {
+                    latitude: undefined,
+                    longitude: undefined,
                   },
+                  logout_date: undefined,
+                  login_date: undefined,
+                  login_device: undefined,
+                  email: user_email,
                 };
-            }else {
+                data_CreateActivityeventsDto_child.createdAt = current_date_string;
+                data_CreateActivityeventsDto_child.updatedAt = current_date_string;
+                data_CreateActivityeventsDto_child.sequenceNumber = new Int32(
+                  3,
+                );
+                data_CreateActivityeventsDto_child.flowIsDone = false;
+                data_CreateActivityeventsDto_child.parentActivityEventID =
+                  user_activityevents[0].activityEventID;
+                data_CreateActivityeventsDto_child.userbasic =
+                  datauserbasicsService._id;
+
+                //Insert ActivityEvent child
+                await this.activityeventsService.create(
+                  data_CreateActivityeventsDto_child,
+                );
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Create Activity events Child. Error:' +
+                  error,
+                );
+              }
+
+              //Update ActivityEvent Parent
+              try {
+                data_transitions = user_activityevents[0].transitions;
+                data_transitions.push({
+                  $ref: 'activityevents',
+                  $id: new Object(ID_child_ActivityEvent),
+                  $db: 'hyppe_trans_db',
+                });
+
+                //Update ActivityEvent Parent
+                const update_activityevents_parent =
+                  await this.activityeventsService.update(
+                    {
+                      _id: user_activityevents[0]._id,
+                    },
+                    {
+                      transitions: data_transitions,
+                    },
+                  );
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Update Activity events Parent. Error:' +
+                  error,
+                );
+              }
+
+              //Update Pin
+              try {
+                var encrypt_pin = await this.utilsService.encrypt(body_.pin.toString());
+                var createUserbasicDto_ = new CreateUserbasicDto();
+                createUserbasicDto_.pin = encrypt_pin;
+                await this.userbasicsService.updateData(user_email, createUserbasicDto_);
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Create Pin. Error: ' +
+                  error,
+                );
+              }
+
+              //Create ActivityEvent child
+              try {
+                var id_child = new mongoose.Types.ObjectId();
+                data_CreateActivityeventsDto_child._id = id_child;
+                data_CreateActivityeventsDto_child.activityEventID =
+                  ID_child_ActivityEvent_2;
+                data_CreateActivityeventsDto_child.activityType = type;
+                data_CreateActivityeventsDto_child.active = true;
+                data_CreateActivityeventsDto_child.status = 'COMPLETE';
+                data_CreateActivityeventsDto_child.target = 'COMPLETE';
+                data_CreateActivityeventsDto_child.event = 'COMPLETE';
+                data_CreateActivityeventsDto_child.action =
+                  'VerifyActivityCommand';
+                data_CreateActivityeventsDto_child._class =
+                  'io.melody.hyppe.trans.domain.ActivityEvent';
+                data_CreateActivityeventsDto_child.payload = {
+                  login_location: {
+                    latitude: undefined,
+                    longitude: undefined,
+                  },
+                  logout_date: undefined,
+                  login_date: undefined,
+                  login_device: undefined,
+                  email: user_email,
+                };
+                data_CreateActivityeventsDto_child.createdAt = current_date_string;
+                data_CreateActivityeventsDto_child.updatedAt = current_date_string;
+                data_CreateActivityeventsDto_child.sequenceNumber =
+                  new Int32(4);
+                data_CreateActivityeventsDto_child.flowIsDone = false;
+                data_CreateActivityeventsDto_child.parentActivityEventID =
+                  user_activityevents[0].activityEventID;
+                data_CreateActivityeventsDto_child.userbasic =
+                  datauserbasicsService._id;
+
+                //Insert ActivityEvent child
+                await this.activityeventsService.create(
+                  data_CreateActivityeventsDto_child,
+                );
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Create Activity events Child. Error:' +
+                  error,
+                );
+              }
+
+              //Update ActivityEvent Parent
+              try {
+                data_transitions.push({
+                  $ref: 'activityevents',
+                  $id: new Object(ID_child_ActivityEvent_2),
+                  $db: 'hyppe_trans_db',
+                });
+
+                //Update ActivityEvent Parent
+                const update_activityevents_parent =
+                  await this.activityeventsService.update(
+                    {
+                      _id: user_activityevents[0]._id,
+                    },
+                    {
+                      transitions: data_transitions,
+                    },
+                  );
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Update Activity events Parent. Error:' +
+                  error,
+                );
+              }
+
+              //Update ActivityEvent All Child True
+              try {
+                await this.activityeventsService.updateFlowDone(
+                  user_activityevents[0].activityEventID,
+                );
+              } catch (error) {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Unabled to proceed Update ActivityEvent All Child True. Error:' +
+                  error,
+                );
+              }
+
+              return {
+                response_code: 202,
+                messages: {
+                  info: ['Create PIN request successful'],
+                },
+              };
+            } else {
               //Create ActivityEvent child
               try {
                 var id_child = new mongoose.Types.ObjectId();
@@ -1699,10 +1750,10 @@ export class AuthController {
                 );
               }
             }
-          }else{
+          } else {
             let last;
             if (user_activityevents[0].transitions.length > 0) {
-              last = await this.activityeventsService.findbyactivityEventID(user_email, user_activityevents[0].transitions[0].oid, type,false,);
+              last = await this.activityeventsService.findbyactivityEventID(user_email, user_activityevents[0].transitions[0].oid, type, false,);
             } else {
               last = user_activityevents;
             }
@@ -1806,7 +1857,7 @@ export class AuthController {
                   );
                 }
 
-                if (datauserbasicsService.otp_attemp==undefined){
+                if (datauserbasicsService.otp_attemp == undefined) {
                   otp_attemp = 0;
                 } else {
                   otp_attemp = datauserbasicsService.otp_attemp;
@@ -2050,7 +2101,7 @@ export class AuthController {
                   'Unabled to proceed',
                 );
               }
-            }else{
+            } else {
               //Create ActivityEvent child
               try {
                 var id_child = new mongoose.Types.ObjectId();
@@ -2148,7 +2199,7 @@ export class AuthController {
             }
           }
         } else {
-          if (type =="CECK_PIN"){
+          if (type == "CECK_PIN") {
             if (body_.pin == undefined) {
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, param pin is required',
@@ -2160,8 +2211,8 @@ export class AuthController {
                 );
               }
             }
-            
-            if (datauserbasicsService.pin != undefined){
+
+            if (datauserbasicsService.pin != undefined) {
               var current_pin = datauserbasicsService.pin;
               var decript_pin = await this.utilsService.decrypt(current_pin.toString());
               if (decript_pin == body_.pin) {
@@ -2274,7 +2325,7 @@ export class AuthController {
                 'Unabled to proceed, you must create pin first',
               );
             }
-          }else if (type == "FORGOT_PIN") {
+          } else if (type == "FORGOT_PIN") {
             //Create ActivityEvent Parent
             try {
               var id_parent = new mongoose.Types.ObjectId();
@@ -2402,7 +2453,7 @@ export class AuthController {
                 'Unabled to proceed Gnerate OTP. Error: ' + error,
               );
             }
-          }else{
+          } else {
             if (body_.pin == undefined) {
               await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed, param pin is required',

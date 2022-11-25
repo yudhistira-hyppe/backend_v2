@@ -69,15 +69,16 @@ export class MediaproofpictsService {
     }
     var pipeline = [];
 
-    pipeline.push({
-      $lookup: {
-        from: 'userbasics',
-        localField: '_id',
-        foreignField: 'proofPict.$id',
-        as: 'basicdata',
+    pipeline.push(
+      {
+        $lookup: {
+          from: 'userbasics',
+          localField: '_id',
+          foreignField: 'proofPict.$id',
+          as: 'basicdata',
 
-      }
-    },
+        }
+      },
       {
         $unwind: "$basicdata"
       },
@@ -117,23 +118,17 @@ export class MediaproofpictsService {
           from: 'mediaprofilepicts',
           localField: 'profilepictid',
           foreignField: '_id',
-          as: 'avatardata',
+          as: 'profilePict_data',
 
         }
       },
-      {
-        $addFields: {
-          'avatar': {
-            $arrayElemAt: ['$avatardata', 0]
-          },
 
-        }
-      },
       {
         $project: {
           email: 1,
           username: '$auth.username',
           createdAt: 1,
+          profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
           status: {
             $switch: {
               branches: [
@@ -171,17 +166,40 @@ export class MediaproofpictsService {
           idcardnumber: 1,
           jumlahPermohonan: "1",
           tahapan: "KTP",
+
+
+        }
+      },
+      {
+        $addFields: {
+
+          concat: '/profilepict',
+          pict: {
+            $replaceOne: {
+              input: "$profilpict.mediaUri",
+              find: "_0001.jpeg",
+              replacement: ""
+            }
+          },
+
+        },
+
+      },
+      {
+        $project: {
+          email: 1,
+          username: '$auth.username',
+          createdAt: 1,
+          status: 1,
+          idcardnumber: 1,
+          jumlahPermohonan: "1",
+          tahapan: "KTP",
           avatar: {
-            mediaBasePath: '$avatar.mediaBasePath',
-            mediaUri: '$avatar.mediaUri',
-            mediaType: '$avatar.mediaType',
-            mediaEndpoint: '$avatar.fsTargetUri',
-            medreplace: {
-              $replaceOne: {
-                input: "$avatar.mediaUri",
-                find: "_0001.jpeg",
-                replacement: ""
-              }
+            mediaBasePath: '$profilpict.mediaBasePath',
+            mediaUri: '$profilpict.mediaUri',
+            mediaType: '$profilpict.mediaType',
+            mediaEndpoint: {
+              $concat: ["$concat", "/", "$pict"]
             },
 
           },
