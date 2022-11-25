@@ -609,7 +609,7 @@ export class PostContentService {
     let cm = post.contentMedias[0];
     let ns = cm.namespace;
     this.logger.log('updateNewPost >>> namespace: ' + ns);
-    if (ns == 'mediavideos' || post.musicId != undefined) {
+    if (ns == 'mediavideos') {
       let vid = await this.videoService.findOne(cm.oid);
       if (vid == undefined) {
         return;
@@ -643,12 +643,10 @@ export class PostContentService {
       post.active = true;
       this.postService.create(post);
     } else if (ns == 'mediapicts') {
-      if (post.musicId != undefined) {
-
-      }
-
+      this.logger.log('updateNewPost >>> checking picture oid: ' + cm.oid);
       let pic = await this.picService.findOne(cm.oid);
       if (pic == undefined) {
+        this.logger.error('updateNewPost >>> checking picture oid: ' + cm.oid + " error");
         return;
       }
 
@@ -697,6 +695,8 @@ export class PostContentService {
         let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll };
         post.metadata = metadata;
       }
+
+      post.active = true;
       this.postService.create(post);
 
       let todel = body.filedel + "";
@@ -1401,7 +1401,7 @@ export class PostContentService {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     let st = await this.utilService.getDateTimeDate();
     var emailUser = headers['x-auth-user'];
-    let query = this.PostsModel.find({ $or: [{ reportedUser: { $elemMatch: { email: { $ne: emailUser } } } }, { reportedUser: { $exists: false } }] });
+    let query = this.PostsModel.find({ "reportedUser.email": { $not: { $regex: emailUser } }, reportedStatus: { $ne: "OWNED" } });
     let con = true;
     if (body.visibility != undefined) {
       if (body.visibility == 'PRIVATE') {
@@ -1512,7 +1512,7 @@ export class PostContentService {
   private async doGetUserPostMy(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     var emailUser = headers['x-auth-user'];
-    let query = this.PostsModel.find({ $or: [{ reportedUser: { $elemMatch: { email: { $ne: emailUser } } } }, { reportedUser: { $exists: false } }] });
+    let query = this.PostsModel.find({ "reportedUser.email": { $not: { $regex: emailUser } }, reportedStatus: { $ne: "OWNED" } });
     query.where('email', whoami.email);
     if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
       query.where('active', true);
@@ -1670,6 +1670,20 @@ export class PostContentService {
         if (ps.reportedUserCount != undefined) {
           pa.reportedUserCount = Number(ps.reportedUserCount);
         }
+        var music = {}
+        if (ps.musicId!=undefined){
+          var dataMusic = await this.mediamusicService.findOneDetail(ps.musicId.toString());
+          if (await this.utilService.ceckData(dataMusic)) {
+            music["_id"] = ps.musicId.toString()
+            music["musicTitle"] = dataMusic[0].musicTitle;
+            music["artistName"] = dataMusic[0].artistName;
+            music["albumName"] = dataMusic[0].albumName;
+            music["apsaraMusic"] = dataMusic[0].apsaraMusic;
+            music["apsaraThumnail"] = dataMusic[0].apsaraThumnail;
+            music["apsaraThumnailUrl"] = dataMusic[0].apsaraThumnailUrl;
+          }
+        }
+        pa.music = music;
 
         let following = await this.contentEventService.findFollowing(pa.email);
 
@@ -3294,6 +3308,9 @@ export class PostContentService {
               ndat.push(ndy);
             }
           }
+          //let pt = await this.findByPostId(pid);
+        }else{
+          ndat.push(ndy);
         }
       }
 
