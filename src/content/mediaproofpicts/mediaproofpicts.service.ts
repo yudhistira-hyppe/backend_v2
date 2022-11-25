@@ -188,7 +188,7 @@ export class MediaproofpictsService {
       {
         $project: {
           email: 1,
-          username: '$auth.username',
+          username: 1,
           createdAt: 1,
           status: 1,
           idcardnumber: 1,
