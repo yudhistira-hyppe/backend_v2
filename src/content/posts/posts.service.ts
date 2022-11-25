@@ -3697,7 +3697,6 @@ export class PostsService {
     }
   }
 
-
   async findhistorySell(postID: string) {
 
     const query = await this.PostsModel.aggregate([
@@ -4701,43 +4700,44 @@ export class PostsService {
     ];
 
     if (jenis === "report") {
-      pipeline.push({
-        $match: {
-          reportedUser: {
-            $ne: null
-          },
-
-          active: true
-        }
-      },
+      pipeline.push(
         {
           $match: {
-            reportedUser: {
-              $ne: []
-            },
-            active: true
+            $and: [
+              {
+                reportedUser: {
+                  $ne: null
+                }, isActive: true
+              },
+              {
+                reportedUser: {
+                  $ne: []
+                }, isActive: true
+              },
 
+            ]
           }
-        });
+        },
+
+      );
     } else if (jenis === "appeal") {
       pipeline.push({
         $match: {
-          reportedUserHandle: {
-            $ne: null
-          },
-
-          active: true
-        }
-      },
-        {
-          $match: {
-            reportedUserHandle: {
-              $ne: []
+          $and: [
+            {
+              reportedUserHandle: {
+                $ne: null
+              }, isActive: true
             },
-            active: true
+            {
+              reportedUserHandle: {
+                $ne: []
+              }, isActive: true
+            },
 
-          }
-        });
+          ]
+        }
+      },);
     }
 
     if (keys && keys !== undefined) {

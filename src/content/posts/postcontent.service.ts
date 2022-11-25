@@ -609,7 +609,7 @@ export class PostContentService {
     let cm = post.contentMedias[0];
     let ns = cm.namespace;
     this.logger.log('updateNewPost >>> namespace: ' + ns);
-    if (ns == 'mediavideos' || post.musicId != undefined) {
+    if (ns == 'mediavideos') {
       let vid = await this.videoService.findOne(cm.oid);
       if (vid == undefined) {
         return;
@@ -643,12 +643,10 @@ export class PostContentService {
       post.active = true;
       this.postService.create(post);
     } else if (ns == 'mediapicts') {
-      if (post.musicId != undefined) {
-
-      }
-
+      this.logger.log('updateNewPost >>> checking picture oid: ' + cm.oid);
       let pic = await this.picService.findOne(cm.oid);
       if (pic == undefined) {
+        this.logger.error('updateNewPost >>> checking picture oid: ' + cm.oid + " error");
         return;
       }
 
@@ -697,6 +695,8 @@ export class PostContentService {
         let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll };
         post.metadata = metadata;
       }
+
+      post.active = true;
       this.postService.create(post);
 
       let todel = body.filedel + "";
