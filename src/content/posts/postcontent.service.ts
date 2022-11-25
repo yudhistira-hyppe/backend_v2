@@ -643,10 +643,6 @@ export class PostContentService {
       post.active = true;
       this.postService.create(post);
     } else if (ns == 'mediapicts') {
-      if (post.musicId != undefined) {
-
-      }
-
       let pic = await this.picService.findOne(cm.oid);
       if (pic == undefined) {
         return;
