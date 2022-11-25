@@ -4707,12 +4707,12 @@ export class PostsService {
               {
                 reportedUser: {
                   $ne: null
-                }, isActive: true
+                }, active: true
               },
               {
                 reportedUser: {
                   $ne: []
-                }, isActive: true
+                }, active: true
               },
 
             ]
@@ -4727,12 +4727,12 @@ export class PostsService {
             {
               reportedUserHandle: {
                 $ne: null
-              }, isActive: true
+              }, active: true
             },
             {
               reportedUserHandle: {
                 $ne: []
-              }, isActive: true
+              }, active: true
             },
 
           ]

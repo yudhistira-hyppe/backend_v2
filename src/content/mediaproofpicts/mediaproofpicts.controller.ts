@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, UseGuards, Headers, Request, BadRequestException, Res, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, UseGuards, Headers, Request, BadRequestException, Res, UseInterceptors, UploadedFiles, Req } from '@nestjs/common';
 import { MediaproofpictsService } from './mediaproofpicts.service';
 import { CreateMediaproofpictsDto } from './dto/create-mediaproofpicts.dto';
 import { Mediaproofpicts } from './schemas/mediaproofpicts.schema';
@@ -57,6 +57,63 @@ export class MediaproofpictsController {
     return this.MediaproofpictsService.delete(id);
   }
 
+  @Post('listkyc')
+  @UseGuards(JwtAuthGuard)
+  async profileuser(@Req() request: Request): Promise<any> {
+    var request_json = JSON.parse(JSON.stringify(request.body));
+    var keys = null;
+    var data = null;
+    var page = null;
+    var limit = null;
+    var startdate = null;
+    var enddate = null;
+    var status = null;
+
+    var descending = null;
+
+    const messages = {
+      "info": ["The process successful"],
+    };
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
+    keys = request_json["keys"];
+    status = request_json["status"];
+    startdate = request_json["startdate"];
+    enddate = request_json["enddate"];
+    descending = request_json["descending"];
+    if (request_json["page"] !== undefined) {
+      page = request_json["page"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    if (request_json["limit"] !== undefined) {
+      limit = request_json["limit"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    data = await this.MediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, page, limit);
+    let datasearch = await this.MediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, 0, 0);
+    var totalsearch = datasearch.length;
+    var allrow = await this.MediaproofpictsService.listkyc(undefined, undefined, undefined, undefined, descending, 0, 0);
+    var totalallrow = allrow.length;
+    var totalrow = data.length;
+
+    var tpage = null;
+    var tpage2 = null;
+    var totalpage = null;
+    tpage2 = (totalsearch / limit).toFixed(0);
+    tpage = (totalsearch % limit);
+    if (tpage > 0 && tpage < 5) {
+      totalpage = parseInt(tpage2) + 1;
+
+    } else {
+      totalpage = parseInt(tpage2);
+    }
+
+    return { response_code: 202, data, page, limit, totalrow, totalallrow, totalsearch, totalpage, messages };
+  }
 
   // @Post()
   // @UseInterceptors(FileFieldsInterceptor([

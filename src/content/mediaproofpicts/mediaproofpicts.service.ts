@@ -51,6 +51,224 @@ export class MediaproofpictsService {
     );
   }
 
+  async listkyc(keys: string, status: any[], startdate: string, enddate: string, descending: boolean, page: number, limit: number) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+
+    var order = null;
+
+    if (descending === true) {
+      order = -1;
+    } else {
+      order = 1;
+    }
+    var pipeline = [];
+
+    pipeline.push({
+      $lookup: {
+        from: 'userbasics',
+        localField: '_id',
+        foreignField: 'proofPict.$id',
+        as: 'basicdata',
+
+      }
+    },
+      {
+        $unwind: "$basicdata"
+      },
+      {
+        $project: {
+          email: '$basicdata.email',
+          profilepictid: '$basicdata.profilePict.$id',
+          fullName: '$basicdata.fullName',
+          userAuth_id: '$basicdata.userAuth.$id',
+          createdAt: 1,
+          status: 1,
+          idcardnumber: 1
+        }
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+
+        },
+
+      },
+      {
+        $addFields: {
+
+
+          'auth': {
+            $arrayElemAt: ['$userAuth_data', 0]
+          },
+
+        }
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts',
+          localField: 'profilepictid',
+          foreignField: '_id',
+          as: 'avatardata',
+
+        }
+      },
+      {
+        $addFields: {
+          'avatar': {
+            $arrayElemAt: ['$avatardata', 0]
+          },
+
+        }
+      },
+      {
+        $project: {
+          email: 1,
+          username: '$auth.username',
+          createdAt: 1,
+          status: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [
+                      "$status",
+                      "IN_PROGGRESS"
+                    ]
+                  },
+                  then: "BARU"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$status",
+                      "FAILED"
+                    ]
+                  },
+                  then: "DITOLAK"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$status",
+                      "FINISH"
+                    ]
+                  },
+                  then: "DISETUJUI"
+                },
+              ],
+              default: ""
+            }
+          },
+          idcardnumber: 1,
+          jumlahPermohonan: "1",
+          tahapan: "KTP",
+          avatar: {
+            mediaBasePath: '$avatar.mediaBasePath',
+            mediaUri: '$avatar.mediaUri',
+            mediaType: '$avatar.mediaType',
+            mediaEndpoint: '$avatar.fsTargetUri',
+            medreplace: {
+              $replaceOne: {
+                input: "$avatar.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+
+          },
+
+        }
+      },
+      {
+        $match: {
+          $and: [
+            {
+              idcardnumber: {
+                $ne: null
+              },
+              status: {
+                $ne: null
+              }
+            },
+            {
+              idcardnumber: {
+                $ne: ""
+              },
+              status: {
+                $ne: ""
+              }
+            },
+
+          ]
+        }
+      },);
+
+    if (keys && keys !== undefined) {
+      pipeline.push({
+        $match: {
+
+          username: {
+            $regex: keys, $options: 'i'
+          },
+        }
+      });
+    }
+    if (status && status !== undefined) {
+
+      pipeline.push(
+        {
+          $match: {
+            $or: [
+              {
+                status: {
+                  $in: status
+                }
+              },
+
+            ], active: true,
+          }
+        });
+    }
+
+    if (startdate && startdate !== undefined) {
+
+      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+
+    }
+    if (enddate && enddate !== undefined) {
+
+      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+
+    }
+
+    pipeline.push({
+      $sort: {
+        createdAt: order
+      },
+
+    });
+
+    if (page > 0) {
+      pipeline.push({ $skip: (page * limit) });
+    }
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
+    let query = await this.MediaproofpictsModel.aggregate(pipeline);
+
+    return query;
+
+  }
+
   // async findmediaproofpicts() {
   //   const query = await this.MediaproofpictsModel.aggregate([
 
