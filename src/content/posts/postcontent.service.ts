@@ -643,8 +643,10 @@ export class PostContentService {
       post.active = true;
       this.postService.create(post);
     } else if (ns == 'mediapicts') {
+      this.logger.log('updateNewPost >>> checking picture oid: ' + cm.oid);
       let pic = await this.picService.findOne(cm.oid);
       if (pic == undefined) {
+        this.logger.error('updateNewPost >>> checking picture oid: ' + cm.oid + " error");
         return;
       }
 
