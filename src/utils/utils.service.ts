@@ -333,6 +333,7 @@ export class UtilsService {
       for (var i = 0; i < datadevice.length; i++) {
         var deviceid = datadevice[i].deviceID;
         await admin.messaging().sendToDevice(deviceid, payload);
+
         arraydevice.push(deviceid);
 
       }

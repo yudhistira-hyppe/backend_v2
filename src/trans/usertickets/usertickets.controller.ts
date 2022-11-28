@@ -653,14 +653,38 @@ export class UserticketsController {
     }
 
     data = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, page, limit, descending);
+    // let datasearch = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, 0, 0, descending);
+    //var totalsearch = datasearch.length;
+    // var allrow = await this.userticketsService.totalcount();
+    // var totalallrow = allrow[0].countrow;
+    // var totalrow = data.length;
+    // var totalpage = (totalallrow / limit).toFixed(0);
+    // var totalpagesearch = (totalsearch / limit).toFixed(0);
+
+    var total = null;
+    var totalsearch = null;
+    var totalallrow = null;
+    var totalpage = null;
+    total = data.length;
     let datasearch = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, 0, 0, descending);
-    var totalsearch = datasearch.length;
-    var allrow = await this.userticketsService.totalcount();
-    var totalallrow = allrow[0].countrow;
-    var totalrow = data.length;
-    var totalpage = (totalallrow / limit).toFixed(0);
-    var totalpagesearch = (totalsearch / limit).toFixed(0);
-    return { response_code: 202, data, page, limit, totalrow, totalsearch, totalallrow, totalpage, totalpagesearch, messages };
+    totalsearch = datasearch.length;
+
+    let dataall = await this.userticketsService.filterdata(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0, 0, descending);
+    totalallrow = dataall.length;
+
+    var tpage = null;
+    var tpage2 = null;
+
+    tpage2 = (totalsearch / limit).toFixed(0);
+    tpage = (totalsearch % limit);
+    if (tpage > 0 && tpage < 5) {
+      totalpage = parseInt(tpage2) + 1;
+
+    } else {
+      totalpage = parseInt(tpage2);
+    }
+    return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
+
   }
 
   @Post('api/usertickets/count')
