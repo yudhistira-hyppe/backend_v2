@@ -1272,7 +1272,8 @@ export class TransactionsController {
                             "message": messagesnull
                         });
                     }
-                } else if (type === "BOOST_CONTENT") {
+                }
+                else if (type === "BOOST_CONTENT") {
                     //GET USER BUY
                     var ubasic = await this.userbasicsService.findid(iduserbuy);
                     var emailbuyer = ubasic.email;
@@ -5671,7 +5672,7 @@ export class TransactionsController {
         await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
     }
 
-    async sendemail(email: string, type: string, transaction_boost:any) {
+    async sendemail(email: string, type: string, transaction_boost: any) {
         //Send Email
         try {
             //GET TEMPLATE HTML
@@ -5688,14 +5689,14 @@ export class TransactionsController {
             //GET USER LANGUAGE
             var DataPost = await this.postsService.findByPostId(transaction_boost.postid);
             var postType = "-";
-            if (await this.utilsService.ceckData(DataPost)){
+            if (await this.utilsService.ceckData(DataPost)) {
                 var DatapostType = DataPost.postType;
                 postType = DatapostType[0].toUpperCase() + DatapostType.slice(1).toLowerCase();
             }
 
             //TEMPLATE HTML TO CHEERIO
             var html_body = "";
-            if (langIso=="en"){
+            if (langIso == "en") {
                 html_body = Templates_.body_detail.trim().toString();
             } else {
                 html_body = Templates_.body_detail_id.trim().toString();
@@ -5704,7 +5705,7 @@ export class TransactionsController {
 
             //GET DATA BOOST
             var typeBoost = "-";
-            if (transaction_boost.detail.length>0){
+            if (transaction_boost.detail.length > 0) {
                 if (transaction_boost.detail[0].type != undefined) {
                     var DatapostTypeBoost = transaction_boost.detail[0].type;
                     typeBoost = DatapostTypeBoost[0].toUpperCase() + DatapostTypeBoost.slice(1).toLowerCase();
@@ -5726,7 +5727,7 @@ export class TransactionsController {
             var tanggalPemesanan = "24/10/2022 16:00 PM";
             if (transaction_boost.timestamp != undefined) {
                 var Datetimestamp = new Date(transaction_boost.timestamp);
-                tanggalPemesanan = await this.utilsService.formatAMPM(Datetimestamp,true);
+                tanggalPemesanan = await this.utilsService.formatAMPM(Datetimestamp, true);
             }
             var kodePemesanan = "INV/MMXXII/XI/XXII/00000";
             if (transaction_boost.noinvoice != undefined) {
@@ -5740,17 +5741,17 @@ export class TransactionsController {
                 }
             }
             var waktuBoost = "-";
-            if (typeBoost.toLowerCase()=="manual"){
+            if (typeBoost.toLowerCase() == "manual") {
                 if (transaction_boost.detail.length > 0) {
                     if (transaction_boost.detail[0].session != undefined) {
                         var name = transaction_boost.detail[0].session.name;
                         var start = transaction_boost.detail[0].session.start;
                         var end = transaction_boost.detail[0].session.end;
-                        waktuBoost = name + "(" + start.slice(0, -3) + "-" + end.slice(0, -3) +" WIB)";
+                        waktuBoost = name + "(" + start.slice(0, -3) + "-" + end.slice(0, -3) + " WIB)";
                     }
                 }
             }
-            
+
             var selangWaktu = "-";
             if (typeBoost.toLowerCase() == "manual") {
                 if (transaction_boost.detail.length > 0) {
@@ -5785,22 +5786,22 @@ export class TransactionsController {
                     timeMinute = "0 Menit"
                     var dateVA = "Jumat, 04 November 2022, 10:00"
                 }
-                if ((transaction_boost.timestamp != undefined) && (transaction_boost.expiredtimeva != undefined)){
+                if ((transaction_boost.timestamp != undefined) && (transaction_boost.expiredtimeva != undefined)) {
                     var DataTimeStamp = (new Date(transaction_boost.timestamp)).getTime();
                     var DataTimestampExpiredTimeVa = (new Date(transaction_boost.expiredtimeva)).getTime();
                     var DataMinute = Math.round(Math.round((DataTimestampExpiredTimeVa - DataTimeStamp) / 60000));
                     if (langIso == "en") {
-                        timeMinute = DataMinute+" Minutes"
+                        timeMinute = DataMinute + " Minutes"
                     } else {
                         timeMinute = DataMinute + " Menit"
                     }
                     dateVA = await this.utilsService.getDateFormat(langIso.toString(), transaction_boost.expiredtimeva)
                 }
-                $_('#timeMinute').text(timeMinute.toString()); 
+                $_('#timeMinute').text(timeMinute.toString());
                 $_('#dateVA').text(dateVA.toString());
             }
             var string_html = $_.html().toString();
-            
+
             //SEND TO EMAIL
             var to = email;
             var from = '"no-reply" <' + Templates_.from.toString() + '>';

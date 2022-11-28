@@ -16,6 +16,8 @@ import { TransactionsService } from '../transactions/transactions.service';
 import { UserauthsService } from '../userauths/userauths.service';
 import { UserAdsService } from '../userads/userads.service';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
+import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
+import { UtilsService } from '../../utils/utils.service';
 @Controller('api/reportuser')
 export class ReportuserController {
 
@@ -29,7 +31,8 @@ export class ReportuserController {
         private readonly transactionsService: TransactionsService,
         private readonly userauthsService: UserauthsService,
         private readonly userAdsService: UserAdsService,
-        private readonly mediaprofilepictsService: MediaprofilepictsService
+        private readonly mediaprofilepictsService: MediaprofilepictsService,
+        private readonly utilsService: UtilsService,
     ) { }
     @UseGuards(JwtAuthGuard)
     @Get('all')
@@ -546,6 +549,9 @@ export class ReportuserController {
         var datahandel = null;
         var objhandel = {};
         var reportedHandel = null;
+        var name = "";
+        var event = "";
+        var tipe = "";
 
         var reportCount = null;
 
@@ -594,6 +600,10 @@ export class ReportuserController {
         }
 
         if (type === "content") {
+            name = "NOTIFY_APPEAL";
+            event = "REQUEST_APPEAL";
+            tipe = "CONTENT";
+
             let createPostsDto = new CreatePostsDto();
             try {
                 datacontent = await this.postsService.findByPostId(postID);
@@ -667,6 +677,7 @@ export class ReportuserController {
 
                 }
                 this.postsService.update(postID, createPostsDto);
+                await this.sendReportAppealFCM(name, event, tipe, postID);
 
 
                 var data = request_json;
@@ -906,7 +917,9 @@ export class ReportuserController {
         var objreporthandle = {};
         var arrayreportedHandle = [];
         var reportedUserHandle = [];
-
+        var name = "";
+        var event = "";
+        var tipe = "";
 
         if (type === "content") {
             try {
@@ -918,8 +931,13 @@ export class ReportuserController {
                 reportedUserHandle = [];
             }
             if (ditangguhkan === true) {
+                name = "NOTIFY_APPEAL";
+                event = "SUSPENDED_APPEAL";
+                tipe = "CONTENT";
+
                 if (reportedUserHandle.length > 0) {
                     await this.postsService.updateDitangguhkan(postID, reason, dt.toISOString(), idreason);
+                    await this.sendReportAppealFCM(name, event, tipe, postID);
                 } else {
 
                     objreporthandle = {
@@ -935,12 +953,17 @@ export class ReportuserController {
                     arrayreportedHandle.push(objreporthandle);
 
                     await this.postsService.updateDitangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
+                    await this.sendReportAppealFCM(name, event, tipe, postID);
                 }
 
 
             } else {
+                name = "NOTIFY_APPEAL";
+                event = "NOTSUSPENDED_APPEAL";
+                tipe = "CONTENT";
                 if (reportedUserHandle.length > 0) {
                     await this.postsService.updateTidakditangguhkan(postID, dt.toISOString());
+                    await this.sendReportAppealFCM(name, event, tipe, postID);
                     await this.postsService.nonactive(postID, dt.toISOString());
                 } else {
                     objreporthandle = {
@@ -956,6 +979,7 @@ export class ReportuserController {
                     arrayreportedHandle.push(objreporthandle);
 
                     await this.postsService.updateTidakditangguhkanEmpty(postID, dt.toISOString(), arrayreportedHandle);
+                    await this.sendReportAppealFCM(name, event, tipe, postID);
                     await this.postsService.nonactive(postID, dt.toISOString());
                 }
             }
@@ -1023,6 +1047,9 @@ export class ReportuserController {
         var type = null;
         var reason = null;
         var reasonId = null;
+        var name = "";
+        var event = "";
+        var tipe = "";
         var request_json = JSON.parse(JSON.stringify(request.body));
 
         if (request_json["postID"] !== undefined) {
@@ -1058,6 +1085,9 @@ export class ReportuserController {
         var reportedUserHandle = [];
 
         if (type === "content") {
+            name = "NOTIFY_FLAGING";
+            event = "ADMIN_FLAGING";
+            tipe = "CONTENT";
             try {
                 datacontent = await this.postsService.findByPostId(postID);
                 reportedUserHandle = datacontent._doc.reportedUserHandle;
@@ -1069,6 +1099,7 @@ export class ReportuserController {
 
             if (reportedUserHandle.length > 0) {
                 await this.postsService.updateFlaging(postID, dt.toISOString());
+                await this.sendReportAppealFCM(name, event, tipe, postID);
 
             } else {
 
@@ -1081,6 +1112,7 @@ export class ReportuserController {
                 arrayreportedHandle.push(objreporthandle);
 
                 await this.postsService.updateFlagingEmpty(postID, dt.toISOString(), arrayreportedHandle);
+                await this.sendReportAppealFCM(name, event, tipe, postID);
             }
 
         }
@@ -2925,5 +2957,25 @@ export class ReportuserController {
         return { response_code: 202, data, messages };
 
 
+    }
+
+    async sendReportAppealFCM(name: string, event: string, type: string, postID: string) {
+        var Templates_ = new TemplatesRepo();
+        Templates_ = await this.utilsService.getTemplateAppealReport(name, event, 'NOTIFICATION');
+
+        var titlein = Templates_.subject_id.toString();
+        var titleen = Templates_.subject.toString();
+        var email_post = "";
+        var posts = await this.postsService.findid(postID);
+        var bodyin_get = Templates_.body_detail_id.toString();
+        var bodyen_get = Templates_.body_detail.toString();
+        var post_type = "";
+        if (await this.utilsService.ceckData(posts)) {
+            post_type = posts.postType.toString();
+            email_post = posts.email.toString();
+        }
+
+        var eventType = type.toString();
+        await this.utilsService.sendFcm(email_post, titlein, titleen, bodyin_get, bodyen_get, eventType, event, postID, post_type);
     }
 }

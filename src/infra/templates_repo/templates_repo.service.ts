@@ -56,7 +56,15 @@ export class TemplatesRepoService {
       type: type,
       category: category,
     }).exec();
-  }  
+  }
+
+  async findByNameAndEventCategory(name: string, event: string, category: string): Promise<TemplatesRepo> {
+    return this.TemplatesRepoModel.findOne({
+      name: name,
+      event: event,
+      category: category
+    }).exec();
+  }
 
   async delete(id: string) {
     const deletedCat = await this.TemplatesRepoModel.findByIdAndRemove({

@@ -967,6 +967,105 @@ export class AuthController {
     }
   }
 
+  @Get('selfiepict/:id')
+  @HttpCode(HttpStatus.OK)
+  async selfiepict(
+    @Param('id') id: string,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response) {
+    if ((id != undefined) && (token != undefined) && (email != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
+        if (await this.utilsService.ceckData(mediaproofpicts)) {
+          var mediaproofpicts_SelfiefsSourceUri = '';
+          var mediaMime = "";
+          if (mediaproofpicts != null) {
+            if (mediaproofpicts.SelfiefsSourceUri != null) {
+              mediaproofpicts_SelfiefsSourceUri = mediaproofpicts.SelfiefsSourceUri.toString();
+            }
+          }
+          if (mediaproofpicts.SelfiemediaMime != undefined) {
+            mediaMime = mediaproofpicts.SelfiemediaMime.toString();
+          } else {
+            mediaMime = "image/jpeg";
+          }
+          if (mediaproofpicts_SelfiefsSourceUri != '') {
+            // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
+            // const response_ = await fetch(url);
+            // const blob = await response_.blob();
+            // const arrayBuffer = await blob.arrayBuffer();
+            // const buffer = Buffer.from(arrayBuffer);
+            var data = await this.authService.profilePict(mediaproofpicts_SelfiefsSourceUri);
+            if (data != null) {
+              response.set("Content-Type", "image/png");
+              response.send(data);
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        } else {
+          response.send(null);
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
+
+  @Get('supportfile/:id')
+  @HttpCode(HttpStatus.OK)
+  async supportfile(
+    @Param('id') id: string,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response) {
+    if ((id != undefined) && (token != undefined) && (email != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
+        if (await this.utilsService.ceckData(mediaproofpicts)) {
+          var mediaproofpicts_SupportfsSourceUri = '';
+          var mediaMime = "";
+          if (mediaproofpicts != null) {
+            if (mediaproofpicts.SupportfsSourceUri != null) {
+              mediaproofpicts_SupportfsSourceUri = mediaproofpicts.SupportfsSourceUri.toString();
+            }
+          }
+          if (mediaproofpicts.SupportmediaMime != undefined) {
+            mediaMime = mediaproofpicts.SupportmediaMime.toString();
+          } else {
+            mediaMime = "image/jpeg";
+          }
+          if (mediaproofpicts_SupportfsSourceUri != '') {
+            // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
+            // const response_ = await fetch(url);
+            // const blob = await response_.blob();
+            // const arrayBuffer = await blob.arrayBuffer();
+            // const buffer = Buffer.from(arrayBuffer);
+            var data = await this.authService.profilePict(mediaproofpicts_SupportfsSourceUri);
+            if (data != null) {
+              response.set("Content-Type", "image/png");
+              response.send(data);
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        } else {
+          response.send(null);
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
+
+
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Put('api/userauths/:email')
