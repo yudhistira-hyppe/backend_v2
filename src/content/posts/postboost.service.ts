@@ -2975,6 +2975,7 @@ export class PostBoostService {
       if (obj.boosted != undefined) {
         console.log("boosted: " + pd.postID);
         this.postxService.updateBoostViewer(pd.postID, email);
+        pd.boostJangkauan = this.countBoosted(obj.boosted, email);
       }
 
 
@@ -2984,6 +2985,31 @@ export class PostBoostService {
 
     return res;
   }  
+
+  private countBoosted(ps: any, email: string) {
+    let bs = ps.boosted;
+    let cnt = 0;
+    if (bs != undefined) {
+      for (let i = 0; i < bs.length; i++) {
+        let bbs = bs[i];
+        if (bbs.boostSession != undefined) {
+          let bootSession = bbs.boostSession;
+          let bv: any[] = bbs.boostViewer;
+          if (bv != undefined) {
+            if (bv.length > 0) {
+              for (let x = 0; x < bv.length; x++) {
+                let bbv = bv[x];
+                if (String(bbv.email) == email) {
+                  cnt++;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return cnt;
+  }
 
   async getBoostV2(body: any, headers: any): Promise<PostLandingResponseApps> {
     this.logger.log('getBoostV2 >>> started');
