@@ -13,6 +13,7 @@ import { JwtrefreshtokenModule } from '../trans/jwtrefreshtoken/jwtrefreshtoken.
 import { CountriesModule } from '../infra/countries/countries.module';
 import { LanguagesModule } from '../infra/languages/languages.module';
 import { MediaprofilepictsModule } from '../content/mediaprofilepicts/mediaprofilepicts.module';
+import { MediaproofpictsModule } from '../content/mediaproofpicts/mediaproofpicts.module';
 import { InsightsModule } from '../content/insights/insights.module';
 import { InterestsModule } from '../infra/interests/interests.module';
 import { InterestsRepoModule } from '../infra/interests_repo/interests_repo.module';
@@ -32,6 +33,7 @@ import { OtpService } from './otp.service';
 import { SocmedService } from './socmed.service';
 @Module({
   imports: [
+    MediaproofpictsModule,
     UserbasicsnewModule,
     AdsUserCompareModule,
     ContenteventsModule,
