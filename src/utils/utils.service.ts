@@ -131,8 +131,8 @@ export class UtilsService {
   async toRad(Value) {
     return Value * Math.PI / 180;
   }
-  
-  async sendFcmV2(receiverParty: string, senderParty: string, eventType: string, event: string, typeTemplate: string, postID?: string, postType?: string){
+
+  async sendFcmV2(receiverParty: string, senderParty: string, eventType: string, event: string, typeTemplate: string, postID?: string, postType?: string) {
     var currentDate = await this.getDateTimeString()
     var Templates_ = new TemplatesRepo();
     Templates_ = await this.getTemplate_repo(typeTemplate, 'NOTIFICATION');
@@ -147,7 +147,7 @@ export class UtilsService {
     const langIso_senderParty = (profile_senderParty.langIso != undefined) ? profile_senderParty.langIso : "id";
 
     let title_send = Templates_.subject.toString();
-    if (title_send =="${user_name}"){
+    if (title_send == "${user_name}") {
       title_send = get_username_senderParty;
     }
 
@@ -180,7 +180,7 @@ export class UtilsService {
     var datadevice = await this.userdevicesService.findActive(receiverParty);
     var device_user = [];
     for (var i = 0; i < datadevice.length; i++) {
-      await admin.messaging().sendToDevice(datadevice[i].deviceID,{ notification: { title: title_send, body: body_send } });
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: body_send } });
       device_user.push(datadevice[i].deviceID)
     }
 
@@ -328,40 +328,42 @@ export class UtilsService {
           }
         };
       }
-
+      var arraydevice = [];
       datadevice = await this.userdevicesService.findActive(emailuserbasic);
       for (var i = 0; i < datadevice.length; i++) {
         var deviceid = datadevice[i].deviceID;
         await admin.messaging().sendToDevice(deviceid, payload);
-        var generateID = await this.generateId();
-        createNotificationsDto._id = generateID;
-        createNotificationsDto.notificationID = generateID;
-        createNotificationsDto.email = emailuserbasic;
-        createNotificationsDto.eventType = eventType;
-        createNotificationsDto.event = event;
-        createNotificationsDto.mate = emailuserbasic;
-        createNotificationsDto.devices = [deviceid];
-        createNotificationsDto.title = payload.notification.title;
-        createNotificationsDto.body = bodyen;
-        createNotificationsDto.bodyId = bodyin;
-        createNotificationsDto.active = true;
-        createNotificationsDto.flowIsDone = true;
-        createNotificationsDto.createdAt = date;
-        createNotificationsDto.updatedAt = date;
-        createNotificationsDto.actionButtons = null;
-        createNotificationsDto.contentEventID = null;
-        createNotificationsDto.senderOrReceiverInfo = senderreceiver;
+        arraydevice.push(deviceid);
 
-        if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION") {
-          if (postID != undefined) {
-            createNotificationsDto.postID = postID;
-          }
-          if (postID != undefined) {
-            createNotificationsDto.postType = postType;
-          }
-        }
-        await this.notificationsService.create(createNotificationsDto);
       }
+      var generateID = await this.generateId();
+      createNotificationsDto._id = generateID;
+      createNotificationsDto.notificationID = generateID;
+      createNotificationsDto.email = emailuserbasic;
+      createNotificationsDto.eventType = eventType;
+      createNotificationsDto.event = event;
+      createNotificationsDto.mate = emailuserbasic;
+      createNotificationsDto.devices = arraydevice;
+      createNotificationsDto.title = payload.notification.title;
+      createNotificationsDto.body = bodyen;
+      createNotificationsDto.bodyId = bodyin;
+      createNotificationsDto.active = true;
+      createNotificationsDto.flowIsDone = true;
+      createNotificationsDto.createdAt = date;
+      createNotificationsDto.updatedAt = date;
+      createNotificationsDto.actionButtons = null;
+      createNotificationsDto.contentEventID = null;
+      createNotificationsDto.senderOrReceiverInfo = senderreceiver;
+
+      if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION" || eventType == "CONTENT") {
+        if (postID != undefined) {
+          createNotificationsDto.postID = postID;
+        }
+        if (postID != undefined) {
+          createNotificationsDto.postType = postType;
+        }
+      }
+      await this.notificationsService.create(createNotificationsDto);
 
 
     }
@@ -381,9 +383,9 @@ export class UtilsService {
 
   async getSetting_(_id_setting: string) {
     var getSetting = await this.settingsService.findOne(_id_setting);
-    if (getSetting!=null){
+    if (getSetting != null) {
       return getSetting.value;
-    }else{
+    } else {
       return null;
     }
   }
@@ -409,6 +411,10 @@ export class UtilsService {
 
   async getTemplate_repo(type: string, category: string): Promise<TemplatesRepo> {
     return await this.templatesRepoService.findOneByTypeAndCategory(type, category);
+  }
+
+  async getTemplateAppealReport(name: string, event: string, category: string): Promise<TemplatesRepo> {
+    return await this.templatesRepoService.findByNameAndEventCategory(name, event, category);
   }
 
   async ceckObjectid(id: string): Promise<boolean> {
@@ -610,7 +616,7 @@ export class UtilsService {
     return isTrue;
   }
 
-  async formatDateString(date:Date): Promise<string> {
+  async formatDateString(date: Date): Promise<string> {
     var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
     return DateTime.substring(0, 10);
   }
@@ -696,7 +702,7 @@ export class UtilsService {
 
   async validasiTokenEmailParam(bearer_token: string, email: string): Promise<boolean> {
     var isTrue = false;
-    if (bearer_token!=undefined){
+    if (bearer_token != undefined) {
       var isTrue = false;
       var email = email;
       var token = bearer_token.split(" ")[1];
@@ -1040,7 +1046,7 @@ export class UtilsService {
     return cryptr.decrypt(text);
   }
 
-  async generateTransactionNumber(No:number) {
+  async generateTransactionNumber(No: number) {
     var date_current = await this.getDateTimeString();
     var tahun_nember = this.generateRomawi(parseInt(date_current.substring(0, 4)));
     var bulan_number = this.generateRomawi(parseInt(date_current.substring(7, 5)));
@@ -1050,7 +1056,7 @@ export class UtilsService {
     return TransactionNumber;
   }
 
-  async formatMoney(num:number) {
+  async formatMoney(num: number) {
     var p = num.toFixed(2).split(".");
     return "Rp " + p[0].split("").reverse().reduce(function (acc, num, i, orig) {
       return num + (num != "-" && i && !(i % 3) ? "." : "") + acc;
@@ -1058,14 +1064,14 @@ export class UtilsService {
   }
 
   async formatAMPM(date: Date, dateShow: boolean) {
-    var hours = date.getHours()-7;
+    var hours = date.getHours() - 7;
     var minutes = date.getMinutes();
     var ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
     hours = hours ? hours : 12;
-    var strTime = (hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes:minutes) + ' ' + ampm;
+    var strTime = (hours < 10 ? '0' + hours : hours) + ':' + (minutes < 10 ? '0' + minutes : minutes) + ' ' + ampm;
     var DataDate = "";
-    if (dateShow){
+    if (dateShow) {
       var day = date.getDate();
       var month = date.getMonth();
       var year = date.getFullYear();
@@ -1080,11 +1086,11 @@ export class UtilsService {
     return dateSplit[2] + "/" + dateSplit[1] + "/" + dateSplit[0];
   }
 
-  async getDayName(lang: string, dateString: string){
+  async getDayName(lang: string, dateString: string) {
     var day_list = [];
-    if (lang=="en"){
+    if (lang == "en") {
       day_list = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-    }else{
+    } else {
       day_list = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
     }
     var d = new Date(dateString);
@@ -1100,7 +1106,7 @@ export class UtilsService {
       month_list = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     }
     var d = new Date(dateString);
-    var monthName = month_list[d.getMonth()-1];
+    var monthName = month_list[d.getMonth() - 1];
     return monthName;
   }
 
