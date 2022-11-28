@@ -2953,6 +2953,7 @@ export class PostBoostService {
       pd.isBoost = obj.isBoost;
 
       pd.music = null;
+      console.log(obj.musicId);
       if (obj.music != undefined) {
         if (Array.isArray(obj.music)) {
           if (obj.music.length > 0) {
@@ -4764,7 +4765,7 @@ export class PostBoostService {
                                         
                                         
                                         $expr: {
-                                            $eq: ['$id', '$$localID']
+                                            $eq: ['$_id', '$$localID']
                                         }
                                     }
                                 },
@@ -4957,7 +4958,7 @@ export class PostBoostService {
                                     $match: 
                                     {
                                         $expr: {
-                                            $eq: ['$id', '$$localID']
+                                            $eq: ['$_id', '$$localID']
                                         }
                                     }
                                 },
