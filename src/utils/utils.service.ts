@@ -131,8 +131,8 @@ export class UtilsService {
   async toRad(Value) {
     return Value * Math.PI / 180;
   }
-  
-  async sendFcmV2(receiverParty: string, senderParty: string, eventType: string, event: string, typeTemplate: string, postID?: string, postType?: string){
+
+  async sendFcmV2(receiverParty: string, senderParty: string, eventType: string, event: string, typeTemplate: string, postID?: string, postType?: string) {
     var currentDate = await this.getDateTimeString()
     var Templates_ = new TemplatesRepo();
     Templates_ = await this.getTemplate_repo(typeTemplate, 'NOTIFICATION');
@@ -147,16 +147,16 @@ export class UtilsService {
     const langIso_senderParty = (profile_senderParty.langIso != undefined) ? profile_senderParty.langIso : "id";
 
     let title_send = Templates_.subject.toString();
-    if (title_send =="${user_name}"){
+    if (title_send == "${user_name}") {
       title_send = get_username_senderParty;
     }
 
-    if (postType==undefined){
-      postType="";
+    if (postType == undefined) {
+      postType = "";
     }
-    
+
     let body_send = "";
-    if (langIso_receiverParty=="en"){
+    if (langIso_receiverParty == "en") {
       body_send = Templates_.body_detail.toString().replace("${post_type}", "Hypper" + postType.toUpperCase() + postType.substring(1));
     } else {
       body_send = Templates_.body_detail_id.toString().replace("${post_type}", "Hypper" + postType.toUpperCase() + postType.substring(1));
@@ -164,7 +164,7 @@ export class UtilsService {
 
     var senderOrReceiverInfo = null;
     senderOrReceiverInfo['fullName'] = (profile_senderParty.fullName != undefined) ? profile_senderParty.fullName : null;
-    if (profile_senderParty.avatar!=undefined){
+    if (profile_senderParty.avatar != undefined) {
       if (profile_senderParty.avatar.mediaBasePath != undefined) {
         senderOrReceiverInfo['avatar']['mediaBasePath'] = profile_senderParty.avatar.mediaBasePath;
       }
@@ -179,7 +179,7 @@ export class UtilsService {
     var datadevice = await this.userdevicesService.findActive(receiverParty);
     var device_user = [];
     for (var i = 0; i < datadevice.length; i++) {
-      await admin.messaging().sendToDevice(datadevice[i].deviceID,{ notification: { title: title_send, body: body_send } });
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: body_send } });
       device_user.push(datadevice[i].deviceID)
     }
 
@@ -213,7 +213,7 @@ export class UtilsService {
     await this.notificationsService.create(createNotificationsDto);
   }
 
-  
+
   async sendFcm(email: string, titlein: string, titleen: string, bodyin: string, bodyen: string, eventType: string, event: string, postID?: string, postType?: string) {
     var emailuserbasic = null;
     var datadevice = null;
@@ -328,40 +328,42 @@ export class UtilsService {
           }
         };
       }
-
+      var arraydevice = [];
       datadevice = await this.userdevicesService.findActive(emailuserbasic);
       for (var i = 0; i < datadevice.length; i++) {
         var deviceid = datadevice[i].deviceID;
         await admin.messaging().sendToDevice(deviceid, payload);
-        var generateID = await this.generateId();
-        createNotificationsDto._id = generateID;
-        createNotificationsDto.notificationID = generateID;
-        createNotificationsDto.email = emailuserbasic;
-        createNotificationsDto.eventType = eventType;
-        createNotificationsDto.event = event;
-        createNotificationsDto.mate = emailuserbasic;
-        createNotificationsDto.devices = [deviceid];
-        createNotificationsDto.title = payload.notification.title;
-        createNotificationsDto.body = bodyen;
-        createNotificationsDto.bodyId = bodyin;
-        createNotificationsDto.active = true;
-        createNotificationsDto.flowIsDone = true;
-        createNotificationsDto.createdAt = date;
-        createNotificationsDto.updatedAt = date;
-        createNotificationsDto.actionButtons = null;
-        createNotificationsDto.contentEventID = null;
-        createNotificationsDto.senderOrReceiverInfo = senderreceiver;
+        arraydevice.push(deviceid);
 
-        if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION" || eventType == "CONTENT") {
-          if (postID != undefined) {
-            createNotificationsDto.postID = postID;
-          }
-          if (postID != undefined) {
-            createNotificationsDto.postType = postType;
-          }
-        }
-        await this.notificationsService.create(createNotificationsDto);
       }
+      var generateID = await this.generateId();
+      createNotificationsDto._id = generateID;
+      createNotificationsDto.notificationID = generateID;
+      createNotificationsDto.email = emailuserbasic;
+      createNotificationsDto.eventType = eventType;
+      createNotificationsDto.event = event;
+      createNotificationsDto.mate = emailuserbasic;
+      createNotificationsDto.devices = arraydevice;
+      createNotificationsDto.title = payload.notification.title;
+      createNotificationsDto.body = bodyen;
+      createNotificationsDto.bodyId = bodyin;
+      createNotificationsDto.active = true;
+      createNotificationsDto.flowIsDone = true;
+      createNotificationsDto.createdAt = date;
+      createNotificationsDto.updatedAt = date;
+      createNotificationsDto.actionButtons = null;
+      createNotificationsDto.contentEventID = null;
+      createNotificationsDto.senderOrReceiverInfo = senderreceiver;
+
+      if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION" || eventType == "CONTENT") {
+        if (postID != undefined) {
+          createNotificationsDto.postID = postID;
+        }
+        if (postID != undefined) {
+          createNotificationsDto.postType = postType;
+        }
+      }
+      await this.notificationsService.create(createNotificationsDto);
 
 
     }
