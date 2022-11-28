@@ -2573,6 +2573,7 @@ export class PostContentService {
     this.logger.log('getVideoApsaraSingle >>> response: ' + JSON.stringify(result));
     if (result != null && result.PlayInfoList != null && result.PlayInfoList.PlayInfo && result.PlayInfoList.PlayInfo.length > 0) {
       xres.PlayUrl = result.PlayInfoList.PlayInfo[0].PlayURL;
+      xres.Duration = result.PlayInfoList.PlayInfo[0].Duration;
     }
     return xres;
   }

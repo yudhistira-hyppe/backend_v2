@@ -212,6 +212,7 @@ export class ApsaraImageResponse {
 
 export class ApsaraPlayResponse {
     PlayUrl: string;
+    Duration: string;
 }
 
 export class InsightPost {
