@@ -1376,8 +1376,10 @@ export class TransactionsController {
             },
             boostSession: {
                 id: new mongoose.Types.ObjectId(detail[0].session._id.toString()),
-                start: new Date((detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() + ".000Z")),
-                end: new Date((detail[0].datedateEnd.toString() + "T" + detail[0].session.end.toString() + ".000Z")),
+                //start: new Date((detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() + ".000Z")),
+                //end: new Date((detail[0].datedateEnd.toString() + "T" + detail[0].session.end.toString() + ".000Z")),
+                start: (detail[0].dateStart.toString() + detail[0].session.start.toString()),
+                end: (detail[0].datedateEnd.toString() + detail[0].session.end.toString()),
                 timeStart: detail[0].session.start,
                 timeEnd: detail[0].session.end,
                 name: detail[0].session.name,
