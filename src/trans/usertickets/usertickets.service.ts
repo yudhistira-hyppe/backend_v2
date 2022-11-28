@@ -1300,6 +1300,11 @@ export class UserticketsService {
 
         }
       },
+      {
+        $match: {
+          active: true
+        }
+      },
 
 
     ];
@@ -1322,7 +1327,7 @@ export class UserticketsService {
               },
 
             }],
-            active: true
+
           }
         },
       );
@@ -1348,7 +1353,7 @@ export class UserticketsService {
                 }
               },
 
-            ], active: true,
+            ],
           }
         },
       );
@@ -1371,7 +1376,7 @@ export class UserticketsService {
                 }
               },
 
-            ], active: true,
+            ],
           }
         },
       );
@@ -1394,7 +1399,7 @@ export class UserticketsService {
                 }
               },
 
-            ], active: true,
+            ],
           }
         },
       );
@@ -1411,7 +1416,7 @@ export class UserticketsService {
                 }
               },
 
-            ], active: true,
+            ],
           }
         });
     }
@@ -1429,10 +1434,10 @@ export class UserticketsService {
             $regex: assignto,
             $options: 'i'
           },
-          active: true
+
         }
       },
-        { $sort: { datetime: order }, },);
+      );
     }
 
     pipeline.push({ $sort: { datetime: order }, });
