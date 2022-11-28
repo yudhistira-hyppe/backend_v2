@@ -1615,6 +1615,22 @@ export class PostContentService {
 
       let postx: string[] = [];
 
+      //GET THUMNAIL MUSIC
+      let thumnail_data: string[] = [];
+      for (let i = 0; i < posts.length; i++) {
+        let data_item = posts[i];
+        if (data_item.musicId!=undefined){
+          var dataMusic = await this.mediamusicService.findOneMusic(data_item.musicId.toString());
+          if (await this.utilService.ceckData(dataMusic)) {
+            if (dataMusic.apsaraThumnail != undefined && dataMusic.apsaraThumnail != "" && dataMusic.apsaraThumnail != null) {
+              thumnail_data.push(dataMusic.apsaraThumnail.toString());
+            }
+          }
+        }
+      }
+      var dataApsaraThumnail = await this.mediamusicService.getImageApsara(thumnail_data);
+      //GET THUMNAIL MUSIC
+
       for (let i = 0; i < posts.length; i++) {
         let ps = posts[i];
         let pa = new PostData();
@@ -1626,6 +1642,8 @@ export class PostContentService {
         pa.updatedAt = String(ps.updatedAt);
         pa.description = String(ps.description);
         pa.email = String(ps.email);
+
+        //SET DATA BOOST
         var boostedRes=[];
         if (ps.boosted != undefined) {
           if (ps.boosted.length > 0) {
@@ -1664,26 +1682,36 @@ export class PostContentService {
             pa.statusBoost = boostedStatus; 
           }
         }
+        //SET DATA BOOST
+
+        //SET DATA REPORT
         if (ps.reportedStatus != undefined) {
           pa.reportedStatus = ps.reportedStatus;
         }
         if (ps.reportedUserCount != undefined) {
           pa.reportedUserCount = Number(ps.reportedUserCount);
         }
+        //SET DATA REPORT
+
+        //SET DATA MUSIC
         var music = {}
         if (ps.musicId!=undefined){
-          var dataMusic = await this.mediamusicService.findOneDetail(ps.musicId.toString());
+          var dataMusic = await this.mediamusicService.findOneMusic(ps.musicId.toString());
           if (await this.utilService.ceckData(dataMusic)) {
             music["_id"] = ps.musicId.toString()
-            music["musicTitle"] = dataMusic[0].musicTitle;
-            music["artistName"] = dataMusic[0].artistName;
-            music["albumName"] = dataMusic[0].albumName;
-            music["apsaraMusic"] = dataMusic[0].apsaraMusic;
-            music["apsaraThumnail"] = dataMusic[0].apsaraThumnail;
-            music["apsaraThumnailUrl"] = dataMusic[0].apsaraThumnailUrl;
+            music["musicTitle"] = dataMusic.musicTitle;
+            music["artistName"] = dataMusic.artistName;
+            music["albumName"] = dataMusic.albumName;
+            music["apsaraMusic"] = dataMusic.apsaraMusic;
+            music["apsaraThumnail"] = dataMusic.apsaraThumnail;
+            console.log(dataMusic.apsaraThumnail)
+            if (dataMusic.apsaraThumnail != undefined && dataMusic.apsaraThumnail != "" && dataMusic.apsaraThumnail != null) {
+              music["apsaraThumnailUrl"] = dataApsaraThumnail.ImageInfo.find(x => x.ImageId == dataMusic.apsaraThumnail).URL;
+            }
           }
         }
         pa.music = music;
+        //SET DATA MUSIC
 
         let following = await this.contentEventService.findFollowing(pa.email);
 

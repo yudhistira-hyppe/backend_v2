@@ -406,6 +406,11 @@ export class PostsController {
     return y;
   }
 
+  @Post('api/posts/getnotificationAll')
+  async getNotificationAll() {
+    return await this.notifService.getNotificationAll();
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts/byprofile')
   @UseInterceptors(FileInterceptor('postContent'))

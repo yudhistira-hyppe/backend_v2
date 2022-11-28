@@ -47,6 +47,7 @@ import { ContentDTO, CreateNotificationsDto, NotifResponseApps } from '../notifi
 import { use } from 'passport';
 import { PostContentService } from './postcontent.service';
 import { profile } from 'console';
+import { CreateContenteventsDto } from '../contentevents/dto/create-contentevents.dto';
 
 
 //import FormData from "form-data";
@@ -65,6 +66,8 @@ export class PostBoostService {
     private utilService: UtilsService,
     private userAuthService: UserauthsService,
     private settingsService: SettingsService,
+    private contentEventsService: ContenteventsService,
+    private errorHandler: ErrorHandler
   ) { }
 
   async getBoost(body: any, headers: any): Promise<PostLandingResponseApps> {
@@ -2950,6 +2953,7 @@ export class PostBoostService {
       pd.isBoost = obj.isBoost;
 
       pd.music = null;
+      console.log(obj.musicId);
       if (obj.music != undefined) {
         if (Array.isArray(obj.music)) {
           if (obj.music.length > 0) {
@@ -2972,6 +2976,7 @@ export class PostBoostService {
       if (obj.boosted != undefined) {
         console.log("boosted: " + pd.postID);
         this.postxService.updateBoostViewer(pd.postID, email);
+        pd.boostJangkauan = this.countBoosted(obj.boosted, email);
       }
 
 
@@ -2981,6 +2986,31 @@ export class PostBoostService {
 
     return res;
   }  
+
+  private countBoosted(ps: any, email: string) {
+    let bs = ps.boosted;
+    let cnt = 0;
+    if (bs != undefined) {
+      for (let i = 0; i < bs.length; i++) {
+        let bbs = bs[i];
+        if (bbs.boostSession != undefined) {
+          let bootSession = bbs.boostSession;
+          let bv: any[] = bbs.boostViewer;
+          if (bv != undefined) {
+            if (bv.length > 0) {
+              for (let x = 0; x < bv.length; x++) {
+                let bbv = bv[x];
+                if (String(bbv.email) == email) {
+                  cnt++;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    return cnt;
+  }
 
   async getBoostV2(body: any, headers: any): Promise<PostLandingResponseApps> {
     this.logger.log('getBoostV2 >>> started');
@@ -4735,7 +4765,7 @@ export class PostBoostService {
                                         
                                         
                                         $expr: {
-                                            $eq: ['$id', '$$localID']
+                                            $eq: ['$_id', '$$localID']
                                         }
                                     }
                                 },
@@ -4928,7 +4958,7 @@ export class PostBoostService {
                                     $match: 
                                     {
                                         $expr: {
-                                            $eq: ['$id', '$$localID']
+                                            $eq: ['$_id', '$$localID']
                                         }
                                     }
                                 },
@@ -5247,7 +5277,6 @@ export class PostBoostService {
     let isLike : [] = obj.isLike;
     let isView : [] = obj.isView;
 
-    console.log(JSON.stringify(obj.pict));
 
     if (body.postType == 'ALL' || body.postType == 'pict') {
       opic = this.processDataV2(obj.pict, xvids, xpics, isLike, isView, String(profile.email));
@@ -5527,11 +5556,95 @@ export class PostBoostService {
 
     res.data = pld;
 
+    this.setViewed(obj, String(profile.email));
+
     var ver = await this.settingsService.findOneByJenis('AppsVersion');
     ver.value;
     res.version = String(ver.value);
 
     return res;
+  }
+
+  private async setViewed(obj: any, email: string) {
+    this.logger.log("setViewed >>> pid: email: " + email);
+    if (obj.video != null && obj.video.length > 0) {
+      for (let i = 0; i < obj.video.length; i++) {
+        let o = obj.video[i];
+        this.markViewed(o, email, String(o.email));
+      }
+    }    
+
+    if (obj.pict != null && obj.pict.length > 0) {
+      for (let i = 0; i < obj.pict.length; i++) {
+        let o = obj.pict[i];
+        this.markViewed(o, email, String(o.email));
+      }
+    }        
+
+    if (obj.diary != null && obj.diary.length > 0) {
+      for (let i = 0; i < obj.diary.length; i++) {
+        let o = obj.diary[i];
+        this.markViewed(o, email, String(o.email));
+      }
+    }
+    
+    if (obj.story != null && obj.story.length > 0) {
+      for (let i = 0; i < obj.story.length; i++) {
+        let o = obj.story[i];
+        this.markViewed(o, email, String(o.email));
+      }
+    }    
+  }
+
+  private async markViewed(obj: any, email: string, receiver: string) {
+    this.logger.log("markViewed >>> pid: " + obj.postID + ", email: " + email + ", receiver: " + receiver);
+    let checkDone = await this.contentEventsService.ceckData(email, "VIEW", "DONE", receiver, "", obj.postID);
+    var checkAccept = await this.contentEventsService.ceckData(receiver, "VIEW", "ACCEPT", "", email, obj.postID);
+    if (checkDone == undefined && checkAccept == undefined) {
+      this.logger.log("markViewed >>> pid: " + obj.postID + ", email: " + email + ", receiver: " + receiver + " create new");
+      var _id_1 = await this.utilService.generateId();
+      var _id_2 = await this.utilService.generateId();
+      const current_date = await this.utilService.getDateTimeString();
+      var CreateContenteventsDto1 = new CreateContenteventsDto();
+      CreateContenteventsDto1._id = _id_1;
+      CreateContenteventsDto1.contentEventID = _id_1;
+      CreateContenteventsDto1.email = email;
+      CreateContenteventsDto1.eventType = "VIEW";
+      CreateContenteventsDto1.active = true;
+      CreateContenteventsDto1.event = "DONE";
+      CreateContenteventsDto1.createdAt = current_date;
+      CreateContenteventsDto1.updatedAt = current_date;
+      CreateContenteventsDto1.sequenceNumber = 1;
+      CreateContenteventsDto1.flowIsDone = true;
+      CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent";
+      CreateContenteventsDto1.receiverParty = receiver;
+      CreateContenteventsDto1.postID = obj.postID;
+
+      var CreateContenteventsDto2 = new CreateContenteventsDto();
+      CreateContenteventsDto2._id = _id_2;
+      CreateContenteventsDto2.contentEventID = _id_2;
+      CreateContenteventsDto2.email = receiver;
+      CreateContenteventsDto2.eventType = "VIEW";
+      CreateContenteventsDto2.active = true;
+      CreateContenteventsDto2.event = "ACCEPT";
+      CreateContenteventsDto2.createdAt = current_date;
+      CreateContenteventsDto2.updatedAt = current_date;
+      CreateContenteventsDto2.sequenceNumber = 1;
+      CreateContenteventsDto2.flowIsDone = true;
+      CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent";
+      CreateContenteventsDto2.senderParty = email;
+      CreateContenteventsDto2.postID = obj.postID;
+      try {
+        await this.contentEventsService.create(CreateContenteventsDto1);
+        await this.contentEventsService.create(CreateContenteventsDto2);
+        await this.postxService.updateView(receiver, obj.postID);
+      } catch (error) {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed, ' +
+          error,
+        );
+      }
+    }
   }
 
   private paging(page: number, row: number) {

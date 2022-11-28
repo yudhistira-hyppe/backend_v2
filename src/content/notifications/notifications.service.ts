@@ -89,6 +89,48 @@ export class NotificationsService {
     return res;
   }
 
+  async getNotificationAll(){
+    const query = await this.NotificationsModel.aggregate([
+      { $match: { email: "ikanhiu@getnada.com", eventType:"FOLLOWER" } },
+      { 
+        $group: { 
+          _id: { 
+            eventType: "$eventType", 
+            email: "$email", 
+            event: "$event", 
+            mate: "$mate", 
+            senderOrReceiverInfo: "$senderOrReceiverInfo", 
+            title: "$title", 
+            body: "$body",
+            bodyId: "$bodyId",
+            active: "$active",
+            createdAt: "$createdAt",
+            updatedAt: "$updatedAt",
+            contentEventID: "$contentEventID"
+          },
+        } 
+      },
+      {
+        $project: {
+          _id: 0,
+          eventType: "$_id.eventType",
+          email: "$_id.email",
+          event: "$_id.event",
+          mate: "$_id.mate",
+          senderOrReceiverInfo: "$_id.senderOrReceiverInfo",
+          title: "$_id.title",
+          body: "$_id.body",
+          bodyId: "$_id.bodyId",
+          active: "$_id.active",
+          createdAt: "$_id.createdAt",
+          updatedAt: "$_id.updatedAt",
+          contentEventID: "$_id.contentEventID"
+        }
+      },
+    ]);
+    return query;
+  }
+
   private async getNotificationQuery(body: any, profile: Userbasic): Promise<Notifications[]> {
     let query = this.NotificationsModel.find();
     query.where('email', profile.email);

@@ -100,6 +100,8 @@ export class Posts {
   boostCount: number;
   @Prop()
   isBoost: number;
+  @Prop()
+  apsaraThumnail: string;
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);
