@@ -20,6 +20,11 @@ export class MediamusicService {
     return DataSave;
   }
 
+  async findOneMusic(_id: string): Promise<Mediamusic> {
+    const DataSave = await this.MediamusicModel.findOne({ _id: new mongoose.Types.ObjectId(_id) });
+    return DataSave;
+  }
+
   async findCriteria(pageNumber: number, pageRow: number, search: string, genre: string, theme: string, mood: string): Promise<Mediamusic[]> {
     var perPage = pageRow, page = Math.max(0, pageNumber);
     var where = {};
@@ -108,7 +113,8 @@ export class MediamusicService {
       }, 
       {
         $unwind: {
-          path: "$posts_data"
+          path: "$posts_data",
+          preserveNullAndEmptyArrays: true
         }
       },
       {
@@ -164,7 +170,8 @@ export class MediamusicService {
       },
       {
         $unwind: {
-          path: "$contentevents_data"
+          path: "$contentevents_data",
+          preserveNullAndEmptyArrays: true
         }
       },
       {
@@ -199,7 +206,8 @@ export class MediamusicService {
       },
       {
         $unwind: {
-          path: "$userbasics_data"
+          path: "$userbasics_data",
+          preserveNullAndEmptyArrays: true
         }
       },
       {
@@ -237,7 +245,8 @@ export class MediamusicService {
       },
       {
         $unwind: {
-          path: "$areas_data"
+          path: "$areas_data",
+          preserveNullAndEmptyArrays: true
         }
       },
       {
