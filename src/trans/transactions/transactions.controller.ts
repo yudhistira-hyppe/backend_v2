@@ -1371,7 +1371,7 @@ export class TransactionsController {
         var dateStartDate = new Date(dateStartString)
         var dateStartAdd = new Date(dateStartDate.getTime() + ContInterval * 60000)
         var dateStartGetTime = dateStartAdd.toISOString().split('T')[1].split(".")[0]
-        
+
         console.log("date String", dateStartString);
         console.log("date Date", new Date(dateStartString));
         console.log("date Add", dateStartAdd);
@@ -5031,8 +5031,8 @@ export class TransactionsController {
         let datasearch = await this.transactionsService.findhistoryBuyVoucher(key, userid, status, startdate, enddate, 0, 0, descending, startday, endday, used, expired);
         var total = data.length;
         var totalsearch = datasearch.length;
-        var allrow = await this.transactionsService.findhistoryBuyVoucher(undefined, undefined, undefined, undefined, undefined, 0, 0, undefined, undefined, undefined, undefined, undefined);
-        var totalallrow = allrow.length;
+        var allrow = await this.transactionsService.totalcountVoucher();
+        var totalallrow = allrow[0].countrow;
         var tpage = null;
         var tpage2 = null;
 

@@ -4575,11 +4575,11 @@ export class TransactionsService {
                     uservoucher: '$uservoucherdata'
                 }
             },);
-        if (expired && expired !== true) {
+        if (expired && expired === true) {
             pipeline.push({
                 $match: {
                     'vcdata.expiredAt': {
-                        '$gt': datenew
+                        '$lt': datenew
                     }
 
                 }
@@ -4588,7 +4588,7 @@ export class TransactionsService {
             pipeline.push({
                 $match: {
                     'vcdata.expiredAt': {
-                        '$lt': datenew
+                        '$gt': datenew
                     }
 
                 }
@@ -4624,10 +4624,6 @@ export class TransactionsService {
                 }
             },);
         }
-
-
-
-
 
 
         pipeline.push({
