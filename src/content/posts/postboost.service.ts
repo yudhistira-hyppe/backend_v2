@@ -3489,7 +3489,7 @@ export class PostBoostService {
                                         "fsSourceName": 1,
                                         "fsTargetUri": 1,
                                         "mediaType": 1,
-                                        
+                                        "mediaEndpoint": {"$concat": ["/profilepict/","$mediaID"]}                                        
                                     }
                                 }
                             ],
@@ -4005,7 +4005,7 @@ export class PostBoostService {
                                         "fsSourceName": 1,
                                         "fsTargetUri": 1,
                                         "mediaType": 1,
-                                        
+                                        "mediaEndpoint": {"$concat": ["/profilepict/","$mediaID"]}   
                                     }
                                 }
                             ],
@@ -4515,7 +4515,7 @@ export class PostBoostService {
                                         "fsSourceName": 1,
                                         "fsTargetUri": 1,
                                         "mediaType": 1,
-                                        
+                                        "mediaEndpoint": {"$concat": ["/profilepict/","$mediaID"]}
                                     }
                                 }
                             ],
@@ -4744,7 +4744,6 @@ export class PostBoostService {
                                         "mediaThumbEndpoint": 1,
                                         "mediaThumbUri": 1,
                                         "mediaType": 1,
-                                        
                                     }
                                 }
                             ],
@@ -4940,7 +4939,7 @@ export class PostBoostService {
                                         "fsSourceName": 1,
                                         "fsTargetUri": 1,
                                         "mediaType": 1,
-                                        
+                                        "mediaEndpoint": {"$concat": ["/profilepict/","$mediaID"]}
                                     }
                                 }
                             ],
