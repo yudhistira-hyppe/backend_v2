@@ -2891,6 +2891,8 @@ export class PostBoostService {
       pd.username = obj.username;
       pd.visibility = obj.visibility;
       pd.boostViewer = obj.boostViewer;
+      pd.reportedStatus = obj.reportedStatus;
+      pd.reportedUserCount = obj.reportedUserCount;
 
       pd.isViewed = false;
       if (isView != undefined && isView.length > 0) {
@@ -2955,21 +2957,18 @@ export class PostBoostService {
       pd.isBoost = obj.isBoost;
 
       pd.music = null;
-      console.log(obj.musicId);
       if (obj.music != undefined) {
         if (Array.isArray(obj.music)) {
           if (obj.music.length > 0) {
             pd.music = obj.music[0];
             if (pd.music.apsaraThumnail != undefined) {
               xpics.push(String(pd.music.apsaraThumnail));
-              this.logger.log("music : " + String(pd.music.apsaraThumnail));
             }
           }
         } else {
           pd.music = obj.music;
           if (pd.music.apsaraThumnail != undefined) {
             xpics.push(String(pd.music.apsaraThumnail));
-            this.logger.log("music : " + String(pd.music.apsaraThumnail));
           }          
         }
 
