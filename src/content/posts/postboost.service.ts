@@ -4027,7 +4027,7 @@ export class PostBoostService {
                                     $match: 
                                     {
                                         $expr: {
-                                            $eq: ['$id', '$$localID']
+                                            $eq: ['$_id', '$$localID']
                                         }
                                     }
                                 },
@@ -4538,7 +4538,7 @@ export class PostBoostService {
                                     $match: 
                                     {
                                         $expr: {
-                                            $eq: ['$id', '$$localID']
+                                            $eq: ['$_id', '$$localID']
                                         }
                                     }
                                 },
