@@ -1,13 +1,13 @@
 export class CreateInsightlogsDto {
   
 
-    readonly _id: String;
-    readonly insightID: String;
-    readonly active: boolean;
-    readonly  createdAt: String;
-    readonly  updatedAt: String;
-    readonly mate: String;
-    readonly postID: String;
-    readonly eventInsight: String;
-    readonly _class:String;
+     _id: String;
+     insightID: String;
+     active: boolean;
+      createdAt: String;
+      updatedAt: String;
+     mate: String;
+     postID: String;
+     eventInsight: String;
+     _class:String;
   }

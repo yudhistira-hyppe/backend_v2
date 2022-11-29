@@ -292,6 +292,38 @@ export class InsightsService {
     );
   }
 
+  async updateLike(email: string) {
+    this.InsightsModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { likes: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateUnlike(email: string) {
+    this.InsightsModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { likes: -1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
   async updateUnFollower(email: string) {
     this.InsightsModel.updateOne(
       {

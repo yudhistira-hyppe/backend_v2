@@ -1363,9 +1363,20 @@ export class TransactionsController {
     }
 
     async editPostBost(postid: string, detail: any) {
+        var GetMaxBoost = await this.utilsService.getSetting_("636212526f07000023005ce3");
+        let ContInterval = Number(detail[0].interval.value.toString()) * Number(GetMaxBoost.toString());
+
         var boost = [];
-        var dateStartdata = (detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() + ".000Z")
-        console.log("date String", dateStartdata);
+        var dateStartString = (detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() + ".000Z")
+        var dateStartDate = new Date(dateStartString)
+        var dateStartAdd = new Date(dateStartDate.getTime() + ContInterval * 60000)
+        var dateStartGetTime = dateStartAdd.toISOString().split('T')[1].split(".")[0]
+        
+        console.log("date String", dateStartString);
+        console.log("date Date", new Date(dateStartString));
+        console.log("date Add", dateStartAdd);
+        console.log("date GetTime", dateStartGetTime);
+
         var dataBost = {
             type: detail[0].type.toString(),
             boostDate: new Date(detail[0].dateStart.toString()),
@@ -1379,9 +1390,9 @@ export class TransactionsController {
                 //start: new Date((detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() + ".000Z")),
                 //end: new Date((detail[0].datedateEnd.toString() + "T" + detail[0].session.end.toString() + ".000Z")),
                 start: (detail[0].dateStart.toString() + " " + detail[0].session.start.toString()),
-                end: (detail[0].datedateEnd.toString() + " " + detail[0].session.end.toString()),
+                end: (detail[0].datedateEnd.toString() + " " + dateStartGetTime),
                 timeStart: detail[0].session.start,
-                timeEnd: detail[0].session.end,
+                timeEnd: dateStartGetTime,
                 name: detail[0].session.name,
             },
             boostViewer: [],
