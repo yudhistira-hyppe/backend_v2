@@ -3334,42 +3334,6 @@ export class PostBoostService {
                     },
                     {
                         "$lookup": {
-                            from: "insights",
-                            as: "insight",
-                            let: {
-                                localID: '$email'
-                            },
-                            pipeline: [
-                                {
-                                    $match: 
-                                    {
-                                        
-                                        
-                                        $expr: {
-                                            $eq: ['$email', '$$localID']
-                                        }
-                                    }
-                                },
-                                {
-                                    $project: {
-                                        "followers": 1,
-                                        "followings": 1,
-                                        "unfollows": 1,
-                                        "likes": 1,
-                                        "views": 1,
-                                        "comments": 1,
-                                        "posts": 1,
-                                        "shares": 1,
-                                        "reactions": 1,
-                                        "views_profile": 1
-                                    }
-                                }
-                            ],
-                            
-                        }
-                    },
-                    {
-                        "$lookup": {
                             from: "userauths",
                             as: "userTag",
                             let: {
@@ -3604,9 +3568,14 @@ export class PostBoostService {
                             "saleAmount": 1,
                             "saleLike": 1,
                             "saleView": 1,
-                            "likes": 1,
-                            "views": 1,
-                            "shares": 1,
+                            "insight": [
+                              {
+                                "likes": 1,
+                                "views": 1,
+                                "shares": 1,
+                                "comments": 1,
+                              }
+                              ],                            
                             "userProfile": 1,
                             "contentMedias": 1,
                             "category": 1,
@@ -3634,7 +3603,6 @@ export class PostBoostService {
                             "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                             "mediaThumbUri": "$media.mediaThumbUri",
                             "cats": 1,
-                            "insight": 1,
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
@@ -3842,42 +3810,6 @@ export class PostBoostService {
                                         "icon": 1,
                                         "createdAt": 1,
                                         "updatedAt": 1
-                                    }
-                                }
-                            ],
-                            
-                        }
-                    },
-                    {
-                        "$lookup": {
-                            from: "insights",
-                            as: "insight",
-                            let: {
-                                localID: '$email'
-                            },
-                            pipeline: [
-                                {
-                                    $match: 
-                                    {
-                                        
-                                        
-                                        $expr: {
-                                            $eq: ['$email', '$$localID']
-                                        }
-                                    }
-                                },
-                                {
-                                    $project: {
-                                        "followers": 1,
-                                        "followings": 1,
-                                        "unfollows": 1,
-                                        "likes": 1,
-                                        "views": 1,
-                                        "comments": 1,
-                                        "posts": 1,
-                                        "shares": 1,
-                                        "reactions": 1,
-                                        "views_profile": 1
                                     }
                                 }
                             ],
@@ -4114,9 +4046,6 @@ export class PostBoostService {
                             "saleAmount": 1,
                             "saleLike": 1,
                             "saleView": 1,
-                            "likes": 1,
-                            "views": 1,
-                            "shares": 1,
                             "userProfile": 1,
                             "contentMedias": 1,
                             "category": 1,
@@ -4144,7 +4073,14 @@ export class PostBoostService {
                             "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                             "mediaThumbUri": "$media.mediaThumbUri",
                             "cats": 1,
-                            "insight": 1,
+                            "insight": [
+                              {
+                                "likes": 1,
+                                "views": 1,
+                                "shares": 1,
+                                "comments": 1,
+                              }
+                              ],
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
@@ -4352,42 +4288,6 @@ export class PostBoostService {
                                         "icon": 1,
                                         "createdAt": 1,
                                         "updatedAt": 1
-                                    }
-                                }
-                            ],
-                            
-                        }
-                    },
-                    {
-                        "$lookup": {
-                            from: "insights",
-                            as: "insight",
-                            let: {
-                                localID: '$email'
-                            },
-                            pipeline: [
-                                {
-                                    $match: 
-                                    {
-                                        
-                                        
-                                        $expr: {
-                                            $eq: ['$email', '$$localID']
-                                        }
-                                    }
-                                },
-                                {
-                                    $project: {
-                                        "followers": 1,
-                                        "followings": 1,
-                                        "unfollows": 1,
-                                        "likes": 1,
-                                        "views": 1,
-                                        "comments": 1,
-                                        "posts": 1,
-                                        "shares": 1,
-                                        "reactions": 1,
-                                        "views_profile": 1
                                     }
                                 }
                             ],
@@ -4624,9 +4524,6 @@ export class PostBoostService {
                             "saleAmount": 1,
                             "saleLike": 1,
                             "saleView": 1,
-                            "likes": 1,
-                            "views": 1,
-                            "shares": 1,
                             "userProfile": 1,
                             "contentMedias": 1,
                             "category": 1,
@@ -4654,7 +4551,14 @@ export class PostBoostService {
                             "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                             "mediaThumbUri": "$media.mediaThumbUri",
                             "cats": 1,
-                            "insight": 1,
+                            "insight": [
+                              {
+                                "likes": 1,
+                                "views": 1,
+                                "shares": 1,
+                                "comments": 1,
+                              }
+                              ],
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
@@ -4776,42 +4680,6 @@ export class PostBoostService {
                                         "icon": 1,
                                         "createdAt": 1,
                                         "updatedAt": 1
-                                    }
-                                }
-                            ],
-                            
-                        }
-                    },
-                    {
-                        "$lookup": {
-                            from: "insights",
-                            as: "insight",
-                            let: {
-                                localID: '$email'
-                            },
-                            pipeline: [
-                                {
-                                    $match: 
-                                    {
-                                        
-                                        
-                                        $expr: {
-                                            $eq: ['$email', '$$localID']
-                                        }
-                                    }
-                                },
-                                {
-                                    $project: {
-                                        "followers": 1,
-                                        "followings": 1,
-                                        "unfollows": 1,
-                                        "likes": 1,
-                                        "views": 1,
-                                        "comments": 1,
-                                        "posts": 1,
-                                        "shares": 1,
-                                        "reactions": 1,
-                                        "views_profile": 1
                                     }
                                 }
                             ],
@@ -5031,9 +4899,6 @@ export class PostBoostService {
                             "saleAmount": 1,
                             "saleLike": 1,
                             "saleView": 1,
-                            "likes": 1,
-                            "views": 1,
-                            "shares": 1,
                             "userProfile": 1,
                             "contentMedias": 1,
                             "category": 1,
@@ -5061,7 +4926,14 @@ export class PostBoostService {
                             "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                             "mediaThumbUri": "$media.mediaThumbUri",
                             "cats": 1,
-                            "insight": 1,
+                            "insight": [
+                              {
+                                "likes": 1,
+                                "views": 1,
+                                "shares": 1,
+                                "comments": 1,
+                              }
+                              ],
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
