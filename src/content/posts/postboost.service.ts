@@ -3137,7 +3137,6 @@ export class PostBoostService {
                 "pict": [
                     {
                         $sort: {
-                            "timeStart": - 1,
                             "isBoost": - 1,
                             "createdAt": - 1
                         }
@@ -3654,7 +3653,6 @@ export class PostBoostService {
                 "video": [
                     {
                         $sort: {
-                            "timeStart": - 1,
                             "isBoost": - 1,
                             "createdAt": - 1
                         }
@@ -4165,7 +4163,6 @@ export class PostBoostService {
                 "diary": [
                     {
                         $sort: {
-                            "timeStart": - 1,
                             "isBoost": - 1,
                             "createdAt": - 1
                         }
@@ -4676,7 +4673,6 @@ export class PostBoostService {
                 "story": [
                     {
                         $sort: {
-                            "timeStart": - 1,
                             "isBoost": - 1,
                             "createdAt": - 1
                         }
