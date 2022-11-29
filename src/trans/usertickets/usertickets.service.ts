@@ -1761,5 +1761,84 @@ export class UserticketsService {
   //   return dateArray;
   // }
 
+  async countUserticketStatus(startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+
+    var pipeline = [];
+
+    if (startdate && startdate === undefined) {
+      pipeline.push({ $match: { datetime: { "$gte": startdate } } });
+
+    }
+    if (enddate && enddate !== undefined) {
+      pipeline.push({ $match: { datetime: { "$lte": dateend } } });
+    }
+
+    pipeline.push({
+      $match: {
+
+        active: true,
+
+      }
+    },
+      {
+        $addFields: {
+          statusDesc: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: ['$status', 'new']
+                  },
+                  then: 'BARU',
+
+                },
+                {
+                  case: {
+                    $eq: ['$status', 'onprogress']
+                  },
+                  then: 'DALAM PROSES',
+
+                },
+                {
+                  case: {
+                    $eq: ['$status', 'close']
+                  },
+                  then: 'SELESAI',
+
+                }
+              ],
+              default: [],
+
+            },
+
+          },
+
+        }
+      },
+      {
+        $group: {
+          _id: "$statusDesc",
+          myCount: {
+            $sum: 1
+          },
+
+        }
+      },
+    );
+
+
+
+    let query = await this.userticketsModel.aggregate(pipeline);
+
+    return query;
+  }
+
 
 }

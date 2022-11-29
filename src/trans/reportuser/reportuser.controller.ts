@@ -15,6 +15,7 @@ import { PostContentService } from '../../content/posts/postcontent.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { UserauthsService } from '../userauths/userauths.service';
 import { UserAdsService } from '../userads/userads.service';
+import { UserticketsService } from '../usertickets/usertickets.service';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 import { UtilsService } from '../../utils/utils.service';
@@ -33,6 +34,7 @@ export class ReportuserController {
         private readonly userAdsService: UserAdsService,
         private readonly mediaprofilepictsService: MediaprofilepictsService,
         private readonly utilsService: UtilsService,
+        private readonly userticketsService: UserticketsService,
     ) { }
     @UseGuards(JwtAuthGuard)
     @Get('all')
@@ -2885,7 +2887,89 @@ export class ReportuserController {
             ],
         };
 
-        return { response_code: 202, content, ads, messages };
+        var datauserticket = null;
+        var objusertiket = {};
+        var arrusertiket = [];
+        var lengusertiket = null;
+        var sumusertiket = null;
+
+        try {
+
+            datauserticket = await this.userticketsService.countUserticketStatus(startdate, enddate);
+            lengusertiket = datauserticket.length;
+
+
+        } catch (e) {
+            datauserticket = null;
+            lengusertiket = 0;
+
+        }
+        if (lengusertiket > 0) {
+
+            for (let i = 0; i < lengusertiket; i++) {
+                sumusertiket += datauserticket[i].myCount;
+
+            }
+        } else {
+            sumusertiket = 0;
+        }
+
+        if (lengusertiket > 0) {
+
+
+            for (let i = 0; i < lengusertiket; i++) {
+                let count = datauserticket[i].myCount;
+                let id = datauserticket[i]._id;
+                persen = count * 100 / sumusertiket;
+
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "red"
+                    };
+                    arrusertiket.push(objbaru);
+                }
+                let objditangguhkan = {}
+                if (id === "DALAM PROSES") {
+                    objditangguhkan = {
+                        "_id": "DALAM PROSES",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#FF8C00D9"
+                    };
+                    arrusertiket.push(objditangguhkan);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "SELESAI") {
+                    objtidakditangguhkan = {
+                        "_id": "SELESAI",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#71A500D9"
+                    };
+                    arrusertiket.push(objtidakditangguhkan);
+                }
+
+            }
+        } else {
+            arrusertiket = [];
+        }
+
+        var userticket = null;
+
+        userticket = {
+            ticket: [{
+                totalReport: sumusertiket,
+                data: arrusertiket
+            }
+            ],
+        };
+
+
+        return { response_code: 202, content, ads, userticket, messages };
 
 
 
