@@ -8752,6 +8752,10 @@ export class PostsService {
 
               let ted = d + (7 * 3600 * 1000);
               console.log(st + " " + d + " " + ted);
+
+              let td = new Date(ted);
+              let stoday = new Date(td.getTime() - (td.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');              
+              
               let bv: any[] = bbs.boostViewer;
               if (bv != undefined) {
                 if (bv.length > 0) {
@@ -8767,7 +8771,7 @@ export class PostsService {
                   let o = {
                     email: email,
                     createAt: new Date(),
-                    timeEnd: new Date(ted),
+                    timeEnd: stoday,
                     isLast: true
                   };
 
@@ -8776,7 +8780,7 @@ export class PostsService {
                   let o = {
                     email: email,
                     createAt: new Date(),
-                    timeEnd: new Date(ted),
+                    timeEnd: stoday,
                     isLast: true
                   };
 
