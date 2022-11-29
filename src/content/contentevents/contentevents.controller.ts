@@ -167,7 +167,7 @@ export class ContenteventsController {
     }
     if (request.body.receiverParty == undefined) {
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed, param eventType is required',
+        'Unabled to proceed, param receiverParty is required',
       );
     }
 
