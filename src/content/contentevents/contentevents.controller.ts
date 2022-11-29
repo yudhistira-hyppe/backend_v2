@@ -227,7 +227,7 @@ export class ContenteventsController {
           CreateInsightlogsDto_sender.eventInsight = "FOLLOWING"
           CreateInsightlogsDto_sender._class = "io.melody.hyppe.content.domain.InsightLog"
           await this.insightlogsService.create(CreateInsightlogsDto_sender);
-          //var LogInsught_sensder = Insight_sender.insightLogs;
+          var LogInsught_sensder = Insight_sender.insightLogs;
 
         }
         if (await this.utilsService.ceckData(Insight_receiver)) {
@@ -241,7 +241,7 @@ export class ContenteventsController {
           CreateInsightlogsDto_receiver.eventInsight = "FOLLOWER"
           CreateInsightlogsDto_receiver._class = "io.melody.hyppe.content.domain.InsightLog"
           await this.insightlogsService.create(CreateInsightlogsDto_receiver);
-          //var LogInsught_receiver = Insight_receiver.insightLogs;
+          var LogInsught_receiver = Insight_receiver.insightLogs;
         }
 
         try {
