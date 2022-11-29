@@ -8755,7 +8755,11 @@ export class PostsService {
 
               let td = new Date(ted);
               let stoday = new Date(td.getTime() - (td.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');  
-              stoday = stoday.substring(0, 19);            
+              stoday = stoday.substring(0, 19);
+              
+              let tdx = new Date(today);
+              let xtoday = new Date(tdx.getTime() - (tdx.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');  
+              xtoday = xtoday.substring(0, 19);              
 
               let bv: any[] = bbs.boostViewer;
               if (bv != undefined) {
@@ -8771,7 +8775,7 @@ export class PostsService {
 
                   let o = {
                     email: email,
-                    createAt: new Date(),
+                    createAt: xtoday,
                     timeEnd: stoday,
                     isLast: true
                   };
@@ -8780,7 +8784,7 @@ export class PostsService {
                 } else {
                   let o = {
                     email: email,
-                    createAt: new Date(),
+                    createAt: xtoday,
                     timeEnd: stoday,
                     isLast: true
                   };
