@@ -5316,6 +5316,38 @@ export class PostBoostService {
       ubs = await this.userService.findIn(xuser);
     }
 
+    if (ovid.length > 0) {
+      for (let i = 0; i < ovid.length; i++) {
+        let pdvv = ovid[i];
+        this.generateThumbnail(pdvv, vapsara, papsara);
+        resVideo.push(pdvv);
+      }
+    }
+
+    if (osto.length > 0) {
+      for (let i = 0; i < osto.length; i++) {
+        let pdss = osto[i];
+        this.generateThumbnail(pdss, vapsara, papsara);
+        resVideo.push(pdss);        
+      }
+    }    
+
+    if (odia.length > 0) {
+      for (let i = 0; i < odia.length; i++) {
+        let pddd = odia[i];
+        this.generateThumbnail(pddd, vapsara, papsara);
+        resDiary.push(pddd);        
+      }
+    }    
+
+    if (opic.length > 0) {
+      for (let i = 0; i < opic.length; i++) {
+        let pdpp = opic[i];
+        this.generateThumbnail(pdpp, vapsara, papsara);
+        resPic.push(pdpp);                
+      }
+    }    
+    /*
     let valPost = new Map();
 
     if (vapsara != undefined) {
@@ -5466,8 +5498,6 @@ export class PostBoostService {
                 }
               }            
 
-              resDiary.push(pddd);
-
               if (valPost.has(pddd.postID) == false) {
                 resDiary.push(pddd);
                 valPost.set(pddd.postID, pddd.postID);
@@ -5543,6 +5573,7 @@ export class PostBoostService {
         }
       }
     }
+    */
 
     let pld = new PostLandingData();
     pld.diary = resDiary;
@@ -5647,6 +5678,104 @@ export class PostBoostService {
         );
       }
     }
+  }
+
+  private generateThumbnail(pdvv: PostData, vapsara: ApsaraVideoResponse, papsara: ApsaraImageResponse) {
+    if (pdvv == undefined) {
+      return undefined;
+    } 
+    
+
+    if (vapsara != undefined) {
+      for (let i = 0; i < vapsara.VideoList.length; i++) {
+        let vi = vapsara.VideoList[i];
+        if (pdvv.apsaraId == vi.VideoId) {
+          pdvv.mediaThumbEndpoint = vi.CoverURL;
+  
+          if (papsara != undefined) { 
+            for (let i = 0; i < papsara.ImageInfo.length; i++) {
+              let vi = papsara.ImageInfo[i];
+              if (pdvv.apsaraId == vi.ImageId) {
+                pdvv.mediaThumbEndpoint = vi.URL;
+                pdvv.mediaThumbUri = vi.URL;
+                break;
+              }
+            }            
+
+            for (let i = 0; i < papsara.ImageInfo.length; i++) {
+              let vi = papsara.ImageInfo[i];
+              if (pdvv.apsaraId == vi.ImageId) {
+                pdvv.mediaEndpoint = vi.URL;
+                pdvv.mediaUri = vi.URL;
+                break;
+              }
+            }            
+
+            for (let i = 0; i < papsara.ImageInfo.length; i++) {
+              let vi = papsara.ImageInfo[i];
+              if (pdvv.apsaraThumbId == vi.ImageId) {
+                pdvv.mediaThumbEndpoint = vi.URL;
+                pdvv.mediaThumbUri = vi.URL;
+                break;
+              }                            
+            }
+            
+            for (let i = 0; i < papsara.ImageInfo.length; i++) {
+              let vi = papsara.ImageInfo[i];
+              if (pdvv.music != undefined && pdvv.music.apsaraThumnail != undefined) {
+                let m = String(pdvv.music.apsaraThumnail);
+                if (m == String(vi.ImageId)) {
+                  pdvv.music.apsaraThumnailUrl = vi.URL;
+                  break;
+                }
+              }                          
+            }            
+          }
+          break;
+        }
+      }
+    } 
+
+    if (papsara != undefined) { 
+      for (let i = 0; i < papsara.ImageInfo.length; i++) {
+        let vi = papsara.ImageInfo[i];
+        if (pdvv.apsaraId == vi.ImageId) {
+          pdvv.mediaThumbEndpoint = vi.URL;
+          pdvv.mediaThumbUri = vi.URL;
+          break;
+        }
+      }            
+
+      for (let i = 0; i < papsara.ImageInfo.length; i++) {
+        let vi = papsara.ImageInfo[i];
+        if (pdvv.apsaraId == vi.ImageId) {
+          pdvv.mediaEndpoint = vi.URL;
+          pdvv.mediaUri = vi.URL;
+          break;
+        }
+      }            
+
+      for (let i = 0; i < papsara.ImageInfo.length; i++) {
+        let vi = papsara.ImageInfo[i];
+        if (pdvv.apsaraThumbId == vi.ImageId) {
+          pdvv.mediaThumbEndpoint = vi.URL;
+          pdvv.mediaThumbUri = vi.URL;
+          break;
+        }                            
+      }
+      
+      for (let i = 0; i < papsara.ImageInfo.length; i++) {
+        let vi = papsara.ImageInfo[i];
+        if (pdvv.music != undefined && pdvv.music.apsaraThumnail != undefined) {
+          let m = String(pdvv.music.apsaraThumnail);
+          if (m == String(vi.ImageId)) {
+            pdvv.music.apsaraThumnailUrl = vi.URL;
+            break;
+          }
+        }                          
+      }            
+    }    
+
   }
 
   private paging(page: number, row: number) {
