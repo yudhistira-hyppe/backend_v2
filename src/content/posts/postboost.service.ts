@@ -2849,6 +2849,8 @@ export class PostBoostService {
     for (let i = 0; i < src.length; i++) {
       let obj = src[i];
 
+      console.log(JSON.stringify(obj));
+
       let pd = new PostData();
       pd.active = obj.active;
       pd.allowComments = obj.allowComments;
@@ -3027,7 +3029,7 @@ export class PostBoostService {
     // x = x + (7 * 3600 * 1000);
     let today = new Date();
     //today.setHours(today.getHours() + 4);
-    console.log(today);
+    //console.log(today);
 
     let row = 20;
     let page = 0;
@@ -3064,66 +3066,70 @@ export class PostBoostService {
             }
         },
         {
-            "$set": {
-                "timeStart": {
-                    "$dateFromString": {
-                        "dateString": {
-                            "$concat": [
-                                {
-                                    "$dateToString": {
-                                        "format": "%Y-%m-%d",
-                                        "date": new Date()
-                                    }
-                                },
-                                "T",
-                                "$boosted.boostSession.timeStart"
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "$set": {
-                "timeEnd": {
-                    "$dateFromString": {
-                        "dateString": {
-                            "$concat": [
-                                {
-                                    "$dateToString": {
-                                        "format": "%Y-%m-%d",
-                                        "date": new Date()
-                                    }
-                                },
-                                "T",
-                                "$boosted.boostSession.timeEnd"
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        {
-            $set: {
-                "testDate": {
-                    $add: [new Date(), 25200000]
-                }
-            }
-        },
-        {
-            $set: {
-                "storyDate": 
-                {
-                    //$add: [new Date(), -61200000]
-                    "$dateToString": {
-                        "format": "%Y-%m-%d %H:%M:%S",
-                        "date": {
-                            $add: [new Date(), - 61200000]
-                        }
-                    }
-                }
-            }
-        },
+          "$set": {
+              "timeStart": {
+                  
+                          "$concat": [
+                              {
+                                  "$dateToString": {
+                                      "format": "%Y-%m-%d",
+                                      "date": new Date()
+                                  }
+                              },
+                              " ",
+                              "$boosted.boostSession.timeStart"
+                          ]
+                      
+                  
+              }
+          }
+      },
+      {
+          "$set": {
+              "timeEnd": {
+                  
+                      
+                          "$concat": [
+                              {
+                                  "$dateToString": {
+                                      "format": "%Y-%m-%d",
+                                      "date": new Date()
+                                  }
+                              },
+                              " ",
+                              "$boosted.boostSession.timeEnd"
+                          ]
+                      }
+                  
+              
+          }
+      },
+      {
+          $set: {
+          
+              "testDate": 
+              {
+                "$dateToString": {
+                                      "format": "%Y-%m-%d %H:%M:%S",
+                                      "date": {$add: [new Date(), 25200000]}
+                                  }
+                  
+              }
+          }
+      },
+      {
+          $set: {
+              "storyDate": 
+              {
+                  "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                          $add: [new Date(), - 61200000]
+                      }
+                  }
+              }
+          }
+      },
         {
             $facet: 
             {
@@ -3131,7 +3137,6 @@ export class PostBoostService {
                 "pict": [
                     {
                         $sort: {
-                            "timeStart": - 1,
                             "isBoost": - 1,
                             "createdAt": - 1
                         }
@@ -3648,7 +3653,6 @@ export class PostBoostService {
                 "video": [
                     {
                         $sort: {
-                            "timeStart": - 1,
                             "isBoost": - 1,
                             "createdAt": - 1
                         }
@@ -4021,7 +4025,7 @@ export class PostBoostService {
                                     $match: 
                                     {
                                         $expr: {
-                                            $eq: ['$id', '$$localID']
+                                            $eq: ['$_id', '$$localID']
                                         }
                                     }
                                 },
@@ -4159,7 +4163,6 @@ export class PostBoostService {
                 "diary": [
                     {
                         $sort: {
-                            "timeStart": - 1,
                             "isBoost": - 1,
                             "createdAt": - 1
                         }
@@ -4532,7 +4535,7 @@ export class PostBoostService {
                                     $match: 
                                     {
                                         $expr: {
-                                            $eq: ['$id', '$$localID']
+                                            $eq: ['$_id', '$$localID']
                                         }
                                     }
                                 },
@@ -4670,7 +4673,6 @@ export class PostBoostService {
                 "story": [
                     {
                         $sort: {
-                            "timeStart": - 1,
                             "isBoost": - 1,
                             "createdAt": - 1
                         }
