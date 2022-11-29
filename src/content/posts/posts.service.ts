@@ -8754,8 +8754,9 @@ export class PostsService {
               console.log(st + " " + d + " " + ted);
 
               let td = new Date(ted);
-              let stoday = new Date(td.getTime() - (td.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');              
-              
+              let stoday = new Date(td.getTime() - (td.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');  
+              stoday = stoday.substring(0, 19);            
+
               let bv: any[] = bbs.boostViewer;
               if (bv != undefined) {
                 if (bv.length > 0) {
