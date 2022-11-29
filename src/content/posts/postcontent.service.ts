@@ -1654,13 +1654,14 @@ export class PostContentService {
               var CurrentDate = new Date(await (await this.utilService.getDateTime()).toISOString());
               console.log("CurrentDate", CurrentDate);
 
-              var DateBoostStart = ps.boosted[p].boostSession.start
-              var DateBoostEnd = ps.boosted[p].boostSession.end
-              console.log("GetDate", DateBoostStart);
-              console.log("GetDate", DateBoostEnd);
+              var DateBoostStart = new Date(ps.boosted[p].boostSession.start.split(" ")[0] + "T" + ps.boosted[p].boostSession.start.split(" ")[1] +".000Z")
+              var DateBoostEnd = new Date(ps.boosted[p].boostSession.end.split(" ")[0] + "T" + ps.boosted[p].boostSession.end.split(" ")[1] + ".000Z")
+              console.log("DateBoostStart", DateBoostStart);
+              console.log("DateBoostEnd", DateBoostEnd);
+              console.log("CurrentDate", CurrentDate);
               var boostedData = {};
               var boostedStatus = "AKAN DATANG";
-              if (DateBoostStart < CurrentDate < DateBoostEnd){
+              if ((DateBoostStart < CurrentDate) && (CurrentDate < DateBoostEnd)){
                 boostedStatus = "BERLANGSUNG";
                 boostedData["type"] = ps.boosted[p].type
                 boostedData["boostDate"] = ps.boosted[p].boostDate
@@ -1680,7 +1681,7 @@ export class PostContentService {
 
             pa.boosted = boostedRes;
             if (boostedRes.length > 0) {
-              pa.boostJangkauan = boostedRes[0].boostViewer.length;
+              pa.boostJangkauan = (boostedRes[0].boostViewer != undefined) ? boostedRes[0].boostViewer.length:0;
             }
             pa.statusBoost = boostedStatus; 
           }
