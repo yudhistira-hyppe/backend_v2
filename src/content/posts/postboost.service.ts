@@ -2849,6 +2849,8 @@ export class PostBoostService {
     for (let i = 0; i < src.length; i++) {
       let obj = src[i];
 
+      console.log(JSON.stringify(obj));
+
       let pd = new PostData();
       pd.active = obj.active;
       pd.allowComments = obj.allowComments;
@@ -2889,6 +2891,8 @@ export class PostBoostService {
       pd.username = obj.username;
       pd.visibility = obj.visibility;
       pd.boostViewer = obj.boostViewer;
+      pd.reportedStatus = obj.reportedStatus;
+      pd.reportedUserCount = obj.reportedUserCount;
 
       pd.isViewed = false;
       if (isView != undefined && isView.length > 0) {
@@ -2953,21 +2957,18 @@ export class PostBoostService {
       pd.isBoost = obj.isBoost;
 
       pd.music = null;
-      console.log(obj.musicId);
       if (obj.music != undefined) {
         if (Array.isArray(obj.music)) {
           if (obj.music.length > 0) {
             pd.music = obj.music[0];
             if (pd.music.apsaraThumnail != undefined) {
               xpics.push(String(pd.music.apsaraThumnail));
-              this.logger.log("music : " + String(pd.music.apsaraThumnail));
             }
           }
         } else {
           pd.music = obj.music;
           if (pd.music.apsaraThumnail != undefined) {
             xpics.push(String(pd.music.apsaraThumnail));
-            this.logger.log("music : " + String(pd.music.apsaraThumnail));
           }          
         }
 
@@ -3027,7 +3028,7 @@ export class PostBoostService {
     // x = x + (7 * 3600 * 1000);
     let today = new Date();
     //today.setHours(today.getHours() + 4);
-    console.log(today);
+    //console.log(today);
 
     let row = 20;
     let page = 0;
@@ -3064,66 +3065,70 @@ export class PostBoostService {
             }
         },
         {
-            "$set": {
-                "timeStart": {
-                    "$dateFromString": {
-                        "dateString": {
-                            "$concat": [
-                                {
-                                    "$dateToString": {
-                                        "format": "%Y-%m-%d",
-                                        "date": new Date()
-                                    }
-                                },
-                                "T",
-                                "$boosted.boostSession.timeStart"
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        {
-            "$set": {
-                "timeEnd": {
-                    "$dateFromString": {
-                        "dateString": {
-                            "$concat": [
-                                {
-                                    "$dateToString": {
-                                        "format": "%Y-%m-%d",
-                                        "date": new Date()
-                                    }
-                                },
-                                "T",
-                                "$boosted.boostSession.timeEnd"
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        {
-            $set: {
-                "testDate": {
-                    $add: [new Date(), 25200000]
-                }
-            }
-        },
-        {
-            $set: {
-                "storyDate": 
-                {
-                    //$add: [new Date(), -61200000]
-                    "$dateToString": {
-                        "format": "%Y-%m-%d %H:%M:%S",
-                        "date": {
-                            $add: [new Date(), - 61200000]
-                        }
-                    }
-                }
-            }
-        },
+          "$set": {
+              "timeStart": {
+                  
+                          "$concat": [
+                              {
+                                  "$dateToString": {
+                                      "format": "%Y-%m-%d",
+                                      "date": new Date()
+                                  }
+                              },
+                              " ",
+                              "$boosted.boostSession.timeStart"
+                          ]
+                      
+                  
+              }
+          }
+      },
+      {
+          "$set": {
+              "timeEnd": {
+                  
+                      
+                          "$concat": [
+                              {
+                                  "$dateToString": {
+                                      "format": "%Y-%m-%d",
+                                      "date": new Date()
+                                  }
+                              },
+                              " ",
+                              "$boosted.boostSession.timeEnd"
+                          ]
+                      }
+                  
+              
+          }
+      },
+      {
+          $set: {
+          
+              "testDate": 
+              {
+                "$dateToString": {
+                                      "format": "%Y-%m-%d %H:%M:%S",
+                                      "date": {$add: [new Date(), 25200000]}
+                                  }
+                  
+              }
+          }
+      },
+      {
+          $set: {
+              "storyDate": 
+              {
+                  "$dateToString": {
+                      "format": "%Y-%m-%d %H:%M:%S",
+                      "date": {
+                          $add: [new Date(), - 61200000]
+                      }
+                  }
+              }
+          }
+      },
         {
             $facet: 
             {
@@ -3131,7 +3136,6 @@ export class PostBoostService {
                 "pict": [
                     {
                         $sort: {
-                            "timeStart": - 1,
                             "isBoost": - 1,
                             "createdAt": - 1
                         }
@@ -3330,42 +3334,6 @@ export class PostBoostService {
                     },
                     {
                         "$lookup": {
-                            from: "insights",
-                            as: "insight",
-                            let: {
-                                localID: '$email'
-                            },
-                            pipeline: [
-                                {
-                                    $match: 
-                                    {
-                                        
-                                        
-                                        $expr: {
-                                            $eq: ['$email', '$$localID']
-                                        }
-                                    }
-                                },
-                                {
-                                    $project: {
-                                        "followers": 1,
-                                        "followings": 1,
-                                        "unfollows": 1,
-                                        "likes": 1,
-                                        "views": 1,
-                                        "comments": 1,
-                                        "posts": 1,
-                                        "shares": 1,
-                                        "reactions": 1,
-                                        "views_profile": 1
-                                    }
-                                }
-                            ],
-                            
-                        }
-                    },
-                    {
-                        "$lookup": {
                             from: "userauths",
                             as: "userTag",
                             let: {
@@ -3485,7 +3453,7 @@ export class PostBoostService {
                                         "fsSourceName": 1,
                                         "fsTargetUri": 1,
                                         "mediaType": 1,
-                                        
+                                        "mediaEndpoint": {"$concat": ["/profilepict/","$mediaID"]}                                        
                                     }
                                 }
                             ],
@@ -3600,9 +3568,14 @@ export class PostBoostService {
                             "saleAmount": 1,
                             "saleLike": 1,
                             "saleView": 1,
-                            "likes": 1,
-                            "views": 1,
-                            "shares": 1,
+                            "insight": [
+                              {
+                                "likes": 1,
+                                "views": 1,
+                                "shares": 1,
+                                "comments": 1,
+                              }
+                              ],                            
                             "userProfile": 1,
                             "contentMedias": 1,
                             "category": 1,
@@ -3630,7 +3603,6 @@ export class PostBoostService {
                             "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                             "mediaThumbUri": "$media.mediaThumbUri",
                             "cats": 1,
-                            "insight": 1,
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
@@ -3648,7 +3620,6 @@ export class PostBoostService {
                 "video": [
                     {
                         $sort: {
-                            "timeStart": - 1,
                             "isBoost": - 1,
                             "createdAt": - 1
                         }
@@ -3847,42 +3818,6 @@ export class PostBoostService {
                     },
                     {
                         "$lookup": {
-                            from: "insights",
-                            as: "insight",
-                            let: {
-                                localID: '$email'
-                            },
-                            pipeline: [
-                                {
-                                    $match: 
-                                    {
-                                        
-                                        
-                                        $expr: {
-                                            $eq: ['$email', '$$localID']
-                                        }
-                                    }
-                                },
-                                {
-                                    $project: {
-                                        "followers": 1,
-                                        "followings": 1,
-                                        "unfollows": 1,
-                                        "likes": 1,
-                                        "views": 1,
-                                        "comments": 1,
-                                        "posts": 1,
-                                        "shares": 1,
-                                        "reactions": 1,
-                                        "views_profile": 1
-                                    }
-                                }
-                            ],
-                            
-                        }
-                    },
-                    {
-                        "$lookup": {
                             from: "userauths",
                             as: "userTag",
                             let: {
@@ -4002,7 +3937,7 @@ export class PostBoostService {
                                         "fsSourceName": 1,
                                         "fsTargetUri": 1,
                                         "mediaType": 1,
-                                        
+                                        "mediaEndpoint": {"$concat": ["/profilepict/","$mediaID"]}   
                                     }
                                 }
                             ],
@@ -4021,7 +3956,7 @@ export class PostBoostService {
                                     $match: 
                                     {
                                         $expr: {
-                                            $eq: ['$id', '$$localID']
+                                            $eq: ['$_id', '$$localID']
                                         }
                                     }
                                 },
@@ -4111,9 +4046,6 @@ export class PostBoostService {
                             "saleAmount": 1,
                             "saleLike": 1,
                             "saleView": 1,
-                            "likes": 1,
-                            "views": 1,
-                            "shares": 1,
                             "userProfile": 1,
                             "contentMedias": 1,
                             "category": 1,
@@ -4141,7 +4073,14 @@ export class PostBoostService {
                             "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                             "mediaThumbUri": "$media.mediaThumbUri",
                             "cats": 1,
-                            "insight": 1,
+                            "insight": [
+                              {
+                                "likes": 1,
+                                "views": 1,
+                                "shares": 1,
+                                "comments": 1,
+                              }
+                              ],
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
@@ -4159,7 +4098,6 @@ export class PostBoostService {
                 "diary": [
                     {
                         $sort: {
-                            "timeStart": - 1,
                             "isBoost": - 1,
                             "createdAt": - 1
                         }
@@ -4358,42 +4296,6 @@ export class PostBoostService {
                     },
                     {
                         "$lookup": {
-                            from: "insights",
-                            as: "insight",
-                            let: {
-                                localID: '$email'
-                            },
-                            pipeline: [
-                                {
-                                    $match: 
-                                    {
-                                        
-                                        
-                                        $expr: {
-                                            $eq: ['$email', '$$localID']
-                                        }
-                                    }
-                                },
-                                {
-                                    $project: {
-                                        "followers": 1,
-                                        "followings": 1,
-                                        "unfollows": 1,
-                                        "likes": 1,
-                                        "views": 1,
-                                        "comments": 1,
-                                        "posts": 1,
-                                        "shares": 1,
-                                        "reactions": 1,
-                                        "views_profile": 1
-                                    }
-                                }
-                            ],
-                            
-                        }
-                    },
-                    {
-                        "$lookup": {
                             from: "userauths",
                             as: "userTag",
                             let: {
@@ -4513,7 +4415,7 @@ export class PostBoostService {
                                         "fsSourceName": 1,
                                         "fsTargetUri": 1,
                                         "mediaType": 1,
-                                        
+                                        "mediaEndpoint": {"$concat": ["/profilepict/","$mediaID"]}
                                     }
                                 }
                             ],
@@ -4532,7 +4434,7 @@ export class PostBoostService {
                                     $match: 
                                     {
                                         $expr: {
-                                            $eq: ['$id', '$$localID']
+                                            $eq: ['$_id', '$$localID']
                                         }
                                     }
                                 },
@@ -4622,9 +4524,6 @@ export class PostBoostService {
                             "saleAmount": 1,
                             "saleLike": 1,
                             "saleView": 1,
-                            "likes": 1,
-                            "views": 1,
-                            "shares": 1,
                             "userProfile": 1,
                             "contentMedias": 1,
                             "category": 1,
@@ -4652,7 +4551,14 @@ export class PostBoostService {
                             "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                             "mediaThumbUri": "$media.mediaThumbUri",
                             "cats": 1,
-                            "insight": 1,
+                            "insight": [
+                              {
+                                "likes": 1,
+                                "views": 1,
+                                "shares": 1,
+                                "comments": 1,
+                              }
+                              ],
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
@@ -4670,7 +4576,6 @@ export class PostBoostService {
                 "story": [
                     {
                         $sort: {
-                            "timeStart": - 1,
                             "isBoost": - 1,
                             "createdAt": - 1
                         }
@@ -4743,7 +4648,6 @@ export class PostBoostService {
                                         "mediaThumbEndpoint": 1,
                                         "mediaThumbUri": 1,
                                         "mediaType": 1,
-                                        
                                     }
                                 }
                             ],
@@ -4776,42 +4680,6 @@ export class PostBoostService {
                                         "icon": 1,
                                         "createdAt": 1,
                                         "updatedAt": 1
-                                    }
-                                }
-                            ],
-                            
-                        }
-                    },
-                    {
-                        "$lookup": {
-                            from: "insights",
-                            as: "insight",
-                            let: {
-                                localID: '$email'
-                            },
-                            pipeline: [
-                                {
-                                    $match: 
-                                    {
-                                        
-                                        
-                                        $expr: {
-                                            $eq: ['$email', '$$localID']
-                                        }
-                                    }
-                                },
-                                {
-                                    $project: {
-                                        "followers": 1,
-                                        "followings": 1,
-                                        "unfollows": 1,
-                                        "likes": 1,
-                                        "views": 1,
-                                        "comments": 1,
-                                        "posts": 1,
-                                        "shares": 1,
-                                        "reactions": 1,
-                                        "views_profile": 1
                                     }
                                 }
                             ],
@@ -4939,7 +4807,7 @@ export class PostBoostService {
                                         "fsSourceName": 1,
                                         "fsTargetUri": 1,
                                         "mediaType": 1,
-                                        
+                                        "mediaEndpoint": {"$concat": ["/profilepict/","$mediaID"]}
                                     }
                                 }
                             ],
@@ -5031,9 +4899,6 @@ export class PostBoostService {
                             "saleAmount": 1,
                             "saleLike": 1,
                             "saleView": 1,
-                            "likes": 1,
-                            "views": 1,
-                            "shares": 1,
                             "userProfile": 1,
                             "contentMedias": 1,
                             "category": 1,
@@ -5061,7 +4926,14 @@ export class PostBoostService {
                             "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                             "mediaThumbUri": "$media.mediaThumbUri",
                             "cats": 1,
-                            "insight": 1,
+                            "insight": [
+                              {
+                                "likes": 1,
+                                "views": 1,
+                                "shares": 1,
+                                "comments": 1,
+                              }
+                              ],
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
@@ -5314,6 +5186,38 @@ export class PostBoostService {
       ubs = await this.userService.findIn(xuser);
     }
 
+    if (ovid.length > 0) {
+      for (let i = 0; i < ovid.length; i++) {
+        let pdvv = ovid[i];
+        this.generateThumbnail(pdvv, vapsara, papsara);
+        resVideo.push(pdvv);
+      }
+    }
+
+    if (osto.length > 0) {
+      for (let i = 0; i < osto.length; i++) {
+        let pdss = osto[i];
+        this.generateThumbnail(pdss, vapsara, papsara);
+        resVideo.push(pdss);        
+      }
+    }    
+
+    if (odia.length > 0) {
+      for (let i = 0; i < odia.length; i++) {
+        let pddd = odia[i];
+        this.generateThumbnail(pddd, vapsara, papsara);
+        resDiary.push(pddd);        
+      }
+    }    
+
+    if (opic.length > 0) {
+      for (let i = 0; i < opic.length; i++) {
+        let pdpp = opic[i];
+        this.generateThumbnail(pdpp, vapsara, papsara);
+        resPic.push(pdpp);                
+      }
+    }    
+    /*
     let valPost = new Map();
 
     if (vapsara != undefined) {
@@ -5464,8 +5368,6 @@ export class PostBoostService {
                 }
               }            
 
-              resDiary.push(pddd);
-
               if (valPost.has(pddd.postID) == false) {
                 resDiary.push(pddd);
                 valPost.set(pddd.postID, pddd.postID);
@@ -5541,6 +5443,7 @@ export class PostBoostService {
         }
       }
     }
+    */
 
     let pld = new PostLandingData();
     pld.diary = resDiary;
@@ -5645,6 +5548,104 @@ export class PostBoostService {
         );
       }
     }
+  }
+
+  private generateThumbnail(pdvv: PostData, vapsara: ApsaraVideoResponse, papsara: ApsaraImageResponse) {
+    if (pdvv == undefined) {
+      return undefined;
+    } 
+    
+
+    if (vapsara != undefined) {
+      for (let i = 0; i < vapsara.VideoList.length; i++) {
+        let vi = vapsara.VideoList[i];
+        if (pdvv.apsaraId == vi.VideoId) {
+          pdvv.mediaThumbEndpoint = vi.CoverURL;
+  
+          if (papsara != undefined) { 
+            for (let i = 0; i < papsara.ImageInfo.length; i++) {
+              let vi = papsara.ImageInfo[i];
+              if (pdvv.apsaraId == vi.ImageId) {
+                pdvv.mediaThumbEndpoint = vi.URL;
+                pdvv.mediaThumbUri = vi.URL;
+                break;
+              }
+            }            
+
+            for (let i = 0; i < papsara.ImageInfo.length; i++) {
+              let vi = papsara.ImageInfo[i];
+              if (pdvv.apsaraId == vi.ImageId) {
+                pdvv.mediaEndpoint = vi.URL;
+                pdvv.mediaUri = vi.URL;
+                break;
+              }
+            }            
+
+            for (let i = 0; i < papsara.ImageInfo.length; i++) {
+              let vi = papsara.ImageInfo[i];
+              if (pdvv.apsaraThumbId == vi.ImageId) {
+                pdvv.mediaThumbEndpoint = vi.URL;
+                pdvv.mediaThumbUri = vi.URL;
+                break;
+              }                            
+            }
+            
+            for (let i = 0; i < papsara.ImageInfo.length; i++) {
+              let vi = papsara.ImageInfo[i];
+              if (pdvv.music != undefined && pdvv.music.apsaraThumnail != undefined) {
+                let m = String(pdvv.music.apsaraThumnail);
+                if (m == String(vi.ImageId)) {
+                  pdvv.music.apsaraThumnailUrl = vi.URL;
+                  break;
+                }
+              }                          
+            }            
+          }
+          break;
+        }
+      }
+    } 
+
+    if (papsara != undefined) { 
+      for (let i = 0; i < papsara.ImageInfo.length; i++) {
+        let vi = papsara.ImageInfo[i];
+        if (pdvv.apsaraId == vi.ImageId) {
+          pdvv.mediaThumbEndpoint = vi.URL;
+          pdvv.mediaThumbUri = vi.URL;
+          break;
+        }
+      }            
+
+      for (let i = 0; i < papsara.ImageInfo.length; i++) {
+        let vi = papsara.ImageInfo[i];
+        if (pdvv.apsaraId == vi.ImageId) {
+          pdvv.mediaEndpoint = vi.URL;
+          pdvv.mediaUri = vi.URL;
+          break;
+        }
+      }            
+
+      for (let i = 0; i < papsara.ImageInfo.length; i++) {
+        let vi = papsara.ImageInfo[i];
+        if (pdvv.apsaraThumbId == vi.ImageId) {
+          pdvv.mediaThumbEndpoint = vi.URL;
+          pdvv.mediaThumbUri = vi.URL;
+          break;
+        }                            
+      }
+      
+      for (let i = 0; i < papsara.ImageInfo.length; i++) {
+        let vi = papsara.ImageInfo[i];
+        if (pdvv.music != undefined && pdvv.music.apsaraThumnail != undefined) {
+          let m = String(pdvv.music.apsaraThumnail);
+          if (m == String(vi.ImageId)) {
+            pdvv.music.apsaraThumnailUrl = vi.URL;
+            break;
+          }
+        }                          
+      }            
+    }    
+
   }
 
   private paging(page: number, row: number) {

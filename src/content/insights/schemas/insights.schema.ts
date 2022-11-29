@@ -39,7 +39,15 @@ export class Insights {
   @Prop()
   reactions: Long;
  @Prop()
- _class:String
+    _class: String
+    @Prop()
+    insightLogs: [
+        {
+            $ref: String;
+            $id: { oid: String };
+            $db: String;
+        },
+    ]
 }
 
 export const InsightsSchema = SchemaFactory.createForClass(Insights);

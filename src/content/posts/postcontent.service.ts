@@ -847,7 +847,9 @@ export class PostContentService {
   private async doGetUserPostBoost(pageNumber: number, pageRow: number, whoami: Userbasic): Promise<Posts[]> {
     var currentDateString = await this.utilService.getDateTimeISOString();
     var currentDate = new Date(currentDateString);
+    var currentDateFormat = currentDate.toISOString().split('T')[0] + " " + currentDate.toISOString().split('T')[1].split('.')[0];
     console.log(currentDate)
+    console.log(currentDate.toISOString().split('T')[0] + " " + currentDate.toISOString().split('T')[1].split('.')[0])
     var perPage = Math.max(0, pageRow), page = Math.max(0, pageNumber);
     
     const query = await this.PostsModel.aggregate([
@@ -884,14 +886,14 @@ export class PostContentService {
                     {
                       boosted: {
                         $elemMatch: {
-                          "boostSession.start": { $lte: currentDate }
+                          "boostSession.start": { $lte: currentDateFormat }
                         }
                       }
                     },
                     {
                       boosted: {
                         $elemMatch: {
-                          "boostSession.end": { $gte: currentDate }
+                          "boostSession.end": { $gte: currentDateFormat }
                         }
                       }
                     }
@@ -902,14 +904,14 @@ export class PostContentService {
                     {
                       boosted: {
                         $elemMatch: {
-                          "boostSession.start": { $gte: currentDate }
+                          "boostSession.start": { $gte: currentDateFormat }
                         }
                       }
                     },
                     {
                       boosted: {
                         $elemMatch: {
-                          "boostSession.end": { $gte: currentDate }
+                          "boostSession.end": { $gte: currentDateFormat }
                         }
                       }
                     }
@@ -976,31 +978,30 @@ export class PostContentService {
         }
       },
       {
-        $match:
-        {
+        $match: {
           $or: [
             {
               $and: [
                 {
-                  "boosted.boostSession.start": { $lte: currentDate }
+                  "boosted.boostSession.start": { $lte: currentDateFormat }
                 },
                 {
-                  "boosted.boostSession.end": { $gte: currentDate }
+                  "boosted.boostSession.end": { $gte: currentDateFormat }
                 }
               ]
             },
             {
               $and: [
                 {
-                  "boosted.boostSession.start": { $gte: currentDate }
+                  "boosted.boostSession.start": { $gte: currentDateFormat }
                 },
                 {
-                  "boosted.boostSession.end": { $gte: currentDate }
+                  "boosted.boostSession.end": { $gte: currentDateFormat }
                 }
               ]
             }
           ]
-        },
+        }      
       },
       {
         $addFields: {
@@ -1014,8 +1015,8 @@ export class PostContentService {
           status: {
             $switch: {
               branches: [
-                { case: { $and: [{ $lte: ["$boostStart", currentDate] }, { $gte: ["$boostEnd", currentDate] }] }, then: "BERLANGSUNG" },
-                { case: { $and: [{ $gte: ["$boostStart", currentDate] }, { $gte: ["$boostEnd", currentDate] }] }, then: "AKAN DATANG" }
+                { case: { $and: [{ $lte: ["$boostStart", currentDateFormat] }, { $gte: ["$boostEnd", currentDateFormat] }] }, then: "BERLANGSUNG" },
+                { case: { $and: [{ $gte: ["$boostStart", currentDateFormat] }, { $gte: ["$boostEnd", currentDateFormat] }] }, then: "AKAN DATANG" }
               ],
               "default": "AKAN DATANG"
             }
@@ -1653,13 +1654,14 @@ export class PostContentService {
               var CurrentDate = new Date(await (await this.utilService.getDateTime()).toISOString());
               console.log("CurrentDate", CurrentDate);
 
-              var DateBoostStart = ps.boosted[p].boostSession.start
-              var DateBoostEnd = ps.boosted[p].boostSession.end
-              console.log("GetDate", DateBoostStart);
-              console.log("GetDate", DateBoostEnd);
+              var DateBoostStart = new Date(ps.boosted[p].boostSession.start.split(" ")[0] + "T" + ps.boosted[p].boostSession.start.split(" ")[1] +".000Z")
+              var DateBoostEnd = new Date(ps.boosted[p].boostSession.end.split(" ")[0] + "T" + ps.boosted[p].boostSession.end.split(" ")[1] + ".000Z")
+              console.log("DateBoostStart", DateBoostStart);
+              console.log("DateBoostEnd", DateBoostEnd);
+              console.log("CurrentDate", CurrentDate);
               var boostedData = {};
               var boostedStatus = "AKAN DATANG";
-              if (DateBoostStart < CurrentDate < DateBoostEnd){
+              if ((DateBoostStart < CurrentDate) && (CurrentDate < DateBoostEnd)){
                 boostedStatus = "BERLANGSUNG";
                 boostedData["type"] = ps.boosted[p].type
                 boostedData["boostDate"] = ps.boosted[p].boostDate
@@ -1678,7 +1680,9 @@ export class PostContentService {
             }
 
             pa.boosted = boostedRes;
-            pa.boostJangkauan = boostedRes[0].boostViewer.length;
+            if (boostedRes.length > 0) {
+              pa.boostJangkauan = (boostedRes[0].boostViewer != undefined) ? boostedRes[0].boostViewer.length:0;
+            }
             pa.statusBoost = boostedStatus; 
           }
         }

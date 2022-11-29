@@ -25,6 +25,13 @@ export class CreateInsightsDto {
   shares: Long;
   reactions: Long;
   _class: String;
+  insightLogs: [
+    {
+      $ref: String;
+      $id: { oid: String };
+      $db: String;
+    },
+  ]
 }
 
 export class InsightsDto {

@@ -8744,7 +8744,7 @@ export class PostsService {
             let st = new Date(String(bootSession.start)).getTime();
             let ed = new Date(String(bootSession.end)).getTime();
 
-            if (bootSession.start < today < bootSession.end) {
+            if (st  <= today && ed >= today) {
               let interval = Number(bbs.boostInterval.value);
               let a = (today - st) / 1000 / 60;
               let c = Math.round(a / interval);
@@ -8752,6 +8752,15 @@ export class PostsService {
 
               let ted = d + (7 * 3600 * 1000);
               console.log(st + " " + d + " " + ted);
+
+              let td = new Date(ted);
+              let stoday = new Date(td.getTime() - (td.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');  
+              stoday = stoday.substring(0, 19);
+              
+              let tdx = new Date(today);
+              let xtoday = new Date(tdx.getTime() - (tdx.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');  
+              xtoday = xtoday.substring(0, 19);              
+
               let bv: any[] = bbs.boostViewer;
               if (bv != undefined) {
                 if (bv.length > 0) {
@@ -8766,8 +8775,8 @@ export class PostsService {
 
                   let o = {
                     email: email,
-                    createAt: new Date(),
-                    timeEnd: new Date(ted),
+                    createAt: xtoday,
+                    timeEnd: stoday,
                     isLast: true
                   };
 
@@ -8775,8 +8784,8 @@ export class PostsService {
                 } else {
                   let o = {
                     email: email,
-                    createAt: new Date(),
-                    timeEnd: new Date(ted),
+                    createAt: xtoday,
+                    timeEnd: stoday,
                     isLast: true
                   };
 

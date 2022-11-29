@@ -10,6 +10,8 @@ import { InsightsService } from '../insights/insights.service';
 import { PostDisqusService } from '../disqus/post/postdisqus.service';
 import { request } from 'http';
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
+import { CreateInsightlogsDto } from '../insightlogs/dto/create-insightlogs.dto';
+import { InsightlogsService } from '../insightlogs/insightlogs.service';
 
 @Controller()
 export class ContenteventsController {
@@ -17,6 +19,7 @@ export class ContenteventsController {
     private readonly contenteventsService: ContenteventsService,
     private readonly groupModuleService: GroupModuleService,
     private readonly utilsService: UtilsService,
+    private readonly insightlogsService: InsightlogsService,
     private readonly insightsService: InsightsService,
     private readonly postsService: PostDisqusService,
     private readonly errorHandler: ErrorHandler) { }
@@ -176,6 +179,9 @@ export class ContenteventsController {
     const email_receiverParty = request.body.receiverParty;
     const current_date = await this.utilsService.getDateTimeString();
 
+    var Insight_sender = await this.insightsService.findemail(email_user);
+    var Insight_receiver = await this.insightsService.findemail(email_receiverParty);
+
     if (eventType == "FOLLOWING") {
       var ceck_data_FOLLOWER = await this.contenteventsService.ceckData(email_receiverParty, "FOLLOWER", "ACCEPT", email_user, "", "");
       var ceck_data_FOLLOWING = await this.contenteventsService.ceckData(email_user, "FOLLOWING", "ACCEPT", "", email_receiverParty, "");
@@ -209,6 +215,35 @@ export class ContenteventsController {
         CreateContenteventsDto2.flowIsDone = true
         CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
         CreateContenteventsDto2.senderParty = email_receiverParty
+
+        if (await this.utilsService.ceckData(Insight_sender)) {
+          var _id_sender = (await this.utilsService.generateId());
+          var CreateInsightlogsDto_sender = new CreateInsightlogsDto()
+          CreateInsightlogsDto_sender._id = _id_sender;
+          CreateInsightlogsDto_sender.insightID = Insight_sender._id;
+          CreateInsightlogsDto_sender.createdAt = current_date;
+          CreateInsightlogsDto_sender.updatedAt = current_date;
+          CreateInsightlogsDto_sender.mate = email_receiverParty
+          CreateInsightlogsDto_sender.eventInsight = "FOLLOWING"
+          CreateInsightlogsDto_sender._class = "io.melody.hyppe.content.domain.InsightLog"
+          await this.insightlogsService.create(CreateInsightlogsDto_sender);
+          var LogInsught_sensder = Insight_sender.insightLogs;
+
+        }
+        if (await this.utilsService.ceckData(Insight_receiver)) {
+          var _id_receiver = (await this.utilsService.generateId());
+          var CreateInsightlogsDto_receiver = new CreateInsightlogsDto()
+          CreateInsightlogsDto_receiver._id = _id_receiver;
+          CreateInsightlogsDto_receiver.insightID = Insight_receiver._id;
+          CreateInsightlogsDto_receiver.createdAt = current_date;
+          CreateInsightlogsDto_receiver.updatedAt = current_date;
+          CreateInsightlogsDto_receiver.mate = email_user
+          CreateInsightlogsDto_receiver.eventInsight = "FOLLOWER"
+          CreateInsightlogsDto_receiver._class = "io.melody.hyppe.content.domain.InsightLog"
+          await this.insightlogsService.create(CreateInsightlogsDto_receiver);
+          var LogInsught_receiver = Insight_receiver.insightLogs;
+        }
+
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);
@@ -307,6 +342,7 @@ export class ContenteventsController {
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);
+          await this.insightsService.updateLike(email_receiverParty);
           await this.postsService.updateLike(email_receiverParty, request.body.postID);
           this.sendInteractiveFCM(email_receiverParty, "LIKE", request.body.postID, email_user);
         } catch (error) {
@@ -331,6 +367,7 @@ export class ContenteventsController {
       var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "LIKE", "ACCEPT", "", email_user, request.body.postID);
       if ((await this.utilsService.ceckData(ceck_data_DONE)) && (await this.utilsService.ceckData(ceck_data_ACCEPT))) {
         try {
+          await this.insightsService.updateUnlike(email_receiverParty);
           await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID,false);
           await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, false);
           await this.postsService.updateUnLike(email_receiverParty, request.body.postID);
