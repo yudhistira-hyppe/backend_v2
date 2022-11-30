@@ -8747,16 +8747,18 @@ export class PostsService {
             if (st  <= today && ed >= today) {
               let interval = Number(bbs.boostInterval.value);
               let a = (today - st) / 1000 / 60;
+              console.log("today: " + a + " interval: " + interval);              
               let c = Math.round(a / interval);
+              console.log("round today: " + c);
               let d = st + ((interval * 1000 * 60) * c);
 
               //let ted = d + (7 * 3600 * 1000);
               let ted = d;
-              console.log(st + " " + d + " " + ted);
 
               let td = new Date(ted);
               let stoday = new Date(td.getTime() - (td.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');  
               stoday = stoday.substring(0, 19);
+              console.log(st + " " + d + " " + ted + " " + stoday);
               
               let tdx = new Date(today);
               let xtoday = new Date(tdx.getTime() - (tdx.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');  
