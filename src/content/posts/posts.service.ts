@@ -8746,11 +8746,12 @@ export class PostsService {
 
             if (st  <= today && ed >= today) {
               let interval = Number(bbs.boostInterval.value);
-              let a = (today - st) / 1000 / 60;
+              interval = interval * 60 * 1000;
+              let a = (today - st);
               console.log("today: " + a + " interval: " + interval);              
-              let c = Math.round(a / interval);
+              let c = Math.ceil(a / interval);
               console.log("round today: " + c);
-              let d = st + ((interval * 1000 * 60) * c);
+              let d = st + (interval * c);
 
               //let ted = d + (7 * 3600 * 1000);
               let ted = d;

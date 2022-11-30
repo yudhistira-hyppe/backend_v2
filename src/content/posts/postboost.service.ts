@@ -2849,7 +2849,7 @@ export class PostBoostService {
     for (let i = 0; i < src.length; i++) {
       let obj = src[i];
 
-      console.log(JSON.stringify(obj));
+      //console.log(JSON.stringify(obj));
 
       let pd = new PostData();
       pd.active = obj.active;
@@ -3141,129 +3141,132 @@ export class PostBoostService {
                         }
                     },
                     {
-                        $match: 
-                        {
-                            $or: [
-                                {
-                                    $and: [
-                                        {
-                                            "reportedStatus": {
-                                                $ne: "OWNED"
-                                            }
-                                        },
-                                        {
-                                            "visibility": vis
-                                        },
-                                        {
-                                            "active": true
-                                        },
-                                        {
-                                            "postType": "pict"
-                                        },
-                                        {
-                                            $expr: {
-                                                $lte: ["$boosted.boostSession.start", "$testDate", ]
-                                            }
-                                        },
-                                        {
-                                            $expr: {
-                                                $gt: ["$boosted.boostSession.end", "$testDate", ]
-                                            }
-                                        },
-                                        {
-                                            $expr: {
-                                                $lte: ["$timeStart", "$testDate", ]
-                                            }
-                                        },
-                                        {
-                                            $expr: {
-                                                $gt: ["$timeEnd", "$testDate", ]
-                                            }
-                                        },
-                                        {
-                                            
-                                            "timeStart": {
-                                                $ne: null
-                                            }
-                                        },
-                                        {
-                                            
-                                            "timeEnd": {
-                                                $ne: null
-                                            }
-                                        },
-                                        {
-                                            "reportedUser.email": {
-                                                $not: {
-                                                    $regex: profile.email
-                                                }
-                                            }
-                                        },
-                                        {
-                                            $or: [
-                                                {
-                                                  "boosted.boostViewer":
-                                                  [
-                                                    {
-                                                        "boosted.boostViewer.email": profile.email
-                                                    },
-                                                    {
-                                                        "$boosted.boostViewer.isLast": true
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $lt: ["$boosted.boostViewer.timeEnd", "$testDate", ]
-                                                        }
-                                                    },
+                      $match: 
+                      {
+                          $or: [
+                              {
+                                  $and: [
+                                      {
+                                          "reportedStatus": {
+                                              $ne: "OWNED"
+                                          }
+                                      },
+                                      {
+                                          "visibility": vis
+                                      },
+                                      {
+                                          "active": true
+                                      },
+                                      {
+                                          "postType": "pict"
+                                      },
+                                      {
+                                          $expr: {
+                                              $lte: ["$boosted.boostSession.start", "$testDate", ]
+                                          }
+                                      },
+                                      {
+                                          $expr: {
+                                              $gt: ["$boosted.boostSession.end", "$testDate", ]
+                                          }
+                                      },
+                                      {
+                                          $expr: {
+                                              $lte: ["$timeStart", "$testDate", ]
+                                          }
+                                      },
+                                      {
+                                          $expr: {
+                                              $gt: ["$timeEnd", "$testDate", ]
+                                          }
+                                      },
+                                      {
+                                          
+                                          "timeStart": {
+                                              $ne: null
+                                          }
+                                      },
+                                      {
+                                          
+                                          "timeEnd": {
+                                              $ne: null
+                                          }
+                                      },
+                                      {
+                                          "reportedUser.email": {
+                                              $not: {
+                                                  $regex: profile.email
+                                              }
+                                          }
+                                      },
+                                      {
+                                          $or: [
+                                              
+                                              {
+                                                  $and: [
+                                                      
+                                                      {
+                                                          "boosted.boostViewer.email": profile.email
+                                                      },
+                                                      {
+                                                          "boosted.boostViewer.isLast": true
+                                                      },
+                                                      {
+                                                          $expr: {
+                                                              $gte: ["$testDate", "$boosted.boostViewer.timeEnd"]
+                                                          }
+                                                      },
+                                                      
                                                   ]
-                                                },
-                                                {
-                                                    $and: [
-                                                        {
-                                                            "boosted.boostViewer.email": {
-                                                                $ne: profile.email
-                                                            }
-                                                        },
-                                                        
-                                                    ]
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                {
-                                    $and: [
-                                        {
-                                            "reportedStatus": {
-                                                $ne: "OWNED"
-                                            }
-                                        },
-                                        {
-                                            "visibility": vis
-                                        },
-                                        {
-                                            "active": true
-                                        },
-                                        {
-                                            "postType": "pict"
-                                        },
-                                        {
-                                            "timeStart": null
-                                        },
-                                        {
-                                            "reportedUser.email": {
-                                                $not: {
-                                                    $regex: profile.email
-                                                }
-                                            }
-                                        },
-                                        
-                                    ]
-                                },
-                                
-                            ]
-                        }
-                    },
+                                              },
+                                              {
+                                                  $and: [
+                                                      {
+                                                          "boosted.boostViewer.email": {
+                                                              $ne: profile.email
+                                                          }
+                                                      },
+                                                      
+                                                  ]
+                                              }
+                                          ]
+                                      }
+                                  ]
+                              },
+                              {
+                                  $and: [
+                                      {
+                                          "reportedStatus": {
+                                              $ne: "OWNED"
+                                          }
+                                      },
+                                      {
+                                          "visibility": vis
+                                      },
+                                      {
+                                          "active": true
+                                      },
+                                      {
+                                          "postType": "pict"
+                                      },
+                                      {
+                                          "timeStart": null
+                                      },
+                                      {
+                                          "reportedUser.email": {
+                                              $not: {
+                                                  $regex: profile.email
+                                              }
+                                          }
+                                      },
+                                      
+                                  ]
+                              },
+                              
+                          ]
+                      }
+                  },
+
                     {
                         "$lookup": {
                             from: "mediapicts",
@@ -3695,10 +3698,10 @@ export class PostBoostService {
                                                         "$boosted.boostViewer.isLast": true
                                                     },
                                                     {
-                                                        $expr: {
-                                                            $lt: ["$boosted.boostViewer.timeEnd", "$testDate", ]
-                                                        }
-                                                    },
+                                                      $expr: {
+                                                          $gte: ["$testDate", "$boosted.boostViewer.timeEnd"]
+                                                      }
+                                                  },
                                                   ]
                                                 },
                                                 {
@@ -4173,10 +4176,10 @@ export class PostBoostService {
                                                         "$boosted.boostViewer.isLast": true
                                                     },
                                                     {
-                                                        $expr: {
-                                                            $lt: ["$boosted.boostViewer.timeEnd", "$testDate", ]
-                                                        }
-                                                    },
+                                                      $expr: {
+                                                          $gte: ["$testDate", "$boosted.boostViewer.timeEnd"]
+                                                      }
+                                                  },
                                                   ]
                                                 },
                                                 {
