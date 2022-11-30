@@ -1008,6 +1008,7 @@ export class PostContentService {
           boostJangkauan: { $size: "$boosted.boostViewer" },
           boostStart: "$boosted.boostSession.start",
           boostEnd: "$boosted.boostSession.end",
+          boostDate: "$boosted.boostDate",
         }
       },
       {
@@ -1023,7 +1024,7 @@ export class PostContentService {
           },
         }
       },
-      { $sort: { status : -1}},
+      { $sort: { status: -1, boostDate: -1 }},
       { $skip: (perPage * page) },
       { $limit: perPage },
     ])
@@ -1062,7 +1063,14 @@ export class PostContentService {
         pa.boosted = [ps.boosted];
         pa.isBoost = ps.isBoost; 
         pa.boostJangkauan = ps['boostJangkauan'];
-        pa.statusBoost = ps['status']; 
+        pa.statusBoost = ps['status'];
+        
+        if (ps.reportedStatus != undefined) {
+          pa.reportedStatus = ps.reportedStatus;
+        }
+        if (ps.reportedUserCount != undefined) {
+          pa.reportedUserCount = Number(ps.reportedUserCount);
+        } 
 
         let following = await this.contentEventService.findFollowing(pa.email);
 
@@ -1513,7 +1521,7 @@ export class PostContentService {
   private async doGetUserPostMy(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     var emailUser = headers['x-auth-user'];
-    let query = this.PostsModel.find({ "reportedUser.email": { $not: { $regex: emailUser } }, reportedStatus: { $ne: "OWNED" } });
+    let query = this.PostsModel.find({ "reportedUser.email": { $not: { $regex: emailUser } } });
     query.where('email', whoami.email);
     if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
       query.where('active', true);
@@ -1542,7 +1550,8 @@ export class PostContentService {
 
   private async doGetUserPostTheir(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
     //this.logger.log('doGetUserPost >>> start: ' + body);
-    let query = this.PostsModel.find();
+    var emailUser = headers['x-auth-user'];
+    let query = this.PostsModel.find({ "reportedUser.email": { $not: { $regex: emailUser } }, reportedStatus: { $ne: "OWNED" } });
     query.where('email', whoami.email);
     //let friend = [];
     //let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);

@@ -310,6 +310,22 @@ export class InsightsService {
     );
   }
 
+  async updateComment(email: string) {
+    this.InsightsModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { comments: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
   async updateLike(email: string) {
     this.InsightsModel.updateOne(
       {
