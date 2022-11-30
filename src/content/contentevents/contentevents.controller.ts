@@ -344,7 +344,7 @@ export class ContenteventsController {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);
           await this.postsService.updateView(email_receiverParty, request.body.postID);
-          await this.insightsService.updateReactions(email_user);
+          await this.insightsService.updateViews(email_receiverParty);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
