@@ -4396,7 +4396,7 @@ export class AdsService {
     async updateActive(id: ObjectID, updatedAt: string, remark: string) {
         let data = await this.adsModel.updateMany({ "_id": id },
 
-            { $set: { "active": false, "updatedAt": updatedAt, "reportedUserHandle.$[].remark": remark, "reportedUserHandle.$[].status": "DELETE", "reportedUserHandle.$[].updatedAt": updatedAt } });
+            { $set: { "isActive": false, "updatedAt": updatedAt, "reportedUserHandle.$[].remark": remark, "reportedUserHandle.$[].status": "DELETE", "reportedUserHandle.$[].updatedAt": updatedAt } });
         return data;
     }
 
