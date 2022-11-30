@@ -42,6 +42,10 @@ export class UserauthsService {
     return this.userauthModel.find().where('email').in(id).exec();
   }
 
+  async findByUsername(Username: String): Promise<Userauth> {
+    return await this.userauthModel.findOne({ username: Username }).exec();
+  }
+
   async findRoleEmail(email: String, roles_: String): Promise<Userauth[]> {
     return this.userauthModel.find({ email: email, roles: { $in: [roles_] } }).exec();
   }
