@@ -1016,13 +1016,14 @@ export class AuthController {
     }
   }
 
-  @Get('supportfile/:id')
+  @Get('supportfile/:id/:index')
   @HttpCode(HttpStatus.OK)
   async supportfile(
     @Param('id') id: string,
+    @Param('index') index: number,
     @Query('x-auth-token') token: string,
     @Query('x-auth-user') email: string, @Res() response) {
-    if ((id != undefined) && (token != undefined) && (email != undefined)) {
+    if ((id != undefined) && (token != undefined) && (email != undefined) && (index != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var mediaproofpicts = await this.mediaproofpictsService.findOne(id);
         if (await this.utilsService.ceckData(mediaproofpicts)) {
@@ -1030,7 +1031,7 @@ export class AuthController {
           var mediaMime = "";
           if (mediaproofpicts != null) {
             if (mediaproofpicts.SupportfsSourceUri != null) {
-              mediaproofpicts_SupportfsSourceUri = mediaproofpicts.SupportfsSourceUri.toString();
+              mediaproofpicts_SupportfsSourceUri = mediaproofpicts.SupportfsSourceUri[index].toString();
             }
           }
           if (mediaproofpicts.SupportmediaMime != undefined) {
