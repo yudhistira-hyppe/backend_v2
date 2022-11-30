@@ -360,15 +360,6 @@ export class PostsController {
     return data;
   }
 
-  @Post('api/test')
-  async tests() {
-    var DateStart = new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 31));
-    var DateEnd = new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 1));
-    console.log(DateStart.toISOString());
-    console.log(DateEnd.toISOString());
-    return DateEnd;
-  }
-
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/getuserposts')
   @UseInterceptors(FileInterceptor('postContent'))

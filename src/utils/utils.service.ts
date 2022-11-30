@@ -184,6 +184,10 @@ export class UtilsService {
       device_user.push(datadevice[i].deviceID)
     }
 
+    if (eventType =="COMMENT_TAG"){
+      eventType = "REACTION"
+    }
+
     var generateID = await this.generateId();
     var createNotificationsDto = new CreateNotificationsDto();
     createNotificationsDto._id = generateID;

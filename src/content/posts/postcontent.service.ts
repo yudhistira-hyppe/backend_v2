@@ -1514,7 +1514,7 @@ export class PostContentService {
   private async doGetUserPostMy(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     var emailUser = headers['x-auth-user'];
-    let query = this.PostsModel.find({ "reportedUser.email": { $not: { $regex: emailUser } }, reportedStatus: { $ne: "OWNED" } });
+    let query = this.PostsModel.find({ "reportedUser.email": { $not: { $regex: emailUser } } });
     query.where('email', whoami.email);
     if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
       query.where('active', true);
@@ -1543,7 +1543,8 @@ export class PostContentService {
 
   private async doGetUserPostTheir(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
     //this.logger.log('doGetUserPost >>> start: ' + body);
-    let query = this.PostsModel.find();
+    var emailUser = headers['x-auth-user'];
+    let query = this.PostsModel.find({ "reportedUser.email": { $not: { $regex: emailUser } }, reportedStatus: { $ne: "OWNED" } });
     query.where('email', whoami.email);
     //let friend = [];
     //let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
