@@ -12,6 +12,7 @@ import { request } from 'http';
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 import { CreateInsightlogsDto } from '../insightlogs/dto/create-insightlogs.dto';
 import { InsightlogsService } from '../insightlogs/insightlogs.service';
+import { CreateInsightsDto } from '../insights/dto/create-insights.dto';
 
 @Controller()
 export class ContenteventsController {
@@ -227,7 +228,17 @@ export class ContenteventsController {
           CreateInsightlogsDto_sender.eventInsight = "FOLLOWING"
           CreateInsightlogsDto_sender._class = "io.melody.hyppe.content.domain.InsightLog"
           await this.insightlogsService.create(CreateInsightlogsDto_sender);
-          //var LogInsught_sensder = Insight_sender.insightLogs;
+
+          var LogInsught_sensder = Insight_sender.insightLogs;
+          LogInsught_sensder.push({
+            $ref: 'insightlogs',
+            $id: _id_sender,
+            $db: 'hyppe_content_db',
+          });
+
+          var CreateInsightsDto_sender = new CreateInsightsDto()
+          CreateInsightsDto_sender.insightLogs = LogInsught_sensder;
+          await this.insightsService.updateone(email_user, CreateInsightsDto_sender)
 
         }
         if (await this.utilsService.ceckData(Insight_receiver)) {
@@ -241,7 +252,17 @@ export class ContenteventsController {
           CreateInsightlogsDto_receiver.eventInsight = "FOLLOWER"
           CreateInsightlogsDto_receiver._class = "io.melody.hyppe.content.domain.InsightLog"
           await this.insightlogsService.create(CreateInsightlogsDto_receiver);
-          //var LogInsught_receiver = Insight_receiver.insightLogs;
+
+          var LogInsught_receiver = Insight_receiver.insightLogs;
+          LogInsught_receiver.push({
+            $ref: 'insightlogs',
+            $id: _id_receiver,
+            $db: 'hyppe_content_db',
+          });
+
+          var CreateInsightsDto_receiver = new CreateInsightsDto()
+          CreateInsightsDto_receiver.insightLogs = LogInsught_receiver;
+          await this.insightsService.updateone(email_receiverParty, CreateInsightsDto_receiver)
         }
 
         try {
@@ -293,10 +314,37 @@ export class ContenteventsController {
         CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
         CreateContenteventsDto2.senderParty = email_user
         CreateContenteventsDto2.postID = request.body.postID
+
+        if (await this.utilsService.ceckData(Insight_receiver)) {
+          var _id_receiver = (await this.utilsService.generateId());
+          var CreateInsightlogsDto_receiver = new CreateInsightlogsDto()
+          CreateInsightlogsDto_receiver._id = _id_receiver;
+          CreateInsightlogsDto_receiver.insightID = Insight_receiver._id;
+          CreateInsightlogsDto_receiver.createdAt = current_date;
+          CreateInsightlogsDto_receiver.updatedAt = current_date;
+          CreateInsightlogsDto_receiver.mate = email_user
+          CreateInsightlogsDto_receiver.postID = request.body.postID
+          CreateInsightlogsDto_receiver.eventInsight = "VIEW"
+          CreateInsightlogsDto_receiver._class = "io.melody.hyppe.content.domain.InsightLog"
+          await this.insightlogsService.create(CreateInsightlogsDto_receiver);
+
+          var LogInsught_receiver = Insight_receiver.insightLogs;
+          LogInsught_receiver.push({
+            $ref: 'insightlogs',
+            $id: _id_receiver,
+            $db: 'hyppe_content_db',
+          });
+
+          var CreateInsightsDto_receiver = new CreateInsightsDto()
+          CreateInsightsDto_receiver.insightLogs = LogInsught_receiver;
+          await this.insightsService.updateone(email_receiverParty, CreateInsightsDto_receiver)
+        }
+
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);
           await this.postsService.updateView(email_receiverParty, request.body.postID);
+          await this.insightsService.updateReactions(email_user);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
@@ -339,6 +387,32 @@ export class ContenteventsController {
         CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
         CreateContenteventsDto2.senderParty = email_user
         CreateContenteventsDto2.postID = request.body.postID
+
+        if (await this.utilsService.ceckData(Insight_receiver)) {
+          var _id_receiver = (await this.utilsService.generateId());
+          var CreateInsightlogsDto_receiver = new CreateInsightlogsDto()
+          CreateInsightlogsDto_receiver._id = _id_receiver;
+          CreateInsightlogsDto_receiver.insightID = Insight_receiver._id;
+          CreateInsightlogsDto_receiver.createdAt = current_date;
+          CreateInsightlogsDto_receiver.updatedAt = current_date;
+          CreateInsightlogsDto_receiver.mate = email_user
+          CreateInsightlogsDto_receiver.eventInsight = "LIKE"
+          CreateInsightlogsDto_receiver.postID = request.body.postID
+          CreateInsightlogsDto_receiver._class = "io.melody.hyppe.content.domain.InsightLog"
+          await this.insightlogsService.create(CreateInsightlogsDto_receiver);
+
+          var LogInsught_receiver = Insight_receiver.insightLogs;
+          LogInsught_receiver.push({
+            $ref: 'insightlogs',
+            $id: _id_receiver,
+            $db: 'hyppe_content_db',
+          });
+
+          var CreateInsightsDto_receiver = new CreateInsightsDto()
+          CreateInsightsDto_receiver.insightLogs = LogInsught_receiver;
+          await this.insightsService.updateone(email_receiverParty, CreateInsightsDto_receiver)
+        }
+
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);
@@ -387,6 +461,7 @@ export class ContenteventsController {
           await this.contenteventsService.updateUnFollower(email_receiverParty, "FOLLOWER", email_user);
           await this.insightsService.updateUnFollower(email_receiverParty);
           await this.insightsService.updateUnFollowing(email_user);
+          await this.insightsService.updateUnFollow(email_user);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
@@ -431,10 +506,36 @@ export class ContenteventsController {
         CreateContenteventsDto2.senderParty = email_user
         CreateContenteventsDto2.reactionUri = request.body.reactionUri
         CreateContenteventsDto2.postID = request.body.postID
+
+        if (await this.utilsService.ceckData(Insight_receiver)) {
+          var _id_receiver = (await this.utilsService.generateId());
+          var CreateInsightlogsDto_receiver = new CreateInsightlogsDto()
+          CreateInsightlogsDto_receiver._id = _id_receiver;
+          CreateInsightlogsDto_receiver.insightID = Insight_receiver._id;
+          CreateInsightlogsDto_receiver.createdAt = current_date;
+          CreateInsightlogsDto_receiver.updatedAt = current_date;
+          CreateInsightlogsDto_receiver.mate = email_user
+          CreateInsightlogsDto_receiver.eventInsight = "REACTION"
+          CreateInsightlogsDto_receiver.postID = request.body.postID
+          CreateInsightlogsDto_receiver._class = "io.melody.hyppe.content.domain.InsightLog"
+          await this.insightlogsService.create(CreateInsightlogsDto_receiver);
+
+          var LogInsught_receiver = Insight_receiver.insightLogs;
+          LogInsught_receiver.push({
+            $ref: 'insightlogs',
+            $id: _id_receiver,
+            $db: 'hyppe_content_db',
+          });
+
+          var CreateInsightsDto_receiver = new CreateInsightsDto()
+          CreateInsightsDto_receiver.insightLogs = LogInsught_receiver;
+          await this.insightsService.updateone(email_receiverParty, CreateInsightsDto_receiver)
+        }
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);
           await this.postsService.updateReaction(email_receiverParty, request.body.postID);
+          await this.insightsService.updateReactions(email_user);
           this.sendInteractiveFCM(email_receiverParty, "REACTION", request.body.postID, email_user);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(

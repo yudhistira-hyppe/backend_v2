@@ -1371,7 +1371,7 @@ export class TransactionsController {
         var dateStartDate = new Date(dateStartString)
         var dateStartAdd = new Date(dateStartDate.getTime() + ContInterval * 60000)
         var dateStartGetTime = dateStartAdd.toISOString().split('T')[1].split(".")[0]
-        
+
         console.log("date String", dateStartString);
         console.log("date Date", new Date(dateStartString));
         console.log("date Add", dateStartAdd);
@@ -4993,6 +4993,10 @@ export class TransactionsController {
         var iduser = null;
         var totalpage = null;
         var descending = null;
+        var startday = null;
+        var endday = null;
+        var used = null;
+        var expired = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -5011,6 +5015,10 @@ export class TransactionsController {
         startdate = request_json["startdate"];
         enddate = request_json["enddate"];
         iduser = request_json["iduser"];
+        startday = request_json["startday"];
+        endday = request_json["endday"];
+        used = request_json["used"];
+        expired = request_json["expired"];
         var userid = null;
         if (iduser !== undefined) {
             userid = mongoose.Types.ObjectId(iduser);
@@ -5018,34 +5026,25 @@ export class TransactionsController {
             userid = undefined;
         }
 
-        let data = await this.transactionsService.findhistoryBuyVoucher(key, userid, status, startdate, enddate, page, limit, descending);
+        let data = await this.transactionsService.findhistoryBuyVoucher(key, userid, status, startdate, enddate, page, limit, descending, startday, endday, used, expired);
         var total = data.length;
-        let datasearch = await this.transactionsService.findhistoryBuyVoucherCount(key, userid, status, startdate, enddate);
+        let datasearch = await this.transactionsService.findhistoryBuyVoucher(key, userid, status, startdate, enddate, 0, 0, descending, startday, endday, used, expired);
         var total = data.length;
         var totalsearch = datasearch.length;
         var allrow = await this.transactionsService.totalcountVoucher();
         var totalallrow = allrow[0].countrow;
         var tpage = null;
         var tpage2 = null;
-        if (iduser === undefined) {
-            tpage2 = (totalallrow / limit).toFixed(0);
-            tpage = (totalallrow % limit);
-            if (tpage > 0 && tpage < 5) {
-                totalpage = parseInt(tpage2) + 1;
 
-            } else {
-                totalpage = parseInt(tpage2);
-            }
+        tpage2 = (totalsearch / limit).toFixed(0);
+        tpage = (totalsearch % limit);
+        if (tpage > 0 && tpage < 5) {
+            totalpage = parseInt(tpage2) + 1;
+
         } else {
-            tpage2 = (totalsearch / limit).toFixed(0);
-            tpage = (totalsearch % limit);
-            if (tpage > 0 && tpage < 5) {
-                totalpage = parseInt(tpage2) + 1;
-
-            } else {
-                totalpage = parseInt(tpage2);
-            }
+            totalpage = parseInt(tpage2);
         }
+
 
 
         return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };

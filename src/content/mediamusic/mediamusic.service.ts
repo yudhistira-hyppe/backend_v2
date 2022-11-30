@@ -2608,7 +2608,7 @@ export class MediamusicService {
                   $eq: ["$postID", "null nih"]
 
                 },
-                then: 0,
+                then: [null],
                 else: '$gender'
               }
             },
@@ -2619,7 +2619,7 @@ export class MediamusicService {
                   $eq: ["$postID", "null nih"]
 
                 },
-                then: 0,
+                then: [null],
                 else: '$wilayah'
               }
             },
@@ -2628,7 +2628,7 @@ export class MediamusicService {
                 if: {
                   $eq: ["$postID", "null nih"]
                 },
-                then: 0,
+                then: [null],
                 else: '$age'
               }
             },

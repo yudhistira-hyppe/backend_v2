@@ -44,7 +44,7 @@ export class Insights {
     insightLogs: [
         {
             $ref: String;
-            $id: { oid: String };
+            $id: String;
             $db: String;
         },
     ]

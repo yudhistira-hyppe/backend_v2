@@ -43,8 +43,6 @@ export class VouchersController {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
-
-
         var exday = CreateVouchersDto.expiredDay;
 
         var d = new Date();
