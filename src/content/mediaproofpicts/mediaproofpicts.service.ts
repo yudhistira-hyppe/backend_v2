@@ -283,6 +283,263 @@ export class MediaproofpictsService {
 
   }
 
+  async detailkyc(id: string) {
+    var query = await this.MediaproofpictsModel.aggregate([
+      {
+        $lookup: {
+          from: 'userbasics',
+          localField: '_id',
+          foreignField: 'proofPict.$id',
+          as: 'basicdata',
+
+        }
+      },
+      {
+        $unwind: "$basicdata"
+      },
+      {
+        $project: {
+          email: '$basicdata.email',
+          insight_id: '$basicdata.insight.$id',
+          isIdVerified: '$basicdata.isIdVerified',
+          profilepictid: '$basicdata.profilePict.$id',
+          fsSourceUri: 1,
+          mediaUri: 1,
+          SelfiefsSourceUri: 1,
+          mediaSelfieUri: 1,
+          SupportfsSourceUri: 1,
+          mediaSupportUri: 1,
+          fullName: '$basicdata.fullName',
+          userAuth_id: '$basicdata.userAuth.$id',
+          createdAt: 1,
+          status: 1,
+          idcardnumber: 1,
+          tglLahir: '$basicdata.dob',
+          nama: 1,
+          tempatLahir: 1,
+          jenisKelamin1: 1,
+          alamat: 1,
+          agama: 1,
+          statusPerkawinan: 1,
+          pekerjaan: 1,
+          kewarganegaraan: 1,
+
+        }
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+
+        },
+
+      },
+      {
+        $addFields: {
+
+
+          'auth': {
+            $arrayElemAt: ['$userAuth_data', 0]
+          },
+
+        }
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts',
+          localField: 'profilepictid',
+          foreignField: '_id',
+          as: 'profilePict_data',
+
+        }
+      },
+      {
+        $lookup: {
+          from: 'insights',
+          localField: 'insight_id',
+          foreignField: '_id',
+          as: 'insight_data',
+        },
+      },
+      {
+        $addFields: {
+
+          insights: { $arrayElemAt: ['$insight_data', 0] },
+        },
+
+      },
+      {
+        $project: {
+          email: 1,
+          insights: 1,
+          isIdVerified: 1,
+          username: '$auth.username',
+          createdAt: 1,
+          profilpict: {
+            $arrayElemAt: ['$profilePict_data', 0]
+          },
+          status: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [
+                      "$status",
+                      "IN_PROGGRESS"
+                    ]
+                  },
+                  then: "BARU"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$status",
+                      "FAILED"
+                    ]
+                  },
+                  then: "DITOLAK"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$status",
+                      "FINISH"
+                    ]
+                  },
+                  then: "DISETUJUI"
+                },
+
+              ],
+              default: ""
+            }
+          },
+          tglLahir: 1,
+          idcardnumber: 1,
+          jumlahPermohonan: "1",
+          tahapan: "KTP",
+          nama: 1,
+          tempatLahir: 1,
+          jenisKelamin1: 1,
+          alamat: 1,
+          agama: 1,
+          statusPerkawinan: 1,
+          pekerjaan: 1,
+          kewarganegaraan: 1,
+          fsSourceUri: 1,
+          mediaUri: 1,
+          SelfiefsSourceUri: 1,
+          mediaSelfieUri: 1,
+          SupportfsSourceUri: 1,
+          mediaSupportUri: 1,
+          statusUser: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$isIdVerified", null]
+                }, {
+                  $eq: ["$isIdVerified", ""]
+                }, {
+                  $eq: ["$isIdVerified", []]
+                }, {
+                  $eq: ["$isIdVerified", false]
+                }]
+              },
+              then: "BASIC",
+              else: "PREMIUM"
+            },
+
+          },
+
+        }
+      },
+      {
+        $addFields: {
+
+          concat: '/profilepict',
+          pict: {
+            $replaceOne: {
+              input: "$profilpict.mediaUri",
+              find: "_0001.jpeg",
+              replacement: ""
+            }
+          },
+
+        },
+
+      },
+      {
+        $project: {
+          email: 1,
+          isIdVerified: 1,
+          username: 1,
+          createdAt: 1,
+          status: 1,
+          idcardnumber: 1,
+          jumlahPermohonan: "1",
+          tahapan: "KTP",
+          avatar: {
+            mediaBasePath: '$profilpict.mediaBasePath',
+            mediaUri: '$profilpict.mediaUri',
+            mediaType: '$profilpict.mediaType',
+            mediaEndpoint: {
+              $concat: ["$concat", "/", "$pict"]
+            },
+
+          },
+          nama: 1,
+          tglLahir: 1,
+          tempatLahir: 1,
+          jenisKelamin1: 1,
+          alamat: 1,
+          agama: 1,
+          statusPerkawinan: 1,
+          pekerjaan: 1,
+          kewarganegaraan: 1,
+          statusUser: 1,
+          insight: {
+
+            followers: '$insights.followers',
+
+            followings: '$insights.followings'
+          },
+          fsSourceUri: 1,
+          SelfiefsSourceUri: 1,
+          SupportfsSourceUri: 1,
+          mediaSelfieUri: 1,
+          mediaUri: 1,
+          mediaSupportUri: 1,
+        }
+      },
+      {
+        $match: {
+          $and: [
+            {
+
+              status: {
+                $ne: null
+              }
+            },
+            {
+
+              status: {
+                $ne: ""
+              }
+            },
+
+          ],
+          _id: id
+        }
+      },
+
+
+
+    ]);
+
+    return query;
+  }
+
   // async findmediaproofpicts() {
   //   const query = await this.MediaproofpictsModel.aggregate([
 
