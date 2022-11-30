@@ -143,11 +143,15 @@ export class DisqusController {
               var discuslogGet = await this.disqusLogService.findDisqusLogByParentID(ContentDto_.parentID.toString())
               if (await this.utilsService.ceckData(discuslogGet)) {
                 var UserEmail = discuslogGet.sender.toString();
-                this.sendCommentFCM(UserEmail, "COMMENT_TAG", ContentDto_.postID.toString(), ContentDto_.email.toString())
+                if (ContentDto_.receiverParty != ContentDto_.email.toString()) {
+                  this.sendCommentFCM(UserEmail, "COMMENT_TAG", ContentDto_.postID.toString(), ContentDto_.email.toString())
+                }
               }
             }
           }
-          this.sendCommentFCM(ContentDto_.receiverParty.toString(), "COMMENT", ContentDto_.postID.toString(), ContentDto_.email.toString())
+          if (ContentDto_.receiverParty != ContentDto_.email.toString()) {
+            this.sendCommentFCM(ContentDto_.receiverParty.toString(), "COMMENT", ContentDto_.postID.toString(), ContentDto_.email.toString())
+          }
           this.insightsService.updateComment(ContentDto_.receiverParty.toString())
           res.response_code = 202;
           let m = new Messages();

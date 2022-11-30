@@ -1063,7 +1063,14 @@ export class PostContentService {
         pa.boosted = [ps.boosted];
         pa.isBoost = ps.isBoost; 
         pa.boostJangkauan = ps['boostJangkauan'];
-        pa.statusBoost = ps['status']; 
+        pa.statusBoost = ps['status'];
+        
+        if (ps.reportedStatus != undefined) {
+          pa.reportedStatus = ps.reportedStatus;
+        }
+        if (ps.reportedUserCount != undefined) {
+          pa.reportedUserCount = Number(ps.reportedUserCount);
+        } 
 
         let following = await this.contentEventService.findFollowing(pa.email);
 
