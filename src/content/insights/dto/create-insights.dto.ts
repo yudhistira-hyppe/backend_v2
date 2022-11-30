@@ -28,7 +28,7 @@ export class CreateInsightsDto {
   insightLogs: [
     {
       $ref: String;
-      $id: { oid: String };
+      $id: String;
       $db: String;
     },
   ]

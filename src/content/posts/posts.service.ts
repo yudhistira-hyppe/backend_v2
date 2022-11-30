@@ -8750,7 +8750,8 @@ export class PostsService {
               let c = Math.round(a / interval);
               let d = st + ((interval * 1000 * 60) * c);
 
-              let ted = d + (7 * 3600 * 1000);
+              //let ted = d + (7 * 3600 * 1000);
+              let ted = d;
               console.log(st + " " + d + " " + ted);
 
               let td = new Date(ted);
