@@ -40,6 +40,24 @@ export class InsightsService {
     );
   }
 
+  async updateone(email: string, CreateInsightsDto: CreateInsightsDto) {
+    this.InsightsModel.updateMany(
+      {
+        email: email,
+      },
+      {
+        $set: CreateInsightsDto
+      },
+      function (err, docs) {
+        if (err) {
+          //console.log(err);
+        } else {
+          //console.log(docs);
+        }
+      },
+    );
+  }
+
   async findAll(): Promise<Insights[]> {
     return this.InsightsModel.find().exec();
   }
@@ -346,6 +364,54 @@ export class InsightsService {
         email: email,
       },
       { $inc: { followings: -1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateUnFollow(email: string) {
+    this.InsightsModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { unfollows: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateReactions(email: string) {
+    this.InsightsModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { reactions: 1 } },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+      },
+    );
+  }
+
+  async updateViews(email: string) {
+    this.InsightsModel.updateOne(
+      {
+        email: email,
+      },
+      { $inc: { views: 1 } },
       function (err, docs) {
         if (err) {
           console.log(err);
