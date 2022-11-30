@@ -1008,6 +1008,7 @@ export class PostContentService {
           boostJangkauan: { $size: "$boosted.boostViewer" },
           boostStart: "$boosted.boostSession.start",
           boostEnd: "$boosted.boostSession.end",
+          boostDate: "$boosted.boostDate",
         }
       },
       {
@@ -1023,7 +1024,7 @@ export class PostContentService {
           },
         }
       },
-      { $sort: { status : -1}},
+      { $sort: { status: -1, boostDate: -1 }},
       { $skip: (perPage * page) },
       { $limit: perPage },
     ])

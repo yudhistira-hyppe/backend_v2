@@ -128,6 +128,25 @@ export class DisqusController {
             });
           }
           let xres = await this.buildComments(ContentDto_, true);
+          if (ContentDto_.tagComment_.length>0){
+            for (var n = 0; n < ContentDto_.tagComment_.length;n++){
+              var userAuth = await this.userauthsService.findByUsername(ContentDto_.tagComment_[n]);
+              if (await this.utilsService.ceckData(userAuth)) {
+                var UserEmail = userAuth.email.toString();
+                this.sendCommentFCM(ContentDto_.email.toString(), "COMMENT_TAG", ContentDto_.postID.toString(), UserEmail)
+              }
+            }
+          }
+
+          if (ContentDto_.parentID != undefined) {
+            if (ContentDto_.parentID != "") {
+              var discuslogGet = await this.disqusLogService.findDisqusLogByParentID(ContentDto_.parentID.toString())
+              if (await this.utilsService.ceckData(discuslogGet)) {
+                var UserEmail = discuslogGet.sender.toString();
+                this.sendCommentFCM(ContentDto_.email.toString(), "COMMENT_TAG", ContentDto_.postID.toString(), UserEmail)
+              }
+            }
+          }
           this.sendCommentFCM(ContentDto_.email.toString(), "COMMENT", ContentDto_.postID.toString(), ContentDto_.receiverParty.toString())
           res.response_code = 202;
           let m = new Messages();

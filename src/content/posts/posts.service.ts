@@ -231,6 +231,16 @@ export class PostsService {
     );
   }
 
+  async updateBuyBoost(id: string, boosted:any) {
+    let data = await this.PostsModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "boosted": boosted,
+        }
+      });
+    return data;
+  }
+
   async updateemail(id: string, email: string, iduser: {
     "$oid": string
   }, createdAt: string): Promise<Object> {
