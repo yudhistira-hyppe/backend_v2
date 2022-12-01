@@ -775,16 +775,31 @@ export class PostContentService {
       }      
     }
 
+    let myus = await this.userAuthService.findOneByEmail(post.email);
+
     let tag = post.tagPeople;
     if (tag != undefined && tag.length > 0) {
       tag.forEach(el => {
         console.log(el.oid);
         let oid = el.oid;
         this.userAuthService.findById(oid).then((as) => {
-          let em = String(as.username);
-          let bodyi = em + ' Menyebut kamu ';
-          let bodye = em + ' Mentioned you ';
-          this.utilService.sendFcm(String(post.email), 'Disebut', 'Mentioned',bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
+          let em = String(myus.username);
+          let bodyi = em + ' Menandai kamu di ';
+          let bodye = em + ' Tagged you in ';
+          if (post.postType == 'pict') {
+            bodyi = bodyi + ' HyppePic';
+            bodye = bodye + ' HyppePic';
+          } else if (post.postType == 'vid') {
+            bodyi = bodyi + ' HyppeVideo';
+            bodye = bodye + ' HyppeVideo';
+          } else if (post.postType == 'diary') {
+            bodyi = bodyi + ' HyppeDiary';
+            bodye = bodye + ' HyppeDiary';            
+          } else if (post.postType == 'story') {
+            bodyi = bodyi + ' HyppeStory';
+            bodye = bodye + ' HyppeStory';            
+          }
+          this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned',bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
         });
       });
     }
@@ -796,8 +811,8 @@ export class PostContentService {
         let oid = el.oid;
         this.userAuthService.findById(oid).then((as) => {
           let em = String(as.username);
-          let bodyi = em + ' Menyebut kamu ';
-          let bodye = em + ' Mentioned you ';
+          let bodyi = em + ' Menandai kamu di ';
+          let bodye = em + ' Tagged you in ';
           this.utilService.sendFcm(String(post.email), 'Disebut', 'Mentioned',bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
         });
       });

@@ -3050,6 +3050,10 @@ export class PostBoostService {
     let xpics: string[] = [];
     let xuser: string[] = [];
 
+    let td = new Date();
+    let stoday = new Date(td.getTime() - (td.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');  
+    stoday = stoday.substring(0, 19);
+
     let query = await this.PostsModel.aggregate([
 
         {
@@ -3201,24 +3205,17 @@ export class PostBoostService {
                                       },
                                       {
                                           $or: [
-                                              
-                                              {
-                                                  $and: [
-                                                      
-                                                      {
-                                                          "boosted.boostViewer.email": profile.email
-                                                      },
-                                                      {
-                                                          "boosted.boostViewer.isLast": true
-                                                      },
-                                                      {
-                                                          $expr: {
-                                                              $gte: ["$testDate", "$boosted.boostViewer.timeEnd"]
-                                                          }
-                                                      },
-                                                      
-                                                  ]
-                                              },
+                                            {
+                                              "boosted.boostViewer":{
+                                              "$elemMatch": {
+                                                "email": profile.email,
+                                                "isLast": true,
+                                                "timeEnd":{
+                                                  $lte: stoday
+                                                }
+                                              }
+                                              }
+                                              },                                              
                                               {
                                                   $and: [
                                                       {
@@ -3688,32 +3685,31 @@ export class PostBoostService {
                                         },
                                         {
                                             $or: [
-                                                {
-                                                  "boosted.boostViewer":
-                                                  [
-                                                    {
-                                                        "boosted.boostViewer.email": profile.email
-                                                    },
-                                                    {
-                                                        "$boosted.boostViewer.isLast": true
-                                                    },
-                                                    {
-                                                      $expr: {
-                                                          $gte: ["$testDate", "$boosted.boostViewer.timeEnd"]
+                                              {
+                                                $or: [
+                                                  {
+                                                    "boosted.boostViewer":{
+                                                    "$elemMatch": {
+                                                      "email": profile.email,
+                                                      "isLast": true,
+                                                      "timeEnd":{
+                                                        $lte: stoday
                                                       }
-                                                  },
-                                                  ]
-                                                },
-                                                {
-                                                    $and: [
-                                                        {
-                                                            "boosted.boostViewer.email": {
-                                                                $ne: profile.email
-                                                            }
-                                                        },
-                                                        
-                                                    ]
-                                                }
+                                                    }
+                                                    }
+                                                    },                                              
+                                                    {
+                                                        $and: [
+                                                            {
+                                                                "boosted.boostViewer.email": {
+                                                                    $ne: profile.email
+                                                                }
+                                                            },
+                                                            
+                                                        ]
+                                                    }
+                                                ]
+                                            }
                                             ]
                                         }
                                     ]
@@ -4166,32 +4162,31 @@ export class PostBoostService {
                                         },
                                         {
                                             $or: [
-                                                {
-                                                  "boosted.boostViewer":
-                                                  [
-                                                    {
-                                                        "boosted.boostViewer.email": profile.email
-                                                    },
-                                                    {
-                                                        "$boosted.boostViewer.isLast": true
-                                                    },
-                                                    {
-                                                      $expr: {
-                                                          $gte: ["$testDate", "$boosted.boostViewer.timeEnd"]
+                                              {
+                                                $or: [
+                                                  {
+                                                    "boosted.boostViewer":{
+                                                    "$elemMatch": {
+                                                      "email": profile.email,
+                                                      "isLast": true,
+                                                      "timeEnd":{
+                                                        $lte: stoday
                                                       }
-                                                  },
-                                                  ]
-                                                },
-                                                {
-                                                    $and: [
-                                                        {
-                                                            "boosted.boostViewer.email": {
-                                                                $ne: profile.email
-                                                            }
-                                                        },
-                                                        
-                                                    ]
-                                                }
+                                                    }
+                                                    }
+                                                    },                                              
+                                                    {
+                                                        $and: [
+                                                            {
+                                                                "boosted.boostViewer.email": {
+                                                                    $ne: profile.email
+                                                                }
+                                                            },
+                                                            
+                                                        ]
+                                                    }
+                                                ]
+                                            }
                                             ]
                                         }
                                     ]

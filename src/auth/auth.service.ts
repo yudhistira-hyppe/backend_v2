@@ -27,7 +27,7 @@ import { CitiesService } from '../infra/cities/cities.service';
 import { ReferralService } from '../trans/referral/referral.service';
 import { CreateReferralDto } from '../trans/referral/dto/create-referral.dto';
 import mongoose from 'mongoose';
-import { SeaweedfsService } from '../stream/seaweedfs/seaweedfs.service'; 
+import { SeaweedfsService } from '../stream/seaweedfs/seaweedfs.service';
 import { AdsUserCompareService } from '../trans/ads/adsusercompare/adsusercompare.service';
 import { Long } from 'mongodb';
 import * as fs from 'fs';
@@ -36,6 +36,7 @@ import { CreateContenteventsDto } from '../content/contentevents/dto/create-cont
 import { CreateGetcontenteventsDto } from '../trans/getusercontents/getcontentevents/dto/create-getcontentevents.dto';
 import { CreateUserbasicnewDto } from '../trans/newuserbasic/dto/create-userbasicnew.dto';
 import { PostsService } from '../content/posts/posts.service';
+
 
 @Injectable()
 export class AuthService {
@@ -61,10 +62,10 @@ export class AuthService {
     private errorHandler: ErrorHandler,
     private citiesService: CitiesService,
     private referralService: ReferralService,
-    private seaweedfsService: SeaweedfsService, 
+    private seaweedfsService: SeaweedfsService,
     private adsUserCompareService: AdsUserCompareService,
     private contenteventsService: ContenteventsService,
-    private postsService: PostsService,  
+    private postsService: PostsService,
   ) { }
 
   async validateUser(email: string, pass: string): Promise<any> {
@@ -1257,10 +1258,10 @@ export class AuthService {
                 }
 
                 //Create User Ads
-                try{
+                try {
                   await this.adsUserCompareService.createNewUserAds(datauserbasicsService._id.toString());
-                }catch(e){
-                  console.log("Create User Ads",e);
+                } catch (e) {
+                  console.log("Create User Ads", e);
                 }
 
                 //Create User Playlist
@@ -2575,38 +2576,38 @@ export class AuthService {
       //     'Refesh token still valid',
       //   );
       // } else {
-        //Ceck User Userauths
-        const datauserauthsService = await this.userauthsService.findOneByEmail(
-          email,
-        );
+      //Ceck User Userauths
+      const datauserauthsService = await this.userauthsService.findOneByEmail(
+        email,
+      );
 
-        //Get Id Userdevices
-        const datauserauthsService_devices =
-          datauserauthsService.devices[datauserauthsService.devices.length - 1];
+      //Get Id Userdevices
+      const datauserauthsService_devices =
+        datauserauthsService.devices[datauserauthsService.devices.length - 1];
 
-        //Generate Token
-        var Token =
-          'Bearer ' +
-          (await this.utilsService.generateToken(
-            datauserbasicsService.email.toString(),
-            datauserbasicsService._id.toString(),
-          ));
-
-        //Generate Refresh Token
-        var RefreshToken = await this.updateRefreshToken(
+      //Generate Token
+      var Token =
+        'Bearer ' +
+        (await this.utilsService.generateToken(
           datauserbasicsService.email.toString(),
-        );
+          datauserbasicsService._id.toString(),
+        ));
 
-        return {
-          response_code: 202,
-          data: {
-            token: Token.toString(),
-            refreshToken: RefreshToken.toString(),
-          },
-          messages: {
-            info: ['Refresh Token successful'],
-          },
-        };
+      //Generate Refresh Token
+      var RefreshToken = await this.updateRefreshToken(
+        datauserbasicsService.email.toString(),
+      );
+
+      return {
+        response_code: 202,
+        data: {
+          token: Token.toString(),
+          refreshToken: RefreshToken.toString(),
+        },
+        messages: {
+          info: ['Refresh Token successful'],
+        },
+      };
       //}
     } else {
       await this.errorHandler.generateNotAcceptableException(
@@ -4005,7 +4006,7 @@ export class AuthService {
           var data_referral_parent = await this.referralService.findAllByChildren(user_email);
 
           return {
-            parent: (await this.utilsService.ceckData(data_referral_parent))? data_referral_parent[0].parent:"",
+            parent: (await this.utilsService.ceckData(data_referral_parent)) ? data_referral_parent[0].parent : "",
             response_code: 202,
             data: data_referral.length,
             messages: {
@@ -4082,7 +4083,7 @@ export class AuthService {
     if (email_ceck) {
       //Ceck User auth parent
       datauserauthService_parent = await this.userauthsService.findOneUsername(user_username_parent);
-      if (await this.utilsService.ceckData(datauserauthService_parent)){
+      if (await this.utilsService.ceckData(datauserauthService_parent)) {
         user_email_parent = datauserauthService_parent.email;
       } else {
         await this.errorHandler.generateNotAcceptableException(
@@ -5313,7 +5314,7 @@ export class AuthService {
                 //await this.contenteventsService.create(CreateContenteventsDto3);
                 await this.contenteventsService.create(CreateContenteventsDto4);
                 await this.insightsService.updateFollower(req.body.referral);
-                await this.insightsService.updateFollowing(req.body.email);                
+                await this.insightsService.updateFollowing(req.body.email);
               } catch (error) {
                 await this.errorHandler.generateNotAcceptableException(
                   'Unabled to proceed Create Refferal. Error:' +
@@ -5477,7 +5478,7 @@ export class AuthService {
   }
 
   async getuserprofile(req: any, head: any) {
-    
+
   }
 
   async signsosmed(req: any) {
@@ -6032,8 +6033,14 @@ export class AuthService {
 
   }
 
-  async countPost(id: string) : Promise<number> {
-    
+  async countPost(id: string): Promise<number> {
+
     return 0;
   }
+
+  async friend(email: string) {
+    const query = await this.contenteventsService.friend(email, "");
+    return query;
+  }
+
 }
