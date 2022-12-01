@@ -7949,7 +7949,7 @@ export class GetusercontentsService {
     } catch (e) {
       dateend = "";
     }
-    var pipeline=[];
+    var pipeline=new Array<any>();
     if(buy && buy!==undefined){
       pipeline=new Array<any>(
           {$lookup: {
@@ -8080,16 +8080,17 @@ export class GetusercontentsService {
                    isPostPrivate:'$basic.isPostPrivate',
                    isCelebrity:'$basic.isCelebrity',
                    isPrivate:'$basic.isPrivate'
-               },
-               isViewed:'$isViewed',
-               allowComments:1,
-               isSafe:1,
-               saleLike:1,
-               saleView:1,
-               monetize:"$monetize",
-               salePrice:"$salePrice",
-               mediaref:"$mediaref",
-               rotate: '$diary.rotate',
+              },
+              isViewed:'$isViewed',
+              allowComments:1,
+              isSafe:1,
+              saleLike:1,
+              saleView:1,
+              monetize:"$monetize",
+              salePrice:"$salePrice",
+              mediaref:"$mediaref",
+              rotate: '$diary.rotate',
+              trans:1,
               mediaBasePath: {
                 $switch: {
                   branches: [
@@ -8222,7 +8223,7 @@ export class GetusercontentsService {
               },
           }},
       );
-      pipeline.push({$match:{"trans.iduserbuyer":iduserbuy,"trans.status":"success"}});
+      pipeline.push({$match:{"trans.iduserbuyer":iduserbuy,"trans.status":"Success"}});
     }
     else{
       console.log("not monetized");
@@ -8489,7 +8490,7 @@ export class GetusercontentsService {
               },
           }}   
       );
-      pipeline.push({$match:{email:email}});
+      pipeline.push({$match:{email:email,active:true}});
       if(ownership!==undefined){
         pipeline.push({$match:{isOwned:ownership}});
       }
@@ -8612,7 +8613,8 @@ export class GetusercontentsService {
         "saleView": query[i].saleView,
         "monetize": query[i].monetize,
         "salePrice":query[i].salePrice,
-        "media": data
+        "media": data,
+        "trans":query[i].trans
       };
 
       arrdata.push(objk);

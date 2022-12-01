@@ -6553,7 +6553,7 @@ export class TransactionsService {
         }
         pipeline.push({
             $match: {
-                idusersell: iduser
+                iduser: iduser
             }
         });
         pipeline.push({ $sort: { timestamp: -1 } });
@@ -7708,7 +7708,7 @@ export class TransactionsService {
         }
         pipeline.push({
             $match: {
-                iduserbuyer: iduser
+                iduser: iduser
             }
         });
         pipeline.push({ $sort: { timestamp: -1 } });
