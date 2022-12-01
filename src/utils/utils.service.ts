@@ -161,9 +161,9 @@ export class UtilsService {
 
     let body_send = "";
     if (langIso_receiverParty=="en"){
-      body_send = Templates_.body_detail.toString().replace("${post_type}", "Hypper" + Post_type_upper)
+      body_send = Templates_.body_detail.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
     } else {
-      body_send = Templates_.body_detail_id.toString().replace("${post_type}", "Hypper" + Post_type_upper)
+      body_send = Templates_.body_detail_id.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
     }
 
     var senderOrReceiverInfo = {
@@ -198,8 +198,8 @@ export class UtilsService {
     createNotificationsDto.mate = senderParty;
     createNotificationsDto.devices = device_user;
     createNotificationsDto.title = title_send;
-    createNotificationsDto.body = Templates_.body_detail.toString().replace("${post_type}", "Hypper" + Post_type_upper);
-    createNotificationsDto.bodyId = Templates_.body_detail_id.toString().replace("${post_type}", "Hypper" + Post_type_upper);
+    createNotificationsDto.body = Templates_.body_detail.toString().replace("${post_type}", "Hyppe" + Post_type_upper);
+    createNotificationsDto.bodyId = Templates_.body_detail_id.toString().replace("${post_type}", "Hyppe" + Post_type_upper);
     createNotificationsDto.active = true;
     createNotificationsDto.flowIsDone = true;
     createNotificationsDto.createdAt = currentDate;
@@ -368,6 +368,8 @@ export class UtilsService {
           createNotificationsDto.postType = postType;
         }
       }
+
+      console.log('notif: ' + JSON.stringify(createNotificationsDto));
       await this.notificationsService.create(createNotificationsDto);
 
 
