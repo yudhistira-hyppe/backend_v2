@@ -186,7 +186,7 @@ import { TransactionsPostModule } from './trans/transactionpost/transactionspost
     DisquscontactsModule,
     DisqusModule,
     ContentqmaticModule,
-    ContenteventsModule,
+    //ContenteventsModule,
     ContentdailyqueueModule,
     WelcomenotesModule,
     TemplatesRepoModule,

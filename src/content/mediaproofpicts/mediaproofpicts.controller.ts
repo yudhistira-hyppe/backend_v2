@@ -3,6 +3,7 @@ import { MediaproofpictsService } from './mediaproofpicts.service';
 import { CreateMediaproofpictsDto } from './dto/create-mediaproofpicts.dto';
 import { Mediaproofpicts } from './schemas/mediaproofpicts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
+
 // import { FormDataRequest } from 'nestjs-form-data';
 // import { FileInterceptor, FilesInterceptor, FileFieldsInterceptor } from '@nestjs/platform-express';
 // import * as http from 'http';
@@ -34,7 +35,8 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 
 @Controller('api/mediaproofpicts')
 export class MediaproofpictsController {
-  constructor(private readonly MediaproofpictsService: MediaproofpictsService) { }
+  constructor(private readonly MediaproofpictsService: MediaproofpictsService,
+  ) { }
 
   @Post()
   async create(@Body() CreateMediaproofpictsDto: CreateMediaproofpictsDto) {
@@ -57,168 +59,7 @@ export class MediaproofpictsController {
     return this.MediaproofpictsService.delete(id);
   }
 
-  @Post('listkyc')
-  @UseGuards(JwtAuthGuard)
-  async profileuser(@Req() request: Request): Promise<any> {
-    var request_json = JSON.parse(JSON.stringify(request.body));
-    var keys = null;
-    var data = null;
-    var page = null;
-    var limit = null;
-    var startdate = null;
-    var enddate = null;
-    var status = null;
 
-    var descending = null;
-
-    const messages = {
-      "info": ["The process successful"],
-    };
-    startdate = request_json["startdate"];
-    enddate = request_json["enddate"];
-    keys = request_json["keys"];
-    status = request_json["status"];
-    startdate = request_json["startdate"];
-    enddate = request_json["enddate"];
-    descending = request_json["descending"];
-    if (request_json["page"] !== undefined) {
-      page = request_json["page"];
-    } else {
-      throw new BadRequestException("Unabled to proceed");
-    }
-
-    if (request_json["limit"] !== undefined) {
-      limit = request_json["limit"];
-    } else {
-      throw new BadRequestException("Unabled to proceed");
-    }
-
-    data = await this.MediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, page, limit);
-    let datasearch = await this.MediaproofpictsService.listkyc(keys, status, startdate, enddate, descending, 0, 0);
-    var totalsearch = datasearch.length;
-    var allrow = await this.MediaproofpictsService.listkyc(undefined, undefined, undefined, undefined, descending, 0, 0);
-    var totalallrow = allrow.length;
-    var totalrow = data.length;
-
-    var tpage = null;
-    var tpage2 = null;
-    var totalpage = null;
-    tpage2 = (totalsearch / limit).toFixed(0);
-    tpage = (totalsearch % limit);
-    if (tpage > 0 && tpage < 5) {
-      totalpage = parseInt(tpage2) + 1;
-
-    } else {
-      totalpage = parseInt(tpage2);
-    }
-
-    return { response_code: 202, data, page, limit, totalrow, totalallrow, totalsearch, totalpage, messages };
-  }
-
-  @Post('detailkyc')
-  @UseGuards(JwtAuthGuard)
-  async detailkyc(@Req() request: Request): Promise<any> {
-    var request_json = JSON.parse(JSON.stringify(request.body));
-
-    var id = null;
-    var datakyc = null;
-    var obj = {};
-    var data = [];
-    var fileselfiepict = null;
-    var fileproofpict = null;
-    var filesupport = [];
-    var newselfie = null;
-    var newproof = null;
-    var newsupport = null;
-    var lengsupport = null;
-
-    var arrsuport = [];
-    const messages = {
-      "info": ["The process successful"],
-    };
-
-
-    if (request_json["id"] !== undefined) {
-      id = request_json["id"];
-    } else {
-      throw new BadRequestException("Unabled to proceed");
-    }
-
-    try {
-      datakyc = await this.MediaproofpictsService.detailkyc(id);
-      try {
-        fileselfiepict = datakyc[0].mediaSelfieUri;
-        let splitselfi = fileselfiepict.split('_');
-        newselfie = "/selfiepict/" + splitselfi[0].toString();
-
-      } catch (e) {
-        fileselfiepict = "";
-        newselfie = "";
-      }
-      try {
-
-        fileproofpict = datakyc[0].mediaSelfieUri;
-        let splitproof = fileproofpict.split('_');
-        newproof = "/proofpict/" + splitproof[0].toString();
-
-      } catch (e) {
-        fileproofpict = "";
-        newproof = "";
-      }
-
-      try {
-
-        filesupport = datakyc[0].mediaSupportUri;
-        lengsupport = filesupport.length;
-      } catch (e) {
-        filesupport = [];
-        lengsupport = 0;
-      }
-
-      if (lengsupport > 0) {
-        for (let i = 0; i < lengsupport; i++) {
-          let splitsupport = filesupport[i].split('_');
-          newsupport = "/supportfile/" + splitsupport[0].toString() + "/" + i;
-          arrsuport.push(newsupport);
-
-        }
-      }
-      arrsuport.push(newproof);
-      arrsuport.push(newselfie);
-
-      obj = {
-
-        "_id": datakyc[0]._id,
-        "createdAt": datakyc[0].createdAt,
-        "nama": datakyc[0].nama,
-        "tempatLahir": datakyc[0].tempatLahir,
-        "alamat": datakyc[0].alamat,
-        "agama": datakyc[0].agama,
-        "statusPerkawinan": datakyc[0].statusPerkawinan,
-        "pekerjaan": datakyc[0].pekerjaan,
-        "kewarganegaraan": datakyc[0].kewarganegaraan,
-        "FileEndpoint": arrsuport,
-        "idcardnumber": datakyc[0].idcardnumber,
-        "email": datakyc[0].email,
-        "isIdVerified": datakyc[0].isIdVerified,
-        "tglLahir": datakyc[0].tglLahir,
-        "username": datakyc[0].username,
-        "status": datakyc[0].status,
-        "statusUser": datakyc[0].statusUser,
-        "jumlahPermohonan": datakyc[0].jumlahPermohonan,
-        "tahapan": datakyc[0].tahapan,
-        "avatar": datakyc[0].avatar,
-        "insight": datakyc[0].insight
-      }
-      data.push(obj);
-    } catch (e) {
-      throw new BadRequestException("Data not found..!" + e);
-    }
-
-
-
-    return { response_code: 202, data, messages };
-  }
 
   // @Post()
   // @UseInterceptors(FileFieldsInterceptor([
