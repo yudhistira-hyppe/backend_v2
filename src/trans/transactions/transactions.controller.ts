@@ -1105,13 +1105,13 @@ export class TransactionsController {
 
 
                         await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy, dt.toISOString());
-                        if (datapost.boosted!=undefined){
+                        if (datapost.boosted != undefined) {
 
                             var DateStart = (new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 31))).toISOString();
                             var DateEnd = (new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 1))).toISOString();
-                            
+
                             var boosted = datapost.boosted;
-                            if (boosted.leght>0){
+                            if (boosted.leght > 0) {
                                 boosted = await Promise.all(datapost.boosted.map(async (item, index) => {
                                     var CurrentDate = new Date(await (await this.utilsService.getDateTime()).toISOString());
                                     var DateBoostEnd = new Date(item.boostSession.end.split(" ")[0] + "T" + item.boostSession.end.split(" ")[1] + ".000Z")
@@ -5072,28 +5072,71 @@ export class TransactionsController {
             userid = undefined;
         }
 
-        let data = await this.transactionsService.findhistoryBuyVoucher(key, userid, status, startdate, enddate, page, limit, descending, startday, endday, used, expired);
-        var total = data.length;
-        let datasearch = await this.transactionsService.findhistoryBuyVoucher(key, userid, status, startdate, enddate, 0, 0, descending, startday, endday, used, expired);
-        var total = data.length;
-        var totalsearch = datasearch.length;
-        var allrow = await this.transactionsService.totalcountVoucher();
-        var totalallrow = allrow[0].countrow;
-        var tpage = null;
-        var tpage2 = null;
 
-        tpage2 = (totalsearch / limit).toFixed(0);
-        tpage = (totalsearch % limit);
-        if (tpage > 0 && tpage < 5) {
-            totalpage = parseInt(tpage2) + 1;
 
+
+
+        if (iduser === undefined) {
+            var totalallrow = null;
+            let data = await this.transactionsService.findhistoryBuyVoucher(key, status, startdate, enddate, page, limit, descending, startday, endday, used, expired);
+            var total = data.length;
+            let datasearch = await this.transactionsService.findhistoryBuyVoucher(key, status, startdate, enddate, 0, 0, descending, startday, endday, used, expired);
+            var total = data.length;
+            var totalsearch = datasearch.length;
+            var allrow = await this.transactionsService.totalcountVoucher();
+
+            try {
+                totalallrow = allrow[0].countrow;
+            } catch (e) {
+                totalallrow = 0;
+            }
+            var tpage = null;
+            var tpage2 = null;
+            tpage2 = (totalsearch / limit).toFixed(0);
+            tpage = (totalsearch % limit);
+            if (tpage > 0 && tpage < 5) {
+                totalpage = parseInt(tpage2) + 1;
+
+            } else {
+                totalpage = parseInt(tpage2);
+            }
+            return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };
         } else {
-            totalpage = parseInt(tpage2);
+            var totalallrowuser = null;
+            let datauser = await this.transactionsService.findhistoryBuyVoucherByuser(userid, status, startdate, enddate, page, limit, descending);
+            var totaluser = datauser.length;
+            let datasearchuser = await this.transactionsService.findhistoryBuyVoucherByuser(userid, status, startdate, enddate, 0, 0, descending);
+            var totaluser = datauser.length;
+            var totalsearchuser = datasearchuser.length;
+            var allrowuser = await this.transactionsService.totalcountVoucherUser(userid);
+
+            try {
+                totalallrowuser = allrowuser[0].countrow;
+            } catch (e) {
+                totalallrowuser = 0;
+            }
+            var tpageuser = null;
+            var tpage2user = null;
+
+            tpage2user = (totalsearchuser / limit).toFixed(0);
+            tpageuser = (totalsearchuser % limit);
+            if (tpageuser > 0 && tpageuser < 5) {
+                totalpage = parseInt(tpage2user) + 1;
+
+            } else {
+                totalpage = parseInt(tpage2user);
+            }
+            return {
+                response_code: 202,
+                "data": datauser, "page": page, "limit": limit, "total": totaluser, "totalsearch": totalsearchuser, "totalallrow": totalallrowuser, "totalpage": totalpage, "messages": messages
+            };
         }
 
 
 
-        return { response_code: 202, data, page, limit, total, totalsearch, totalallrow, totalpage, messages };
+
+
+
     }
 
     @UseGuards(JwtAuthGuard)
