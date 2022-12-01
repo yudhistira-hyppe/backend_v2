@@ -132,6 +132,8 @@ export class Userbasic {
   reportedUser: any[];
   @Prop()
   reportedUserHandle: any[];
+  @Prop()
+  listAddKyc: any[];
 }
 
 export const UserbasicSchema = SchemaFactory.createForClass(Userbasic);
