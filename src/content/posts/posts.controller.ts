@@ -55,6 +55,29 @@ export class PostsController {
     private readonly methodepaymentsService: MethodepaymentsService,     
     private readonly groupModuleService: GroupModuleService) { }
 
+  @Post('api/posts/boostupdate')
+  async testUpdateBoost() {
+    var datapost = await this.PostsService.findid("2cb3770c-d8da-c4c3-c940-033dadf5a10c");
+    if (datapost.boosted != undefined) {
+      var DateStart = (new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 31))).toISOString();
+      var DateEnd = (new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 1))).toISOString();
+
+      var boosted = datapost.boosted;
+      console.log(boosted);
+      boosted = await Promise.all(datapost.boosted.map(async (item, index) => {
+        var CurrentDate = new Date(await (await this.utilsService.getDateTime()).toISOString());
+        var DateBoostEnd = new Date(item.boostSession.end.split(" ")[0] + "T" + item.boostSession.end.split(" ")[1] + ".000Z")
+        if ((CurrentDate < DateBoostEnd)) {
+          item.boostSession.start = DateStart.split("T")[0] + " " + (DateStart.split("T")[1]).split(".")[0]
+          item.boostSession.end = DateEnd.split("T")[0] + " " + (DateEnd.split("T")[1]).split(".")[0]
+          item.boostDate = (new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 31)))
+        }
+      }));
+      console.log(boosted);
+      await this.PostsService.updateBuyBoost("2cb3770c-d8da-c4c3-c940-033dadf5a10c", boosted)
+    }
+  }
+
   @Post()
   async create(@Body() CreatePostsDto: CreatePostsDto) {
     await this.PostsService.create(CreatePostsDto);
