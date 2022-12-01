@@ -115,6 +115,111 @@ export class MediaproofpictsController {
     return { response_code: 202, data, page, limit, totalrow, totalallrow, totalsearch, totalpage, messages };
   }
 
+  @Post('detailkyc')
+  @UseGuards(JwtAuthGuard)
+  async detailkyc(@Req() request: Request): Promise<any> {
+    var request_json = JSON.parse(JSON.stringify(request.body));
+
+    var id = null;
+    var datakyc = null;
+    var obj = {};
+    var data = [];
+    var fileselfiepict = null;
+    var fileproofpict = null;
+    var filesupport = [];
+    var newselfie = null;
+    var newproof = null;
+    var newsupport = null;
+    var lengsupport = null;
+
+    var arrsuport = [];
+    const messages = {
+      "info": ["The process successful"],
+    };
+
+
+    if (request_json["id"] !== undefined) {
+      id = request_json["id"];
+    } else {
+      throw new BadRequestException("Unabled to proceed");
+    }
+
+    try {
+      datakyc = await this.MediaproofpictsService.detailkyc(id);
+      try {
+        fileselfiepict = datakyc[0].mediaSelfieUri;
+        let splitselfi = fileselfiepict.split('_');
+        newselfie = "/selfiepict/" + splitselfi[0].toString();
+
+      } catch (e) {
+        fileselfiepict = "";
+        newselfie = "";
+      }
+      try {
+
+        fileproofpict = datakyc[0].mediaSelfieUri;
+        let splitproof = fileproofpict.split('_');
+        newproof = "/proofpict/" + splitproof[0].toString();
+
+      } catch (e) {
+        fileproofpict = "";
+        newproof = "";
+      }
+
+      try {
+
+        filesupport = datakyc[0].mediaSupportUri;
+        lengsupport = filesupport.length;
+      } catch (e) {
+        filesupport = [];
+        lengsupport = 0;
+      }
+
+      if (lengsupport > 0) {
+        for (let i = 0; i < lengsupport; i++) {
+          let splitsupport = filesupport[i].split('_');
+          newsupport = "/supportfile/" + splitsupport[0].toString() + "/" + i;
+          arrsuport.push(newsupport);
+
+        }
+      }
+      arrsuport.push(newproof);
+      arrsuport.push(newselfie);
+
+      obj = {
+
+        "_id": datakyc[0]._id,
+        "createdAt": datakyc[0].createdAt,
+        "nama": datakyc[0].nama,
+        "tempatLahir": datakyc[0].tempatLahir,
+        "alamat": datakyc[0].alamat,
+        "agama": datakyc[0].agama,
+        "statusPerkawinan": datakyc[0].statusPerkawinan,
+        "pekerjaan": datakyc[0].pekerjaan,
+        "kewarganegaraan": datakyc[0].kewarganegaraan,
+        "FileEndpoint": arrsuport,
+        "idcardnumber": datakyc[0].idcardnumber,
+        "email": datakyc[0].email,
+        "isIdVerified": datakyc[0].isIdVerified,
+        "tglLahir": datakyc[0].tglLahir,
+        "username": datakyc[0].username,
+        "status": datakyc[0].status,
+        "statusUser": datakyc[0].statusUser,
+        "jumlahPermohonan": datakyc[0].jumlahPermohonan,
+        "tahapan": datakyc[0].tahapan,
+        "avatar": datakyc[0].avatar,
+        "insight": datakyc[0].insight
+      }
+      data.push(obj);
+    } catch (e) {
+      throw new BadRequestException("Data not found..!" + e);
+    }
+
+
+
+    return { response_code: 202, data, messages };
+  }
+
   // @Post()
   // @UseInterceptors(FileFieldsInterceptor([
   //   {
