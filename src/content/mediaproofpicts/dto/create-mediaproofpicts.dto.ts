@@ -21,6 +21,7 @@ export class CreateMediaproofpictsDto {
   idcardnumber: String;
   nama: String;
   tempatLahir: String;
+  tglLahir: String;
   jenisKelamin: String;
   alamat: String;
   agama: String;
@@ -45,6 +46,7 @@ export class CreateMediaproofpictsDto {
   SupportfsTargetUri: any[];
   SupportmediaMime: String;
   email: String;
+  kycHandle: any[];
   // mediaFileSuportType: String;
   // mediaFileSuportBasePath: String;
   // mediaFileSuportUri: String;

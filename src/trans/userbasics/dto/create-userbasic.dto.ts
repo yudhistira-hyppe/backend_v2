@@ -81,7 +81,7 @@ export class CreateUserbasicDto {
   reportedUserCount: number
   reportedUser: any[];
   reportedUserHandle: any[];
-
+  listAddKyc: any[];
 }
 
 export class SearchUserbasicDto {

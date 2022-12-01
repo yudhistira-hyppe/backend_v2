@@ -37,6 +37,7 @@ export class Mediaproofpicts {
   mediaMime: String
   @Prop() nama: String
   @Prop() tempatLahir: String
+  @Prop() tglLahir: String;
   @Prop() jenisKelamin: String
   @Prop() alamat: String
   @Prop() agama: String
@@ -76,6 +77,7 @@ export class Mediaproofpicts {
     db: String;
   };
   @Prop() state: String;
+  @Prop() kycHandle: any[];
 }
 
 export const MediaproofpictsSchema = SchemaFactory.createForClass(Mediaproofpicts);

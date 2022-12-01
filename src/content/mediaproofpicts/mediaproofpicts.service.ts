@@ -539,7 +539,11 @@ export class MediaproofpictsService {
 
     return query;
   }
-
+  async updateKyc(id: string, nama: string, tglLahir: String, tempatLahir: String, jenisKelamin: string, status: string, kycHandle: any[]): Promise<Object> {
+    let data = await this.MediaproofpictsModel.updateOne({ "_id": id },
+      { $set: { "nama": nama, "tglLahir": tglLahir, "tempatLahir": tempatLahir, "jenisKelamin": jenisKelamin, "status": status, "kycHandle": kycHandle } });
+    return data;
+  }
   // async findmediaproofpicts() {
   //   const query = await this.MediaproofpictsModel.aggregate([
 

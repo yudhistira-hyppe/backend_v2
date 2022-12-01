@@ -4320,7 +4320,327 @@ export class TransactionsService {
 
     }
 
-    async findhistoryBuyVoucher(key: string, iduser: ObjectId, status: any[], startdate: string, enddate: string, page: number, limit: number, descending: boolean, startday: number, endday: number, used: boolean, expired: boolean) {
+    async findhistoryBuyVoucher(key: string, status: any[], startdate: string, enddate: string, page: number, limit: number, descending: boolean, startday: number, endday: number, used: boolean, expired: boolean) {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+
+
+        var currdate = new Date();
+
+        var dt = currdate.toISOString();
+        var split = dt.split('T');
+        var datenew = split[0];
+
+
+        var order = null;
+
+        if (descending === true) {
+            order = -1;
+        } else {
+            order = 1;
+        }
+
+        var pipeline = [];
+        pipeline.push({
+            $match: {
+
+                type: "VOUCHER",
+
+            }
+        },);
+
+        if (status && status !== undefined) {
+            pipeline.push({
+                $match: {
+
+
+                    status: {
+                        $in: status
+                    },
+
+                }
+            },);
+        }
+
+        if (startdate && startdate !== undefined) {
+
+            pipeline.push({ $match: { timestamp: { "$gte": startdate } } });
+
+        }
+        if (enddate && enddate !== undefined) {
+
+            pipeline.push({ $match: { timestamp: { "$lte": dateend } } });
+
+        }
+
+        pipeline.push(
+            {
+                $match: {
+
+                    'type': "VOUCHER"
+                }
+            },
+            {
+                $addFields: {
+                    type: 'Buy',
+                    jenis: "$type",
+                    idvoucher: '$detail.id'
+                },
+
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "iduserbuyer",
+                    foreignField: "_id",
+                    as: "userbasics_data"
+                }
+            },
+            {
+                "$lookup": {
+                    from: "vouchers",
+                    as: "voucher_data",
+                    let: {
+                        local_id: '$idvoucher'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $in: ['$_id', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            "$lookup": {
+                                from: "uservouchers",
+                                as: "uservoucherdata",
+                                let: {
+                                    local_id: '$_id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+
+
+                                            $expr: {
+                                                $eq: ['$voucherID', '$$local_id']
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $set: {
+                                "testDate": {
+                                    $add: [new Date(), 25200000]
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "noVoucher": 1,
+                                "codeVoucher": 1,
+                                "userID": 1,
+                                "nameAds": "tes",
+                                "creditValue": 1,
+                                "creditPromo": 1,
+                                "creditTotal": 1,
+                                "createdAt": 1,
+                                "expiredAt": 1,
+                                "amount": 1,
+                                "qty": 1,
+                                "totalUsed": 1,
+                                "pendingUsed": 1,
+                                "expiredDay": 1,
+                                "isActive": 1,
+                                "description": 1,
+                                "updatedAt": 1,
+                                "testDate": 1,
+                                "statusUsed": {
+                                    $cond: {
+                                        if: {
+                                            $or: [{
+                                                $eq: ["$uservoucherdata", null]
+                                            }, {
+                                                $eq: ["$uservoucherdata", ""]
+                                            }, {
+                                                $eq: ["$uservoucherdata", []]
+                                            }, {
+                                                $eq: ["$uservoucherdata", 0]
+                                            }]
+                                        },
+                                        then: "NOTUSED",
+                                        else: "USED"
+                                    },
+
+                                },
+
+
+                            }
+                        }
+                    ],
+
+                }
+            },
+            {
+                $project: {
+                    iduser: "$iduserbuyer",
+                    type: 1,
+                    jenis: 1,
+                    timestamp: 1,
+                    description: 1,
+                    noinvoice: 1,
+                    nova: 1,
+                    expiredtimeva: 1,
+                    salelike: 1,
+                    saleview: 1,
+                    bank: 1,
+                    amount: 1,
+                    totalamount: 1,
+                    status: 1,
+                    user: {
+                        $arrayElemAt: [
+                            "$userbasics_data",
+                            0
+                        ]
+                    },
+                    vcdata: "$voucher_data"
+                }
+            },
+            {
+                $project: {
+
+                    iduser: 1,
+                    type: 1,
+                    jenis: 1,
+                    timestamp: 1,
+                    description: 1,
+                    noinvoice: 1,
+                    nova: 1,
+                    expiredtimeva: 1,
+                    salelike: 1,
+                    saleview: 1,
+                    bank: 1,
+                    amount: 1,
+                    totalamount: 1,
+                    status: 1,
+                    fullName: "$user.fullName",
+                    email: "$user.email",
+                    vcdata: 1
+                }
+            },
+            {
+                $project: {
+
+                    iduser: 1,
+                    type: 1,
+                    jenis: 1,
+                    timestamp: 1,
+                    description: 1,
+                    noinvoice: 1,
+                    nova: 1,
+                    expiredtimeva: 1,
+                    salelike: 1,
+                    saleview: 1,
+                    bank: 1,
+                    amount: 1,
+                    totalamount: 1,
+                    status: 1,
+                    fullName: "$user.fullName",
+                    email: "$user.email",
+                    vcdata: 1,
+                    uservoucher: '$uservoucherdata'
+                }
+            },);
+        if (expired && expired === true) {
+            pipeline.push({
+                $match: {
+                    'vcdata.expiredAt': {
+                        '$lt': datenew
+                    }
+
+                }
+            },);
+        }
+        else if (expired && expired !== true) {
+            pipeline.push({
+                $match: {
+                    'vcdata.expiredAt': {
+                        '$gt': datenew
+                    }
+
+                }
+            },);
+        }
+
+        if (key && key !== undefined) {
+            pipeline.push({
+                $match: {
+
+                    'vcdata.nameAds': {
+                        $regex: key,
+                        $options: 'i'
+                    },
+
+                }
+            },);
+        }
+
+        if (startday && startday !== undefined) {
+            pipeline.push({ $match: { 'vcdata.expiredDay': { "$gte": startday } } });
+        }
+        if (endday && endday !== undefined) {
+            pipeline.push({ $match: { 'vcdata.expiredDay': { "$lte": endday } } });
+        }
+
+        if (used && used === true) {
+            pipeline.push({
+                $match: {
+
+                    'vcdata.statusUsed': "USED"
+
+                }
+            },);
+        }
+
+
+        pipeline.push({
+            $sort: {
+                timestamp: order
+            },
+
+        });
+
+        if (page > 0) {
+            pipeline.push({ $skip: (page * limit) });
+        }
+        if (limit > 0) {
+            pipeline.push({ $limit: limit });
+        }
+        let query = await this.transactionsModel.aggregate(pipeline);
+
+        return query;
+
+
+
+
+
+    }
+
+    async findhistoryBuyVoucherByuser(iduser: ObjectId, status: any[], startdate: string, enddate: string, page: number, limit: number, descending: boolean) {
         try {
             var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -4575,56 +4895,6 @@ export class TransactionsService {
                     uservoucher: '$uservoucherdata'
                 }
             },);
-        if (expired && expired === true) {
-            pipeline.push({
-                $match: {
-                    'vcdata.expiredAt': {
-                        '$lt': datenew
-                    }
-
-                }
-            },);
-        } else {
-            pipeline.push({
-                $match: {
-                    'vcdata.expiredAt': {
-                        '$gt': datenew
-                    }
-
-                }
-            },);
-        }
-
-        if (key && key !== undefined) {
-            pipeline.push({
-                $match: {
-
-                    'vcdata.nameAds': {
-                        $regex: key,
-                        $options: 'i'
-                    },
-
-                }
-            },);
-        }
-
-        if (startday && startday !== undefined) {
-            pipeline.push({ $match: { 'vcdata.expiredDay': { "$gte": startday } } });
-        }
-        if (endday && endday !== undefined) {
-            pipeline.push({ $match: { 'vcdata.expiredDay': { "$lte": endday } } });
-        }
-
-        if (used && used === true) {
-            pipeline.push({
-                $match: {
-
-                    'vcdata.statusUsed': "USED"
-
-                }
-            },);
-        }
-
 
         pipeline.push({
             $sort: {
@@ -4642,10 +4912,6 @@ export class TransactionsService {
         let query = await this.transactionsModel.aggregate(pipeline);
 
         return query;
-
-
-
-
 
     }
     async findhistoryBuyVoucherCount(key: string, iduser: ObjectId, status: any[], startdate: string, enddate: string) {
@@ -6028,6 +6294,31 @@ export class TransactionsService {
         return query;
     }
 
+    async totalcountVoucherUser(iduser: ObjectId) {
+        const query = await this.transactionsModel.aggregate([
+
+            {
+                $match: {
+                    iduserbuyer: iduser,
+                    type: "VOUCHER"
+                }
+            },
+            {
+                $group: {
+                    _id: null,
+                    countrow: {
+                        $sum: 1
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: 0
+                }
+            }]);
+        return query;
+    }
+
     async findhistorySeller(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
 
         var pipeline = new Array<any>(
@@ -6262,7 +6553,7 @@ export class TransactionsService {
         }
         pipeline.push({
             $match: {
-                idusersell: iduser
+                iduser: iduser
             }
         });
         pipeline.push({ $sort: { timestamp: -1 } });
@@ -7417,7 +7708,7 @@ export class TransactionsService {
         }
         pipeline.push({
             $match: {
-                iduserbuyer: iduser
+                iduser: iduser
             }
         });
         pipeline.push({ $sort: { timestamp: -1 } });
