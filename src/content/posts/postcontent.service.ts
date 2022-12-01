@@ -634,13 +634,15 @@ export class PostContentService {
       if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
         let aim = aimg.PlayUrl;
         this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
-        this.cmodService.cmodVideo(body.postID, aim);
+        //TODO 
+        //this.cmodService.cmodVideo(body.postID, aim);
       }      
 
       let meta = post.metadata;
       let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll };
       post.metadata = metadata;
       post.active = true;
+      //TODO 
       this.postService.create(post);
     } else if (ns == 'mediapicts') {
       this.logger.log('updateNewPost >>> checking picture oid: ' + cm.oid);
@@ -653,9 +655,11 @@ export class PostContentService {
       pic.apsaraId = body.videoId;
       pic.apsaraThumbId = body.thId;
       pic.active = true;
+      //TODO 
       this.picService.create(pic);
 
       post.active = true;
+      //TODO 
       this.postService.create(post);
 
       let todel = body.filedel + "";
@@ -685,6 +689,7 @@ export class PostContentService {
 
       st.apsaraId = body.videoId;
       st.active = true;
+      //TODO 
       this.storyService.create(st);
 
       post.active = true;
@@ -697,6 +702,7 @@ export class PostContentService {
       }
 
       post.active = true;
+      //TODO 
       this.postService.create(post);
 
       let todel = body.filedel + "";
@@ -715,6 +721,7 @@ export class PostContentService {
         if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
           let aim = aimg.PlayUrl;
           this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
+          //TODO 
           this.cmodService.cmodVideo(body.postID, aim);
         }              
       } else {
@@ -726,6 +733,7 @@ export class PostContentService {
         if (aimg != undefined && aimg.ImageInfo != undefined && aimg.ImageInfo.length > 0) {
           let aim = aimg.ImageInfo[0];
           this.logger.log('updateNewPost >>> checking cmod image img: ' + aim.URL);
+          //TODO 
           this.cmodService.cmodImage(body.postID, aim.URL);
         }
       }
@@ -737,12 +745,14 @@ export class PostContentService {
 
       dy.apsaraId = body.videoId;
       dy.active = true;
+      //TODO 
       this.diaryService.create(dy);
 
       let meta = post.metadata;
       let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll };
       post.metadata = metadata;
       post.active = true;
+      //TODO 
       this.postService.create(post);
 
       let todel = body.filedel + "";
@@ -760,8 +770,37 @@ export class PostContentService {
       if (aimg != undefined && aimg.PlayUrl != undefined && aimg.PlayUrl.length > 0) {
         let aim = aimg.PlayUrl;
         this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
+        //TODO 
         this.cmodService.cmodVideo(body.postID, aim);
       }      
+    }
+
+    let tag = post.tagPeople;
+    if (tag != undefined && tag.length > 0) {
+      tag.forEach(el => {
+        console.log(el.oid);
+        let oid = el.oid;
+        this.userAuthService.findById(oid).then((as) => {
+          let em = String(as.username);
+          let bodyi = em + ' Menyebut kamu ';
+          let bodye = em + ' Mentioned you ';
+          this.utilService.sendFcm(String(post.email), 'Disebut', 'Mentioned',bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
+        });
+      });
+    }
+
+    let tagd = post.tagDescription;
+    if (tagd != undefined && tagd.length > 0) {
+      tagd.forEach(el => {
+        console.log(el.oid);
+        let oid = el.oid;
+        this.userAuthService.findById(oid).then((as) => {
+          let em = String(as.username);
+          let bodyi = em + ' Menyebut kamu ';
+          let bodye = em + ' Mentioned you ';
+          this.utilService.sendFcm(String(post.email), 'Disebut', 'Mentioned',bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
+        });
+      });
     }
 
     let playlist = new CreateUserplaylistDto();
@@ -3255,6 +3294,7 @@ export class PostContentService {
         ndy.eventType = dy.eventType;
         ndy.flowIsDone = dy.flowIsDone;
         ndy.mate = dy.mate;
+        ndy.postType = dy.postType;
         ndy.notificationID = dy.notificationID;
         ndy.postID = dy.postID;
         ndy.senderOrReceiverInfo = dy.senderOrReceiverInfo;

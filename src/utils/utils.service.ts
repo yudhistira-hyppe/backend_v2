@@ -368,6 +368,8 @@ export class UtilsService {
           createNotificationsDto.postType = postType;
         }
       }
+
+      console.log('notif: ' + JSON.stringify(createNotificationsDto));
       await this.notificationsService.create(createNotificationsDto);
 
 
