@@ -161,9 +161,9 @@ export class UtilsService {
 
     let body_send = "";
     if (langIso_receiverParty=="en"){
-      body_send = Templates_.body_detail.toString().replace("${post_type}", "Hypper" + Post_type_upper)
+      body_send = Templates_.body_detail.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
     } else {
-      body_send = Templates_.body_detail_id.toString().replace("${post_type}", "Hypper" + Post_type_upper)
+      body_send = Templates_.body_detail_id.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
     }
 
     var senderOrReceiverInfo = {
