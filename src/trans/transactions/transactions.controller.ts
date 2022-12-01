@@ -1111,7 +1111,8 @@ export class TransactionsController {
                             var DateEnd = (new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 1))).toISOString();
                             
                             var boosted = datapost.boosted;
-                            if (boosted.leght>0){
+                            console.log(boosted.length);
+                            if (boosted.length >0){
                                 boosted = await Promise.all(datapost.boosted.map(async (item, index) => {
                                     var CurrentDate = new Date(await (await this.utilsService.getDateTime()).toISOString());
                                     var DateBoostEnd = new Date(item.boostSession.end.split(" ")[0] + "T" + item.boostSession.end.split(" ")[1] + ".000Z")
