@@ -1106,28 +1106,49 @@ export class TransactionsController {
 
                         await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy, dt.toISOString());
                         if (datapost.boosted!=undefined){
+
                             var DateStart = (new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 31))).toISOString();
                             var DateEnd = (new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 1))).toISOString();
                             
-                            var boosted = await Promise.all(datapost.boosted.map(async (item, index) => {
-                                var CurrentDate = new Date(await (await this.utilsService.getDateTime()).toISOString());
-                                var DateBoostEnd = new Date(item.boostSession.end.split(" ")[0] + "T" + item.boostSession.end.split(" ")[1] + ".000Z")
-                                if ((CurrentDate < DateBoostEnd)) {
-                                    item.boostSession.start = DateStart.split[0] + " " + DateStart.split[1].split(".")[0]
-                                    item.boostSession.end = DateEnd.split[0] + " " + DateEnd.split[1].split(".")[0]
-                                    item.boostDate = (new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 31)))
-                                }
-                            }));
-                            // for (var t = 0; t < boosted.leght; i++) {
-                            //     var CurrentDate = new Date(await (await this.utilsService.getDateTime()).toISOString());
-                            //     var DateBoostEnd = new Date(boosted[t].boostSession.end.split(" ")[0] + "T" + boosted[t].boostSession.end.split(" ")[1] + ".000Z")
-                            //     if ((CurrentDate < DateBoostEnd)) {
-                            //         boosted[i].boostSession.start = DateStart.split[0] + " " + DateStart.split[1].split(".")[0]
-                            //         boosted[i].boostSession.end = DateEnd.split[0] + " " + DateEnd.split[1].split(".")[0]
-                            //         boosted[i].boostDate = (new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 31)))
-                            //     }
-                            // }
-                            await this.postsService.updateBuyBoost(postid, boosted)
+                            var boosted = datapost.boosted;
+                            if (boosted.leght>0){
+                                boosted = await Promise.all(datapost.boosted.map(async (item, index) => {
+                                    var CurrentDate = new Date(await (await this.utilsService.getDateTime()).toISOString());
+                                    var DateBoostEnd = new Date(item.boostSession.end.split(" ")[0] + "T" + item.boostSession.end.split(" ")[1] + ".000Z")
+
+                                    let start, end, boostDate;
+                                    if ((CurrentDate < DateBoostEnd)) {
+                                        start = DateStart.split("T")[0] + " " + item.boostSession.timeStart;
+                                        end = DateEnd.split("T")[0] + " " + item.boostSession.timeEnd;
+
+                                        boostDate = (new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 31)))
+                                    } else {
+                                        start = item.boostSession.start
+                                        end = item.boostSession.end
+
+                                        boostDate = item.boostSession.boostDate
+                                    }
+                                    return {
+                                        type: item.type,
+                                        boostDate: boostDate,
+                                        boostInterval: {
+                                            id: item.boostInterval.id,
+                                            value: item.boostInterval.value,
+                                            remark: item.boostInterval.remark,
+                                        },
+                                        boostSession: {
+                                            id: item.boostSession.id,
+                                            start: start,
+                                            end: end,
+                                            timeStart: item.boostSession.timeStart,
+                                            timeEnd: item.boostSession.timeEnd,
+                                            name: item.boostSession.name
+                                        },
+                                        boostViewer: item.boostViewer
+                                    };
+                                }));
+                                await this.postsService.updateBuyBoost(postid, boosted)
+                            }
                         }
                         if (salelike == false) {
                             await this.postsService.updatesalelike(postid);
