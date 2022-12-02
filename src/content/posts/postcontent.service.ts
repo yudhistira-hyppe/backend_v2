@@ -3411,6 +3411,7 @@ export class PostContentService {
               }
 
               ndy.content = cn;
+              ndy.postType = ps.postType;
 
               this.logger.log('dy.content: ' + JSON.stringify(ndy));
               ndat.push(ndy);

@@ -231,12 +231,13 @@ export class PostsService {
     );
   }
 
-  async updateBuyBoost(id: string, boosted:any) {
+  async updateBuyBoostToNoBoost(id: string, boosted:any) {
     let data = await this.PostsModel.updateOne({ "_id": id },
       {
         $set: {
           "boosted": boosted,
-        }
+        },
+        $unset: { isBoost: 1 }
       });
     return data;
   }
