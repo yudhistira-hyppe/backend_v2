@@ -5196,7 +5196,7 @@ export class PostBoostService {
       for (let i = 0; i < osto.length; i++) {
         let pdss = osto[i];
         this.generateThumbnail(pdss, vapsara, papsara);
-        resVideo.push(pdss);        
+        resStory.push(pdss);        
       }
     }    
 
