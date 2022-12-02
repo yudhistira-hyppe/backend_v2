@@ -543,12 +543,44 @@ export class MediaproofpictsService {
 
     return query;
   }
-  async updateKyc(id: string, nama: string, tglLahir: String, tempatLahir: String, jenisKelamin: string, status: string, kycHandle: any[]): Promise<Object> {
+  async updateKyc(id: string, noktp: string, nama: string, tglLahir: String, tempatLahir: String, jenisKelamin: string, status: string, kycHandle: any[]): Promise<Object> {
     let data = await this.MediaproofpictsModel.updateOne({ "_id": id },
-      { $set: { "nama": nama, "tglLahir": tglLahir, "tempatLahir": tempatLahir, "jenisKelamin": jenisKelamin, "status": status, "kycHandle": kycHandle } });
+      { $set: { "idcardnumber": noktp, "nama": nama, "tglLahir": tglLahir, "tempatLahir": tempatLahir, "jenisKelamin": jenisKelamin, "status": status, "kycHandle": kycHandle } });
     return data;
   }
 
+  async finduser(id: string) {
+    var query = await this.MediaproofpictsModel.aggregate([
+      {
+        $lookup: {
+          from: 'userbasics',
+          localField: '_id',
+          foreignField: 'proofPict.$id',
+          as: 'basicdata',
+
+        }
+      },
+      {
+        $unwind: "$basicdata"
+      },
+      {
+        $project: {
+          email: '$basicdata.email',
+
+
+        }
+      },
+
+      {
+        $match: {
+
+          _id: id
+        }
+      },
+
+    ]);
+    return query;
+  }
   // async findmediaproofpicts() {
   //   const query = await this.MediaproofpictsModel.aggregate([
 
