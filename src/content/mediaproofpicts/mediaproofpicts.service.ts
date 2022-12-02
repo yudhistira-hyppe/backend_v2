@@ -317,12 +317,13 @@ export class MediaproofpictsService {
           tglLahir: '$basicdata.dob',
           nama: 1,
           tempatLahir: 1,
-          jenisKelamin1: 1,
+          jenisKelamin: 1,
           alamat: 1,
           agama: 1,
           statusPerkawinan: 1,
           pekerjaan: 1,
           kewarganegaraan: 1,
+          mobileNumber: '$basicdata.mobileNumber',
 
         }
       },
@@ -421,7 +422,7 @@ export class MediaproofpictsService {
           tahapan: "KTP",
           nama: 1,
           tempatLahir: 1,
-          jenisKelamin1: 1,
+          jenisKelamin: 1,
           alamat: 1,
           agama: 1,
           statusPerkawinan: 1,
@@ -433,6 +434,8 @@ export class MediaproofpictsService {
           mediaSelfieUri: 1,
           SupportfsSourceUri: 1,
           mediaSupportUri: 1,
+          mobileNumber: 1,
+
           statusUser: {
             $cond: {
               if: {
@@ -491,7 +494,7 @@ export class MediaproofpictsService {
           nama: 1,
           tglLahir: 1,
           tempatLahir: 1,
-          jenisKelamin1: 1,
+          jenisKelamin: 1,
           alamat: 1,
           agama: 1,
           statusPerkawinan: 1,
@@ -510,6 +513,7 @@ export class MediaproofpictsService {
           mediaSelfieUri: 1,
           mediaUri: 1,
           mediaSupportUri: 1,
+          mobileNumber: 1,
         }
       },
       {
@@ -538,6 +542,11 @@ export class MediaproofpictsService {
     ]);
 
     return query;
+  }
+  async updateKyc(id: string, nama: string, tglLahir: String, tempatLahir: String, jenisKelamin: string, status: string, kycHandle: any[]): Promise<Object> {
+    let data = await this.MediaproofpictsModel.updateOne({ "_id": id },
+      { $set: { "nama": nama, "tglLahir": tglLahir, "tempatLahir": tempatLahir, "jenisKelamin": jenisKelamin, "status": status, "kycHandle": kycHandle } });
+    return data;
   }
 
   // async findmediaproofpicts() {

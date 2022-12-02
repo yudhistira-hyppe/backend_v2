@@ -28,7 +28,7 @@ export class UserbasicsService {
   async createV2(dto: Userbasic): Promise<Userbasic> {
     const ndto = await this.userbasicModel.create(dto);
     return ndto;
-  }  
+  }
 
   async updatebyEmail(email: string, data: Object) {
     console.log(data);
@@ -134,7 +134,11 @@ export class UserbasicsService {
     );
     return data;
   }
-
+  async updatekyc(email: string, listAddKyc: any[]): Promise<Object> {
+    let data = await this.userbasicModel.updateOne({ "email": email },
+      { $set: { "listAddKyc": listAddKyc } });
+    return data;
+  }
   async update(
     id: string,
     createUserbasicDto: CreateUserbasicDto,
@@ -634,21 +638,21 @@ export class UserbasicsService {
     const query = await this.userbasicModel.aggregate(Query_aggregate);
     return query;
   }
-  async countBy(field:String){
-    const query=await this.userbasicModel.aggregate([
+  async countBy(field: String) {
+    const query = await this.userbasicModel.aggregate([
       {
-        $group:{
-          _id:"$"+field,
-          countuser:{
-            $sum:1
+        $group: {
+          _id: "$" + field,
+          countuser: {
+            $sum: 1
           }
         }
       },
       {
-        $project:{_id:1,countuser:1}
+        $project: { _id: 1, countuser: 1 }
       }
     ]);
     return query;
   }
-  
+
 }

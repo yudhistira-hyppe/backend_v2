@@ -1471,7 +1471,9 @@ export class MediaController {
                 "_id": datakyc[0]._id,
                 "createdAt": datakyc[0].createdAt,
                 "nama": datakyc[0].nama,
+                "jenisKelamin": datakyc[0].jenisKelamin,
                 "tempatLahir": datakyc[0].tempatLahir,
+                "mobileNumber": datakyc[0].mobileNumber,
                 "alamat": datakyc[0].alamat,
                 "agama": datakyc[0].agama,
                 "statusPerkawinan": datakyc[0].statusPerkawinan,
@@ -1498,6 +1500,61 @@ export class MediaController {
 
 
         return { response_code: 202, data, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('api/mediaproofpicts/approval')
+    async reportHandleAproval(@Req() request) {
+        var id = null;
+        var nama = null;
+        var tempatLahir = null;
+        var jenisKelamin = null;
+        var tglLahir = null;
+        var idcardnumber = null;
+        var status = null;
+        var datakyc = null;
+        var kycHandle = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if (request_json["id"] !== undefined) {
+            id = request_json["id"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        nama = request_json["nama"];
+        tempatLahir = request_json["tempatLahir"];
+        jenisKelamin = request_json["jenisKelamin"];
+        tglLahir = request_json["tglLahir"];
+        idcardnumber = request_json["idcardnumber"];
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+
+
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+
+
+
+        if (status === "") {
+            try {
+                datakyc = await this.mediaproofpictsService.updateKyc(id, nama, tglLahir, tempatLahir, jenisKelamin, status, kycHandle);
+
+            } catch (e) {
+                datakyc = null;
+
+            }
+        }
     }
 
 }
