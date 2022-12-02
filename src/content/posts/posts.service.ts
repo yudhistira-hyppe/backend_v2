@@ -231,7 +231,7 @@ export class PostsService {
     );
   }
 
-  async updateBuyBoost(id: string, boosted:any) {
+  async updateBuyBoost(id: string, boosted: any) {
     let data = await this.PostsModel.updateOne({ "_id": id },
       {
         $set: {
@@ -8704,12 +8704,12 @@ export class PostsService {
 
   async updateFlaging(id: string, updatedAt: string) {
     let data = await this.PostsModel.updateMany({ "_id": id },
-      { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserHandle.$[].status": "FLAGING", "reportedUserHandle.$[].updatedAt": updatedAt } });
+      { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle.$[].status": "FLAGING", "reportedUserHandle.$[].updatedAt": updatedAt } });
     return data;
   }
   async updateFlagingEmpty(id: string, updatedAt: string, reportedUserHandle: any[]) {
     let data = await this.PostsModel.updateMany({ "_id": id },
-      { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserHandle": reportedUserHandle } });
+      { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle": reportedUserHandle } });
     return data;
   }
 
@@ -8754,11 +8754,11 @@ export class PostsService {
             let st = new Date(String(bootSession.start)).getTime();
             let ed = new Date(String(bootSession.end)).getTime();
 
-            if (st  <= today && ed >= today) {
+            if (st <= today && ed >= today) {
               let interval = Number(bbs.boostInterval.value);
               interval = interval * 60 * 1000;
               let a = (today - st);
-              console.log("today: " + a + " interval: " + interval);              
+              console.log("today: " + a + " interval: " + interval);
               let c = Math.ceil(a / interval);
               console.log("round today: " + c);
               let d = st + (interval * c);
@@ -8767,13 +8767,13 @@ export class PostsService {
               let ted = d;
 
               let td = new Date(ted);
-              let stoday = new Date(td.getTime() - (td.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');  
+              let stoday = new Date(td.getTime() - (td.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
               stoday = stoday.substring(0, 19);
               console.log(st + " " + d + " " + ted + " " + stoday);
-              
+
               let tdx = new Date(today);
-              let xtoday = new Date(tdx.getTime() - (tdx.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');  
-              xtoday = xtoday.substring(0, 19);              
+              let xtoday = new Date(tdx.getTime() - (tdx.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+              xtoday = xtoday.substring(0, 19);
 
               let bv: any[] = bbs.boostViewer;
               if (bv != undefined) {
