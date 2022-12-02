@@ -313,6 +313,7 @@ export class MediaController {
         var bodyensukses = "Congratulations! you have become a premium user, enjoy the benefits";
         var eventType = "VERIFICATIONID";
         var event = "REQUEST";
+        var listAddKyc = [];
         //Var cardPict
         let cardPict_data = null;
         let cardPict_filename = '';
@@ -366,6 +367,8 @@ export class MediaController {
         );
         if (await this.utilsService.ceckData(datauserbasicsService)) {
             emailuserbasic = datauserbasicsService.email;
+
+
             //Ceck cardPict
             if (files.cardPict != undefined) {
                 var FormData_ = new FormData();
@@ -555,6 +558,21 @@ export class MediaController {
                     );
                 }
             } else {
+
+                try {
+                    listAddKyc = datauserbasicsService.listAddKyc;
+                } catch (e) {
+                    listAddKyc = [];
+                }
+                if (listAddKyc === null || listAddKyc === undefined) {
+                    listAddKyc = [];
+                }
+                var objkyc = {
+                    "mediaID": IdMediaproofpictsDto,
+                    "createdAt": current_date
+                }
+                listAddKyc.push(objkyc);
+
                 //Insert proofPict
                 try {
                     id_mediaproofpicts_ = IdMediaproofpictsDto;
@@ -596,7 +614,8 @@ export class MediaController {
                             $ref: 'mediaproofpicts',
                             $id: new Object(IdMediaproofpictsDto),
                             $db: 'hyppe_content_db'
-                        }
+                        },
+                        listAddKyc: listAddKyc
                     });
                 } catch (err) {
                     await this.errorHandler.generateNotAcceptableException(
@@ -1503,17 +1522,21 @@ export class MediaController {
     }
 
     @UseGuards(JwtAuthGuard)
-    @Post('api/mediaproofpicts/approval')
+    @Post('api/mediaproofpicts/approve')
     async reportHandleAproval(@Req() request) {
         var id = null;
         var nama = null;
         var tempatLahir = null;
         var jenisKelamin = null;
         var tglLahir = null;
-        var idcardnumber = null;
+        var noktp = null;
         var status = null;
         var datakyc = null;
-        var kycHandle = null;
+        var iduserhandle = null;
+        var kycHandle = [];
+        var dataemailuser = null;
+        var databasic = null;
+        var email = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
 
         if (request_json["id"] !== undefined) {
@@ -1525,8 +1548,9 @@ export class MediaController {
         tempatLahir = request_json["tempatLahir"];
         jenisKelamin = request_json["jenisKelamin"];
         tglLahir = request_json["tglLahir"];
-        idcardnumber = request_json["idcardnumber"];
-
+        noktp = request_json["noktp"];
+        status = request_json["status"];
+        iduserhandle = request_json["iduserhandle"];
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
 
@@ -1543,15 +1567,66 @@ export class MediaController {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
+        var iduser = mongoose.Types.ObjectId(iduserhandle);
+
+        try {
+            dataemailuser = await this.mediaproofpictsService.finduser(id);
+            email = dataemailuser[0].email;
+        } catch (e) {
+            dataemailuser = null;
+            email = "";
+        }
 
 
+        if (status === "DISETUJUI") {
+            kycHandle = [
+                {
+                    noktp: noktp,
+                    nama: nama,
+                    createdAt: dt.toISOString(),
+                    jenisKelamin: jenisKelamin,
+                    tempatLahir: tempatLahir,
+                    tglLahir: tglLahir,
+                    status: "FINISH",
+                    iduserhandle: iduser
+                }
 
-        if (status === "") {
+            ];
             try {
-                datakyc = await this.mediaproofpictsService.updateKyc(id, nama, tglLahir, tempatLahir, jenisKelamin, status, kycHandle);
+
+                let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "FINISH", kycHandle);
+                let datauserbasic = await this.userbasicsService.updateStatusKycName(nama, jenisKelamin, email, true, "verified");
+                console.log(datauserbasic)
+
+                return { response_code: 202, data, messages };
 
             } catch (e) {
-                datakyc = null;
+                throw new BadRequestException("Unabled to proceed " + e);
+
+            }
+        } else if (status === "DITOLAK") {
+            kycHandle = [
+                {
+                    noktp: noktp,
+                    nama: nama,
+                    createdAt: dt.toISOString(),
+                    jenisKelamin: jenisKelamin,
+                    tempatLahir: tempatLahir,
+                    tglLahir: tglLahir,
+                    status: "FAILED",
+                    iduserhandle: iduser
+                }
+
+            ];
+            try {
+                let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "FAILED", kycHandle);
+                await this.userbasicsService.updateStatusKycName(nama, jenisKelamin, email, false, "unverified");
+
+                return { response_code: 202, data, messages };
+
+            } catch (e) {
+                throw new BadRequestException("Unabled to proceed " + e);
+
 
             }
         }
