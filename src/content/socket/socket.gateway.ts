@@ -29,9 +29,10 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     }        
 
     room(email: string, payload: string): void {
-        this.server.socketsJoin("f89c6e7d-e8ac-48b9-b10e-95a65fef4b92");
-        this.server.to("f89c6e7d-e8ac-48b9-b10e-95a65fef4b92").emit("payload", payload);
-        this.server.socketsLeave("f89c6e7d-e8ac-48b9-b10e-95a65fef4b92");
+        this.server.socketsJoin("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256");
+        this.server.to("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256").emit("payload", payload);
+        console.log("room emit");
+        this.server.socketsLeave("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256");
     }            
 
     @SubscribeMessage('coba')
