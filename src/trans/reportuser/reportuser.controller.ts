@@ -1101,6 +1101,7 @@ export class ReportuserController {
 
             if (reportedUserHandle.length > 0) {
                 await this.postsService.updateFlaging(postID, dt.toISOString());
+                await this.postsService.nonactive(postID, dt.toISOString());
                 await this.sendReportAppealFCM(name, event, tipe, postID);
 
             } else {
@@ -1114,6 +1115,7 @@ export class ReportuserController {
                 arrayreportedHandle.push(objreporthandle);
 
                 await this.postsService.updateFlagingEmpty(postID, dt.toISOString(), arrayreportedHandle);
+                await this.postsService.nonactive(postID, dt.toISOString());
                 await this.sendReportAppealFCM(name, event, tipe, postID);
             }
 
@@ -1131,6 +1133,7 @@ export class ReportuserController {
 
             if (reportedUserHandle.length > 0) {
                 await this.adsService.updateFlaging(adsId, dt.toISOString());
+                await this.adsService.nonactive(adsId, dt.toISOString());
 
             } else {
 
@@ -1143,6 +1146,8 @@ export class ReportuserController {
                 arrayreportedHandle.push(objreporthandle);
 
                 await this.adsService.updateFlagingEmpty(adsId, dt.toISOString(), arrayreportedHandle);
+                await this.adsService.nonactive(adsId, dt.toISOString());
+
             }
 
 

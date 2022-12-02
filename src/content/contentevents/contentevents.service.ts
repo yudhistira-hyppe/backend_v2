@@ -641,7 +641,198 @@ export class ContenteventsService {
     ]);
     return query;
   }
+  async friendnew(email: string) {
+    const query = await this.ContenteventsModel.aggregate([
+      {
+        "$match": {
+          "$or": [
+            {
+              "$and": [
+                {
+                  "eventType": "FOLLOWING"
+                },
+                {
+                  "senderParty": email
+                }
+              ]
+            },
+            {
+              "$and": [
+                {
+                  "eventType": "FOLLOWER"
+                },
+                {
+                  "receiverParty": email
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "$lookup": {
+          from: "userauths",
+          localField: "email",
+          foreignField: "email",
+          as: "nameUser"
+        }
+      },
+      {
+        "$lookup": {
+          from: "userbasics",
+          localField: "email",
+          foreignField: "email",
+          as: "userBasic"
+        }
+      },
+      {
+        "$lookup": {
+          from: "posts",
+          as: "posted",
+          let: { local_id: '$email' },
+          pipeline: [
+            { $match: { $expr: { $eq: ['$$local_id', '$email'] } } },
+            {
+              $sort: {
+                'createdAt': - 1
+              }
+            },
+            {
+              $limit: 100
+            }
+          ],
+        }
+      },
+      {
+        "$lookup": {
+          from: "mediapicts",
+          as: "pict",
+          let: { local_id: '$posted.postID' },
+          pipeline: [
+            { $match: { $expr: { $in: ['$postID', '$$local_id'] } } },
+            {
+              $sort: {
+                'createdAt': - 1
+              }
+            },
+            {
+              $limit: 10
+            }
+          ],
 
+        }
+      },
+      {
+        "$lookup": {
+          from: "mediadiaries",
+
+          as: "diary",
+          let: { local_id: '$posted.postID' },
+          pipeline: [
+            { $match: { $expr: { $in: ['$postID', '$$local_id'] } } },
+            {
+              $sort: {
+                'createdAt': - 1
+              }
+            },
+            {
+              $limit: 10
+            }
+          ],
+
+        }
+      },
+      {
+        "$lookup": {
+          from: "mediavideos",
+
+          as: "video",
+          let: { local_id: '$posted.postID' },
+          pipeline: [
+            { $match: { $expr: { $in: ['$postID', '$$local_id'] } } },
+            {
+              $sort: {
+                'createdAt': - 1
+              }
+            },
+            {
+              $limit: 10
+            }
+          ],
+
+
+        }
+      },
+      {
+        "$lookup": {
+          from: "mediastories",
+          localField: "posted.contentMedias.$id",
+          foreignField: "_id",
+          as: "stories",
+
+
+        }
+      },
+      {
+        "$lookup": {
+          from: "mediaprofilepicts",
+          localField: "userBasic.profilePict.$id",
+          foreignField: "_id",
+          as: "profilePict"
+        }
+      },
+      {
+        "$lookup": {
+          from: "mediaproofpicts",
+          localField: "userBasic.proofPict.$id",
+          foreignField: "_id",
+          as: "proofPict"
+        }
+      },
+      {
+        "$group": {
+          "_id": {
+            "friend": "$email",
+            "username": "$nameUser.username",
+            "profilePict": "$userBasic.profilePict",
+            "proofPict": "$userBasic.proofPict",
+            "profileSourceUri": "$profilePict.fsSourceUri",
+            "proofSourceUri": "$proofPict.fsSourceUri",
+            "posted": "$posted",
+            "postPict": "$pict",
+            "postDiary": "$diary",
+            "postStories": "$stories",
+            "postVid": "$video",
+            //"postMeta":"$posted.metadata",
+            //"postSaleAmount":"$posted.saleAmount",
+            //"postLike":"$posted.like",
+            //"postView":"$posted.view",
+            //"postShare":"$posted.share",
+          },
+          "count": {
+            "$sum": 1.0
+          }
+        }
+      },
+      {
+        "$match": {
+          "count": {
+            "$gt": 1.0
+          }
+        }
+      },
+      {
+        "$project": {
+          "email": 1.0
+        }
+      }
+    ],
+      {
+        "allowDiskUse": true
+      }
+    );
+    return query;
+  }
   async ceckFriendFollowingFollower(email1: string, email2: string) {
     const query = await this.ContenteventsModel.aggregate([
       {
@@ -833,8 +1024,8 @@ export class ContenteventsService {
 
   async findEventByEmail(email: string, postID: string[], eventInsight: string): Promise<Contentevents[]> {
     return this.ContenteventsModel.find().where('email', email).where('postID').in(postID)
-            .where('eventType', eventInsight).where('active', true).where('event', 'DONE').exec();
-  }    
+      .where('eventType', eventInsight).where('active', true).where('event', 'DONE').exec();
+  }
 
   async updateUnlike(email: string, eventType: string, event: string, postID: string, active: boolean) {
     this.ContenteventsModel.updateOne(
@@ -892,5 +1083,5 @@ export class ContenteventsService {
       },
     );
   }
-  
+
 }

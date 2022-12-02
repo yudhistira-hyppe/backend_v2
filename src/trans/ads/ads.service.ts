@@ -4363,12 +4363,12 @@ export class AdsService {
     }
     async updateFlaging(id: ObjectID, updatedAt: string) {
         let data = await this.adsModel.updateMany({ "_id": id },
-            { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserHandle.$[].status": "FLAGING", "reportedUserHandle.$[].updatedAt": updatedAt } });
+            { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle.$[].status": "FLAGING", "reportedUserHandle.$[].updatedAt": updatedAt } });
         return data;
     }
     async updateFlagingEmpty(id: ObjectID, updatedAt: string, reportedUserHandle: any[]) {
         let data = await this.adsModel.updateMany({ "_id": id },
-            { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserHandle": reportedUserHandle } });
+            { $set: { "reportedStatus": "BLURRED", "updatedAt": updatedAt, "reportedUserCount": 0, "reportedUserHandle": reportedUserHandle } });
         return data;
     }
     async updateTidakditangguhkan(id: ObjectID, updatedAt: string) {

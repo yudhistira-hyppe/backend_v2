@@ -1148,7 +1148,7 @@ export class TransactionsController {
                                         boostViewer: item.boostViewer
                                     };
                                 }));
-                                await this.postsService.updateBuyBoost(postid, boosted)
+                                await this.postsService.updateBuyBoostToNoBoost(postid, boosted)
                             }
                         }
                         if (salelike == false) {
