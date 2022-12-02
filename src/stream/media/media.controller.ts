@@ -1407,7 +1407,7 @@ export class MediaController {
         try {
             datakyc = await this.mediaproofpictsService.detailkyc(id);
             try {
-                datafriend = await this.contenteventsService.friend(datakyc[0].email, "");
+                datafriend = await this.contenteventsService.friendnew(datakyc[0].email);
                 lengfrend = datafriend.length;
             } catch (e) {
                 datafriend = null;
