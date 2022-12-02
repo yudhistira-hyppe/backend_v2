@@ -1490,6 +1490,7 @@ export class MediaController {
                 "_id": datakyc[0]._id,
                 "createdAt": datakyc[0].createdAt,
                 "nama": datakyc[0].nama,
+                "fullName": datakyc[0].fullName,
                 "jenisKelamin": datakyc[0].jenisKelamin,
                 "tempatLahir": datakyc[0].tempatLahir,
                 "mobileNumber": datakyc[0].mobileNumber,
@@ -1509,6 +1510,9 @@ export class MediaController {
                 "jumlahPermohonan": datakyc[0].jumlahPermohonan,
                 "tahapan": datakyc[0].tahapan,
                 "avatar": datakyc[0].avatar,
+                "countries": datakyc[0].countries,
+                "area": datakyc[0].area,
+                "cities": datakyc[0].cities,
                 "insight": objinsig
             }
             data.push(obj);
@@ -1595,8 +1599,7 @@ export class MediaController {
             try {
 
                 let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "FINISH", kycHandle);
-                let datauserbasic = await this.userbasicsService.updateStatusKycName(nama, jenisKelamin, email, true, "verified");
-                console.log(datauserbasic)
+                await this.userbasicsService.updateStatusKycName(nama, jenisKelamin, email, true, "verified");
 
                 return { response_code: 202, data, messages };
 
