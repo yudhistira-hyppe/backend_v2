@@ -3194,11 +3194,24 @@ export class PostBoostService {
                                           }
                                       },
                                       {
-                                          "reportedUser.email": {
-                                              $not: {
-                                                  $regex: profile.email
-                                              }
-                                          }
+                                        $or:[
+                                            {
+                                                "reportedUser": {
+                                                    "$elemMatch": {
+                                                        "email": profile.email,
+                                                        "active": false,
+                                                        
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "reportedUser.email": {
+                                                    $not: {
+                                                        $regex: profile.email
+                                                    }
+                                                }
+                                            },
+                                        ]
                                       },
                                       {
                                           $or: [
@@ -3247,11 +3260,24 @@ export class PostBoostService {
                                           "timeStart": null
                                       },
                                       {
-                                          "reportedUser.email": {
-                                              $not: {
-                                                  $regex: profile.email
-                                              }
-                                          }
+                                        $or:[
+                                            {
+                                                "reportedUser": {
+                                                    "$elemMatch": {
+                                                        "email": profile.email,
+                                                        "active": false,
+                                                        
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "reportedUser.email": {
+                                                    $not: {
+                                                        $regex: profile.email
+                                                    }
+                                                }
+                                            },
+                                        ]
                                       },
                                       
                                   ]
@@ -3674,11 +3700,24 @@ export class PostBoostService {
                                             }
                                         },
                                         {
-                                            "reportedUser.email": {
-                                                $not: {
-                                                    $regex: profile.email
-                                                }
-                                            }
+                                          $or:[
+                                              {
+                                                  "reportedUser": {
+                                                      "$elemMatch": {
+                                                          "email": profile.email,
+                                                          "active": false,
+                                                          
+                                                      }
+                                                  }
+                                              },
+                                              {
+                                                  "reportedUser.email": {
+                                                      $not: {
+                                                          $regex: profile.email
+                                                      }
+                                                  }
+                                              },
+                                          ]
                                         },
                                         {
                                             $or: [
@@ -3731,13 +3770,25 @@ export class PostBoostService {
                                             "timeStart": null
                                         },
                                         {
-                                            "reportedUser.email": {
-                                                $not: {
-                                                    $regex: profile.email
-                                                }
-                                            }
+                                          $or:[
+                                              {
+                                                  "reportedUser": {
+                                                      "$elemMatch": {
+                                                          "email": profile.email,
+                                                          "active": false,
+                                                          
+                                                      }
+                                                  }
+                                              },
+                                              {
+                                                  "reportedUser.email": {
+                                                      $not: {
+                                                          $regex: profile.email
+                                                      }
+                                                  }
+                                              },
+                                          ]
                                         },
-                                        
                                     ]
                                 },
                                 
@@ -4151,11 +4202,24 @@ export class PostBoostService {
                                             }
                                         },
                                         {
-                                            "reportedUser.email": {
-                                                $not: {
-                                                    $regex: profile.email
-                                                }
-                                            }
+                                          $or:[
+                                              {
+                                                  "reportedUser": {
+                                                      "$elemMatch": {
+                                                          "email": profile.email,
+                                                          "active": false,
+                                                          
+                                                      }
+                                                  }
+                                              },
+                                              {
+                                                  "reportedUser.email": {
+                                                      $not: {
+                                                          $regex: profile.email
+                                                      }
+                                                  }
+                                              },
+                                          ]
                                         },
                                         {
                                             $or: [
@@ -4208,13 +4272,25 @@ export class PostBoostService {
                                             "timeStart": null
                                         },
                                         {
-                                            "reportedUser.email": {
-                                                $not: {
-                                                    $regex: profile.email
-                                                }
-                                            }
+                                          $or:[
+                                              {
+                                                  "reportedUser": {
+                                                      "$elemMatch": {
+                                                          "email": profile.email,
+                                                          "active": false,
+                                                          
+                                                      }
+                                                  }
+                                              },
+                                              {
+                                                  "reportedUser.email": {
+                                                      $not: {
+                                                          $regex: profile.email
+                                                      }
+                                                  }
+                                              },
+                                          ]
                                         },
-                                        
                                     ]
                                 },
                                 
@@ -4601,13 +4677,25 @@ export class PostBoostService {
                                             }
                                         },
                                         {
-                                            "reportedUser.email": {
-                                                $not: {
-                                                    $regex: profile.email
-                                                }
-                                            }
+                                          $or:[
+                                              {
+                                                  "reportedUser": {
+                                                      "$elemMatch": {
+                                                          "email": profile.email,
+                                                          "active": false,
+                                                          
+                                                      }
+                                                  }
+                                              },
+                                              {
+                                                  "reportedUser.email": {
+                                                      $not: {
+                                                          $regex: profile.email
+                                                      }
+                                                  }
+                                              },
+                                          ]
                                         },
-                                        
                                     ]
                                 },
                                 
