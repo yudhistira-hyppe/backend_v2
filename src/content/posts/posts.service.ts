@@ -231,7 +231,7 @@ export class PostsService {
     );
   }
 
-  async updateBuyBoostToNoBoost(id: string, boosted:any) {
+  async updateBuyBoostToNoBoost(id: string, boosted: any) {
     let data = await this.PostsModel.updateOne({ "_id": id },
       {
         $set: {
@@ -2795,39 +2795,39 @@ export class PostsService {
     if (keys !== undefined) {
       const query = await this.PostsModel.aggregate([
 
-        {
-          $lookup: {
-            from: "userbasics",
-            as: "ubasic",
-            let: {
-              local_id: '$reportedUser.email'
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      {
-                        $in: ['$email', {
-                          $ifNull: ['$$local_id', []]
-                        }]
-                      },
+        // {
+        //   $lookup: {
+        //     from: "userbasics",
+        //     as: "ubasic",
+        //     let: {
+        //       local_id: '$reportedUser.email'
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match: {
+        //           $expr: {
+        //             $and: [
+        //               {
+        //                 $in: ['$email', {
+        //                   $ifNull: ['$$local_id', []]
+        //                 }]
+        //               },
 
-                    ]
-                  }
-                }
-              },
-              {
-                $project: {
-                  fullName: 1,
-                  email: 1
-                }
-              },
+        //             ]
+        //           }
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           fullName: 1,
+        //           email: 1
+        //         }
+        //       },
 
-            ],
+        //     ],
 
-          }
-        },
+        //   }
+        // },
 
 
         {
@@ -3174,9 +3174,25 @@ export class PostsService {
 
             description: {
               $regex: keys, $options: 'i'
-            }, postType: postType, visibility: "PUBLIC", active: true, reportedStatus: { $ne: "OWNED" }, 'ubasic.email': {
-              $ne: email
-            },
+            }, postType: postType, visibility: "PUBLIC", active: true, reportedStatus: { $ne: "OWNED" }, $or: [
+              {
+                "reportedUser": {
+                  "$elemMatch": {
+                    "email": email,
+                    "active": false,
+
+                  }
+                }
+              },
+              {
+                "reportedUser.email": {
+                  $not: {
+                    $regex: email
+                  }
+                }
+              },
+
+            ]
           }
         },
         { $sort: { description: -1 }, },
@@ -3190,39 +3206,39 @@ export class PostsService {
       const query = await this.PostsModel.aggregate([
 
 
-        {
-          $lookup: {
-            from: "userbasics",
-            as: "ubasic",
-            let: {
-              local_id: '$reportedUser.email'
-            },
-            pipeline: [
-              {
-                $match: {
-                  $expr: {
-                    $and: [
-                      {
-                        $in: ['$email', {
-                          $ifNull: ['$$local_id', []]
-                        }]
-                      },
+        // {
+        //   $lookup: {
+        //     from: "userbasics",
+        //     as: "ubasic",
+        //     let: {
+        //       local_id: '$reportedUser.email'
+        //     },
+        //     pipeline: [
+        //       {
+        //         $match: {
+        //           $expr: {
+        //             $and: [
+        //               {
+        //                 $in: ['$email', {
+        //                   $ifNull: ['$$local_id', []]
+        //                 }]
+        //               },
 
-                    ]
-                  }
-                }
-              },
-              {
-                $project: {
-                  fullName: 1,
-                  email: 1
-                }
-              },
+        //             ]
+        //           }
+        //         }
+        //       },
+        //       {
+        //         $project: {
+        //           fullName: 1,
+        //           email: 1
+        //         }
+        //       },
 
-            ],
+        //     ],
 
-          }
-        },
+        //   }
+        // },
         {
           $addFields: {
 
@@ -3564,9 +3580,25 @@ export class PostsService {
         {
           $match: {
 
-            postType: postType, visibility: "PUBLIC", active: true, reportedStatus: { $ne: "OWNED" }, 'ubasic.email': {
-              $ne: email
-            },
+            postType: postType, visibility: "PUBLIC", active: true, reportedStatus: { $ne: "OWNED" }, $or: [
+              {
+                "reportedUser": {
+                  "$elemMatch": {
+                    "email": email,
+                    "active": false,
+
+                  }
+                }
+              },
+              {
+                "reportedUser.email": {
+                  $not: {
+                    $regex: email
+                  }
+                }
+              },
+
+            ]
 
           }
         },
@@ -8755,11 +8787,11 @@ export class PostsService {
             let st = new Date(String(bootSession.start)).getTime();
             let ed = new Date(String(bootSession.end)).getTime();
 
-            if (st  <= today && ed >= today) {
+            if (st <= today && ed >= today) {
               let interval = Number(bbs.boostInterval.value);
               interval = interval * 60 * 1000;
               let a = (today - st);
-              console.log("today: " + a + " interval: " + interval);              
+              console.log("today: " + a + " interval: " + interval);
               let c = Math.ceil(a / interval);
               console.log("round today: " + c);
               let d = st + (interval * c);
@@ -8768,13 +8800,13 @@ export class PostsService {
               let ted = d;
 
               let td = new Date(ted);
-              let stoday = new Date(td.getTime() - (td.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');  
+              let stoday = new Date(td.getTime() - (td.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
               stoday = stoday.substring(0, 19);
               console.log(st + " " + d + " " + ted + " " + stoday);
-              
+
               let tdx = new Date(today);
-              let xtoday = new Date(tdx.getTime() - (tdx.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');  
-              xtoday = xtoday.substring(0, 19);              
+              let xtoday = new Date(tdx.getTime() - (tdx.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+              xtoday = xtoday.substring(0, 19);
 
               let bv: any[] = bbs.boostViewer;
               if (bv != undefined) {

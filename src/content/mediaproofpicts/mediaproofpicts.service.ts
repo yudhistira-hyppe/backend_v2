@@ -297,12 +297,17 @@ export class MediaproofpictsService {
       {
         $unwind: "$basicdata"
       },
+
+
       {
         $project: {
           email: '$basicdata.email',
           insight_id: '$basicdata.insight.$id',
           isIdVerified: '$basicdata.isIdVerified',
           profilepictid: '$basicdata.profilePict.$id',
+          countries_id: '$basicdata.countries.$id',
+          cities_id: '$basicdata.cities.$id',
+          areas_id: '$basicdata.states.$id',
           fsSourceUri: 1,
           mediaUri: 1,
           SelfiefsSourceUri: 1,
@@ -349,6 +354,36 @@ export class MediaproofpictsService {
       },
       {
         $lookup: {
+          from: 'countries',
+          localField: 'countries_id',
+          foreignField: '_id',
+          as: 'countries_data',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'cities',
+          localField: 'cities_id',
+          foreignField: '_id',
+          as: 'cities_data',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'areas',
+          localField: 'areas_id',
+          foreignField: '_id',
+          as: 'areas_data',
+
+        },
+
+      },
+      {
+        $lookup: {
           from: 'mediaprofilepicts',
           localField: 'profilepictid',
           foreignField: '_id',
@@ -368,6 +403,16 @@ export class MediaproofpictsService {
         $addFields: {
 
           insights: { $arrayElemAt: ['$insight_data', 0] },
+          citi: {
+            $arrayElemAt: ['$cities_data', 0]
+          },
+          countri: {
+            $arrayElemAt: ['$countries_data', 0]
+          },
+
+          areas: {
+            $arrayElemAt: ['$areas_data', 0]
+          },
         },
 
       },
@@ -377,6 +422,10 @@ export class MediaproofpictsService {
           insights: 1,
           isIdVerified: 1,
           username: '$auth.username',
+          fullName: 1,
+          countries: '$countri.country',
+          area: '$areas.stateName',
+          cities: '$citi.cityName',
           createdAt: 1,
           profilpict: {
             $arrayElemAt: ['$profilePict_data', 0]
@@ -477,6 +526,8 @@ export class MediaproofpictsService {
           email: 1,
           isIdVerified: 1,
           username: 1,
+          fullName: 1,
+
           createdAt: 1,
           status: 1,
           idcardnumber: 1,
@@ -514,6 +565,9 @@ export class MediaproofpictsService {
           mediaUri: 1,
           mediaSupportUri: 1,
           mobileNumber: 1,
+          countries: 1,
+          area: 1,
+          cities: 1,
         }
       },
       {
