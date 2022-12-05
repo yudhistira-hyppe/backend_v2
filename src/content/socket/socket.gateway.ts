@@ -5,6 +5,7 @@ import {
     WebSocketServer,
     OnGatewayConnection,
     OnGatewayDisconnect,
+    MessageBody,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
@@ -36,8 +37,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
     }            
 
     @SubscribeMessage('coba')
-    coba(payload: string): void {
-        console.log("coba send: " + payload);
+    coba(@MessageBody() payload: string): void {
         this.server.emit('coba', payload);
     }    
 
