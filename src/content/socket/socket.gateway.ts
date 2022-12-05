@@ -37,6 +37,7 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
 
     @SubscribeMessage('coba')
     coba(payload: string): void {
+        console.log("coba send: " + payload);
         this.server.emit('coba', payload);
     }    
 
