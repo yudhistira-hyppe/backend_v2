@@ -374,8 +374,13 @@ export class PostsController {
   async getUserPostLandingPage(@Body() body, @Headers() headers): Promise<PostLandingResponseApps> {
     console.log(body);
     this.logger.log("getUserPostLandingPage >>> start: " + JSON.stringify(body));
-    //return this.postContentService.getUserPostLandingPage(body, headers);
-    return this.bootsService.getBoostV2(body, headers);
+    if (body.visibility == 'PUBLIC') {
+      return this.bootsService.getBoostV2(body, headers);
+    } else {
+      return this.postContentService.getUserPostLandingPage(body, headers);
+    }
+
+
   }
 
   @UseGuards(JwtAuthGuard)
