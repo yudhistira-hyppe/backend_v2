@@ -134,14 +134,15 @@ export class UserbasicsService {
     );
     return data;
   }
-  async updateStatusKycName(nama: string, gender: string, email: string, status: Boolean, statusKyc: string): Promise<Object> {
+  async updateStatusKycName(nama: string, gender: string, email: string, status: Boolean, statusKyc: string, dob: string): Promise<Object> {
     let data = await this.userbasicModel.updateOne({ "email": email },
       {
         $set: {
           "isIdVerified": status,
           "statusKyc": statusKyc,
           "fullName": nama,
-          "gender": gender
+          "gender": gender,
+          "dob": dob
         }
       },
     );
