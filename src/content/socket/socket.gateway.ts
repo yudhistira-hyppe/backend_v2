@@ -5,6 +5,7 @@ import {
     WebSocketServer,
     OnGatewayConnection,
     OnGatewayDisconnect,
+    MessageBody,
 } from '@nestjs/websockets';
 import { Logger } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
@@ -28,8 +29,15 @@ export class AppGateway implements OnGatewayInit, OnGatewayConnection, OnGateway
         this.server.emit(email, payload);
     }        
 
+    room(email: string, payload: string): void {
+        this.server.socketsJoin("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256");
+        this.server.to("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256").emit("payload", payload);
+        console.log("room emit");
+        this.server.socketsLeave("45b0bb4c-2ef6-4d9f-8ab2-c30a6ace1256");
+    }            
+
     @SubscribeMessage('coba')
-    coba(payload: string): void {
+    coba(@MessageBody() payload: string): void {
         this.server.emit('coba', payload);
     }    
 

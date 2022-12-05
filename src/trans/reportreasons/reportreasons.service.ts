@@ -18,6 +18,10 @@ export class ReportreasonsService {
         return this.reportreasonsModel.find({ "language": lang }).exec();
     }
 
+    async findTypekyc(type: string): Promise<Reportreasons[]> {
+        return this.reportreasonsModel.find({ "type": type }).exec();
+    }
+
     async findOne(id: string): Promise<Reportreasons> {
         return this.reportreasonsModel.findOne({ _id: id }).exec();
     }
