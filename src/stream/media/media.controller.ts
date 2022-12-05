@@ -1608,7 +1608,7 @@ export class MediaController {
             try {
 
                 let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "FINISH", kycHandle);
-                await this.userbasicsService.updateStatusKycName(nama, jenisKelamin, email, true, "verified");
+                await this.userbasicsService.updateStatusKycName(nama, jenisKelamin, email, true, "verified", tglLahir);
 
                 return { response_code: 202, data, messages };
 
@@ -1635,7 +1635,7 @@ export class MediaController {
             ];
             try {
                 let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "FAILED", kycHandle);
-                await this.userbasicsService.updateStatusKycName(nama, jenisKelamin, email, false, "unverified");
+                await this.userbasicsService.updateStatusKycName(nama, jenisKelamin, email, false, "unverified", tglLahir);
 
                 return { response_code: 202, data, messages };
 
