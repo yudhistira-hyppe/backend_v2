@@ -90,7 +90,8 @@ export class MediaproofpictsService {
           userAuth_id: '$basicdata.userAuth.$id',
           createdAt: 1,
           status: 1,
-          idcardnumber: 1
+          idcardnumber: 1,
+          kycHandle: 1
         }
       },
       {
@@ -166,6 +167,7 @@ export class MediaproofpictsService {
           idcardnumber: 1,
           jumlahPermohonan: "1",
           tahapan: "KTP",
+          kycHandle: 1
 
 
         }
@@ -194,6 +196,7 @@ export class MediaproofpictsService {
           idcardnumber: 1,
           jumlahPermohonan: "1",
           tahapan: "KTP",
+          kycHandle: 1,
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
