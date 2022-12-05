@@ -92,7 +92,7 @@ export class DisqusController {
           let xres = await this.buildDisqus(ContentDto_, true);
 
           console.log("processDisqus >>> receiver: ", xres.disqusLogs[0].receiver);
-          this.disqusService.sendDMNotif(String(xres.email), String(xres.mate), JSON.stringify(xres));
+          this.disqusService.sendDMNotif(String(xres.room), JSON.stringify(xres));
 
           res.response_code = 202;
           let m = new Messages();
@@ -753,7 +753,7 @@ export class DisqusController {
       dis.disqusID = DataId;
       dis.eventType = dto.eventType;
       dis.email = dto.email;
-      dis.mate = dto.mate;
+      dis.mate = dto.receiverParty;
       dis.active = dto.active;
       dis.createdAt = await this.utilsService.getDateTimeString();
       dis.updatedAt = await this.utilsService.getDateTimeString();      
@@ -807,25 +807,25 @@ export class DisqusController {
     dis.emailActive = true;
     this.disqusService.create(dis);
 
-    if (cts == undefined || cts.length < 0) {
+    if (cts == undefined || cts.length < 1) {
 
       let c0 = new Disquscontacts();
-      var usy = { "ref": "disqus", "id": String(dis._id), "db": "hyppe_trans_db" };
+      var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_trans_db" };
       c0.disqus = usy;
       var c0id = await this.utilsService.generateId();
       c0._id = c0id;
-      c0.mate = dto.mate;
+      c0.mate = dto.receiverParty;
       c0.email = dto.email;
       this.disquscontactsService.create(c0);
 
       let c1 = new Disquscontacts();
-      var usy = { "ref": "disqus", "id": String(dis._id), "db": "hyppe_trans_db" };
+      var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_trans_db" };
       c1.disqus = usy;
       var c1id = await this.utilsService.generateId();
       c1._id = c1id;
       c1.mate = dto.email;
       c1.email = dto.receiverParty;
-      this.disquscontactsService.create(c0);
+      this.disquscontactsService.create(c1);
     }
 
     retVal.email = dis.email;
@@ -891,7 +891,7 @@ export class DisqusController {
       for (let i = 0; i < cts.length; i++) {
         let ct = cts[i];
 
-        var IdDisqus = ct.disqus.id.toString();
+        var IdDisqus = ct.disqus.$id.toString();
         var Disqus_ = new Disqus();
         if (ct.disqus != null) {
           Disqus_ = await this.DisqusService.findOne(IdDisqus);

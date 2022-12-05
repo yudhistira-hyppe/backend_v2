@@ -18,9 +18,9 @@ export class Disquscontacts {
  
  @Prop({type:Object})
  disqus: {
-    ref:String
-    id:String
-    db:String
+    $ref:String
+    $id:String
+    $db:String
 }
  @Prop()
  _class:String
