@@ -7,9 +7,10 @@ import { ConfigModule } from '@nestjs/config';
 import { UserAds, UserAdsSchema } from './schemas/userads.schema';
 import { AdsModule } from '../ads/ads.module';
 import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediaprofilepicts.module';
+import { ContenteventsModule } from '../../content/contentevents/contentevents.module';
 @Module({
     imports: [
-        ConfigModule.forRoot(), AdsModule, MediaprofilepictsModule,
+        ConfigModule.forRoot(), AdsModule, MediaprofilepictsModule, ContenteventsModule,
         MongooseModule.forFeature([{ name: UserAds.name, schema: UserAdsSchema }], 'SERVER_FULL')
     ],
     controllers: [UserAdsController],
