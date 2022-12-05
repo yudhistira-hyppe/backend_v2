@@ -1475,7 +1475,28 @@ export class PostContentService {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     let st = await this.utilService.getDateTimeDate();
     var emailUser = headers['x-auth-user'];
-    let query = this.PostsModel.find({ "reportedUser.email": { $not: { $regex: emailUser } }, reportedStatus: { $ne: "OWNED" } });
+    let query = this.PostsModel.find({
+      $or: [
+        {
+          $and: [
+            {
+              "reportedUser.email": emailUser
+            },
+            {
+              "reportedUser.active": false
+            },
+
+          ]
+        },
+        {
+          "reportedUser.email": {
+            $not: {
+              $regex: emailUser
+            }
+          }
+        },
+      ]
+    });
     let con = true;
     if (body.visibility != undefined) {
       if (body.visibility == 'PRIVATE') {
@@ -1586,7 +1607,7 @@ export class PostContentService {
   private async doGetUserPostMy(body: any, headers: any, whoami: Userbasic): Promise<Posts[]> {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     var emailUser = headers['x-auth-user'];
-    let query = this.PostsModel.find({ "reportedUser.email": { $not: { $regex: emailUser } } });
+    let query = this.PostsModel.find();
     query.where('email', whoami.email);
     if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
       query.where('active', true);

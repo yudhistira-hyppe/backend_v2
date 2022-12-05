@@ -1320,7 +1320,7 @@ export class TransactionsController {
                         });
                     }
                 }
-                else if (type === "BOOST_CONTENT") {
+                else if ((type === "BOOST_CONTENT") || (type === "BOOST_CONTENT+OWNERSHIP")) {
                     //GET USER BUY
                     var ubasic = await this.userbasicsService.findid(iduserbuy);
                     var emailbuyer = ubasic.email;
@@ -1359,7 +1359,13 @@ export class TransactionsController {
                         //SEND FCM SUCCES TRANSACTION
                         this.sendCommentFCM("BOOST_SUCCES", postid, emailbuyer.toString())
                         //this.sendCommentFCM("BOOST_CONTENT", postid, emailbuyer.toString())
-                        this.sendemail(emailbuyer.toString(), "BOOST_SUCCES", datatransaksi);
+
+                        var OwnerShip = false;
+                        if (detail.length==2){
+                            OwnerShip = true;
+                        }
+                        this.sendemail(emailbuyer.toString(), "BOOST_SUCCES", datatransaksi, OwnerShip);
+                        //this.sendemail(emailbuyer.toString(), "BOOST_SUCCES_TEST", datatransaksi, OwnerShip);
 
                         //RESPONSE SUCCES
                         res.status(HttpStatus.OK).json({
@@ -1410,11 +1416,22 @@ export class TransactionsController {
     }
 
     async editPostBost(postid: string, detail: any) {
+        var databoost = null;
+        if (detail!=undefined){
+            if (detail.length>0) {
+                databoost = detail.filter((item,index) => {
+                    return (item.description == "BOOST");
+                });
+            }
+        }
+        
         var GetMaxBoost = await this.utilsService.getSetting_("636212526f07000023005ce3");
-        let ContInterval = Number(detail[0].interval.value.toString()) * Number(GetMaxBoost.toString());
+        //let ContInterval = Number(detail[0].interval.value.toString()) * Number(GetMaxBoost.toString());
+        let ContInterval = Number(databoost[0].interval.value.toString()) * Number(GetMaxBoost.toString());
 
         var boost = [];
-        var dateStartString = (detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() + ".000Z")
+        //var dateStartString = (detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() + ".000Z")
+        var dateStartString = (databoost[0].dateStart.toString() + "T" + databoost[0].session.start.toString() + ".000Z")
         var dateStartDate = new Date(dateStartString)
         var dateStartAdd = new Date(dateStartDate.getTime() + ContInterval * 60000)
         var dateStartGetTime = dateStartAdd.toISOString().split('T')[1].split(".")[0]
@@ -1425,22 +1442,33 @@ export class TransactionsController {
         console.log("date GetTime", dateStartGetTime);
 
         var dataBost = {
-            type: detail[0].type.toString(),
-            boostDate: new Date(detail[0].dateStart.toString()),
+            //type: detail[0].type.toString(),
+            type: databoost[0].type.toString(),
+            //boostDate: new Date(detail[0].dateStart.toString()),
+            boostDate: new Date(databoost[0].dateStart.toString()),
             boostInterval: {
-                id: new mongoose.Types.ObjectId(detail[0].interval._id.toString()),
-                value: detail[0].interval.value.toString(),
-                remark: detail[0].interval.remark.toString(),
+                //id: new mongoose.Types.ObjectId(detail[0].interval._id.toString()),
+                id: new mongoose.Types.ObjectId(databoost[0].interval._id.toString()),
+                //value: detail[0].interval.value.toString(),
+                value: databoost[0].interval.value.toString(),
+                //remark: detail[0].interval.remark.toString(),
+                remark: databoost[0].interval.remark.toString(),
             },
             boostSession: {
-                id: new mongoose.Types.ObjectId(detail[0].session._id.toString()),
+                //id: new mongoose.Types.ObjectId(detail[0].session._id.toString()),
+                id: new mongoose.Types.ObjectId(databoost[0].session._id.toString()),
                 //start: new Date((detail[0].dateStart.toString() + "T" + detail[0].session.start.toString() + ".000Z")),
                 //end: new Date((detail[0].datedateEnd.toString() + "T" + detail[0].session.end.toString() + ".000Z")),
-                start: (detail[0].dateStart.toString() + " " + detail[0].session.start.toString()),
-                end: (detail[0].datedateEnd.toString() + " " + dateStartGetTime),
-                timeStart: detail[0].session.start,
+
+                //start: (detail[0].dateStart.toString() + " " + detail[0].session.start.toString()),
+                start: (databoost[0].dateStart.toString() + " " + databoost[0].session.start.toString()),
+                //end: (detail[0].datedateEnd.toString() + " " + dateStartGetTime),
+                end: (databoost[0].datedateEnd.toString() + " " + dateStartGetTime),
+                //timeStart: detail[0].session.start,
+                timeStart: databoost[0].session.start,
                 timeEnd: dateStartGetTime,
-                name: detail[0].session.name,
+                //name: detail[0].session.name,
+                name: databoost[0].session.name,
             },
             boostViewer: [],
         }
@@ -5661,6 +5689,12 @@ export class TransactionsController {
             );
         }
 
+        //CECK OWNERSHIP
+        let ownership = false;
+        if (body.ownership != undefined) {
+            ownership = body.ownership;
+        }
+
         //VALIDASI PARAM DATESTART, TYPE
         if (body.dateStart == undefined) {
             await this.errorHandler.generateBadRequestException(
@@ -5707,6 +5741,31 @@ export class TransactionsController {
 
         //CALCULATION TOTAL AMOUNT
         var totalAmount = price + BankVaCharge;
+
+        //SET VAR OWNERSHIP
+        let getOwnershipAmaount = 0;
+        let getOwnershipDiscount = 0;
+        let TotalOwnershipPrice = 0;
+
+        //CECK OWNERSHIP
+        if (ownership) {
+            //GET ONERSHIP AMOUNT
+            getOwnershipAmaount = await this.utilsService.getSetting_("6332c9a60c7d00004f005173");
+            if (getOwnershipAmaount == null) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, Setting Ownership Amaount not found',
+                );
+            }
+            //GET ONERSHIP AMOUNT
+            getOwnershipDiscount = await this.utilsService.getSetting_("6332c9c80c7d00004f005174");
+            if (getOwnershipDiscount == null) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed, Setting Ownership Discount not found',
+                );
+            }
+            TotalOwnershipPrice = getOwnershipAmaount - getOwnershipDiscount;
+            totalAmount = totalAmount + TotalOwnershipPrice;
+        }
 
         //SET VAR INTERVAL, SESSION
         let interval, session;
@@ -5827,21 +5886,46 @@ export class TransactionsController {
                 //CREATE DATA TRANSACTION
                 var transactionNumber = await this.utilsService.generateTransactionNumber(countTransaction);
                 var typeTransaction = "BOOST_CONTENT";
+                //CECK OWNERSHIP
+                if (ownership){
+                    typeTransaction = "BOOST_CONTENT+OWNERSHIP";
+                }else{
+                    typeTransaction = "BOOST_CONTENT";
+                }
                 var date_trx_expiration_time = new Date(Va.trx_expiration_time);
                 date_trx_expiration_time.setHours(date_trx_expiration_time.getHours() + 7);
                 date_trx_expiration_time = new Date(date_trx_expiration_time);
                 var transactionDetail = [
                     {
                         id: body.postID,
+                        description: "BOOST",
                         interval: interval,
                         session: session,
                         type: body.type,
                         dateStart: body.dateStart,
                         datedateEnd: body.dateEnd,
+                        totalDiscont: 0,
                         totalAmount: totalAmount,
                         qty: 1
                     }
                 ];
+
+                //CECK OWNERSHIP
+                if (ownership) {
+                    var transactionOWNERSHIP = {
+                        id: null,
+                        description: "OWNERSHIP",
+                        interval: null,
+                        session: null,
+                        type: null,
+                        dateStart: null,
+                        datedateEnd: null,
+                        totalDiscont: getOwnershipDiscount,
+                        totalAmount: getOwnershipAmaount,
+                        qty: 1
+                    }
+                    transactionDetail.push(transactionOWNERSHIP);
+                }
 
                 //CECK VA STATUS
                 if (Va.status.code == "000") {
@@ -5856,7 +5940,7 @@ export class TransactionsController {
                         createTransactionsDto_.timestamp = DateTimeStamp.toISOString();
                         createTransactionsDto_.updatedAt = DateTimeStamp.toISOString();
                         createTransactionsDto_.noinvoice = transactionNumber;
-                        createTransactionsDto_.amount = price;
+                        createTransactionsDto_.amount = price + TotalOwnershipPrice;
                         createTransactionsDto_.status = cekstatusva.va_status;
                         createTransactionsDto_.bank = Object(bank._id.toString());
                         createTransactionsDto_.idva = Va.id;
@@ -5874,7 +5958,8 @@ export class TransactionsController {
                         createTransactionsDto_.response = Va;
                         let transaction_boost = await this.transactionsService.create(createTransactionsDto_);
                         //this.sendTransactionFCM(email, "BOOST_BUY", body.postID, email)
-                        this.sendemail(email, "BOOST_BUY", transaction_boost);
+                        this.sendemail(email, "BOOST_BUY", transaction_boost, ownership);
+                        //this.sendemail(email, "BOOST_BUY_TEST", transaction_boost, ownership);
 
                         var data_response_ = {
                             "noinvoice": transaction_boost.noinvoice,
@@ -5950,21 +6035,46 @@ export class TransactionsController {
                     //CREATE DATA TRANSACTION
                     var transactionNumber = await this.utilsService.generateTransactionNumber(countTransaction);
                     var typeTransaction = "BOOST_CONTENT";
+                    //CECK OWNERSHIP
+                    if (ownership) {
+                        typeTransaction = "BOOST_CONTENT+OWNERSHIP";
+                    } else {
+                        typeTransaction = "BOOST_CONTENT";
+                    }
                     var date_trx_expiration_time = new Date(Va.trx_expiration_time);
                     date_trx_expiration_time.setHours(date_trx_expiration_time.getHours() + 7);
                     date_trx_expiration_time = new Date(date_trx_expiration_time);
                     var transactionDetail = [
                         {
                             id: body.postID,
+                            description: "BOOST",
                             interval: interval,
                             session: session,
                             type: body.type,
                             dateStart: body.dateStart,
                             datedateEnd: body.dateEnd,
+                            totalDiscont: 0,
                             totalAmount: totalAmount,
                             qty: 1
                         }
                     ];
+
+                    //CECK OWNERSHIP
+                    if (ownership) {
+                        var transactionOWNERSHIP = {
+                            id: null,
+                            description: "OWNERSHIP",
+                            interval: null,
+                            session: null,
+                            type: null,
+                            dateStart: null,
+                            datedateEnd: null,
+                            totalDiscont: getOwnershipDiscount,
+                            totalAmount: getOwnershipAmaount,
+                            qty: 1
+                        }
+                        transactionDetail.push(transactionOWNERSHIP);
+                    }
 
                     //CECK VA STATUS
                     if (Va.status.code == "000") {
@@ -5979,7 +6089,7 @@ export class TransactionsController {
                             createTransactionsDto_.timestamp = DateTimeStamp.toISOString();
                             createTransactionsDto_.updatedAt = DateTimeStamp.toISOString();
                             createTransactionsDto_.noinvoice = transactionNumber;
-                            createTransactionsDto_.amount = price;
+                            createTransactionsDto_.amount = price + TotalOwnershipPrice;
                             createTransactionsDto_.status = cekstatusva.va_status;
                             createTransactionsDto_.bank = Object(bank._id.toString());
                             createTransactionsDto_.idva = Va.id;
@@ -5997,7 +6107,8 @@ export class TransactionsController {
                             createTransactionsDto_.response = Va;
                             let transaction_boost = await this.transactionsService.create(createTransactionsDto_);
                             //this.sendTransactionFCM(email, "BOOST_BUY", body.postID, email)
-                            this.sendemail(email, "BOOST_BUY", transaction_boost);
+                            this.sendemail(email, "BOOST_BUY", transaction_boost, ownership); 
+                            //this.sendemail(email, "BOOST_BUY_TEST", transaction_boost, ownership);
 
                             var data_response_ = {
                                 "noinvoice": transaction_boost.noinvoice,
@@ -6052,6 +6163,14 @@ export class TransactionsController {
         } else {
             //CREATE RESPONSE
             var data = {};
+
+            //CECK OWNERSHIP
+            if (ownership) {
+                data["ownershipPrice"] = getOwnershipAmaount;
+                data["ownershipDiscount"] = getOwnershipDiscount;
+                data["ownershipTotal"] = TotalOwnershipPrice;
+            }
+
             data["typeBoost"] = body.type;
             data["intervalBoost"] = interval;
             data["sessionBoost"] = session;
@@ -6124,7 +6243,7 @@ export class TransactionsController {
         await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
     }
 
-    async sendemail(email: string, type: string, transaction_boost: any) {
+    async sendemail(email: string, type: string, transaction_boost: any, ownerShip: boolean) {
         //Send Email
         try {
             //GET TEMPLATE HTML
@@ -6144,6 +6263,30 @@ export class TransactionsController {
             if (await this.utilsService.ceckData(DataPost)) {
                 var DatapostType = DataPost.postType;
                 postType = DatapostType[0].toUpperCase() + DatapostType.slice(1).toLowerCase();
+            }
+
+            //SET VAR OWNERSHIP
+            let getOwnershipAmaount = 0;
+            let getOwnershipDiscount = 0;
+            let TotalOwnershipPrice = 0;
+
+            //CECK OWNERSHIP
+            if (ownerShip) {
+                //GET ONERSHIP AMOUNT
+                getOwnershipAmaount = await this.utilsService.getSetting_("6332c9a60c7d00004f005173");
+                if (getOwnershipAmaount == null) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed, Setting Ownership Amaount not found',
+                    );
+                }
+                //GET ONERSHIP AMOUNT
+                getOwnershipDiscount = await this.utilsService.getSetting_("6332c9c80c7d00004f005174");
+                if (getOwnershipDiscount == null) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        'Unabled to proceed, Setting Ownership Discount not found',
+                    );
+                }
+                TotalOwnershipPrice = getOwnershipAmaount - getOwnershipDiscount;
             }
 
             //TEMPLATE HTML TO CHEERIO
@@ -6215,6 +6358,21 @@ export class TransactionsController {
                 }
             }
 
+            if (ownerShip) {
+                var ownerPrice = "Rp 0,00";
+                if (transaction_boost.amount != undefined) {
+                    ownerPrice = await this.utilsService.formatMoney(getOwnershipAmaount);
+                }
+                
+                $_('#postTypeOwnership').text("Hyppe" + postType.toString());
+                $_('#tanggalPemesananOwnership').text(tanggalPemesanan.toString());
+                $_('#kodePemesananOwnership').text(kodePemesanan.toString()); 
+                $_('#hargaOwnership').text(ownerPrice.toString());
+            }else{
+                $_('#transactionOwnership').css('display', 'none');
+                $_('#hrTransaction').css('display', 'none');
+            }
+
             //INSER VAR TO TEMPLATE
             $_('#fullname').text(profile.fullName.toString());
             $_('#username').text(profile.username.toString());
@@ -6228,7 +6386,7 @@ export class TransactionsController {
             $_('#waktuBoost').text(waktuBoost.toString());
             $_('#selangWaktu').text(selangWaktu.toString());
 
-            if (type == "BOOST_BUY") {
+            if ((type == "BOOST_BUY")) {
                 var timeMinute = ""
                 var dateVA = ""
                 if (langIso == "en") {

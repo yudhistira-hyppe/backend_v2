@@ -1132,7 +1132,7 @@ export class UtilsService {
     var month = d.getMonth();
     var year = d.getFullYear();
 
-    var hours = d.getHours();
+    var hours = d.getHours()-7;
     var minute = d.getMinutes();
     var timeData = (hours < 10 ? '0' + hours : hours) + ":" + (minute < 10 ? '0' + minute : minute)
 
