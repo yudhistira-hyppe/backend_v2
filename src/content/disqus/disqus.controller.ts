@@ -753,7 +753,7 @@ export class DisqusController {
       dis.disqusID = DataId;
       dis.eventType = dto.eventType;
       dis.email = dto.email;
-      dis.mate = dto.mate;
+      dis.mate = dto.receiverParty;
       dis.active = dto.active;
       dis.createdAt = await this.utilsService.getDateTimeString();
       dis.updatedAt = await this.utilsService.getDateTimeString();      
@@ -807,14 +807,14 @@ export class DisqusController {
     dis.emailActive = true;
     this.disqusService.create(dis);
 
-    if (cts == undefined || cts.length < 0) {
+    if (cts == undefined || cts.length < 1) {
 
       let c0 = new Disquscontacts();
       var usy = { "$ref": "$disqus", "$id": String(dis._id), "$db": "hyppe_trans_db" };
       c0.disqus = usy;
       var c0id = await this.utilsService.generateId();
       c0._id = c0id;
-      c0.mate = dto.mate;
+      c0.mate = dto.receiverParty;
       c0.email = dto.email;
       this.disquscontactsService.create(c0);
 
@@ -825,7 +825,7 @@ export class DisqusController {
       c1._id = c1id;
       c1.mate = dto.email;
       c1.email = dto.receiverParty;
-      this.disquscontactsService.create(c0);
+      this.disquscontactsService.create(c1);
     }
 
     retVal.email = dis.email;
