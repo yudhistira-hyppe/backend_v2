@@ -15,15 +15,23 @@ export class ReportreasonsController {
             "info": ["The process successful"],
         };
         var lang = null;
+        var type = null;
 
         lang = request_json["lang"];
+        type = request_json["type"];
 
         var data = null;
         if (lang !== undefined) {
             data = await this.reportreasonsService.findLanguage(lang);
-        } else {
+        }
+        else if (type !== undefined) {
+            data = await this.reportreasonsService.findTypekyc(type);
+        }
+        else {
             data = await this.reportreasonsService.findAll();
         }
+
+
 
         return { response_code: 202, data, messages };
     }

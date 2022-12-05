@@ -1541,6 +1541,9 @@ export class MediaController {
         var dataemailuser = null;
         var databasic = null;
         var email = null;
+        var reasonId = null;
+        var reasonValue = null;
+        var remark = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
 
         if (request_json["id"] !== undefined) {
@@ -1555,6 +1558,9 @@ export class MediaController {
         noktp = request_json["noktp"];
         status = request_json["status"];
         iduserhandle = request_json["iduserhandle"];
+        reasonId = request_json["reasonId"];
+        reasonValue = request_json["reasonValue"];
+        remark = request_json["remark"];
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
 
@@ -1592,7 +1598,10 @@ export class MediaController {
                     tempatLahir: tempatLahir,
                     tglLahir: tglLahir,
                     status: "FINISH",
-                    iduserhandle: iduser
+                    iduserhandle: iduser,
+                    reasonId: null,
+                    reasonValue: "",
+                    remark: ""
                 }
 
             ];
@@ -1617,7 +1626,10 @@ export class MediaController {
                     tempatLahir: tempatLahir,
                     tglLahir: tglLahir,
                     status: "FAILED",
-                    iduserhandle: iduser
+                    iduserhandle: iduser,
+                    reasonId: reasonId,
+                    reasonValue: reasonValue,
+                    remark: remark
                 }
 
             ];
