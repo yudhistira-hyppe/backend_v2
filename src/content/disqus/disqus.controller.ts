@@ -810,7 +810,7 @@ export class DisqusController {
     if (cts == undefined || cts.length < 0) {
 
       let c0 = new Disquscontacts();
-      var usy = { "ref": "disqus", "id": String(dis._id), "db": "hyppe_trans_db" };
+      var usy = { "$ref": "$disqus", "$id": String(dis._id), "$db": "hyppe_trans_db" };
       c0.disqus = usy;
       var c0id = await this.utilsService.generateId();
       c0._id = c0id;
@@ -819,7 +819,7 @@ export class DisqusController {
       this.disquscontactsService.create(c0);
 
       let c1 = new Disquscontacts();
-      var usy = { "ref": "disqus", "id": String(dis._id), "db": "hyppe_trans_db" };
+      var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_trans_db" };
       c1.disqus = usy;
       var c1id = await this.utilsService.generateId();
       c1._id = c1id;
@@ -891,7 +891,7 @@ export class DisqusController {
       for (let i = 0; i < cts.length; i++) {
         let ct = cts[i];
 
-        var IdDisqus = ct.disqus.id.toString();
+        var IdDisqus = ct.disqus.$id.toString();
         var Disqus_ = new Disqus();
         if (ct.disqus != null) {
           Disqus_ = await this.DisqusService.findOne(IdDisqus);

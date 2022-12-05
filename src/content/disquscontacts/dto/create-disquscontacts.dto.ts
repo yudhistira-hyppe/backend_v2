@@ -6,9 +6,9 @@ export class CreateDisquscontactsDto {
     readonly email: String;
     readonly mate: String;
     readonly  disqus: {
-        ref:String;
-        id:String;
-        db:String;
+        $ref:String;
+        $id:String;
+        $db:String;
     };
     readonly _class:String;
   }
