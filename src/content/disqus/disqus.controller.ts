@@ -92,7 +92,7 @@ export class DisqusController {
           let xres = await this.buildDisqus(ContentDto_, true);
 
           console.log("processDisqus >>> receiver: ", xres.disqusLogs[0].receiver);
-          this.disqusService.sendDMNotif(String(xres.email), String(xres.mate), JSON.stringify(xres));
+          this.disqusService.sendDMNotif(String(xres.room), JSON.stringify(xres));
 
           res.response_code = 202;
           let m = new Messages();

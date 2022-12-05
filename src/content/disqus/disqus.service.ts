@@ -43,8 +43,8 @@ export class DisqusService {
     return this.DisqusModel.findOne({ _id: id }).exec();
   }
 
-  async sendDMNotif(email: string, mate: string, payload: string) {
-    return this.gtw.room(email, payload);
+  async sendDMNotif(room: string, payload: string) {
+    return this.gtw.room(room, payload);
   }  
 
   async delete(id: string) {
