@@ -4822,6 +4822,356 @@ export class TransactionsController {
 
                 };
             }
+
+            else if (type === "Buy" && jenis === "BOOST_CONTENT+OWNERSHIP") {
+                databuy = await this.transactionsService.findhistorydetailbuy(idtr, type, jenis, iduser);
+                var postid = databuy[0].postID;
+
+
+                paymentmethod = databuy[0].paymentmethod;
+
+                idbank = databuy[0].bank.toString();
+                amounts = databuy[0].amount;
+
+                noinvoice = databuy[0].noinvoice;
+                mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
+                mediaThumbUri = databuy[0].mediaThumbUri;
+                try {
+                    dataconten = await this.getusercontentsService.findcontenbuy(postid);
+                    saleAmount = dataconten[0].saleAmount;
+                } catch (e) {
+                    dataconten = null;
+                    saleAmount = 0;
+                }
+
+                try {
+                    datamethode = await this.methodepaymentsService.findOne(paymentmethod);
+                    namamethode = datamethode._doc.methodename;
+
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+                try {
+
+                    datamradmin = await this.settingsService.findOne(idmdradmin);
+                    databankvacharge = await this.settingsService.findOne(idbankvacharge);
+                    valuevacharge = databankvacharge._doc.value;
+                    valuemradmin = datamradmin._doc.value;
+                    nominalmradmin = Math.ceil(amounts * valuemradmin / 100);
+
+
+
+
+                } catch (e) {
+                    datamradmin = null;
+                    databankvacharge = null;
+                    valuevacharge = 0;
+                    valuemradmin = 0;
+                    nominalmradmin = 0;
+                }
+
+                try {
+                    databank = await this.banksService.findOne(idbank);
+                    namabank = databank._doc.bankname;
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+
+                amount = saleAmount;
+                var selluser = databuy[0].idusersell;
+
+
+
+                try {
+                    var ubasic = await this.userbasicsService.findid(selluser);
+                    var namapenjual = ubasic.fullName;
+                    var emailpenjual = ubasic.email;
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+                var dataapsara = null;
+                var arrdata = [];
+                let pict: String[] = [];
+                var objk = {};
+                var idapsara = null;
+                var apsara = null;
+                var idapsaradefine = null;
+                var apsaradefine = null;
+                try {
+                    idapsara = databuy[0].apsaraId;
+                } catch (e) {
+                    idapsara = "";
+                }
+
+                try {
+                    apsara = databuy[0].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
+                var type = databuy[0].postType;
+                pict = [idapsara];
+
+                if (idapsara === "") {
+                    dataapsara = [];
+                } else {
+                    if (type === "pict") {
+
+                        try {
+                            dataapsara = await this.postContentService.getImageApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
+                    }
+                    else if (type === "vid") {
+                        try {
+                            dataapsara = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
+
+                    }
+                    else if (type === "story") {
+                        try {
+                            dataapsara = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
+                    }
+                    else if (type === "diary") {
+                        try {
+                            dataapsara = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
+                    }
+                }
+
+                data = {
+
+                    "_id": idtr,
+                    "type": databuy[0].type,
+                    "jenis": databuy[0].jenis,
+                    "time": databuy[0].timestamp,
+                    "description": databuy[0].description,
+                    "noinvoice": noinvoice,
+                    "nova": databuy[0].nova,
+                    "expiredtimeva": databuy[0].expiredtimeva,
+                    "like": databuy[0].salelike,
+                    "view": databuy[0].saleview,
+                    "bank": namabank,
+                    "paymentmethode": namamethode,
+                    "amount": amounts,
+                    "totalamount": databuy[0].totalamount,
+                    "adminFee": nominalmradmin,
+                    "serviceFee": valuevacharge,
+                    "status": databuy[0].status,
+                    "fullName": databuy[0].fullName,
+                    "email": databuy[0].email,
+                    "namapenjual": namapenjual,
+                    "emailpenjual": emailpenjual,
+                    "postID": databuy[0].postID,
+                    "postType": databuy[0].postType,
+                    "totallike": databuy[0].likes,
+                    "totalview": databuy[0].views,
+                    "descriptionContent": databuy[0].descriptionContent,
+                    "title": databuy[0].title,
+                    "mediaBasePath": databuy[0].mediaBasePath,
+                    "mediaUri": databuy[0].mediaUri,
+                    "mediaType": databuy[0].mediaType,
+                    "mediaEndpoint": databuy[0].mediaEndpoint,
+                    "mediaThumbEndpoint": mediaThumbEndpoint,
+                    "mediaThumbUri": mediaThumbUri,
+                    "apsara": apsaradefine,
+                    "apsaraId": idapsaradefine,
+                    "media": dataapsara
+
+                };
+            }
+            else if (type === "Sell" && jenis === "BOOST_CONTENT+OWNERSHIP") {
+                databuy = await this.transactionsService.findhistorydetailsell(idtr, type, jenis, iduser);
+                var postid = databuy[0].postID;
+
+
+                paymentmethod = databuy[0].paymentmethod;
+
+                idbank = databuy[0].bank.toString();
+                amounts = databuy[0].amount;
+
+                noinvoice = databuy[0].noinvoice;
+                mediaThumbEndpoint = databuy[0].mediaThumbEndpoint;
+                mediaThumbUri = databuy[0].mediaThumbUri;
+                try {
+                    dataconten = await this.getusercontentsService.findcontenbuy(postid);
+                    saleAmount = dataconten[0].saleAmount;
+                } catch (e) {
+                    dataconten = null;
+                    saleAmount = 0;
+                }
+
+                try {
+                    datamethode = await this.methodepaymentsService.findOne(paymentmethod);
+                    namamethode = datamethode._doc.methodename;
+
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+                try {
+
+                    datamradmin = await this.settingsService.findOne(idmdradmin);
+                    databankvacharge = await this.settingsService.findOne(idbankvacharge);
+                    valuevacharge = databankvacharge._doc.value;
+                    valuemradmin = datamradmin._doc.value;
+                    nominalmradmin = Math.ceil(saleAmount * valuemradmin / 100);
+
+
+
+
+                } catch (e) {
+                    datamradmin = null;
+                    databankvacharge = null;
+                    valuevacharge = 0;
+                    valuemradmin = 0;
+                    nominalmradmin = 0;
+                }
+
+                try {
+                    databank = await this.banksService.findOne(idbank);
+                    namabank = databank._doc.bankname;
+
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+
+                amount = saleAmount;
+                var buyuser = databuy[0].iduserbuyer;
+
+                try {
+                    var ubasic = await this.userbasicsService.findid(buyuser);
+                    var namapembeli = ubasic.fullName;
+                    var emailpembeli = ubasic.email;
+                } catch (e) {
+                    throw new BadRequestException("Data not found...!");
+                }
+                var dataapsara = null;
+                var arrdata = [];
+                let pict: String[] = [];
+                var objk = {};
+                var idapsara = null;
+                var apsara = null;
+                var idapsaradefine = null;
+                var apsaradefine = null;
+                try {
+                    idapsara = databuy[0].apsaraId;
+                } catch (e) {
+                    idapsara = "";
+                }
+
+                try {
+                    apsara = databuy[0].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
+                var type = databuy[0].postType;
+                pict = [idapsara];
+
+                if (idapsara === "") {
+                    dataapsara = [];
+                } else {
+                    if (type === "pict") {
+
+                        try {
+                            dataapsara = await this.postContentService.getImageApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
+                    }
+                    else if (type === "vid") {
+                        try {
+                            dataapsara = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
+
+                    }
+                    else if (type === "story") {
+                        try {
+                            dataapsara = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
+                    }
+                    else if (type === "diary") {
+                        try {
+                            dataapsara = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            dataapsara = [];
+                        }
+                    }
+                }
+                data = {
+
+                    "_id": idtr,
+                    "type": databuy[0].type,
+                    "jenis": databuy[0].jenis,
+                    "time": databuy[0].timestamp,
+                    "noinvoice": noinvoice,
+                    "description": databuy[0].description,
+                    "like": databuy[0].salelike,
+                    "view": databuy[0].saleview,
+                    "bank": namabank,
+                    "paymentmethode": namamethode,
+                    "amount": amount,
+                    "totalamount": databuy[0].totalamount,
+                    "status": databuy[0].status,
+                    "fullName": databuy[0].fullName,
+                    "email": databuy[0].email,
+                    "namapembeli": namapembeli,
+                    "emailpembeli": emailpembeli,
+                    "postID": databuy[0].postID,
+                    "postType": databuy[0].postType,
+                    "totallike": databuy[0].likes,
+                    "totalview": databuy[0].views,
+                    "descriptionContent": databuy[0].descriptionContent,
+                    "title": databuy[0].title,
+                    "mediaBasePath": databuy[0].mediaBasePath,
+                    "mediaUri": databuy[0].mediaUri,
+                    "mediaType": databuy[0].mediaType,
+                    "mediaEndpoint": databuy[0].mediaEndpoint,
+                    "mediaThumbEndpoint": mediaThumbEndpoint,
+                    "mediaThumbUri": mediaThumbUri,
+                    "apsara": apsaradefine,
+                    "apsaraId": idapsaradefine,
+                    "media": dataapsara
+
+                };
+            }
             else if (type === "Buy" && jenis === "VOUCHER") {
                 databuy = await this.transactionsService.findtransactionvoucher(idtr, type, jenis, iduser);
                 var selluser = databuy[0].idusersell;
