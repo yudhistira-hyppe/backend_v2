@@ -810,7 +810,7 @@ export class DisqusController {
     if (cts == undefined || cts.length < 0) {
 
       let c0 = new Disquscontacts();
-      var usy = { "$ref": "$disqus", "$id": String(dis._id), "$db": "hyppe_trans_db" };
+      var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_trans_db" };
       c0.disqus = usy;
       var c0id = await this.utilsService.generateId();
       c0._id = c0id;
