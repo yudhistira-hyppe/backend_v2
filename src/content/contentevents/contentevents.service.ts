@@ -1084,4 +1084,56 @@ export class ContenteventsService {
     );
   }
 
+  async findkunjunganprofile(email: string, startdate: string, enddate: string) {
+
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+
+    var pipeline = [];
+    pipeline.push({
+      $match: {
+
+        eventType: "VIEW_PROFILE",
+        senderParty: email
+      }
+    },);
+
+    if (startdate && startdate !== undefined) {
+      pipeline.push({
+        $match: {
+          createdAt: { $gte: startdate }
+
+        }
+      },);
+    }
+
+    if (enddate && enddate !== undefined) {
+      pipeline.push({
+        $match: {
+          createdAt: { $lte: dateend }
+
+        }
+      },);
+    }
+
+    pipeline.push(
+      {
+        $group: {
+          _id: null,
+          total: {
+            $sum: 1
+          }
+        }
+      });
+
+
+    const query = await this.ContenteventsModel.aggregate(pipeline);
+    return query;
+  }
+
 }
