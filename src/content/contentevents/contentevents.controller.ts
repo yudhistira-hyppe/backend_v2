@@ -429,6 +429,8 @@ export class ContenteventsController {
         try {
           await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, true);
           await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, true);
+          await this.insightsService.updateLike(email_receiverParty);
+          await this.postsService.updateLike(email_receiverParty, request.body.postID);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
