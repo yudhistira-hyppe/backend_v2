@@ -3593,10 +3593,10 @@ export class PostBoostService {
                             "saleView": 1,
                             "insight": [
                               {
-                                "likes": 1,
-                                "views": 1,
-                                "shares": 1,
-                                "comments": 1,
+                                "likes": "$likes",
+                                "views": "$views",
+                                "shares": "$shares",
+                                "comments": "$comments",
                               }
                               ],                            
                             "userProfile": 1,
@@ -4122,12 +4122,12 @@ export class PostBoostService {
                             "cats": 1,
                             "insight": [
                               {
-                                "likes": 1,
-                                "views": 1,
-                                "shares": 1,
-                                "comments": 1,
+                                "likes": "$likes",
+                                "views": "$views",
+                                "shares": "$shares",
+                                "comments": "$comments",
                               }
-                              ],
+                              ],                            
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
@@ -4624,12 +4624,12 @@ export class PostBoostService {
                             "cats": 1,
                             "insight": [
                               {
-                                "likes": 1,
-                                "views": 1,
-                                "shares": 1,
-                                "comments": 1,
+                                "likes": "$likes",
+                                "views": "$views",
+                                "shares": "$shares",
+                                "comments": "$comments",
                               }
-                              ],
+                              ],                            
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
@@ -5011,12 +5011,12 @@ export class PostBoostService {
                             "cats": 1,
                             "insight": [
                               {
-                                "likes": 1,
-                                "views": 1,
-                                "shares": 1,
-                                "comments": 1,
+                                "likes": "$likes",
+                                "views": "$views",
+                                "shares": "$shares",
+                                "comments": "$comments",
                               }
-                              ],
+                              ],                            
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
