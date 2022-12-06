@@ -148,6 +148,8 @@ export class MediaController {
 
         let isNew = true;
         if (await this.utilsService.ceckData(datauserbasicsService)) {
+
+            /*
             if (datauserbasicsService.profilePict != undefined) {
                 var profilePict_json = JSON.parse(JSON.stringify(datauserbasicsService.profilePict));
                 id_mediaprofilepicts = profilePict_json.$id;
@@ -166,6 +168,10 @@ export class MediaController {
                 id_mediaprofilepicts = await this.utilsService.generateId();
                 mongoose_gen_media = new mongoose.Types.ObjectId();
             }
+            */
+
+            id_mediaprofilepicts = await this.utilsService.generateId();
+            mongoose_gen_media = new mongoose.Types.ObjectId();            
             //Ceck cardPict
             if (files.profilePict != undefined) {
                 var FormData_ = new FormData();
@@ -176,14 +182,17 @@ export class MediaController {
                 profilePict_etx = 'jpeg';
                 profilePict_name = profilePict_filename.substring(0, profilePict_filename.lastIndexOf('.'));
 
+                let rand = Math.floor(Math.random() * 1000) + 1;
                 //New Name file cardPict
-                profilePict_filename_new = id_mediaprofilepicts + '_0001.' + profilePict_etx;
+                profilePict_filename_new = id_mediaprofilepicts + '_' + rand + '.' + profilePict_etx;
                 //Rename Name file cardPict
                 fs.renameSync('./temp/' + profilePict_filename, './temp/' + profilePict_filename_new);
                 //Local path
                 profilePict_local_path = './temp/' + mongoose_gen_media.toString() + '/profilepict/' + profilePict_filename_new;
                 //SeaweedFs path
                 profilePict_seaweedfs_path = '/' + mongoose_gen_media.toString() + '/profilepict/';
+
+                isNew = true;
 
                 if (isNew) {
                     //Create Folder Id
