@@ -779,6 +779,7 @@ export class DisqusController {
 
     let dl = new Disquslogs();
     var dlid = await this.utilsService.generateId();
+    dl.createdAt = await this.utilsService.getDateTimeString();
     dl._id = dlid;
     dl.sender = dto.email;
     dl.receiver = dto.receiverParty;
