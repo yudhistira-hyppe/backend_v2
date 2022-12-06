@@ -506,5 +506,173 @@ export class UserAdsService {
         return query;
     }
 
+    async detailView(iduser: ObjectId, startdate: string, enddate: string) {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+
+        var pipeline = [];
+        pipeline.push({
+            $match: {
+
+                statusView: true
+            }
+        },);
+
+        if (startdate && startdate !== undefined) {
+            pipeline.push({
+                $match: {
+                    createdAt: { $gte: startdate }
+
+                }
+            },);
+        }
+
+        if (enddate && enddate !== undefined) {
+            pipeline.push({
+                $match: {
+                    createdAt: { $lte: dateend }
+
+                }
+            },);
+        }
+
+        pipeline.push({
+            $lookup: {
+                from: "ads",
+                localField: "adsID",
+                foreignField: "_id",
+                as: "adsdata"
+            }
+        },
+            {
+                $unwind: "$adsdata"
+            },
+            {
+                $match: {
+
+                    'adsdata.userID': iduser
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        tanggal: {
+                            $substrCP: [
+                                "$createdAt",
+                                0,
+                                10
+                            ]
+                        }
+                    },
+                    total: {
+                        $sum: 1
+                    }
+                }
+            }, {
+            $project: {
+                _id: 0,
+                date: "$_id.tanggal",
+                total: 1,
+
+            }
+        }, {
+            $sort: {
+                date: 1
+            }
+        },
+        );
+
+        let query = await this.userAdsModel.aggregate(pipeline);
+        return query;
+    }
+
+    async detailClick(iduser: ObjectId, startdate: string, enddate: string) {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+
+        var pipeline = [];
+        pipeline.push({
+            $match: {
+
+                statusClick: true
+            }
+        },);
+
+        if (startdate && startdate !== undefined) {
+            pipeline.push({
+                $match: {
+                    createdAt: { $gte: startdate }
+
+                }
+            },);
+        }
+
+        if (enddate && enddate !== undefined) {
+            pipeline.push({
+                $match: {
+                    createdAt: { $lte: dateend }
+
+                }
+            },);
+        }
+
+        pipeline.push({
+            $lookup: {
+                from: "ads",
+                localField: "adsID",
+                foreignField: "_id",
+                as: "adsdata"
+            }
+        },
+            {
+                $unwind: "$adsdata"
+            },
+            {
+                $match: {
+
+                    'adsdata.userID': iduser
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        tanggal: {
+                            $substrCP: [
+                                "$createdAt",
+                                0,
+                                10
+                            ]
+                        }
+                    },
+                    total: {
+                        $sum: 1
+                    }
+                }
+            }, {
+            $project: {
+                _id: 0,
+                date: "$_id.tanggal",
+                total: 1,
+
+            }
+        }, {
+            $sort: {
+                date: 1
+            }
+        },
+        );
+
+        let query = await this.userAdsModel.aggregate(pipeline);
+        return query;
+    }
 }
