@@ -1521,6 +1521,7 @@ export class PostContentService {
           con = false;
         }
 
+        query.where('reportedStatus').ne('OWNED');
       } else if (body.visibility == 'FRIEND') {
         let friend: String[] = [];
         let check = await this.contentEventService.friend(whoami.email.valueOf(), whoami);
