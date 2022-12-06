@@ -869,7 +869,7 @@ export class UtilsService {
       AvatarDTO_.mediaBasePath = get_profilePict.mediaBasePath;
       AvatarDTO_.mediaUri = get_profilePict.mediaUri;
       AvatarDTO_.mediaType = get_profilePict.mediaType;
-      AvatarDTO_.mediaEndpoint = '/profilepict/' + get_profilePict.mediaUri.replace('_0001.jpeg', '');
+      AvatarDTO_.mediaEndpoint = '/profilepict/' + get_profilePict.mediaID;
     }
 
     var CreateInsightsDto_ = new CreateInsightsDto();
