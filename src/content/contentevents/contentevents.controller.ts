@@ -14,6 +14,7 @@ import { CreateInsightlogsDto } from '../insightlogs/dto/create-insightlogs.dto'
 import { InsightlogsService } from '../insightlogs/insightlogs.service';
 import { CreateInsightsDto } from '../insights/dto/create-insights.dto';
 
+
 @Controller()
 export class ContenteventsController {
   constructor(
@@ -425,7 +426,7 @@ export class ContenteventsController {
             error,
           );
         }
-      }else{
+      } else {
         try {
           await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, true);
           await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, true);
@@ -444,7 +445,7 @@ export class ContenteventsController {
       if ((await this.utilsService.ceckData(ceck_data_DONE)) && (await this.utilsService.ceckData(ceck_data_ACCEPT))) {
         try {
           await this.insightsService.updateUnlike(email_receiverParty);
-          await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID,false);
+          await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, false);
           await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, false);
           await this.postsService.updateUnLike(email_receiverParty, request.body.postID);
         } catch (error) {
@@ -572,15 +573,15 @@ export class ContenteventsController {
     var email_post = "";
 
     // if (type == "LIKE") {
-      var posts = await this.postsService.findid(postID);
+    var posts = await this.postsService.findid(postID);
     //   var bodyin_get = Templates_.body_detail_id.toString();
     //   var bodyen_get = Templates_.body_detail.toString();
 
-      var post_type = "";
-      if (await this.utilsService.ceckData(posts)) {
-        post_type = posts.postType.toString();
-        email_post = posts.email.toString();
-      }
+    var post_type = "";
+    if (await this.utilsService.ceckData(posts)) {
+      post_type = posts.postType.toString();
+      email_post = posts.email.toString();
+    }
 
     //   var new_bodyin_get = bodyin_get.replace("${post_type}", "Hypper" + post_type[0].toUpperCase() + post_type.substring(1));
     //   var new_bodyen_get = bodyen_get.replace("${post_type}", "Hypper" + post_type[0].toUpperCase() + post_type.substring(1));
@@ -609,4 +610,7 @@ export class ContenteventsController {
       }
     }
   }
+
+
+
 }

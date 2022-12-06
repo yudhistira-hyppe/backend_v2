@@ -142,7 +142,7 @@ import { TransactionsPostModule } from './trans/transactionpost/transactionspost
     // UservouchersModule,
     // VouchersModule,
     DivisionModule,
-    UserAdsModule,
+    // UserAdsModule,
     //AdsModule,
     // AdstypesModule,
     AdsplacesModule,

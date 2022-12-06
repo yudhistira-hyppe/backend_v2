@@ -4835,6 +4835,283 @@ export class AdsService {
         return query;
     }
 
+    async countViewClick(iduser: ObjectID, startdate: string, enddate: string) {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+
+        if (startdate !== undefined && enddate !== undefined) {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+                        userID: iduser
+                    }
+                },
+                {
+                    $facet: {
+                        "view": [
+                            {
+                                "$lookup": {
+                                    from: "userads",
+                                    as: "userad",
+                                    let: {
+                                        localID: '$_id'
+                                    },
+                                    pipeline: [
+                                        {
+                                            $match:
+                                            {
+
+
+                                                $expr: {
+                                                    $eq: ['$adsID', '$$localID']
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $match:
+                                            {
+                                                'statusView': true,
+                                                'createdAt': { $gte: startdate, $lte: dateend }
+                                            }
+                                        },
+                                        {
+                                            $group: {
+                                                _id: "$statusView",
+                                                myCount: {
+                                                    $sum: 1
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                _id: "$statusView",
+                                                "myCount": "$myCount",
+
+                                            }
+                                        }
+                                    ],
+
+                                },
+
+                            },
+                            {
+                                $unwind: "$userad"
+                            },
+                            {
+                                $project: {
+
+                                    "_id": 1,
+                                    "totalView": '$userad.myCount',
+
+                                }
+                            },
+                        ],
+                        "click": [
+                            {
+                                "$lookup": {
+                                    from: "userads",
+                                    as: "userad",
+                                    let: {
+                                        localID: '$_id'
+                                    },
+                                    pipeline: [
+                                        {
+                                            $match:
+                                            {
+
+
+                                                $expr: {
+                                                    $eq: ['$adsID', '$$localID']
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $match:
+                                            {
+                                                'statusClick': true,
+                                                'clickAt': { $gte: startdate, $lte: dateend }
+                                            }
+                                        },
+                                        {
+                                            $group: {
+                                                _id: "$statusClick",
+                                                myCount: {
+                                                    $sum: 1
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                _id: "$statusClick",
+                                                "myCount": "$myCount",
+
+                                            }
+                                        }
+                                    ],
+
+                                },
+
+                            },
+                            {
+                                $unwind: "$userad"
+                            },
+                            {
+                                $project: {
+
+                                    "_id": 1,
+                                    "totalClick": '$userad.myCount',
+
+                                }
+                            },
+                        ]
+
+                    }
+                }
+
+            ]);
+            return query;
+        }
+        else {
+            let query = await this.adsModel.aggregate([
+
+                {
+                    $match: {
+                        userID: iduser
+                    }
+                },
+                {
+                    $facet: {
+                        "view": [
+                            {
+                                "$lookup": {
+                                    from: "userads",
+                                    as: "userad",
+                                    let: {
+                                        localID: '$_id'
+                                    },
+                                    pipeline: [
+                                        {
+                                            $match:
+                                            {
+
+
+                                                $expr: {
+                                                    $eq: ['$adsID', '$$localID']
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $match:
+                                            {
+                                                'statusView': true,
+
+                                            }
+                                        },
+                                        {
+                                            $group: {
+                                                _id: "$statusView",
+                                                myCount: {
+                                                    $sum: 1
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                _id: "$statusView",
+                                                "myCount": "$myCount",
+
+                                            }
+                                        }
+                                    ],
+
+                                },
+
+                            },
+                            {
+                                $unwind: "$userad"
+                            },
+                            {
+                                $project: {
+
+                                    "_id": 1,
+                                    "totalView": '$userad.myCount',
+
+                                }
+                            },
+                        ],
+                        "click": [
+                            {
+                                "$lookup": {
+                                    from: "userads",
+                                    as: "userad",
+                                    let: {
+                                        localID: '$_id'
+                                    },
+                                    pipeline: [
+                                        {
+                                            $match:
+                                            {
+
+
+                                                $expr: {
+                                                    $eq: ['$adsID', '$$localID']
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $match:
+                                            {
+                                                'statusClick': true,
+
+                                            }
+                                        },
+                                        {
+                                            $group: {
+                                                _id: "$statusClick",
+                                                myCount: {
+                                                    $sum: 1
+                                                }
+                                            }
+                                        },
+                                        {
+                                            $project: {
+                                                _id: "$statusClick",
+                                                "myCount": "$myCount",
+
+                                            }
+                                        }
+                                    ],
+
+                                },
+
+                            },
+                            {
+                                $unwind: "$userad"
+                            },
+                            {
+                                $project: {
+
+                                    "_id": 1,
+                                    "totalClick": '$userad.myCount',
+
+                                }
+                            },
+                        ]
+
+                    }
+                }
+
+            ]);
+            return query;
+        }
+
+
+    }
 
 }

@@ -9,6 +9,7 @@ import { UtilsModule } from '../../utils/utils.module';
 import { InsightsModule } from '../insights/insights.module';
 import { PostDisqusModule } from '../disqus/post/postdisqus.module';
 import { InsightlogsModule } from '../insightlogs/insightlogs.module';
+import { UserAdsModule } from '../../trans/userads/userads.module';
 
 @Module({
     imports: [

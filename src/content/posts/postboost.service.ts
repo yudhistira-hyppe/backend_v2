@@ -5061,7 +5061,10 @@ export class PostBoostService {
                                         },
                                         {
                                             "eventType": "LIKE"
-                                        }
+                                        },
+                                        {
+                                          "active": true
+                                        },                                        
                                     ]
                                 },
                                {
@@ -5076,7 +5079,10 @@ export class PostBoostService {
                                        },
                                        {
                                            "eventType": "LIKE"
-                                       }
+                                       },
+                                       {
+                                        "active": true
+                                       }                                       
                                    ]
                                },
                                

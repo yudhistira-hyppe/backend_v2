@@ -3,10 +3,11 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserAdsService } from './userads.service';
 import { CreateUserAdsDto } from './dto/create-userads.dto';
 import { AdsService } from '../ads/ads.service';
+import { ContenteventsService } from '../../content/contentevents/contentevents.service';
 @Controller()
 export class UserAdsController {
     constructor(private readonly userAdsService: UserAdsService,
-        private readonly adsService: AdsService) { }
+        private readonly adsService: AdsService, private readonly contenteventsService: ContenteventsService) { }
 
     @UseGuards(JwtAuthGuard)
     @Post('api/userads/update')
@@ -176,12 +177,12 @@ export class UserAdsController {
         };
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
-        
+
         var request_json = JSON.parse(JSON.stringify(request.body));
         var email;
         var startdate;
         var enddate;
-        if (request_json["email"] !== undefined || request_json["startdate"] !== undefined || request_json["enddate"] !== undefined ) {
+        if (request_json["email"] !== undefined || request_json["startdate"] !== undefined || request_json["enddate"] !== undefined) {
             email = request_json["email"];
             startdate = request_json["startdate"];
             enddate = request_json["enddate"];
@@ -189,11 +190,11 @@ export class UserAdsController {
             throw new BadRequestException("Unabled to proceed");
         }
 
-        let adsIds=await this.adsService.findAdsIDsByEmail(email);
+        let adsIds = await this.adsService.findAdsIDsByEmail(email);
         // console.log(adsIds);
-        let ads=await this.userAdsService.findByAdsIDsDate(adsIds,startdate,enddate);
+        let ads = await this.userAdsService.findByAdsIDsDate(adsIds, startdate, enddate);
         // console.log(ads);
-        let data=await this.userAdsService.groupByDateActivity(ads);
+        let data = await this.userAdsService.groupByDateActivity(ads);
         // console.log(data);
 
         return { response_code: 202, data, messages };
@@ -206,12 +207,12 @@ export class UserAdsController {
         };
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
-        
+
         var request_json = JSON.parse(JSON.stringify(request.body));
         var email;
         var startdate;
         var enddate;
-        if (request_json["email"] !== undefined || request_json["startdate"] !== undefined || request_json["enddate"] !== undefined ) {
+        if (request_json["email"] !== undefined || request_json["startdate"] !== undefined || request_json["enddate"] !== undefined) {
             email = request_json["email"];
             startdate = request_json["startdate"];
             enddate = request_json["enddate"];
@@ -219,15 +220,119 @@ export class UserAdsController {
             throw new BadRequestException("Unabled to proceed");
         }
 
-        let adsIds=await this.adsService.findAdsIDsByEmail(email);
+        let adsIds = await this.adsService.findAdsIDsByEmail(email);
         // console.log(adsIds);
-        let ads=await this.userAdsService.findByAdsIDsDate(adsIds,startdate,enddate);
+        let ads = await this.userAdsService.findByAdsIDsDate(adsIds, startdate, enddate);
         console.log(ads);
-        let byArea=await this.userAdsService.groupBy(ads,'area');
-        let byGender=await this.userAdsService.groupBy(ads,'gender');
-        let byAge=await this.userAdsService.groupBy(ads,'age');
-        var data=[{'byArea':byArea,'byGender':byGender,'byAge':byAge}];
+        let byArea = await this.userAdsService.groupBy(ads, 'area');
+        let byGender = await this.userAdsService.groupBy(ads, 'gender');
+        let byAge = await this.userAdsService.groupBy(ads, 'age');
+        var data = [{ 'byArea': byArea, 'byGender': byGender, 'byAge': byAge }];
 
         return { response_code: 202, data, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
+    @Post('api/userads/summaryprofile')
+    async findsummary(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var startdate = null;
+        var enddate = null;
+        var dataprofile = null;
+        var totalkunjungan = null;
+        var datauserads = null;
+        var dataview = [];
+        var dataclick = null;
+        var sumView = null;
+        var sumClick = null;
+        var totalView = null;
+        var totalClick = null;
+        var lengview = null;
+        var lengclick = null;
+        var email = null;
+        var iduser = null;
+        email = request_json["email"];
+        iduser = request_json["iduser"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+
+        var userid = mongoose.Types.ObjectId(iduser);
+
+        // kunjungan profil
+
+        try {
+            dataprofile = await this.contenteventsService.findkunjunganprofile(email, startdate, enddate);
+            totalkunjungan = dataprofile[0].total;
+        } catch (e) {
+            dataprofile = null;
+            totalkunjungan = 0;
+        }
+        try {
+            datauserads = await this.adsService.countViewClick(userid, startdate, enddate);
+            dataview = datauserads[0].view;
+            lengview = dataview.length;
+
+
+        } catch (e) {
+            datauserads = null;
+            dataview = [];
+            lengview = 0;
+
+        }
+
+        try {
+            datauserads = await this.adsService.countViewClick(userid, startdate, enddate);
+            dataclick = datauserads[0].click;
+            lengclick = dataclick.length;
+
+        } catch (e) {
+            datauserads = null;
+            dataclick = [];
+            lengclick = 0;
+        }
+
+
+        if (lengview > 0) {
+
+            for (let i = 0; i < lengview; i++) {
+                sumView += dataview[i].totalView;
+
+            }
+
+        } else {
+            sumView = 0;
+        }
+
+
+
+        if (lengclick > 0) {
+
+            for (let i = 0; i < lengclick; i++) {
+                sumClick += dataclick[i].totalClick;
+
+            }
+
+        } else {
+            sumClick = 0;
+        }
+
+        var data = {
+
+            totalKunjungan: totalkunjungan,
+            totalView: sumView,
+            totalClick: sumClick
+        }
+
+        return { response_code: 202, data, messages };
+
+
+
     }
 }

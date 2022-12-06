@@ -1475,7 +1475,7 @@ export class PostContentService {
     //this.logger.log('doGetUserPost >>> start: ' + body);
     let st = await this.utilService.getDateTimeDate();
     var emailUser = headers['x-auth-user'];
-    let query = this.PostsModel.find({
+    let queryx = this.PostsModel.find({
       $or: [
         {
           $and: [
@@ -1497,6 +1497,7 @@ export class PostContentService {
         },
       ]
     });
+    let query = this.PostsModel.find();
     let con = true;
     if (body.visibility != undefined) {
       if (body.visibility == 'PRIVATE') {
@@ -1578,7 +1579,7 @@ export class PostContentService {
   
       if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
         this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
-        query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
+        //query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
       }
 
       let row = 20;
@@ -1592,7 +1593,7 @@ export class PostContentService {
       let skip = this.paging(page, row);
       query.skip(skip);
       query.limit(row);
-      query.sort({ 'postType': 1, 'createdAt': -1 });
+      query.sort({ 'postType': 1});
       let res = await query.exec();
       let ed = await this.utilService.getDateTimeDate();
       let gap = ed.getTime() - st.getTime();
