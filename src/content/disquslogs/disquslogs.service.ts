@@ -150,7 +150,7 @@ export class DisquslogsService {
   }
 
   async findLogByDisqusId(disqusId: string, dpage: number, dpageRow: number) {
-    let query = this.DisquslogsModel.find({ disqusID: disqusId, active: true });
+    let query = this.DisquslogsModel.find({ disqusID: disqusId, active: true }).sort({ sequenceNumber :1});
 
     let row = 20;
     let page = 0;
@@ -192,49 +192,26 @@ export class DisquslogsService {
       obj.lineID = dat._id;
       obj.active = dat.active;
       obj.updatedAt = dat.updatedAt;
-      
       var replyLogs_ = dat.replyLogs;
-      if (replyLogs_.length > 0) {
-        var dta = [];
+
+      var dta = [];
+      if (dat.sequenceNumber==0){
         dta.push(obj);
-        for (var k = 0; k < replyLogs_.length; k++) {
-          console.log(replyLogs_[k]);
-          var Data_id = JSON.parse(JSON.stringify(replyLogs_[k])).$id.toString();
-          var child_replyLogs = await this.findOne(Data_id.toString());
-
-          if (await this.utilsService.ceckData(child_replyLogs)){
-            let objchild = new DisquslogsDto();
-            objchild.sequenceNumber = child_replyLogs.sequenceNumber;
-            objchild.createdAt = child_replyLogs.createdAt;
-            objchild.txtMessages = child_replyLogs.txtMessages;
-            var profilehild = await this.utilsService.generateProfile(String(child_replyLogs.sender), 'PROFILE');
-
-            var profile_info_child = {};
-            if (profilehild.fullName != undefined) {
-              profile_info_child["fullName"] = profilehild.fullName;
+      }else{
+        var index_default = 0;
+        res.map((item, index) => {
+          item.filter((item_, index_) =>{
+            if (item_.lineID == dat.parentID){
+              index_default = index
             }
-            if (profilehild.username != undefined) {
-              profile_info_child["username"] = profilehild.username;
-            }
-            if (profilehild.avatar != undefined) {
-              profile_info_child["avatar"] = profilehild.avatar;
-            }
-            objchild.senderInfo = profile_info_child;
-            objchild.receiver = child_replyLogs.receiver;
-            objchild.sender = child_replyLogs.sender;
-            objchild.lineID = child_replyLogs._id;
-            objchild.active = child_replyLogs.active;
-            objchild.updatedAt = child_replyLogs.updatedAt;
-
-            dta.push(objchild);
-          }
- 
-        }
-        res.push(dta);
-      } else {
-        res.push([obj]);
+            return item_.lineID == dat.parentID
+          });
+        });
+        res[index_default].push(obj);
       }
-      //res.push(obj);
+      if (dta.length > 0) {
+        res.push(dta)
+      }
     }
 
     return res;

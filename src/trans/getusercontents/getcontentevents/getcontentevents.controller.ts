@@ -258,41 +258,41 @@ export class GetcontenteventsController {
             CreateGetcontenteventsDto_.active = true;
             var data_contentevents = await this.getcontenteventsService.getConteneventbyType(CreateGetcontenteventsDto_);
             var data_response = [];
-            if (await this.utilsService.ceckData(data_contentevents)) {
-                if (data_contentevents.length > 0) {
-                    for (var i = 0; i < data_contentevents.length; i++) {
-                        const data_profile = await this.utilsService.generateProfile(data_contentevents[i].email, 'FULL');
-                        var ProfileDTO_ = new ProfileDTO();
-                        ProfileDTO_.fullName = data_profile.fullName;
-                        ProfileDTO_.email = data_profile.email;
-                        ProfileDTO_.username = data_profile.username;
-                        var AvatarDTO_ = new AvatarDTO();
-                        if (data_profile.avatar != undefined) {
-                            if (data_profile.avatar.mediaBasePath != undefined) {
-                                AvatarDTO_.mediaBasePath = data_profile.avatar.mediaBasePath;
-                            }
-                            if (data_profile.avatar.mediaUri != undefined) {
-                                AvatarDTO_.mediaUri = data_profile.avatar.mediaUri;
-                            }
-                            if (data_profile.avatar.mediaType != undefined) {
-                                AvatarDTO_.mediaType = data_profile.avatar.mediaType;
-                            }
-                            if (data_profile.avatar.mediaEndpoint != undefined) {
-                                AvatarDTO_.mediaEndpoint = data_profile.avatar.mediaEndpoint;
-                                var mediaEndpoint = data_profile.avatar.mediaEndpoint;
-                                AvatarDTO_.profilePict_id = mediaEndpoint.replace("/profilepict/", "");
-                            }
-                            ProfileDTO_.avatar = AvatarDTO_;
-                        } else {
-                            ProfileDTO_.avatar = null;
-                        }
-                        data_response.push(ProfileDTO_);
-                    }
-                }
-            }
+            // if (await this.utilsService.ceckData(data_contentevents)) {
+            //     if (data_contentevents.length > 0) {
+            //         for (var i = 0; i < data_contentevents.length; i++) {
+            //             const data_profile = await this.utilsService.generateProfile(data_contentevents[i].email, 'FULL');
+            //             var ProfileDTO_ = new ProfileDTO();
+            //             ProfileDTO_.fullName = data_profile.fullName;
+            //             ProfileDTO_.email = data_profile.email;
+            //             ProfileDTO_.username = data_profile.username;
+            //             var AvatarDTO_ = new AvatarDTO();
+            //             if (data_profile.avatar != undefined) {
+            //                 if (data_profile.avatar.mediaBasePath != undefined) {
+            //                     AvatarDTO_.mediaBasePath = data_profile.avatar.mediaBasePath;
+            //                 }
+            //                 if (data_profile.avatar.mediaUri != undefined) {
+            //                     AvatarDTO_.mediaUri = data_profile.avatar.mediaUri;
+            //                 }
+            //                 if (data_profile.avatar.mediaType != undefined) {
+            //                     AvatarDTO_.mediaType = data_profile.avatar.mediaType;
+            //                 }
+            //                 if (data_profile.avatar.mediaEndpoint != undefined) {
+            //                     AvatarDTO_.mediaEndpoint = data_profile.avatar.mediaEndpoint;
+            //                     var mediaEndpoint = data_profile.avatar.mediaEndpoint;
+            //                     AvatarDTO_.profilePict_id = mediaEndpoint.replace("/profilepict/", "");
+            //                 }
+            //                 ProfileDTO_.avatar = AvatarDTO_;
+            //             } else {
+            //                 ProfileDTO_.avatar = null;
+            //             }
+            //             data_response.push(ProfileDTO_);
+            //         }
+            //     }
+            // }
             var response = {
                 "response_code": 202,
-                "data": data_response,
+                "data": data_contentevents,
                 "messages": {
                     "info": [
                         "successfully"
