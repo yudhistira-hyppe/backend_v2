@@ -257,6 +257,7 @@ export class DisqusController {
           console.log("Payload Query Comment >>>>>> : ", ContentDto_);
           var DisqusResponseComment_ = new DisqusResponseComment();
           let com = await this.disqusService.findDisqusByPost(String(ContentDto_.postID), type);
+          console.log('com',com);
 
           let tmp_: DisqusComment[] = [];
           for (let i = 0; i < com.length; i++) {

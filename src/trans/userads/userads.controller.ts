@@ -247,17 +247,28 @@ export class UserAdsController {
         var enddate = null;
         var dataprofile = null;
         var totalkunjungan = null;
+        var detailkunjungan = null;
+        var datadetailkunjungan = null;
+        var datadetailview = null;
+        var datadetailclick = null;
         var datauserads = null;
         var dataview = [];
+        var arrdata = [];
+        var objdata = {};
         var dataclick = null;
         var sumView = null;
         var sumClick = null;
         var totalView = null;
-        var totalClick = null;
+        var lengprofile = null;
+        var lengviews = null;
+        var lengclicks = null;
         var lengview = null;
         var lengclick = null;
         var email = null;
         var iduser = null;
+        var arrdataview = [];
+        var arrdataclick = [];
+        var arr = [];
         email = request_json["email"];
         iduser = request_json["iduser"];
         startdate = request_json["startdate"];
@@ -267,6 +278,16 @@ export class UserAdsController {
 
         // kunjungan profil
 
+        var date1 = new Date(startdate);
+        var date2 = new Date(enddate);
+
+        //calculate time difference  
+        var time_difference = date2.getTime() - date1.getTime();
+
+        //calculate days difference by dividing total milliseconds in a day  
+        var resultTime = time_difference / (1000 * 60 * 60 * 24);
+        console.log(resultTime);
+
         try {
             dataprofile = await this.contenteventsService.findkunjunganprofile(email, startdate, enddate);
             totalkunjungan = dataprofile[0].total;
@@ -274,35 +295,108 @@ export class UserAdsController {
             dataprofile = null;
             totalkunjungan = 0;
         }
+
         try {
-            datauserads = await this.adsService.countViewClick(userid, startdate, enddate);
-            dataview = datauserads[0].view;
-            lengview = dataview.length;
-
-
+            datadetailkunjungan = await this.contenteventsService.detailkunjunganprofile(email, startdate, enddate);
+            lengprofile = datadetailkunjungan.length;
         } catch (e) {
-            datauserads = null;
-            dataview = [];
-            lengview = 0;
+            datadetailkunjungan = null;
+            lengprofile = 0;
 
         }
 
         try {
-            datauserads = await this.adsService.countViewClick(userid, startdate, enddate);
-            dataclick = datauserads[0].click;
-            lengclick = dataclick.length;
-
+            datadetailview = await this.userAdsService.detailView(userid, startdate, enddate);
+            lengviews = datadetailview.length;
         } catch (e) {
-            datauserads = null;
-            dataclick = [];
-            lengclick = 0;
+            datadetailview = null;
+            lengviews = 0;
+
+        }
+
+        try {
+            datadetailclick = await this.userAdsService.detailClick(userid, startdate, enddate);
+            lengclicks = datadetailclick.length;
+        } catch (e) {
+            datadetailclick = null;
+            lengclicks = 0;
+
+        }
+
+        if (resultTime > 0) {
+            for (var i = 0; i < resultTime + 1; i++) {
+                var dt = new Date(startdate);
+                dt.setDate(dt.getDate() + i);
+                var splitdt = dt.toISOString();
+                var dts = splitdt.split('T');
+                var stdt = dts[0].toString();
+                var count = 0;
+                for (var j = 0; j < lengprofile; j++) {
+                    if (datadetailkunjungan[j].date == stdt) {
+                        count = datadetailkunjungan[j].total;
+                        break;
+                    }
+                }
+                arrdata.push({
+                    'date': stdt,
+                    'count': count
+                });
+
+            }
+
+        }
+
+        if (resultTime > 0) {
+            for (var i = 0; i < resultTime + 1; i++) {
+                var dt = new Date(startdate);
+                dt.setDate(dt.getDate() + i);
+                var splitdt = dt.toISOString();
+                var dts = splitdt.split('T');
+                var stdt = dts[0].toString();
+                var count = 0;
+                for (var j = 0; j < lengviews; j++) {
+                    if (datadetailview[j].date == stdt) {
+                        count = datadetailview[j].total;
+                        break;
+                    }
+                }
+                arrdataview.push({
+                    'date': stdt,
+                    'count': count
+                });
+
+            }
+
+        }
+
+        if (resultTime > 0) {
+            for (var i = 0; i < resultTime + 1; i++) {
+                var dt = new Date(startdate);
+                dt.setDate(dt.getDate() + i);
+                var splitdt = dt.toISOString();
+                var dts = splitdt.split('T');
+                var stdt = dts[0].toString();
+                var count = 0;
+                for (var j = 0; j < lengclicks; j++) {
+                    if (datadetailclick[j].date == stdt) {
+                        count = datadetailclick[j].total;
+                        break;
+                    }
+                }
+                arrdataclick.push({
+                    'date': stdt,
+                    'count': count
+                });
+
+            }
+
         }
 
 
-        if (lengview > 0) {
+        if (lengviews > 0) {
 
-            for (let i = 0; i < lengview; i++) {
-                sumView += dataview[i].totalView;
+            for (let i = 0; i < lengviews; i++) {
+                sumView += datadetailview[i].total;
 
             }
 
@@ -312,10 +406,10 @@ export class UserAdsController {
 
 
 
-        if (lengclick > 0) {
+        if (lengclicks > 0) {
 
-            for (let i = 0; i < lengclick; i++) {
-                sumClick += dataclick[i].totalClick;
+            for (let i = 0; i < lengclicks; i++) {
+                sumClick += datadetailclick[i].total;
 
             }
 
@@ -325,9 +419,9 @@ export class UserAdsController {
 
         var data = {
 
-            totalKunjungan: totalkunjungan,
-            totalView: sumView,
-            totalClick: sumClick
+            viewProfile: { totalkunjungan: totalkunjungan, detail: arrdata },
+            view: { totalView: sumView, detail: arrdataview },
+            click: { totalClick: sumClick, detail: arrdataclick }
         }
 
         return { response_code: 202, data, messages };
