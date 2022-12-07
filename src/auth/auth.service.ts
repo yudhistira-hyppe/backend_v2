@@ -5952,6 +5952,7 @@ export class AuthService {
         data["interest"] = interests_array;
         data["event"] = datauserbasicsService.event;
         data["email"] = datauserbasicsService.email;
+        data["iduser"] = datauserbasicsService._id;
         data["username"] = datauserauthsService.username;
         data["isComplete"] = datauserbasicsService.isComplete;
         data["status"] = datauserbasicsService.status;
