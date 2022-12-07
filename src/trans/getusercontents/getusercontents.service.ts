@@ -122,61 +122,106 @@ export class GetusercontentsService {
     return query;
   }
 
-  async findalldata(email: string, skip: number, limit: number): Promise<object> {
+  async findalldata(email: string, monetize: any, popular: any, startdate: string, enddate: string, page: number, limit: number) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
-    const query = await this.getusercontentsModel.aggregate([
-      { $match: { email: email } },
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+
+    var pipeline = [];
+
+    pipeline.push(
       {
         $addFields: {
-          ubasic_id: '$userProfile.$id',
 
+          salePrice: {
+            $cmp: ["$saleAmount", 0]
+          }
         },
-      },
-      {
-        $lookup: {
-          from: 'userbasics',
-          localField: 'ubasic_id',
-          foreignField: '_id',
-          as: 'userbasics_data',
-        },
-      },
 
+      },
       {
         $project: {
-          refs: { $arrayElemAt: ['$contentMedias', 0] },
-          user: { $arrayElemAt: ['$userbasics_data', 0] },
-
-          profilpictid: '$user.profilePict.$id',
-          insight_id: '$user.insight.$id',
-          userAuth_id: '$user.userAuth.$id',
-          fullName: '$user.fullName',
-          createdAt: '$createdAt',
-          updatedAt: '$updatedAt',
-          postID: '$postID',
-          email: '$email',
-          postType: '$postType',
-          description: '$description',
-          title: '$description',
-          active: '$active',
-          metadata: '$metadata',
-          location: '$location',
-          tags: '$tags',
-          likes: '$likes',
-          shares: '$shares',
-          comments: '$comments',
-          isOwned: '$isOwned',
-          views: '$views',
-          isPostPrivate: '$user.isPostPrivate',
-          privacy: {
-            isPostPrivate: '$user.isPostPrivate',
-            isCelebrity: '$user.isCelebrity',
-            isPrivate: '$user.isPrivate',
+          refs: {
+            $arrayElemAt: ['$contentMedias', 0]
           },
+          createdAt: 1,
+          reportedStatus: 1,
+          reportedUserCount: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          metadata: 1,
+          location: 1,
+          tags: 1,
+          likes: 1,
+          shares: 1,
+          reaction: 1,
+          comments: 1,
+          isOwned: 1,
+          views: 1,
+          visibility: 1,
+          allowComments: 1,
+          isCertified: 1,
           isViewed:
           {
-            $cond: { if: { $eq: ["$views", 0] }, then: false, else: true }
+            $cond: {
+              if: {
+                $eq: ["$views", 0]
+              },
+              then: false,
+              else: true
+            }
           },
-          allowComments: '$allowComments',
+          saleLike: {
+            $cond: {
+              if: {
+                $eq: ["$saleLike", - 1]
+              },
+              then: false,
+              else: "$saleLike"
+            }
+          },
+          saleView: {
+            $cond: {
+              if: {
+                $eq: ["$saleView", - 1]
+              },
+              then: false,
+              else: "$saleView"
+            }
+          },
+          saleAmount: {
+            $cond: {
+              if: {
+                $eq: ["$salePrice", - 1]
+              },
+              then: 0,
+              else: "$saleAmount"
+            }
+          },
+
+          monetize: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$salePrice", -1]
+                }, {
+                  $eq: ["$salePrice", 0]
+                },]
+              },
+              then: false,
+              else: true
+            },
+
+          },
 
         }
       },
@@ -184,63 +229,37 @@ export class GetusercontentsService {
         $project: {
           refs: '$refs.$ref',
           idmedia: '$refs.$id',
-          profilpictid: '$user.profilePict.$id',
-          insight_id: '$user.insight.$id',
-          userAuth_id: '$user.userAuth.$id',
-          fullName: '$user.fullName',
-          createdAt: '$createdAt',
-          updatedAt: '$updatedAt',
-          postID: '$postID',
-          email: '$email',
-          postType: '$postType',
-          description: '$description',
-          title: '$description',
-          active: '$active',
-          metadata: '$metadata',
-          location: '$location',
-          tags: '$tags',
-          likes: '$likes',
-          shares: '$shares',
-          comments: '$comments',
-          isOwned: '$isOwned',
-          views: '$views',
-          isPostPrivate: '$user.isPostPrivate',
-          privacy: {
-            isPostPrivate: '$user.isPostPrivate',
-            isCelebrity: '$user.isCelebrity',
-            isPrivate: '$user.isPrivate',
-          },
-          isViewed: '$isViewed',
-          allowComments: '$allowComments',
-
-
+          reportedStatus: 1,
+          reportedUserCount: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          metadata: 1,
+          location: 1,
+          tags: 1,
+          likes: 1,
+          shares: 1,
+          reaction: 1,
+          comments: 1,
+          isOwned: 1,
+          views: 1,
+          visibility: 1,
+          isViewed: 1,
+          allowComments: 1,
+          isCertified: 1,
+          saleLike: 1,
+          saleView: 1,
+          saleAmount: 1,
+          monetize: 1,
           refe: '$refs.ref',
-        }
-      },
 
-      {
-        $lookup: {
-          from: 'mediaprofilepicts',
-          localField: 'profilpictid',
-          foreignField: '_id',
-          as: 'profilePict_data',
-        },
-      },
-      {
-        $lookup: {
-          from: 'insights',
-          localField: 'insight_id',
-          foreignField: '_id',
-          as: 'insight_data',
-        },
-      },
-      {
-        $lookup: {
-          from: 'userauths',
-          localField: 'userAuth_id',
-          foreignField: '_id',
-          as: 'userAuth_data',
-        },
+
+        }
       },
       {
         $lookup: {
@@ -248,7 +267,9 @@ export class GetusercontentsService {
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediaPict_data',
+
         },
+
       },
       {
         $lookup: {
@@ -256,7 +277,9 @@ export class GetusercontentsService {
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediadiaries_data',
+
         },
+
       },
       {
         $lookup: {
@@ -264,85 +287,78 @@ export class GetusercontentsService {
           localField: 'idmedia',
           foreignField: '_id',
           as: 'mediavideos_data',
+
         },
+
       },
       {
         $project: {
-          mediapict: { $arrayElemAt: ['$mediaPict_data', 0] },
-          mediadiaries: { $arrayElemAt: ['$mediadiaries_data', 0] },
-          mediavideos: { $arrayElemAt: ['$mediavideos_data', 0] },
-
-          profilpict: { $arrayElemAt: ['$profilePict_data', 0] },
-          insights: { $arrayElemAt: ['$insight_data', 0] },
-          auth: { $arrayElemAt: ['$userAuth_data', 0] },
+          mediapict: {
+            $arrayElemAt: ['$mediaPict_data', 0]
+          },
+          mediadiaries: {
+            $arrayElemAt: ['$mediadiaries_data', 0]
+          },
+          mediavideos: {
+            $arrayElemAt: ['$mediavideos_data', 0]
+          },
           mediapictPath: '$mediapict.mediaBasePath',
           mediadiariPath: '$mediadiaries.mediaBasePath',
           mediavideoPath: '$mediavideos.mediaBasePath',
-          refs: '$refs',
-          idmedia: '$idmedia',
+          refs: 1,
+          reportedStatus: 1,
+          reportedUserCount: 1,
+          idmedia: 1,
           rotate: '$mediadiaries.rotate',
-          fullName: '$fullName',
-          username: '$auth.username',
-          createdAt: '$createdAt',
-          updatedAt: '$updatedAt',
-          postID: '$postID',
-          email: '$email',
-          postType: '$postType',
-          description: '$description',
-          title: '$description',
-          active: '$active',
-          metadata: '$metadata',
-          location: '$location',
-          tags: '$tags',
-          likes: '$likes',
-          shares: '$shares',
-          comments: '$comments',
-          isOwned: '$isOwned',
-          views: '$views',
-          privacy: '$privacy',
-          isViewed: '$isViewed',
-          allowComments: '$allowComments',
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          metadata: 1,
+          location: 1,
+          tags: 1,
+          likes: 1,
+          shares: 1,
+          reaction: 1,
+          comments: 1,
+          isOwned: 1,
+          views: 1,
+          visibility: 1,
+          privacy: 1,
+          isViewed: 1,
+          allowComments: 1,
+          isCertified: 1,
+          saleLike: 1,
+          saleView: 1,
+          saleAmount: 1,
+          monetize: 1,
 
-
-          insight: {
-            shares: '$insights.shares',
-            followers: '$insights.followers',
-            comments: '$insights.comments',
-            followings: '$insights.followings',
-            reactions: '$insights.reactions',
-            posts: '$insights.posts',
-            views: '$insights.views',
-            likes: '$insights.likes'
-          },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: '$profilpict.fsTargetUri',
-            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
-
-          },
 
         }
       },
-
       {
         $addFields: {
 
-          concats: '/profilepict',
-          pict: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
           concatmediapict: '/pict',
-          media_pict: { $replaceOne: { input: "$mediapict.mediaUri", find: "_0001.jpeg", replacement: "" } },
-
-
+          media_pict: {
+            $replaceOne: {
+              input: "$mediapict.mediaUri",
+              find: "_0001.jpeg",
+              replacement: ""
+            }
+          },
           concatmediadiari: '/stream',
           concatthumbdiari: '/thumb',
           media_diari: '$mediadiaries.mediaUri',
-
           concatmediavideo: '/stream',
           concatthumbvideo: '/thumb',
           media_video: '$mediavideos.mediaUri'
         },
+
       },
       {
         $project: {
@@ -350,9 +366,24 @@ export class GetusercontentsService {
           mediaBasePath: {
             $switch: {
               branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediapict.mediaBasePath' },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaBasePath' },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaBasePath' }
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediapict.mediaBasePath'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': '$mediadiaries.mediaBasePath'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': '$mediavideos.mediaBasePath'
+                }
               ],
               default: ''
             }
@@ -360,9 +391,24 @@ export class GetusercontentsService {
           mediaUri: {
             $switch: {
               branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediapict.mediaUri' },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaUri' },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaUri' }
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediapict.mediaUri'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': '$mediadiaries.mediaUri'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': '$mediavideos.mediaUri'
+                }
               ],
               default: ''
             }
@@ -370,101 +416,366 @@ export class GetusercontentsService {
           mediaType: {
             $switch: {
               branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediapict.mediaType' },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaType' },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaType' }
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediapict.mediaType'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': '$mediadiaries.mediaType'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': '$mediavideos.mediaType'
+                }
               ],
               default: ''
             }
           },
-
           mediaThumbEndpoint: {
             $switch: {
               branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediadiaries.mediaThumb' },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatthumbdiari", "/", "$media_diari"] }, },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatthumbvideo", "/", "$media_video"] }, }
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediadiaries.mediaThumb'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': {
+                    $concat: ["$concatthumbdiari", "/", "$postID"]
+                  },
+
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': {
+                    $concat: ["$concatthumbvideo", "/", "$postID"]
+                  },
+
+                }
               ],
               default: ''
             }
           },
-
           mediaEndpoint: {
             $switch: {
               branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': { $concat: ["$concatmediapict", "/", "$media_pict"] }, },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': { $concat: ["$concatmediadiari", "/", "$media_diari"] }, },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': { $concat: ["$concatmediavideo", "/", "$media_video"] }, }
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': {
+                    $concat: ["$concatmediapict", "/", "$postID"]
+                  },
+
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': {
+                    $concat: ["$concatmediadiari", "/", "$postID"]
+                  },
+
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': {
+                    $concat: ["$concatmediavideo", "/", "$postID"]
+                  },
+
+                }
               ],
               default: ''
             }
           },
-
           mediaThumbUri: {
             $switch: {
               branches: [
-                { 'case': { '$eq': ['$refs', 'mediapicts'] }, 'then': '$mediadiaries.mediaThumb' },
-                { 'case': { '$eq': ['$refs', 'mediadiaries'] }, 'then': '$mediadiaries.mediaThumb' },
-                { 'case': { '$eq': ['$refs', 'mediavideos'] }, 'then': '$mediavideos.mediaThumb' }
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediapicts']
+                  },
+                  'then': '$mediadiaries.mediaThumb'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediadiaries']
+                  },
+                  'then': '$mediadiaries.mediaThumb'
+                },
+                {
+                  'case': {
+                    '$eq': ['$refs', 'mediavideos']
+                  },
+                  'then': '$mediavideos.mediaThumb'
+                }
               ],
               default: ''
             }
           },
-
-          fullName: '$fullName',
-          username: '$auth.username',
-          createdAt: '$createdAt',
-          updatedAt: '$updatedAt',
-          postID: '$postID',
-          email: '$email',
-          postType: '$postType',
-          description: '$description',
-          title: '$description',
-          active: '$active',
-          metadata: '$metadata',
-          location: '$location',
-          tags: '$tags',
-          likes: '$likes',
-          shares: '$shares',
-          comments: '$comments',
-          isOwned: '$isOwned',
-          views: '$views',
-          privacy: '$privacy',
-          isViewed: '$isViewed',
-          allowComments: '$allowComments',
-
-          insight: {
-            shares: '$insights.shares',
-            followers: '$insights.followers',
-            comments: '$insights.comments',
-            followings: '$insights.followings',
-            reactions: '$insights.reactions',
-            posts: '$insights.posts',
-            views: '$insights.views',
-            likes: '$insights.likes'
+          apsaraId: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediapicts"
+                    ]
+                  },
+                  then: "$mediapict.apsaraId"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediadiaries"
+                    ]
+                  },
+                  then: "$mediadiaries.apsaraId"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediavideos"
+                    ]
+                  },
+                  then: "$mediavideos.apsaraId"
+                }
+              ],
+              default: false
+            }
           },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: { $concat: ["$concats", "/", "$pict"] },
-
-
+          apsara: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediapicts"
+                    ]
+                  },
+                  then: "$mediapict.apsara"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediadiaries"
+                    ]
+                  },
+                  then: "$mediadiaries.apsara"
+                },
+                {
+                  case: {
+                    $eq: [
+                      "$refs",
+                      "mediavideos"
+                    ]
+                  },
+                  then: "$mediavideos.apsara"
+                }
+              ],
+              default: false
+            }
           },
-
-
+          reportedStatus: 1,
+          reportedUserCount: 1,
+          createdAt: 1,
+          updatedAt: 1,
+          postID: 1,
+          email: 1,
+          postType: 1,
+          description: 1,
+          title: 1,
+          active: 1,
+          metadata: 1,
+          location: 1,
+          tags: 1,
+          likes: 1,
+          shares: 1,
+          reaction: 1,
+          comments: 1,
+          isOwned: 1,
+          views: 1,
+          visibility: 1,
+          privacy: 1,
+          isViewed: 1,
+          allowComments: 1,
+          isCertified: 1,
+          saleLike: 1,
+          saleView: 1,
+          saleAmount: 1,
+          monetize: 1,
 
 
         }
       },
+    );
 
-      { $sort: { createdAt: -1 }, },
-      { $skip: skip },
-      { $limit: limit },
+    pipeline.push({
+      $match: {
+        email: email
+      }
+    },);
 
-    ]);
+    if (monetize && monetize !== undefined) {
+      pipeline.push({
+        $match: {
+          monetize: monetize
+        }
+      },);
+    }
+    if (startdate && startdate !== undefined) {
 
-    return query;
+      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+
+    }
+    if (enddate && enddate !== undefined) {
+
+      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+
+    }
+
+    if (popular && popular !== undefined) {
+      pipeline.push({ $sort: { views: -1, likes: -1 }, },);
+    } else {
+      pipeline.push({ $sort: { createdAt: - 1 } });
+    }
+
+    if (page > 0) {
+      pipeline.push({ $skip: (page * limit) });
+    }
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
+    let query = await this.getusercontentsModel.aggregate(pipeline);
+
+    try {
+      var data = null;
+      var datas = null;
+      var arrdata = [];
+      let pict: String[] = [];
+      var objk = {};
+      var type = null;
+      var idapsara = null;
+      var apsara = null;
+      var idapsaradefine = null;
+      var apsaradefine = null;
+      for (var i = 0; i < query.length; i++) {
+        try {
+          idapsara = query[i].apsaraId;
+        } catch (e) {
+          idapsara = "";
+        }
+        try {
+          apsara = query[i].apsara;
+        } catch (e) {
+          apsara = false;
+        }
+        if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+          apsaradefine = false;
+        } else {
+          apsaradefine = true;
+        }
+
+        if (idapsara === undefined || idapsara === "" || idapsara === null) {
+          idapsaradefine = "";
+        } else {
+          idapsaradefine = idapsara;
+        }
+        var type = query[i].postType;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+          datas = [];
+        } else {
+          if (type === "pict") {
+
+            try {
+              datas = await this.postContentService.getImageApsara(pict);
+            } catch (e) {
+              datas = [];
+            }
+          }
+          else if (type === "vid") {
+            try {
+              datas = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              datas = [];
+            }
+
+          }
+          else if (type === "story") {
+            try {
+              datas = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              datas = [];
+            }
+          }
+          else if (type === "diary") {
+            try {
+              datas = await this.postContentService.getVideoApsara(pict);
+            } catch (e) {
+              datas = [];
+            }
+          }
+        }
+        objk = {
+          "_id": query[i]._id,
+          "postID": query[i].postID,
+          "email": query[i].email,
+          "postType": query[i].postType,
+          "description": query[i].description,
+          "active": query[i].active,
+          "createdAt": query[i].createdAt,
+          "updatedAt": query[i].updatedAt,
+          "visibility": query[i].visibility,
+          "location": query[i].location,
+          "isViewed": query[i].isViewed,
+          "saleLike": query[i].saleLike,
+          "saleView": query[i].saleView,
+          "likes": query[i].likes,
+          "shares": query[i].shares,
+          "reaction": query[i].reaction,
+          "comments": query[i].comments,
+          "isOwned": query[i].isOwned,
+          "views": query[i].views,
+          "saleAmount": query[i].saleAmount,
+          "monetize": query[i].monetize,
+          "mediaType": query[i].mediaType,
+          "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+          "mediaEndpoint": query[i].mediaEndpoint,
+          "apsaraId": idapsaradefine,
+          "apsara": apsaradefine,
+          "media": datas
+        };
+
+        arrdata.push(objk);
+      }
+      data = arrdata;
+    } catch (e) {
+      data = null;
+    }
+
+    return data;
   }
 
 
@@ -7949,586 +8260,634 @@ export class GetusercontentsService {
     } catch (e) {
       dateend = "";
     }
-    var pipeline=new Array<any>();
-    if(buy && buy!==undefined){
-      pipeline=new Array<any>(
-          {$lookup: {
-              from: 'userbasics',
-              localField: 'email',
-              foreignField: 'email',
-              as: 'basicdata',
-          }},
-          {$lookup: {
-              from: 'userauths',
-              localField: 'email',
-              foreignField: 'email',
-              as: 'authdata',
-          }},
-          {$lookup: {
-              from: 'transactions',
-              localField: 'postID',
-              foreignField: 'postid',
-              as: 'trans',
-          }},
-          {$unwind: {
-              path: '$trans',
-              preserveNullAndEmptyArrays: false
-          }},
-          
-          {$addFields:{
-              'auth':{$arrayElemAt:['$authdata',0]},
-              'basic':{$arrayElemAt:['$basicdata',0]},
-              'profilepictid':{$arrayElemAt:['$basicdata.profilePict.$id',0]},
-              'insightid':{$arrayElemAt:['$basicdata.insight.$id',0]},
-              'mediaid':{$arrayElemAt:['$contentMedias.$id',0]},
-              'mediaref':{$arrayElemAt:['$contentMedias.$ref',0]},
-              'isViewed':{
-                '$cond': { if: { '$eq': [ '$views', 0 ] }, then: false, else: true }
-              },
-              salePrice: "$trans.amount",
-              monetize: true
-          }},
-          {$lookup: {
-              from: 'mediaprofilepicts',
-              localField: 'profilepictid',
-              foreignField: '_id',
-              as: 'avatardata',
-          }},
-          {$lookup: {
-              from: 'insights',
-              localField: 'insightid',
-              foreignField: '_id',
-              as: 'insightdata',
-          }},
-          {$lookup: {
-              from: 'mediapicts',
-              localField: 'mediaid',
-              foreignField: '_id',
-              as: 'picturedata',
-          }},
-          {$lookup: {
-              from: 'mediadiaries',
-              localField: 'mediaid',
-              foreignField: '_id',
-              as: 'diarydata',
-          }},
-          {$lookup: {
-              from: 'mediavideos',
-              localField: 'mediaid',
-              foreignField: '_id',
-              as: 'videodata',
-          }},
-          {$addFields:{
-              'avatar':{$arrayElemAt:['$avatardata',0]},
-              'insight':{$arrayElemAt:['$insightdata',0]},
-              'picture':{$arrayElemAt:['$picturedata',0]},
-              'diary':{$arrayElemAt:['$diarydata',0]},
-              'video':{$arrayElemAt:['$videodata',0]},
-          }},
-          {$addFields:{
-              pathavatar: '/profilepict',
+    var pipeline = new Array<any>();
+    if (buy && buy !== undefined) {
+      pipeline = new Array<any>(
+        {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'email',
+            foreignField: 'email',
+            as: 'basicdata',
+          }
+        },
+        {
+          $lookup: {
+            from: 'userauths',
+            localField: 'email',
+            foreignField: 'email',
+            as: 'authdata',
+          }
+        },
+        {
+          $lookup: {
+            from: 'transactions',
+            localField: 'postID',
+            foreignField: 'postid',
+            as: 'trans',
+          }
+        },
+        {
+          $unwind: {
+            path: '$trans',
+            preserveNullAndEmptyArrays: false
+          }
+        },
 
-              pathpicture: '/pict',
-              mediapicture: { $replaceOne: { input: "$picture.mediaUri", find: "_0001.jpeg", replacement: "" } },
+        {
+          $addFields: {
+            'auth': { $arrayElemAt: ['$authdata', 0] },
+            'basic': { $arrayElemAt: ['$basicdata', 0] },
+            'profilepictid': { $arrayElemAt: ['$basicdata.profilePict.$id', 0] },
+            'insightid': { $arrayElemAt: ['$basicdata.insight.$id', 0] },
+            'mediaid': { $arrayElemAt: ['$contentMedias.$id', 0] },
+            'mediaref': { $arrayElemAt: ['$contentMedias.$ref', 0] },
+            'isViewed': {
+              '$cond': { if: { '$eq': ['$views', 0] }, then: false, else: true }
+            },
+            salePrice: "$trans.amount",
+            monetize: true
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediaprofilepicts',
+            localField: 'profilepictid',
+            foreignField: '_id',
+            as: 'avatardata',
+          }
+        },
+        {
+          $lookup: {
+            from: 'insights',
+            localField: 'insightid',
+            foreignField: '_id',
+            as: 'insightdata',
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediapicts',
+            localField: 'mediaid',
+            foreignField: '_id',
+            as: 'picturedata',
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediadiaries',
+            localField: 'mediaid',
+            foreignField: '_id',
+            as: 'diarydata',
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediavideos',
+            localField: 'mediaid',
+            foreignField: '_id',
+            as: 'videodata',
+          }
+        },
+        {
+          $addFields: {
+            'avatar': { $arrayElemAt: ['$avatardata', 0] },
+            'insight': { $arrayElemAt: ['$insightdata', 0] },
+            'picture': { $arrayElemAt: ['$picturedata', 0] },
+            'diary': { $arrayElemAt: ['$diarydata', 0] },
+            'video': { $arrayElemAt: ['$videodata', 0] },
+          }
+        },
+        {
+          $addFields: {
+            pathavatar: '/profilepict',
 
-              pathdiary: '/stream',
-              paththumbdiary: '/thumb',
-              mediadiary: '$diary.mediaUri',
+            pathpicture: '/pict',
+            mediapicture: { $replaceOne: { input: "$picture.mediaUri", find: "_0001.jpeg", replacement: "" } },
 
-              pathvideo: '/stream',
-              paththumbvideo: '/thumb',
-              mediavideo: '$video.mediaUri'
-          }},
-          {$project:{
-               _id:1,
-               insight: {
-                  shares: '$insight.shares',
-                  followers: '$insight.followers',
-                  comments: '$insight.comments',
-                  followings: '$insight.followings',
-                  reactions: '$insight.reactions',
-                  posts: '$insight.posts',
-                  views: '$insight.views',
-                  likes: '$insight.likes'
-               },
-               avatar:{
-                   mediaBasePath: '$avatar.mediaBasePath',
-                   mediaUri: '$avatar.mediaUri',
-                   mediaType: '$avatar.mediaType',
-                   mediaEndpoint: '$avatar.fsTargetUri',
-                   medreplace: { $replaceOne: { input: "$avatar.mediaUri", find: "_0001.jpeg", replacement: "" } },
-               },
-               fullName:"$basic.fullName",
-               username:"$auth.username",
-               createdAt:1,
-               updatedAt:1,
-               postID:1,
-               email:1,
-               postType:1,
-               description:1,
-               title:1,
-               active:1,
-               metadata:1,
-               location:1,
-               tags:1,
-               likes:1,
-               views:1,
-               shares:1,
-               comments:1,
-               isOwned:1,
-               privacy:{
-                   isPostPrivate:'$basic.isPostPrivate',
-                   isCelebrity:'$basic.isCelebrity',
-                   isPrivate:'$basic.isPrivate'
-              },
-              isViewed:'$isViewed',
-              allowComments:1,
-              isSafe:1,
-              saleLike:1,
-              saleView:1,
-              monetize:"$monetize",
-              salePrice:"$salePrice",
-              mediaref:"$mediaref",
-              rotate: '$diary.rotate',
-              trans:1,
-              mediaBasePath: {
-                $switch: {
-                  branches: [
-                    { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaBasePath' },
-                    { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaBasePath' },
-                    { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaBasePath' }
-                  ],
-                  default: ''
-                }
-              },
-              mediaUri: {
-                $switch: {
-                  branches: [
-                    { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaUri' },
-                    { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaUri' },
-                    { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaUri' }
-                  ],
-                  default: ''
-                }
-              },
-              mediaType: {
-                $switch: {
-                  branches: [
-                    { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaType' },
-                    { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaType' },
-                    { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaType' }
-                  ],
-                  default: ''
-                }
-              },
-              mediaThumbEndpoint: {
-                $switch: {
-                  branches: [
-                    { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaThumb' },
-                    { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': { $concat: ["$paththumbdiary", "/", "$mediadiary"] }, },
-                    { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': { $concat: ["$paththumbvideo", "/", "$mediavideo"] }, }
-                  ],
-                  default: ''
-                }
-              },
-              
-              mediaEndpoint: {
-                $switch: {
-                  branches: [
-                    { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': { $concat: ["$pathpicture", "/", "$mediapicture"] }, },
-                    { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': { $concat: ["$pathdiary", "/", "$mediadiary"] }, },
-                    { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': { $concat: ["$pathvideo", "/", "$mediavideo"] }, }
-                  ],
-                  default: ''
-                }
-              },
-              
-              mediaThumbUri: {
-                $switch: {
-                  branches: [
-                    { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$diary.mediaThumb' },
-                    { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaThumb' },
-                    { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaThumb' }
-                  ],
-                  default: ''
-                }
-              },
-              apsaraId: {
-                $switch: {
-                  branches: [
-                    {
-                      case: {
-                        $eq: [
-                          "$mediaref",
-                          "mediapicts"
-                        ]
-                      },
-                      then: "$picture.apsaraId"
-                    },
-                    {
-                      case: {
-                        $eq: [
-                          "$mediaref",
-                          "mediadiaries"
-                        ]
-                      },
-                      then: "$diary.apsaraId"
-                    },
-                    {
-                      case: {
-                        $eq: [
-                          "$mediaref",
-                          "mediavideos"
-                        ]
-                      },
-                      then: "$video.apsaraId"
-                    }
-                  ],
-                  default: ""
-                }
-              },
-              apsara: {
-                $switch: {
-                  branches: [
-                    {
-                      case: {
-                        $eq: [
-                          "$mediaref",
-                          "mediapicts"
-                        ]
-                      },
-                      then: "$picture.apsara"
-                    },
-                    {
-                      case: {
-                        $eq: [
-                          "$mediaref",
-                          "mediadiaries"
-                        ]
-                      },
-                      then: "$diary.apsara"
-                    },
-                    {
-                      case: {
-                        $eq: [
-                          "$mediaref",
-                          "mediavideos"
-                        ]
-                      },
-                      then: "$video.apsara"
-                    }
-                  ],
-                  default: false
-                }
-              },
-          }},
-      );
-      pipeline.push({$match:{"trans.iduserbuyer":iduserbuy,"trans.status":"Success"}});
-    }
-    else{
-      console.log("not monetized");
-      pipeline=new Array<any>(
-          {$lookup: {
-              from: 'userbasics',
-              localField: 'email',
-              foreignField: 'email',
-              as: 'basicdata',
-          }},
-          {$lookup: {
-              from: 'userauths',
-              localField: 'email',
-              foreignField: 'email',
-              as: 'authdata',
-          }},
-          {$addFields:{
-              'auth':{$arrayElemAt:['$authdata',0]},
-              'basic':{$arrayElemAt:['$basicdata',0]},
-              'profilepictid':{$arrayElemAt:['$basicdata.profilePict.$id',0]},
-              'insightid':{$arrayElemAt:['$basicdata.insight.$id',0]},
-              'mediaid':{$arrayElemAt:['$contentMedias.$id',0]},
-              'mediaref':{$arrayElemAt:['$contentMedias.$ref',0]},
-              'isViewed':{
-                '$cond': { if: { '$eq': [ '$views', 0 ] }, then: false, else: true }
-              },
-              salePrice: "$saleAmount",
-              monetize: {
-                $cond: { if: { $eq: ["$saleAmount", 0] }, then: false, else: true }
+            pathdiary: '/stream',
+            paththumbdiary: '/thumb',
+            mediadiary: '$diary.mediaUri',
+
+            pathvideo: '/stream',
+            paththumbvideo: '/thumb',
+            mediavideo: '$video.mediaUri'
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            insight: {
+              shares: '$insight.shares',
+              followers: '$insight.followers',
+              comments: '$insight.comments',
+              followings: '$insight.followings',
+              reactions: '$insight.reactions',
+              posts: '$insight.posts',
+              views: '$insight.views',
+              likes: '$insight.likes'
+            },
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: '$avatar.fsTargetUri',
+              medreplace: { $replaceOne: { input: "$avatar.mediaUri", find: "_0001.jpeg", replacement: "" } },
+            },
+            fullName: "$basic.fullName",
+            username: "$auth.username",
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            metadata: 1,
+            location: 1,
+            tags: 1,
+            likes: 1,
+            views: 1,
+            shares: 1,
+            comments: 1,
+            isOwned: 1,
+            privacy: {
+              isPostPrivate: '$basic.isPostPrivate',
+              isCelebrity: '$basic.isCelebrity',
+              isPrivate: '$basic.isPrivate'
+            },
+            isViewed: '$isViewed',
+            allowComments: 1,
+            isSafe: 1,
+            saleLike: 1,
+            saleView: 1,
+            monetize: "$monetize",
+            salePrice: "$salePrice",
+            mediaref: "$mediaref",
+            rotate: '$diary.rotate',
+            trans: 1,
+            mediaBasePath: {
+              $switch: {
+                branches: [
+                  { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaBasePath' },
+                  { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaBasePath' },
+                  { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaBasePath' }
+                ],
+                default: ''
               }
-          }},
-          {$lookup: {
-              from: 'mediaprofilepicts',
-              localField: 'profilepictid',
-              foreignField: '_id',
-              as: 'avatardata',
-          }},
-          {$lookup: {
-              from: 'insights',
-              localField: 'insightid',
-              foreignField: '_id',
-              as: 'insightdata',
-          }},
-          {$lookup: {
-              from: 'mediapicts',
-              localField: 'mediaid',
-              foreignField: '_id',
-              as: 'picturedata',
-          }},
-          {$lookup: {
-              from: 'mediadiaries',
-              localField: 'mediaid',
-              foreignField: '_id',
-              as: 'diarydata',
-          }},
-          {$lookup: {
-              from: 'mediavideos',
-              localField: 'mediaid',
-              foreignField: '_id',
-              as: 'videodata',
-          }},
-          {$addFields:{
-              'avatar':{$arrayElemAt:['$avatardata',0]},
-              'insight':{$arrayElemAt:['$insightdata',0]},
-              'picture':{$arrayElemAt:['$picturedata',0]},
-              'diary':{$arrayElemAt:['$diarydata',0]},
-              'video':{$arrayElemAt:['$videodata',0]},
-          }},
-          {$addFields:{
-              pathavatar: '/profilepict',
+            },
+            mediaUri: {
+              $switch: {
+                branches: [
+                  { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaUri' },
+                  { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaUri' },
+                  { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaUri' }
+                ],
+                default: ''
+              }
+            },
+            mediaType: {
+              $switch: {
+                branches: [
+                  { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaType' },
+                  { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaType' },
+                  { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaType' }
+                ],
+                default: ''
+              }
+            },
+            mediaThumbEndpoint: {
+              $switch: {
+                branches: [
+                  { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaThumb' },
+                  { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': { $concat: ["$paththumbdiary", "/", "$mediadiary"] }, },
+                  { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': { $concat: ["$paththumbvideo", "/", "$mediavideo"] }, }
+                ],
+                default: ''
+              }
+            },
 
-              pathpicture: '/pict',
-              mediapicture: { $replaceOne: { input: "$picture.mediaUri", find: "_0001.jpeg", replacement: "" } },
+            mediaEndpoint: {
+              $switch: {
+                branches: [
+                  { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': { $concat: ["$pathpicture", "/", "$mediapicture"] }, },
+                  { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': { $concat: ["$pathdiary", "/", "$mediadiary"] }, },
+                  { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': { $concat: ["$pathvideo", "/", "$mediavideo"] }, }
+                ],
+                default: ''
+              }
+            },
 
-              pathdiary: '/stream',
-              paththumbdiary: '/thumb',
-              mediadiary: '$diary.mediaUri',
-
-              pathvideo: '/stream',
-              paththumbvideo: '/thumb',
-              mediavideo: '$video.mediaUri'
-          }},
-          {$project:{
-               _id:1,
-               insight: {
-                  shares: '$insight.shares',
-                  followers: '$insight.followers',
-                  comments: '$insight.comments',
-                  followings: '$insight.followings',
-                  reactions: '$insight.reactions',
-                  posts: '$insight.posts',
-                  views: '$insight.views',
-                  likes: '$insight.likes'
-               },
-               avatar:{
-                   mediaBasePath: '$avatar.mediaBasePath',
-                   mediaUri: '$avatar.mediaUri',
-                   mediaType: '$avatar.mediaType',
-                   mediaEndpoint: '$avatar.fsTargetUri',
-                   medreplace: { $replaceOne: { input: "$avatar.mediaUri", find: "_0001.jpeg", replacement: "" } },
-               },
-               fullName:"$basic.fullName",
-               username:"$auth.username",
-               createdAt:1,
-               updatedAt:1,
-               postID:1,
-               email:1,
-               postType:1,
-               description:1,
-               title:1,
-               active:1,
-               metadata:1,
-               location:1,
-               tags:1,
-               likes:1,
-               views:1,
-               shares:1,
-               comments:1,
-               isOwned:1,
-               privacy:{
-                   isPostPrivate:'$basic.isPostPrivate',
-                   isCelebrity:'$basic.isCelebrity',
-                   isPrivate:'$basic.isPrivate'
-               },
-               isViewed:'$isViewed',
-               allowComments:1,
-               isSafe:1,
-               saleLike:1,
-               saleView:1,
-               reportedUserCount:1,
-               monetize:"$monetize",
-               salePrice:"$salePrice",
-               mediaref:"$mediaref",
-               rotate: '$diary.rotate',
-              mediaBasePath: {
-                $switch: {
-                  branches: [
-                    { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaBasePath' },
-                    { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaBasePath' },
-                    { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaBasePath' }
-                  ],
-                  default: ''
-                }
-              },
-              mediaUri: {
-                $switch: {
-                  branches: [
-                    { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaUri' },
-                    { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaUri' },
-                    { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaUri' }
-                  ],
-                  default: ''
-                }
-              },
-              mediaType: {
-                $switch: {
-                  branches: [
-                    { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaType' },
-                    { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaType' },
-                    { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaType' }
-                  ],
-                  default: ''
-                }
-              },
-              mediaThumbEndpoint: {
-                $switch: {
-                  branches: [
-                    { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaThumb' },
-                    { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': { $concat: ["$paththumbdiary", "/", "$mediadiary"] }, },
-                    { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': { $concat: ["$paththumbvideo", "/", "$mediavideo"] }, }
-                  ],
-                  default: ''
-                }
-              },
-              
-              mediaEndpoint: {
-                $switch: {
-                  branches: [
-                    { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': { $concat: ["$pathpicture", "/", "$mediapicture"] }, },
-                    { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': { $concat: ["$pathdiary", "/", "$mediadiary"] }, },
-                    { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': { $concat: ["$pathvideo", "/", "$mediavideo"] }, }
-                  ],
-                  default: ''
-                }
-              },
-              
-              mediaThumbUri: {
-                $switch: {
-                  branches: [
-                    { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$diary.mediaThumb' },
-                    { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaThumb' },
-                    { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaThumb' }
-                  ],
-                  default: ''
-                }
-              },
-              apsaraId: {
-                $switch: {
-                  branches: [
-                    {
-                      case: {
-                        $eq: [
-                          "$mediaref",
-                          "mediapicts"
-                        ]
-                      },
-                      then: "$picture.apsaraId"
+            mediaThumbUri: {
+              $switch: {
+                branches: [
+                  { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$diary.mediaThumb' },
+                  { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaThumb' },
+                  { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaThumb' }
+                ],
+                default: ''
+              }
+            },
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$mediaref",
+                        "mediapicts"
+                      ]
                     },
-                    {
-                      case: {
-                        $eq: [
-                          "$mediaref",
-                          "mediadiaries"
-                        ]
-                      },
-                      then: "$diary.apsaraId"
+                    then: "$picture.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$mediaref",
+                        "mediadiaries"
+                      ]
                     },
-                    {
-                      case: {
-                        $eq: [
-                          "$mediaref",
-                          "mediavideos"
-                        ]
-                      },
-                      then: "$video.apsaraId"
-                    }
-                  ],
-                  default: ""
-                }
-              },
-              apsara: {
-                $switch: {
-                  branches: [
-                    {
-                      case: {
-                        $eq: [
-                          "$mediaref",
-                          "mediapicts"
-                        ]
-                      },
-                      then: "$picture.apsara"
+                    then: "$diary.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$mediaref",
+                        "mediavideos"
+                      ]
                     },
-                    {
-                      case: {
-                        $eq: [
-                          "$mediaref",
-                          "mediadiaries"
-                        ]
-                      },
-                      then: "$diary.apsara"
+                    then: "$video.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$mediaref",
+                        "mediapicts"
+                      ]
                     },
-                    {
-                      case: {
-                        $eq: [
-                          "$mediaref",
-                          "mediavideos"
-                        ]
-                      },
-                      then: "$video.apsara"
-                    }
-                  ],
-                  default: false
-                }
-              },
-          }}   
+                    then: "$picture.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$mediaref",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$diary.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$mediaref",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$video.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
+          }
+        },
       );
-      pipeline.push({$match:{email:email,active:true}});
-      if(ownership!==undefined){
-        pipeline.push({$match:{isOwned:ownership}});
+      pipeline.push({ $match: { "trans.iduserbuyer": iduserbuy, "trans.status": "Success" } });
+    }
+    else {
+      console.log("not monetized");
+      pipeline = new Array<any>(
+        {
+          $lookup: {
+            from: 'userbasics',
+            localField: 'email',
+            foreignField: 'email',
+            as: 'basicdata',
+          }
+        },
+        {
+          $lookup: {
+            from: 'userauths',
+            localField: 'email',
+            foreignField: 'email',
+            as: 'authdata',
+          }
+        },
+        {
+          $addFields: {
+            'auth': { $arrayElemAt: ['$authdata', 0] },
+            'basic': { $arrayElemAt: ['$basicdata', 0] },
+            'profilepictid': { $arrayElemAt: ['$basicdata.profilePict.$id', 0] },
+            'insightid': { $arrayElemAt: ['$basicdata.insight.$id', 0] },
+            'mediaid': { $arrayElemAt: ['$contentMedias.$id', 0] },
+            'mediaref': { $arrayElemAt: ['$contentMedias.$ref', 0] },
+            'isViewed': {
+              '$cond': { if: { '$eq': ['$views', 0] }, then: false, else: true }
+            },
+            salePrice: "$saleAmount",
+            monetize: {
+              $cond: { if: { $eq: ["$saleAmount", 0] }, then: false, else: true }
+            }
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediaprofilepicts',
+            localField: 'profilepictid',
+            foreignField: '_id',
+            as: 'avatardata',
+          }
+        },
+        {
+          $lookup: {
+            from: 'insights',
+            localField: 'insightid',
+            foreignField: '_id',
+            as: 'insightdata',
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediapicts',
+            localField: 'mediaid',
+            foreignField: '_id',
+            as: 'picturedata',
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediadiaries',
+            localField: 'mediaid',
+            foreignField: '_id',
+            as: 'diarydata',
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediavideos',
+            localField: 'mediaid',
+            foreignField: '_id',
+            as: 'videodata',
+          }
+        },
+        {
+          $addFields: {
+            'avatar': { $arrayElemAt: ['$avatardata', 0] },
+            'insight': { $arrayElemAt: ['$insightdata', 0] },
+            'picture': { $arrayElemAt: ['$picturedata', 0] },
+            'diary': { $arrayElemAt: ['$diarydata', 0] },
+            'video': { $arrayElemAt: ['$videodata', 0] },
+          }
+        },
+        {
+          $addFields: {
+            pathavatar: '/profilepict',
+
+            pathpicture: '/pict',
+            mediapicture: { $replaceOne: { input: "$picture.mediaUri", find: "_0001.jpeg", replacement: "" } },
+
+            pathdiary: '/stream',
+            paththumbdiary: '/thumb',
+            mediadiary: '$diary.mediaUri',
+
+            pathvideo: '/stream',
+            paththumbvideo: '/thumb',
+            mediavideo: '$video.mediaUri'
+          }
+        },
+        {
+          $project: {
+            _id: 1,
+            insight: {
+              shares: '$insight.shares',
+              followers: '$insight.followers',
+              comments: '$insight.comments',
+              followings: '$insight.followings',
+              reactions: '$insight.reactions',
+              posts: '$insight.posts',
+              views: '$insight.views',
+              likes: '$insight.likes'
+            },
+            avatar: {
+              mediaBasePath: '$avatar.mediaBasePath',
+              mediaUri: '$avatar.mediaUri',
+              mediaType: '$avatar.mediaType',
+              mediaEndpoint: '$avatar.fsTargetUri',
+              medreplace: { $replaceOne: { input: "$avatar.mediaUri", find: "_0001.jpeg", replacement: "" } },
+            },
+            fullName: "$basic.fullName",
+            username: "$auth.username",
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            metadata: 1,
+            location: 1,
+            tags: 1,
+            likes: 1,
+            views: 1,
+            shares: 1,
+            comments: 1,
+            isOwned: 1,
+            privacy: {
+              isPostPrivate: '$basic.isPostPrivate',
+              isCelebrity: '$basic.isCelebrity',
+              isPrivate: '$basic.isPrivate'
+            },
+            isViewed: '$isViewed',
+            allowComments: 1,
+            isSafe: 1,
+            saleLike: 1,
+            saleView: 1,
+            reportedUserCount: 1,
+            monetize: "$monetize",
+            salePrice: "$salePrice",
+            mediaref: "$mediaref",
+            rotate: '$diary.rotate',
+            mediaBasePath: {
+              $switch: {
+                branches: [
+                  { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaBasePath' },
+                  { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaBasePath' },
+                  { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaBasePath' }
+                ],
+                default: ''
+              }
+            },
+            mediaUri: {
+              $switch: {
+                branches: [
+                  { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaUri' },
+                  { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaUri' },
+                  { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaUri' }
+                ],
+                default: ''
+              }
+            },
+            mediaType: {
+              $switch: {
+                branches: [
+                  { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaType' },
+                  { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaType' },
+                  { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaType' }
+                ],
+                default: ''
+              }
+            },
+            mediaThumbEndpoint: {
+              $switch: {
+                branches: [
+                  { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$picture.mediaThumb' },
+                  { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': { $concat: ["$paththumbdiary", "/", "$mediadiary"] }, },
+                  { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': { $concat: ["$paththumbvideo", "/", "$mediavideo"] }, }
+                ],
+                default: ''
+              }
+            },
+
+            mediaEndpoint: {
+              $switch: {
+                branches: [
+                  { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': { $concat: ["$pathpicture", "/", "$mediapicture"] }, },
+                  { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': { $concat: ["$pathdiary", "/", "$mediadiary"] }, },
+                  { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': { $concat: ["$pathvideo", "/", "$mediavideo"] }, }
+                ],
+                default: ''
+              }
+            },
+
+            mediaThumbUri: {
+              $switch: {
+                branches: [
+                  { 'case': { '$eq': ['$mediaref', 'mediapicts'] }, 'then': '$diary.mediaThumb' },
+                  { 'case': { '$eq': ['$mediaref', 'mediadiaries'] }, 'then': '$diary.mediaThumb' },
+                  { 'case': { '$eq': ['$mediaref', 'mediavideos'] }, 'then': '$video.mediaThumb' }
+                ],
+                default: ''
+              }
+            },
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$mediaref",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$picture.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$mediaref",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$diary.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$mediaref",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$video.apsaraId"
+                  }
+                ],
+                default: ""
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$mediaref",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$picture.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$mediaref",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$diary.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$mediaref",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$video.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
+          }
+        }
+      );
+      pipeline.push({ $match: { email: email, active: true } });
+      if (ownership !== undefined) {
+        pipeline.push({ $match: { isOwned: ownership } });
       }
-      if(archived && archived!==undefined){
-        pipeline.push({$match:{postType:"story"}});
+      if (archived && archived !== undefined) {
+        pipeline.push({ $match: { postType: "story" } });
       }
-    }
-    
-    if(postType && postType!==undefined){
-      pipeline.push({$match:{postType:postType}});
-    }
-    if(monetesisasi!==undefined){
-      pipeline.push({$match:{monetize:monetesisasi}});
-    }
-    if(startdate && startdate!==undefined){
-      pipeline.push({$match:{createdAt:{"$gte":startdate}}});
-    }
-    if(enddate && enddate!==undefined){
-      pipeline.push({$match:{createdAt:{"$lte":enddate}}});
-    }
-    if(reported!==undefined){
-      if(reported)
-        pipeline.push({$match:{"reportedUserCount":{$gt:0}}})
-      else
-        pipeline.push({$match:{"reportedUserCount":0}})
     }
 
-    if(buy!==undefined){
-      pipeline.push({$sort: { "trans.createdAt": -1 }});
+    if (postType && postType !== undefined) {
+      pipeline.push({ $match: { postType: postType } });
     }
-    else{
-      pipeline.push({$sort: { createdAt: -1 }});
+    if (monetesisasi !== undefined) {
+      pipeline.push({ $match: { monetize: monetesisasi } });
     }
-    pipeline.push({$skip:skip});
-    pipeline.push({$limit:limit});
+    if (startdate && startdate !== undefined) {
+      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+    }
+    if (enddate && enddate !== undefined) {
+      pipeline.push({ $match: { createdAt: { "$lte": enddate } } });
+    }
+    if (reported !== undefined) {
+      if (reported)
+        pipeline.push({ $match: { "reportedUserCount": { $gt: 0 } } })
+      else
+        pipeline.push({ $match: { "reportedUserCount": 0 } })
+    }
+
+    if (buy !== undefined) {
+      pipeline.push({ $sort: { "trans.createdAt": -1 } });
+    }
+    else {
+      pipeline.push({ $sort: { createdAt: -1 } });
+    }
+    pipeline.push({ $skip: skip });
+    pipeline.push({ $limit: limit });
     const util = require('util')
-    console.log(util.inspect(pipeline, {showHidden: false, depth: null, colors: true}));
-    
+    console.log(util.inspect(pipeline, { showHidden: false, depth: null, colors: true }));
+
     const query = await this.getusercontentsModel.aggregate(pipeline);
     var data = null;
     var arrdata = [];
@@ -8612,9 +8971,9 @@ export class GetusercontentsService {
         "saleLike": query[i].saleLike,
         "saleView": query[i].saleView,
         "monetize": query[i].monetize,
-        "salePrice":query[i].salePrice,
+        "salePrice": query[i].salePrice,
         "media": data,
-        "trans":query[i].trans
+        "trans": query[i].trans
       };
 
       arrdata.push(objk);
@@ -10392,14 +10751,14 @@ export class GetusercontentsService {
     ]);
     return query;
   }
-  async findPostIDsByEmail(email:string){
-    const posts=await this.getusercontentsModel.find({
-      "email":email,
-    },{
-      postID:1,_id:0
+  async findPostIDsByEmail(email: string) {
+    const posts = await this.getusercontentsModel.find({
+      "email": email,
+    }, {
+      postID: 1, _id: 0
     });
-    var postIDs=[];
-    for(var i=0;i<posts.length;i++){
+    var postIDs = [];
+    for (var i = 0; i < posts.length; i++) {
       postIDs.push(posts[i].postID);
     }
     // console.log(postIDs);

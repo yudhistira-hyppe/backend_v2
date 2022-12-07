@@ -52,112 +52,81 @@ export class UservouchersService {
         return query;
     }
 
-    async findUserVoucher(userID: ObjectId, key: string): Promise<Object> {
+    async findUserVoucher(userID: ObjectId, key: string, startday: number, endday: number): Promise<Object> {
 
-        if (key !== undefined) {
-            const query = this.uservouchersModel.aggregate([
+        var pipeline = [];
 
-                {
-                    $lookup: {
-                        from: "vouchers",
-                        localField: "voucherID",
-                        foreignField: "_id",
-                        as: "field"
-                    }
-                },
-                {
-                    $unwind: {
-                        path: "$field",
-                        preserveNullAndEmptyArrays: false
-                    }
-                },
-                {
-                    $match: {
-                        "userID": userID,
-                        "$or": [{
-                            "field.nameAds": {
-                                $regex: key,
-                                $options: 'i'
-                            }
-                        }, {
-                            "field.codeVoucher": {
-                                $regex: key,
-                                $options: 'i'
-                            }
-                        }],
-                        "isActive": true
-                    }
-                },
-                {
-                    "$sort": {
-                        "_id": 1
-                    },
-
-                },
-                {
-                    $project: {
-                        noVoucher: "$field.noVoucher",
-                        codeVoucher: "$field.codeVoucher",
-                        nameAds: "$field.nameAds",
-                        expiredAt: "$expiredAt",
-                        creditTotal: "$totalCredit",
-                        credit: "$credit",
-                        creditFree: "$creditFree",
-                        totalUsed: "$field.totalUsed",
-                        isActive: "$isActive",
-                        description: "$field.description",
-                        jmlVoucher: "$jmlVoucher"
-                    }
+        pipeline.push({
+            $lookup: {
+                from: "vouchers",
+                localField: "voucherID",
+                foreignField: "_id",
+                as: "field"
+            }
+        },
+            {
+                $unwind: {
+                    path: "$field",
+                    preserveNullAndEmptyArrays: false
                 }
-            ]);
-            return query;
-        } else {
-            const query = this.uservouchersModel.aggregate([
+            },
+        );
 
-                {
-                    $lookup: {
-                        from: "vouchers",
-                        localField: "voucherID",
-                        foreignField: "_id",
-                        as: "field"
-                    }
-                },
-                {
-                    $unwind: {
-                        path: "$field",
-                        preserveNullAndEmptyArrays: false
-                    }
-                },
-                {
-                    $match: {
-                        "userID": userID,
-                        "isActive": true
-                    }
-                },
-                {
-                    "$sort": {
-                        "_id": 1
-                    },
+        pipeline.push({
+            $match: {
+                "userID": userID,
+                "isActive": true
+            }
+        },);
 
-                },
-                {
-                    $project: {
-                        noVoucher: "$field.noVoucher",
-                        codeVoucher: "$field.codeVoucher",
-                        nameAds: "$field.nameAds",
-                        expiredAt: "$expiredAt",
-                        creditTotal: "$totalCredit",
-                        credit: "$credit",
-                        creditFree: "$creditFree",
-                        totalUsed: "$field.totalUsed",
-                        isActive: "$isActive",
-                        description: "$field.description",
-                        jmlVoucher: "$jmlVoucher"
-                    }
+        if (key && key !== undefined) {
+            pipeline.push({
+                $match: {
+                    "$or": [{
+                        "field.nameAds": {
+                            $regex: key,
+                            $options: 'i'
+                        }
+                    }, {
+                        "field.codeVoucher": {
+                            $regex: key,
+                            $options: 'i'
+                        }
+                    }],
                 }
-            ]);
-            return query;
+            },);
         }
+
+        pipeline.push({
+            "$sort": {
+                "_id": 1
+            },
+
+        },
+            {
+                $project: {
+                    noVoucher: "$field.noVoucher",
+                    codeVoucher: "$field.codeVoucher",
+                    nameAds: "$field.nameAds",
+                    expiredAt: 1,
+                    creditTotal: 1,
+                    credit: 1,
+                    creditFree: 1,
+                    totalUsed: "$field.totalUsed",
+                    isActive: 1,
+                    description: "$field.description",
+                    jmlVoucher: 1,
+                    expiredDay: "$field.expiredDay"
+                }
+            });
+        if (startday && startday !== undefined) {
+            pipeline.push({ $match: { 'expiredDay': { "$gte": startday } } });
+        }
+        if (endday && endday !== undefined) {
+            pipeline.push({ $match: { 'expiredDay': { "$lte": endday } } });
+        }
+        let query = await this.uservouchersModel.aggregate(pipeline);
+        return query;
 
     }
 
