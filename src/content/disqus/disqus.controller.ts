@@ -162,6 +162,20 @@ export class DisqusController {
         }
       }else{
         if (type == "DIRECT_MSG") {
+          
+
+          let tmp : DisqusResDto[] = [];
+          let dm = await this.disqusService.queryDiscussV2(String(ContentDto_.email));
+          if (dm != undefined && dm.length > 0) {
+            for (let i = 0; i < dm.length; i++) {
+              let o = dm[i];
+              tmp.push(o);
+            }
+          }
+
+          res.data = tmp;
+
+          /*
           var aDisqusContacts : any[] = []; 
           if (ContentDto_.receiverParty != undefined) {
             aDisqusContacts = await this.disquscontactsService.findDisqusByEmail(String(ContentDto_.email));
@@ -253,6 +267,7 @@ export class DisqusController {
 
           }
           }
+          */
         } else if (type == "COMMENT") {
           console.log("Payload Query Comment >>>>>> : ", ContentDto_);
           var DisqusResponseComment_ = new DisqusResponseComment();
