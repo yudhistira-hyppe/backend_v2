@@ -1135,5 +1135,71 @@ export class ContenteventsService {
     const query = await this.ContenteventsModel.aggregate(pipeline);
     return query;
   }
+  async detailkunjunganprofile(email: string, startdate: string, enddate: string) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+
+    var pipeline = [];
+    pipeline.push({
+      $match: {
+
+        eventType: "VIEW_PROFILE",
+        senderParty: email
+      }
+    },);
+
+    if (startdate && startdate !== undefined) {
+      pipeline.push({
+        $match: {
+          createdAt: { $gte: startdate }
+
+        }
+      },);
+    }
+
+    if (enddate && enddate !== undefined) {
+      pipeline.push({
+        $match: {
+          createdAt: { $lte: dateend }
+
+        }
+      },);
+    }
+
+    pipeline.push({
+      $group: {
+        _id: {
+          tanggal: {
+            $substrCP: [
+              "$createdAt",
+              0,
+              10
+            ]
+          }
+        },
+        total: {
+          $sum: 1
+        }
+      }
+    }, {
+      $project: {
+        _id: 0,
+        date: "$_id.tanggal",
+        total: 1,
+
+      }
+    }, {
+      $sort: {
+        date: 1
+      }
+    },);
+
+    let query = await this.ContenteventsModel.aggregate(pipeline);
+    return query;
+  }
 }
