@@ -85,7 +85,7 @@ export class DisqusController {
     if ((type == "DIRECT_MSG") || (type == "COMMENT")) {
       var isValid = false;
       isQuery = String(ContentDto_.isQuery);
-      console.log("processDisqus >>> event: ", ContentDto_.eventType);
+      console.log("processDisqus >>> event: " + ContentDto_.eventType + " with isQuery: " + isQuery);
       if (isQuery == undefined || isQuery == 'false'){
         if (type == "DIRECT_MSG") {
 
@@ -163,7 +163,7 @@ export class DisqusController {
       }else{
         if (type == "DIRECT_MSG") {
           
-
+          console.log("processDisqus >>> DIRECT_MSG: ", String(ContentDto_.email));
           let tmp : DisqusResDto[] = [];
           let dm = await this.disqusService.queryDiscussV2(String(ContentDto_.email));
           if (dm != undefined && dm.length > 0) {
