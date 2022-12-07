@@ -1455,9 +1455,8 @@ export class AuthService {
 
       //Ceck User Userauth
       const datauserauthsService_ =
-        await this.userauthsService.findOneByEmailandUsername(
+        await this.userauthsService.findOne(
           user_email,
-          username,
         );
 
       user_exist = !(await this.utilsService.ceckData(datauserauthsService_));
@@ -5952,6 +5951,7 @@ export class AuthService {
         data["interest"] = interests_array;
         data["event"] = datauserbasicsService.event;
         data["email"] = datauserbasicsService.email;
+        data["iduser"] = datauserbasicsService._id;
         data["username"] = datauserauthsService.username;
         data["isComplete"] = datauserbasicsService.isComplete;
         data["status"] = datauserbasicsService.status;

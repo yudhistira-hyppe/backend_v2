@@ -8868,7 +8868,7 @@ export class GetusercontentsService {
       pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
     }
     if (enddate && enddate !== undefined) {
-      pipeline.push({ $match: { createdAt: { "$lte": enddate } } });
+      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
     }
     if (reported !== undefined) {
       if (reported)

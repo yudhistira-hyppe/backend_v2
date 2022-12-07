@@ -2879,7 +2879,18 @@ export class PostsService {
               $cond: { if: { $eq: ["$salePrice", -1] }, then: 0, else: "$saleAmount" }
             },
             monetize: {
-              $cond: { if: { $eq: ["$salePrice", -1] }, then: false, else: true }
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$salePrice", -1]
+                  }, {
+                    $eq: ["$salePrice", 0]
+                  },]
+                },
+                then: false,
+                else: true
+              },
+
             },
 
 
@@ -3288,8 +3299,20 @@ export class PostsService {
               $cond: { if: { $eq: ["$salePrice", -1] }, then: 0, else: "$saleAmount" }
             },
             monetize: {
-              $cond: { if: { $eq: ["$salePrice", -1] }, then: false, else: true }
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$salePrice", -1]
+                  }, {
+                    $eq: ["$salePrice", 0]
+                  },]
+                },
+                then: false,
+                else: true
+              },
+
             },
+
 
 
           }

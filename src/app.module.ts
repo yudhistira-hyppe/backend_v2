@@ -96,8 +96,10 @@ import { ThemeModule } from './infra/theme/theme.module';
 import { MediamusicModule } from './content/mediamusic/mediamusic.module';
 import { IntervalSessionModule } from './content/boostsession/intervarsession/intervarsession.module';
 import { TransactionsPostModule } from './trans/transactionpost/transactionspost.module';
+import { DisqusContentEventModule } from './content/contentevents/discus/disqusdisquscontentevent.module';
 @Module({
   imports: [
+    DisqusContentEventModule,
     IntervalSessionModule,
     MediamusicModule,
     ThemeModule,
