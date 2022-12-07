@@ -3306,17 +3306,16 @@ export class PostBoostService {
                                     }
                                 },
                                 {
-                                    $project: {
-                                        
+                                    $project: {                                        
                                         "apsara": 1,
                                         "apsaraId": 1,
                                         "apsaraThumbId": 1,
-                                        "mediaEndpoint": 1,
                                         "mediaUri": 1,
-                                        "mediaThumbEndpoint": 1,
-                                        "mediaThumbUri": 1,
-                                        "mediaType": 1,
-                                        
+                                        "postID": 1,
+                                        "mediaEndpoint": {"$concat": ["/pict/","$mediaUri"]},
+                                        "mediaThumbEndpoint": {"$concat": ["/thumb/","$postID"]},
+                                        "mediaThumbUri": "$mediaThumb",
+                                        "mediaType": 1,                                        
                                     }
                                 }
                             ],
@@ -3816,14 +3815,14 @@ export class PostBoostService {
                                 {
                                     $project: {
                                         
-                                        "apsara": 1,
-                                        "apsaraId": 1,
-                                        "apsaraThumbId": 1,
-                                        "mediaEndpoint": 1,
-                                        "mediaUri": 1,
-                                        "mediaThumbEndpoint": 1,
-                                        "mediaThumbUri": 1,
-                                        "mediaType": 1,
+                                      "apsara": 1,
+                                      "apsaraId": 1,
+                                      "apsaraThumbId": 1,
+                                      "mediaUri": 1,
+                                      "mediaEndpoint": {"$concat": ["/stream/","$mediaUri"]},
+                                      "mediaThumbEndpoint": {"$concat": ["/thumb/","$postID"]},
+                                      "mediaThumbUri": "$mediaThumb",
+                                      "mediaType": 1,
                                         
                                     }
                                 }
@@ -4318,14 +4317,14 @@ export class PostBoostService {
                                 {
                                     $project: {
                                         
-                                        "apsara": 1,
-                                        "apsaraId": 1,
-                                        "apsaraThumbId": 1,
-                                        "mediaEndpoint": 1,
-                                        "mediaUri": 1,
-                                        "mediaThumbEndpoint": 1,
-                                        "mediaThumbUri": 1,
-                                        "mediaType": 1,
+                                      "apsara": 1,
+                                      "apsaraId": 1,
+                                      "apsaraThumbId": 1,
+                                      "mediaUri": 1,
+                                      "mediaEndpoint": {"$concat": ["/stream/","$mediaUri"]},
+                                      "mediaThumbEndpoint": {"$concat": ["/thumb/","$postID"]},
+                                      "mediaThumbUri": "$mediaThumb",
+                                      "mediaType": 1,
                                         
                                     }
                                 }

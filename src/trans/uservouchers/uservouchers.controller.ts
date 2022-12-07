@@ -107,6 +107,8 @@ export class UservouchersController {
         var iduser = null;
         var startdate = null;
         var datatrue = null;
+        var startday = null;
+        var endday = null;
         var key = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
@@ -115,6 +117,8 @@ export class UservouchersController {
             throw new BadRequestException("Unabled to proceed");
         }
         key = request_json["key"];
+        startday = request_json["startday"];
+        endday = request_json["endday"];
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         const messages = {
@@ -161,7 +165,7 @@ export class UservouchersController {
         //     datatrue = null;
         // }
 
-        data = await this.uservouchersService.findUserVoucher(iduser, key);
+        data = await this.uservouchersService.findUserVoucher(iduser, key, startday, endday);
 
         return { response_code: 202, data, messages };
     }
