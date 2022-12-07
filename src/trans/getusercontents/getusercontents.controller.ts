@@ -33,16 +33,20 @@ export class GetusercontentsController {
     async contentuserall(@Req() request: Request): Promise<any> {
 
         var email = null;
-        var skip = 0;
+        var page = 0;
         var limit = 0;
+        var monetize = null;
+        var startdate = null;
+        var enddate = null;
+        var popular = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-        if (request_json["skip"] !== undefined) {
-            skip = request_json["skip"];
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
@@ -52,14 +56,41 @@ export class GetusercontentsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-
+        monetize = request_json["monetize"];
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        popular = request_json["popular"];
         const messages = {
             "info": ["The process successful"],
         };
 
-        let data = await this.getusercontentsService.findalldata(email, skip, limit);
 
-        return { response_code: 202, data, messages };
+
+        var total = null;
+        var totalsearch = null;
+        var totalallrow = null;
+        var totalpage = null;
+        let data = await this.getusercontentsService.findalldata(email, monetize, popular, startdate, enddate, page, limit);
+
+        total = data.length;
+        let datasearch = await this.getusercontentsService.findalldata(email, monetize, popular, startdate, enddate, 0, 0);
+        totalsearch = datasearch.length;
+
+        let dataall = await this.getusercontentsService.findalldata(email, undefined, undefined, undefined, undefined, 0, 0);
+        totalallrow = dataall.length;
+
+        var tpage = null;
+        var tpage2 = null;
+
+        tpage2 = (totalsearch / limit).toFixed(0);
+        tpage = (totalsearch % limit);
+        if (tpage > 0 && tpage < 5) {
+            totalpage = parseInt(tpage2) + 1;
+
+        } else {
+            totalpage = parseInt(tpage2);
+        }
+        return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
 
     @Post('api/getusercontents/latest')
