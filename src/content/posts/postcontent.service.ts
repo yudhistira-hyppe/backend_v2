@@ -1580,7 +1580,7 @@ export class PostContentService {
   
       if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
         this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
-        //query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
+        query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
       }
 
       let row = 20;
