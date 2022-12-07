@@ -24,6 +24,10 @@ export class DisquscontactsService {
     return this.DisquscontactsModel.find().exec();
   }
 
+  async findMayeEmail(email: string, mate: string): Promise<Disquscontacts[]> {
+    return this.DisquscontactsModel.find({ email: email, mate: mate }).exec();
+  }
+
   //    async findOne(id: string): Promise<Disquscontacts> {
   //     return this.DisquscontactsModel.findOne({ _id: id }).exec();
   //   }

@@ -13,6 +13,10 @@ export class PostDisqusService {
     private getuserprofilesService: GetuserprofilesService,
   ) { }
 
+  async findByPostId(postID: string): Promise<Posts> {
+    return this.PostsModel.findOne({ postID: postID }).exec();
+  }
+
 
   async findOnepostID(postID: string): Promise<Object> {
     var datacontent = null;
