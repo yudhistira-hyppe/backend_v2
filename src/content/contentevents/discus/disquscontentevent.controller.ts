@@ -138,7 +138,9 @@ export class DisqusContentEventController {
     dis.disqusLogs = usparr;
 
     dis.updatedAt = dl.createdAt;
-    dis.lastestMessage = dl.txtMessages.substring(0, 21);
+    if (dl.txtMessages != undefined) {
+      dis.lastestMessage = dl.txtMessages.substring(0, 21);
+    }
     dis.mateActive = true;
     dis.emailActive = true;
     this.disqusContentEventService.create(dis);
