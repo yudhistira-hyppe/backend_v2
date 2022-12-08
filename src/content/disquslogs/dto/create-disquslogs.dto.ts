@@ -16,17 +16,7 @@ export class CreateDisquslogsDto {
     txtMessages: String;
   parentID: String;
     
-      medias: [{
-        createdAt: String;
-        mediaBasePath: String;
-        postType: String;
-        mediaUri: String;
-        description: String;
-        active: boolean;
-        mediaType: String;
-        postID: String;
-        mediaEndpoint: String;
-    }];
+      medias: any[];
   replyLogs: [
     {
       $ref: String;

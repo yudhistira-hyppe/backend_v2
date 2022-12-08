@@ -10,9 +10,14 @@ import { InsightsModule } from '../insights/insights.module';
 import { PostDisqusModule } from '../disqus/post/postdisqus.module';
 import { InsightlogsModule } from '../insightlogs/insightlogs.module';
 import { UserAdsModule } from '../../trans/userads/userads.module';
-
+import { DisquscontactsModule } from '../disquscontacts/disquscontacts.module';
+import { DisquslogsModule } from '../disquslogs/disquslogs.module';
+import { DisqusContentEventModule } from './discus/disqusdisquscontentevent.module';
 @Module({
     imports: [
+        DisqusContentEventModule,
+        DisquslogsModule,
+        DisquscontactsModule,
         InsightlogsModule,
         PostDisqusModule,
         InsightsModule,

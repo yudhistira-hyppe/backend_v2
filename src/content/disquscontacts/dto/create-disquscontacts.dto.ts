@@ -1,14 +1,14 @@
 export class CreateDisquscontactsDto {
   
 
-    readonly _id: String;
-    readonly active: boolean;
-    readonly email: String;
-    readonly mate: String;
-    readonly  disqus: {
+     _id: String;
+     active: boolean;
+     email: String;
+     mate: String;
+      disqus: {
         $ref:String;
         $id:String;
         $db:String;
     };
-    readonly _class:String;
+     _class:String;
   }
