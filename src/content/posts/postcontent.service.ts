@@ -635,7 +635,7 @@ export class PostContentService {
         let aim = aimg.PlayUrl;
         this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
         //TODO 
-        //this.cmodService.cmodVideo(body.postID, aim);
+        this.cmodService.cmodVideo(body.postID, aim);
       }      
 
       let meta = post.metadata;
