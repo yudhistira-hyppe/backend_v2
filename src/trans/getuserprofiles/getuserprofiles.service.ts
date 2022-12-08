@@ -66,14 +66,24 @@ export class GetuserprofilesService {
           concat: '/profilepict',
           email: '$email',
           age: {
-            $round: [{
-              $divide: [{
-                $subtract: [new Date(), {
-                  $toDate: '$dob'
+            $cond: {
+              if: {
+                $and: ['$dob', {
+                  $ne: ["$dob", ""]
                 }]
-              }, (365 * 24 * 60 * 60 * 1000)]
-            }]
-          }
+              },
+              then: {
+                $toInt: {
+                  $divide: [{
+                    $subtract: [new Date(), {
+                      $toDate: "$dob"
+                    }]
+                  }, (365 * 24 * 60 * 60 * 1000)]
+                }
+              },
+              else: 0
+            }
+          },
         },
       },
 
@@ -148,7 +158,6 @@ export class GetuserprofilesService {
           "preserveNullAndEmptyArrays": false
         }
       },
-
       {
         "$match": {
           "userAuth_data.email": email
@@ -258,7 +267,6 @@ export class GetuserprofilesService {
           },
         },
       },
-
       { $sort: { createdAt: -1 }, },
     ]);
     return query;

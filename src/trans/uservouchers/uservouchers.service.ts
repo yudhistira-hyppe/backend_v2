@@ -109,7 +109,7 @@ export class UservouchersService {
                     codeVoucher: "$field.codeVoucher",
                     nameAds: "$field.nameAds",
                     expiredAt: 1,
-                    creditTotal: 1,
+                    creditTotal: "$totalCredit",
                     credit: 1,
                     creditFree: 1,
                     totalUsed: "$field.totalUsed",
