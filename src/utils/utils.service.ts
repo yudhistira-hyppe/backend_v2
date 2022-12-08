@@ -1033,6 +1033,12 @@ export class UtilsService {
       }
     }
 
+
+    let cl = 'manual';
+    if (get_userauth.password == '$2a$10$GTQLm6mRlZVoBhR8LSm8T.CDI3TG6CViPdiTAt2tfRY3dNwOk7s1G') {
+      cl = 'socmed';
+    }
+    ProfileDTO_.loginSource = cl;
     return ProfileDTO_;
   }
 
