@@ -189,5 +189,9 @@ export class GetuserprofilesController {
     return { response_code: 202, data, skip, limit, messages };
   }
 
-
+  @Post('api/getuserprofiles/ff')
+  async finduserdata(): Promise<any> {
+    var data = await this.getuserprofilesService.findUserDetailbyEmail("limstudio07@gmail.com");
+    return data;
+  }
 }
