@@ -52,9 +52,16 @@ export class UservouchersService {
         return query;
     }
 
-    async findUserVoucher(userID: ObjectId, key: string, startday: number, endday: number): Promise<Object> {
+    async findUserVoucher(userID: ObjectId, key: string, startday: number, endday: number, startdate: string, enddate: string): Promise<Object> {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
         var pipeline = [];
+
 
         pipeline.push({
             $lookup: {
@@ -119,12 +126,20 @@ export class UservouchersService {
                     expiredDay: "$field.expiredDay"
                 }
             });
+
+        if (startdate && startdate !== undefined) {
+            pipeline.push({ $match: { 'expiredAt': { "$gte": startdate } } });
+        }
+        if (enddate && enddate !== undefined) {
+            pipeline.push({ $match: { 'expiredAt': { "$lte": dateend } } });
+        }
         if (startday && startday !== undefined) {
             pipeline.push({ $match: { 'expiredDay': { "$gte": startday } } });
         }
         if (endday && endday !== undefined) {
             pipeline.push({ $match: { 'expiredDay': { "$lte": endday } } });
         }
+
         let query = await this.uservouchersModel.aggregate(pipeline);
         return query;
 
