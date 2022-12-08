@@ -176,362 +176,373 @@ export class DisqusService {
   async queryDiscussV2(email: string) {
     let query = await this.DisqusModel.aggregate(
 
-      [
-        {
-            $match: 
+        [
             {
-                $or: [
-                    {
-                        $and: [
-                            {
-                                "email": email
-                            },
-                            {
-                                "eventType": "DIRECT_MSG"
-                            },
-                            {
-                                "active": 
+                $match: 
+                {
+                    $or: [
+                        {
+                            $and: [
                                 {
-                                    $not: {
-                                        $regex: "false"
+                                    "email": email
+                                },
+                                {
+                                    "eventType": "DIRECT_MSG"
+                                },
+                                {
+                                    "active": 
+                                    {
+                                        $not: {
+                                            $regex: "false"
+                                        }
                                     }
-                                }
-                            },
-                            
-                        ]
-                    },
-                    {
-                        $and: [
-                            {
-                                "mate": email
-                            },
-                            {
-                                "eventType": "DIRECT_MSG"
-                            },
-                            {
-                                "mateactive": 
+                                },
+                                
+                            ]
+                        },
+                        {
+                            $and: [
                                 {
-                                    $not: {
-                                        $regex: "false"
+                                    "mate": email
+                                },
+                                {
+                                    "eventType": "DIRECT_MSG"
+                                },
+                                {
+                                    "mateactive": 
+                                    {
+                                        $not: {
+                                            $regex: "false"
+                                        }
                                     }
-                                }
-                            },
-                            
-                        ]
-                    },
-                    
-                ]
-            },
-            
-        },
-        {
-            $lookup: {
-                from: 'userbasics',
-                localField: 'email',
-                foreignField: 'email',
-                as: 'userUserBasic',
-                
-            },
-            
-        },
-        {
-            $lookup: {
-                from: 'userauths',
-                localField: 'email',
-                foreignField: 'email',
-                as: 'userUserAuth',
-                
-            },
-            
-        },
-        {
-            "$lookup": {
-                from: "mediaprofilepicts",
-                as: "avatar",
-                let: {
-                    localID: '$userUserBasic.profilePict.$id'
-                },
-                pipeline: [
-                    {
-                        $match: 
-                        {
-                            
-                            
-                            $expr: {
-                                $in: ['$mediaID', '$$localID']
-                            }
-                        }
-                    },
-                    {
-                        $project: {
-                            "mediaBasePath": 1,
-                            "mediaUri": 1,
-                            "originalName": 1,
-                            "fsSourceUri": 1,
-                            "fsSourceName": 1,
-                            "fsTargetUri": 1,
-                            "mediaType": 1,
-                            "mediaEndpoint": {
-                                "$concat": ["/profilepict/", "$mediaID"]
-                            }
-                        }
-                    }
-                ],
-                
-            }
-        },
-        {
-            $lookup: {
-                from: 'userbasics',
-                localField: 'mate',
-                foreignField: 'email',
-                as: 'mateUserBasic',
-                
-            },
-            
-        },
-        {
-            $lookup: {
-                from: 'userauths',
-                localField: 'mate',
-                foreignField: 'email',
-                as: 'mateUserAuth',
-                
-            },
-            
-        },
-        {
-            "$lookup": {
-                from: "mediaprofilepicts",
-                as: "mateAvatar",
-                let: {
-                    localID: '$userUserBasic.profilePict.$id'
-                },
-                pipeline: [
-                    {
-                        $match: 
-                        {
-                            
-                            $expr: {
-                                $in: ['$mediaID', '$$localID']
-                            }
-                        }
-                    },
-                    {
-                        $project: {
-                            "mediaBasePath": 1,
-                            "mediaUri": 1,
-                            "originalName": 1,
-                            "fsSourceUri": 1,
-                            "fsSourceName": 1,
-                            "fsTargetUri": 1,
-                            "mediaType": 1,
-                            "mediaEndpoint": {
-                                "$concat": ["/profilepict/", "$mediaID"]
-                            }
-                        }
-                    }
-                ],
-                
-            }
-        },
-        {
-            "$lookup": {
-                from: "disquslogs",
-                as: "disqusLogs",
-                let: {
-                    localID: '$disqusLogs.$id'
-                },
-                pipeline: [
-                    {
-                        $match: 
-                        {
-                            $or: [
-                                {
-                                    $and: [
-                                        {
-                                            
-                                            $expr: {
-                                                $in: ['$_id', '$$localID']
-                                            }
-                                        },
-                                        {
-                                            "senderActive": 
-                                            {
-                                                $ne: false
-                                            }
-                                        },
-                                        {
-                                            "recieverActive": 
-                                            {
-                                                $ne: false
-                                                
-                                            }
-                                        },
-                                        
-                                    ]
                                 },
                                 
                             ]
                         },
                         
-                    },
-                    {
-                        $project: {
-                            "createdAt": 1,
-                            "reactionUri": 1,
-                            "txtMessages": 1,
-                            "receiver": 1,
-                            "postType": 1,
-                            "sender": 1,
-                            "lineID": 1,
-                            "active": 1,
-                            "disqusID": 1,
-                            "updatedAt": 1
-                        }
-                    },
-                    {
-                        $sort: {
-                            "createdAt": 1
-                        }
-                    },
-                    
-                ],
+                    ]
+                },
                 
             },
-            
-        },
-        {
-            $unwind: {
-                path: "$userUserBasic",
-                preserveNullAndEmptyArrays: true
-            }
-        },
-        {
-            $unwind: {
-                path: "$userUserAuth",
-                preserveNullAndEmptyArrays: true
-            }
-        },
-        {
-            $unwind: {
-                path: "$mateUserBasic",
-                preserveNullAndEmptyArrays: true
-            }
-        },
-        {
-            $unwind: {
-                path: "$mateUserAuth",
-                preserveNullAndEmptyArrays: true
-            }
-        },
-        {
-            $project: {
-                "emailActive": 1,
-                "email": 
-                {
-                    $cond: {
-                        if : {
-                            $eq: ["$email", email]
-                        },
-                        then: "$email",
-                        else : '$mate'
-                    }
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    localField: 'email',
+                    foreignField: 'email',
+                    as: 'userUserBasic',
+                    
                 },
-                "username": 
-                    {
-                    $cond: {
-                        if : {
-                            $eq: ["$email", email]
-                        },
-                        then: "$userUserAuth.username",
-                        else : '$mateUserAuth.username'
-                    }
+                
+            },
+            {
+                $lookup: {
+                    from: 'userauths',
+                    localField: 'email',
+                    foreignField: 'email',
+                    as: 'userUserAuth',
+                    
                 },
-                "fullName": 
-                    {
-                    $cond: {
-                        if : {
-                            $eq: ["$email", email]
-                        },
-                        then: "$userUserBasic.fullName",
-                        else : '$mateUserBasic.fullName'
-                    }
-                },
-                "avatar": 
-                    {
-                    $cond: {
-                        if : {
-                            $eq: ["$email", email]
-                        },
-                        then: "$avatar",
-                        else : '$mateAvatar'
-                    }
-                },
-                "updatedAt": 1,
-                "lastestMessage": 1,
-                "disqusID": 1,
-                "room": 1,
-                "mateActive": 1,
-                "createdAt": 1,
-                "active": 1,
-                "eventType": 1,
-                "disqusLogs": 1,
-                "senderOrReceiverInfo": [
+                
+            },
+            {
+                "$lookup": {
+                    from: "mediaprofilepicts",
+                    as: "avatar",
+                    let: {
+                        localID: '$userUserBasic.profilePict.$id'
+                    },
+                    pipeline: [
                         {
-                        "email": 
+                            $match: 
+                            {
+                                
+                                
+                                $expr: {
+                                    $in: ['$mediaID', '$$localID']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "mediaBasePath": 1,
+                                "mediaUri": 1,
+                                "originalName": 1,
+                                "fsSourceUri": 1,
+                                "fsSourceName": 1,
+                                "fsTargetUri": 1,
+                                "mediaType": 1,
+                                "mediaEndpoint": {
+                                    "$concat": ["/profilepict/", "$mediaID"]
+                                }
+                            }
+                        }
+                    ],
+                    
+                }
+            },
+            {
+                $lookup: {
+                    from: 'userbasics',
+                    localField: 'mate',
+                    foreignField: 'email',
+                    as: 'mateUserBasic',
+                    
+                },
+                
+            },
+            {
+                $lookup: {
+                    from: 'userauths',
+                    localField: 'mate',
+                    foreignField: 'email',
+                    as: 'mateUserAuth',
+                    
+                },
+                
+            },
+            {
+                "$lookup": {
+                    from: "mediaprofilepicts",
+                    as: "mateAvatar",
+                    let: {
+                        localID: '$mateUserBasic.profilePict.$id'
+                    },
+                    pipeline: [
+                        {
+                            $match: 
+                            {
+                                
+                                $expr: {
+                                    $in: ['$mediaID', '$$localID']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "mediaBasePath": 1,
+                                "mediaUri": 1,
+                                "originalName": 1,
+                                "fsSourceUri": 1,
+                                "fsSourceName": 1,
+                                "fsTargetUri": 1,
+                                "mediaType": 1,
+                                "mediaEndpoint": {
+                                    "$concat": ["/profilepict/", "$mediaID"]
+                                }
+                            }
+                        }
+                    ],
+                    
+                }
+            },
+            {
+                "$lookup": {
+                    from: "disquslogs",
+                    as: "disqusLogs",
+                    let: {
+                        localID: '$disqusLogs.$id'
+                    },
+                    pipeline: [
+                        {
+                            $match: 
+                            {
+                                $or: [
+                                    {
+                                        $and: [
+                                            {
+                                                
+                                                $expr: {
+                                                    $in: ['$_id', '$$localID']
+                                                }
+                                            },
+                                            {
+                                                "senderActive": 
+                                                {
+                                                    $ne: false
+                                                }
+                                            },
+                                            {
+                                                "recieverActive": 
+                                                {
+                                                    $ne: false
+                                                }
+                                            },
+                                            
+                                        ]
+                                    },
+                                    
+                                ]
+                            },
+                            
+                        },
+                        {
+                            $project: {
+                                "createdAt": 1,
+                                "reactionUri": 1,
+                                "txtMessages": 1,
+                                "receiver": 1,
+                                "postType": 1,
+                                "sender": 1,
+                                "lineID": 1,
+                                "active": 1,
+                                "disqusID": 1,
+                                "updatedAt": 1
+                            }
+                        },
+                        {
+                            $sort: {
+                                "createdAt": 1
+                            }
+                        },
+                        
+                    ],
+                    
+                },
+                
+            },
+            {
+                $unwind: {
+                    path: "$userUserBasic",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $unwind: {
+                    path: "$userUserAuth",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $unwind: {
+                    path: "$mateUserBasic",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $unwind: {
+                    path: "$mateUserAuth",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $unwind: {
+                    path: "$avatar",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $unwind: {
+                    path: "$mateAvatar",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    "emailActive": 1,
+                    "email": 
+                    {
+                        $cond: {
+                            if : {
+                                $eq: ["$email", email]
+                            },
+                            then: "$email",
+                            else : '$mate'
+                        }
+                    },
+                    "username": 
+                        {
+                        $cond: {
+                            if : {
+                                $eq: ["$email", email]
+                            },
+                            then: "$userUserAuth.username",
+                            else : '$mateUserAuth.username'
+                        }
+                    },
+                    "fullName": 
+                        {
+                        $cond: {
+                            if : {
+                                $eq: ["$email", email]
+                            },
+                            then: "$userUserBasic.fullName",
+                            else : '$mateUserBasic.fullName'
+                        }
+                    },
+                    "avatar": 
                         {
                             $cond: {
                                 if : {
-                                    $eq: ["$mate", email]
-                                },
-                                then: "$email",
-                                else : '$mate'
-                            }
-                        },
-                        "username": 
-                            {
-                            $cond: {
-                                if : {
-                                    $eq: ["$mate", email]
-                                },
-                                then: "$userUserAuth.username",
-                                else : '$mateUserAuth.username'
-                            }
-                        },
-                        "fullName": 
-                            {
-                            $cond: {
-                                if : {
-                                    $eq: ["$mate", email]
-                                },
-                                then: "$userUserBasic.fullName",
-                                else : '$mateUserBasic.fullName'
-                            }
-                        },
-                        "avatar": 
-                            {
-                            $cond: {
-                                if : {
-                                    $eq: ["$mate", email]
+                                    $eq: ["$email", email]
                                 },
                                 then: "$avatar",
                                 else : '$mateAvatar'
                             }
+                    },
+                    "updatedAt": 1,
+                    "lastestMessage": 1,
+                    "disqusID": 1,
+                    "room": 1,
+                    "mateActive": 1,
+                    "createdAt": 1,
+                    "active": 1,
+                    "eventType": 1,
+                    "disqusLogs": 1,
+                    "senderOrReceiverInfo": 
+                            {
+                            "email": 
+                            {
+                                $cond: {
+                                    if : {
+                                        $eq: ["$mate", email]
+                                    },
+                                    then: "$email",
+                                    else : '$mate'
+                                }
+                            },
+                            "username": 
+                                {
+                                $cond: {
+                                    if : {
+                                        $eq: ["$mate", email]
+                                    },
+                                    then: "$userUserAuth.username",
+                                    else : '$mateUserAuth.username'
+                                }
+                            },
+                            "fullName": 
+                                {
+                                $cond: {
+                                    if : {
+                                        $eq: ["$mate", email]
+                                    },
+                                    then: "$userUserBasic.fullName",
+                                    else : '$mateUserBasic.fullName'
+                                }
+                            },
+                            "avatar": 
+                                    {
+                                    $cond: {
+                                        if : {
+                                            $eq: ["$mate", email]
+                                        },
+                                        then: "$avatar",
+                                        else : '$mateAvatar'
+                                    }
+                                },
+                                
+                            
                         },
-                        
-                    }
-                ],
-                
-            }
-        },
-        {
-            $sort: {
-                "createdAt": - 1
-            }
-        },
-        
-    ]      
+                    
+                }
+            },
+            {
+                $sort: {
+                    "createdAt": - 1
+                }
+            },
+            
+        ]
       
     ).exec();
 
