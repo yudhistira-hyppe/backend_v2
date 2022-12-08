@@ -555,7 +555,6 @@ export class ContenteventsController {
         ContentDto_.receiverParty = email_receiverParty
         ContentDto_.postID = request.body.postID.toString()
         ContentDto_.reactionUri = request.body.reactionUri
-        ContentDto_.txtMessages = ""
         let xres = await this.disqusContentEventController.buildDisqus(ContentDto_, false);
         this.disqusContentEventService.sendDMNotif(String(xres.room), JSON.stringify(xres));
 
