@@ -17,7 +17,6 @@ export class PostDisqusService {
     return this.PostsModel.findOne({ postID: postID }).exec();
   }
 
-
   async findOnepostID(postID: string): Promise<Object> {
     var datacontent = null;
     var CreatePostsDto_ = await this.PostsModel.findOne({ postID: postID }).exec();

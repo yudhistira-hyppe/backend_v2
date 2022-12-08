@@ -13,6 +13,7 @@ import { UserAdsModule } from '../../trans/userads/userads.module';
 import { DisquscontactsModule } from '../disquscontacts/disquscontacts.module';
 import { DisquslogsModule } from '../disquslogs/disquslogs.module';
 import { DisqusContentEventModule } from './discus/disqusdisquscontentevent.module';
+import { DisqusContentEventController } from './discus/disquscontentevent.controller';
 @Module({
     imports: [
         DisqusContentEventModule,
@@ -26,8 +27,8 @@ import { DisqusContentEventModule } from './discus/disqusdisquscontentevent.modu
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Contentevents.name, schema: ContenteventsSchema }], 'SERVER_FULL')
     ],
-    controllers: [ContenteventsController],
-    providers: [ContenteventsService],
+    controllers: [ContenteventsController,],
+    providers: [ContenteventsService, DisqusContentEventController],
     exports: [ContenteventsService],
 })
 export class ContenteventsModule { }

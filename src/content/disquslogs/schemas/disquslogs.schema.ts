@@ -41,17 +41,7 @@ export class Disquslogs {
 
 
  @Prop([{type:Object}])
- medias: [{
-    createdAt: String
-    mediaBasePath: String
-    postType: String
-    mediaUri: String
-    description: String
-    active: boolean
-    mediaType: String
-    postID: String
-    mediaEndpoint: String
-}]
+ medias: any[]
 
    @Prop([{ type: Object }])
    replyLogs: [

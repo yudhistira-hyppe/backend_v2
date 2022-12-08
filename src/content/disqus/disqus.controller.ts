@@ -912,16 +912,16 @@ export class DisqusController {
     if (dto.postID != undefined) {
       if (buildInteractive) {
         // Add reaction in post
-        let post = await this.postDisqusService.findid(dto.postID.toString());
-        let y = Number(post.reactions);
-        y = y + 1;
-        let yy = <any> y;
-        post.reactions = yy;
+        // let post = await this.postDisqusService.findid(dto.postID.toString());
+        // let y = Number(post.reactions);
+        // y = y + 1;
+        // let yy = <any> y;
+        // post.reactions = yy;
 
-        let cser = await this.contenteventsService.findSenderOrReceiverByPostID(String(post.postID), 'REACTION', String(dto.email), String(dto.receiverParty));
+        // let cser = await this.contenteventsService.findSenderOrReceiverByPostID(String(post.postID), 'REACTION', String(dto.email), String(dto.receiverParty));
 
-        let insSender = this.insightsService.findemail(String(dto.email));
-        let insReceiver = this.insightsService.findemail(String(dto.receiverParty));
+        // let insSender = this.insightsService.findemail(String(dto.email));
+        // let insReceiver = this.insightsService.findemail(String(dto.receiverParty));
       }
     }
 
