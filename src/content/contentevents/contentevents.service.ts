@@ -108,6 +108,7 @@ export class ContenteventsService {
   async findOne(email: string): Promise<Contentevents> {
     return this.ContenteventsModel.findOne({ email: email }).exec();
   }
+
   async delete(id: string) {
     const deletedCat = await this.ContenteventsModel.findByIdAndRemove({
       _id: id,

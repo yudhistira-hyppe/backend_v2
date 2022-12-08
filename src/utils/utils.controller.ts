@@ -288,7 +288,7 @@ export class UtilsController {
         @Query('pageRow') pageRow: number,
         @Query('search') search: string) {
         var pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
-        var pageRow_ = (pageRow != undefined) ? pageRow : 3;
+        var pageRow_ = (pageRow != undefined) ? pageRow : 20;
         var search_ = search;
 
         var data = await this.reactionsRepoService.findCriteria(pageNumber_, pageRow_, search_);

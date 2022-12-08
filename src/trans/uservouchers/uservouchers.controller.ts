@@ -106,6 +106,7 @@ export class UservouchersController {
         var email = null;
         var iduser = null;
         var startdate = null;
+        var enddate = null;
         var datatrue = null;
         var startday = null;
         var endday = null;
@@ -118,7 +119,9 @@ export class UservouchersController {
         }
         key = request_json["key"];
         startday = request_json["startday"];
+        startdate = request_json["startdate"];
         endday = request_json["endday"];
+        enddate = request_json["enddate"];
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         const messages = {
@@ -165,7 +168,7 @@ export class UservouchersController {
         //     datatrue = null;
         // }
 
-        data = await this.uservouchersService.findUserVoucher(iduser, key, startday, endday);
+        data = await this.uservouchersService.findUserVoucher(iduser, key, startday, endday, startdate, enddate);
 
         return { response_code: 202, data, messages };
     }
