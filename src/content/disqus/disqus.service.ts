@@ -305,7 +305,7 @@ export class DisqusService {
                     from: "mediaprofilepicts",
                     as: "mateAvatar",
                     let: {
-                        localID: '$userUserBasic.profilePict.$id'
+                        localID: '$mateUserBasic.profilePict.$id'
                     },
                     pipeline: [
                         {
