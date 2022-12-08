@@ -1035,7 +1035,8 @@ export class UtilsService {
 
 
     let cl = 'manual';
-    if (get_userauth.password == '$2a$10$GTQLm6mRlZVoBhR8LSm8T.CDI3TG6CViPdiTAt2tfRY3dNwOk7s1G') {
+    let ch = await this.comparePassword('HyppeNew', get_userauth.password);
+    if (ch) {
       cl = 'socmed';
     }
     ProfileDTO_.loginSource = cl;
