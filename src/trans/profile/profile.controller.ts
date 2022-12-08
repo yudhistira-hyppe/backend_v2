@@ -418,6 +418,10 @@ export class ProfileController {
         interest = [];
       }
 
+      let cl = 'manual';
+      if (datauserauthsService.password == '$2a$10$GTQLm6mRlZVoBhR8LSm8T.CDI3TG6CViPdiTAt2tfRY3dNwOk7s1G') {
+        cl = 'socmed';
+      }
       const data = [{
         "createdAt": datauserbasicsService.createdAt,
         "areas": areas,
@@ -445,7 +449,8 @@ export class ProfileController {
         "isComplete": datauserbasicsService.isComplete,
         "status": datauserbasicsService.status,
         "statusUser": statusUser,
-        "databank": dataakunbank
+        "databank": dataakunbank,
+        "loginSource" : cl
       }];
 
       return {
