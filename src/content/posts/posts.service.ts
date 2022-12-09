@@ -390,7 +390,7 @@ export class PostsService {
       },
       {
         $project: {
-          isCertified: '$isCertified',
+          certified: '$certified',
           createdAt: '$createdAt',
           YearcreatedAt: { $toInt: { $substrCP: ['$createdAt', 0, 4] } },
           year_param: { $toInt: year_param.toString() },
@@ -398,7 +398,7 @@ export class PostsService {
       },
       {
         $match: {
-          isCertified: { $ne: null },
+          certified: { $ne: null },
           YearcreatedAt: year_param,
         },
       },
@@ -406,7 +406,7 @@ export class PostsService {
         $group: {
           _id: {
             year_month: { $substrCP: ['$createdAt', 0, 7] },
-            isCertified_data: '$isCertified',
+            isCertified_data: '$certified',
           },
           isCertified_data_count: { $sum: 1 },
         },
@@ -518,7 +518,7 @@ export class PostsService {
       },
       {
         $match: {
-          isCertified: false,
+          certified: false,
           active: true,
         },
       },
@@ -556,7 +556,7 @@ export class PostsService {
       },
       {
         $group: {
-          _id: '$isCertified',
+          _id: '$certified',
           log: {
             $push: {
               email: '$email',
@@ -825,7 +825,7 @@ export class PostsService {
       },
       {
         $match: {
-          isCertified: true,
+          certified: true,
           active: true,
         },
       },
@@ -863,7 +863,7 @@ export class PostsService {
       },
       {
         $group: {
-          _id: '$isCertified',
+          _id: '$certified',
           log: {
             $push: {
               email: '$email',
@@ -1171,7 +1171,7 @@ export class PostsService {
       },
       {
         $group: {
-          _id: '$isCertified',
+          _id: '$certified',
           log: {
             $push: {
               email: '$email',
@@ -2874,7 +2874,7 @@ export class PostsService {
             views: 1,
             visibility: 1,
             allowComments: 1,
-            isCertified: 1,
+            certified: 1,
             isViewed:
             {
               $cond: { if: { $eq: ["$views", 0] }, then: false, else: true }
@@ -2928,7 +2928,7 @@ export class PostsService {
             visibility: 1,
             isViewed: 1,
             allowComments: 1,
-            isCertified: 1,
+            certified: 1,
             saleLike: 1,
             saleView: 1,
             saleAmount: 1,
@@ -2997,7 +2997,7 @@ export class PostsService {
             privacy: 1,
             isViewed: 1,
             allowComments: 1,
-            isCertified: 1,
+            certified: 1,
             saleLike: 1,
             saleView: 1,
             saleAmount: 1,
@@ -3181,7 +3181,7 @@ export class PostsService {
             privacy: 1,
             isViewed: 1,
             allowComments: 1,
-            isCertified: 1,
+            certified: 1,
             saleLike: 1,
             saleView: 1,
             saleAmount: 1,
@@ -3294,7 +3294,7 @@ export class PostsService {
             views: 1,
             visibility: 1,
             allowComments: 1,
-            isCertified: 1,
+            certified: 1,
             isViewed:
             {
               $cond: { if: { $eq: ["$views", 0] }, then: false, else: true }
@@ -3349,7 +3349,7 @@ export class PostsService {
             visibility: 1,
             isViewed: 1,
             allowComments: 1,
-            isCertified: 1,
+            certified: 1,
             saleLike: 1,
             saleView: 1,
             saleAmount: 1,
@@ -3418,7 +3418,7 @@ export class PostsService {
             privacy: 1,
             isViewed: 1,
             allowComments: 1,
-            isCertified: 1,
+            certified: 1,
             saleLike: 1,
             saleView: 1,
             saleAmount: 1,
@@ -3602,7 +3602,7 @@ export class PostsService {
             privacy: 1,
             isViewed: 1,
             allowComments: 1,
-            isCertified: 1,
+            certified: 1,
             saleLike: 1,
             saleView: 1,
             saleAmount: 1,
@@ -3818,7 +3818,7 @@ export class PostsService {
             $cond: { if: { $eq: ["$views", 0] }, then: false, else: true }
           },
           allowComments: '$allowComments',
-          isCertified: '$isCertified',
+          certified: '$certified',
           saleLike: {
             $cond: { if: { $eq: ["$saleLike", -1] }, then: false, else: "$saleLike" }
           },
@@ -3854,7 +3854,7 @@ export class PostsService {
           visibility: '$visibility',
           isViewed: '$isViewed',
           allowComments: '$allowComments',
-          isCertified: '$isCertified',
+          certified: '$certified',
           saleLike: '$saleLike',
           saleView: '$saleView',
           saleAmount: '$saleAmount',
@@ -3921,7 +3921,7 @@ export class PostsService {
           privacy: '$privacy',
           isViewed: '$isViewed',
           allowComments: '$allowComments',
-          isCertified: '$isCertified',
+          certified: '$certified',
           saleLike: '$saleLike',
           saleView: '$saleView',
           saleAmount: '$saleAmount',
@@ -4103,7 +4103,7 @@ export class PostsService {
           privacy: '$privacy',
           isViewed: '$isViewed',
           allowComments: '$allowComments',
-          isCertified: '$isCertified',
+          certified: '$certified',
           saleLike: '$saleLike',
           saleView: '$saleView',
           saleAmount: '$saleAmount',
