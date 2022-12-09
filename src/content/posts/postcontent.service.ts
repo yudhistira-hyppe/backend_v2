@@ -1900,7 +1900,8 @@ export class PostContentService {
           let atp1 = Array<Cat>();
 
           for (let x = 0; x < atp.length; x++) {
-            let tp = atp[i];
+            let tp = atp[x];
+            console.log(JSON.stringify(tp));
             if (tp?.namespace) {
               let oid = tp.oid;
               let ua = await this.interestService.findOne(oid.toString());
