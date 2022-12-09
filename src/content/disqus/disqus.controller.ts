@@ -949,6 +949,9 @@ export class DisqusController {
   
     var usp = { "$ref": "disquslogs", "$id": String(ndl._id), "$db": "hyppe_trans_db" };
     let usparr = [];
+    if (dis.disqusLogs != undefined) {
+      usparr = dis.disqusLogs;
+    }
     usparr.push(usp);
     dis.disqusLogs = usparr;
 
