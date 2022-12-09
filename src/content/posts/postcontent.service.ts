@@ -1508,8 +1508,8 @@ export class PostContentService {
         if (check != undefined) {
           for (let i = 0; i < check.length; i++) {
             var ce = check[i];
-            if (ce.receiverParty != undefined && ce.receiverParty.length > 1) {
-              following.push(ce.receiverParty);
+            if (ce.senderParty != undefined && ce.senderParty.length > 1) {
+              following.push(ce.senderParty);
             }
           }
         }
@@ -1594,7 +1594,7 @@ export class PostContentService {
       let skip = this.paging(page, row);
       query.skip(skip);
       query.limit(row);
-      query.sort({ 'postType': 1});
+      query.sort({ 'createdAt': 1, 'postType': 1});
       let res = await query.exec();
       let ed = await this.utilService.getDateTimeDate();
       let gap = ed.getTime() - st.getTime();
