@@ -55,6 +55,7 @@ export class CreateDisquslogsDto {
     reactionUri: String;
     txtMessages: String; 
     lineID: String;
+    medias: any[];
    
     readonly _class: String;
     receiverActive: boolean;

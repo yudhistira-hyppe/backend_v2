@@ -1,4 +1,4 @@
-import { Body, Headers, Controller, Delete, Get, Param, Post, UseGuards, HttpCode, HttpStatus, Req } from '@nestjs/common';
+import { Body, Headers, Controller, Delete, Get, Param, Post, UseGuards, HttpCode, HttpStatus, Req, Logger } from '@nestjs/common';
 import { ContenteventsService } from './contentevents.service';
 import { ContentEventId, CreateContenteventsDto } from './dto/create-contentevents.dto';
 import { Contentevents } from './schemas/contentevents.schema';
@@ -16,15 +16,17 @@ import { CreateInsightsDto } from '../insights/dto/create-insights.dto';
 import { DisquscontactsService } from '../disquscontacts/disquscontacts.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
 import { CreateDisquslogsDto } from '../disquslogs/dto/create-disquslogs.dto';
-import { ContentDto, CreateDisqusDto } from '../disqus/dto/create-disqus.dto';
+import { ContentDto, CreateDisqusDto, DisqusResDto } from '../disqus/dto/create-disqus.dto';
 import { CreateDisquscontactsDto } from '../disquscontacts/dto/create-disquscontacts.dto';
 import { Posts } from '../posts/schemas/posts.schema';
 import { DisqusContentEventService } from './discus/disqusdisquscontentevent.service';
 import { DisqusContentEventController } from './discus/disquscontentevent.controller';
+import { Disquslogs } from '../disquslogs/schemas/disquslogs.schema';
 
 
 @Controller()
 export class ContenteventsController {
+  private readonly logger = new Logger(ContenteventsController.name);
   constructor(
     private readonly contenteventsService: ContenteventsService,
     private readonly groupModuleService: GroupModuleService,
@@ -547,229 +549,222 @@ export class ContenteventsController {
           await this.insightsService.updateone(email_receiverParty, CreateInsightsDto_receiver)
         }
         //SEND DIRECT MESSAGE
-        var ContentDto_ = new ContentDto();
-        ContentDto_.isQuery = false
-        ContentDto_.eventType = "DIRECT_MSG"
-        ContentDto_.postType = "txt_msg"
-        ContentDto_.email = email_user
-        ContentDto_.receiverParty = email_receiverParty
-        ContentDto_.postID = request.body.postID.toString()
-        ContentDto_.reactionUri = request.body.reactionUri
-        let xres = await this.disqusContentEventController.buildDisqus(ContentDto_, false);
-        this.disqusContentEventService.sendDMNotif(String(xres.room), JSON.stringify(xres));
+        try{
+          let retVal = new DisqusResDto();
+          var CeckDataDiscusContact = await this.disquscontactsService.findMayeEmail(email_user, email_receiverParty);
+          if (!(await this.utilsService.ceckData(CeckDataDiscusContact))){
+            var id_discus_log = await this.utilsService.generateId()
+            var id_discus = await this.utilsService.generateId()
+            var id_discus_contact = await this.utilsService.generateId()
 
-        // try{
-        //   var CeckDataDiscusContact = await this.disquscontactsService.findMayeEmail(email_user, email_receiverParty);
-        //   if (!(await this.utilsService.ceckData(CeckDataDiscusContact))){
-        //     var id_discus_log = await this.utilsService.generateId()
-        //     var id_discus = await this.utilsService.generateId()
-        //     var id_discus_contact = await this.utilsService.generateId()
+            var post = await this.postsService.findByPostId(request.body.postID.toString());
+            var media = await this.postsService.findOnepostID(request.body.postID.toString());
+            var media_ ={}
+            if (await this.utilsService.ceckData(media)) {
+              if (post.createdAt != undefined) {
+                media_["createdAt"] = post.createdAt;
+              }
+              if (media[0].datacontent[0].mediaBasePath != undefined) {
+                media_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
+              }
+              if (post.postType != undefined) {
+                media_["postType"] = post.postType;
+              }
+              if (media[0].datacontent[0].mediaUri != undefined) {
+                media_["mediaUri"] = media[0].datacontent[0].mediaUri;
+              }
+              if (media[0].datacontent[0].mediaUri != undefined) {
+                media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
+              }
+              if (post.description != undefined) {
+                media_["description"] = post.description;
+              }
+              if (post.active != undefined) {
+                media_["active"] = post.active;
+              }
+              if (media[0].datacontent[0].mediaType != undefined) {
+                media_["mediaType"] = media[0].datacontent[0].mediaType;
+              }
+              if (media[0].datacontent[0].mediaType != undefined) {
+                media_["mediaThumbEndpoint"] = "/thumb/" + post.postID;
+              }
+              if (post.postID != undefined) {
+                media_["postID"] = post.postID;
+              }
+              if (media[0].datacontent[0].mediaUri != undefined) {
+                media_["mediaEndpoint"] = "/stream/"+media[0].datacontent[0].mediaUri;
+              }
+              if (media[0].datacontent[0].apsara != undefined) {
+                media_["apsara"] = media[0].datacontent[0].apsara
+              }
+              if (media[0].datacontent[0].apsaraId != undefined) {
+                media_["apsaraId"] = media[0].datacontent[0].apsaraId
+              }
+            }
 
-        //     var post = await this.postsService.findByPostId(request.body.postID.toString());
-        //     var media = await this.postsService.findOnepostID(request.body.postID.toString());
-        //     var media_ ={}
-        //     if (await this.utilsService.ceckData(media)) {
-        //       if (post.createdAt != undefined) {
-        //         media_["createdAt"] = post.createdAt;
-        //       }
-        //       if (media[0].datacontent[0].mediaBasePath != undefined) {
-        //         media_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
-        //       }
-        //       if (post.postType != undefined) {
-        //         media_["postType"] = post.postType;
-        //       }
-        //       if (media[0].datacontent[0].mediaUri != undefined) {
-        //         media_["mediaUri"] = media[0].datacontent[0].mediaUri;
-        //       }
-        //       if (media[0].datacontent[0].mediaUri != undefined) {
-        //         media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
-        //       }
-        //       if (post.description != undefined) {
-        //         media_["description"] = post.description;
-        //       }
-        //       if (post.active != undefined) {
-        //         media_["active"] = post.active;
-        //       }
-        //       if (media[0].datacontent[0].mediaType != undefined) {
-        //         media_["mediaType"] = media[0].datacontent[0].mediaType;
-        //       }
-        //       if (media[0].datacontent[0].mediaType != undefined) {
-        //         media_["mediaThumbEndpoint"] = "/thumb/" + post.postID;
-        //       }
-        //       if (post.postID != undefined) {
-        //         media_["postID"] = post.postID;
-        //       }
-        //       if (media[0].datacontent[0].mediaUri != undefined) {
-        //         media_["mediaEndpoint"] = "/stream/"+media[0].datacontent[0].mediaUri;
-        //       }
-        //       if (media[0].datacontent[0].apsara != undefined) {
-        //         media_["apsara"] = media[0].datacontent[0].apsara
-        //       }
-        //       if (media[0].datacontent[0].apsaraId != undefined) {
-        //         media_["apsaraId"] = media[0].datacontent[0].apsaraId
-        //       }
-        //     }
+            var CreateDisquslogsDto_ = new Disquslogs();
+            CreateDisquslogsDto_._id = id_discus_log;
+            CreateDisquslogsDto_.disqusID = id_discus;
+            CreateDisquslogsDto_.active = true;
+            CreateDisquslogsDto_.sender = email_user;
+            CreateDisquslogsDto_.receiver = email_receiverParty;
+            CreateDisquslogsDto_.postType = "txt_msg";
+            CreateDisquslogsDto_.createdAt = current_date;
+            CreateDisquslogsDto_.updatedAt = current_date;
+            CreateDisquslogsDto_.reactionUri = request.body.reactionUri;
+            CreateDisquslogsDto_.medias = [media_];
+            CreateDisquslogsDto_.replyLogs = [null];
+            CreateDisquslogsDto_.tags = [null];
+            CreateDisquslogsDto_._class = "io.melody.hyppe.content.domain.DisqusLog";
+            CreateDisquslogsDto_.receiverActive = true;
+            CreateDisquslogsDto_.senderActive = true;
+            this.disquslogsService.create(CreateDisquslogsDto_);
 
-        //     var CreateDisquslogsDto_ = new CreateDisquslogsDto();
-        //     CreateDisquslogsDto_._id = id_discus_log;
-        //     CreateDisquslogsDto_.disqusID = id_discus;
-        //     CreateDisquslogsDto_.active = true;
-        //     CreateDisquslogsDto_.sender = email_user;
-        //     CreateDisquslogsDto_.receiver = email_receiverParty;
-        //     CreateDisquslogsDto_.postType = "txt_msg";
-        //     CreateDisquslogsDto_.createdAt = current_date;
-        //     CreateDisquslogsDto_.updatedAt = current_date;
-        //     CreateDisquslogsDto_.reactionUri = request.body.reactionUri;
-        //     CreateDisquslogsDto_.medias = [media_];
-        //     CreateDisquslogsDto_.replyLogs = [null];
-        //     CreateDisquslogsDto_.tags = [null];
-        //     CreateDisquslogsDto_._class = "io.melody.hyppe.content.domain.DisqusLog";
-        //     CreateDisquslogsDto_.receiverActive = true;
-        //     CreateDisquslogsDto_.senderActive = true;
-        //     this.disquslogsService.create(CreateDisquslogsDto_);
+            var CreateDisqusDto_ = new CreateDisqusDto();
+            CreateDisqusDto_._id = id_discus;
+            CreateDisqusDto_.room = id_discus;
+            CreateDisqusDto_.disqusID = id_discus;
+            CreateDisqusDto_.email = email_user;
+            CreateDisqusDto_.mate = email_receiverParty;
+            CreateDisqusDto_.eventType = "DIRECT_MSG";
+            CreateDisqusDto_.room = id_discus;
+            CreateDisqusDto_.createdAt = current_date;
+            CreateDisqusDto_.updatedAt = current_date;
+            CreateDisqusDto_.lastestMessage = "";
+            CreateDisqusDto_.emailActive = true;
+            CreateDisqusDto_.mateActive = true;
+            CreateDisqusDto_.disqusLogs = [{
+              $ref: 'disquslogs',
+              $id: id_discus_log,
+              $db: 'hyppe_content_db',
+            }];
+            CreateDisqusDto_._class = "io.melody.hyppe.content.domain.Disqus"; 
+            this.disqusContentEventService.create(CreateDisqusDto_);
 
-        //     var CreateDisqusDto_ = new CreateDisqusDto();
-        //     CreateDisqusDto_._id = id_discus;
-        //     CreateDisqusDto_.room = id_discus;
-        //     CreateDisqusDto_.disqusID = id_discus;
-        //     CreateDisqusDto_.email = email_user;
-        //     CreateDisqusDto_.mate = email_receiverParty;
-        //     CreateDisqusDto_.eventType = "DIRECT_MSG";
-        //     CreateDisqusDto_.room = "DIRECT_MSG";
-        //     CreateDisqusDto_.createdAt = current_date;
-        //     CreateDisqusDto_.updatedAt = current_date;
-        //     CreateDisqusDto_.lastestMessage = "";
-        //     CreateDisqusDto_.emailActive = true;
-        //     CreateDisqusDto_.mateActive = true;
-        //     CreateDisqusDto_.disqusLogs = [{
-        //       $ref: 'disquslogs',
-        //       $id: id_discus_log,
-        //       $db: 'hyppe_content_db',
-        //     }];
-        //     CreateDisqusDto_._class = "io.melody.hyppe.content.domain.Disqus"; 
-        //     this.disqusContentEventService.create(CreateDisqusDto_);
+            var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
+            CreateDisquscontactsDto_._id = id_discus_contact;
+            CreateDisquscontactsDto_.active = true;
+            CreateDisquscontactsDto_.email = email_user;
+            CreateDisquscontactsDto_.mate = email_receiverParty;
+            CreateDisquscontactsDto_.disqus = {
+              $ref: 'disqus',
+              $id: id_discus,
+              $db: 'hyppe_content_db',
+            };
+            CreateDisquscontactsDto_._class = "io.melody.hyppe.content.domain.DisqusContact";
+            this.disquscontactsService.create(CreateDisquscontactsDto_);
 
-        //     var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
-        //     CreateDisquscontactsDto_._id = id_discus_contact;
-        //     CreateDisquscontactsDto_.active = true;
-        //     CreateDisquscontactsDto_.email = email_user;
-        //     CreateDisquscontactsDto_.mate = email_receiverParty;
-        //     CreateDisquscontactsDto_.disqus = {
-        //       $ref: 'disqus',
-        //       $id: id_discus,
-        //       $db: 'hyppe_content_db',
-        //     };
-        //     CreateDisquscontactsDto_._class = "io.melody.hyppe.content.domain.DisqusContact";
-        //     this.disquscontactsService.create(CreateDisquscontactsDto_);
-        //   } else {
-        //     var id_discus_log = await this.utilsService.generateId()
-        //     var id_discus = CeckDataDiscusContact[0].disqus.$id.toString();
+            retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_);
+            this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
+          } else {
+            var id_discus_log = await this.utilsService.generateId()
+            var id_discus = CeckDataDiscusContact[0].disqus.$id.toString();
 
-        //     var CeckDataDiscus = await this.disqusContentEventService.findById(id_discus);
-        //     if (!(await this.utilsService.ceckData(CeckDataDiscus))) {
-        //       var CreateDisqusDto_ = new CreateDisqusDto();
-        //       CreateDisqusDto_._id = id_discus;
-        //       CreateDisqusDto_.room = id_discus;
-        //       CreateDisqusDto_.disqusID = id_discus;
-        //       CreateDisqusDto_.email = email_user;
-        //       CreateDisqusDto_.mate = email_receiverParty;
-        //       CreateDisqusDto_.eventType = "DIRECT_MSG";
-        //       CreateDisqusDto_.room = "DIRECT_MSG";
-        //       CreateDisqusDto_.createdAt = current_date;
-        //       CreateDisqusDto_.updatedAt = current_date;
-        //       CreateDisqusDto_.lastestMessage = "";
-        //       CreateDisqusDto_.emailActive = true;
-        //       CreateDisqusDto_.mateActive = true;
-        //       CreateDisqusDto_.disqusLogs = [{
-        //         $ref: 'disquslogs',
-        //         $id: id_discus_log,
-        //         $db: 'hyppe_content_db',
-        //       }];
-        //       CreateDisqusDto_._class = "io.melody.hyppe.content.domain.Disqus";
-        //       this.disqusContentEventService.create(CreateDisqusDto_);
-        //     }else{
-        //       var CreateDisqusDto_ = new CreateDisqusDto();
-        //       var data_disqusLogs = CeckDataDiscus.disqusLogs;
-        //       data_disqusLogs.push({
-        //         $ref: 'disquslogs',
-        //         $id: id_discus_log,
-        //         $db: 'hyppe_content_db',
-        //       });
-        //       CreateDisqusDto_.disqusLogs = data_disqusLogs;
-        //       CreateDisqusDto_.lastestMessage = "";
-        //       this.disqusContentEventService.update(id_discus, CreateDisqusDto_);
-              
-        //     }
+            var CeckDataDiscus = await this.disqusContentEventService.findById(id_discus);
+            if (!(await this.utilsService.ceckData(CeckDataDiscus))) {
+              var CreateDisqusDto_ = new CreateDisqusDto();
+              CreateDisqusDto_._id = id_discus;
+              CreateDisqusDto_.room = id_discus;
+              CreateDisqusDto_.disqusID = id_discus;
+              CreateDisqusDto_.email = email_user;
+              CreateDisqusDto_.mate = email_receiverParty;
+              CreateDisqusDto_.eventType = "DIRECT_MSG";
+              CreateDisqusDto_.room = id_discus;
+              CreateDisqusDto_.createdAt = current_date;
+              CreateDisqusDto_.updatedAt = current_date;
+              CreateDisqusDto_.lastestMessage = "";
+              CreateDisqusDto_.emailActive = true;
+              CreateDisqusDto_.mateActive = true;
+              CreateDisqusDto_.disqusLogs = [{
+                $ref: 'disquslogs',
+                $id: id_discus_log,
+                $db: 'hyppe_content_db',
+              }];
+              CreateDisqusDto_._class = "io.melody.hyppe.content.domain.Disqus";
+              this.disqusContentEventService.create(CreateDisqusDto_);
+            }else{
+              var CreateDisqusDto_ = new CreateDisqusDto();
+              var data_disqusLogs = CeckDataDiscus.disqusLogs;
+              data_disqusLogs.push({
+                $ref: 'disquslogs',
+                $id: id_discus_log,
+                $db: 'hyppe_content_db',
+              });
+              CreateDisqusDto_.disqusLogs = data_disqusLogs;
+              CreateDisqusDto_.lastestMessage = "";
+              this.disqusContentEventService.update(id_discus, CreateDisqusDto_);
+            }
 
-        //     var post = await this.postsService.findByPostId(request.body.postID.toString());
-        //     var media = await this.postsService.findOnepostID(request.body.postID.toString());
-        //     var media_ = {}
-        //     if (await this.utilsService.ceckData(media)) {
-        //       if (post.createdAt != undefined) {
-        //         media_["createdAt"] = post.createdAt;
-        //       }
-        //       if (media[0].datacontent[0].mediaBasePath != undefined) {
-        //         media_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
-        //       }
-        //       if (post.postType != undefined) {
-        //         media_["postType"] = post.postType;
-        //       }
-        //       if (media[0].datacontent[0].mediaUri != undefined) {
-        //         media_["mediaUri"] = media[0].datacontent[0].mediaUri;
-        //       }
-        //       if (media[0].datacontent[0].mediaUri != undefined) {
-        //         media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
-        //       }
-        //       if (post.description != undefined) {
-        //         media_["description"] = post.description;
-        //       }
-        //       if (post.active != undefined) {
-        //         media_["active"] = post.active;
-        //       }
-        //       if (media[0].datacontent[0].mediaType != undefined) {
-        //         media_["mediaType"] = media[0].datacontent[0].mediaType;
-        //       }
-        //       if (media[0].datacontent[0].mediaType != undefined) {
-        //         media_["mediaThumbEndpoint"] = "/thumb/" + post.postID;
-        //       }
-        //       if (post.postID != undefined) {
-        //         media_["postID"] = post.postID;
-        //       }
-        //       if (media[0].datacontent[0].mediaUri != undefined) {
-        //         media_["mediaEndpoint"] = "/stream/" + media[0].datacontent[0].mediaUri;
-        //       }
-        //       if (media[0].datacontent[0].apsara != undefined) {
-        //         media_["apsara"] = media[0].datacontent[0].apsara
-        //       }
-        //       if (media[0].datacontent[0].apsaraId != undefined) {
-        //         media_["apsaraId"] = media[0].datacontent[0].apsaraId
-        //       }
-        //     }
+            var post = await this.postsService.findByPostId(request.body.postID.toString());
+            var media = await this.postsService.findOnepostID(request.body.postID.toString());
+            var media_ = {}
+            if (await this.utilsService.ceckData(media)) {
+              if (post.createdAt != undefined) {
+                media_["createdAt"] = post.createdAt;
+              }
+              if (media[0].datacontent[0].mediaBasePath != undefined) {
+                media_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
+              }
+              if (post.postType != undefined) {
+                media_["postType"] = post.postType;
+              }
+              if (media[0].datacontent[0].mediaUri != undefined) {
+                media_["mediaUri"] = media[0].datacontent[0].mediaUri;
+              }
+              if (media[0].datacontent[0].mediaUri != undefined) {
+                media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
+              }
+              if (post.description != undefined) {
+                media_["description"] = post.description;
+              }
+              if (post.active != undefined) {
+                media_["active"] = post.active;
+              }
+              if (media[0].datacontent[0].mediaType != undefined) {
+                media_["mediaType"] = media[0].datacontent[0].mediaType;
+              }
+              if (media[0].datacontent[0].mediaType != undefined) {
+                media_["mediaThumbEndpoint"] = "/thumb/" + post.postID;
+              }
+              if (post.postID != undefined) {
+                media_["postID"] = post.postID;
+              }
+              if (media[0].datacontent[0].mediaUri != undefined) {
+                media_["mediaEndpoint"] = "/stream/" + media[0].datacontent[0].mediaUri;
+              }
+              if (media[0].datacontent[0].apsara != undefined) {
+                media_["apsara"] = media[0].datacontent[0].apsara
+              }
+              if (media[0].datacontent[0].apsaraId != undefined) {
+                media_["apsaraId"] = media[0].datacontent[0].apsaraId
+              }
+            }
 
-        //     var CreateDisquslogsDto_ = new CreateDisquslogsDto();
-        //     CreateDisquslogsDto_._id = id_discus_log;
-        //     CreateDisquslogsDto_.disqusID = id_discus;
-        //     CreateDisquslogsDto_.active = true;
-        //     CreateDisquslogsDto_.sender = email_user;
-        //     CreateDisquslogsDto_.receiver = email_receiverParty;
-        //     CreateDisquslogsDto_.postType = "txt_msg";
-        //     CreateDisquslogsDto_.createdAt = current_date;
-        //     CreateDisquslogsDto_.updatedAt = current_date;
-        //     CreateDisquslogsDto_.reactionUri = request.body.reactionUri;
-        //     CreateDisquslogsDto_.medias = [media_];
-        //     CreateDisquslogsDto_.replyLogs = [null];
-        //     CreateDisquslogsDto_.tags = [null];
-        //     CreateDisquslogsDto_._class = "io.melody.hyppe.content.domain.DisqusLog";
-        //     CreateDisquslogsDto_.receiverActive = true;
-        //     CreateDisquslogsDto_.senderActive = true;
-        //     this.disquslogsService.create(CreateDisquslogsDto_);
-        //   }
-        // } catch (error) {
-        //   await this.errorHandler.generateNotAcceptableException(
-        //     'Unabled to proceed, ' +
-        //     error,
-        //   );
-        // }
+            var CreateDisquslogsDto_ = new CreateDisquslogsDto();
+            CreateDisquslogsDto_._id = id_discus_log;
+            CreateDisquslogsDto_.disqusID = id_discus;
+            CreateDisquslogsDto_.active = true;
+            CreateDisquslogsDto_.sender = email_user;
+            CreateDisquslogsDto_.receiver = email_receiverParty;
+            CreateDisquslogsDto_.postType = "txt_msg";
+            CreateDisquslogsDto_.createdAt = current_date;
+            CreateDisquslogsDto_.updatedAt = current_date;
+            CreateDisquslogsDto_.reactionUri = request.body.reactionUri;
+            CreateDisquslogsDto_.medias = [media_];
+            CreateDisquslogsDto_.replyLogs = [null];
+            CreateDisquslogsDto_.tags = [null];
+            CreateDisquslogsDto_._class = "io.melody.hyppe.content.domain.DisqusLog";
+            CreateDisquslogsDto_.receiverActive = true;
+            CreateDisquslogsDto_.senderActive = true;
+            this.disquslogsService.create(CreateDisquslogsDto_);
+
+            retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_);
+            this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
+          }
+        } catch (error) {
+          this.logger.log("ERROR Send DM REACTION >>>>>>>> ", error);
+        }
+        
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);

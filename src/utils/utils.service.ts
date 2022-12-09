@@ -1032,14 +1032,6 @@ export class UtilsService {
         }
       }
     }
-
-
-    let cl = 'manual';
-    let ch = await this.comparePassword('HyppeNew', get_userauth.password);
-    if (ch) {
-      cl = 'socmed';
-    }
-    ProfileDTO_.loginSource = cl;
     return ProfileDTO_;
   }
 

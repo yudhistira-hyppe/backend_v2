@@ -37,6 +37,7 @@ export class ContentDto {
   active: boolean;
   tagComment: String;
   tagComment_: string[];
+  medias: any[];
 
   reactionUri: String;
   eventType: String;
