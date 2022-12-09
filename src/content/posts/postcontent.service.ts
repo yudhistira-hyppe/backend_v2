@@ -3506,6 +3506,36 @@ export class PostContentService {
     return payload;
   }
 
+  async cmodCheckResult(postID: string) {
+    if (postID == undefined) {
+      this.logger.error('cmodCheckResult >>> body content is undefined');
+      return;
+    }
+    let pd = await this.postService.findByPostId(postID);
+    if (pd == undefined) {
+      this.logger.error('cmodResponse >>> post id:' + postID + ' not found');
+      return;      
+    }    
+
+    if (pd.statusCB == undefined || pd.statusCB == 'PENDING') {
+      let cr = pd.contentModerationResponse;
+      if (cr == undefined) {
+        return;
+      }
+
+      let ocr = JSON.parse(cr);
+      let cont = ocr.content;
+      if (cont == undefined) {
+        return;
+      }
+      let ocr2 = JSON.parse(cont);
+      let taskId = ocr2.taskId;
+
+      let rc = await this.cmodService.cmodResult(String(pd._id), taskId);
+    }
+  }
+
+
   private formatTime(seconds) {
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);

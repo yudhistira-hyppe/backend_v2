@@ -874,8 +874,9 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('api/posts/testdm')
-  async testdm(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
+  async testdm(@Body() body, @Headers() headers): Promise<string> {
     this.logger.log("testdm >>> start");
-    return this.postCommentService.removeComment(body, headers);
+    this.postContentService.cmodCheckResult('b9b22a4c-25e8-98fe-b414-ff116616dcf8');
+    return "sgsg";
   }  
 }

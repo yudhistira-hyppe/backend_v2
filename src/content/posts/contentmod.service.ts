@@ -128,6 +128,35 @@ export class ContentModService {
 
   }  
 
+
+  async cmodResult(postId: string, taskId: string) {
+    this.logger.log('cmodResult >>> start');    
+    const accessKeyId = this.configService.get("APSARA_ACCESS_KEY");
+    const accessKeySecret = this.configService.get("APSARA_ACCESS_SECRET");
+    const greenVersion = '2017-01-12';
+    var hostname = 'green.ap-southeast-1.aliyuncs.com';
+    var path = '/green/video/results';
+
+    var clientInfo = {
+        "ip":"127.0.0.1"
+    };
+
+    let requestBody = JSON.stringify([taskId]); 
+
+    let bizCfg = {
+        'accessKeyId' : accessKeyId,
+        'accessKeySecret' : accessKeySecret,
+        'path' : path,
+        'clientInfo' : clientInfo,
+        'requestBody' : requestBody,
+        'hostname' : hostname,
+        'greenVersion' : greenVersion
+    }
+
+    this.greenUploadNoCallback(postId, bizCfg);
+
+  }  
+
   execute(chunk){
 	console.log('BODY: ' + chunk);
   }  
@@ -183,8 +212,82 @@ export class ContentModService {
 	});
 
 	req.write(requestBody); 
+
 	req.end();      
   }
+
+  greenUploadNoCallback(postId: string, bizCfg :any) {
+
+    var http = require('http');
+    var crypto = require('crypto');
+
+	var accessKeyId = bizCfg['accessKeyId'];
+	var accessKeySecret = bizCfg['accessKeySecret'];
+	var path = bizCfg['path'];
+	var clientInfo = bizCfg['clientInfo'];
+	var requestBody = bizCfg['requestBody'];
+	var greenVersion = bizCfg['greenVersion'];
+	var hostname = bizCfg['hostname'];
+    var gmtCreate = new Date().toUTCString();
+    var md5 = crypto.createHash('md5');
+	// 请求头
+	var requestHeaders = {
+		'Accept':'application/json',
+	    'Content-Type':'application/json',  
+	    'Content-MD5':md5.update(requestBody).digest().toString('base64'),
+	    'Date':gmtCreate,
+	    'x-acs-version':greenVersion,
+	    'x-acs-signature-nonce':uuidv4(),
+	    'x-acs-signature-version':'1.0',
+	    'x-acs-signature-method':'HMAC-SHA1'
+	};
+
+	// 对请求的签名
+	this.signature(requestHeaders, bizCfg);
+
+	// HTTP请求设置
+	var options = {
+	    hostname: hostname,
+	    port: 80,
+	    path: encodeURI(path + '?clientInfo=' + JSON.stringify(clientInfo)),
+	    method: 'POST',
+	    headers:requestHeaders
+	};
+
+  this.logger.log('host => ' + hostname + ":" + 443 + encodeURI(path + '?clientInfo=' + JSON.stringify(clientInfo)));
+  this.logger.log('header => ' + JSON.stringify(requestHeaders));
+  this.logger.log('body => ' + JSON.stringify(requestBody));
+
+  let data = "";
+  let x= this;
+	var req = http.request(options, function(res) {
+	  res.setEncoding('utf8');
+
+    res.on('data', (chunk) => {
+      data += chunk;
+    });
+  
+    res.on('close', () => {
+      x.postUpdateCB(postId, data);
+    });    
+	});
+
+	req.write(requestBody); 
+  
+	req.end();      
+
+  }
+
+  postUpdateCB(postId: string, data: string) {
+    console.log(data);
+    let odata = JSON.parse(data);
+    if (odata.data[0].msg == 'OK') {
+      this.postService.updateStatusCB(postId, 'DONE');
+    } else {
+      this.postService.updateStatusCB(postId, 'PENDING');
+    }
+  }
+
 
   private signature(requestHeaders, bizCfg){
     var crypto = require('crypto');
@@ -255,6 +358,7 @@ export class ContentModService {
 
     await this.postService.create(pd);
   }
+
 
   async ws() {
     this.gtw.coba('fssttertertet');

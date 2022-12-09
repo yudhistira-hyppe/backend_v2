@@ -344,6 +344,17 @@ export class PostsService {
       { $set: { "reportedStatus": reportedStatus, "reportedUserCount": reportedUserCount, "reportedUser": reportedUser, "contentModeration": contentModeration, "contentModerationResponse": contentModerationResponse, "reportedUserHandle": reportedUserHandle } });
     return data;
   }
+
+  async updateStatusCB(id: string, cb: string) {
+    let data = await this.PostsModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "statusCB": cb,
+        }
+      });
+    return data;
+  }
+
   async delete(id: string) {
     const deletedCat = await this.PostsModel.findByIdAndRemove({
       _id: id,
