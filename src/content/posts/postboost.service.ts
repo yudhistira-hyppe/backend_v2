@@ -2877,6 +2877,7 @@ export class PostBoostService {
       pd.mediaThumbUri = obj.mediaThumbUri;
       pd.mediaType = obj.mediaType;
       pd.mediaUri = obj.mediaUri;
+      pd.metadata = obj.metadata;
 
       pd.postID = obj.postID;
       pd.postType = obj.postType;
