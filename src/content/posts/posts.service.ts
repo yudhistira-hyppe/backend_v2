@@ -8902,6 +8902,11 @@ export class PostsService {
     });
   }
 
+  async isLike(email: string, postID: string) {
+    let query = await this.contentEventService.findisLike(email, postID);
+    return query;
+  }
+
 }
 
 

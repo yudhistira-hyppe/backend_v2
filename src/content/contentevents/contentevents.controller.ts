@@ -548,82 +548,91 @@ export class ContenteventsController {
           CreateInsightsDto_receiver.insightLogs = LogInsught_receiver;
           await this.insightsService.updateone(email_receiverParty, CreateInsightsDto_receiver)
         }
+
         //SEND DIRECT MESSAGE
-        try{
-          let retVal = new DisqusResDto();
-          var CeckDataDiscusContact = await this.disquscontactsService.findMayeEmail(email_user, email_receiverParty);
-          if (!(await this.utilsService.ceckData(CeckDataDiscusContact))){
-            var id_discus_log = await this.utilsService.generateId()
-            var id_discus = await this.utilsService.generateId()
-            var id_discus_contact = await this.utilsService.generateId()
+        let retVal = new DisqusResDto();
 
-            var post = await this.postsService.findByPostId(request.body.postID.toString());
-            var media = await this.postsService.findOnepostID(request.body.postID.toString());
-            var media_ ={}
-            if (await this.utilsService.ceckData(media)) {
-              if (post.createdAt != undefined) {
-                media_["createdAt"] = post.createdAt;
-              }
-              if (media[0].datacontent[0].mediaBasePath != undefined) {
-                media_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
-              }
-              if (post.postType != undefined) {
-                media_["postType"] = post.postType;
-              }
-              if (media[0].datacontent[0].mediaUri != undefined) {
-                media_["mediaUri"] = media[0].datacontent[0].mediaUri;
-              }
-              if (media[0].datacontent[0].mediaUri != undefined) {
-                media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
-              }
-              if (post.description != undefined) {
-                media_["description"] = post.description;
-              }
-              if (post.active != undefined) {
-                media_["active"] = post.active;
-              }
-              if (media[0].datacontent[0].mediaType != undefined) {
-                media_["mediaType"] = media[0].datacontent[0].mediaType;
-              }
-              if (media[0].datacontent[0].mediaType != undefined) {
-                media_["mediaThumbEndpoint"] = "/thumb/" + post.postID;
-              }
-              if (post.postID != undefined) {
-                media_["postID"] = post.postID;
-              }
-              if (media[0].datacontent[0].mediaUri != undefined) {
-                media_["mediaEndpoint"] = "/stream/"+media[0].datacontent[0].mediaUri;
-              }
-              if (media[0].datacontent[0].apsara != undefined) {
-                media_["apsara"] = media[0].datacontent[0].apsara
-              }
-              if (media[0].datacontent[0].apsaraId != undefined) {
-                media_["apsaraId"] = media[0].datacontent[0].apsaraId
-              }
-            }
+        //CECk DISQUS CONTACT
+        var CeckDataDiscusContact = await this.disquscontactsService.findMayeEmail(email_user, email_receiverParty);
+        var id_discus_contact = "";
+        var id_discus = "";
+        var id_discus_log = "";
 
-            var CreateDisquslogsDto_ = new Disquslogs();
-            CreateDisquslogsDto_._id = id_discus_log;
-            CreateDisquslogsDto_.disqusID = id_discus;
-            CreateDisquslogsDto_.active = true;
-            CreateDisquslogsDto_.sender = email_user;
-            CreateDisquslogsDto_.receiver = email_receiverParty;
-            CreateDisquslogsDto_.postType = "txt_msg";
-            CreateDisquslogsDto_.createdAt = current_date;
-            CreateDisquslogsDto_.updatedAt = current_date;
-            CreateDisquslogsDto_.reactionUri = request.body.reactionUri;
-            CreateDisquslogsDto_.medias = [media_];
-            CreateDisquslogsDto_.replyLogs = [null];
-            CreateDisquslogsDto_.tags = [null];
-            CreateDisquslogsDto_._class = "io.melody.hyppe.content.domain.DisqusLog";
-            CreateDisquslogsDto_.receiverActive = true;
-            CreateDisquslogsDto_.senderActive = true;
-            this.disquslogsService.create(CreateDisquslogsDto_);
+        var post = await this.postsService.findByPostId(request.body.postID.toString());
+        var media = await this.postsService.findOnepostID(request.body.postID.toString());
+        var media_ = {}
+        if (await this.utilsService.ceckData(media)) {
+          if (post.createdAt != undefined) {
+            media_["createdAt"] = post.createdAt;
+          }
+          if (media[0].datacontent[0].mediaBasePath != undefined) {
+            media_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
+          }
+          if (post.postType != undefined) {
+            media_["postType"] = post.postType;
+          }
+          if (media[0].datacontent[0].mediaUri != undefined) {
+            media_["mediaUri"] = media[0].datacontent[0].mediaUri;
+          }
+          if (media[0].datacontent[0].mediaUri != undefined) {
+            media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
+          }
+          if (post.description != undefined) {
+            media_["description"] = post.description;
+          }
+          if (post.active != undefined) {
+            media_["active"] = post.active;
+          }
+          if (media[0].datacontent[0].mediaType != undefined) {
+            media_["mediaType"] = media[0].datacontent[0].mediaType;
+          }
+          if (media[0].datacontent[0].mediaType != undefined) {
+            media_["mediaThumbEndpoint"] = "/thumb/" + post.postID;
+          }
+          if (post.postID != undefined) {
+            media_["postID"] = post.postID;
+          }
+          if (media[0].datacontent[0].mediaUri != undefined) {
+            media_["mediaEndpoint"] = "/stream/" + media[0].datacontent[0].mediaUri;
+          }
+          if (media[0].datacontent[0].apsara != undefined) {
+            media_["apsara"] = media[0].datacontent[0].apsara
+          }
+          if (media[0].datacontent[0].apsaraId != undefined) {
+            media_["apsaraId"] = media[0].datacontent[0].apsaraId
+          }
+        }
 
-            var CreateDisqusDto_ = new CreateDisqusDto();
+        if (!(await this.utilsService.ceckData(CeckDataDiscusContact))) {
+          id_discus_contact = await this.utilsService.generateId()
+          id_discus = await this.utilsService.generateId()
+          id_discus_log = await this.utilsService.generateId()
+
+          //INSERT DISQUS CONTACT
+          var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
+          try{
+            CreateDisquscontactsDto_._id = id_discus_contact;
+            CreateDisquscontactsDto_.active = true;
+            CreateDisquscontactsDto_.email = email_user;
+            CreateDisquscontactsDto_.mate = email_receiverParty;
+            CreateDisquscontactsDto_.disqus = {
+              $ref: 'disqus',
+              $id: id_discus,
+              $db: 'hyppe_content_db',
+            };
+            CreateDisquscontactsDto_._class = "io.melody.hyppe.content.domain.DisqusContact";
+            this.disquscontactsService.create(CreateDisquscontactsDto_);
+          } catch (error) {
+            this.logger.log("ERROR INSERT DISQUS CONTACT >>>>>>>>>>>>>>>>>>> ", error);
+          }
+
+          //INSERT DISQUS
+          var CreateDisqusDto_ = new CreateDisqusDto();
+          try {
             CreateDisqusDto_._id = id_discus;
             CreateDisqusDto_.room = id_discus;
             CreateDisqusDto_.disqusID = id_discus;
+            CreateDisqusDto_.active = true
             CreateDisqusDto_.email = email_user;
             CreateDisqusDto_.mate = email_receiverParty;
             CreateDisqusDto_.eventType = "DIRECT_MSG";
@@ -638,34 +647,52 @@ export class ContenteventsController {
               $id: id_discus_log,
               $db: 'hyppe_content_db',
             }];
-            CreateDisqusDto_._class = "io.melody.hyppe.content.domain.Disqus"; 
+            CreateDisqusDto_._class = "io.melody.hyppe.content.domain.Disqus";
             this.disqusContentEventService.create(CreateDisqusDto_);
+          } catch (error) {
+            this.logger.log("ERROR INSERT DISQUS >>>>>>>>>>>>>>>>>>> ", error);
+          }
 
-            var CreateDisquscontactsDto_ = new CreateDisquscontactsDto();
-            CreateDisquscontactsDto_._id = id_discus_contact;
-            CreateDisquscontactsDto_.active = true;
-            CreateDisquscontactsDto_.email = email_user;
-            CreateDisquscontactsDto_.mate = email_receiverParty;
-            CreateDisquscontactsDto_.disqus = {
-              $ref: 'disqus',
-              $id: id_discus,
-              $db: 'hyppe_content_db',
-            };
-            CreateDisquscontactsDto_._class = "io.melody.hyppe.content.domain.DisqusContact";
-            this.disquscontactsService.create(CreateDisquscontactsDto_);
+          //INSERT DISQUS LOG
+          var CreateDisquslogsDto_ = new Disquslogs();
+          try {
+            CreateDisquslogsDto_._id = id_discus_log;
+            CreateDisquslogsDto_.disqusID = id_discus;
+            CreateDisquslogsDto_.active = true;
+            CreateDisquslogsDto_.sequenceNumber = 0;
+            CreateDisquslogsDto_.postID = request.body.postID.toString();
+            CreateDisquslogsDto_.eventInsight = "REACTION";
+            CreateDisquslogsDto_.sender = email_user;
+            CreateDisquslogsDto_.receiver = email_receiverParty;
+            CreateDisquslogsDto_.postType = "txt_msg";
+            CreateDisquslogsDto_.createdAt = current_date;
+            CreateDisquslogsDto_.updatedAt = current_date;
+            CreateDisquslogsDto_.reactionUri = request.body.reactionUri;
+            CreateDisquslogsDto_.medias = [media_];
+            CreateDisquslogsDto_._class = "io.melody.hyppe.content.domain.DisqusLog";
+            CreateDisquslogsDto_.receiverActive = true;
+            CreateDisquslogsDto_.senderActive = true;
+            this.disquslogsService.create(CreateDisquslogsDto_);
+          } catch (error) {
+            this.logger.log("ERROR INSERT DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
+          }
 
-            retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_);
-            this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
-          } else {
-            var id_discus_log = await this.utilsService.generateId()
-            var id_discus = CeckDataDiscusContact[0].disqus.$id.toString();
+          retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_);
+          this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
+        }else{
+          id_discus = (JSON.parse(JSON.stringify(CeckDataDiscusContact[0].disqus))).$id;
+          id_discus_log = await this.utilsService.generateId()
 
-            var CeckDataDiscus = await this.disqusContentEventService.findById(id_discus);
-            if (!(await this.utilsService.ceckData(CeckDataDiscus))) {
-              var CreateDisqusDto_ = new CreateDisqusDto();
+          //CECK DISQUS
+          var CreateDisqusDto_ = new CreateDisqusDto();
+          CreateDisqusDto_ = await this.disqusContentEventService.findById(id_discus);
+          if (!(await this.utilsService.ceckData(CreateDisqusDto_))) {
+            //INSERT DISQUS
+            try{
               CreateDisqusDto_._id = id_discus;
               CreateDisqusDto_.room = id_discus;
               CreateDisqusDto_.disqusID = id_discus;
+              CreateDisqusDto_.active = true
               CreateDisqusDto_.email = email_user;
               CreateDisqusDto_.mate = email_receiverParty;
               CreateDisqusDto_.eventType = "DIRECT_MSG";
@@ -682,68 +709,34 @@ export class ContenteventsController {
               }];
               CreateDisqusDto_._class = "io.melody.hyppe.content.domain.Disqus";
               this.disqusContentEventService.create(CreateDisqusDto_);
-            }else{
-              var CreateDisqusDto_ = new CreateDisqusDto();
-              var data_disqusLogs = CeckDataDiscus.disqusLogs;
+            } catch (error) {
+              this.logger.log("ERROR INSERT DISQUS >>>>>>>>>>>>>>>>>>> ", error);
+            }
+          }else{
+            //UPDATE DISQUS
+            try{
+              var data_disqusLogs = CreateDisqusDto_.disqusLogs;
               data_disqusLogs.push({
                 $ref: 'disquslogs',
                 $id: id_discus_log,
                 $db: 'hyppe_content_db',
               });
               CreateDisqusDto_.disqusLogs = data_disqusLogs;
-              CreateDisqusDto_.lastestMessage = "";
               this.disqusContentEventService.update(id_discus, CreateDisqusDto_);
+            } catch (error) {
+              this.logger.log("ERROR UPDATE DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
             }
+          }
 
-            var post = await this.postsService.findByPostId(request.body.postID.toString());
-            var media = await this.postsService.findOnepostID(request.body.postID.toString());
-            var media_ = {}
-            if (await this.utilsService.ceckData(media)) {
-              if (post.createdAt != undefined) {
-                media_["createdAt"] = post.createdAt;
-              }
-              if (media[0].datacontent[0].mediaBasePath != undefined) {
-                media_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
-              }
-              if (post.postType != undefined) {
-                media_["postType"] = post.postType;
-              }
-              if (media[0].datacontent[0].mediaUri != undefined) {
-                media_["mediaUri"] = media[0].datacontent[0].mediaUri;
-              }
-              if (media[0].datacontent[0].mediaUri != undefined) {
-                media_["mediaThumbUri"] = media[0].datacontent[0].mediaThumb;
-              }
-              if (post.description != undefined) {
-                media_["description"] = post.description;
-              }
-              if (post.active != undefined) {
-                media_["active"] = post.active;
-              }
-              if (media[0].datacontent[0].mediaType != undefined) {
-                media_["mediaType"] = media[0].datacontent[0].mediaType;
-              }
-              if (media[0].datacontent[0].mediaType != undefined) {
-                media_["mediaThumbEndpoint"] = "/thumb/" + post.postID;
-              }
-              if (post.postID != undefined) {
-                media_["postID"] = post.postID;
-              }
-              if (media[0].datacontent[0].mediaUri != undefined) {
-                media_["mediaEndpoint"] = "/stream/" + media[0].datacontent[0].mediaUri;
-              }
-              if (media[0].datacontent[0].apsara != undefined) {
-                media_["apsara"] = media[0].datacontent[0].apsara
-              }
-              if (media[0].datacontent[0].apsaraId != undefined) {
-                media_["apsaraId"] = media[0].datacontent[0].apsaraId
-              }
-            }
-
-            var CreateDisquslogsDto_ = new CreateDisquslogsDto();
+          //INSERT DISQUS LOG
+          var CreateDisquslogsDto_ = new Disquslogs();
+          try {
             CreateDisquslogsDto_._id = id_discus_log;
             CreateDisquslogsDto_.disqusID = id_discus;
             CreateDisquslogsDto_.active = true;
+            CreateDisquslogsDto_.sequenceNumber = 0;
+            CreateDisquslogsDto_.postID = request.body.postID.toString();
+            CreateDisquslogsDto_.eventInsight = "REACTION";
             CreateDisquslogsDto_.sender = email_user;
             CreateDisquslogsDto_.receiver = email_receiverParty;
             CreateDisquslogsDto_.postType = "txt_msg";
@@ -751,20 +744,20 @@ export class ContenteventsController {
             CreateDisquslogsDto_.updatedAt = current_date;
             CreateDisquslogsDto_.reactionUri = request.body.reactionUri;
             CreateDisquslogsDto_.medias = [media_];
-            CreateDisquslogsDto_.replyLogs = [null];
-            CreateDisquslogsDto_.tags = [null];
             CreateDisquslogsDto_._class = "io.melody.hyppe.content.domain.DisqusLog";
             CreateDisquslogsDto_.receiverActive = true;
             CreateDisquslogsDto_.senderActive = true;
             this.disquslogsService.create(CreateDisquslogsDto_);
-
-            retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_);
-            this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
+          } catch (error) {
+            this.logger.log("ERROR INSERT DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
           }
-        } catch (error) {
-          this.logger.log("ERROR Send DM REACTION >>>>>>>> ", error);
+
+          retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_);
+          this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
         }
         
+        console.log("retVal",retVal);
+
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);

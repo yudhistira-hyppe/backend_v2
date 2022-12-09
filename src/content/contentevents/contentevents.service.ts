@@ -38,6 +38,33 @@ export class ContenteventsService {
     query.where('email', email);
     return query.exec();
   }
+
+  async findisLike(email: string, postID: string) {
+    let query = this.ContenteventsModel.aggregate([
+
+      {
+        $match:
+        {
+
+          "postID": postID,
+          "email": email,
+          "eventType": "LIKE",
+          "event": "DONE"
+
+        }
+      },
+
+      {
+        $project: {
+          postID: 1,
+          email: 1
+        }
+      }
+
+    ]);
+
+    return query.exec();
+  }
   async updateNoneActive(email: string) {
     this.ContenteventsModel.updateMany(
       {
