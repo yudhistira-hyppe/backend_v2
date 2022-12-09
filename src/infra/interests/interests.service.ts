@@ -49,6 +49,7 @@ export class InterestsService {
   }
 
   async findOne(id: string): Promise<Interests> {
+    console.log("int: " + id);
     return this.interestsModel.findOne({ _id: id }).exec();
   }
 
