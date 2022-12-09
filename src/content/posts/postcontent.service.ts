@@ -1508,8 +1508,8 @@ export class PostContentService {
         if (check != undefined) {
           for (let i = 0; i < check.length; i++) {
             var ce = check[i];
-            if (ce.receiverParty != undefined && ce.receiverParty.length > 1) {
-              following.push(ce.receiverParty);
+            if (ce.senderParty != undefined && ce.senderParty.length > 1) {
+              following.push(ce.senderParty);
             }
           }
         }
@@ -1594,7 +1594,7 @@ export class PostContentService {
       let skip = this.paging(page, row);
       query.skip(skip);
       query.limit(row);
-      query.sort({ 'postType': 1});
+      query.sort({ 'createdAt': 1, 'postType': 1});
       let res = await query.exec();
       let ed = await this.utilService.getDateTimeDate();
       let gap = ed.getTime() - st.getTime();
@@ -3505,6 +3505,36 @@ export class PostContentService {
 
     return payload;
   }
+
+  async cmodCheckResult(postID: string) {
+    if (postID == undefined) {
+      this.logger.error('cmodCheckResult >>> body content is undefined');
+      return;
+    }
+    let pd = await this.postService.findByPostId(postID);
+    if (pd == undefined) {
+      this.logger.error('cmodResponse >>> post id:' + postID + ' not found');
+      return;      
+    }    
+
+    if (pd.statusCB == undefined || pd.statusCB == 'PENDING') {
+      let cr = pd.contentModerationResponse;
+      if (cr == undefined) {
+        return;
+      }
+
+      let ocr = JSON.parse(cr);
+      let cont = ocr.content;
+      if (cont == undefined) {
+        return;
+      }
+      let ocr2 = JSON.parse(cont);
+      let taskId = ocr2.taskId;
+
+      let rc = await this.cmodService.cmodResult(String(pd._id), taskId);
+    }
+  }
+
 
   private formatTime(seconds) {
     const h = Math.floor(seconds / 3600);

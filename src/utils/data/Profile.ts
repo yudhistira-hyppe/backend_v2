@@ -56,6 +56,7 @@ export class ProfileDTO {
     pin_verified: boolean;
     pin_create: boolean;
     statusKyc: String;
+    loginSource: String;
 }
 
 export class LocationDTO {

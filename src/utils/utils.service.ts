@@ -1032,7 +1032,6 @@ export class UtilsService {
         }
       }
     }
-
     return ProfileDTO_;
   }
 
