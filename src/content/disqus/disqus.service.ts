@@ -197,7 +197,7 @@ export class DisqusService {
                                         }
                                     }
                                 },
-                                
+                                  
                             ]
                         },
                         {
@@ -349,8 +349,7 @@ export class DisqusService {
                                 $or: [
                                     {
                                         $and: [
-                                            {
-                                                
+                                            {                                        
                                                 $expr: {
                                                     $in: ['$_id', '$$localID']
                                                 }
@@ -387,6 +386,7 @@ export class DisqusService {
                                 "active": 1,
                                 "disqusID": 1,
                                 "updatedAt": 1
+                                                        
                             }
                         },
                         {
@@ -400,6 +400,44 @@ export class DisqusService {
                 },
                 
             },
+                {
+                $lookup: {
+                    from: 'reactions_repo',
+                    as: 'emot',
+                    let: {
+                        localID: '$disqusLogs.reactionUri'
+                    },
+                    pipeline: [
+                        {
+                            $match: 
+                            {
+                                $or: [
+                                    {
+                                        $expr: {
+                                            $in: ['$URL', '$$localID']
+                                        }
+                                    },
+                                    
+                                ]
+                            }
+                        },
+                        
+                    ],
+                },
+                
+            },
+           {
+               $unwind: {
+                   path: "$disqusLogs",
+                   preserveNullAndEmptyArrays: true
+               }
+           },
+           //{
+           //     $unwind: {
+           //         path: "$emot",
+           //         preserveNullAndEmptyArrays: true
+           //     }
+           // },
             {
                 $unwind: {
                     path: "$userUserBasic",
@@ -487,7 +525,23 @@ export class DisqusService {
                     "createdAt": 1,
                     "active": 1,
                     "eventType": 1,
-                    "disqusLogs": 1,
+                                //"emot":1,
+                    "disqusLogs": 
+                                [{
+                                                        "createdAt"		: "$disqusLogs.createdAt",
+                                "reactionUri"	: "$disqusLogs.reactionUri",
+                                "txtMessages"	: "$disqusLogs.txtMessages",
+                                "receiver"		: "$disqusLogs.receiver",
+                                "postType"		: "$disqusLogs.postType",
+                                "sender"			: "$disqusLogs.sender",
+                                "lineID"			: "$disqusLogs.lineID",
+                                "active"			: "$disqusLogs.active",
+                                "disqusID"		: "$disqusLogs.disqusID",
+                                "updatedAt"		: "$disqusLogs.updatedAt",
+                                                        "reactionUri": {$ifNull: ["$emot.URL", "null nih"]} ,
+                                                        "reaction_icon": { $ifNull: ["$emot.icon", "null nih"] }
+                                                        
+                                }],
                     "senderOrReceiverInfo": 
                             {
                             "email": 
