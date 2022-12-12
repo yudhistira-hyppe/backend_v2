@@ -81,8 +81,7 @@ export class UservouchersService {
 
         pipeline.push({
             $match: {
-                "userID": userID,
-                "isActive": true
+                "userID": userID
             }
         },);
 
