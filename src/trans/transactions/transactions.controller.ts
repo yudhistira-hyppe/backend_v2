@@ -36,6 +36,7 @@ import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.
 import { CreatePostsDto } from 'src/content/posts/dto/create-posts.dto';
 import { Accountbalances } from '../accountbalances/schemas/accountbalances.schema';
 import { Templates } from 'src/infra/templates/schemas/templates.schema';
+import { Console } from 'console';
 
 const cheerio = require('cheerio');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -6027,6 +6028,8 @@ export class TransactionsController {
                     email: user.email,
                     valueexpiredva: ExpiredVa,
                 }
+
+                console.log("PARAM REQUEST VA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",JSON.stringify(dataCreateVa));
                 var Va = await this.createVa(dataCreateVa);
 
                 //CREATE DATA TRANSACTION
@@ -6192,6 +6195,7 @@ export class TransactionsController {
                         email: user.email,
                         valueexpiredva: ExpiredVa,
                     }
+                    console.log("PARAM REQUEST VA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(dataCreateVa));
                     var Va = await this.createVa(dataCreateVa);
 
                     //CREATE DATA TRANSACTION
@@ -6385,6 +6389,7 @@ export class TransactionsController {
 
         try {
             var datareqva = await this.oyPgService.generateStaticVa(data_va);
+            console.log("PARAM RESPONSE VA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(datareqva));
             return datareqva;
         } catch (e) {
             await this.errorHandler.generateNotAcceptableException(
