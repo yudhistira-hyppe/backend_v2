@@ -432,12 +432,12 @@ export class DisqusService {
                         preserveNullAndEmptyArrays: true
                     }
                 },
-                //{
-                //     $unwind: {
-                //         path: "$emot",
-                //         preserveNullAndEmptyArrays: true
-                //     }
-                // },
+                {
+                     $unwind: {
+                         path: "$emot",
+                         preserveNullAndEmptyArrays: true
+                     }
+                },
                 {
                     $unwind: {
                         path: "$userUserBasic",
