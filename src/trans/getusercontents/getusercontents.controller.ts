@@ -831,7 +831,7 @@ export class GetusercontentsController {
                 "privacy": databuy[0].privacy,
                 "isViewed": databuy[0].isViewed,
                 "allowComments": databuy[0].allowComments,
-                "isCertified": databuy[0].isCertified,
+                "certified": databuy[0].certified,
                 "saleLike": databuy[0].saleLike,
                 "saleView": databuy[0].saleView,
                 "adminFee": Math.ceil(nominalmradmin),
@@ -856,6 +856,7 @@ export class GetusercontentsController {
     async contentfilter(@Req() request: Request): Promise<any> {
 
         var datavids = null;
+        var isLike = null;
         var datadiary = null;
         var datapict = null;
         var keys = null;
@@ -874,6 +875,7 @@ export class GetusercontentsController {
         var totalFilterPostUser = null;
         var totalFilterUser = null;
         var email = null;
+        var dataLike = null;
 
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["skip"] !== undefined) {
@@ -959,6 +961,10 @@ export class GetusercontentsController {
             arrdatauser = [];
         }
 
+
+
+
+
         try {
             let query = null;
             query = await this.postsService.findcontentfilters(keys, "vid", skip, limit, email);
@@ -1031,6 +1037,20 @@ export class GetusercontentsController {
                         }
                     }
                 }
+
+                let postid = query[i].postID;
+                try {
+                    dataLike = await this.postsService.isLike(email, postid);
+                } catch (e) {
+                    dataLike = null;
+
+                }
+
+                if (dataLike.length > 0) {
+                    isLike = true
+                } else {
+                    isLike = false
+                }
                 objk = {
                     "_id": query[i]._id,
                     "mediaBasePath": query[i].mediaBasePath,
@@ -1058,6 +1078,8 @@ export class GetusercontentsController {
                     "insight": query[i].insight,
                     "apsaraId": idapsaradefine,
                     "isApsara": apsaradefine,
+                    "certified": query[i].certified,
+                    "isLiked": isLike,
                     "reportedStatus": query[i].reportedStatus,
                     "reportedUserCount": query[i].reportedUserCount,
                     "media": datas
@@ -1141,6 +1163,20 @@ export class GetusercontentsController {
                         }
                     }
                 }
+
+                let postid = query[i].postID;
+                try {
+                    dataLike = await this.postsService.isLike(email, postid);
+                } catch (e) {
+                    dataLike = null;
+
+                }
+
+                if (dataLike.length > 0) {
+                    isLike = true
+                } else {
+                    isLike = false
+                }
                 objk = {
                     "_id": query[i]._id,
                     "mediaBasePath": query[i].mediaBasePath,
@@ -1168,6 +1204,8 @@ export class GetusercontentsController {
                     "insight": query[i].insight,
                     "apsaraId": idapsaradefine,
                     "isApsara": apsaradefine,
+                    "certified": query[i].certified,
+                    "isLiked": isLike,
                     "reportedStatus": query[i].reportedStatus,
                     "reportedUserCount": query[i].reportedUserCount,
                     "media": datas
@@ -1252,6 +1290,22 @@ export class GetusercontentsController {
                         }
                     }
                 }
+
+
+                let postid = query[i].postID;
+                try {
+                    dataLike = await this.postsService.isLike(email, postid);
+                } catch (e) {
+                    dataLike = null;
+
+                }
+
+                if (dataLike.length > 0) {
+                    isLike = true
+                } else {
+                    isLike = false
+                }
+
                 objk = {
                     "_id": query[i]._id,
                     "mediaBasePath": query[i].mediaBasePath,
@@ -1279,6 +1333,8 @@ export class GetusercontentsController {
                     "insight": query[i].insight,
                     "apsaraId": idapsaradefine,
                     "isApsara": apsaradefine,
+                    "certified": query[i].certified,
+                    "isLiked": isLike,
                     "reportedStatus": query[i].reportedStatus,
                     "reportedUserCount": query[i].reportedUserCount,
                     "media": datas

@@ -20,6 +20,10 @@ export class FaqdetailsService {
         return data;
     }
 
+    async findOne(Idfaqs: ObjectId): Promise<Faqdetails> {
+        return this.faqdetailsModel.findOne({ Idfaqs: Idfaqs }).exec();
+    }
+
     async update(
         id: string,
         createFaqdetailsDto: CreateFaqdetailsDto,

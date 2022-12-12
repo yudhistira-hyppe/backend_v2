@@ -2877,6 +2877,7 @@ export class PostBoostService {
       pd.mediaThumbUri = obj.mediaThumbUri;
       pd.mediaType = obj.mediaType;
       pd.mediaUri = obj.mediaUri;
+      pd.metadata = obj.metadata;
 
       pd.postID = obj.postID;
       pd.postType = obj.postType;
@@ -2978,6 +2979,11 @@ export class PostBoostService {
         console.log("boosted: " + pd.postID);
         this.postxService.updateBoostViewer(pd.postID, email);
         pd.boostJangkauan = this.countBoosted(obj, email);
+      }
+
+      if (obj.statusCB == undefined || obj.statusCB == 'PENDING') {
+        console.log("statusCB: " + obj.statusCB);
+        this.postService.cmodCheckResult(obj.postID);
       }
 
 
@@ -3628,6 +3634,7 @@ export class PostBoostService {
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
+                            "statusCB": 1,
                             "privacy": [{
                                 "isCelebrity": "$userBasic.isCelebrity"
                             }, {
@@ -4130,6 +4137,7 @@ export class PostBoostService {
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
+                            "statusCB": 1,
                             "privacy": [{
                                 "isCelebrity": "$userBasic.isCelebrity"
                             }, {
@@ -4632,6 +4640,7 @@ export class PostBoostService {
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
+                            "statusCB": 1,
                             "privacy": [{
                                 "isCelebrity": "$userBasic.isCelebrity"
                             }, {
@@ -5019,6 +5028,7 @@ export class PostBoostService {
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
+                            "statusCB": 1,
                             "privacy": [{
                                 "isCelebrity": "$userBasic.isCelebrity"
                             }, {
