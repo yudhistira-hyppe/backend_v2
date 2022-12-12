@@ -3068,6 +3068,7 @@ export class PostContentService {
         let ps = pdv[i];
         posts.push(ps.postID);
       }      
+      data.video = pdv;
     }
 
     if (String(body.postType) == 'diary') {
