@@ -2981,6 +2981,11 @@ export class PostBoostService {
         pd.boostJangkauan = this.countBoosted(obj, email);
       }
 
+      if (obj.statusCB == undefined || obj.statusCB == 'PENDING') {
+        console.log("statusCB: " + obj.statusCB);
+        this.postService.cmodCheckResult(obj.postID);
+      }
+
 
       res.push(pd);
 
@@ -3629,6 +3634,7 @@ export class PostBoostService {
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
+                            "statusCB": 1,
                             "privacy": [{
                                 "isCelebrity": "$userBasic.isCelebrity"
                             }, {
@@ -4131,6 +4137,7 @@ export class PostBoostService {
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
+                            "statusCB": 1,
                             "privacy": [{
                                 "isCelebrity": "$userBasic.isCelebrity"
                             }, {
@@ -4633,6 +4640,7 @@ export class PostBoostService {
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
+                            "statusCB": 1,
                             "privacy": [{
                                 "isCelebrity": "$userBasic.isCelebrity"
                             }, {
@@ -5020,6 +5028,7 @@ export class PostBoostService {
                             "fullName": "$userBasic.fullName",
                             "username": "$username.username",
                             "avatar": 1,
+                            "statusCB": 1,
                             "privacy": [{
                                 "isCelebrity": "$userBasic.isCelebrity"
                             }, {

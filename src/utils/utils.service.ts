@@ -148,7 +148,7 @@ export class UtilsService {
 
     let title_send = Templates_.subject.toString();
     if (title_send == "${user_name}") {
-      title_send = get_username_senderParty;
+      title_send = "@"+get_username_senderParty;
     }
 
     var Post_type_upper = "";
