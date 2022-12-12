@@ -509,7 +509,7 @@ export class DisqusController {
                   array_data.push({
                     $ref: 'userauths',
                     $id: new ObjectId(user._id.toString()),
-                    $db: 'hyppe_trans_db',
+                    $db: 'hyppe_content_db',
                   });
                 }
               }
@@ -947,7 +947,7 @@ export class DisqusController {
     arr.push(agg);
     retVal.disqusLogs = arr;
   
-    var usp = { "$ref": "disquslogs", "$id": String(ndl._id), "$db": "hyppe_trans_db" };
+    var usp = { "$ref": "disquslogs", "$id": String(ndl._id), "$db": "hyppe_content_db" };
     let usparr = [];
     if (dis.disqusLogs != undefined) {
       usparr = dis.disqusLogs;
@@ -964,7 +964,7 @@ export class DisqusController {
     if (cts == undefined || cts.length < 1) {
 
       let c0 = new Disquscontacts();
-      var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_trans_db" };
+      var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_content_db" };
       c0.disqus = usy;
       var c0id = await this.utilsService.generateId();
       c0._id = c0id;
@@ -973,7 +973,7 @@ export class DisqusController {
       this.disquscontactsService.create(c0);
 
       let c1 = new Disquscontacts();
-      var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_trans_db" };
+      var usy = { "$ref": "disqus", "$id": String(dis._id), "$db": "hyppe_content_db" };
       c1.disqus = usy;
       var c1id = await this.utilsService.generateId();
       c1._id = c1id;
