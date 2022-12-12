@@ -36,6 +36,7 @@ export class TransactionsService {
         return this.transactionsModel.findOne({ postid: postid }).exec();
     }
 
+
     async findpostid(postid: string): Promise<Transactions> {
         return this.transactionsModel.findOne({ postid: postid, status: "Success" }).exec();
     }

@@ -169,6 +169,9 @@ export class TransactionsController {
         var ubasic = await this.userbasicsService.findOne(email);
 
         var iduser = ubasic._id;
+
+        var userbuyer = mongoose.Types.ObjectId(iduser);
+
         var namapembeli = ubasic.fullName;
         var dataconten = null;
         var saleAmount = 0;
@@ -192,6 +195,7 @@ export class TransactionsController {
         var transactionVoucher = null;
         var datamradmin = null;
         var databankvacharge = null;
+        var datawayting = null;
         var idppn = "62bbbe43a7520000050077a3";
         //  var idmdradmin = "62bd413ff37a00001a004369";
         var idbankvacharge = "62bd40e0f37a00001a004366";
@@ -260,76 +264,245 @@ export class TransactionsController {
         var name = ubasic.fullName;
         var emailbuy = ubasic.email;
         var stringId = (await this.generateNumber()).toString();
+        try {
+
+            datawayting = await this.transactionsService.findExpired(userbuyer);
 
 
-        if (type === "CONTENT") {
-            try {
-                datapost = await this.postsService.findid(postid[0].id);
+        } catch (e) {
+            datawayting = null;
 
-                emailseller = datapost._doc.email;
-                ubasicseller = await this.userbasicsService.findOne(emailseller);
-                iduserseller = ubasicseller._id;
-                namapenjual = ubasicseller.fullName;
+        }
 
-            } catch (e) {
-                throw new BadRequestException("User not found..!");
-            }
+        if (datawayting.length > 0) {
 
-            try {
+            throw new BadRequestException("Tidak dapat melanjutkan. Selesaikan pembayaran transaksi anda dahulu !");
+        }
+        else {
 
-                dataconten = await this.getusercontentsService.findcontenbuy(postid[0].id);
-                saleAmount = dataconten[0].saleAmount;
-            } catch (e) {
-                dataconten = null;
-                saleAmount = 0;
-            }
+            if (type === "CONTENT") {
+                try {
+                    datapost = await this.postsService.findid(postid[0].id);
 
-            try {
+                    emailseller = datapost._doc.email;
+                    ubasicseller = await this.userbasicsService.findOne(emailseller);
+                    iduserseller = ubasicseller._id;
+                    namapenjual = ubasicseller.fullName;
 
-                datatrpending = await this.transactionsService.findpostidpending(postid[0].id);
-
-
-            } catch (e) {
-                datatrpending = null;
-
-            }
-
-
-            var postIds = postid[0].id;
-
-            //  var objid = mongoose.Types.ObjectId(postIds);
-            var qty = postid[0].qty;
-            var totalAmount = postid[0].totalAmount;
-            var arraydetailobj = { "id": postIds, "qty": qty, "totalAmount": totalAmount };
-            arrayDetail.push(arraydetailobj);
-
-            postidTR = postIds;
-            arraypostids.push(postid[0].id);
-
-
-            if (datatrpending !== null) {
-
-                let cekstatusva = await this.oyPgService.staticVaInfo(datatrpending.idva);
-                var expiredva = cekstatusva.trx_expiration_time;
-                var dex = new Date(expiredva);
-                dex.setHours(dex.getHours() + 7); // timestamp
-                dex = new Date(dex);
-
-                if (cekstatusva.va_status === "WAITING_PAYMENT") {
-                    throw new BadRequestException("Tidak dapat melanjutkan. Konten ini sedang dalam proses pembelian");
+                } catch (e) {
+                    throw new BadRequestException("User not found..!");
                 }
-                else if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+
+                try {
+
+                    dataconten = await this.getusercontentsService.findcontenbuy(postid[0].id);
+                    saleAmount = dataconten[0].saleAmount;
+                } catch (e) {
+                    dataconten = null;
+                    saleAmount = 0;
+                }
 
 
-                    // var datenow = new Date(Date.now());
-                    // var expiredvas = dex;
-                    // var dateVa = new Date(expiredvas);
-                    // dateVa.setHours(dateVa.getHours() - 7); // timestamp
+
+                try {
+
+                    datatrpending = await this.transactionsService.findpostidpending(postid[0].id);
 
 
-                    var idtransaction = datatrpending._id;
+                } catch (e) {
+                    datatrpending = null;
 
-                    // if (datenow > dateVa) {
+                }
+
+
+                var postIds = postid[0].id;
+
+                //  var objid = mongoose.Types.ObjectId(postIds);
+                var qty = postid[0].qty;
+                var totalAmount = postid[0].totalAmount;
+                var arraydetailobj = { "id": postIds, "qty": qty, "totalAmount": totalAmount };
+                arrayDetail.push(arraydetailobj);
+
+                postidTR = postIds;
+                arraypostids.push(postid[0].id);
+
+
+                if (datatrpending !== null) {
+
+                    let cekstatusva = await this.oyPgService.staticVaInfo(datatrpending.idva);
+                    var expiredva = cekstatusva.trx_expiration_time;
+                    var dex = new Date(expiredva);
+                    dex.setHours(dex.getHours() + 7); // timestamp
+                    dex = new Date(dex);
+
+                    if (cekstatusva.va_status === "WAITING_PAYMENT") {
+                        throw new BadRequestException("Tidak dapat melanjutkan. Konten ini sedang dalam proses pembelian");
+                    }
+                    else if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+
+
+                        // var datenow = new Date(Date.now());
+                        // var expiredvas = dex;
+                        // var dateVa = new Date(expiredvas);
+                        // dateVa.setHours(dateVa.getHours() - 7); // timestamp
+
+
+                        var idtransaction = datatrpending._id;
+
+                        // if (datenow > dateVa) {
+
+                        var datava = {
+                            "partner_user_id": userbuy.toString() + stringId,
+                            "amount": totalamount,
+                            "bank_code": bankcode,
+                            "is_open": false,
+                            "is_single_use": true,
+                            "is_lifetime": false,
+                            "username_display": name.toString(),
+                            "email": email,
+                            "trx_expiration_time": valueexpiredva,
+                        }
+
+                        try {
+                            var datareqva = await this.oyPgService.generateStaticVa(datava);
+                            var idva = datareqva.id;
+                            var statuscodeva = datareqva.status.code;
+                            var statusmessage = datareqva.status.message;
+                            var nova = datareqva.va_number;
+                            var expiredva = datareqva.trx_expiration_time;
+                            var d1 = new Date(expiredva);
+                            d1.setHours(d1.getHours() + 7); // timestamp
+                            d1 = new Date(d1);
+
+
+                        } catch (e) {
+                            throw new BadRequestException("Not process..!");
+
+                        }
+
+                        if (statuscodeva == "000") {
+
+                            try {
+
+                                let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                                CreateTransactionsDto.iduserbuyer = iduser;
+                                CreateTransactionsDto.idusersell = iduserseller;
+                                CreateTransactionsDto.timestamp = dt.toISOString();
+                                CreateTransactionsDto.updatedAt = dt.toISOString();
+                                CreateTransactionsDto.noinvoice = no;
+                                CreateTransactionsDto.amount = saleAmount;
+                                CreateTransactionsDto.status = cekstatusva.va_status;
+                                CreateTransactionsDto.bank = idbank;
+                                CreateTransactionsDto.idva = idva;
+                                CreateTransactionsDto.nova = nova;
+                                CreateTransactionsDto.accountbalance = null;
+                                CreateTransactionsDto.paymentmethod = idmethode;
+                                // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                                CreateTransactionsDto.ppn = null;
+                                CreateTransactionsDto.totalamount = totalamount;
+                                CreateTransactionsDto.description = "buy " + type + " pending";
+                                CreateTransactionsDto.payload = null;
+                                CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                                CreateTransactionsDto.detail = arrayDetail;
+                                CreateTransactionsDto.postid = postidTR;
+                                CreateTransactionsDto.response = datareqva;
+                                let datatr = await this.transactionsService.create(CreateTransactionsDto);
+                                await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                                await this.transactionsService.updatestatuscancel(idtransaction);
+
+
+                                var data = {
+                                    "noinvoice": datatr.noinvoice,
+                                    "postid": postidTR,
+                                    "idusersell": datatr.idusersell,
+                                    "NamaPenjual": namapenjual,
+                                    "iduserbuyer": datatr.iduserbuyer,
+                                    "NamaPembeli": namapembeli,
+                                    "amount": datatr.amount,
+                                    "paymentmethod": namamethode,
+                                    "status": datatr.status,
+                                    "description": datatr.description,
+                                    "idva": datatr.idva,
+                                    "nova": datatr.nova,
+                                    "expiredtimeva": datatr.expiredtimeva,
+                                    "salelike": datatr.saleview,
+                                    "saleview": datatr.salelike,
+                                    "bank": namabank,
+                                    // "ppn": valueppn + " %",
+                                    // "nominalppn": nominalppn,
+                                    "bankvacharge": valuevacharge,
+                                    // "mdradmin": valuemradmin + " %",
+                                    // "nominalmdradmin": nominalmradmin,
+                                    "detail": arrayDetail,
+                                    "totalamount": datatr.totalamount,
+                                    "accountbalance": datatr.accountbalance,
+                                    "timestamp": datatr.timestamp,
+                                    "_id": datatr._id
+                                };
+
+
+                            } catch (e) {
+                                res.status(HttpStatus.BAD_REQUEST).json({
+
+                                    "message": messagesEror + " " + e.toString()
+                                });
+                            }
+                            res.status(HttpStatus.OK).json({
+                                response_code: 202,
+                                "data": data,
+                                "message": messages
+                            });
+                            // setTimeout(res, 3000);
+                        }
+                        else if (statuscodeva == "208") {
+                            throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+                        }
+                        else if (statuscodeva == "211") {
+                            throw new BadRequestException("Request is Rejected (Bank code is not available for this service)");
+                        }
+                        else if (statuscodeva == "212") {
+                            throw new BadRequestException("Request is Rejected (Given amount are lesser than allowed value for static va)");
+                        }
+                        else if (statuscodeva == "213") {
+                            throw new BadRequestException("Request is Rejected (Given amount are greater than allowed value for static va)");
+                        }
+                        else if (statuscodeva == "214") {
+                            throw new BadRequestException("Request is Rejected (Failed to generate static va)");
+                        }
+                        else if (statuscodeva == "215") {
+                            throw new BadRequestException("Request is Rejected (Amount type is not supported for the requested bank code)");
+                        }
+                        else if (statuscodeva == "216") {
+                            throw new BadRequestException("Request is Rejected (VA Id is empty)");
+                        }
+                        else if (statuscodeva == "217") {
+                            throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
+                        }
+                        else if (statuscodeva == "219") {
+                            throw new BadRequestException("Request is Rejected (Virtual account is not enabled for this bank)");
+                        }
+                        else if (statuscodeva == "226") {
+                            throw new BadRequestException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
+                        }
+                        else if (statuscodeva == "245") {
+                            throw new BadRequestException("Request is rejected (Min expiry time is 60 minutes)");
+                        }
+                        else if (statuscodeva == "246") {
+                            throw new BadRequestException("Request is rejected (Failed update va)");
+                        }
+                        else {
+                            throw new BadRequestException("Request is Rejected");
+                        }
+                        // } else {
+                        //     throw new BadRequestException("This content is already in the process of being purchased");
+                        // }
+                    }
+
+
+
+                }
+                else {
 
                     var datava = {
                         "partner_user_id": userbuy.toString() + stringId,
@@ -362,6 +535,7 @@ export class TransactionsController {
 
                     if (statuscodeva == "000") {
 
+
                         try {
 
                             let cekstatusva = await this.oyPgService.staticVaInfo(idva);
@@ -389,8 +563,6 @@ export class TransactionsController {
                             CreateTransactionsDto.response = datareqva;
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
                             await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
-                            await this.transactionsService.updatestatuscancel(idtransaction);
-
 
                             var data = {
                                 "noinvoice": datatr.noinvoice,
@@ -420,8 +592,6 @@ export class TransactionsController {
                                 "timestamp": datatr.timestamp,
                                 "_id": datatr._id
                             };
-
-
                         } catch (e) {
                             res.status(HttpStatus.BAD_REQUEST).json({
 
@@ -438,227 +608,311 @@ export class TransactionsController {
                     else if (statuscodeva == "208") {
                         throw new BadRequestException("Request is Rejected (API Key is not Valid)");
                     }
+                    else if (statuscodeva == "211") {
+                        throw new BadRequestException("Request is Rejected (Bank code is not available for this service)");
+                    }
+                    else if (statuscodeva == "212") {
+                        throw new BadRequestException("Request is Rejected (Given amount are lesser than allowed value for static va)");
+                    }
+                    else if (statuscodeva == "213") {
+                        throw new BadRequestException("Request is Rejected (Given amount are greater than allowed value for static va)");
+                    }
+                    else if (statuscodeva == "214") {
+                        throw new BadRequestException("Request is Rejected (Failed to generate static va)");
+                    }
+                    else if (statuscodeva == "215") {
+                        throw new BadRequestException("Request is Rejected (Amount type is not supported for the requested bank code)");
+                    }
+                    else if (statuscodeva == "216") {
+                        throw new BadRequestException("Request is Rejected (VA Id is empty)");
+                    }
                     else if (statuscodeva == "217") {
                         throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
+                    }
+                    else if (statuscodeva == "219") {
+                        throw new BadRequestException("Request is Rejected (Virtual account is not enabled for this bank)");
+                    }
+                    else if (statuscodeva == "226") {
+                        throw new BadRequestException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
+                    }
+                    else if (statuscodeva == "245") {
+                        throw new BadRequestException("Request is rejected (Min expiry time is 60 minutes)");
+                    }
+                    else if (statuscodeva == "246") {
+                        throw new BadRequestException("Request is rejected (Failed update va)");
                     }
                     else {
                         throw new BadRequestException("Request is Rejected");
                     }
-                    // } else {
-                    //     throw new BadRequestException("This content is already in the process of being purchased");
-                    // }
                 }
-
-
 
             }
-            else {
+            else if (type === "VOUCHER") {
 
-                var datava = {
-                    "partner_user_id": userbuy.toString() + stringId,
-                    "amount": totalamount,
-                    "bank_code": bankcode,
-                    "is_open": false,
-                    "is_single_use": true,
-                    "is_lifetime": false,
-                    "username_display": name.toString(),
-                    "email": email,
-                    "trx_expiration_time": valueexpiredva,
-                }
-
+                var postidTRvoucer = null;
+                var arraymountvc = [];
+                var arraypostidsvc = [];
+                var arrayDetailvc = [];
                 try {
-                    var datareqva = await this.oyPgService.generateStaticVa(datava);
-                    var idva = datareqva.id;
-                    var statuscodeva = datareqva.status.code;
-                    var statusmessage = datareqva.status.message;
-                    var nova = datareqva.va_number;
-                    var expiredva = datareqva.trx_expiration_time;
-                    var d1 = new Date(expiredva);
-                    d1.setHours(d1.getHours() + 7); // timestamp
-                    d1 = new Date(d1);
+
+
+                    emailseller = "tjikaljedy@hyppe.id";
+                    ubasicseller = await this.userbasicsService.findOne(emailseller);
+                    iduserseller = ubasicseller._id;
+                    namapenjual = ubasicseller.fullName;
 
 
                 } catch (e) {
-                    throw new BadRequestException("Not process..!");
+                    throw new BadRequestException("User not found..!");
+                }
+                try {
+
+                    datatrpending = await this.transactionsService.findpostidpendingVoucer();
+
+                } catch (e) {
+                    datatrpending = null;
 
                 }
 
-                if (statuscodeva == "000") {
+                try {
+
+                    var sum = 0;
+                    for (var i = 0; i < lenghtpostid; i++) {
+                        var postIds = postid[i].id;
+
+                        var objid = mongoose.Types.ObjectId(postIds);
+                        var qty = postid[i].qty;
 
 
-                    try {
+                        var totalAmount = postid[i].totalAmount;
+                        dataconten = await this.vouchersService.findOne(postIds);
+                        var qtyvoucher = dataconten.qty;
+                        var tusedvoucher = dataconten.totalUsed;
+                        var codeVoucher = dataconten.codeVoucher;
+                        var pendingUsed = dataconten.pendingUsed;
+                        var totalUsePending = tusedvoucher + pendingUsed;
 
-                        let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+                        if (qty >= qtyvoucher) {
+                            res.status(HttpStatus.BAD_REQUEST).json({
+                                "message": "Maaf quantity Voucher melebihi quota.."
+                            });
+                            process.exit(0);
+                        }
+                        else if (totalUsePending === qtyvoucher) {
+                            res.status(HttpStatus.BAD_REQUEST).json({
+                                "message": "Maaf Voucher " + codeVoucher + " quota sudah habis.."
+                            });
+                            process.exit(0);
+                        } else {
+                            var amountobj = dataconten.amount * qty;
+                            arraymountvc.push(amountobj);
+                            arraypostidsvc.push(postIds);
 
-                        CreateTransactionsDto.iduserbuyer = iduser;
-                        CreateTransactionsDto.idusersell = iduserseller;
-                        CreateTransactionsDto.timestamp = dt.toISOString();
-                        CreateTransactionsDto.updatedAt = dt.toISOString();
-                        CreateTransactionsDto.noinvoice = no;
-                        CreateTransactionsDto.amount = saleAmount;
-                        CreateTransactionsDto.status = cekstatusva.va_status;
-                        CreateTransactionsDto.bank = idbank;
-                        CreateTransactionsDto.idva = idva;
-                        CreateTransactionsDto.nova = nova;
-                        CreateTransactionsDto.accountbalance = null;
-                        CreateTransactionsDto.paymentmethod = idmethode;
-                        // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
-                        CreateTransactionsDto.ppn = null;
-                        CreateTransactionsDto.totalamount = totalamount;
-                        CreateTransactionsDto.description = "buy " + type + " pending";
-                        CreateTransactionsDto.payload = null;
-                        CreateTransactionsDto.expiredtimeva = d1.toISOString();
-                        CreateTransactionsDto.detail = arrayDetail;
-                        CreateTransactionsDto.postid = postidTR;
-                        CreateTransactionsDto.response = datareqva;
-                        let datatr = await this.transactionsService.create(CreateTransactionsDto);
-                        await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
-
-                        var data = {
-                            "noinvoice": datatr.noinvoice,
-                            "postid": postidTR,
-                            "idusersell": datatr.idusersell,
-                            "NamaPenjual": namapenjual,
-                            "iduserbuyer": datatr.iduserbuyer,
-                            "NamaPembeli": namapembeli,
-                            "amount": datatr.amount,
-                            "paymentmethod": namamethode,
-                            "status": datatr.status,
-                            "description": datatr.description,
-                            "idva": datatr.idva,
-                            "nova": datatr.nova,
-                            "expiredtimeva": datatr.expiredtimeva,
-                            "salelike": datatr.saleview,
-                            "saleview": datatr.salelike,
-                            "bank": namabank,
-                            // "ppn": valueppn + " %",
-                            // "nominalppn": nominalppn,
-                            "bankvacharge": valuevacharge,
-                            // "mdradmin": valuemradmin + " %",
-                            // "nominalmdradmin": nominalmradmin,
-                            "detail": arrayDetail,
-                            "totalamount": datatr.totalamount,
-                            "accountbalance": datatr.accountbalance,
-                            "timestamp": datatr.timestamp,
-                            "_id": datatr._id
-                        };
-                    } catch (e) {
-                        res.status(HttpStatus.BAD_REQUEST).json({
-
-                            "message": messagesEror + " " + e.toString()
-                        });
+                            var arraydetailobj = { "id": objid, "qty": qty, "totalAmount": totalAmount };
+                            arrayDetailvc.push(arraydetailobj);
+                        }
                     }
-                    res.status(HttpStatus.OK).json({
-                        response_code: 202,
-                        "data": data,
-                        "message": messages
-                    });
-                    // setTimeout(res, 3000);
+
+                    for (var i = 0; i < arraymountvc.length; i++) {
+                        sum += arraymountvc[i];
+                    }
+
+                    saleAmount = sum;
+                } catch (e) {
+                    dataconten = null;
+                    saleAmount = 0;
                 }
-                else if (statuscodeva == "208") {
-                    throw new BadRequestException("Request is Rejected (API Key is not Valid)");
-                }
-                else if (statuscodeva == "217") {
-                    throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
+
+                postidTRvoucer = arraypostidsvc.toString();
+                console.log(postidTRvoucer)
+
+                if (datatrpending !== null) {
+
+                    let cekstatusva = await this.oyPgService.staticVaInfo(datatrpending.idva);
+                    var expiredva = cekstatusva.trx_expiration_time;
+                    var dex = new Date(expiredva);
+                    dex.setHours(dex.getHours() + 7); // timestamp
+                    dex = new Date(dex);
+
+                    if (cekstatusva.va_status === "WAITING_PAYMENT") {
+                        throw new BadRequestException("Tidak dapat melanjutkan. Voucher ini sedang dalam proses pembelian");
+                    }
+                    else if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        var idtransaction = datatrpending._id;
+                        var datava = {
+                            "partner_user_id": userbuy.toString() + stringId,
+                            "amount": totalamount,
+                            "bank_code": bankcode,
+                            "is_open": false,
+                            "is_single_use": true,
+                            "is_lifetime": false,
+                            "username_display": name.toString(),
+                            "email": email,
+                            "trx_expiration_time": valueexpiredva,
+                        }
+
+                        try {
+                            var datareqva = await this.oyPgService.generateStaticVa(datava);
+                            var idva = datareqva.id;
+                            var statuscodeva = datareqva.status.code;
+                            var statusmessage = datareqva.status.message;
+                            var nova = datareqva.va_number;
+                            var expiredva = datareqva.trx_expiration_time;
+                            var d1 = new Date(expiredva);
+                            d1.setHours(d1.getHours() + 7); // timestamp
+                            d1 = new Date(d1);
+
+
+                        } catch (e) {
+                            throw new BadRequestException("Not process..!");
+
+                        }
+
+                        if (statuscodeva == "000") {
+
+                            try {
+
+                                let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                                CreateTransactionsDto.iduserbuyer = iduser;
+                                CreateTransactionsDto.idusersell = iduserseller;
+                                CreateTransactionsDto.timestamp = dt.toISOString();
+                                CreateTransactionsDto.updatedAt = dt.toISOString();
+                                CreateTransactionsDto.noinvoice = no;
+                                CreateTransactionsDto.amount = saleAmount;
+                                CreateTransactionsDto.status = cekstatusva.va_status;
+                                CreateTransactionsDto.bank = idbank;
+                                CreateTransactionsDto.idva = idva;
+                                CreateTransactionsDto.nova = nova;
+                                CreateTransactionsDto.accountbalance = null;
+                                CreateTransactionsDto.paymentmethod = idmethode;
+                                // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
+                                CreateTransactionsDto.ppn = null;
+                                CreateTransactionsDto.totalamount = totalamount;
+                                CreateTransactionsDto.description = "buy " + type + " pending";
+                                CreateTransactionsDto.payload = null;
+                                CreateTransactionsDto.expiredtimeva = d1.toISOString();
+                                CreateTransactionsDto.detail = arrayDetailvc;
+                                CreateTransactionsDto.postid = postidTRvoucer.toString();
+                                CreateTransactionsDto.response = datareqva;
+                                let datatr = await this.transactionsService.create(CreateTransactionsDto);
+
+                                var lengArrDetail = arrayDetailvc.length;
+
+                                for (var i = 0; i < lengArrDetail; i++) {
+                                    let qtyDetail = arrayDetailvc[i].qty;
+                                    let idvoucher = arrayDetailvc[i].id.toString();
+                                    let idvcr = mongoose.Types.ObjectId(idvoucher);
+                                    datavoucher = await this.vouchersService.findOne(idvoucher);
+                                    let pendingUsed = datavoucher.pendingUsed;
+                                    let totalPending = pendingUsed + qtyDetail;
+                                    await this.vouchersService.updatesPendingUsed(idvcr, totalPending);
+                                }
+
+                                await this.transactionsService.updatestatuscancel(idtransaction);
+                                transactionVoucher = await this.transactionsService.findid(idtransaction.toString());
+
+
+                                var detailTr = transactionVoucher.detail;
+                                for (var a = 0; a < detailTr.length; a++) {
+                                    var qtyDetail2 = detailTr[a].qty;
+                                    var idvoucher2 = detailTr[a].id.toString();
+                                    var idvcr2 = detailTr[a].id;
+                                    datavoucher = await this.vouchersService.findOne(idvoucher2);
+                                    var pendingUsed2 = datavoucher.pendingUsed;
+                                    var totalPending2 = pendingUsed2 - qtyDetail2;
+                                    await this.vouchersService.updatesPendingUsed(idvcr2, totalPending2);
+                                }
+
+                                var data = {
+                                    "noinvoice": datatr.noinvoice,
+                                    "postid": postidTRvoucer.toString(),
+                                    "idusersell": datatr.idusersell,
+                                    "NamaPenjual": namapenjual,
+                                    "iduserbuyer": datatr.iduserbuyer,
+                                    "NamaPembeli": namapembeli,
+                                    "amount": datatr.amount,
+                                    "paymentmethod": namamethode,
+                                    "status": datatr.status,
+                                    "description": datatr.description,
+                                    "idva": datatr.idva,
+                                    "nova": datatr.nova,
+                                    "expiredtimeva": datatr.expiredtimeva,
+                                    "salelike": datatr.saleview,
+                                    "saleview": datatr.salelike,
+                                    "bank": namabank,
+                                    // "ppn": valueppn + " %",
+                                    // "nominalppn": nominalppn,
+                                    "bankvacharge": valuevacharge,
+                                    // "mdradmin": valuemradmin + " %",
+                                    // "nominalmdradmin": nominalmradmin,
+                                    "detail": arrayDetailvc,
+                                    "totalamount": datatr.totalamount,
+                                    "accountbalance": datatr.accountbalance,
+                                    "timestamp": datatr.timestamp,
+                                    "_id": datatr._id
+                                };
+
+
+                            } catch (e) {
+                                res.status(HttpStatus.BAD_REQUEST).json({
+
+                                    "message": messagesEror + " " + e.toString()
+                                });
+                            }
+                            res.status(HttpStatus.OK).json({
+                                response_code: 202,
+                                "data": data,
+                                "message": messages
+                            });
+                            // setTimeout(res, 3000);
+                        }
+                        else if (statuscodeva == "208") {
+                            throw new BadRequestException("Request is Rejected (API Key is not Valid)");
+                        }
+                        else if (statuscodeva == "211") {
+                            throw new BadRequestException("Request is Rejected (Bank code is not available for this service)");
+                        }
+                        else if (statuscodeva == "212") {
+                            throw new BadRequestException("Request is Rejected (Given amount are lesser than allowed value for static va)");
+                        }
+                        else if (statuscodeva == "213") {
+                            throw new BadRequestException("Request is Rejected (Given amount are greater than allowed value for static va)");
+                        }
+                        else if (statuscodeva == "214") {
+                            throw new BadRequestException("Request is Rejected (Failed to generate static va)");
+                        }
+                        else if (statuscodeva == "215") {
+                            throw new BadRequestException("Request is Rejected (Amount type is not supported for the requested bank code)");
+                        }
+                        else if (statuscodeva == "216") {
+                            throw new BadRequestException("Request is Rejected (VA Id is empty)");
+                        }
+                        else if (statuscodeva == "217") {
+                            throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
+                        }
+                        else if (statuscodeva == "219") {
+                            throw new BadRequestException("Request is Rejected (Virtual account is not enabled for this bank)");
+                        }
+                        else if (statuscodeva == "226") {
+                            throw new BadRequestException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
+                        }
+                        else if (statuscodeva == "245") {
+                            throw new BadRequestException("Request is rejected (Min expiry time is 60 minutes)");
+                        }
+                        else if (statuscodeva == "246") {
+                            throw new BadRequestException("Request is rejected (Failed update va)");
+                        }
+                        else {
+                            throw new BadRequestException("Request is Rejected");
+                        }
+                    }
+
+
+
                 }
                 else {
-                    throw new BadRequestException("Request is Rejected");
-                }
-            }
 
-        }
-        else if (type === "VOUCHER") {
-
-            var postidTRvoucer = null;
-            var arraymountvc = [];
-            var arraypostidsvc = [];
-            var arrayDetailvc = [];
-            try {
-
-
-                emailseller = "tjikaljedy@hyppe.id";
-                ubasicseller = await this.userbasicsService.findOne(emailseller);
-                iduserseller = ubasicseller._id;
-                namapenjual = ubasicseller.fullName;
-
-
-            } catch (e) {
-                throw new BadRequestException("User not found..!");
-            }
-            try {
-
-                datatrpending = await this.transactionsService.findpostidpendingVoucer();
-
-            } catch (e) {
-                datatrpending = null;
-
-            }
-
-            try {
-
-                var sum = 0;
-                for (var i = 0; i < lenghtpostid; i++) {
-                    var postIds = postid[i].id;
-
-                    var objid = mongoose.Types.ObjectId(postIds);
-                    var qty = postid[i].qty;
-
-
-                    var totalAmount = postid[i].totalAmount;
-                    dataconten = await this.vouchersService.findOne(postIds);
-                    var qtyvoucher = dataconten.qty;
-                    var tusedvoucher = dataconten.totalUsed;
-                    var codeVoucher = dataconten.codeVoucher;
-                    var pendingUsed = dataconten.pendingUsed;
-                    var totalUsePending = tusedvoucher + pendingUsed;
-
-                    if (qty >= qtyvoucher) {
-                        res.status(HttpStatus.BAD_REQUEST).json({
-                            "message": "Maaf quantity Voucher melebihi quota.."
-                        });
-                        process.exit(0);
-                    }
-                    else if (totalUsePending === qtyvoucher) {
-                        res.status(HttpStatus.BAD_REQUEST).json({
-                            "message": "Maaf Voucher " + codeVoucher + " quota sudah habis.."
-                        });
-                        process.exit(0);
-                    } else {
-                        var amountobj = dataconten.amount * qty;
-                        arraymountvc.push(amountobj);
-                        arraypostidsvc.push(postIds);
-
-                        var arraydetailobj = { "id": objid, "qty": qty, "totalAmount": totalAmount };
-                        arrayDetailvc.push(arraydetailobj);
-                    }
-                }
-
-                for (var i = 0; i < arraymountvc.length; i++) {
-                    sum += arraymountvc[i];
-                }
-
-                saleAmount = sum;
-            } catch (e) {
-                dataconten = null;
-                saleAmount = 0;
-            }
-
-            postidTRvoucer = arraypostidsvc.toString();
-            console.log(postidTRvoucer)
-
-            if (datatrpending !== null) {
-
-                let cekstatusva = await this.oyPgService.staticVaInfo(datatrpending.idva);
-                var expiredva = cekstatusva.trx_expiration_time;
-                var dex = new Date(expiredva);
-                dex.setHours(dex.getHours() + 7); // timestamp
-                dex = new Date(dex);
-
-                if (cekstatusva.va_status === "WAITING_PAYMENT") {
-                    throw new BadRequestException("Tidak dapat melanjutkan. Voucher ini sedang dalam proses pembelian");
-                }
-                else if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
-                    var idtransaction = datatrpending._id;
                     var datava = {
                         "partner_user_id": userbuy.toString() + stringId,
                         "amount": totalamount,
@@ -690,6 +944,7 @@ export class TransactionsController {
 
                     if (statuscodeva == "000") {
 
+
                         try {
 
                             let cekstatusva = await this.oyPgService.staticVaInfo(idva);
@@ -713,40 +968,25 @@ export class TransactionsController {
                             CreateTransactionsDto.payload = null;
                             CreateTransactionsDto.expiredtimeva = d1.toISOString();
                             CreateTransactionsDto.detail = arrayDetailvc;
-                            CreateTransactionsDto.postid = postidTRvoucer.toString();
+                            CreateTransactionsDto.postid = postidTRvoucer;
                             CreateTransactionsDto.response = datareqva;
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
-
+                            await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                             var lengArrDetail = arrayDetailvc.length;
 
                             for (var i = 0; i < lengArrDetail; i++) {
                                 let qtyDetail = arrayDetailvc[i].qty;
                                 let idvoucher = arrayDetailvc[i].id.toString();
-                                let idvcr = mongoose.Types.ObjectId(idvoucher);
+                                let idvcr2 = arrayDetailvc[i].id;
                                 datavoucher = await this.vouchersService.findOne(idvoucher);
                                 let pendingUsed = datavoucher.pendingUsed;
                                 let totalPending = pendingUsed + qtyDetail;
-                                await this.vouchersService.updatesPendingUsed(idvcr, totalPending);
-                            }
-
-                            await this.transactionsService.updatestatuscancel(idtransaction);
-                            transactionVoucher = await this.transactionsService.findid(idtransaction.toString());
-
-
-                            var detailTr = transactionVoucher.detail;
-                            for (var a = 0; a < detailTr.length; a++) {
-                                var qtyDetail2 = detailTr[a].qty;
-                                var idvoucher2 = detailTr[a].id.toString();
-                                var idvcr2 = detailTr[a].id;
-                                datavoucher = await this.vouchersService.findOne(idvoucher2);
-                                var pendingUsed2 = datavoucher.pendingUsed;
-                                var totalPending2 = pendingUsed2 - qtyDetail2;
-                                await this.vouchersService.updatesPendingUsed(idvcr2, totalPending2);
+                                await this.vouchersService.updatesPendingUsed(idvcr2, totalPending);
                             }
 
                             var data = {
                                 "noinvoice": datatr.noinvoice,
-                                "postid": postidTRvoucer.toString(),
+                                "postid": postidTRvoucer,
                                 "idusersell": datatr.idusersell,
                                 "NamaPenjual": namapenjual,
                                 "iduserbuyer": datatr.iduserbuyer,
@@ -773,164 +1013,62 @@ export class TransactionsController {
                                 "_id": datatr._id
                             };
 
-
                         } catch (e) {
                             res.status(HttpStatus.BAD_REQUEST).json({
 
                                 "message": messagesEror + " " + e.toString()
                             });
                         }
+
                         res.status(HttpStatus.OK).json({
                             response_code: 202,
                             "data": data,
                             "message": messages
                         });
-                        // setTimeout(res, 3000);
+                        //  setTimeout(res, 3000);
                     }
                     else if (statuscodeva == "208") {
                         throw new BadRequestException("Request is Rejected (API Key is not Valid)");
                     }
+                    else if (statuscodeva == "211") {
+                        throw new BadRequestException("Request is Rejected (Bank code is not available for this service)");
+                    }
+                    else if (statuscodeva == "212") {
+                        throw new BadRequestException("Request is Rejected (Given amount are lesser than allowed value for static va)");
+                    }
+                    else if (statuscodeva == "213") {
+                        throw new BadRequestException("Request is Rejected (Given amount are greater than allowed value for static va)");
+                    }
+                    else if (statuscodeva == "214") {
+                        throw new BadRequestException("Request is Rejected (Failed to generate static va)");
+                    }
+                    else if (statuscodeva == "215") {
+                        throw new BadRequestException("Request is Rejected (Amount type is not supported for the requested bank code)");
+                    }
+                    else if (statuscodeva == "216") {
+                        throw new BadRequestException("Request is Rejected (VA Id is empty)");
+                    }
                     else if (statuscodeva == "217") {
                         throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
+                    }
+                    else if (statuscodeva == "219") {
+                        throw new BadRequestException("Request is Rejected (Virtual account is not enabled for this bank)");
+                    }
+                    else if (statuscodeva == "226") {
+                        throw new BadRequestException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
+                    }
+                    else if (statuscodeva == "245") {
+                        throw new BadRequestException("Request is rejected (Min expiry time is 60 minutes)");
+                    }
+                    else if (statuscodeva == "246") {
+                        throw new BadRequestException("Request is rejected (Failed update va)");
                     }
                     else {
                         throw new BadRequestException("Request is Rejected");
                     }
-                    // } else {
-                    //     throw new BadRequestException("This content is already in the process of being purchased");
-                    // }
                 }
-
-
 
             }
-            else {
-
-                var datava = {
-                    "partner_user_id": userbuy.toString() + stringId,
-                    "amount": totalamount,
-                    "bank_code": bankcode,
-                    "is_open": false,
-                    "is_single_use": true,
-                    "is_lifetime": false,
-                    "username_display": name.toString(),
-                    "email": email,
-                    "trx_expiration_time": valueexpiredva,
-                }
-
-                try {
-                    var datareqva = await this.oyPgService.generateStaticVa(datava);
-                    var idva = datareqva.id;
-                    var statuscodeva = datareqva.status.code;
-                    var statusmessage = datareqva.status.message;
-                    var nova = datareqva.va_number;
-                    var expiredva = datareqva.trx_expiration_time;
-                    var d1 = new Date(expiredva);
-                    d1.setHours(d1.getHours() + 7); // timestamp
-                    d1 = new Date(d1);
-
-
-                } catch (e) {
-                    throw new BadRequestException("Not process..!");
-
-                }
-
-                if (statuscodeva == "000") {
-
-
-                    try {
-
-                        let cekstatusva = await this.oyPgService.staticVaInfo(idva);
-
-                        CreateTransactionsDto.iduserbuyer = iduser;
-                        CreateTransactionsDto.idusersell = iduserseller;
-                        CreateTransactionsDto.timestamp = dt.toISOString();
-                        CreateTransactionsDto.updatedAt = dt.toISOString();
-                        CreateTransactionsDto.noinvoice = no;
-                        CreateTransactionsDto.amount = saleAmount;
-                        CreateTransactionsDto.status = cekstatusva.va_status;
-                        CreateTransactionsDto.bank = idbank;
-                        CreateTransactionsDto.idva = idva;
-                        CreateTransactionsDto.nova = nova;
-                        CreateTransactionsDto.accountbalance = null;
-                        CreateTransactionsDto.paymentmethod = idmethode;
-                        // CreateTransactionsDto.ppn = mongoose.Types.ObjectId(idppn);
-                        CreateTransactionsDto.ppn = null;
-                        CreateTransactionsDto.totalamount = totalamount;
-                        CreateTransactionsDto.description = "buy " + type + " pending";
-                        CreateTransactionsDto.payload = null;
-                        CreateTransactionsDto.expiredtimeva = d1.toISOString();
-                        CreateTransactionsDto.detail = arrayDetailvc;
-                        CreateTransactionsDto.postid = postidTRvoucer;
-                        CreateTransactionsDto.response = datareqva;
-                        let datatr = await this.transactionsService.create(CreateTransactionsDto);
-                        await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
-                        var lengArrDetail = arrayDetailvc.length;
-
-                        for (var i = 0; i < lengArrDetail; i++) {
-                            let qtyDetail = arrayDetailvc[i].qty;
-                            let idvoucher = arrayDetailvc[i].id.toString();
-                            let idvcr2 = arrayDetailvc[i].id;
-                            datavoucher = await this.vouchersService.findOne(idvoucher);
-                            let pendingUsed = datavoucher.pendingUsed;
-                            let totalPending = pendingUsed + qtyDetail;
-                            await this.vouchersService.updatesPendingUsed(idvcr2, totalPending);
-                        }
-
-                        var data = {
-                            "noinvoice": datatr.noinvoice,
-                            "postid": postidTRvoucer,
-                            "idusersell": datatr.idusersell,
-                            "NamaPenjual": namapenjual,
-                            "iduserbuyer": datatr.iduserbuyer,
-                            "NamaPembeli": namapembeli,
-                            "amount": datatr.amount,
-                            "paymentmethod": namamethode,
-                            "status": datatr.status,
-                            "description": datatr.description,
-                            "idva": datatr.idva,
-                            "nova": datatr.nova,
-                            "expiredtimeva": datatr.expiredtimeva,
-                            "salelike": datatr.saleview,
-                            "saleview": datatr.salelike,
-                            "bank": namabank,
-                            // "ppn": valueppn + " %",
-                            // "nominalppn": nominalppn,
-                            "bankvacharge": valuevacharge,
-                            // "mdradmin": valuemradmin + " %",
-                            // "nominalmdradmin": nominalmradmin,
-                            "detail": arrayDetailvc,
-                            "totalamount": datatr.totalamount,
-                            "accountbalance": datatr.accountbalance,
-                            "timestamp": datatr.timestamp,
-                            "_id": datatr._id
-                        };
-
-                    } catch (e) {
-                        res.status(HttpStatus.BAD_REQUEST).json({
-
-                            "message": messagesEror + " " + e.toString()
-                        });
-                    }
-
-                    res.status(HttpStatus.OK).json({
-                        response_code: 202,
-                        "data": data,
-                        "message": messages
-                    });
-                    //  setTimeout(res, 3000);
-                }
-                else if (statuscodeva == "208") {
-                    throw new BadRequestException("Request is Rejected (API Key is not Valid)");
-                }
-                else if (statuscodeva == "217") {
-                    throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
-                }
-                else {
-                    throw new BadRequestException("Request is Rejected");
-                }
-            }
-
         }
 
     }
@@ -986,6 +1124,11 @@ export class TransactionsController {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
+        var strdate = dt.toISOString();
+        var repdate = strdate.replace('T', ' ');
+        var splitdate = repdate.split('.');
+        var timedate = splitdate[0];
+
         try {
 
             datavabankbca = await this.settingsService.findOne(idbankvachargeBCA);
@@ -1104,7 +1247,7 @@ export class TransactionsController {
                         await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
 
-                        await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy, dt.toISOString());
+                        await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy, timedate);
                         if (datapost.boosted != undefined) {
 
                             var DateStart = (new Date((await this.utilsService.getDateTime()).setDate((await this.utilsService.getDateTime()).getDate() - 31))).toISOString();
@@ -1361,7 +1504,7 @@ export class TransactionsController {
                         //this.sendCommentFCM("BOOST_CONTENT", postid, emailbuyer.toString())
 
                         var OwnerShip = false;
-                        if (detail.length==2){
+                        if (detail.length == 2) {
                             OwnerShip = true;
                         }
                         this.sendemail(emailbuyer.toString(), "BOOST_SUCCES", datatransaksi, OwnerShip);
@@ -1417,14 +1560,14 @@ export class TransactionsController {
 
     async editPostBost(postid: string, detail: any) {
         var databoost = null;
-        if (detail!=undefined){
-            if (detail.length>0) {
-                databoost = detail.filter((item,index) => {
+        if (detail != undefined) {
+            if (detail.length > 0) {
+                databoost = detail.filter((item, index) => {
                     return (item.description == "BOOST");
                 });
             }
         }
-        
+
         var GetMaxBoost = await this.utilsService.getSetting_("636212526f07000023005ce3");
         //let ContInterval = Number(detail[0].interval.value.toString()) * Number(GetMaxBoost.toString());
         let ContInterval = Number(databoost[0].interval.value.toString()) * Number(GetMaxBoost.toString());
@@ -5887,9 +6030,9 @@ export class TransactionsController {
                 var transactionNumber = await this.utilsService.generateTransactionNumber(countTransaction);
                 var typeTransaction = "BOOST_CONTENT";
                 //CECK OWNERSHIP
-                if (ownership){
+                if (ownership) {
                     typeTransaction = "BOOST_CONTENT+OWNERSHIP";
-                }else{
+                } else {
                     typeTransaction = "BOOST_CONTENT";
                 }
                 var date_trx_expiration_time = new Date(Va.trx_expiration_time);
@@ -6107,7 +6250,7 @@ export class TransactionsController {
                             createTransactionsDto_.response = Va;
                             let transaction_boost = await this.transactionsService.create(createTransactionsDto_);
                             //this.sendTransactionFCM(email, "BOOST_BUY", body.postID, email)
-                            this.sendemail(email, "BOOST_BUY", transaction_boost, ownership); 
+                            this.sendemail(email, "BOOST_BUY", transaction_boost, ownership);
                             //this.sendemail(email, "BOOST_BUY_TEST", transaction_boost, ownership);
 
                             var data_response_ = {
@@ -6363,12 +6506,12 @@ export class TransactionsController {
                 if (transaction_boost.amount != undefined) {
                     ownerPrice = await this.utilsService.formatMoney(getOwnershipAmaount);
                 }
-                
+
                 $_('#postTypeOwnership').text("Hyppe" + postType.toString());
                 $_('#tanggalPemesananOwnership').text(tanggalPemesanan.toString());
-                $_('#kodePemesananOwnership').text(kodePemesanan.toString()); 
+                $_('#kodePemesananOwnership').text(kodePemesanan.toString());
                 $_('#hargaOwnership').text(ownerPrice.toString());
-            }else{
+            } else {
                 $_('#transactionOwnership').css('display', 'none');
                 $_('#hrTransaction').css('display', 'none');
             }

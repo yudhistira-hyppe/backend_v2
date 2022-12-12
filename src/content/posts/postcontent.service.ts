@@ -2855,7 +2855,11 @@ export class PostContentService {
     let apost = await this.PostsModel.create(post);
 
     if (post.certified) {
-      this.generateCertificate(String(post.postID), 'id');
+      let opost = await this.postService.findByPostId(body.postID);
+      if (opost.certified == undefined || opost.certified == false) {
+        this.generateCertificate(String(post.postID), 'id');
+      }
+
     }
 
     let cm = post.contentMedias[0];
@@ -3064,6 +3068,7 @@ export class PostContentService {
         let ps = pdv[i];
         posts.push(ps.postID);
       }      
+      data.video = pdv;
     }
 
     if (String(body.postType) == 'diary') {
