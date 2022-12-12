@@ -96,7 +96,7 @@ export class AdsUserCompareController {
     @HttpCode(HttpStatus.ACCEPTED)
     async getads(@Headers() headers,
         @Query('type') type: string): Promise<any> {
-        this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START headers : " + headers);
+        this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START headers : " + JSON.stringify(headers));
         this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START type : " + type);
         let type_ = "";
         if (!(await this.utilsService.validasiTokenEmail(headers))) {
@@ -195,8 +195,8 @@ export class AdsUserCompareController {
     @Post('/viewads/')
     @HttpCode(HttpStatus.ACCEPTED)
     async viewads(@Headers() headers, @Body() body): Promise<any> {
-        this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START headers : " + headers);
-        this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START body : " + body);
+        this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START headers : " + JSON.stringify(headers));
+        this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> START body : " + JSON.stringify(body));
         if (await this.utilsService.validasiTokenEmail(headers)) {
 
             var user_email = null;
