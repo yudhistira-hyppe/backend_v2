@@ -7,5 +7,12 @@ export class CreateUserbankaccountsDto {
     statusInquiry: boolean;
     description: string;
     active: boolean;
-
+    mediaSupportType: String;
+    mediaSupportBasePath: String;
+    mediaSupportUri: any[];
+    SupportOriginalName: any[];
+    SupportfsSourceUri: any[];
+    SupportfsSourceName: any[];
+    SupportfsTargetUri: any[];
+    SupportmediaMime: String;
 }
