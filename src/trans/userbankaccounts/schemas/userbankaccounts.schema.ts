@@ -22,6 +22,15 @@ export class Userbankaccounts {
     description: string
     @Prop()
     active: boolean
+    @Prop() mediaSupportType: String;
+    @Prop() mediaSupportBasePath: String;
+    @Prop() mediaSupportUri: any[];
+    @Prop() SupportOriginalName: any[];
+    @Prop() SupportfsSourceUri: any[];
+    @Prop() SupportfsSourceName: any[];
+    @Prop() SupportfsTargetUri: any[];
+    @Prop() SupportmediaMime: String;
+
 
 
 }
