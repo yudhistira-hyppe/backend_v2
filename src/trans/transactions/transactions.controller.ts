@@ -458,8 +458,38 @@ export class TransactionsController {
                         else if (statuscodeva == "208") {
                             throw new BadRequestException("Request is Rejected (API Key is not Valid)");
                         }
+                        else if (statuscodeva == "211") {
+                            throw new BadRequestException("Request is Rejected (Bank code is not available for this service)");
+                        }
+                        else if (statuscodeva == "212") {
+                            throw new BadRequestException("Request is Rejected (Given amount are lesser than allowed value for static va)");
+                        }
+                        else if (statuscodeva == "213") {
+                            throw new BadRequestException("Request is Rejected (Given amount are greater than allowed value for static va)");
+                        }
+                        else if (statuscodeva == "214") {
+                            throw new BadRequestException("Request is Rejected (Failed to generate static va)");
+                        }
+                        else if (statuscodeva == "215") {
+                            throw new BadRequestException("Request is Rejected (Amount type is not supported for the requested bank code)");
+                        }
+                        else if (statuscodeva == "216") {
+                            throw new BadRequestException("Request is Rejected (VA Id is empty)");
+                        }
                         else if (statuscodeva == "217") {
                             throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
+                        }
+                        else if (statuscodeva == "219") {
+                            throw new BadRequestException("Request is Rejected (Virtual account is not enabled for this bank)");
+                        }
+                        else if (statuscodeva == "226") {
+                            throw new BadRequestException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
+                        }
+                        else if (statuscodeva == "245") {
+                            throw new BadRequestException("Request is rejected (Min expiry time is 60 minutes)");
+                        }
+                        else if (statuscodeva == "246") {
+                            throw new BadRequestException("Request is rejected (Failed update va)");
                         }
                         else {
                             throw new BadRequestException("Request is Rejected");
@@ -578,8 +608,38 @@ export class TransactionsController {
                     else if (statuscodeva == "208") {
                         throw new BadRequestException("Request is Rejected (API Key is not Valid)");
                     }
+                    else if (statuscodeva == "211") {
+                        throw new BadRequestException("Request is Rejected (Bank code is not available for this service)");
+                    }
+                    else if (statuscodeva == "212") {
+                        throw new BadRequestException("Request is Rejected (Given amount are lesser than allowed value for static va)");
+                    }
+                    else if (statuscodeva == "213") {
+                        throw new BadRequestException("Request is Rejected (Given amount are greater than allowed value for static va)");
+                    }
+                    else if (statuscodeva == "214") {
+                        throw new BadRequestException("Request is Rejected (Failed to generate static va)");
+                    }
+                    else if (statuscodeva == "215") {
+                        throw new BadRequestException("Request is Rejected (Amount type is not supported for the requested bank code)");
+                    }
+                    else if (statuscodeva == "216") {
+                        throw new BadRequestException("Request is Rejected (VA Id is empty)");
+                    }
                     else if (statuscodeva == "217") {
                         throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
+                    }
+                    else if (statuscodeva == "219") {
+                        throw new BadRequestException("Request is Rejected (Virtual account is not enabled for this bank)");
+                    }
+                    else if (statuscodeva == "226") {
+                        throw new BadRequestException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
+                    }
+                    else if (statuscodeva == "245") {
+                        throw new BadRequestException("Request is rejected (Min expiry time is 60 minutes)");
+                    }
+                    else if (statuscodeva == "246") {
+                        throw new BadRequestException("Request is rejected (Failed update va)");
                     }
                     else {
                         throw new BadRequestException("Request is Rejected");
@@ -810,15 +870,42 @@ export class TransactionsController {
                         else if (statuscodeva == "208") {
                             throw new BadRequestException("Request is Rejected (API Key is not Valid)");
                         }
+                        else if (statuscodeva == "211") {
+                            throw new BadRequestException("Request is Rejected (Bank code is not available for this service)");
+                        }
+                        else if (statuscodeva == "212") {
+                            throw new BadRequestException("Request is Rejected (Given amount are lesser than allowed value for static va)");
+                        }
+                        else if (statuscodeva == "213") {
+                            throw new BadRequestException("Request is Rejected (Given amount are greater than allowed value for static va)");
+                        }
+                        else if (statuscodeva == "214") {
+                            throw new BadRequestException("Request is Rejected (Failed to generate static va)");
+                        }
+                        else if (statuscodeva == "215") {
+                            throw new BadRequestException("Request is Rejected (Amount type is not supported for the requested bank code)");
+                        }
+                        else if (statuscodeva == "216") {
+                            throw new BadRequestException("Request is Rejected (VA Id is empty)");
+                        }
                         else if (statuscodeva == "217") {
                             throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
+                        }
+                        else if (statuscodeva == "219") {
+                            throw new BadRequestException("Request is Rejected (Virtual account is not enabled for this bank)");
+                        }
+                        else if (statuscodeva == "226") {
+                            throw new BadRequestException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
+                        }
+                        else if (statuscodeva == "245") {
+                            throw new BadRequestException("Request is rejected (Min expiry time is 60 minutes)");
+                        }
+                        else if (statuscodeva == "246") {
+                            throw new BadRequestException("Request is rejected (Failed update va)");
                         }
                         else {
                             throw new BadRequestException("Request is Rejected");
                         }
-                        // } else {
-                        //     throw new BadRequestException("This content is already in the process of being purchased");
-                        // }
                     }
 
 
@@ -943,8 +1030,38 @@ export class TransactionsController {
                     else if (statuscodeva == "208") {
                         throw new BadRequestException("Request is Rejected (API Key is not Valid)");
                     }
+                    else if (statuscodeva == "211") {
+                        throw new BadRequestException("Request is Rejected (Bank code is not available for this service)");
+                    }
+                    else if (statuscodeva == "212") {
+                        throw new BadRequestException("Request is Rejected (Given amount are lesser than allowed value for static va)");
+                    }
+                    else if (statuscodeva == "213") {
+                        throw new BadRequestException("Request is Rejected (Given amount are greater than allowed value for static va)");
+                    }
+                    else if (statuscodeva == "214") {
+                        throw new BadRequestException("Request is Rejected (Failed to generate static va)");
+                    }
+                    else if (statuscodeva == "215") {
+                        throw new BadRequestException("Request is Rejected (Amount type is not supported for the requested bank code)");
+                    }
+                    else if (statuscodeva == "216") {
+                        throw new BadRequestException("Request is Rejected (VA Id is empty)");
+                    }
                     else if (statuscodeva == "217") {
                         throw new BadRequestException("Request is Rejected (VA Number is still active for this partner user id)");
+                    }
+                    else if (statuscodeva == "219") {
+                        throw new BadRequestException("Request is Rejected (Virtual account is not enabled for this bank)");
+                    }
+                    else if (statuscodeva == "226") {
+                        throw new BadRequestException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
+                    }
+                    else if (statuscodeva == "245") {
+                        throw new BadRequestException("Request is rejected (Min expiry time is 60 minutes)");
+                    }
+                    else if (statuscodeva == "246") {
+                        throw new BadRequestException("Request is rejected (Failed update va)");
                     }
                     else {
                         throw new BadRequestException("Request is Rejected");
