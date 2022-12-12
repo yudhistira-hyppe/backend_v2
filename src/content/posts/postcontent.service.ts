@@ -3036,11 +3036,16 @@ export class PostContentService {
     let resDiary: PostData[] = [];
     let resStory: PostData[] = [];
 
+    let pdp : PostData[] = [];
+    let pdv : PostData[] = [];
+    let pds : PostData[] = [];
+    let pdd : PostData[] = [];
+
     if (String(body.postType) == 'pict') {
       this.logger.log('getUserPostLandingPage >>> exec: pict');
       body.postType = 'pict';
       let pp = await this.doGetUserPost(body, headers, profile);
-      let pdp = await this.loadPostDataBulk(pp, body, profile, vids, pics, user);
+      pdp = await this.loadPostDataBulk(pp, body, profile, vids, pics, user);
       for (let i = 0; i < pdp.length; i++) {
         let ps = pdp[i];
         posts.push(ps.postID);
@@ -3049,28 +3054,44 @@ export class PostContentService {
     }
 
 
+    if (String(body.postType) == 'vid') {
+      this.logger.log('getUserPostLandingPage >>> exec: video');
+      body.postType = 'vid';
+      body.withExp = false;
+      let pv = await this.doGetUserPost(body, headers, profile);
+      pdv = await this.loadPostDataBulk(pv, body, profile, vids, pics, user);
+      for (let i = 0; i < pdv.length; i++) {
+        let ps = pdv[i];
+        posts.push(ps.postID);
+      }      
+    }
+
+    if (String(body.postType) == 'diary') {
+      this.logger.log('getUserPostLandingPage >>> exec: diary');
+      body.postType = 'diary';
+      let pd = await this.doGetUserPost(body, headers, profile);
+      pdd = await this.loadPostDataBulk(pd, body, profile, vids, pics, user);
+      for (let i = 0; i < pdd.length; i++) {
+        let ps = pdd[i];
+        posts.push(ps.postID);
+      }    
+      data.diary = pdd;      
+    }
 
 
-    this.logger.log('getUserPostLandingPage >>> exec: diary');
-    body.postType = 'diary';
-    let pd = await this.doGetUserPost(body, headers, profile);
-    let pdd = await this.loadPostDataBulk(pd, body, profile, vids, pics, user);
-    for (let i = 0; i < pdd.length; i++) {
-      let ps = pdd[i];
-      posts.push(ps.postID);
+    if (String(body.postType) == 'story') {
+      this.logger.log('getUserPostLandingPage >>> exec: story');
+      body.postType = 'story';
+      body.withExp = true;
+      let ps = await this.doGetUserPost(body, headers, profile);
+      pds = await this.loadPostDataBulk(ps, body, profile, vids, pics, user);
+      for (let i = 0; i < pds.length; i++) {
+        let ps = pds[i];
+        posts.push(ps.postID);
+      }    
+      data.story = pds;      
     }    
-    data.diary = pdd;
 
-    this.logger.log('getUserPostLandingPage >>> exec: story');
-    body.postType = 'story';
-    body.withExp = true;
-    let ps = await this.doGetUserPost(body, headers, profile);
-    let pds = await this.loadPostDataBulk(ps, body, profile, vids, pics, user);
-    for (let i = 0; i < pds.length; i++) {
-      let ps = pds[i];
-      posts.push(ps.postID);
-    }    
-    data.story = pds;
 
     this.logger.log('getUserPostLandingPage >>> exec: insightlog');
     let insl = await this.contentEventService.findEventByEmail(String(profile.email), posts, 'LIKE');
