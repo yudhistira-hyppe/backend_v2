@@ -171,7 +171,16 @@ export class VouchersController {
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
+        var exday = null;
+
         try {
+            exday = CreateVouchersDto.expiredDay;
+
+            var d = new Date();
+            d.setDate(d.getDate() + exday);
+            d = new Date(d);
+            CreateVouchersDto.createdAt = dt.toISOString();
+            CreateVouchersDto.expiredAt = d.toISOString();
             CreateVouchersDto.updatedAt = dt.toISOString();
             let data = await this.vouchersService.update(id, CreateVouchersDto);
 
@@ -182,7 +191,7 @@ export class VouchersController {
         } catch (e) {
             res.status(HttpStatus.BAD_REQUEST).json({
 
-                "message": messagesEror
+                "message": messagesEror + " " + e
             });
         }
     }

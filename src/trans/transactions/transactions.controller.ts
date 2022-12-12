@@ -687,10 +687,10 @@ export class TransactionsController {
                         var totalAmount = postid[i].totalAmount;
                         dataconten = await this.vouchersService.findOne(postIds);
                         var qtyvoucher = dataconten.qty;
-                        var tusedvoucher = dataconten.totalUsed;
-                        var codeVoucher = dataconten.codeVoucher;
-                        var pendingUsed = dataconten.pendingUsed;
-                        var totalUsePending = tusedvoucher + pendingUsed;
+                        // var tusedvoucher = dataconten.totalUsed;
+                        // var codeVoucher = dataconten.codeVoucher;
+                        // var pendingUsed = dataconten.pendingUsed;
+                        // var totalUsePending = tusedvoucher + pendingUsed;
 
                         if (qty >= qtyvoucher) {
                             res.status(HttpStatus.BAD_REQUEST).json({
@@ -698,12 +698,14 @@ export class TransactionsController {
                             });
                             process.exit(0);
                         }
-                        else if (totalUsePending === qtyvoucher) {
-                            res.status(HttpStatus.BAD_REQUEST).json({
-                                "message": "Maaf Voucher " + codeVoucher + " quota sudah habis.."
-                            });
-                            process.exit(0);
-                        } else {
+                        // else if (totalUsePending === qtyvoucher) {
+                        //     res.status(HttpStatus.BAD_REQUEST).json({
+                        //         "message": "Maaf Voucher " + codeVoucher + " quota sudah habis.."
+                        //     });
+                        //     process.exit(0);
+                        // } 
+
+                        else {
                             var amountobj = dataconten.amount * qty;
                             arraymountvc.push(amountobj);
                             arraypostidsvc.push(postIds);
@@ -797,32 +799,32 @@ export class TransactionsController {
                                 CreateTransactionsDto.response = datareqva;
                                 let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
-                                var lengArrDetail = arrayDetailvc.length;
+                                //var lengArrDetail = arrayDetailvc.length;
 
-                                for (var i = 0; i < lengArrDetail; i++) {
-                                    let qtyDetail = arrayDetailvc[i].qty;
-                                    let idvoucher = arrayDetailvc[i].id.toString();
-                                    let idvcr = mongoose.Types.ObjectId(idvoucher);
-                                    datavoucher = await this.vouchersService.findOne(idvoucher);
-                                    let pendingUsed = datavoucher.pendingUsed;
-                                    let totalPending = pendingUsed + qtyDetail;
-                                    await this.vouchersService.updatesPendingUsed(idvcr, totalPending);
-                                }
+                                // for (var i = 0; i < lengArrDetail; i++) {
+                                //     let qtyDetail = arrayDetailvc[i].qty;
+                                //     let idvoucher = arrayDetailvc[i].id.toString();
+                                //     let idvcr = mongoose.Types.ObjectId(idvoucher);
+                                //     datavoucher = await this.vouchersService.findOne(idvoucher);
+                                //     let pendingUsed = datavoucher.pendingUsed;
+                                //     let totalPending = pendingUsed + qtyDetail;
+                                //     await this.vouchersService.updatesPendingUsed(idvcr, totalPending);
+                                // }
 
                                 await this.transactionsService.updatestatuscancel(idtransaction);
-                                transactionVoucher = await this.transactionsService.findid(idtransaction.toString());
+                                //  transactionVoucher = await this.transactionsService.findid(idtransaction.toString());
 
 
-                                var detailTr = transactionVoucher.detail;
-                                for (var a = 0; a < detailTr.length; a++) {
-                                    var qtyDetail2 = detailTr[a].qty;
-                                    var idvoucher2 = detailTr[a].id.toString();
-                                    var idvcr2 = detailTr[a].id;
-                                    datavoucher = await this.vouchersService.findOne(idvoucher2);
-                                    var pendingUsed2 = datavoucher.pendingUsed;
-                                    var totalPending2 = pendingUsed2 - qtyDetail2;
-                                    await this.vouchersService.updatesPendingUsed(idvcr2, totalPending2);
-                                }
+                                // var detailTr = transactionVoucher.detail;
+                                // for (var a = 0; a < detailTr.length; a++) {
+                                //     var qtyDetail2 = detailTr[a].qty;
+                                //     var idvoucher2 = detailTr[a].id.toString();
+                                //     var idvcr2 = detailTr[a].id;
+                                //     datavoucher = await this.vouchersService.findOne(idvoucher2);
+                                //     var pendingUsed2 = datavoucher.pendingUsed;
+                                //     var totalPending2 = pendingUsed2 - qtyDetail2;
+                                //     await this.vouchersService.updatesPendingUsed(idvcr2, totalPending2);
+                                // }
 
                                 var data = {
                                     "noinvoice": datatr.noinvoice,
@@ -972,17 +974,17 @@ export class TransactionsController {
                             CreateTransactionsDto.response = datareqva;
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
                             await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
-                            var lengArrDetail = arrayDetailvc.length;
+                            // var lengArrDetail = arrayDetailvc.length;
 
-                            for (var i = 0; i < lengArrDetail; i++) {
-                                let qtyDetail = arrayDetailvc[i].qty;
-                                let idvoucher = arrayDetailvc[i].id.toString();
-                                let idvcr2 = arrayDetailvc[i].id;
-                                datavoucher = await this.vouchersService.findOne(idvoucher);
-                                let pendingUsed = datavoucher.pendingUsed;
-                                let totalPending = pendingUsed + qtyDetail;
-                                await this.vouchersService.updatesPendingUsed(idvcr2, totalPending);
-                            }
+                            // for (var i = 0; i < lengArrDetail; i++) {
+                            //     let qtyDetail = arrayDetailvc[i].qty;
+                            //     let idvoucher = arrayDetailvc[i].id.toString();
+                            //     let idvcr2 = arrayDetailvc[i].id;
+                            //     datavoucher = await this.vouchersService.findOne(idvoucher);
+                            //     let pendingUsed = datavoucher.pendingUsed;
+                            //     let totalPending = pendingUsed + qtyDetail;
+                            //     await this.vouchersService.updatesPendingUsed(idvcr2, totalPending);
+                            // }
 
                             var data = {
                                 "noinvoice": datatr.noinvoice,
