@@ -1508,8 +1508,8 @@ export class PostContentService {
         if (check != undefined) {
           for (let i = 0; i < check.length; i++) {
             var ce = check[i];
-            if (ce.senderParty != undefined && ce.senderParty.length > 1) {
-              following.push(ce.senderParty);
+            if (ce.receiverParty != undefined && ce.receiverParty.length > 1) {
+              following.push(ce.receiverParty);
             }
           }
         }
