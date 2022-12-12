@@ -5751,6 +5751,7 @@ export class TransactionsController {
         };
         return getRandomId();
     }
+    
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/historys/voucherused')
     async finddatavoucheruse(@Req() request: Request): Promise<any> {
@@ -6142,17 +6143,33 @@ export class TransactionsController {
                         },
                     };
                 } else if (Va.status.code == "208") {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Request is Rejected (API Key is not Valid)',
-                    );
-                } else if (Va.status.code == "217") {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Request is Rejected (VA Number is still active for this partner user id)',
-                    );
+                    await this.errorHandler.generateNotAcceptableException('Request is Rejected (API Key is not Valid)');
+                } else if (Va.status.code == "208") {
+                    await this.errorHandler.generateNotAcceptableException('Request is Rejected (API Key is not Valid)');
+                } else if (Va.status.code == "211") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (Bank code is not available for this service)");
+                }else if (Va.status.code == "212") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (Given amount are lesser than allowed value for static va)");
+                }else if (Va.status.code == "213") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (Given amount are greater than allowed value for static va)");
+                }else if (Va.status.code == "214") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (Failed to generate static va)");
+                }else if (Va.status.code == "215") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (Amount type is not supported for the requested bank code)");
+                }else if (Va.status.code == "216") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (VA Id is empty)");
+                }else if (Va.status.code == "217") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (VA Number is still active for this partner user id)");
+                }else if (Va.status.code == "219") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (Virtual account is not enabled for this bank)");
+                }else if (Va.status.code == "226") {
+                    await this.errorHandler.generateNotAcceptableException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
+                }else if (Va.status.code == "245") {
+                    await this.errorHandler.generateNotAcceptableException("Request is rejected (Min expiry time is 60 minutes)");
+                }else if (Va.status.code == "246") {
+                    await this.errorHandler.generateNotAcceptableException("Request is rejected (Failed update va)");
                 } else {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Request is Rejected',
-                    );
+                    await this.errorHandler.generateNotAcceptableException('Request is Rejected');
                 }
             } else {
                 const cekStatusVa = await this.oyPgService.staticVaInfo(daftarPending.idva);
@@ -6291,17 +6308,31 @@ export class TransactionsController {
                             },
                         };
                     } else if (Va.status.code == "208") {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Request is Rejected (API Key is not Valid)',
-                        );
+                        await this.errorHandler.generateNotAcceptableException('Request is Rejected (API Key is not Valid)');
+                    } else if (Va.status.code == "211") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (Bank code is not available for this service)");
+                    } else if (Va.status.code == "212") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (Given amount are lesser than allowed value for static va)");
+                    } else if (Va.status.code == "213") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (Given amount are greater than allowed value for static va)");
+                    } else if (Va.status.code == "214") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (Failed to generate static va)");
+                    } else if (Va.status.code == "215") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (Amount type is not supported for the requested bank code)");
+                    } else if (Va.status.code == "216") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (VA Id is empty)");
                     } else if (Va.status.code == "217") {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Request is Rejected (VA Number is still active for this partner user id)',
-                        );
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (VA Number is still active for this partner user id)");
+                    } else if (Va.status.code == "219") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (Virtual account is not enabled for this bank)");
+                    } else if (Va.status.code == "226") {
+                        await this.errorHandler.generateNotAcceptableException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
+                    } else if (Va.status.code == "245") {
+                        await this.errorHandler.generateNotAcceptableException("Request is rejected (Min expiry time is 60 minutes)");
+                    } else if (Va.status.code == "246") {
+                        await this.errorHandler.generateNotAcceptableException("Request is rejected (Failed update va)");
                     } else {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Request is Rejected',
-                        );
+                        await this.errorHandler.generateNotAcceptableException('Request is Rejected');
                     }
                 }
             }
