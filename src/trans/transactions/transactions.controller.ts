@@ -359,7 +359,7 @@ export class TransactionsController {
                             "is_open": false,
                             "is_single_use": true,
                             "is_lifetime": false,
-                            "username_display": name.toString(),
+                            "username_display": email,
                             "email": email,
                             "trx_expiration_time": valueexpiredva,
                         }
@@ -512,7 +512,7 @@ export class TransactionsController {
                         "is_open": false,
                         "is_single_use": true,
                         "is_lifetime": false,
-                        "username_display": name.toString(),
+                        "username_display": email,
                         "email": email,
                         "trx_expiration_time": valueexpiredva,
                     }
@@ -749,7 +749,7 @@ export class TransactionsController {
                             "is_open": false,
                             "is_single_use": true,
                             "is_lifetime": false,
-                            "username_display": name.toString(),
+                            "username_display": email,
                             "email": email,
                             "trx_expiration_time": valueexpiredva,
                         }
@@ -923,7 +923,7 @@ export class TransactionsController {
                         "is_open": false,
                         "is_single_use": true,
                         "is_lifetime": false,
-                        "username_display": name.toString(),
+                        "username_display": email,
                         "email": email,
                         "trx_expiration_time": valueexpiredva,
                     }
@@ -6375,6 +6375,7 @@ export class TransactionsController {
 
     async createVa(data: any) {
         var stringId = (await this.utilsService.generateNumber()).toString();
+
         var data_va = {
             "partner_user_id": data.userId.toString() + stringId,
             "amount": data.amount,
@@ -6382,7 +6383,7 @@ export class TransactionsController {
             "is_open": false,
             "is_single_use": true,
             "is_lifetime": false,
-            "username_display": data.name.toString(),
+            "username_display": data.email,
             "email": data.email,
             "trx_expiration_time": data.valueexpiredva,
         }
