@@ -22,6 +22,7 @@ export class Userbankaccounts {
     description: string
     @Prop()
     active: boolean
+    @Prop() userHandle: any[];
     @Prop() mediaSupportType: String;
     @Prop() mediaSupportBasePath: String;
     @Prop() mediaSupportUri: any[];
