@@ -158,7 +158,7 @@ export class AdsUserCompareController {
             mediaBasePath: get_profilePict.mediaBasePath,
             mediaUri: get_profilePict.mediaUri,
             mediaType: get_profilePict.mediaType,
-            mediaEndpoint: '/profilepict/' + get_profilePict.mediaUri.replace('_0001.jpeg', '')
+            mediaEndpoint: '/profilepict/' + get_profilePict.mediaID
         }
         var dataPlace = await this.adsplacesService.findOne(data_ads.placingID.toString());
         if (await this.utilsService.ceckData(dataPlace)) {

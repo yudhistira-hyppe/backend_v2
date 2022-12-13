@@ -798,7 +798,7 @@ export class PostContentService {
             bodyi = bodyi + ' HyppeStory';
             bodye = bodye + ' HyppeStory';            
           }
-          this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned',bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
+          this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned',bodyi, bodye, 'REACTION', 'ACCEPT', String(post.postID), String(post.postType));
         });
       });
     }
@@ -1757,7 +1757,7 @@ export class PostContentService {
               console.log("DateBoostEnd", DateBoostEnd);
               console.log("CurrentDate", CurrentDate);
               var boostedData = {};
-              var boostedStatus = "AKAN DATANG";
+              var boostedStatus = "TIDAK ADA";
               if ((DateBoostStart < CurrentDate) && (CurrentDate < DateBoostEnd)){
                 boostedStatus = "BERLANGSUNG";
                 boostedData["type"] = ps.boosted[p].type
@@ -1773,7 +1773,10 @@ export class PostContentService {
                 boostedData["boostSession"] = ps.boosted[p].boostSession
                 boostedData["boostViewer"] = ps.boosted[p].boostViewer
               }
-              boostedRes.push(boostedData);
+
+              if (Object.keys(boostedData).length > 0) {
+                boostedRes.push(boostedData);
+              }
             }
 
             pa.boosted = boostedRes;
