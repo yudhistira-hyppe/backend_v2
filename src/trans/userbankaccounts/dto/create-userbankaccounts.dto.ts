@@ -7,6 +7,7 @@ export class CreateUserbankaccountsDto {
     statusInquiry: boolean;
     description: string;
     active: boolean;
+    userHandle: any[];
     mediaSupportType: String;
     mediaSupportBasePath: String;
     mediaSupportUri: any[];

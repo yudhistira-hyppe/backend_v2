@@ -158,7 +158,7 @@ export class AdsUserCompareController {
             mediaBasePath: get_profilePict.mediaBasePath,
             mediaUri: get_profilePict.mediaUri,
             mediaType: get_profilePict.mediaType,
-            mediaEndpoint: '/profilepict/' + get_profilePict.mediaUri.replace('_0001.jpeg', '')
+            mediaEndpoint: '/profilepict/' + get_profilePict.mediaID
         }
         var dataPlace = await this.adsplacesService.findOne(data_ads.placingID.toString());
         if (await this.utilsService.ceckData(dataPlace)) {
@@ -169,7 +169,7 @@ export class AdsUserCompareController {
         data_response['mediaType'] = data_ads.type;
         data_response['videoId'] = data_ads.idApsara;
         data_response['duration'] = data_ads.duration;
-        this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, The process successfuly : " + data_response);
+        this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, The process successfuly : " + JSON.stringify(data_response));
 
         return {
             "response_code": 202,
@@ -344,7 +344,7 @@ export class AdsUserCompareController {
                 //     }
                 // }
 
-                this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, successfully " + body);
+                this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, successfully " + JSON.stringify(body));
                 return {
                     response_code: 202,
                     data: {
@@ -565,7 +565,7 @@ export class AdsUserCompareController {
                             );
                         }
                     }
-                    this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, successfully " + rewards);
+                    this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, successfully " + rewards.toString());
 
                     return {
                         response_code: 202,

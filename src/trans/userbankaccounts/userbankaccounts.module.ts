@@ -7,11 +7,14 @@ import { Userbankaccounts, UserbankaccountsSchema } from './schemas/userbankacco
 import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { BanksModule } from '../banks/banks.module';
 import { MediaproofpictsModule } from '../../content/mediaproofpicts/mediaproofpicts.module';
+import { NestjsFormDataModule } from 'nestjs-form-data';
+import { UtilsModule } from '../../utils/utils.module';
+import { SeaweedfsModule } from '../../stream/seaweedfs/seaweedfs.module';
 
 @Module({
     imports: [
 
-        ConfigModule.forRoot(), UserbasicsModule, BanksModule, MediaproofpictsModule,
+        ConfigModule.forRoot(), UserbasicsModule, BanksModule, MediaproofpictsModule, NestjsFormDataModule, UtilsModule, SeaweedfsModule,
         MongooseModule.forFeature([{ name: Userbankaccounts.name, schema: UserbankaccountsSchema }], 'SERVER_FULL')
     ],
     controllers: [UserbankaccountsController],

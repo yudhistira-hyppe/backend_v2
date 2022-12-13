@@ -36,6 +36,7 @@ import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.
 import { CreatePostsDto } from 'src/content/posts/dto/create-posts.dto';
 import { Accountbalances } from '../accountbalances/schemas/accountbalances.schema';
 import { Templates } from 'src/infra/templates/schemas/templates.schema';
+import { Console } from 'console';
 
 const cheerio = require('cheerio');
 const nodeHtmlToImage = require('node-html-to-image');
@@ -358,7 +359,7 @@ export class TransactionsController {
                             "is_open": false,
                             "is_single_use": true,
                             "is_lifetime": false,
-                            "username_display": name.toString(),
+                            "username_display": email,
                             "email": email,
                             "trx_expiration_time": valueexpiredva,
                         }
@@ -511,7 +512,7 @@ export class TransactionsController {
                         "is_open": false,
                         "is_single_use": true,
                         "is_lifetime": false,
-                        "username_display": name.toString(),
+                        "username_display": email,
                         "email": email,
                         "trx_expiration_time": valueexpiredva,
                     }
@@ -748,7 +749,7 @@ export class TransactionsController {
                             "is_open": false,
                             "is_single_use": true,
                             "is_lifetime": false,
-                            "username_display": name.toString(),
+                            "username_display": email,
                             "email": email,
                             "trx_expiration_time": valueexpiredva,
                         }
@@ -922,7 +923,7 @@ export class TransactionsController {
                         "is_open": false,
                         "is_single_use": true,
                         "is_lifetime": false,
-                        "username_display": name.toString(),
+                        "username_display": email,
                         "email": email,
                         "trx_expiration_time": valueexpiredva,
                     }
@@ -5751,6 +5752,7 @@ export class TransactionsController {
         };
         return getRandomId();
     }
+    
     @UseGuards(JwtAuthGuard)
     @Post('api/transactions/historys/voucherused')
     async finddatavoucheruse(@Req() request: Request): Promise<any> {
@@ -6026,6 +6028,8 @@ export class TransactionsController {
                     email: user.email,
                     valueexpiredva: ExpiredVa,
                 }
+
+                console.log("PARAM REQUEST VA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",JSON.stringify(dataCreateVa));
                 var Va = await this.createVa(dataCreateVa);
 
                 //CREATE DATA TRANSACTION
@@ -6142,17 +6146,33 @@ export class TransactionsController {
                         },
                     };
                 } else if (Va.status.code == "208") {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Request is Rejected (API Key is not Valid)',
-                    );
-                } else if (Va.status.code == "217") {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Request is Rejected (VA Number is still active for this partner user id)',
-                    );
+                    await this.errorHandler.generateNotAcceptableException('Request is Rejected (API Key is not Valid)');
+                } else if (Va.status.code == "208") {
+                    await this.errorHandler.generateNotAcceptableException('Request is Rejected (API Key is not Valid)');
+                } else if (Va.status.code == "211") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (Bank code is not available for this service)");
+                }else if (Va.status.code == "212") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (Given amount are lesser than allowed value for static va)");
+                }else if (Va.status.code == "213") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (Given amount are greater than allowed value for static va)");
+                }else if (Va.status.code == "214") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (Failed to generate static va)");
+                }else if (Va.status.code == "215") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (Amount type is not supported for the requested bank code)");
+                }else if (Va.status.code == "216") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (VA Id is empty)");
+                }else if (Va.status.code == "217") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (VA Number is still active for this partner user id)");
+                }else if (Va.status.code == "219") {
+                    await this.errorHandler.generateNotAcceptableException("Request is Rejected (Virtual account is not enabled for this bank)");
+                }else if (Va.status.code == "226") {
+                    await this.errorHandler.generateNotAcceptableException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
+                }else if (Va.status.code == "245") {
+                    await this.errorHandler.generateNotAcceptableException("Request is rejected (Min expiry time is 60 minutes)");
+                }else if (Va.status.code == "246") {
+                    await this.errorHandler.generateNotAcceptableException("Request is rejected (Failed update va)");
                 } else {
-                    await this.errorHandler.generateNotAcceptableException(
-                        'Request is Rejected',
-                    );
+                    await this.errorHandler.generateNotAcceptableException('Request is Rejected');
                 }
             } else {
                 const cekStatusVa = await this.oyPgService.staticVaInfo(daftarPending.idva);
@@ -6175,6 +6195,7 @@ export class TransactionsController {
                         email: user.email,
                         valueexpiredva: ExpiredVa,
                     }
+                    console.log("PARAM REQUEST VA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(dataCreateVa));
                     var Va = await this.createVa(dataCreateVa);
 
                     //CREATE DATA TRANSACTION
@@ -6291,17 +6312,31 @@ export class TransactionsController {
                             },
                         };
                     } else if (Va.status.code == "208") {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Request is Rejected (API Key is not Valid)',
-                        );
+                        await this.errorHandler.generateNotAcceptableException('Request is Rejected (API Key is not Valid)');
+                    } else if (Va.status.code == "211") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (Bank code is not available for this service)");
+                    } else if (Va.status.code == "212") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (Given amount are lesser than allowed value for static va)");
+                    } else if (Va.status.code == "213") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (Given amount are greater than allowed value for static va)");
+                    } else if (Va.status.code == "214") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (Failed to generate static va)");
+                    } else if (Va.status.code == "215") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (Amount type is not supported for the requested bank code)");
+                    } else if (Va.status.code == "216") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (VA Id is empty)");
                     } else if (Va.status.code == "217") {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Request is Rejected (VA Number is still active for this partner user id)',
-                        );
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (VA Number is still active for this partner user id)");
+                    } else if (Va.status.code == "219") {
+                        await this.errorHandler.generateNotAcceptableException("Request is Rejected (Virtual account is not enabled for this bank)");
+                    } else if (Va.status.code == "226") {
+                        await this.errorHandler.generateNotAcceptableException("Request is rejected (Transaction expiry time exceeds VA expiry time)");
+                    } else if (Va.status.code == "245") {
+                        await this.errorHandler.generateNotAcceptableException("Request is rejected (Min expiry time is 60 minutes)");
+                    } else if (Va.status.code == "246") {
+                        await this.errorHandler.generateNotAcceptableException("Request is rejected (Failed update va)");
                     } else {
-                        await this.errorHandler.generateNotAcceptableException(
-                            'Request is Rejected',
-                        );
+                        await this.errorHandler.generateNotAcceptableException('Request is Rejected');
                     }
                 }
             }
@@ -6340,6 +6375,7 @@ export class TransactionsController {
 
     async createVa(data: any) {
         var stringId = (await this.utilsService.generateNumber()).toString();
+
         var data_va = {
             "partner_user_id": data.userId.toString() + stringId,
             "amount": data.amount,
@@ -6347,13 +6383,14 @@ export class TransactionsController {
             "is_open": false,
             "is_single_use": true,
             "is_lifetime": false,
-            "username_display": data.name.toString(),
+            "username_display": data.email,
             "email": data.email,
             "trx_expiration_time": data.valueexpiredva,
         }
 
         try {
             var datareqva = await this.oyPgService.generateStaticVa(data_va);
+            console.log("PARAM RESPONSE VA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(datareqva));
             return datareqva;
         } catch (e) {
             await this.errorHandler.generateNotAcceptableException(

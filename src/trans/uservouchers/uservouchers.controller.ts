@@ -136,39 +136,40 @@ export class UservouchersController {
             throw new BadRequestException("user not found");
         }
 
-        // var curdate = new Date(Date.now());
-        // var beforedate = curdate.toISOString();
+        var curdate = new Date(Date.now());
+        var beforedate = curdate.toISOString();
 
-        // var substrtahun = beforedate.substring(0, 4);
-        // var numtahun = parseInt(substrtahun);
+        var substrtahun = beforedate.substring(0, 4);
+        var numtahun = parseInt(substrtahun);
 
-        // var substrbulan = beforedate.substring(7, 5);
-        // var numbulan = parseInt(substrbulan);
-        // var substrtanggal = beforedate.substring(10, 8);
-        // var numtanggal = parseInt(substrtanggal);
-        // var date = substrtahun + "-" + substrbulan + "-" + substrtanggal;
+        var substrbulan = beforedate.substring(7, 5);
+        var numbulan = parseInt(substrbulan);
+        var substrtanggal = beforedate.substring(10, 8);
+        var numtanggal = parseInt(substrtanggal);
+        var date = substrtahun + "-" + substrbulan + "-" + substrtanggal;
         var data = null;
-        // try {
-        //     datatrue = await this.uservouchersService.findUserVoucherTrue(iduser);
-        //     var datenow = new Date(Date.now());
-        //     var lenghttrue = datatrue.length;
-        //     for (var i = 0; i < lenghttrue; i++) {
-        //         var id = datatrue[i]._id;
-        //         var objid = mongoose.Types.ObjectId(id);
-        //         var dtexp = new Date(datatrue[i].expiredAt);
-        //         dtexp.setHours(dtexp.getHours() + 24);
-        //         dtexp = new Date(dtexp);
-        //         if (datenow > dtexp) {
-        //             await this.uservouchersService.updatefalse(objid);
-        //         } else {
-        //             data = await this.uservouchersService.findUserVoucher(iduser, key);
-        //         }
-        //     }
-        // } catch (e) {
-        //     datatrue = null;
-        // }
+
 
         data = await this.uservouchersService.findUserVoucher(iduser, key, startday, endday, startdate, enddate);
+
+        try {
+            datatrue = await this.uservouchersService.findUserVoucherTrue(iduser);
+            var datenow = new Date(Date.now());
+            var lenghttrue = datatrue.length;
+            for (let i = 0; i < lenghttrue; i++) {
+                let id = datatrue[i]._id;
+                let exp = datatrue[i].expiredAt;
+                let dtexp = new Date(exp);
+                dtexp.setHours(dtexp.getHours() + 24);
+                dtexp = new Date(dtexp);
+                if (datenow > dtexp) {
+                    var objid = mongoose.Types.ObjectId(id);
+                    await this.uservouchersService.updatefalse(objid);
+                }
+            }
+        } catch (e) {
+            datatrue = null;
+        }
 
         return { response_code: 202, data, messages };
     }
