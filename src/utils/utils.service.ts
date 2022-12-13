@@ -148,28 +148,28 @@ export class UtilsService {
 
     let title_send = Templates_.subject.toString();
     if (title_send == "${user_name}") {
-      title_send = "@"+get_username_senderParty;
+      title_send = "@" + get_username_senderParty;
     }
 
     var Post_type_upper = "";
-    if (postType==undefined){
-      Post_type_upper ="";
-    }else{
+    if (postType == undefined) {
+      Post_type_upper = "";
+    } else {
       Post_type_upper = postType[0].toUpperCase() + postType.substring(1)
     }
-    
+
 
     let body_send = "";
-    if (langIso_receiverParty=="en"){
+    if (langIso_receiverParty == "en") {
       body_send = Templates_.body_detail.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
     } else {
       body_send = Templates_.body_detail_id.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
     }
 
     var senderOrReceiverInfo = {
-      fullName: (profile_senderParty.fullName != undefined) ? profile_senderParty.fullName :null,
+      fullName: (profile_senderParty.fullName != undefined) ? profile_senderParty.fullName : null,
       avatar: {
-        mediaBasePath: (profile_senderParty.avatar != undefined) ? (profile_senderParty.avatar.mediaBasePath != undefined) ? profile_senderParty.avatar.mediaBasePath:null : null,
+        mediaBasePath: (profile_senderParty.avatar != undefined) ? (profile_senderParty.avatar.mediaBasePath != undefined) ? profile_senderParty.avatar.mediaBasePath : null : null,
         mediaUri: (profile_senderParty.avatar != undefined) ? (profile_senderParty.avatar.mediaUri != undefined) ? profile_senderParty.avatar.mediaUri : null : null,
         mediaType: (profile_senderParty.avatar != undefined) ? (profile_senderParty.avatar.mediaType != undefined) ? profile_senderParty.avatar.mediaType : null : null,
         mediaEndpoint: (profile_senderParty.avatar != undefined) ? (profile_senderParty.avatar.mediaEndpoint != undefined) ? profile_senderParty.avatar.mediaEndpoint : null : null,
@@ -184,7 +184,7 @@ export class UtilsService {
       device_user.push(datadevice[i].deviceID)
     }
 
-    if (eventType =="COMMENT_TAG"){
+    if (eventType == "COMMENT_TAG") {
       eventType = "REACTION"
     }
 
@@ -360,7 +360,7 @@ export class UtilsService {
       createNotificationsDto.contentEventID = null;
       createNotificationsDto.senderOrReceiverInfo = senderreceiver;
 
-      if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION" || eventType == "CONTENT") {
+      if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION" || eventType == "CONTENT" || eventType == "BANK") {
         if (postID != undefined) {
           createNotificationsDto.postID = postID;
         }
@@ -422,6 +422,9 @@ export class UtilsService {
 
   async getTemplateAppealReport(name: string, event: string, category: string): Promise<TemplatesRepo> {
     return await this.templatesRepoService.findByNameAndEventCategory(name, event, category);
+  }
+  async getTemplateAppealBank(name: string, event: string, category: string, type: string): Promise<TemplatesRepo> {
+    return await this.templatesRepoService.findByNameAndEventCategoryType(name, event, category, type);
   }
 
   async ceckObjectid(id: string): Promise<boolean> {
@@ -1131,7 +1134,7 @@ export class UtilsService {
     var month = d.getMonth();
     var year = d.getFullYear();
 
-    var hours = d.getHours()-7;
+    var hours = d.getHours() - 7;
     var minute = d.getMinutes();
     var timeData = (hours < 10 ? '0' + hours : hours) + ":" + (minute < 10 ? '0' + minute : minute)
 

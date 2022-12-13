@@ -16,4 +16,6 @@ export class CreateUserbankaccountsDto {
     SupportfsSourceName: any[];
     SupportfsTargetUri: any[];
     SupportmediaMime: String;
+    createdAt: string;
+    updatedAt: string;
 }

@@ -15,6 +15,8 @@ import { SeaweedfsService } from "../../stream/seaweedfs/seaweedfs.service";
 import { extname } from 'path';
 import { diskStorage } from 'multer';
 import { UtilsService } from "../../utils/utils.service";
+import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
+
 //import FormData from "form-data";
 const multer = require('multer');
 var FormData = require('form-data');
@@ -110,6 +112,10 @@ export class UserbankaccountsController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
         var ubasic = await this.userbasicsService.findOne(email);
 
         var iduser = ubasic._id;
@@ -158,7 +164,7 @@ export class UserbankaccountsController {
                     CreateUserbankaccountsDto.userId = iduser;
                     CreateUserbankaccountsDto.noRek = noRek;
                     CreateUserbankaccountsDto.idBank = idbank;
-                    // CreateUserbankaccountsDto.statusInquiry = false;
+                    CreateUserbankaccountsDto.createdAt = dt.toISOString();
                     CreateUserbankaccountsDto.active = true;
 
                     let data = await this.userbankaccountsService.create(CreateUserbankaccountsDto);
@@ -198,34 +204,18 @@ export class UserbankaccountsController {
 
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
-    @Post('api/userbankaccounts/create')
+    @Post('api/userbankaccounts/appeal')
     @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 3, }], multerOptions))
     async upload(
         @UploadedFiles() files1: {
             supportFile?: Express.Multer.File[]
         },
-        // @UploadedFiles() files2: Array<Express.Multer.File>,
+
         @Body() CreateUserbankaccountsDto_: CreateUserbankaccountsDto,
         @Headers() headers) {
-        //  var idmediaproofpict = CreateMediaproofpictsDto_._id.toString();
 
-
-        if (!(await this.utilsService.validasiTokenEmail(headers))) {
-            await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed token and email not match',
-            );
-        }
-
-        if (headers['x-auth-token'] == undefined) {
-            await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed email is required',
-            );
-        }
-
-        console.log(files1);
-        //   console.log(files2);
-
-        var countfile = files1.supportFile.length;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
         //Var supportFile
         let supportFile_data = null;
         let supportFile_filename = '';
@@ -239,64 +229,49 @@ export class UserbankaccountsController {
         var arrayName = [];
         var arraySuri = [];
         var arraySname = [];
+        var idBank = null;
+        var email = null;
+        var iduserbank = null;
+        var fullname = null;
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
 
-        var emailuserbasic = null;
-        //Var current date
-        var current_date = await this.utilsService.getDateTimeString();
+        var data = null;
+        var datauserbank = null;
+        var dataacount = null;
 
-        //Var generate id
-        var IdMediaproofpictsDto = await this.utilsService.generateId();
-        //Var generate id mongoose
+        iduserbank = CreateUserbankaccountsDto_._id;
 
+        var iduserbankacount = mongoose.Types.ObjectId(iduserbank);
 
-        //Ceck User Userbasics
-        const datauserbasicsService = await this.userbasicsService.findOne(
-            headers['x-auth-user'],
-        );
+        CreateUserbankaccountsDto_.active = true;
+        CreateUserbankaccountsDto_.createdAt = dt.toISOString();
+        CreateUserbankaccountsDto_.updatedAt = dt.toISOString();
+        CreateUserbankaccountsDto_.userHandle = [{
+            "reasonId": null,
+            "valueReason": "",
+            "idUserHandle": null,
+            "createdAt": dt.toISOString(),
+            "updatedAt": dt.toISOString(),
+            "status": "BARU"
+        }];
 
-        var titleinsukses = null;
-        var titleensukses = null;
-        var bodyinsukses = null;
-        var bodyensukses = null;
-        var eventType = null;
-        var event = null;
-        if (await this.utilsService.ceckData(datauserbasicsService)) {
-            // // var mongoose_gen_meida = new mongoose.Types.ObjectId();
-            // titleinsukses = "Dalam Proses Verifikasi";
-            // titleensukses = "Verification On Progress";
-            // bodyinsukses = "Hai " + datauserbasicsService.fullName + "! Kami sedang meninjau data yang Anda kirimkan. ini akan memakan waktu 3x24 jam proses";
-            // bodyensukses = "Hi " + datauserbasicsService.fullName + "! We are currently reviewing the data you submitted. this will take a 3x24 hour process";
-            // eventType = "SUPPORTFILE";
-            // event = "REQUEST";
+        var paths = iduserbank;
+        var mongoose_gen_meida = paths;
 
-            emailuserbasic = datauserbasicsService.email;
+        try {
+            datauserbank = await this.userbankaccountsService.findemail(iduserbankacount);
+        } catch (e) {
+            datauserbank = null;
+        }
 
-
-            var paths = IdMediaproofpictsDto;
-            var mongoose_gen_meida = paths;
-
-            // /Ceck Data user proofPict
-            // Ceck Data user proofPict
-
-            //Update proofPict
-            try {
-
-
-
-                await this.userbankaccountsService.create(CreateUserbankaccountsDto_);
-
-
-                // await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
-            } catch (err) {
-                await this.errorHandler.generateNotAcceptableException(
-                    'Unabled to proceed failed update Mediaproofpicts ' + err,
-                );
-            }
-
-
+        if (datauserbank !== undefined || datauserbank !== null) {
+            email = datauserbank[0].email;
+            fullname = datauserbank[0].fullName;
             //Ceck supportFile
             if (files1.supportFile != undefined) {
-
+                var countfile = files1.supportFile.length;
 
                 for (var i = 0; i < countfile; i++) {
                     var FormData_ = new FormData();
@@ -307,7 +282,7 @@ export class UserbankaccountsController {
                     supportFile_name = supportFile_filename.substring(0, supportFile_filename.lastIndexOf('.'));
 
                     //New Name file supportFile
-                    supportFile_filename_new = IdMediaproofpictsDto + '_000' + (i + 1) + '.' + supportFile_etx;
+                    supportFile_filename_new = iduserbank + '_000' + (i + 1) + '.' + supportFile_etx;
                     //Rename Name file supportFile
                     fs.renameSync('./temp/' + supportFile_filename, './temp/' + supportFile_filename_new);
 
@@ -328,11 +303,11 @@ export class UserbankaccountsController {
 
                     //Upload Seaweedfs
                     try {
-                        FormData_.append('proofpict', fs.createReadStream(path.resolve(supportFile_local_path)));
+                        FormData_.append('supportfile', fs.createReadStream(path.resolve(supportFile_local_path)));
                         await this.seaweedfsService.write(supportFile_seaweedfs_path, FormData_);
                     } catch (err) {
                         await this.errorHandler.generateNotAcceptableException(
-                            'Unabled to proceed proofpict failed upload seaweedfs',
+                            'Unabled to proceed supportfile failed upload seaweedfs',
                         );
                     }
 
@@ -345,42 +320,55 @@ export class UserbankaccountsController {
                     arraySname.push(objsname);
                 }
 
+                CreateUserbankaccountsDto_.mediaSupportType = 'supportfile';
+                CreateUserbankaccountsDto_.mediaSupportBasePath = mongoose_gen_meida + '/supportfile/';
+                CreateUserbankaccountsDto_.mediaSupportUri = arrayUri;
+                CreateUserbankaccountsDto_.SupportOriginalName = arrayName;
+                CreateUserbankaccountsDto_.SupportfsSourceUri = arraySuri;
+                CreateUserbankaccountsDto_.SupportfsSourceName = arraySname;
+                CreateUserbankaccountsDto_.SupportfsTargetUri = arrayUri;
+                CreateUserbankaccountsDto_.SupportmediaMime = supportFile_mimetype;
+
+                data = await this.userbankaccountsService.update(iduserbank, CreateUserbankaccountsDto_);
+
+
+
+                fs.rm('./temp/' + mongoose_gen_meida, { recursive: true }, (err) => {
+                    if (err) {
+                        throw err;
+                    }
+                });
+
+                try {
+                    dataacount = await this.sendReportAppealBankFCM(email, "NOTIFY_APPEAL", "REQUEST_APPEAL", "BANK", fullname);
+                } catch (e) {
+                    await this.errorHandler.generateNotAcceptableException(
+                        e.toString(),
+                    );
+                }
+                return {
+                    "response_code": 202,
+                    "data": data,
+                    "messages": {
+                        "info": [
+                            "Success Upload"
+                        ]
+                    }
+                };
+
             } else {
                 await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed supportFile is required',
                 );
             }
 
-
-
-
-
-
-            //Delete directory recursively
-
-            fs.rm('./temp/' + mongoose_gen_meida, { recursive: true }, (err) => {
-                if (err) {
-                    throw err;
-                }
-            });
-
-            return {
-                "response_code": 202,
-                "data": {
-                    "id_mediaproofpicts": IdMediaproofpictsDto,
-                    "status": "IN_PROGGRESS"
-                },
-                "messages": {
-                    "info": [
-                        "Success Upload"
-                    ]
-                }
-            };
         } else {
             await this.errorHandler.generateNotAcceptableException(
-                'Unabled to proceed user not found',
+                'Unabled to proceed data is not found',
             );
         }
+
+
     }
 
     @UseGuards(JwtAuthGuard)
@@ -464,5 +452,29 @@ export class UserbankaccountsController {
     }
 
 
+    async sendReportAppealBankFCM(email: string, name: string, event: string, type: string, fullname: string) {
+        var Templates_ = new TemplatesRepo();
+        var repbodyin = null;
+        var repbodyen = null;
+        Templates_ = await this.utilsService.getTemplateAppealBank(name, event, 'NOTIFICATION', type);
 
+        var titlein = Templates_.subject_id.toString();
+        var titleen = Templates_.subject.toString();
+
+
+
+        var bodyin_get = Templates_.body_detail_id.toString();
+        var bodyen_get = Templates_.body_detail.toString();
+
+        if (event === "REQUEST_APPEAL" && type === "BANK") {
+            repbodyin = bodyin_get.replace("${user_name}", fullname);
+            repbodyen = bodyen_get.replace("${user_name}", fullname);
+        } else {
+            repbodyin = bodyin_get;
+            repbodyen = bodyen_get;
+        }
+
+        var eventType = type.toString();
+        await this.utilsService.sendFcm(email, titlein, titleen, repbodyin, repbodyen, eventType, event, undefined, undefined);
+    }
 }
