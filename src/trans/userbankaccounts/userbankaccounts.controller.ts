@@ -165,6 +165,7 @@ export class UserbankaccountsController {
                     CreateUserbankaccountsDto.noRek = noRek;
                     CreateUserbankaccountsDto.idBank = idbank;
                     CreateUserbankaccountsDto.createdAt = dt.toISOString();
+                    CreateUserbankaccountsDto.updatedAt = dt.toISOString();
                     CreateUserbankaccountsDto.active = true;
 
                     let data = await this.userbankaccountsService.create(CreateUserbankaccountsDto);
