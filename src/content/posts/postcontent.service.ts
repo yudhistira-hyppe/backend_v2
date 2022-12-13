@@ -798,7 +798,7 @@ export class PostContentService {
             bodyi = bodyi + ' HyppeStory';
             bodye = bodye + ' HyppeStory';            
           }
-          this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned',bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
+          this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned',bodyi, bodye, 'REACTION', 'ACCEPT', String(post.postID), String(post.postType));
         });
       });
     }
