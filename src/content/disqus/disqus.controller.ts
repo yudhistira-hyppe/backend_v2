@@ -171,6 +171,20 @@ export class DisqusController {
           if (dm != undefined && dm.length > 0) {
             for (let i = 0; i < dm.length; i++) {
               let o = dm[i];
+              if (o.emot != undefined && o.emot.length > 0) {
+                for (let x = 0; x < o.disqusLog.length; x++) {
+                  let dl = o.disqusLog[x]; 
+                  if (dl.reactionUri != undefined) {
+                    for (let y = 0; y < o.emot.length; y++) {
+                      if (dl.reactionUri == o.emot[y].URL) {
+                        o.disqusLog[x].reaction_uri = o.emot[y].icon;
+                        break;
+                      }
+                    }
+                  }
+                }
+
+              }
               tmp.push(o);
             }
           }
