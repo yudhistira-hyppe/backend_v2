@@ -178,7 +178,7 @@ export class DisqusService {
 
             [
                 {
-                    $match:
+                    $match: 
                     {
                         $or: [
                             {
@@ -190,14 +190,14 @@ export class DisqusService {
                                         "eventType": "DIRECT_MSG"
                                     },
                                     {
-                                        "active":
+                                        "active": 
                                         {
                                             $not: {
                                                 $regex: "false"
                                             }
                                         }
                                     },
-
+                                    
                                 ]
                             },
                             {
@@ -209,20 +209,20 @@ export class DisqusService {
                                         "eventType": "DIRECT_MSG"
                                     },
                                     {
-                                        "mateactive":
+                                        "mateactive": 
                                         {
                                             $not: {
                                                 $regex: "false"
                                             }
                                         }
                                     },
-
+                                    
                                 ]
                             },
-
+                            
                         ]
                     },
-
+                    
                 },
                 {
                     $lookup: {
@@ -230,9 +230,9 @@ export class DisqusService {
                         localField: 'email',
                         foreignField: 'email',
                         as: 'userUserBasic',
-
+                        
                     },
-
+                    
                 },
                 {
                     $lookup: {
@@ -240,9 +240,9 @@ export class DisqusService {
                         localField: 'email',
                         foreignField: 'email',
                         as: 'userUserAuth',
-
+                        
                     },
-
+                    
                 },
                 {
                     "$lookup": {
@@ -253,10 +253,10 @@ export class DisqusService {
                         },
                         pipeline: [
                             {
-                                $match:
+                                $match: 
                                 {
-
-
+                                    
+                                    
                                     $expr: {
                                         $in: ['$mediaID', '$$localID']
                                     }
@@ -277,7 +277,7 @@ export class DisqusService {
                                 }
                             }
                         ],
-
+                        
                     }
                 },
                 {
@@ -286,9 +286,9 @@ export class DisqusService {
                         localField: 'mate',
                         foreignField: 'email',
                         as: 'mateUserBasic',
-
+                        
                     },
-
+                    
                 },
                 {
                     $lookup: {
@@ -296,9 +296,9 @@ export class DisqusService {
                         localField: 'mate',
                         foreignField: 'email',
                         as: 'mateUserAuth',
-
+                        
                     },
-
+                    
                 },
                 {
                     "$lookup": {
@@ -309,9 +309,9 @@ export class DisqusService {
                         },
                         pipeline: [
                             {
-                                $match:
+                                $match: 
                                 {
-
+                                    
                                     $expr: {
                                         $in: ['$mediaID', '$$localID']
                                     }
@@ -332,7 +332,7 @@ export class DisqusService {
                                 }
                             }
                         ],
-
+                        
                     }
                 },
                 {
@@ -344,7 +344,7 @@ export class DisqusService {
                         },
                         pipeline: [
                             {
-                                $match:
+                                $match: 
                                 {
                                     $or: [
                                         {
@@ -355,24 +355,24 @@ export class DisqusService {
                                                     }
                                                 },
                                                 {
-                                                    "senderActive":
+                                                    "senderActive": 
                                                     {
                                                         $ne: false
                                                     }
                                                 },
                                                 {
-                                                    "recieverActive":
+                                                    "recieverActive": 
                                                     {
                                                         $ne: false
                                                     }
                                                 },
-
+                                                
                                             ]
                                         },
-
+                                        
                                     ]
                                 },
-
+                                
                             },
                             {
                                 $project: {
@@ -385,8 +385,8 @@ export class DisqusService {
                                     "lineID": 1,
                                     "active": 1,
                                     "disqusID": 1,
-                                    "updatedAt": 1
-
+                                    "updatedAt": 1,
+                                                            "reaction_icon": "$emot.icon",
                                 }
                             },
                             {
@@ -394,11 +394,11 @@ export class DisqusService {
                                     "createdAt": 1
                                 }
                             },
-
+                            
                         ],
-
+                        
                     },
-
+                    
                 },
                 {
                     $lookup: {
@@ -409,7 +409,7 @@ export class DisqusService {
                         },
                         pipeline: [
                             {
-                                $match:
+                                $match: 
                                 {
                                     $or: [
                                         {
@@ -417,26 +417,15 @@ export class DisqusService {
                                                 $in: ['$URL', '$$localID']
                                             }
                                         },
-
+                                        
                                     ]
                                 }
                             },
-
+                            
                         ],
+                        
                     },
-
-                },
-                {
-                    $unwind: {
-                        path: "$disqusLogs",
-                        preserveNullAndEmptyArrays: true
-                    }
-                },
-                {
-                     $unwind: {
-                         path: "$emot",
-                         preserveNullAndEmptyArrays: true
-                     }
+                    
                 },
                 {
                     $unwind: {
@@ -477,44 +466,44 @@ export class DisqusService {
                 {
                     $project: {
                         "emailActive": 1,
-                        "email":
+                        "email": 
                         {
                             $cond: {
-                                if: {
+                                if : {
                                     $eq: ["$email", email]
                                 },
                                 then: "$email",
-                                else: '$mate'
+                                else : '$mate'
                             }
                         },
-                        "username":
-                        {
+                        "username": 
+                            {
                             $cond: {
-                                if: {
+                                if : {
                                     $eq: ["$email", email]
                                 },
                                 then: "$userUserAuth.username",
-                                else: '$mateUserAuth.username'
+                                else : '$mateUserAuth.username'
                             }
                         },
-                        "fullName":
-                        {
+                        "fullName": 
+                            {
                             $cond: {
-                                if: {
+                                if : {
                                     $eq: ["$email", email]
                                 },
                                 then: "$userUserBasic.fullName",
-                                else: '$mateUserBasic.fullName'
+                                else : '$mateUserBasic.fullName'
                             }
                         },
-                        "avatar":
-                        {
+                        "avatar": 
+                            {
                             $cond: {
-                                if: {
+                                if : {
                                     $eq: ["$email", email]
                                 },
                                 then: "$avatar",
-                                else: '$mateAvatar'
+                                else : '$mateAvatar'
                             }
                         },
                         "updatedAt": 1,
@@ -525,69 +514,53 @@ export class DisqusService {
                         "createdAt": 1,
                         "active": 1,
                         "eventType": 1,
-                        //"emot":1,
-                        "disqusLogs":
-                            [{
-                                "createdAt": "$disqusLogs.createdAt",
-                                // "reactionUri"	: "$disqusLogs.reactionUri",
-                                "txtMessages": "$disqusLogs.txtMessages",
-                                "receiver": "$disqusLogs.receiver",
-                                "postType": "$disqusLogs.postType",
-                                "sender": "$disqusLogs.sender",
-                                "lineID": "$disqusLogs.lineID",
-                                "active": "$disqusLogs.active",
-                                "disqusID": "$disqusLogs.disqusID",
-                                "updatedAt": "$disqusLogs.updatedAt",
-                                "reactionUri": { $ifNull: ["$emot.URL", "null nih"] },
-                                "reaction_icon": { $ifNull: ["$emot.icon", "null nih"] }
-
-                            }],
-                        "senderOrReceiverInfo":
+                        "emot": 1,
+                        "disqusLog": "$disqusLogs",
+                        "senderOrReceiverInfo": 
                         {
-                            "email":
+                            "email": 
                             {
                                 $cond: {
-                                    if: {
+                                    if : {
                                         $eq: ["$mate", email]
                                     },
                                     then: "$email",
-                                    else: '$mate'
+                                    else : '$mate'
                                 }
                             },
-                            "username":
-                            {
+                            "username": 
+                                {
                                 $cond: {
-                                    if: {
+                                    if : {
                                         $eq: ["$mate", email]
                                     },
                                     then: "$userUserAuth.username",
-                                    else: '$mateUserAuth.username'
+                                    else : '$mateUserAuth.username'
                                 }
                             },
-                            "fullName":
-                            {
+                            "fullName": 
+                                {
                                 $cond: {
-                                    if: {
+                                    if : {
                                         $eq: ["$mate", email]
                                     },
                                     then: "$userUserBasic.fullName",
-                                    else: '$mateUserBasic.fullName'
+                                    else : '$mateUserBasic.fullName'
                                 }
                             },
-                            "avatar":
-                            {
+                            "avatar": 
+                                {
                                 $cond: {
-                                    if: {
+                                    if : {
                                         $eq: ["$mate", email]
                                     },
                                     then: "$avatar",
-                                    else: '$mateAvatar'
+                                    else : '$mateAvatar'
                                 }
                             },
-
-
+                            
                         },
-
+                        
                     }
                 },
                 {
@@ -595,7 +568,7 @@ export class DisqusService {
                         "createdAt": - 1
                     }
                 },
-
+                
             ]
 
         ).exec();
