@@ -386,7 +386,8 @@ export class DisqusService {
                                     "active": 1,
                                     "disqusID": 1,
                                     "updatedAt": 1,
-                                                            "reaction_icon": "$emot.icon",
+                                    "reaction_icon": "$emot.icon",
+                                    "content":"$medias",
                                 }
                             },
                             {
@@ -515,7 +516,6 @@ export class DisqusService {
                         "active": 1,
                         "eventType": 1,
                         "emot": 1,
-                        "content":"$medias",
                         "disqusLogs": "$disqusLogs",
                         "senderOrReceiverInfo": 
                         {
