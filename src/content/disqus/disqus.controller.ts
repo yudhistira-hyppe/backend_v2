@@ -177,7 +177,7 @@ export class DisqusController {
                   if (dl.reactionUri != undefined) {
                     for (let y = 0; y < o.emot.length; y++) {
                       if (dl.reactionUri == o.emot[y].URL) {
-                        o.disqusLog[x].reaction_uri = o.emot[y].icon;
+                        o.disqusLog[x].reaction_icon = o.emot[y].icon;
                         break;
                       }
                     }
