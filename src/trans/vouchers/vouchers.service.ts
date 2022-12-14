@@ -21,7 +21,9 @@ export class VouchersService {
         }
         return data;
     }
-
+    async findByid(id: string): Promise<Vouchers> {
+        return this.vouchersModel.findOne({ _id: id }).exec();
+    }
     async findAll(): Promise<Vouchers[]> {
         return this.vouchersModel.find().exec();
     }

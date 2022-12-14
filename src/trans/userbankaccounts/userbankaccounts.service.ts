@@ -115,6 +115,12 @@ export class UserbankaccountsService {
             { $set: { "active": false } });
         return data;
     }
+
+    // async updateAppeal(id: Types.ObjectId, updatedAt: string, userHandle: any[]) {
+    //     let data = await this.userbankaccountsModel.updateOne({ "_id": id },
+    //       { $set: { "reportedStatus": "OWNED", "updatedAt": updatedAt, "reportedUserHandle": reportedUserHandle } });
+    //     return data;
+    //   }
     async update(
         id: string,
         createUserbankaccountsDto: CreateUserbankaccountsDto,
@@ -129,6 +135,39 @@ export class UserbankaccountsService {
             throw new Error('Todo is not found!');
         }
         return data;
+    }
+
+    async findemail(id: ObjectId) {
+        let query = await this.userbankaccountsModel.aggregate([
+
+            {
+                $match: {
+                    _id: id
+                }
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "field"
+                }
+            },
+            {
+                $unwind: {
+                    path: '$field',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    email: '$field.email',
+                    fullName: '$field.fullName'
+                }
+            }
+        ]);
+
+        return query;
     }
 
 }

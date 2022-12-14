@@ -31,6 +31,9 @@ export class Userbankaccounts {
     @Prop() SupportfsSourceName: any[];
     @Prop() SupportfsTargetUri: any[];
     @Prop() SupportmediaMime: String;
+    @Prop() createdAt: string;
+    @Prop() updatedAt: string;
+
 
 
 

@@ -167,20 +167,38 @@ export class VouchersController {
         const messagesEror = {
             "info": ["Todo is not found!"],
         };
-
+        var datavoucher = null;
+        var d = null;
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
         var exday = null;
+        var createdAt = null;
 
         try {
-            exday = CreateVouchersDto.expiredDay;
+            datavoucher = await this.vouchersService.findByid(id);
+            createdAt = datavoucher.createdAt;
+            d = new Date(createdAt);
+            d.setHours(d.getHours() - 7);
+        } catch (e) {
+            datavoucher = null;
+            createdAt = "";
+            d = new Date();
+        }
 
-            var d = new Date();
-            d.setDate(d.getDate() + exday);
-            d = new Date(d);
-            CreateVouchersDto.createdAt = dt.toISOString();
-            CreateVouchersDto.expiredAt = d.toISOString();
+        try {
+
+            try {
+                exday = CreateVouchersDto.expiredDay;
+                d.setDate(d.getDate() + exday);
+                d = new Date(d);
+                CreateVouchersDto.expiredAt = d.toISOString();
+
+            } catch (e) {
+                exday = null;
+
+            }
+
             CreateVouchersDto.updatedAt = dt.toISOString();
             let data = await this.vouchersService.update(id, CreateVouchersDto);
 

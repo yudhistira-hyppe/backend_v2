@@ -6418,7 +6418,6 @@ export class PostsService {
     return query;
   }
 
-
   async countReportStatus(startdate: string, enddate: string) {
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
