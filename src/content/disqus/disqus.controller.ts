@@ -172,12 +172,12 @@ export class DisqusController {
             for (let i = 0; i < dm.length; i++) {
               let o = dm[i];
               if (o.emot != undefined && o.emot.length > 0) {
-                for (let x = 0; x < o.disqusLog.length; x++) {
-                  let dl = o.disqusLog[x]; 
+                for (let x = 0; x < o.disqusLogs.length; x++) {
+                  let dl = o.disqusLogs[x]; 
                   if (dl.reactionUri != undefined) {
                     for (let y = 0; y < o.emot.length; y++) {
                       if (dl.reactionUri == o.emot[y].URL) {
-                        o.disqusLog[x].reaction_icon = o.emot[y].icon;
+                        o.disqusLogs[x].reaction_icon = o.emot[y].icon;
                         break;
                       }
                     }
