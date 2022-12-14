@@ -159,11 +159,11 @@ export class UtilsService {
     }
 
 
-    let body_send = "";
+    let body_send = {postID: postID, postType: postType, message: ""};
     if (langIso_receiverParty == "en") {
-      body_send = Templates_.body_detail.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+      body_send.message = Templates_.body_detail.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
     } else {
-      body_send = Templates_.body_detail_id.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+      body_send.message = Templates_.body_detail_id.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
     }
 
     var senderOrReceiverInfo = {
@@ -180,7 +180,7 @@ export class UtilsService {
     var datadevice = await this.userdevicesService.findActive(receiverParty);
     var device_user = [];
     for (var i = 0; i < datadevice.length; i++) {
-      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: body_send } });
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send) } });
       device_user.push(datadevice[i].deviceID)
     }
 
