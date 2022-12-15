@@ -167,7 +167,14 @@ export class DisqusController {
           
           console.log("processDisqus >>> DIRECT_MSG: ", String(ContentDto_.email));
           let tmp : DisqusResDto[] = [];
-          let dm = await this.disqusService.queryDiscussV2(String(ContentDto_.email));
+
+          let dm = [];
+          if (ContentDto_.disqusID != undefined) {
+            dm = await this.disqusService.queryDiscussV2ByDisqusIs(String(ContentDto_.disqusID), String(ContentDto_.email));
+          } else {
+            dm = await this.disqusService.queryDiscussV2(String(ContentDto_.email));
+          }
+
           if (dm != undefined && dm.length > 0) {
             for (let i = 0; i < dm.length; i++) {
               let o = dm[i];
