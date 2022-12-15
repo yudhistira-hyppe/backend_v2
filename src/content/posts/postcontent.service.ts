@@ -2820,7 +2820,7 @@ export class PostContentService {
 
     let htmlPdf = pdf.html().toString();
     let file = { content: htmlPdf };
-    let options = { format: 'A4' };
+    let options = { format: 'A4', landscape:true };
     pdfWriter.generatePdf(file, options).then(pdfBuffer => {
       this.logger.log('generateCertificate >>> sending email to: ' + String(post.email) + ', with subject: ' + String(template.subject));
       this.utilService.sendEmailWithAttachment(String(post.email), 'no-reply@hyppe.app', String(template.subject), html, { filename: fileName, content: pdfBuffer });
