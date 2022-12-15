@@ -190,12 +190,7 @@ export class DisqusService {
                                         "eventType": "DIRECT_MSG"
                                     },
                                     {
-                                        "active": 
-                                        {
-                                            $not: {
-                                                $regex: "false"
-                                            }
-                                        }
+                                        "emailActive": true
                                     },
                                     
                                 ]
@@ -209,12 +204,7 @@ export class DisqusService {
                                         "eventType": "DIRECT_MSG"
                                     },
                                     {
-                                        "mateactive": 
-                                        {
-                                            $not: {
-                                                $regex: "false"
-                                            }
-                                        }
+                                        "mateactive": true
                                     },
                                     
                                 ]
@@ -355,16 +345,10 @@ export class DisqusService {
                                                     }
                                                 },
                                                 {
-                                                    "senderActive": 
-                                                    {
-                                                        $ne: false
-                                                    }
+                                                    "senderActive": true
                                                 },
                                                 {
-                                                    "recieverActive": 
-                                                    {
-                                                        $ne: false
-                                                    }
+                                                    "recieverActive": true
                                                 },
                                                 
                                             ]
