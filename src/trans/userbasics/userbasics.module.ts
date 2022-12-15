@@ -9,9 +9,11 @@ import { CountriesModule } from '../../infra/countries/countries.module';
 import { InterestsRepoModule } from '../../infra/interests_repo/interests_repo.module';
 import { MediaproofpictsModule } from '../../content/mediaproofpicts/mediaproofpicts.module';
 import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediaprofilepicts.module';
+
 @Module({
 
     imports: [
+
         MediaprofilepictsModule,
         MediaproofpictsModule,
         InterestsRepoModule,
