@@ -687,6 +687,34 @@ export class PostsController {
         }
         if (post.postType != undefined) {
           data_["postType"] = post.postType;
+          if (post.postType == 'vid') {
+            if (media[0].datacontent[0].apsaraId != undefined) {
+              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId);
+              var metadata = {
+                duration: dataApsara.Duration
+              }
+              console.log(dataApsara);
+              data_['metadata'] = metadata;
+            }
+          } else if (post.postType == 'diary') {
+            if (media[0].datacontent[0].apsaraId != undefined) {
+              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId);
+              var metadata = {
+                duration: dataApsara.Duration
+              }
+              console.log(dataApsara);
+              data_['metadata'] = metadata;
+            }
+          } else if (post.postType == 'story') {
+            if (media[0].datacontent[0].apsaraId != undefined) {
+              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId);
+              var metadata = {
+                duration: dataApsara.Duration
+              }
+              console.log(dataApsara);
+              data_['metadata'] = metadata;
+            }
+          }
         }
         if (media[0].datacontent[0].mediaUri != undefined) {
           data_["mediaUri"] = media[0].datacontent[0].mediaUri;
@@ -715,10 +743,14 @@ export class PostsController {
         if (media[0].datauser.insight != undefined) {
           data_["insight"] = media[0].datauser.insight;
         }
-        if (media[0].datauser.insight != undefined) {
+        if (post.email != undefined) {
           data_["email"] = post.email;
+          var dataUserauth = await this.userauthsService.findOneByEmail(post.email.toString());
+          if (await this.utilsService.ceckData(dataUserauth)) {
+            data_["username"] = dataUserauth.username;
+          }
         }
-        if (media[0].datauser.insight != undefined) {
+        if (post.updatedAt != undefined) {
           data_["updatedAt"] = post.updatedAt;
         }
         data.push(data_)
