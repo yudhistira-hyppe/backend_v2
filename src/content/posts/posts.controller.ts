@@ -685,8 +685,21 @@ export class PostsController {
         if (media[0].datacontent[0].mediaBasePath != undefined){
           data_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
         }
+
+        // if (post.){
+
+        // }
+
+        //var dataApsara = await this.postContentService.getVideoApsara(xvids);
         if (post.postType != undefined) {
           data_["postType"] = post.postType;
+          if (post.postType == "vid") {
+            data_["durasi"] = post.postType;
+          } else if (post.postType == "pict") {
+            data_["durasi"] = post.postType;
+          } else if (post.postType == "diary") {
+            data_["durasi"] = post.postType;
+          }
         }
         if (media[0].datacontent[0].mediaUri != undefined) {
           data_["mediaUri"] = media[0].datacontent[0].mediaUri;
@@ -715,10 +728,14 @@ export class PostsController {
         if (media[0].datauser.insight != undefined) {
           data_["insight"] = media[0].datauser.insight;
         }
-        if (media[0].datauser.insight != undefined) {
-          data_["email"] = post.email;
+        if (post.email != undefined) {
+          data_["email"] = dataUserauth.username;
+          var dataUserauth = await this.userauthsService.findOneByEmail(post.email.toString());
+          if (await this.utilsService.ceckData(dataUserauth)) {
+            data_["username"] = dataUserauth.username;
+          }
         }
-        if (media[0].datauser.insight != undefined) {
+        if (post.updatedAt != undefined) {
           data_["updatedAt"] = post.updatedAt;
         }
         data.push(data_)
