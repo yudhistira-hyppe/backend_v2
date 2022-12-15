@@ -2017,6 +2017,19 @@ export class AuthService {
       user_email,
     );
 
+    if (await this.utilsService.ceckData(datauserauthsService)){
+      var usernameExisting = datauserauthsService.username.toString();
+      var ceckUsername = await this.utilsService.validateUsername(user_username);
+      if (!ceckUsername) {
+        throw new NotAcceptableException({
+          response_code: 406,
+          messages: {
+            info: ['Unabled to proceed, username is already in use'],
+          },
+        });
+      }
+    }
+
     if ((await this.utilsService.ceckData(datauserbasicsService)) && (await this.utilsService.ceckData(datauserauthsService))) {
       var Data = {
         isEmailVerified: datauserauthsService.isEmailVerified,
