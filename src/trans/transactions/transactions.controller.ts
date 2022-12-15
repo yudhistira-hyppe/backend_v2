@@ -195,12 +195,16 @@ export class TransactionsController {
         var datasettingexpiredva = null;
         var transactionVoucher = null;
         var datamradmin = null;
+        var expiredvanew = null;
         var databankvacharge = null;
         var datawayting = null;
+        var statuswait = null;
         var idppn = "62bbbe43a7520000050077a3";
         //  var idmdradmin = "62bd413ff37a00001a004369";
         var idbankvacharge = "62bd40e0f37a00001a004366";
         var idexpiredva = "62bbbe8ea7520000050077a4";
+        var datenow = new Date(Date.now());
+
         try {
             //  datasettingppn = await this.settingsService.findOne(idppn);
             //  datamradmin = await this.settingsService.findOne(idmdradmin);
@@ -265,17 +269,22 @@ export class TransactionsController {
         var name = ubasic.fullName;
         var emailbuy = ubasic.email;
         var stringId = (await this.generateNumber()).toString();
+        var expiredtimeva = null;
         try {
 
             datawayting = await this.transactionsService.findExpired(userbuyer);
-
+            statuswait = datawayting.status;
+            let expiredtimeva = datawayting.expiredtimeva;
+            expiredvanew = new Date(expiredtimeva);
+            expiredvanew.setHours(expiredvanew.getHours() - 7);
 
         } catch (e) {
             datawayting = null;
-
+            expiredva = null;
+            statuswait = null;
         }
 
-        if (datawayting.length > 0) {
+        if (statuswait === "WAITING_PAYMENT" && datenow > expiredvanew) {
 
             throw new BadRequestException("Tidak dapat melanjutkan. Selesaikan pembayaran transaksi anda dahulu !");
         }
@@ -6626,10 +6635,6 @@ export class TransactionsController {
         var limit = null;
 
         var query = [];
-        var datacount = null;
-        var dtcount = null;
-        var status = null;
-
 
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
@@ -6697,7 +6702,7 @@ export class TransactionsController {
 
                     if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
                         this.transactionsService.updatestatuscancel(idtransaction);
-                        //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+
                     }
 
 
@@ -6736,7 +6741,7 @@ export class TransactionsController {
 
                     if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
                         this.transactionsService.updatestatuscancel(idtransaction);
-                        //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+
                     }
 
 
@@ -6752,13 +6757,7 @@ export class TransactionsController {
         } catch (e) {
             query = [];
         }
-        try {
-            dtcount = await this.transactionsService.countWaitingPayment(idadmin);
-            datacount = dtcount[0]._id;
-        } catch (e) {
-            dtcount = [];
-            datacount = 0;
-        }
+
         var datanew = null;
         var data = [];
         let pict: String[] = [];
@@ -6870,7 +6869,7 @@ export class TransactionsController {
 
 
 
-        return { response_code: 202, data, skip, limit, datacount, messages };
+        return { response_code: 202, data, skip, limit, messages };
     }
 
 }
