@@ -2017,6 +2017,21 @@ export class AuthService {
       user_email,
     );
 
+    if (await this.utilsService.ceckData(datauserauthsService)){
+      var usernameExisting = datauserauthsService.username.toString();
+      if (usernameExisting != user_username) {
+        var ceckUsername = await this.utilsService.validateUsername(user_username);
+        if (!ceckUsername) {
+          throw new NotAcceptableException({
+            response_code: 406,
+            messages: {
+              info: ['Unabled to proceed, username is already in use'],
+            },
+          });
+        }
+      }
+    }
+
     if ((await this.utilsService.ceckData(datauserbasicsService)) && (await this.utilsService.ceckData(datauserauthsService))) {
       var Data = {
         isEmailVerified: datauserauthsService.isEmailVerified,
@@ -4071,11 +4086,20 @@ export class AuthService {
     var datauserauthService_parent = null;
     var datauserauthService_children = null;
 
+    var useLanguage = await this.utilsService.getUserlanguages(head['x-auth-user']);
+    var errorMessages = "";
     //Ceck User auth child
     datauserauthService_children = await this.userauthsService.findOneemail(user_email_children);
     if (!(await this.utilsService.ceckData(datauserauthService_children))) {
+      if (useLanguage == "id") {
+        errorMessages = "Tidak dapat melanjutkan, Pengguna tidak ditemukan atau tidak aktif";
+      } else if (useLanguage == "en") {
+        errorMessages = "Unabled to proceed, User not found or not active";
+      } else {
+        errorMessages = "Tidak dapat melanjutkan, Pengguna tidak ditemukan atau tidak aktif";
+      }
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed, user not found or not active',
+        errorMessages,
       );
     }
 
@@ -4085,16 +4109,30 @@ export class AuthService {
       if (await this.utilsService.ceckData(datauserauthService_parent)) {
         user_email_parent = datauserauthService_parent.email;
       } else {
+        if (useLanguage == "id") {
+          errorMessages = "Tidak dapat melanjutkan, Nama pengguna refferal tidak ditemukan";
+        } else if (useLanguage == "en") {
+          errorMessages = "Unabled to proceed, Username referral not found";
+        } else {
+          errorMessages = "Tidak dapat melanjutkan, Nama pengguna refferal tidak ditemukan";
+        }
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, Data user parent referral not found',
+          errorMessages,
         );
       }
     } else {
       //Ceck User auth parent
       datauserauthService_parent = await this.userauthsService.findOneemail(user_email_parent);
       if (!(await this.utilsService.ceckData(datauserauthService_parent))) {
+        if (useLanguage == "id") {
+          errorMessages = "Tidak dapat melanjutkan, Email refferal tidak ditemukan";
+        } else if (useLanguage == "en") {
+          errorMessages = "Unabled to proceed, Email referral not found";
+        } else {
+          errorMessages = "Tidak dapat melanjutkan, Email refferal tidak ditemukan";
+        }
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, Data user parent referral not found',
+          errorMessages,
         );
       }
     }
@@ -4204,13 +4242,27 @@ export class AuthService {
             }
           };
         } else {
+          if (useLanguage == "id") {
+            errorMessages = "Tidak dapat melanjutkan, Perangkat Anda sudah terdaftar";
+          } else if (useLanguage == "en") {
+            errorMessages = "Unabled to proceed, Yours device already register";
+          } else {
+            errorMessages = "Tidak dapat melanjutkan, Perangkat Anda sudah terdaftar";
+          }
           await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed, yours device already register',
+            errorMessages,
           );
         }
       } else {
+        if (useLanguage=="id"){
+          errorMessages = "Tidak dapat melanjutkan, Email ini sudah terdaftar sebagai refferal";
+        } else if (useLanguage == "en") {
+          errorMessages = "Unabled to proceed, This email already registered as child";
+        } else {
+          errorMessages = "Tidak dapat melanjutkan, Email ini sudah terdaftar sebagai refferal";
+        }
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, this email already registered as Child',
+          errorMessages,
         );
       }
     }

@@ -1567,7 +1567,9 @@ export class TransactionsController {
 
         var eventType = type.toString();
         var event = "ACCEPT";
-        await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
+
+        await this.utilsService.sendFcmV2(email, email, eventType, event, type, postID, post_type)
+        //await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
     }
 
     async editPostBost(postid: string, detail: any) {

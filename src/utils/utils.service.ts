@@ -207,7 +207,7 @@ export class UtilsService {
     createNotificationsDto.actionButtons = null;
     createNotificationsDto.contentEventID = null;
     createNotificationsDto.senderOrReceiverInfo = senderOrReceiverInfo;
-    if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION" || eventType == "COMMENT") {
+    if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION" || eventType == "CONTENT" || eventType == "POST" || eventType == "BANK") {
       if (postID != undefined) {
         createNotificationsDto.postID = postID.toString();
       }
@@ -818,6 +818,42 @@ export class UtilsService {
       if (get_version.value != undefined) { version_number = get_version.value.toString(); }
     }
     return version_number;
+  }
+
+  async getUserlanguages(email: string): Promise<String> {
+    var get_userbasic = await this.userbasicsService.findOne(email);
+    var get_languages = null;
+    if (await this.ceckData(get_userbasic)) {
+      if (get_userbasic.languages != undefined) {
+        var languages_json = JSON.parse(JSON.stringify(get_userbasic.languages));
+        get_languages = await this.languagesService.findOne(languages_json.$id);
+        return get_languages.langIso.toString();
+      } else {
+        return 'id';
+      }
+    }else{
+      return 'id';
+    }
+  }
+
+  async getAvatarUser(email: string) {
+    var AvatarDTO_ = new AvatarDTO();
+    var get_profilePict = null;
+    var get_userbasic = await this.userbasicsService.findOne(email);
+    if (await this.ceckData(get_userbasic)) {
+      if (get_userbasic.profilePict != null) {
+        var mediaprofilepicts_json = JSON.parse(JSON.stringify(get_userbasic.profilePict));
+        get_profilePict = await this.mediaprofilepictsService.findOne(mediaprofilepicts_json.$id);
+      }
+
+      if (await this.ceckData(get_profilePict)) {
+        AvatarDTO_.mediaBasePath = get_profilePict.mediaBasePath;
+        AvatarDTO_.mediaUri = get_profilePict.mediaUri;
+        AvatarDTO_.mediaType = get_profilePict.mediaType;
+        AvatarDTO_.mediaEndpoint = '/profilepict/' + get_profilePict.mediaID;
+      }
+    }
+    return AvatarDTO_;
   }
 
   async generateProfile(email: string, datafor: string): Promise<ProfileDTO> {

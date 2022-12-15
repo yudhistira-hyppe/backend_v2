@@ -939,51 +939,51 @@ export class PostContentService {
               coutBoost: { $gt: 0 }
             },
             {
-              email: whoami.email
+              email: 'limstudio07@gmail.com'
             },
             {
               active: true
             },
-            {
-              $or: [
-                {
-                  $and: [
-                    {
-                      boosted: {
-                        $elemMatch: {
-                          "boostSession.start": { $lte: currentDateFormat }
-                        }
-                      }
-                    },
-                    {
-                      boosted: {
-                        $elemMatch: {
-                          "boostSession.end": { $gte: currentDateFormat }
-                        }
-                      }
-                    }
-                  ]
-                },
-                {
-                  $and: [
-                    {
-                      boosted: {
-                        $elemMatch: {
-                          "boostSession.start": { $gte: currentDateFormat }
-                        }
-                      }
-                    },
-                    {
-                      boosted: {
-                        $elemMatch: {
-                          "boostSession.end": { $gte: currentDateFormat }
-                        }
-                      }
-                    }
-                  ]
-                }
-              ]
-            },
+            // {
+            //   $or: [
+            //     {
+            //       $and: [
+            //         {
+            //           boosted: {
+            //             $elemMatch: {
+            //               "boostSession.start": { $lte: currentDateFormat }
+            //             }
+            //           }
+            //         },
+            //         {
+            //           boosted: {
+            //             $elemMatch: {
+            //               "boostSession.end": { $gte: currentDateFormat }
+            //             }
+            //           }
+            //         }
+            //       ]
+            //     },
+            //     {
+            //       $and: [
+            //         {
+            //           boosted: {
+            //             $elemMatch: {
+            //               "boostSession.start": { $gte: currentDateFormat }
+            //             }
+            //           }
+            //         },
+            //         {
+            //           boosted: {
+            //             $elemMatch: {
+            //               "boostSession.end": { $gte: currentDateFormat }
+            //             }
+            //           }
+            //         }
+            //       ]
+            //     }
+            //   ]
+            // },
           ]
         }
       },
@@ -1042,32 +1042,32 @@ export class PostContentService {
           path: "$boosted"
         }
       },
-      {
-        $match: {
-          $or: [
-            {
-              $and: [
-                {
-                  "boosted.boostSession.start": { $lte: currentDateFormat }
-                },
-                {
-                  "boosted.boostSession.end": { $gte: currentDateFormat }
-                }
-              ]
-            },
-            {
-              $and: [
-                {
-                  "boosted.boostSession.start": { $gte: currentDateFormat }
-                },
-                {
-                  "boosted.boostSession.end": { $gte: currentDateFormat }
-                }
-              ]
-            }
-          ]
-        }      
-      },
+      // {
+      //   $match: {
+      //     $or: [
+      //       {
+      //         $and: [
+      //           {
+      //             "boosted.boostSession.start": { $lte: currentDateFormat }
+      //           },
+      //           {
+      //             "boosted.boostSession.end": { $gte: currentDateFormat }
+      //           }
+      //         ]
+      //       },
+      //       {
+      //         $and: [
+      //           {
+      //             "boosted.boostSession.start": { $gte: currentDateFormat }
+      //           },
+      //           {
+      //             "boosted.boostSession.end": { $gte: currentDateFormat }
+      //           }
+      //         ]
+      //       }
+      //     ]
+      //   }      
+      // },
       {
         $addFields: {
           boostJangkauan: { $size: "$boosted.boostViewer" },
@@ -1084,7 +1084,7 @@ export class PostContentService {
                 { case: { $and: [{ $lte: ["$boostStart", currentDateFormat] }, { $gte: ["$boostEnd", currentDateFormat] }] }, then: "BERLANGSUNG" },
                 { case: { $and: [{ $gte: ["$boostStart", currentDateFormat] }, { $gte: ["$boostEnd", currentDateFormat] }] }, then: "AKAN DATANG" }
               ],
-              "default": "AKAN DATANG"
+              "default": "SELESAI"
             }
           },
         }
@@ -2820,7 +2820,7 @@ export class PostContentService {
 
     let htmlPdf = pdf.html().toString();
     let file = { content: htmlPdf };
-    let options = { format: 'A4' };
+    let options = { format: 'A4', landscape:true };
     pdfWriter.generatePdf(file, options).then(pdfBuffer => {
       this.logger.log('generateCertificate >>> sending email to: ' + String(post.email) + ', with subject: ' + String(template.subject));
       this.utilService.sendEmailWithAttachment(String(post.email), 'no-reply@hyppe.app', String(template.subject), html, { filename: fileName, content: pdfBuffer });
@@ -3373,6 +3373,11 @@ export class PostContentService {
         ndy.senderOrReceiverInfo = dy.senderOrReceiverInfo;
         ndy.title = dy.title;
         ndy.updatedAt = dy.updatedAt;
+        
+        if (dy.senderOrReceiverInfo != null){
+          var getAvatar = await this.utilService.getAvatarUser(dy.mate.toString());
+          dy.senderOrReceiverInfo.avatar = getAvatar;
+        }
 
         if (dy.postID != null) {
           let pid = String(dy.postID);
