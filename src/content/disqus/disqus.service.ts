@@ -561,7 +561,7 @@ export class DisqusService {
         return query;
     }
 
-    async queryDiscussV2ByDisqusIs(id: string) {
+    async queryDiscussV2ByDisqusIs(id: string, email: string) {
         let query = await this.DisqusModel.aggregate(
 
             [

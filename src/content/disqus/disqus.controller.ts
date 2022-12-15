@@ -170,7 +170,7 @@ export class DisqusController {
 
           let dm = [];
           if (ContentDto_.disqusID != undefined) {
-            dm = await this.disqusService.queryDiscussV2ByDisqusIs(String(ContentDto_.disqusID));
+            dm = await this.disqusService.queryDiscussV2ByDisqusIs(String(ContentDto_.disqusID), String(ContentDto_.email));
           } else {
             dm = await this.disqusService.queryDiscussV2(String(ContentDto_.email));
           }
