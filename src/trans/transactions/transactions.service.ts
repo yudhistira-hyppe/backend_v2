@@ -84,7 +84,33 @@ export class TransactionsService {
         }
         return data;
     }
+    async countWaitingPayment(iduserbuyer: ObjectId) {
+        let query = await this.transactionsModel.aggregate([
+            {
+                $match: {
 
+                    iduserbuyer: iduserbuyer,
+                    status: "WAITING_PAYMENT"
+                }
+            },
+            {
+                $group: {
+                    _id: "$status",
+                    myCount: {
+                        $sum: 1
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: "$myCount",
+
+
+                }
+            }
+        ]);
+        return query;
+    }
     async update(
         id: string,
         createTransactionsDto: CreateTransactionsDto,

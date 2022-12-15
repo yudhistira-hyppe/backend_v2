@@ -170,4 +170,28 @@ export class UserbankaccountsService {
         return query;
     }
 
+    async updateDisetujui(id: ObjectId, reason: string, updatedAt: string, reasonId: ObjectId, idUserHandle: ObjectId) {
+        let data = await this.userbankaccountsModel.updateMany({ "_id": id },
+            { $set: { "statusInquiry": null, "updatedAt": updatedAt, "userHandle.$[].updatedAt": updatedAt, "userHandle.$[].reasonId": reasonId, "userHandle.$[].valueReason": reason, "userHandle.$[].status": "DISETUJUI", "userHandle.$[].idUserHandle": idUserHandle, } });
+        return data;
+    }
+
+    async updateDisetujuiEmpty(id: ObjectId, updatedAt: string, userHandle: any[]) {
+        let data = await this.userbankaccountsModel.updateMany({ "_id": id },
+            { $set: { "updatedAt": updatedAt, "userHandle": userHandle } });
+        return data;
+    }
+
+    async updateDitolak(id: ObjectId, reason: string, updatedAt: string, reasonId: ObjectId, idUserHandle: ObjectId) {
+        let data = await this.userbankaccountsModel.updateMany({ "_id": id },
+            { $set: { "updatedAt": updatedAt, "userHandle.$[].updatedAt": updatedAt, "userHandle.$[].reasonId": reasonId, "userHandle.$[].valueReason": reason, "userHandle.$[].status": "DITOLAK", "userHandle.$[].idUserHandle": idUserHandle, } });
+        return data;
+    }
+
+    async updateDitolakEmpty(id: ObjectId, updatedAt: string, userHandle: any[]) {
+        let data = await this.userbankaccountsModel.updateMany({ "_id": id },
+            { $set: { "updatedAt": updatedAt, "userHandle": userHandle } });
+        return data;
+    }
+
 }
