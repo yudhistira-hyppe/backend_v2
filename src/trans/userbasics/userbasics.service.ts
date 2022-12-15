@@ -671,7 +671,7 @@ export class UserbasicsService {
     return query;
   }
 
-  async transaksiHistory(email: string, skip: number, limit: number, startdate: string, enddate: string, type: string, status: string) {
+  async transaksiHistory(email: string, skip: number, limit: number, startdate: string, enddate: string, sell: any, buy: any, withdrawal: any, rewards: any, boost: any) {
 
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -964,14 +964,9 @@ export class UserbasicsService {
                       $and: [
                         {
                           $expr: {
-                            $eq: ['$postID', '$$localID']
+                            $in: ['$postID', '$$localID']
                           }
                         },
-                        {
-                          $expr: {
-                            $eq: ["$post.postType", "pict"]
-                          }
-                        }
                       ]
                     }
                   },
@@ -982,7 +977,7 @@ export class UserbasicsService {
                       "apsaraId": 1,
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
-                        "$concat": ["/thumb/", "$postID"]
+                        "$concat": ["/pict/", "$postID"]
                       },
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
@@ -1450,7 +1445,7 @@ export class UserbasicsService {
                                   "$buy-sell.postid"
                                 ]
                               }]
-                            }, "picts"]
+                            }, "pict"]
                           },
                           then:
                           {
@@ -1543,7 +1538,7 @@ export class UserbasicsService {
                                   "$buy-sell.postid"
                                 ]
                               }]
-                            }, "picts"]
+                            }, "pict"]
                           },
                           then:
                           {
@@ -1636,7 +1631,7 @@ export class UserbasicsService {
                                   "$buy-sell.postid"
                                 ]
                               }]
-                            }, "picts"]
+                            }, "pict"]
                           },
                           then:
                           {
@@ -1786,15 +1781,64 @@ export class UserbasicsService {
 
         }
       },
-
     );
 
-    if (status && status !== undefined) {
-      pipeline.push({ $match: { "status": status } });
+    if (sell === true && buy === false && withdrawal === false && rewards === false && boost === false) {
+      pipeline.push({ $match: { "type": "Sell", "jenis": { $ne: "BOOST_CONTENT" } } },);
     }
-    if (type && type !== undefined) {
-      pipeline.push({ $match: { "type": type } });
+    else if (sell === false && buy === true && withdrawal === false && rewards === false && boost === false) {
+      pipeline.push({ $match: { "type": "Buy", "jenis": { $ne: "BOOST_CONTENT" } } });
     }
+    else if (sell === false && buy === false && withdrawal === true && rewards === false && boost === false) {
+      pipeline.push({ $match: { "type": "Withdraws" } });
+    }
+    else if (sell === false && buy === false && withdrawal === false && rewards === true && boost === false) {
+      pipeline.push({ $match: { "type": "Rewards" } });
+    }
+    else if (sell === false && buy === false && withdrawal === false && rewards === false && boost === true) {
+      pipeline.push({ $match: { "type": "Buy", "jenis": "BOOST_CONTENT" } });
+    }
+    else if (sell === true && buy === true && withdrawal === false && rewards === false && boost === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Buy", "jenis": { $ne: "BOOST_CONTENT" } }] } },);
+    }
+    else if (sell === true && buy === false && withdrawal === true && rewards === false && boost === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Withdraws" }] } },);
+    }
+    else if (sell === true && buy === false && withdrawal === false && rewards === true && boost === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Rewards" }] } },);
+    }
+    else if (sell === true && buy === false && withdrawal === false && rewards === false && boost === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
+    }
+
+    else if (sell === false && buy === true && withdrawal === true && rewards === false && boost === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Buy", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Withdraws" }] } },);
+    }
+    else if (sell === false && buy === true && withdrawal === false && rewards === true && boost === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Buy", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Rewards" }] } },);
+    }
+    else if (sell === false && buy === true && withdrawal === false && rewards === false && boost === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Buy" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
+    }
+    else if (sell === false && buy === false && withdrawal === true && rewards === true && boost === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Withdraws" }, { "type": "Rewards" }] } },);
+    }
+    else if (sell === false && buy === false && withdrawal === true && rewards === false && boost === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Withdraws" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
+    }
+    else if (sell === false && buy === false && withdrawal === false && rewards === true && boost === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Rewards" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
+    }
+    else if (sell === true && buy === true && withdrawal === true && rewards === false && boost === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Buy", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Withdraws" }] } },);
+    }
+    else if (sell === true && buy === true && withdrawal === true && rewards === true && boost === false) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Buy", "jenis": { $ne: "BOOST_CONTENT" } }, { "type": "Withdraws" }, { "type": "Rewards" }] } },);
+    }
+    else if (sell === true && buy === true && withdrawal === true && rewards === true && boost === true) {
+      pipeline.push({ $match: { $or: [{ "type": "Sell" }, { "type": "Buy" }, { "type": "Withdraws" }, { "type": "Buy", "jenis": "BOOST_CONTENT" }] } },);
+    }
+
 
     if (startdate && startdate !== undefined) {
 

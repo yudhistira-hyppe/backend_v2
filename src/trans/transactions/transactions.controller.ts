@@ -6636,6 +6636,11 @@ export class TransactionsController {
 
         var query = [];
         var status = null;
+        var sell = null;
+        var buy = null;
+        var withdrawal = null;
+        var boost = null;
+        var rewards = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
@@ -6650,6 +6655,11 @@ export class TransactionsController {
         startdate = request_json["startdate"];
         enddate = request_json["enddate"];
         type = request_json["type"];
+        sell = request_json["sell"];
+        buy = request_json["buy"];
+        withdrawal = request_json["withdrawal"];
+        boost = request_json["boost"];
+        rewards = request_json["rewards"];
 
         if (request_json["skip"] !== undefined) {
             skip = request_json["skip"];
@@ -6753,7 +6763,7 @@ export class TransactionsController {
         }
 
         try {
-            query = await this.userbasicsService.transaksiHistory(email, skip, limit, startdate, enddate, type, undefined);
+            query = await this.userbasicsService.transaksiHistory(email, skip, limit, startdate, enddate, sell, buy, withdrawal, rewards, boost);
         } catch (e) {
             query = [];
         }
