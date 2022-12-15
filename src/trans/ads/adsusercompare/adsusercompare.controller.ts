@@ -789,13 +789,14 @@ export class AdsUserCompareController {
 
                 if (rewards) {
                     //Update accountbalace
+                    var currentDate = await this.utilsService.getDateTime();
                     try {
                         var CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
                         CreateAccountbalancesDto_.iduser = data_userbasicsService._id;
                         CreateAccountbalancesDto_.debet = 0;
                         CreateAccountbalancesDto_.kredit = ads_rewards;
                         CreateAccountbalancesDto_.type = "rewards";
-                        CreateAccountbalancesDto_.timestamp = current_date;
+                        CreateAccountbalancesDto_.timestamp = currentDate.toISOString();
                         CreateAccountbalancesDto_.description = "rewards form ads click";
                         await this.accountbalancesService.create(CreateAccountbalancesDto_);
                     } catch (e) {

@@ -190,12 +190,7 @@ export class DisqusService {
                                         "eventType": "DIRECT_MSG"
                                     },
                                     {
-                                        "active": 
-                                        {
-                                            $not: {
-                                                $regex: "false"
-                                            }
-                                        }
+                                        "emailActive": true
                                     },
                                     
                                 ]
@@ -209,12 +204,7 @@ export class DisqusService {
                                         "eventType": "DIRECT_MSG"
                                     },
                                     {
-                                        "mateactive": 
-                                        {
-                                            $not: {
-                                                $regex: "false"
-                                            }
-                                        }
+                                        "mateactive": true
                                     },
                                     
                                 ]
@@ -355,16 +345,10 @@ export class DisqusService {
                                                     }
                                                 },
                                                 {
-                                                    "senderActive": 
-                                                    {
-                                                        $ne: false
-                                                    }
+                                                    "senderActive": true
                                                 },
                                                 {
-                                                    "recieverActive": 
-                                                    {
-                                                        $ne: false
-                                                    }
+                                                    "recieverActive": true
                                                 },
                                                 
                                             ]
@@ -386,7 +370,8 @@ export class DisqusService {
                                     "active": 1,
                                     "disqusID": 1,
                                     "updatedAt": 1,
-                                                            "reaction_icon": "$emot.icon",
+                                    "reaction_icon": "$emot.icon",
+                                    "content":"$medias",
                                 }
                             },
                             {
@@ -515,7 +500,7 @@ export class DisqusService {
                         "active": 1,
                         "eventType": 1,
                         "emot": 1,
-                        "disqusLog": "$disqusLogs",
+                        "disqusLogs": "$disqusLogs",
                         "senderOrReceiverInfo": 
                         {
                             "email": 
