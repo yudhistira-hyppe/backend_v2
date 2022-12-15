@@ -7,6 +7,7 @@ import { LanguagesService } from '../../infra/languages/languages.service';
 import { InterestsRepoService } from '../../infra/interests_repo/interests_repo.service';
 import { MediaproofpictsService } from '../../content/mediaproofpicts/mediaproofpicts.service';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
+
 @Injectable()
 export class UserbasicsService {
   constructor(
@@ -16,6 +17,7 @@ export class UserbasicsService {
     private readonly interestsRepoService: InterestsRepoService,
     private readonly mediaprofilepictsService: MediaprofilepictsService,
     private readonly mediaproofpictsService: MediaproofpictsService,
+
   ) { }
 
   async create(CreateUserbasicDto: CreateUserbasicDto): Promise<Userbasic> {
@@ -666,6 +668,1158 @@ export class UserbasicsService {
         $project: { _id: 1, countuser: 1 }
       }
     ]);
+    return query;
+  }
+
+  async transaksiHistory(email: string, skip: number, limit: number, startdate: string, enddate: string, type: string, status: string) {
+
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+    var pipeline = [];
+
+    pipeline.push(
+      {
+        $match:
+        {
+          "email": email
+        }
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          as: 'auth',
+          let: {
+            localID: '$email'
+          },
+          pipeline: [
+            {
+              $match:
+              {
+                $and: [
+                  {
+                    $expr: {
+                      $eq: ['$email', '$$localID']
+                    }
+                  },
+
+                ]
+              }
+            },
+
+          ],
+
+        },
+
+      },
+      {
+        $unwind: {
+          path: "$auth",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $project: {
+          "_id": 1,
+          "userName": '$auth.username',
+          "fullName": 1,
+          "email": 1,
+
+        }
+      },
+      {
+        $facet:
+        {
+
+          "balances": [
+            {
+              "$lookup": {
+                from: "accountbalances",
+                as: "balance",
+                let: {
+                  localID: "$_id"
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $and:
+                        [
+                          {
+                            $expr: {
+                              $eq: ['$iduser', '$$localID']
+                            }
+                          },
+                          {
+                            "type": "rewards"
+                          },
+
+                        ]
+                    }
+                  },
+                  {
+                    $project: {
+                      "jenis": "Rewards",
+                      "type": "Rewards",
+                      "timestamp": 1,
+                      "description": 1,
+                      "noinvoice": 1,
+                      "nova": 1,
+                      "expiredtimeva": 1,
+                      "bank": 1,
+                      "amount": "$kredit",
+                      "totalamount": "$kredit",
+                      "status": "Success",
+                      "postid": 1,
+                      "iduserbuyer": 1,
+                      "idusersell": 1,
+                      "debetKredit": "+",
+
+                    }
+                  },
+
+                ],
+
+              },
+
+            },
+            {
+              $unwind: {
+                path: "$balance",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+
+          ],
+          "tariks": [
+            {
+              "$lookup": {
+                from: "withdraws",
+                as: "tarik",
+                let: {
+                  localID: "$_id"
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $and:
+                        [
+                          {
+                            $expr: {
+                              $eq: ['$idUser', '$$localID']
+                            }
+                          },
+
+                        ]
+                    }
+                  },
+                  {
+                    $project: {
+                      "jenis": "Withdraws",
+                      "type": "Withdraws",
+                      "timestamp": 1,
+                      "description": 1,
+                      "noinvoice": 1,
+                      "nova": 1,
+                      "expiredtimeva": 1,
+                      "bank": 1,
+                      "amount": 1,
+                      "totalamount": 1,
+                      "status": "Success",
+                      "postid": 1,
+                      "iduserbuyer": 1,
+                      "idusersell": 1,
+                      "debetKredit": "-",
+
+                    }
+                  },
+
+                ],
+
+              },
+
+            },
+            {
+              $unwind: {
+                path: "$tarik",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+
+          ],
+          "transactions": [
+            {
+              "$lookup": {
+                from: "transactions",
+                as: "buy-sell",
+                let: {
+                  localID: '$_id'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $or:
+                        [
+                          {
+                            $expr: {
+                              $eq: ['$iduserbuyer', '$$localID']
+                            }
+                          },
+                          {
+                            $expr: {
+                              $eq: ['$idusersell', '$$localID']
+                            }
+                          }
+                        ]
+                    }
+                  },
+                  {
+                    $project: {
+                      "jenis": "$type",
+                      "type":
+                      {
+                        $cond: {
+                          if: {
+                            $eq: ['$iduserbuyer', '$$localID']
+                          },
+                          then: "Buy",
+                          else: 'Sell'
+                        }
+                      },
+                      "timestamp": 1,
+                      "description": 1,
+                      "noinvoice": 1,
+                      "nova": 1,
+                      "expiredtimeva": 1,
+                      "bank": 1,
+                      "amount": 1,
+                      "totalamount": 1,
+                      "status": 1,
+                      "postid": 1,
+                      "iduserbuyer": 1,
+                      "idusersell": 1,
+
+                    }
+                  },
+                  // {
+                  //     $sort: {
+                  //         "timestamp": - 1,
+                  //         
+                  //     }
+                  // },
+                ],
+
+              },
+
+            },
+            {
+              "$lookup": {
+                from: "posts",
+                as: "post",
+                let: {
+                  localID: '$buy-sell.postid'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $in: ['$postID', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+
+                      "postID": 1,
+                      "description": 1,
+                      "postType": 1,
+
+                    }
+                  }
+                ],
+
+              },
+
+            },
+            {
+              "$lookup": {
+                from: "mediapicts",
+                as: "pict",
+                let: {
+                  localID: '$buy-sell.postid'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $eq: ['$postID', '$$localID']
+                          }
+                        },
+                        {
+                          $expr: {
+                            $eq: ["$post.postType", "pict"]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    $project: {
+                      "postID": 1,
+                      "apsara": 1,
+                      "apsaraId": 1,
+                      "apsaraThumbId": 1,
+                      "mediaEndpoint": {
+                        "$concat": ["/thumb/", "$postID"]
+                      },
+                      "mediaUri": 1,
+                      "mediaThumbEndpoint": 1,
+                      "mediaThumbUri": 1,
+
+                    }
+                  }
+                ],
+
+              },
+
+            },
+            {
+              "$lookup": {
+                from: "mediavideos",
+                as: "video",
+                let: {
+                  localID: '$buy-sell.postid'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $in: ['$postID', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "postID": 1,
+                      "apsara": 1,
+                      "apsaraId": 1,
+                      "apsaraThumbId": 1,
+                      "mediaEndpoint": {
+                        "$concat": ["/stream/", "$postID"]
+                      },
+                      "mediaUri": 1,
+                      "mediaThumbEndpoint": 1,
+                      "mediaThumbUri": 1,
+
+                    }
+                  }
+                ],
+
+              },
+
+            },
+            {
+              "$lookup": {
+                from: "mediadiaries",
+                as: "diary",
+                let: {
+                  localID: '$buy-sell.postid'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $in: ['$postID', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "postID": 1,
+                      "apsara": 1,
+                      "apsaraId": 1,
+                      "apsaraThumbId": 1,
+                      "mediaEndpoint": {
+                        "$concat": ["/stream/", "$postID"]
+                      },
+                      "mediaUri": 1,
+                      "mediaThumbEndpoint": 1,
+                      "mediaThumbUri": 1,
+
+                    }
+                  }
+                ],
+
+              },
+
+            },
+            {
+              "$lookup": {
+                from: "mediastories",
+                as: "story",
+                let: {
+                  localID: '$buy-sell.postid'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+
+                      $expr: {
+                        $in: ['$postID', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "postID": 1,
+                      "apsara": 1,
+                      "apsaraId": 1,
+                      "apsaraThumbId": 1,
+                      "mediaEndpoint": {
+                        "$concat": ["/stream/", "$postID"]
+                      },
+                      "mediaUri": 1,
+                      "mediaThumbEndpoint": 1,
+                      "mediaThumbUri": 1,
+
+                    }
+                  }
+                ],
+
+              },
+
+            },
+            {
+              $lookup: {
+                from: 'userbasics',
+                as: 'penjual',
+                let: {
+                  localID: '$buy-sell.idusersell'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $in: ['$_id', '$$localID']
+                          }
+                        },
+                        {
+                          "email":
+                          {
+                            $ne: email
+                          }
+                        }
+                      ]
+                    }
+                  },
+
+                ],
+
+              },
+
+            },
+            {
+              $lookup: {
+                from: 'userbasics',
+                as: 'pembeli',
+                let: {
+                  localID: '$buy-sell.iduserbuyer'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $in: ['$_id', '$$localID']
+                          }
+                        },
+                        {
+                          "email":
+                          {
+                            $ne: email
+                          }
+                        }
+                      ]
+                    }
+                  },
+
+                ],
+
+              },
+
+            },
+            {
+              $lookup: {
+                from: 'userauths',
+                as: 'penjualAuth',
+                let: {
+                  localID: '$penjual.email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $in: ['$email', '$$localID']
+                          }
+                        },
+
+                      ]
+                    }
+                  },
+
+                ],
+
+              },
+
+            },
+            {
+              $lookup: {
+                from: 'userauths',
+                as: 'pembeliAuth',
+                let: {
+                  localID: '$pembeli.email'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+                      $and: [
+                        {
+                          $expr: {
+                            $in: ['$email', '$$localID']
+                          }
+                        },
+
+                      ]
+                    }
+                  },
+
+                ],
+
+              },
+
+            },
+            {
+              $unwind: {
+                path: "$buy-sell",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+              $project: {
+                "transaction": [{
+                  //"video": 1,
+                  "_id": "$buy-sell._id",
+                  //"did": "$buy-sell.postid",
+                  "iduser": "$_id",
+                  "type": "$buy-sell.type",
+                  "jenis": "$buy-sell.jenis",
+                  "timestamp": "$buy-sell.timestamp",
+                  "description": "$buy-sell.description",
+                  "noinvoice": "$buy-sell.noinvoice",
+                  "nova": "$buy-sell.nova",
+                  "expiredtimeva": "$buy-sell.expiredtimeva",
+                  "bank": "$buy-sell.bank",
+                  "amount": "$buy-sell.amount",
+                  "totalamount":
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$buy-sell.type", "Sell"]
+                      },
+                      then: "$buy-sell.amount",
+                      else: '$buy-sell.totalamount'
+                    }
+                  },
+                  "status": "$buy-sell.status",
+                  "email": "$email",
+                  "fullName": "$fullName",
+                  "userame": "$fullName",
+                  "penjual":
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$buy-sell.type", "Sell"]
+                      },
+                      then: "$dodol",
+                      else: {
+                        $arrayElemAt: ['$penjual.fullName', {
+                          "$indexOfArray": [
+                            "$penjual._id",
+                            "$buy-sell.idusersell"
+                          ]
+                        }]
+                      }
+                    }
+                  },
+                  "emailpenjual":
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$buy-sell.type", "Sell"]
+                      },
+                      then: "$dodol",
+                      else: {
+                        $arrayElemAt: ['$penjual.email', {
+                          "$indexOfArray": [
+                            "$penjual._id",
+                            "$buy-sell.idusersell"
+                          ]
+                        }]
+                      }
+                    }
+                  },
+                  "userNamePenjual":
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$buy-sell.type", "Sell"]
+                      },
+                      then: "$dodol",
+                      else: {
+                        $arrayElemAt: ['$penjualAuth.username', {
+                          "$indexOfArray": [
+                            "$penjualAuth.email",
+                            {
+                              $arrayElemAt: ['$penjual.email', {
+                                "$indexOfArray": [
+                                  "$penjual._id",
+                                  "$buy-sell.idusersell"
+                                ]
+                              }]
+                            }
+                          ]
+                        }]
+                      }
+                    }
+                  },
+                  "pembeli":
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$buy-sell.type", "Buy"]
+                      },
+                      then: "$dodol",
+                      else: {
+                        $arrayElemAt: ['$pembeli.fullName', {
+                          "$indexOfArray": [
+                            "$pembeli._id",
+                            "$buy-sell.iduserbuyer"
+                          ]
+                        }]
+                      }
+                    }
+                  },
+                  "emailpembeli":
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$buy-sell.type", "Buy"]
+                      },
+                      then: "$dodol",
+                      else: {
+                        $arrayElemAt: ['$pembeli.email', {
+                          "$indexOfArray": [
+                            "$pembeli._id",
+                            "$buy-sell.iduserbuyer"
+                          ]
+                        }]
+                      }
+                    }
+                  },
+                  "userNamePembeli":
+                  {
+                    $cond: {
+                      if: {
+                        $eq: ["$buy-sell.type", "Buy"]
+                      },
+                      then: "$dodol",
+                      else: {
+                        $arrayElemAt: ['$pembeliAuth.username', {
+                          "$indexOfArray": [
+                            "$pembeliAuth.email",
+                            {
+                              $arrayElemAt: ['$pembeli.email', {
+                                "$indexOfArray": [
+                                  "$pembeli._id",
+                                  "$buy-sell.iduserbuyer"
+                                ]
+                              }]
+                            }
+                          ]
+                        }]
+                      }
+                    }
+                  },
+                  "postID": "$buy-sell.postid",
+                  "postType":
+                  {
+                    $arrayElemAt: ['$post.postType', {
+                      "$indexOfArray": [
+                        "$post.postID",
+                        "$buy-sell.postid"
+                      ]
+                    }]
+                  },
+                  "descriptionContent":
+                  {
+                    $arrayElemAt: ['$post.description', {
+                      "$indexOfArray": [
+                        "$post.postID",
+                        "$buy-sell.postid"
+                      ]
+                    }]
+                  },
+                  "title":
+                  {
+                    $arrayElemAt: ['$post.title', {
+                      "$indexOfArray": [
+                        "$post.postID",
+                        "$buy-sell.postid"
+                      ]
+                    }]
+                  },
+                  "mediaType":
+                  {
+                    $arrayElemAt: ['$post.postType', {
+                      "$indexOfArray": [
+                        "$post.postID",
+                        "$buy-sell.postid"
+                      ]
+                    }]
+                  },
+                  "mediaEndpoint":
+                  {
+                    $switch: {
+                      branches: [
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "vid"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$video.mediaEndpoint', {
+                              "$indexOfArray": [
+                                "$video.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "picts"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$pict.mediaEndpoint', {
+                              "$indexOfArray": [
+                                "$pict.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "story"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$story.mediaEndpoint', {
+                              "$indexOfArray": [
+                                "$story.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "diary"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$diary.mediaEndpoint', {
+                              "$indexOfArray": [
+                                "$diary.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+
+                      ],
+                      "default": "other"
+                    }
+                  },
+                  "apsaraId":
+                  {
+                    $switch: {
+                      branches: [
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "vid"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$video.apsaraId', {
+                              "$indexOfArray": [
+                                "$video.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "picts"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$pict.apsaraId', {
+                              "$indexOfArray": [
+                                "$pict.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "story"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$story.apsaraId', {
+                              "$indexOfArray": [
+                                "$story.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "diary"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$diary.apsaraId', {
+                              "$indexOfArray": [
+                                "$diary.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+
+                      ],
+                      "default": "other"
+                    }
+                  },
+                  "apsara":
+                  {
+                    $switch: {
+                      branches: [
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "vid"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$video.apsara', {
+                              "$indexOfArray": [
+                                "$video.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "picts"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$pict.apsara', {
+                              "$indexOfArray": [
+                                "$pict.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "story"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$story.apsara', {
+                              "$indexOfArray": [
+                                "$story.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+                        {
+                          case: {
+                            $eq: [{
+                              $arrayElemAt: ['$post.postType', {
+                                "$indexOfArray": [
+                                  "$post.postID",
+                                  "$buy-sell.postid"
+                                ]
+                              }]
+                            }, "diary"]
+                          },
+                          then:
+                          {
+                            $arrayElemAt: ['$diary.apsara', {
+                              "$indexOfArray": [
+                                "$diary.postID",
+                                "$buy-sell.postid"
+                              ]
+                            }]
+                          }
+                        },
+
+                      ],
+                      "default": "false"
+                    }
+                  },
+                  "debetKredit":
+                  {
+                    $switch: {
+                      branches: [
+                        {
+                          case: {
+                            $eq: ["$buy-sell.type", "Buy"]
+                          },
+                          then: null
+                        },
+                        {
+                          case: {
+                            $eq: ["$buy-sell.type", "Sell"]
+                          },
+                          then: "+"
+                        },
+
+                      ],
+                      "default": null
+                    }
+                  },
+
+                }]
+              }
+            },
+            {
+              $unwind: {
+                path: "$transaction",
+                preserveNullAndEmptyArrays: true
+              }
+            },
+
+          ],
+
+        }
+      },
+      {
+        $project: {
+          "tester":
+          {
+            $concatArrays: [
+              '$balances.balance',
+              '$tariks.tarik',
+              '$transactions.transaction'
+            ],
+
+          },
+
+        }
+      },
+      {
+        $unwind: {
+          path: "$tester",
+
+        }
+      },
+      {
+        $project: {
+          "_id": '$tester._id',
+          "iduser": '$tester.iduser',
+          "type": '$tester.type',
+          "jenis": '$tester.jenis',
+          "timestamp": '$tester.timestamp',
+          "description": '$tester.description',
+          "noinvoice": '$tester.noinvoice',
+          "nova": '$tester.nova',
+          "expiredtimeva": '$tester.expiredtimeva',
+          "bank": '$tester.bank',
+          "amount": '$tester.amount',
+          "totalamount": '$tester.totalamount',
+          "status": '$tester.status',
+          "fullName": '$tester.fullName',
+          "email": '$tester.email',
+          "penjual": '$tester.penjual',
+          "emailpenjual": '$tester.emailpenjual',
+          "userNamePenjual": '$tester.userNamePenjual',
+          "pembeli": '$tester.pembeli',
+          "emailpembeli": '$tester.emailpembeli',
+          "userNamePembeli": '$tester.userNamePembeli',
+          "postID": '$tester.postID',
+          "postType": '$tester.postType',
+          "descriptionContent": '$tester.descriptionContent',
+          "title": '$tester.title',
+          "mediaType": '$tester.mediaType',
+          "mediaEndpoint": '$tester.mediaEndpoint',
+          "apsaraId": '$tester.apsaraId',
+          "apsara": '$tester.apsara',
+          "debetKredit": '$tester.debetKredit',
+
+        }
+      },
+
+    );
+
+    if (status && status !== undefined) {
+      pipeline.push({ $match: { "status": status } });
+    }
+    if (type && type !== undefined) {
+      pipeline.push({ $match: { "type": type } });
+    }
+
+    if (startdate && startdate !== undefined) {
+
+      pipeline.push({ $match: { timestamp: { "$gte": startdate } } });
+
+    }
+    if (enddate && enddate !== undefined) {
+      pipeline.push({ $match: { timestamp: { "$lte": dateend } } });
+
+    }
+
+    pipeline.push({
+      $sort: {
+        "timestamp": - 1,
+
+      }
+    },
+      {
+        $skip: skip
+      },
+      {
+        $limit: limit
+      },);
+    var query = await this.userbasicModel.aggregate(pipeline);
+
     return query;
   }
 

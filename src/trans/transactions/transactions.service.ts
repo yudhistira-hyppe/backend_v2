@@ -53,8 +53,8 @@ export class TransactionsService {
         return this.transactionsModel.findOne({ iduserbuyer: new mongoose.Types.ObjectId(iduserbuyer), status: "WAITING_PAYMENT" }).exec();
     }
 
-    async findExpired(iduserbuyer: ObjectId): Promise<Transactions[]> {
-        return this.transactionsModel.find({ status: "WAITING_PAYMENT", iduserbuyer: iduserbuyer }).exec();
+    async findExpired(iduserbuyer: ObjectId): Promise<Transactions> {
+        return this.transactionsModel.findOne({ status: "WAITING_PAYMENT", iduserbuyer: iduserbuyer }).exec();
     }
     async findExpiredSell(idusersell: ObjectId): Promise<Transactions[]> {
         return this.transactionsModel.find({ status: "WAITING_PAYMENT", idusersell: idusersell }).exec();
@@ -84,7 +84,33 @@ export class TransactionsService {
         }
         return data;
     }
+    async countWaitingPayment(iduserbuyer: ObjectId) {
+        let query = await this.transactionsModel.aggregate([
+            {
+                $match: {
 
+                    iduserbuyer: iduserbuyer,
+                    status: "WAITING_PAYMENT"
+                }
+            },
+            {
+                $group: {
+                    _id: "$status",
+                    myCount: {
+                        $sum: 1
+                    }
+                }
+            },
+            {
+                $project: {
+                    _id: "$myCount",
+
+
+                }
+            }
+        ]);
+        return query;
+    }
     async update(
         id: string,
         createTransactionsDto: CreateTransactionsDto,

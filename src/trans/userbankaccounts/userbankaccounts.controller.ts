@@ -373,6 +373,141 @@ export class UserbankaccountsController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Post('api/userbankaccounts/approval')
+    async reportHandleAproval(@Req() request) {
+        var id = null;
+
+        var disetujui = null;
+        var reason = null;
+        var reasonId = null;
+        var iduserhandle = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+
+        if (request_json["id"] !== undefined) {
+            id = request_json["id"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["disetujui"] !== undefined) {
+            disetujui = request_json["disetujui"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["iduserhandle"] !== undefined) {
+            iduserhandle = request_json["iduserhandle"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        reason = request_json["reason"];
+        reasonId = request_json["reasonId"];
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var idreason = mongoose.Types.ObjectId(reasonId);
+        var idakun = mongoose.Types.ObjectId(id);
+        var iduser = mongoose.Types.ObjectId(iduserhandle);
+
+
+
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var datacontent = null;
+        var objreporthandle = {};
+        var arrayreportedHandle = [];
+        var userHandle = [];
+        var datauserbank = null;
+        var email = null;
+
+
+        const messages = {
+            "info": ["The update successful"],
+        };
+
+        const messagesEror = {
+            "info": ["Todo is not found!"],
+        };
+        try {
+            datauserbank = await this.userbankaccountsService.findemail(idakun);
+        } catch (e) {
+            datauserbank = null;
+        }
+
+
+
+        if (datauserbank !== undefined || datauserbank !== null) {
+            email = datauserbank[0].email;
+
+            try {
+                datacontent = await this.userbankaccountsService.findOneid(idakun);
+                userHandle = datacontent._doc.userHandle;
+
+            } catch (e) {
+                datacontent = null;
+                userHandle = [];
+            }
+            if (disetujui === true) {
+
+
+                if (userHandle.length > 0) {
+                    await this.userbankaccountsService.updateDisetujui(idakun, "", dt.toISOString(), null, iduser);
+
+                    await this.sendReportAppealBankFCM(email, "NOTIFY_APPEAL", "NOTSUSPENDED_APPEAL", "BANK", "");
+                }
+                else {
+
+                    objreporthandle = {
+
+                        "reasonId": null,
+                        "valueReason": "",
+                        "idUserHandle": iduser,
+                        "createdAt": dt.toISOString(),
+                        "updatedAt": dt.toISOString(),
+                        "status": "DISETUJUI"
+                    };
+                    arrayreportedHandle.push(objreporthandle);
+
+                    await this.userbankaccountsService.updateDisetujuiEmpty(idakun, dt.toISOString(), arrayreportedHandle);
+                    await this.sendReportAppealBankFCM(email, "NOTIFY_APPEAL", "NOTSUSPENDED_APPEAL", "BANK", "");
+                }
+
+
+            }
+
+            else {
+
+                if (userHandle.length > 0) {
+                    await this.userbankaccountsService.updateDitolak(idakun, reason, dt.toISOString(), idreason, iduser);
+                    await this.sendReportAppealBankFCM(email, "NOTIFY_APPEAL", "SUSPENDED_APPEAL", "BANK", "");
+
+                } else {
+                    objreporthandle = {
+
+                        "reasonId": idreason,
+                        "valueReason": "",
+                        "idUserHandle": iduser,
+                        "createdAt": dt.toISOString(),
+                        "updatedAt": dt.toISOString(),
+                        "status": "DITOLAK"
+                    };
+                    arrayreportedHandle.push(objreporthandle);
+
+                    await this.userbankaccountsService.updateDitolakEmpty(idakun, dt.toISOString(), arrayreportedHandle);
+                    await this.sendReportAppealBankFCM(email, "NOTIFY_APPEAL", "SUSPENDED_APPEAL", "BANK", "");
+
+                }
+
+
+            }
+        } else {
+            await this.errorHandler.generateNotAcceptableException(
+                'Unabled to proceed data is not found',
+            );
+        }
+        return { response_code: 202, messages };
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Put('api/userbankaccounts/:id')
     async update(@Res() res, @Param('id') id: string, @Body() createUserbankaccountsDto: CreateUserbankaccountsDto) {
 
@@ -451,6 +586,8 @@ export class UserbankaccountsController {
 
         return { response_code: 202, messages };
     }
+
+
 
 
     async sendReportAppealBankFCM(email: string, name: string, event: string, type: string, fullname: string) {
