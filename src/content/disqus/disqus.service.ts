@@ -568,11 +568,7 @@ export class DisqusService {
                 {
                     $match: 
                     {
-                        $or: [
-                            {
-                                disqusId: id
-                            }                            
-                        ]
+                        disqusID: id
                     },
                     
                 },
