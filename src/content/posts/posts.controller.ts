@@ -685,20 +685,35 @@ export class PostsController {
         if (media[0].datacontent[0].mediaBasePath != undefined){
           data_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
         }
-
-        // if (post.){
-
-        // }
-
-        //var dataApsara = await this.postContentService.getVideoApsara(xvids);
         if (post.postType != undefined) {
           data_["postType"] = post.postType;
-          if (post.postType == "vid") {
-            data_["durasi"] = post.postType;
-          } else if (post.postType == "pict") {
-            data_["durasi"] = post.postType;
-          } else if (post.postType == "diary") {
-            data_["durasi"] = post.postType;
+          if (post.postType == 'vid') {
+            if (media[0].datacontent[0].apsaraId != undefined) {
+              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId);
+              var metadata = {
+                duration: dataApsara.Duration
+              }
+              console.log(dataApsara);
+              data_['metadata'] = metadata;
+            }
+          } else if (post.postType == 'diary') {
+            if (media[0].datacontent[0].apsaraId != undefined) {
+              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId);
+              var metadata = {
+                duration: dataApsara.Duration
+              }
+              console.log(dataApsara);
+              data_['metadata'] = metadata;
+            }
+          } else if (post.postType == 'story') {
+            if (media[0].datacontent[0].apsaraId != undefined) {
+              var dataApsara = await this.postContentService.getVideoApsaraSingle(media[0].datacontent[0].apsaraId);
+              var metadata = {
+                duration: dataApsara.Duration
+              }
+              console.log(dataApsara);
+              data_['metadata'] = metadata;
+            }
           }
         }
         if (media[0].datacontent[0].mediaUri != undefined) {
@@ -729,7 +744,7 @@ export class PostsController {
           data_["insight"] = media[0].datauser.insight;
         }
         if (post.email != undefined) {
-          data_["email"] = dataUserauth.username;
+          data_["email"] = post.email;
           var dataUserauth = await this.userauthsService.findOneByEmail(post.email.toString());
           if (await this.utilsService.ceckData(dataUserauth)) {
             data_["username"] = dataUserauth.username;
