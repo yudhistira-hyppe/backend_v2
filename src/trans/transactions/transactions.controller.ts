@@ -6635,7 +6635,7 @@ export class TransactionsController {
         var limit = null;
 
         var query = [];
-
+        var status = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["email"] !== undefined) {
             email = request_json["email"];
