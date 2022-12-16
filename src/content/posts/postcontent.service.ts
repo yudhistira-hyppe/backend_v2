@@ -2859,6 +2859,7 @@ export class PostContentService {
 
     if (body.certified && body.certified == "true") {
       let opost = await this.postService.findByPostId(body.postID);
+      console.log("post cert: " + opost.certified);
       if (opost.certified == undefined || opost.certified == false) {
         this.generateCertificate(String(post.postID), 'id');
       }
