@@ -161,17 +161,17 @@ export class UtilsService {
       body_send['postID'] = postID
       body_send['postType'] = postType
     }
-    
+
     let title_send = "";
     if (langIso_receiverParty == "en") {
       body_send.message = Templates_.body_detail.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
-      if (Templates_.subject!=undefined){
+      if (Templates_.subject != undefined) {
         if (Templates_.subject.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
         } else {
           title_send = Templates_.subject.toString();
         }
-      }else{
+      } else {
         if (Templates_.subject_id.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
         } else {
@@ -179,16 +179,16 @@ export class UtilsService {
         }
       }
     } else {
-      if(Templates_.subject_id != undefined){
+      if (Templates_.subject_id != undefined) {
         if (Templates_.subject_id.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
-        }else{
+        } else {
           title_send = Templates_.subject.toString();
         }
-      }else{
-        if (Templates_.subject.toString() == "${user_name}"){
+      } else {
+        if (Templates_.subject.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
-        }else{
+        } else {
           title_send = Templates_.subject.toString();
         }
       }
@@ -247,7 +247,7 @@ export class UtilsService {
     await this.notificationsService.create(createNotificationsDto);
   }
 
-  async sendFcm(email: string, titlein: string, titleen: string, bodyin: string, bodyen: string, eventType: string, event: string, postID?: string, postType?: string) {
+  async sendFcm(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID?: string, postType?: string) {
     var emailuserbasic = null;
     var datadevice = null;
     var languages = null;
@@ -860,7 +860,7 @@ export class UtilsService {
       } else {
         return 'id';
       }
-    }else{
+    } else {
       return 'id';
     }
   }

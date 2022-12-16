@@ -8722,6 +8722,603 @@ export class PostsService {
     return query;
   }
 
+  async finddatasearchconten(key: string, email: string, skip: number, limit: number) {
+    var pipeline = [];
+
+    pipeline.push(
+      {
+        $project: {
+          "dedy": key
+        }
+      },
+      {
+        $limit: 1
+      },
+      {
+        $facet:
+        {
+          "user":
+            [
+
+              {
+                $lookup: {
+                  from: "userauths",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match: {
+                        $expr: {
+                          $regexMatch: {
+                            input: "$username",
+                            regex: "$$name",
+                            options: "i"
+                          }
+                        }
+                      }
+                    }
+                  ],
+                  as: "userAuth"
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$userAuth",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                "$lookup": {
+                  from: "userbasics",
+                  as: "userBasic",
+                  let: {
+                    localID: '$userAuth.email'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $expr: {
+                          $eq: ['$email', '$$localID']
+                        }
+                      }
+                    },
+
+                  ],
+
+                }
+              },
+              {
+                $unwind: {
+                  path: "$userBasic",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                "$lookup": {
+                  from: "mediaprofilepicts",
+                  as: "avatar",
+                  let: {
+                    localID: '$userBasic.profilePict.$id'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $expr: {
+                          $eq: ['$mediaID', '$$localID']
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+                        "mediaBasePath": 1,
+                        "mediaUri": 1,
+                        "originalName": 1,
+                        "fsSourceUri": 1,
+                        "fsSourceName": 1,
+                        "fsTargetUri": 1,
+                        "mediaType": 1,
+                        "mediaEndpoint": {
+                          "$concat": ["/profilepict/", "$mediaUri"]
+                        }
+                      }
+                    },
+                    {
+                      $skip: skip
+                    },
+                    {
+                      $limit: limit
+                    },
+
+                  ],
+
+                }
+              },
+              {
+                $project: {
+                  "fullName": "$userBasic.fullname",
+                  "profilePict": "$userBasic.profilePict",
+                  "username": "$userAuth.username",
+                  "email": "$userAuth.email",
+                  "avatar": 1,
+                  "idUserAuth": "$userAuth._id",
+
+                }
+              }
+            ],
+          //pict
+          "pict":
+            [
+              {
+                $lookup: {
+                  from: "posts",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $and: [
+                          {
+                            $expr: {
+                              $regexMatch: {
+                                input: "$description",
+                                regex: "$$name",
+                                options: "i"
+                              }
+                            }
+                          },
+                          {
+                            "reportedStatus": {
+                              $ne: "OWNED"
+                            }
+                          },
+                          {
+                            "visibility": "PUBLIC"
+                          },
+                          {
+                            "active": true
+                          },
+                          {
+                            "postType": "pict"
+                          },
+                          {
+                            "reportedUser.email": {
+                              $not: {
+                                $regex: email
+                              }
+                            }
+                          },
+
+                        ]
+                      },
+
+                    }
+                  ],
+                  as: "pict"
+                },
+
+              },
+              {
+                "$lookup": {
+                  from: "mediapicts",
+                  as: "media",
+                  let: {
+                    localID: '$pict.postID'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $expr: {
+                          $in: ['$postID', '$$localID']
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+
+                        "apsara": 1,
+                        "apsaraId": 1,
+                        "apsaraThumbId": 1,
+                        "mediaEndpoint": 1,
+                        "mediaUri": 1,
+                        "mediaThumbEndpoint": 1,
+                        "mediaThumbUri": 1,
+
+                      }
+                    }
+                  ],
+
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$pict",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$media",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "_id": "$pict._id",
+                  "mediaType": "$media.mediaType",
+                  "mediaThumbEndpoint": {
+                    "$concat": ["/pict/", "$pict.postID"]
+                  },
+                  "mediaEndpoint": {
+                    "$concat": ["/pict/", "$pict.postID"]
+                  },
+                  "createdAt": "$pict.createdAt",
+                  "updatedAt": "$pict.updatedAt",
+                  "postID": "$pict.postID",
+                  "email": "$pict.postID",
+                  "postType": "$pict.postType",
+                  "description": "$pict.description",
+                  "active": "$pict.active",
+                  "metadata": "$pict.metadata",
+                  "location": "$pict.location",
+                  "isOwned": "$pict.isOwned",
+                  "visibility": "$pict.visibility",
+                  "isViewed": "$pict.isViewed",
+                  "allowComments": "$pict.allowComments",
+                  "saleAmount": "$pict.saleAmount",
+                  "monetize":
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$pict.saleAmount", 1]
+                      },
+                      then: true,
+                      else: false
+                    }
+                  },
+                  "insight": {
+                    "shares": "$pict.shares",
+                    "comments": "$pict.comments",
+                    "views": "$pict.views",
+                    "likes": "$pict.likes",
+
+                  },
+                  "apsaraId": "$media.apsaraId",
+                  "isApsara": "$media.apsara",
+                  "isLiked": "$pict.isLiked",
+
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+
+            ],
+          "vid":
+            [
+              {
+                $lookup: {
+                  from: "posts",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $and: [
+                          {
+                            $expr: {
+                              $regexMatch: {
+                                input: "$description",
+                                regex: "$$name",
+                                options: "i"
+                              }
+                            }
+                          },
+                          {
+                            "reportedStatus": {
+                              $ne: "OWNED"
+                            }
+                          },
+                          {
+                            "visibility": "PUBLIC"
+                          },
+                          {
+                            "active": true
+                          },
+                          {
+                            "postType": "vid"
+                          },
+                          {
+                            "reportedUser.email": {
+                              $not: {
+                                $regex: email
+                              }
+                            }
+                          },
+
+                        ]
+                      },
+
+                    }
+                  ],
+                  as: "pict"
+                },
+
+              },
+              {
+                "$lookup": {
+                  from: "mediavideos",
+                  as: "media",
+                  let: {
+                    localID: '$pict.postID'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $expr: {
+                          $in: ['$postID', '$$localID']
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+
+                        "apsara": 1,
+                        "apsaraId": 1,
+                        "apsaraThumbId": 1,
+                        "mediaEndpoint": 1,
+                        "mediaUri": 1,
+                        "mediaThumbEndpoint": 1,
+                        "mediaThumbUri": 1,
+
+                      }
+                    }
+                  ],
+
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$pict",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$media",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "_id": "$pict._id",
+                  "mediaType": "$media.mediaType",
+                  "mediaThumbEndpoint": {
+                    "$concat": ["/thumb/", "$pict.postID"]
+                  },
+                  "mediaEndpoint": {
+                    "$concat": ["/stream/", "$pict.postID"]
+                  },
+                  "createdAt": "$pict.createdAt",
+                  "updatedAt": "$pict.updatedAt",
+                  "postID": "$pict.postID",
+                  "email": "$pict.postID",
+                  "postType": "$pict.postType",
+                  "description": "$pict.description",
+                  "active": "$pict.active",
+                  "metadata": "$pict.metadata",
+                  "location": "$pict.location",
+                  "isOwned": "$pict.isOwned",
+                  "visibility": "$pict.visibility",
+                  "isViewed": "$pict.isViewed",
+                  "allowComments": "$pict.allowComments",
+                  "saleAmount": "$pict.saleAmount",
+                  "monetize":
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$pict.saleAmount", 1]
+                      },
+                      then: true,
+                      else: false
+                    }
+                  },
+                  "insight": {
+                    "shares": "$pict.shares",
+                    "comments": "$pict.comments",
+                    "views": "$pict.views",
+                    "likes": "$pict.likes",
+
+                  },
+                  "apsaraId": "$media.apsaraId",
+                  "isApsara": "$media.apsara",
+                  "isLiked": "$pict.isLiked",
+
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+
+            ],
+          "diary":
+            [
+              {
+                $lookup: {
+                  from: "posts",
+                  let: {
+                    name: "$dedy"
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $and: [
+                          {
+                            $expr: {
+                              $regexMatch: {
+                                input: "$description",
+                                regex: "$$name",
+                                options: "i"
+                              }
+                            }
+                          },
+                          {
+                            "reportedStatus": {
+                              $ne: "OWNED"
+                            }
+                          },
+                          {
+                            "visibility": "PUBLIC"
+                          },
+                          {
+                            "active": true
+                          },
+                          {
+                            "postType": "diary"
+                          },
+                          {
+                            "reportedUser.email": {
+                              $not: {
+                                $regex: email
+                              }
+                            }
+                          },
+
+                        ]
+                      },
+
+                    }
+                  ],
+                  as: "pict"
+                },
+
+              },
+              {
+                "$lookup": {
+                  from: "mediadiaries",
+                  as: "media",
+                  let: {
+                    localID: '$pict.postID'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $expr: {
+                          $in: ['$postID', '$$localID']
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+
+                        "apsara": 1,
+                        "apsaraId": 1,
+                        "apsaraThumbId": 1,
+                        "mediaEndpoint": 1,
+                        "mediaUri": 1,
+                        "mediaThumbEndpoint": 1,
+                        "mediaThumbUri": 1,
+
+                      }
+                    }
+                  ],
+
+                },
+
+              },
+              {
+                $unwind: {
+                  path: "$pict",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $unwind: {
+                  path: "$media",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $project: {
+                  "_id": "$pict._id",
+                  "mediaType": "$media.mediaType",
+                  "mediaThumbEndpoint": {
+                    "$concat": ["/thumb/", "$pict.postID"]
+                  },
+                  "mediaEndpoint": {
+                    "$concat": ["/stream/", "$pict.postID"]
+                  },
+                  "createdAt": "$pict.createdAt",
+                  "updatedAt": "$pict.updatedAt",
+                  "postID": "$pict.postID",
+                  "email": "$pict.postID",
+                  "postType": "$pict.postType",
+                  "description": "$pict.description",
+                  "active": "$pict.active",
+                  "metadata": "$pict.metadata",
+                  "location": "$pict.location",
+                  "isOwned": "$pict.isOwned",
+                  "visibility": "$pict.visibility",
+                  "isViewed": "$pict.isViewed",
+                  "allowComments": "$pict.allowComments",
+                  "saleAmount": "$pict.saleAmount",
+                  "monetize":
+                  {
+                    $cond: {
+                      if: {
+                        $gte: ["$pict.saleAmount", 1]
+                      },
+                      then: true,
+                      else: false
+                    }
+                  },
+                  "insight": {
+                    "shares": "$pict.shares",
+                    "comments": "$pict.comments",
+                    "views": "$pict.views",
+                    "likes": "$pict.likes",
+
+                  },
+                  "apsaraId": "$media.apsaraId",
+                  "isApsara": "$media.apsara",
+                  "isLiked": "$pict.isLiked",
+
+                }
+              },
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
+
+            ]
+        }
+
+      });
+
+    let query = await this.PostsModel.aggregate(pipeline);
+    return query;
+  }
   async thum(thum_data: string): Promise<any> {
     var data = await this.seaweedfsService.read(thum_data.replace('/localrepo', ''));
     return data;
