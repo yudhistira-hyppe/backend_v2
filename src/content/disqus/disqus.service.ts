@@ -345,10 +345,14 @@ export class DisqusService {
                                                     }
                                                 },
                                                 {
-                                                    "senderActive": true
+                                                    "senderActive": {
+                                                        $ne:false
+                                                    }
                                                 },
                                                 {
-                                                    "recieverActive": true
+                                                    "recieverActive": {
+                                                        $ne:false
+                                                    }
                                                 },
                                                 
                                             ]
@@ -703,11 +707,15 @@ export class DisqusService {
                                                     }
                                                 },
                                                 {
-                                                    "senderActive": true
+                                                    "senderActive": {
+                                                        $ne:false
+                                                    }
                                                 },
                                                 {
-                                                    "recieverActive": true
-                                                },
+                                                    "recieverActive": {
+                                                        $ne:false
+                                                    }
+                                                }
                                                 
                                             ]
                                         },
