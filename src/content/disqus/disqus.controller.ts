@@ -1005,6 +1005,7 @@ export class DisqusController {
 
     retVal.email = dis.email;
     retVal.room = dis.room;
+    retVal.disqusID = dis.disqusID;
 
     retVal.eventType = dis.eventType;
     retVal.active = dis.active;
