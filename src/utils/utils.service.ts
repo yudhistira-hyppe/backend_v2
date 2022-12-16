@@ -166,7 +166,7 @@ export class UtilsService {
 
     let body_save_id = "";
     let body_save_en = "";
-    
+
     let body_save_id_ = "";
     let body_save_en_ = "";
 
@@ -178,6 +178,7 @@ export class UtilsService {
     //SET TITLE AND BODY
     if (langIso_receiverParty == "en") {
       body_save_en_ = Templates_.body_detail.toString();
+      body_save_id_ = Templates_.body_detail_id.toString();
       if (Templates_.subject != undefined) {
         if (Templates_.subject.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
@@ -192,6 +193,7 @@ export class UtilsService {
         }
       }
     } else {
+      body_save_en_ = Templates_.body_detail.toString();
       body_save_id_ = Templates_.body_detail_id.toString();
       if (Templates_.subject_id != undefined) {
         if (Templates_.subject_id.toString() == "${user_name}") {
@@ -209,7 +211,7 @@ export class UtilsService {
     }
 
     //SET BODY SAVE
-    if ((event == "REACTION") || (event == "COMMENT") || (event == "LIKE") || (event == "BOOST_CONTENT") || (event == "BOOST_BUY") || (event == "BOOST_SUCCES") || (event == "REWARDS")) {
+    if ((eventType == "REACTION") || (eventType == "COMMENT") || (eventType == "LIKE") || (eventType == "TRANSACTION")) {
       if (event == "BOOST_SUCCES") {
         body_send['postID'] = idtransaction
         body_send['postType'] = eventType
