@@ -525,10 +525,10 @@ export class AdsUserCompareController {
                             }
 
                             try{
-                                var titleinsukses = "Reward";
-                                var titleensukses = "Reward";
-                                var bodyinsukses = "Selamat kamu mendapatkan reward Rp." + ads_rewards;
-                                var bodyensukses = "Congratulation you've got a reward Rp." + ads_rewards;
+                                // var titleinsukses = "Reward";
+                                // var titleensukses = "Reward";
+                                // var bodyinsukses = "Selamat kamu mendapatkan reward Rp." + ads_rewards;
+                                // var bodyensukses = "Congratulation you've got a reward Rp." + ads_rewards;
                                 var eventType = "TRANSACTION";
                                 var event = "ADS VIEW";
                                 await this.utilsService.sendFcmV2(data_userbasicsService.email.toString(), data_userbasicsService.email.toString(), eventType, event, "REWARDS", null, null, ads_rewards.toString())
@@ -809,13 +809,14 @@ export class AdsUserCompareController {
 
 
                     try {
-                        var titleinsukses = "Reward";
-                        var titleensukses = "Reward";
-                        var bodyinsukses = "Selamat kamu mendapatkan reward Rp." + ads_rewards;
-                        var bodyensukses = "Congratulation you've got a reward Rp." + ads_rewards;
-                        var eventType = "ADS CLICK";
+                        // var titleinsukses = "Reward";
+                        // var titleensukses = "Reward";
+                        // var bodyinsukses = "Selamat kamu mendapatkan reward Rp." + ads_rewards;
+                        // var bodyensukses = "Congratulation you've got a reward Rp." + ads_rewards;
+                        var eventType = "TRANSACTION";
                         var event = "ADS CLICK";
-                        await this.utilsService.sendFcm(data_userbasicsService.email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                        await this.utilsService.sendFcmV2(data_userbasicsService.email.toString(), data_userbasicsService.email.toString(), eventType, event, "REWARDS", null, null, ads_rewards.toString())
+                        //await this.utilsService.sendFcm(data_userbasicsService.email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                     } catch (e) {
                         console.log('Unabled to proceed, ' + e);
                     }
