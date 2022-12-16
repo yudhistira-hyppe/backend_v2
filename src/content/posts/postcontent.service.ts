@@ -2845,6 +2845,8 @@ export class PostContentService {
       return res;
     }
 
+    let opost = await this.postService.findByPostId(body.postID);
+
     if (body.certified && body.certified == "true") {
       if (profile.isIdVerified != true) {
         let msg = new Messages();
@@ -2858,7 +2860,6 @@ export class PostContentService {
     let apost = await this.PostsModel.create(post);
 
     if (body.certified && body.certified == "true") {
-      let opost = await this.postService.findByPostId(body.postID);
       console.log("post cert: " + opost.certified);
       if (opost.certified == undefined || opost.certified == false) {
         this.generateCertificate(String(post.postID), 'id');
