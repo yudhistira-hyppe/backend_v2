@@ -302,6 +302,7 @@ export class UtilsService {
     var splitdt = dtstring.split(".");
     var date = splitdt[0].replace("T", " ");
     var mediaprofilepicts = null;
+    var bodypayload = null;
     let createNotificationsDto = new CreateNotificationsDto();
 
     const datauserbasicsService = await this.userbasicsService.findOne(
@@ -375,30 +376,68 @@ export class UtilsService {
         langIso = "";
       }
 
-      if (langIso === "id") {
-        payload = {
-          notification: {
+      if (postID != undefined || postID != "" || postID != null) {
+        if (langIso === "id") {
+          bodypayload = { "message": bodyin, "postID": postID, "postType": postType }
+          payload = {
+            notification: {
 
-            title: titlein,
-            body: bodyin
-          }
-        };
-      } else if (langIso === "en") {
-        payload = {
-          notification: {
+              title: titlein,
+              body: JSON.stringify(bodypayload)
+            }
+          };
+        }
+        else if (langIso === "en") {
+          bodypayload = { "message": bodyen, "postID": postID, "postType": postType }
+          payload = {
+            notification: {
 
-            title: titleen,
-            body: bodyen
-          }
-        };
+              title: titleen,
+              body: JSON.stringify(bodypayload)
+            }
+          };
+        } else {
+          bodypayload = { "message": bodyin, "postID": postID, "postType": postType }
+          payload = {
+            notification: {
+
+              title: titlein,
+              body: JSON.stringify(bodypayload)
+            }
+          };
+        }
+
+
       } else {
-        payload = {
-          notification: {
-            title: titlein,
-            body: bodyin
-          }
-        };
+        if (langIso === "id") {
+          payload = {
+            notification: {
+
+              title: titlein,
+              body: bodyin
+            }
+          };
+        } else if (langIso === "en") {
+          payload = {
+            notification: {
+
+              title: titleen,
+              body: bodyen
+            }
+          };
+        } else {
+          payload = {
+            notification: {
+              title: titlein,
+              body: bodyin
+            }
+          };
+        }
       }
+
+
+
+
       var arraydevice = [];
       datadevice = await this.userdevicesService.findActive(emailuserbasic);
       for (var i = 0; i < datadevice.length; i++) {
@@ -442,6 +481,9 @@ export class UtilsService {
 
     }
   }
+
+
+
 
   async getSetting(jenis: string) {
     return (await this.settingsService.findOneByJenis(jenis)).value;
