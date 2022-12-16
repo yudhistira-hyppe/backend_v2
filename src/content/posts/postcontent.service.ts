@@ -2857,7 +2857,7 @@ export class PostContentService {
     let post = await this.buildUpdatePost(body, headers);
     let apost = await this.PostsModel.create(post);
 
-    if (post.certified) {
+    if (body.certified && body.certified == "true") {
       let opost = await this.postService.findByPostId(body.postID);
       if (opost.certified == undefined || opost.certified == false) {
         this.generateCertificate(String(post.postID), 'id');
