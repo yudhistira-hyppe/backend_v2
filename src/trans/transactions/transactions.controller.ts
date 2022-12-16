@@ -1512,7 +1512,7 @@ export class TransactionsController {
                         await this.transactionsService.updateoneBoost(idtransaction, idbalance, payload);
 
                         //SEND FCM SUCCES TRANSACTION
-                        this.sendCommentFCM("BOOST_SUCCES", postid, emailbuyer.toString())
+                        this.sendCommentFCM("BOOST_SUCCES", postid, emailbuyer.toString(), idtransaction.toString())
                         //this.sendCommentFCM("BOOST_CONTENT", postid, emailbuyer.toString())
 
                         var OwnerShip = false;
@@ -1540,7 +1540,7 @@ export class TransactionsController {
         }
     }
 
-    async sendCommentFCM(type: string, postID: string, receiverParty: string) {
+    async sendCommentFCM(type: string, postID: string, receiverParty: string, idtransaction?: string) {
         var Templates_ = new TemplatesRepo();
         Templates_ = await this.utilsService.getTemplate_repo(type, 'NOTIFICATION');
 
@@ -1565,10 +1565,10 @@ export class TransactionsController {
         var bodyin = new_bodyin_get;
         var bodyen = new_bodyen_get;
 
-        var eventType = type.toString();
-        var event = "ACCEPT";
+        var eventType = "TRANSACTION";
+        var event = type;
 
-        await this.utilsService.sendFcmV2(email, email, eventType, event, type, postID, post_type)
+        await this.utilsService.sendFcmV2(email, email, eventType, event, type, postID, post_type, idtransaction)
         //await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event);
     }
 

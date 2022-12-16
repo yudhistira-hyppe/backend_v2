@@ -132,7 +132,7 @@ export class UtilsService {
     return Value * Math.PI / 180;
   }
 
-  async sendFcmV2(receiverParty: string, senderParty: string, eventType: string, event: string, typeTemplate: string, postID?: string, postType?: string) {
+  async sendFcmV2(receiverParty: string, senderParty: string, eventType: string, event: string, typeTemplate: string, postID?: string, postType?: string, idtransaction?: string) {
     var currentDate = await this.getDateTimeString()
     var Templates_ = new TemplatesRepo();
     Templates_ = await this.getTemplate_repo(typeTemplate, 'NOTIFICATION');
@@ -158,8 +158,15 @@ export class UtilsService {
       Post_type_upper = postType[0].toUpperCase() + postType.substring(1)
     }
 
+    let body_send = { message: "" };
+    if (event == "BOOST_SUCCES") {
+      body_send['postID'] = idtransaction
+      body_send['postType'] = eventType
+    } else {
+      body_send['postID'] = postID
+      body_send['postType'] = postType
+    }
 
-    let body_send = {postID: postID, postType: postType, message: ""};
     if (langIso_receiverParty == "en") {
       body_send.message = Templates_.body_detail.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
     } else {
