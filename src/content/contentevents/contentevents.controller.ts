@@ -174,6 +174,7 @@ export class ContenteventsController {
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/posts/interactive')
   async interactive(@Req() request: any, @Headers() headers) {
+    console.log(JSON.stringify(request));
     if (headers['x-auth-user'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed auth-user undefined',
@@ -197,6 +198,7 @@ export class ContenteventsController {
 
     var Insight_sender = await this.insightsService.findemail(email_user);
     var Insight_receiver = await this.insightsService.findemail(email_receiverParty);
+
 
     if (eventType == "FOLLOWING") {
       var ceck_data_FOLLOWER = await this.contenteventsService.ceckData(email_receiverParty, "FOLLOWER", "ACCEPT", email_user, "", "");
