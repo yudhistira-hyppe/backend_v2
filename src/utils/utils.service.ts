@@ -159,7 +159,7 @@ export class UtilsService {
     }
 
 
-    let body_send = {postID: postID, postType: postType, message: ""};
+    let body_send = { postID: postID, postType: postType, message: "" };
     if (langIso_receiverParty == "en") {
       body_send.message = Templates_.body_detail.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
     } else {
@@ -218,7 +218,7 @@ export class UtilsService {
     await this.notificationsService.create(createNotificationsDto);
   }
 
-  async sendFcm(email: string, titlein: string, titleen: string, bodyin: string, bodyen: string, eventType: string, event: string, postID?: string, postType?: string) {
+  async sendFcm(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID?: string, postType?: string) {
     var emailuserbasic = null;
     var datadevice = null;
     var languages = null;
@@ -831,7 +831,7 @@ export class UtilsService {
       } else {
         return 'id';
       }
-    }else{
+    } else {
       return 'id';
     }
   }

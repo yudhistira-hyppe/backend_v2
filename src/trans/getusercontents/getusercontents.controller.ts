@@ -962,9 +962,6 @@ export class GetusercontentsController {
         }
 
 
-
-
-
         try {
             let query = null;
             query = await this.postsService.findcontentfilters(keys, "vid", skip, limit, email);
@@ -1347,81 +1344,78 @@ export class GetusercontentsController {
             datapict = null;
         }
 
-        var totalFilterPostTag = null;
-        var totalFilter = null;
-        // if (keys !== "") {
-        //     try {
-        //         datatag = await this.postsService.findcontentfilterTags(keys, skip, limit);
-        //     } catch (e) {
-        //         datatag = null;
-        //     }
-
-        //     try {
-        //         totalFilterPostTag = await this.postsService.findcountfilteTag(keys);
-        //         totalFilter = totalFilterPostTag[0].totalpost;
-        //     } catch (e) {
-        //         totalFilter = 0;
-        //     }
-
-        // } else {
-
-        //     try {
-        //         datatag = await this.postsService.findcontentAllTags(skip, limit);
-        //     } catch (e) {
-        //         datatag = null;
-        //     }
-
-        //     try {
-        //         totalFilterPostTag = await this.postsService.findcountfilteTagAll();
-        //         totalFilter = totalFilterPostTag[0].totalpost;
-        //     } catch (e) {
-        //         totalFilter = 0;
-        //     }
-
-        // }
-
-        try {
-            totalFilterPostVid = await this.postsService.findcountfilterall(keys, "vid", email);
-            totalFilterVid = totalFilterPostVid[0].totalpost;
-        } catch (e) {
-            totalFilterVid = 0;
-        }
-
-        try {
-            totalFilterPostDiary = await this.postsService.findcountfilterall(keys, "diary", email);
-            totalFilterDiary = totalFilterPostDiary[0].totalpost;
-        } catch (e) {
-            totalFilterDiary = 0;
-        }
-
-        try {
-            totalFilterPostPic = await this.postsService.findcountfilterall(keys, "pict", email);
-            totalFilterPict = totalFilterPostPic[0].totalpost;
-        } catch (e) {
-            totalFilterPict = 0;
-        }
-
-        if (keys !== undefined) {
-            try {
-                totalFilterPostUser = await this.userauthsService.coutRow(keys);
-                totalFilterUser = totalFilterPostUser[0].totalpost;
-            } catch (e) {
-                totalFilterUser = 0;
-            }
-        } else {
-            totalFilterUser = 0;
-
-        }
-
-
-
         let data = {
-            "users": { "data": arrdatauser, "totalFilter": totalFilterUser, "skip": skip, "limit": limit },
-            // "tags": { "data": datatag, "totalFilter": totalFilter, "skip": skip, "limit": limit },
-            "vid": { "data": datavids, "totalFilter": totalFilterVid, "skip": skip, "limit": limit },
-            "diary": { "data": datadiary, "totalFilter": totalFilterDiary, "skip": skip, "limit": limit },
-            "pict": { "data": datapict, "totalFilter": totalFilterPict, "skip": skip, "limit": limit },
+            "users": { "data": arrdatauser, "skip": skip, "limit": limit },
+            "vid": { "data": datavids, "skip": skip, "limit": limit },
+            "diary": { "data": datadiary, "skip": skip, "limit": limit },
+            "pict": { "data": datapict, "skip": skip, "limit": limit },
         };
+        return { response_code: 202, data, messages };
+    }
+
+
+    @Post('api/getusercontents/searchdatanew')
+    @UseGuards(JwtAuthGuard)
+    async contentsearch(@Req() request: Request): Promise<any> {
+
+        var datavids = null;
+        var isLike = null;
+        var datadiary = null;
+        var datapict = null;
+        var keys = null;
+        var datatag = null;
+        var datauser = null;
+        var postType = null;
+        var mediaprofilepicts = null;
+        var skip = 0;
+        var limit = 0;
+        var totalFilterPostVid = null;
+        var totalFilterVid = null;
+        var totalFilterPostDiary = null;
+        var totalFilterDiary = null;
+        var totalFilterPostPic = null;
+        var totalFilterPict = null;
+        var totalFilterPostUser = null;
+        var totalFilterUser = null;
+        var email = null;
+        var data = null;
+        var dataLike = null;
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["skip"] !== undefined) {
+            skip = request_json["skip"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        email = request_json["email"];
+        keys = request_json["keys"];
+
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var arrmediaid = [];
+        var arrdatauser = [];
+        var objuser = {};
+        var mediaprofilepicts_res = {};
+
+
+        try {
+            data = await this.postsService.finddatasearchconten(keys, email, skip, limit);
+        } catch (e) {
+            data = null;
+        }
+
+
+
         return { response_code: 202, data, messages };
     }
 

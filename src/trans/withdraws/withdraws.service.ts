@@ -67,7 +67,7 @@ export class WithdrawsService {
 
                 {
                     $addFields: {
-                        type: 'Withdrawal',
+                        type: 'Withdraws',
                         apsara: false
 
                     },
@@ -135,7 +135,7 @@ export class WithdrawsService {
 
                 {
                     $addFields: {
-                        type: 'Withdrawal',
+                        type: 'Withdraws',
                         apsara: false
 
                     },
@@ -199,7 +199,7 @@ export class WithdrawsService {
 
                 {
                     $addFields: {
-                        type: 'Withdrawal',
+                        type: 'Withdraws',
                         apsara: false
 
                     },
@@ -271,7 +271,7 @@ export class WithdrawsService {
 
                 {
                     $addFields: {
-                        type: 'Withdrawal',
+                        type: 'Withdraws',
 
                     },
                 },
@@ -330,7 +330,7 @@ export class WithdrawsService {
 
                 {
                     $addFields: {
-                        type: 'Withdrawal',
+                        type: 'Withdraws',
 
                     },
                 },
@@ -385,7 +385,7 @@ export class WithdrawsService {
 
                 {
                     $addFields: {
-                        type: 'Withdrawal',
+                        type: 'Withdraws',
 
                     },
                 },
@@ -443,7 +443,7 @@ export class WithdrawsService {
 
             {
                 $addFields: {
-                    type: 'Withdrawal',
+                    type: 'Withdraws',
 
                 },
             },
@@ -495,11 +495,11 @@ export class WithdrawsService {
     }
 
     async findhistoryWithdrawer(iduser: ObjectId, status: string, startdate: string, enddate: string, skip: number, limit: number) {
-        var pipeline=new Array<any>({
-                $addFields: {
-                    type: 'Withdrawal'
-                }
-            },
+        var pipeline = new Array<any>({
+            $addFields: {
+                type: 'Withdraws'
+            }
+        },
             {
                 $lookup: {
                     from: "userbasics",
@@ -508,53 +508,53 @@ export class WithdrawsService {
                     as: "userbasics_data"
                 }
             }, {
-                $project: {
-                    iduser: "$idUser",
-                    type: "$type",
-                    timestamp: "$timestamp",
-                    partnerTrxid: "$partnerTrxid",
-                    amount: "$amount",
-                    totalamount: "$totalamount",
-                    status: "$status",
-                    user: {
-                        $arrayElemAt: [
-                            "$userbasics_data",
-                            0
-                        ]
-                    }
+            $project: {
+                iduser: "$idUser",
+                type: "$type",
+                timestamp: "$timestamp",
+                partnerTrxid: "$partnerTrxid",
+                amount: "$amount",
+                totalamount: "$totalamount",
+                status: "$status",
+                user: {
+                    $arrayElemAt: [
+                        "$userbasics_data",
+                        0
+                    ]
                 }
-            }, {
-                $project: {
-                    iduser: "$iduser",
-                    fullName: "$user.fullName",
-                    email: "$user.email",
-                    type: "$type",
-                    timestamp: "$timestamp",
-                    partnerTrxid: "$partnerTrxid",
-                    amount: "$amount",
-                    totalamount: "$totalamount",
-                    status: "$status"
-                }
-            });
-        
-        if(status!==undefined){
+            }
+        }, {
+            $project: {
+                iduser: "$iduser",
+                fullName: "$user.fullName",
+                email: "$user.email",
+                type: "$type",
+                timestamp: "$timestamp",
+                partnerTrxid: "$partnerTrxid",
+                amount: "$amount",
+                totalamount: "$totalamount",
+                status: "$status"
+            }
+        });
+
+        if (status !== undefined) {
             pipeline.push({
-                $match:{
-                    status:status
-                }
-            });
-        }
-        if(startdate!==undefined){
-            pipeline.push({
-                "$match":{
-                    timestamp:{$gte:startdate}
+                $match: {
+                    status: status
                 }
             });
         }
-        if(enddate!==undefined){
+        if (startdate !== undefined) {
             pipeline.push({
-                "$match":{
-                    timestamp:{$lte:enddate}
+                "$match": {
+                    timestamp: { $gte: startdate }
+                }
+            });
+        }
+        if (enddate !== undefined) {
+            pipeline.push({
+                "$match": {
+                    timestamp: { $lte: enddate }
                 }
             });
         }
@@ -563,13 +563,13 @@ export class WithdrawsService {
                 idUser: iduser
             }
         });
-        pipeline.push({ "$sort": { timestamp: -1 }});
-        if(skip>0){
+        pipeline.push({ "$sort": { timestamp: -1 } });
+        if (skip > 0) {
             pipeline.push({
                 "$skip": skip
             });
         }
-        if(limit>0){
+        if (limit > 0) {
             pipeline.push({
                 "$limit": limit
             });
@@ -596,7 +596,7 @@ export class WithdrawsService {
 
                 {
                     $addFields: {
-                        type: 'Withdrawal',
+                        type: 'Withdraws',
 
                     },
                 },
@@ -657,7 +657,7 @@ export class WithdrawsService {
 
                 {
                     $addFields: {
-                        type: 'Withdrawal',
+                        type: 'Withdraws',
 
                     },
                 },
@@ -716,7 +716,7 @@ export class WithdrawsService {
 
                 {
                     $addFields: {
-                        type: 'Withdrawal',
+                        type: 'Withdraws',
 
                     },
                 },
@@ -773,7 +773,7 @@ export class WithdrawsService {
 
                 {
                     $addFields: {
-                        type: 'Withdrawal',
+                        type: 'Withdraws',
 
                     },
                 },
