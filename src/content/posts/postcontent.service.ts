@@ -2183,7 +2183,7 @@ export class PostContentService {
         pa.updatedAt = String(ps.updatedAt);
         pa.description = String(ps.description);
         pa.email = String(ps.email);
-        pa.username = pa.email;
+        pa.username = pa.username;
         user.push(pa.email);
 
         //let following = await this.contentEventService.findFollowing(pa.email);
