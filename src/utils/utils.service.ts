@@ -276,13 +276,11 @@ export class UtilsService {
     createNotificationsDto.actionButtons = null;
     createNotificationsDto.contentEventID = null;
     createNotificationsDto.senderOrReceiverInfo = senderOrReceiverInfo;
-    if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION" || eventType == "CONTENT" || eventType == "POST" || eventType == "BANK") {
-      if (postID != undefined) {
-        createNotificationsDto.postID = postID.toString();
-      }
-      if (postID != undefined) {
-        createNotificationsDto.postType = postType.toString();
-      }
+    if (postID != undefined) {
+      createNotificationsDto.postID = postID.toString();
+    }
+    if (postType != undefined) {
+      createNotificationsDto.postType = postType.toString();
     }
     await this.notificationsService.create(createNotificationsDto);
   }
