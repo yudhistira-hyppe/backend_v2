@@ -531,8 +531,8 @@ export class AdsUserCompareController {
                                 var bodyensukses = "Congratulation you've got a reward Rp." + ads_rewards;
                                 var eventType = "TRANSACTION";
                                 var event = "ADS VIEW";
-                                //await this.utilsService.sendFcmV2(data_userbasicsService.email.toString(), data_userbasicsService.email.toString(), eventType, event, "REWARDS")
-                                await this.utilsService.sendFcm(data_userbasicsService.email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                                await this.utilsService.sendFcmV2(data_userbasicsService.email.toString(), data_userbasicsService.email.toString(), eventType, event, "REWARDS", null, null, ads_rewards.toString())
+                                //await this.utilsService.sendFcm(data_userbasicsService.email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                             } catch (e) {
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed " + e);
                                 console.log('Unabled to proceed, ' + e);
