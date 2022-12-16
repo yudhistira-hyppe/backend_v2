@@ -163,6 +163,9 @@ export class UtilsService {
     //SET VARIABLE
     let title_send = "";
     let body_send = { message: "" };
+    let body_save_id_ = "";
+    let body_save_en_ = "";
+
     let body_save_id = "";
     let body_save_en = "";
 
@@ -173,7 +176,7 @@ export class UtilsService {
 
     //SET TITLE AND BODY
     if (langIso_receiverParty == "en") {
-      body_save_en = Templates_.body_detail.toString();
+      body_save_en_ = Templates_.body_detail.toString();
       if (Templates_.subject != undefined) {
         if (Templates_.subject.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
@@ -188,7 +191,7 @@ export class UtilsService {
         }
       }
     } else {
-      body_save_id = Templates_.body_detail_id.toString();
+      body_save_id_ = Templates_.body_detail_id.toString();
       if (Templates_.subject_id != undefined) {
         if (Templates_.subject_id.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
@@ -215,11 +218,11 @@ export class UtilsService {
       }
 
       if (event == "REWARDS"){
-        body_save_id = body_save_id.toString().replace("${rewards}", customText)
-        body_save_en = body_save_en.toString().replace("${rewards}", customText)
+        body_save_id = body_save_id_.toString().replace("${rewards}", customText)
+        body_save_en = body_save_en_.toString().replace("${rewards}", customText)
       } else {
-        body_save_id = body_save_id.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
-        body_save_en = body_save_en.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+        body_save_id = body_save_id_.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+        body_save_en = body_save_en_.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
       }
     }
 
