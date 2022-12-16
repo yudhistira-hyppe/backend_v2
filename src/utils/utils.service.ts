@@ -267,8 +267,8 @@ export class UtilsService {
     createNotificationsDto.mate = senderParty;
     createNotificationsDto.devices = device_user;
     createNotificationsDto.title = title_send;
-    createNotificationsDto.body = body_save_id;
-    createNotificationsDto.bodyId = body_save_en;
+    createNotificationsDto.body = body_save_en;
+    createNotificationsDto.bodyId = body_save_id;
     createNotificationsDto.active = true;
     createNotificationsDto.flowIsDone = true;
     createNotificationsDto.createdAt = currentDate;
