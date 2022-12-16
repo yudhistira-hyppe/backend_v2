@@ -174,7 +174,7 @@ export class ContenteventsController {
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/posts/interactive')
   async interactive(@Req() request: any, @Headers() headers) {
-    console.log(JSON.stringify(request));
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(request));
     if (headers['x-auth-user'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed auth-user undefined',
