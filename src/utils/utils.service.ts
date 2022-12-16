@@ -163,11 +163,12 @@ export class UtilsService {
     //SET VARIABLE
     let title_send = "";
     let body_send = { message: "" };
-    let body_save_id_ = "";
-    let body_save_en_ = "";
 
     let body_save_id = "";
     let body_save_en = "";
+    
+    let body_save_id_ = "";
+    let body_save_en_ = "";
 
     //CECK EVENTTYPE
     if (eventType == "COMMENT_TAG") {
