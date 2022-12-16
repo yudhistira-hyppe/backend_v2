@@ -146,11 +146,6 @@ export class UtilsService {
     const langIso_receiverParty = (profile_receiverParty.langIso != undefined) ? profile_receiverParty.langIso : "id";
     const langIso_senderParty = (profile_senderParty.langIso != undefined) ? profile_senderParty.langIso : "id";
 
-    let title_send = Templates_.subject.toString();
-    if (title_send == "${user_name}") {
-      title_send = "@" + get_username_senderParty;
-    }
-
     var Post_type_upper = "";
     if (postType == undefined) {
       Post_type_upper = "";
@@ -167,9 +162,36 @@ export class UtilsService {
       body_send['postType'] = postType
     }
 
+    let title_send = "";
     if (langIso_receiverParty == "en") {
       body_send.message = Templates_.body_detail.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+      if (Templates_.subject != undefined) {
+        if (Templates_.subject.toString() == "${user_name}") {
+          title_send = "@" + get_username_senderParty;
+        } else {
+          title_send = Templates_.subject.toString();
+        }
+      } else {
+        if (Templates_.subject_id.toString() == "${user_name}") {
+          title_send = "@" + get_username_senderParty;
+        } else {
+          title_send = Templates_.subject_id.toString();
+        }
+      }
     } else {
+      if (Templates_.subject_id != undefined) {
+        if (Templates_.subject_id.toString() == "${user_name}") {
+          title_send = "@" + get_username_senderParty;
+        } else {
+          title_send = Templates_.subject.toString();
+        }
+      } else {
+        if (Templates_.subject.toString() == "${user_name}") {
+          title_send = "@" + get_username_senderParty;
+        } else {
+          title_send = Templates_.subject.toString();
+        }
+      }
       body_send.message = Templates_.body_detail_id.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
     }
 
@@ -225,7 +247,7 @@ export class UtilsService {
     await this.notificationsService.create(createNotificationsDto);
   }
 
-  async sendFcm(email: string, titlein: string, titleen: string, bodyin: string, bodyen: string, eventType: string, event: string, postID?: string, postType?: string) {
+  async sendFcm(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID?: string, postType?: string) {
     var emailuserbasic = null;
     var datadevice = null;
     var languages = null;
@@ -838,7 +860,7 @@ export class UtilsService {
       } else {
         return 'id';
       }
-    }else{
+    } else {
       return 'id';
     }
   }

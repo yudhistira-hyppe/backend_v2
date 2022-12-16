@@ -17,6 +17,7 @@ import { VouchersService } from '../../../trans/vouchers/vouchers.service';
 import { MediaprofilepictsService } from '../../../content/mediaprofilepicts/mediaprofilepicts.service';
 //import { MediaimageadsService } from '../../../stream/mediaimageads/mediaimageads.service;
 import mongoose from 'mongoose';
+import { ObjectId } from 'mongodb';
 
 @Controller('api/ads')
 export class AdsUserCompareController {
@@ -513,6 +514,7 @@ export class AdsUserCompareController {
                                 CreateAccountbalancesDto_.type = "rewards";
                                 CreateAccountbalancesDto_.timestamp = current_date;
                                 CreateAccountbalancesDto_.description = "rewards form ads view";
+                                CreateAccountbalancesDto_.idtrans = Object(data_userAdsService.adsID.toString());
                                 await this.accountbalancesService.create(CreateAccountbalancesDto_);
                             } catch (e) {
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed " + e);
@@ -527,8 +529,9 @@ export class AdsUserCompareController {
                                 var titleensukses = "Reward";
                                 var bodyinsukses = "Selamat kamu mendapatkan reward Rp." + ads_rewards;
                                 var bodyensukses = "Congratulation you've got a reward Rp." + ads_rewards;
-                                var eventType = "ADS VIEW";
+                                var eventType = "TRANSACTION";
                                 var event = "ADS VIEW";
+                                //await this.utilsService.sendFcmV2(data_userbasicsService.email.toString(), data_userbasicsService.email.toString(), eventType, event, "REWARDS")
                                 await this.utilsService.sendFcm(data_userbasicsService.email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
                             } catch (e) {
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed " + e);
@@ -798,6 +801,7 @@ export class AdsUserCompareController {
                         CreateAccountbalancesDto_.type = "rewards";
                         CreateAccountbalancesDto_.timestamp = currentDate.toISOString();
                         CreateAccountbalancesDto_.description = "rewards form ads click";
+                        CreateAccountbalancesDto_.idtrans = Object(data_userAdsService.adsID.toString());
                         await this.accountbalancesService.create(CreateAccountbalancesDto_);
                     } catch (e) {
                         console.log('Unabled to proceed, ' + e);
