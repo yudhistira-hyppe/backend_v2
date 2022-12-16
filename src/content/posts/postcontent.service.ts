@@ -3155,6 +3155,7 @@ export class PostContentService {
 
     if (xuser.length > 0) {
       cuser = await this.userAuthService.findIn(xuser);
+      ubs = await this.userService.findIn(xuser);
 
       for (let v = 0; v < cuser.length; v++) {
         let vv = cuser[v];
