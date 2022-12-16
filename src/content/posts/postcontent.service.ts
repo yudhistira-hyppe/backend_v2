@@ -3143,6 +3143,7 @@ export class PostContentService {
     let papsara = undefined;
     let cuser = undefined;
     let ubs = undefined;
+    let mp = new Map();
 
     if (xvids.length > 0) {
       vapsara = await this.getVideoApsara(xvids);
@@ -3154,7 +3155,14 @@ export class PostContentService {
 
     if (xuser.length > 0) {
       cuser = await this.userAuthService.findIn(xuser);
-      ubs = await this.userService.findIn(xuser);
+
+      for (let v = 0; v < cuser.length; v++) {
+        let vv = cuser[v];
+        if (mp.has(String(vv.email)) == false) {
+          mp.set(vv.email, vv);
+        }
+
+      }
     }
 
     if (vapsara != undefined) {
@@ -3176,8 +3184,13 @@ export class PostContentService {
           } else {
             pdvv.isLiked = false;
           }
+
+          if (mp.has(String(pdvv.email))) {
+            pdvv.username = pdvv.username;
+          }
           resVideo.push(pdvv);
         }
+        
       }
       if (pds.length > 0) {
         for (let i = 0; i < pds.length; i++) {
@@ -3196,6 +3209,10 @@ export class PostContentService {
             pdss.isLiked = true;
           } else {
             pdss.isLiked = false;
+          }          
+
+          if (mp.has(String(pdss.email))) {
+            pdss.username = pdss.username;
           }          
           resStory.push(pdss);
         }
@@ -3217,6 +3234,10 @@ export class PostContentService {
             pddd.isLiked = true;
           } else {
             pddd.isLiked = false;
+          }          
+
+          if (mp.has(String(pddd.email))) {
+            pddd.username = pddd.username;
           }          
           resDiary.push(pddd);
         }
@@ -3306,7 +3327,11 @@ export class PostContentService {
             pdpp.isLiked = true;
           } else {
             pdpp.isLiked = false;
-          }                    
+          }        
+          
+          if (mp.has(String(pdpp.email))) {
+            pdpp.username = pdpp.username;
+          }          
           resPic.push(pdpp);
         }
       }
@@ -3328,7 +3353,61 @@ export class PostContentService {
     if (resDiary.length > 0) {
       data.diary = resDiary;
     }
+
+    if (data.video != undefined && data.video.length > 0) {
+      resVideo = [];
+      for (let x = 0; x < data.video.length; x++) {
+        let obj = data.video[x];
+        if (mp.has(String(obj.email))) {
+          let mpobj = mp.get(String(obj.email));
+          obj.username = mpobj.username;
+          resVideo.push(obj);
+        }                  
+      }
+      data.video = resVideo;
+    }
+
+    if (data.pict != undefined && data.pict.length > 0) {
+      resPic = [];
+      for (let x = 0; x < data.pict.length; x++) {
+        let obj = data.pict[x];
+        if (mp.has(String(obj.email))) {
+          let mpobj = mp.get(String(obj.email));
+          obj.username = mpobj.username;
+          resPic.push(obj);
+        }                  
+      }
+      data.pict = resPic;
+    }
+    
+    if (data.story != undefined && data.story.length > 0) {
+      resStory = [];
+      for (let x = 0; x < data.story.length; x++) {
+        let obj = data.story[x];
+        if (mp.has(String(obj.email))) {
+          let mpobj = mp.get(String(obj.email));
+          obj.username = mpobj.username;
+          resStory.push(obj);
+        }                  
+      }
+      data.story = resStory;
+    }    
+
+    if (data.diary != undefined && data.diary.length > 0) {
+      resDiary = [];
+      for (let x = 0; x < data.diary.length; x++) {
+        let obj = data.diary[x];
+        if (mp.has(String(obj.email))) {
+          let mpobj = mp.get(String(obj.email));
+          obj.username = mpobj.username;
+          resDiary.push(obj);
+        }                  
+      }
+      data.diary = resDiary;
+    }
+
     res.data = data;
+    
 
     var ver = await this.settingsService.findOneByJenis('AppsVersion');
     ver.value;

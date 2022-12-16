@@ -132,20 +132,27 @@ export class UtilsService {
     return Value * Math.PI / 180;
   }
 
-  async sendFcmV2(receiverParty: string, senderParty: string, eventType: string, event: string, typeTemplate: string, postID?: string, postType?: string, idtransaction?: string) {
+  async sendFcmV2(receiverParty: string, senderParty: string, eventType: string, event: string, typeTemplate: string, postID?: string, postType?: string, idtransaction?: string, customText?: any) {
+    //GET DATE
     var currentDate = await this.getDateTimeString()
+
+    //GET TEMPLATE
     var Templates_ = new TemplatesRepo();
     Templates_ = await this.getTemplate_repo(typeTemplate, 'NOTIFICATION');
 
+    //GET USERNAME
     var get_username_receiverParty = await this.getUsertname(receiverParty);
     var get_username_senderParty = await this.getUsertname(senderParty);
 
+    //GET PROFILE
     var profile_receiverParty = await this.generateProfile(receiverParty, "FULL");
     var profile_senderParty = await this.generateProfile(senderParty, "FULL");
 
+    //GET LANGISO
     const langIso_receiverParty = (profile_receiverParty.langIso != undefined) ? profile_receiverParty.langIso : "id";
     const langIso_senderParty = (profile_senderParty.langIso != undefined) ? profile_senderParty.langIso : "id";
-
+    
+    //SET POST TYPE UPPERCASE
     var Post_type_upper = "";
     if (postType == undefined) {
       Post_type_upper = "";
@@ -153,18 +160,24 @@ export class UtilsService {
       Post_type_upper = postType[0].toUpperCase() + postType.substring(1)
     }
 
+    //SET VARIABLE
+    let title_send = "";
     let body_send = { message: "" };
-    if (event == "BOOST_SUCCES") {
-      body_send['postID'] = idtransaction
-      body_send['postType'] = eventType
-    } else {
-      body_send['postID'] = postID
-      body_send['postType'] = postType
+
+    let body_save_id = "";
+    let body_save_en = "";
+    
+    let body_save_id_ = "";
+    let body_save_en_ = "";
+
+    //CECK EVENTTYPE
+    if (eventType == "COMMENT_TAG") {
+      eventType = "REACTION"
     }
 
-    let title_send = "";
+    //SET TITLE AND BODY
     if (langIso_receiverParty == "en") {
-      body_send.message = Templates_.body_detail.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+      body_save_en_ = Templates_.body_detail.toString();
       if (Templates_.subject != undefined) {
         if (Templates_.subject.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
@@ -179,6 +192,7 @@ export class UtilsService {
         }
       }
     } else {
+      body_save_id_ = Templates_.body_detail_id.toString();
       if (Templates_.subject_id != undefined) {
         if (Templates_.subject_id.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
@@ -192,9 +206,35 @@ export class UtilsService {
           title_send = Templates_.subject.toString();
         }
       }
-      body_send.message = Templates_.body_detail_id.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
     }
 
+    //SET BODY SAVE
+    if ((event == "REACTION") || (event == "COMMENT") || (event == "LIKE") || (event == "BOOST_CONTENT") || (event == "BOOST_BUY") || (event == "BOOST_SUCCES") || (event == "REWARDS")) {
+      if (event == "BOOST_SUCCES") {
+        body_send['postID'] = idtransaction
+        body_send['postType'] = eventType
+      } else {
+        body_send['postID'] = postID
+        body_send['postType'] = postType
+      }
+
+      if (event == "REWARDS"){
+        body_save_id = body_save_id_.toString().replace("${rewards}", customText)
+        body_save_en = body_save_en_.toString().replace("${rewards}", customText)
+      } else {
+        body_save_id = body_save_id_.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+        body_save_en = body_save_en_.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+      }
+    }
+
+    //SET BODY SEND
+    if (langIso_receiverParty == "en") {
+      body_send.message = body_save_en
+    } else {
+      body_send.message = body_save_id
+    }
+
+    //SET RECEIVER OR SENDER
     var senderOrReceiverInfo = {
       fullName: (profile_senderParty.fullName != undefined) ? profile_senderParty.fullName : null,
       avatar: {
@@ -206,6 +246,7 @@ export class UtilsService {
       username: (profile_senderParty.username != undefined) ? profile_senderParty.username : null
     };
 
+    //SEND FCM
     var datadevice = await this.userdevicesService.findActive(receiverParty);
     var device_user = [];
     for (var i = 0; i < datadevice.length; i++) {
@@ -213,10 +254,7 @@ export class UtilsService {
       device_user.push(datadevice[i].deviceID)
     }
 
-    if (eventType == "COMMENT_TAG") {
-      eventType = "REACTION"
-    }
-
+    //INSERT NOTIFICATION
     var generateID = await this.generateId();
     var createNotificationsDto = new CreateNotificationsDto();
     createNotificationsDto._id = generateID;
@@ -227,8 +265,8 @@ export class UtilsService {
     createNotificationsDto.mate = senderParty;
     createNotificationsDto.devices = device_user;
     createNotificationsDto.title = title_send;
-    createNotificationsDto.body = Templates_.body_detail.toString().replace("${post_type}", "Hyppe" + Post_type_upper);
-    createNotificationsDto.bodyId = Templates_.body_detail_id.toString().replace("${post_type}", "Hyppe" + Post_type_upper);
+    createNotificationsDto.body = body_save_id;
+    createNotificationsDto.bodyId = body_save_en;
     createNotificationsDto.active = true;
     createNotificationsDto.flowIsDone = true;
     createNotificationsDto.createdAt = currentDate;
