@@ -20,6 +20,8 @@ export class Accountbalances {
     timestamp: string
     @Prop()
     description: string
+    @Prop()
+    idtrans: mongoose.Types.ObjectId;
 
 }
 

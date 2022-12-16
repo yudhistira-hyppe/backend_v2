@@ -8,6 +8,7 @@ export class CreateAccountbalancesDto {
     type: String;
     timestamp: String;
     description: String;
+    idtrans: { oid: String; };
 
 
 }
