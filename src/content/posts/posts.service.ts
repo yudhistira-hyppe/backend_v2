@@ -8925,10 +8925,15 @@ export class PostsService {
                         "apsara": 1,
                         "apsaraId": 1,
                         "apsaraThumbId": 1,
-                        "mediaEndpoint": 1,
+                        "mediaEndpoint": {
+                          "$concat": ["/stream/", "$pict.postID"]
+                        },
                         "mediaUri": 1,
-                        "mediaThumbEndpoint": 1,
+                        "mediaThumbEndpoint": {
+                          "$concat": ["/stream/", "$pict.postID"]
+                        },
                         "mediaThumbUri": 1,
+                        "mediaType": 1,
 
                       }
                     }
@@ -8944,20 +8949,18 @@ export class PostsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$media",
-                  preserveNullAndEmptyArrays: true
-                }
-              },
-              {
                 $project: {
                   "_id": "$pict._id",
-                  "mediaType": "$media.mediaType",
-                  "mediaThumbEndpoint": {
-                    "$concat": ["/pict/", "$pict.postID"]
-                  },
-                  "mediaEndpoint": {
-                    "$concat": ["/pict/", "$pict.postID"]
+                  "mediaThumbEndpoint": "$pict.mediaThumbEndpoint",
+                  "mediaEndpoint": "$pict.mediaEndpoint",
+                  "mediaType":
+                  {
+                    $arrayElemAt: ['$media.mediaType', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$post.postID"
+                      ]
+                    }]
                   },
                   "createdAt": "$pict.createdAt",
                   "updatedAt": "$pict.updatedAt",
@@ -8980,7 +8983,7 @@ export class PostsService {
                         $gte: ["$pict.saleAmount", 1]
                       },
                       then: true,
-                      else: false
+                      else: null
                     }
                   },
                   "insight": {
@@ -8990,8 +8993,24 @@ export class PostsService {
                     "likes": "$pict.likes",
 
                   },
-                  "apsaraId": "$media.apsaraId",
-                  "isApsara": "$media.apsara",
+                  "apsaraId":
+                  {
+                    $arrayElemAt: ['$media.apsaraID', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$post.postID"
+                      ]
+                    }]
+                  },
+                  "isApsara":
+                  {
+                    $arrayElemAt: ['$media.apsara', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$post.postID"
+                      ]
+                    }]
+                  },
                   "isLiked": "$pict.isLiked",
 
                 }
@@ -9098,20 +9117,22 @@ export class PostsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$media",
-                  preserveNullAndEmptyArrays: true
-                }
-              },
-              {
                 $project: {
                   "_id": "$pict._id",
-                  "mediaType": "$media.mediaType",
                   "mediaThumbEndpoint": {
                     "$concat": ["/thumb/", "$pict.postID"]
                   },
                   "mediaEndpoint": {
                     "$concat": ["/stream/", "$pict.postID"]
+                  },
+                  "mediaType":
+                  {
+                    $arrayElemAt: ['$media.mediaType', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$post.postID"
+                      ]
+                    }]
                   },
                   "createdAt": "$pict.createdAt",
                   "updatedAt": "$pict.updatedAt",
@@ -9134,7 +9155,7 @@ export class PostsService {
                         $gte: ["$pict.saleAmount", 1]
                       },
                       then: true,
-                      else: false
+                      else: null
                     }
                   },
                   "insight": {
@@ -9144,8 +9165,24 @@ export class PostsService {
                     "likes": "$pict.likes",
 
                   },
-                  "apsaraId": "$media.apsaraId",
-                  "isApsara": "$media.apsara",
+                  "apsaraId":
+                  {
+                    $arrayElemAt: ['$media.apsaraID', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$post.postID"
+                      ]
+                    }]
+                  },
+                  "isApsara":
+                  {
+                    $arrayElemAt: ['$media.apsara', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$post.postID"
+                      ]
+                    }]
+                  },
                   "isLiked": "$pict.isLiked",
 
                 }
@@ -9252,20 +9289,22 @@ export class PostsService {
                 }
               },
               {
-                $unwind: {
-                  path: "$media",
-                  preserveNullAndEmptyArrays: true
-                }
-              },
-              {
                 $project: {
                   "_id": "$pict._id",
-                  "mediaType": "$media.mediaType",
                   "mediaThumbEndpoint": {
                     "$concat": ["/thumb/", "$pict.postID"]
                   },
                   "mediaEndpoint": {
                     "$concat": ["/stream/", "$pict.postID"]
+                  },
+                  "mediaType":
+                  {
+                    $arrayElemAt: ['$media.mediaType', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$post.postID"
+                      ]
+                    }]
                   },
                   "createdAt": "$pict.createdAt",
                   "updatedAt": "$pict.updatedAt",
@@ -9288,7 +9327,7 @@ export class PostsService {
                         $gte: ["$pict.saleAmount", 1]
                       },
                       then: true,
-                      else: false
+                      else: null
                     }
                   },
                   "insight": {
@@ -9298,8 +9337,24 @@ export class PostsService {
                     "likes": "$pict.likes",
 
                   },
-                  "apsaraId": "$media.apsaraId",
-                  "isApsara": "$media.apsara",
+                  "apsaraId":
+                  {
+                    $arrayElemAt: ['$media.apsaraID', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$post.postID"
+                      ]
+                    }]
+                  },
+                  "isApsara":
+                  {
+                    $arrayElemAt: ['$media.apsara', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$post.postID"
+                      ]
+                    }]
+                  },
                   "isLiked": "$pict.isLiked",
 
                 }
@@ -9312,9 +9367,9 @@ export class PostsService {
               },
 
             ]
-        }
+        },
 
-      });
+      },);
 
     let query = await this.PostsModel.aggregate(pipeline);
     return query;

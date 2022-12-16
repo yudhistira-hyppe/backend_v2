@@ -1406,6 +1406,8 @@ export class GetusercontentsController {
         var arrdatauser = [];
         var objuser = {};
         var mediaprofilepicts_res = {};
+        var user = [];
+        var pict = [];
 
 
         try {

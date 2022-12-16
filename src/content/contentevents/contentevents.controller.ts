@@ -174,6 +174,7 @@ export class ContenteventsController {
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/posts/interactive')
   async interactive(@Req() request: any, @Headers() headers) {
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", request);
     if (headers['x-auth-user'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed auth-user undefined',
@@ -197,6 +198,7 @@ export class ContenteventsController {
 
     var Insight_sender = await this.insightsService.findemail(email_user);
     var Insight_receiver = await this.insightsService.findemail(email_receiverParty);
+
 
     if (eventType == "FOLLOWING") {
       var ceck_data_FOLLOWER = await this.contenteventsService.ceckData(email_receiverParty, "FOLLOWER", "ACCEPT", email_user, "", "");
@@ -441,16 +443,30 @@ export class ContenteventsController {
           );
         }
       } else {
-        try {
-          await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, true);
-          await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, true);
-          await this.insightsService.updateLike(email_receiverParty);
-          await this.postsService.updateLike(email_receiverParty, request.body.postID);
-        } catch (error) {
-          await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed, ' +
-            error,
-          );
+        if (ceck_data_DONE.active && ceck_data_DONE.active){
+          try {
+            await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, false);
+            await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, false);
+            await this.insightsService.updateUnlike(email_receiverParty);
+            await this.postsService.updateUnLike(email_receiverParty, request.body.postID);
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed, ' +
+              error,
+            );
+          }
+        }else{
+          try {
+            await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, true);
+            await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, true);
+            await this.insightsService.updateLike(email_receiverParty);
+            await this.postsService.updateLike(email_receiverParty, request.body.postID);
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed, ' +
+              error,
+            );
+          }
         }
       }
     } else if (eventType == "UNLIKE") {
@@ -467,6 +483,32 @@ export class ContenteventsController {
             'Unabled to proceed, ' +
             error,
           );
+        }
+      }else{
+        if (ceck_data_DONE.active && ceck_data_DONE.active) {
+          try {
+            await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, false);
+            await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, false);
+            await this.insightsService.updateUnlike(email_receiverParty);
+            await this.postsService.updateUnLike(email_receiverParty, request.body.postID);
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed, ' +
+              error,
+            );
+          }
+        } else {
+          try {
+            await this.contenteventsService.updateUnlike(email_user, "LIKE", "DONE", request.body.postID, true);
+            await this.contenteventsService.updateUnlike(email_receiverParty, "LIKE", "ACCEPT", request.body.postID, true);
+            await this.insightsService.updateLike(email_receiverParty);
+            await this.postsService.updateLike(email_receiverParty, request.body.postID);
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed, ' +
+              error,
+            );
+          }
         }
       }
     } else if (eventType == "UNFOLLOW") {

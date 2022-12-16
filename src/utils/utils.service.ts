@@ -163,8 +163,12 @@ export class UtilsService {
     //SET VARIABLE
     let title_send = "";
     let body_send = { message: "" };
+
     let body_save_id = "";
     let body_save_en = "";
+
+    let body_save_id_ = "";
+    let body_save_en_ = "";
 
     //CECK EVENTTYPE
     if (eventType == "COMMENT_TAG") {
@@ -173,7 +177,8 @@ export class UtilsService {
 
     //SET TITLE AND BODY
     if (langIso_receiverParty == "en") {
-      body_save_en = Templates_.body_detail.toString();
+      body_save_en_ = Templates_.body_detail.toString();
+      body_save_id_ = Templates_.body_detail_id.toString();
       if (Templates_.subject != undefined) {
         if (Templates_.subject.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
@@ -188,7 +193,8 @@ export class UtilsService {
         }
       }
     } else {
-      body_save_id = Templates_.body_detail_id.toString();
+      body_save_en_ = Templates_.body_detail.toString();
+      body_save_id_ = Templates_.body_detail_id.toString();
       if (Templates_.subject_id != undefined) {
         if (Templates_.subject_id.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
@@ -205,7 +211,7 @@ export class UtilsService {
     }
 
     //SET BODY SAVE
-    if ((event == "REACTION") || (event == "COMMENT") || (event == "LIKE") || (event == "BOOST_CONTENT") || (event == "BOOST_BUY") || (event == "BOOST_SUCCES") || (event == "REWARDS")) {
+    if ((eventType == "REACTION") || (eventType == "COMMENT") || (eventType == "LIKE") || (eventType == "TRANSACTION")) {
       if (event == "BOOST_SUCCES") {
         body_send['postID'] = idtransaction
         body_send['postType'] = eventType
@@ -215,11 +221,11 @@ export class UtilsService {
       }
 
       if (event == "REWARDS"){
-        body_save_id = body_save_id.toString().replace("${rewards}", customText)
-        body_save_en = body_save_en.toString().replace("${rewards}", customText)
+        body_save_id = body_save_id_.toString().replace("${rewards}", customText)
+        body_save_en = body_save_en_.toString().replace("${rewards}", customText)
       } else {
-        body_save_id = body_save_id.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
-        body_save_en = body_save_en.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+        body_save_id = body_save_id_.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+        body_save_en = body_save_en_.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
       }
     }
 
@@ -261,8 +267,8 @@ export class UtilsService {
     createNotificationsDto.mate = senderParty;
     createNotificationsDto.devices = device_user;
     createNotificationsDto.title = title_send;
-    createNotificationsDto.body = body_save_id;
-    createNotificationsDto.bodyId = body_save_en;
+    createNotificationsDto.body = body_save_en;
+    createNotificationsDto.bodyId = body_save_id;
     createNotificationsDto.active = true;
     createNotificationsDto.flowIsDone = true;
     createNotificationsDto.createdAt = currentDate;
@@ -298,6 +304,7 @@ export class UtilsService {
     var splitdt = dtstring.split(".");
     var date = splitdt[0].replace("T", " ");
     var mediaprofilepicts = null;
+    var bodypayload = null;
     let createNotificationsDto = new CreateNotificationsDto();
 
     const datauserbasicsService = await this.userbasicsService.findOne(
@@ -371,30 +378,68 @@ export class UtilsService {
         langIso = "";
       }
 
-      if (langIso === "id") {
-        payload = {
-          notification: {
+      if (postID != undefined || postID != "" || postID != null) {
+        if (langIso === "id") {
+          bodypayload = { "message": bodyin, "postID": postID, "postType": postType }
+          payload = {
+            notification: {
 
-            title: titlein,
-            body: bodyin
-          }
-        };
-      } else if (langIso === "en") {
-        payload = {
-          notification: {
+              title: titlein,
+              body: JSON.stringify(bodypayload)
+            }
+          };
+        }
+        else if (langIso === "en") {
+          bodypayload = { "message": bodyen, "postID": postID, "postType": postType }
+          payload = {
+            notification: {
 
-            title: titleen,
-            body: bodyen
-          }
-        };
+              title: titleen,
+              body: JSON.stringify(bodypayload)
+            }
+          };
+        } else {
+          bodypayload = { "message": bodyin, "postID": postID, "postType": postType }
+          payload = {
+            notification: {
+
+              title: titlein,
+              body: JSON.stringify(bodypayload)
+            }
+          };
+        }
+
+
       } else {
-        payload = {
-          notification: {
-            title: titlein,
-            body: bodyin
-          }
-        };
+        if (langIso === "id") {
+          payload = {
+            notification: {
+
+              title: titlein,
+              body: bodyin
+            }
+          };
+        } else if (langIso === "en") {
+          payload = {
+            notification: {
+
+              title: titleen,
+              body: bodyen
+            }
+          };
+        } else {
+          payload = {
+            notification: {
+              title: titlein,
+              body: bodyin
+            }
+          };
+        }
       }
+
+
+
+
       var arraydevice = [];
       datadevice = await this.userdevicesService.findActive(emailuserbasic);
       for (var i = 0; i < datadevice.length; i++) {
@@ -438,6 +483,9 @@ export class UtilsService {
 
     }
   }
+
+
+
 
   async getSetting(jenis: string) {
     return (await this.settingsService.findOneByJenis(jenis)).value;
