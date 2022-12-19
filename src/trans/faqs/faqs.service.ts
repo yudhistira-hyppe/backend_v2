@@ -166,6 +166,16 @@ export class FaqService {
     return query;
   }
 
+  async datafaq(tipe: string): Promise<object> {
+    const query = await this.faqsModel.aggregate([
+      { $match: { "tipe": tipe, "active": true } },
+      { $sort: { datetime: -1 }, },
+    ]);
+
+
+    return query;
+  }
+
 
   async dateRange(startDate, endDate, steps = 1) {
     const dateArray = [];

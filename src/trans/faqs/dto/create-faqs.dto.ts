@@ -7,6 +7,9 @@ export class CreateFaqsDto {
   datetime: string;
   IdUser: { oid: String; };
   active: boolean;
+  child: string;
+  detail1: any[];
+
 
 
 }
