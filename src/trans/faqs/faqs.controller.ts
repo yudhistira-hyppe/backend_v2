@@ -138,7 +138,7 @@ export class FaqsController {
       "info": ["The process successful"],
     };
 
-    let data = await this.faqService.viewalldata(tipe);
+    let data = await this.faqService.datafaq(tipe);
     if (!data) {
       throw new Error('Todo is not found!');
     }

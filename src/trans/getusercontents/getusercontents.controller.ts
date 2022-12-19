@@ -851,534 +851,521 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
+    // @Post('api/getusercontents/searchdata')
+    // @UseGuards(JwtAuthGuard)
+    // async contentfilter(@Req() request: Request): Promise<any> {
+
+    //     var datavids = null;
+    //     var isLike = null;
+    //     var datadiary = null;
+    //     var datapict = null;
+    //     var keys = null;
+    //     var datatag = null;
+    //     var datauser = null;
+    //     var postType = null;
+    //     var mediaprofilepicts = null;
+    //     var skip = 0;
+    //     var limit = 0;
+    //     var totalFilterPostVid = null;
+    //     var totalFilterVid = null;
+    //     var totalFilterPostDiary = null;
+    //     var totalFilterDiary = null;
+    //     var totalFilterPostPic = null;
+    //     var totalFilterPict = null;
+    //     var totalFilterPostUser = null;
+    //     var totalFilterUser = null;
+    //     var email = null;
+    //     var dataLike = null;
+
+    //     var request_json = JSON.parse(JSON.stringify(request.body));
+    //     if (request_json["skip"] !== undefined) {
+    //         skip = request_json["skip"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+
+    //     if (request_json["limit"] !== undefined) {
+    //         limit = request_json["limit"];
+    //     } else {
+    //         throw new BadRequestException("Unabled to proceed");
+    //     }
+
+    //     email = request_json["email"];
+    //     keys = request_json["keys"];
+
+
+    //     const messages = {
+    //         "info": ["The process successful"],
+    //     };
+
+    //     var arrmediaid = [];
+    //     var arrdatauser = [];
+    //     var objuser = {};
+    //     var mediaprofilepicts_res = {};
+
+
+    //     if (keys !== undefined) {
+
+
+
+    //         try {
+
+    //             datauser = await this.userauthsService.findUserNew(keys, skip, limit);
+
+    //             for (var i = 0; i < datauser.length; i++) {
+    //                 var media = datauser[i].mediaId;
+
+    //                 try {
+
+    //                     mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
+    //                     console.log(mediaprofilepicts)
+    //                     var mediaUri = mediaprofilepicts.mediaUri;
+    //                     let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
+    //                     mediaprofilepicts_res = {
+    //                         mediaBasePath: mediaprofilepicts.mediaBasePath,
+    //                         mediaUri: mediaprofilepicts.mediaUri,
+    //                         mediaType: mediaprofilepicts.mediaType,
+    //                         mediaEndpoint: result
+    //                     };
+    //                 } catch (e) {
+
+    //                     mediaprofilepicts_res = {
+    //                         mediaBasePath: "",
+    //                         mediaUri: "",
+    //                         mediaType: "",
+    //                         mediaEndpoint: ""
+    //                     };
+    //                 }
+
+
+    //                 objuser = {
+
+    //                     "_id": datauser[i]._id,
+    //                     "avatar": mediaprofilepicts_res,
+    //                     "idUserAuth": datauser[i].idUserAuth,
+    //                     "username": datauser[i].username,
+    //                     "fullName": datauser[i].fullName,
+    //                     "email": datauser[i].email,
+    //                 }
+
+    //                 arrdatauser.push(objuser);
+    //             }
+
+    //         } catch (e) {
+    //             datauser = null;
+    //             arrdatauser = [];
+
+    //         }
+
+    //     } else {
+    //         arrdatauser = [];
+    //     }
+
+
+    //     try {
+    //         let query = null;
+    //         query = await this.postsService.findcontentfilters(keys, "vid", skip, limit, email);
+
+    //         var datas = null;
+    //         var arrdata = [];
+    //         let pict: String[] = [];
+    //         var objk = {};
+    //         var type = null;
+    //         var idapsara = null;
+    //         var apsara = null;
+    //         var idapsaradefine = null;
+    //         var apsaradefine = null;
+    //         for (var i = 0; i < query.length; i++) {
+    //             try {
+    //                 idapsara = query[i].apsaraId;
+    //             } catch (e) {
+    //                 idapsara = "";
+    //             }
+    //             try {
+    //                 apsara = query[i].apsara;
+    //             } catch (e) {
+    //                 apsara = false;
+    //             }
+    //             if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+    //                 apsaradefine = false;
+    //             } else {
+    //                 apsaradefine = true;
+    //             }
+
+    //             if (idapsara === undefined || idapsara === "" || idapsara === null) {
+    //                 idapsaradefine = "";
+    //             } else {
+    //                 idapsaradefine = idapsara;
+    //             }
+    //             var type = query[i].postType;
+    //             pict = [idapsara];
+
+    //             if (idapsara === "") {
+    //                 datas = [];
+    //             } else {
+    //                 if (type === "pict") {
+
+    //                     try {
+    //                         datas = await this.postContentService.getImageApsara(pict);
+    //                     } catch (e) {
+    //                         datas = [];
+    //                     }
+    //                 }
+    //                 else if (type === "vid") {
+    //                     try {
+    //                         datas = await this.postContentService.getVideoApsara(pict);
+    //                     } catch (e) {
+    //                         datas = [];
+    //                     }
+
+    //                 }
+    //                 else if (type === "story") {
+    //                     try {
+    //                         datas = await this.postContentService.getVideoApsara(pict);
+    //                     } catch (e) {
+    //                         datas = [];
+    //                     }
+    //                 }
+    //                 else if (type === "diary") {
+    //                     try {
+    //                         datas = await this.postContentService.getVideoApsara(pict);
+    //                     } catch (e) {
+    //                         datas = [];
+    //                     }
+    //                 }
+    //             }
+
+    //             let postid = query[i].postID;
+    //             try {
+    //                 dataLike = await this.postsService.isLike(email, postid);
+    //             } catch (e) {
+    //                 dataLike = null;
+
+    //             }
+
+    //             if (dataLike.length > 0) {
+    //                 isLike = true
+    //             } else {
+    //                 isLike = false
+    //             }
+    //             objk = {
+    //                 "_id": query[i]._id,
+    //                 "mediaBasePath": query[i].mediaBasePath,
+    //                 "mediaUri": query[i].mediaUri,
+    //                 "mediaType": query[i].mediaType,
+    //                 "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+    //                 "mediaEndpoint": query[i].mediaEndpoint,
+    //                 "mediaThumbUri": query[i].mediaThumbUri,
+    //                 "createdAt": query[i].createdAt,
+    //                 "updatedAt": query[i].updatedAt,
+    //                 "postID": query[i].postID,
+    //                 "email": query[i].email,
+    //                 "postType": query[i].postType,
+    //                 "description": query[i].description,
+    //                 "title": query[i].title,
+    //                 "active": query[i].active,
+    //                 "metadata": query[i].metadata,
+    //                 "location": query[i].location,
+    //                 "isOwned": query[i].isOwned,
+    //                 "visibility": query[i].visibility,
+    //                 "isViewed": query[i].isViewed,
+    //                 "allowComments": query[i].allowComments,
+    //                 "saleAmount": query[i].saleAmount,
+    //                 "monetize": query[i].monetize,
+    //                 "insight": query[i].insight,
+    //                 "apsaraId": idapsaradefine,
+    //                 "isApsara": apsaradefine,
+    //                 "certified": query[i].certified,
+    //                 "isLiked": isLike,
+    //                 "reportedStatus": query[i].reportedStatus,
+    //                 "reportedUserCount": query[i].reportedUserCount,
+    //                 "media": datas
+    //             };
+
+    //             arrdata.push(objk);
+    //         }
+    //         datavids = arrdata;
+    //     } catch (e) {
+    //         datavids = null;
+    //     }
+
+    //     try {
+    //         let query = null;
+    //         query = await this.postsService.findcontentfilters(keys, "diary", skip, limit, email);
+    //         var datas = null;
+    //         var arrdata = [];
+    //         let pict: String[] = [];
+    //         var objk = {};
+    //         var type = null;
+    //         var idapsara = null;
+    //         var apsara = null;
+    //         var idapsaradefine = null;
+    //         var apsaradefine = null;
+    //         for (var i = 0; i < query.length; i++) {
+    //             try {
+    //                 idapsara = query[i].apsaraId;
+    //             } catch (e) {
+    //                 idapsara = "";
+    //             }
+    //             try {
+    //                 apsara = query[i].apsara;
+    //             } catch (e) {
+    //                 apsara = false;
+    //             }
+    //             if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+    //                 apsaradefine = false;
+    //             } else {
+    //                 apsaradefine = true;
+    //             }
+
+    //             if (idapsara === undefined || idapsara === "" || idapsara === null) {
+    //                 idapsaradefine = "";
+    //             } else {
+    //                 idapsaradefine = idapsara;
+    //             }
+    //             var type = query[i].postType;
+    //             pict = [idapsara];
+
+    //             if (idapsara === "") {
+    //                 datas = [];
+    //             } else {
+    //                 if (type === "pict") {
+
+    //                     try {
+    //                         datas = await this.postContentService.getImageApsara(pict);
+    //                     } catch (e) {
+    //                         datas = [];
+    //                     }
+    //                 }
+    //                 else if (type === "vid") {
+    //                     try {
+    //                         datas = await this.postContentService.getVideoApsara(pict);
+    //                     } catch (e) {
+    //                         datas = [];
+    //                     }
+
+    //                 }
+    //                 else if (type === "story") {
+    //                     try {
+    //                         datas = await this.postContentService.getVideoApsara(pict);
+    //                     } catch (e) {
+    //                         datas = [];
+    //                     }
+    //                 }
+    //                 else if (type === "diary") {
+    //                     try {
+    //                         datas = await this.postContentService.getVideoApsara(pict);
+    //                     } catch (e) {
+    //                         datas = [];
+    //                     }
+    //                 }
+    //             }
+
+    //             let postid = query[i].postID;
+    //             try {
+    //                 dataLike = await this.postsService.isLike(email, postid);
+    //             } catch (e) {
+    //                 dataLike = null;
+
+    //             }
+
+    //             if (dataLike.length > 0) {
+    //                 isLike = true
+    //             } else {
+    //                 isLike = false
+    //             }
+    //             objk = {
+    //                 "_id": query[i]._id,
+    //                 "mediaBasePath": query[i].mediaBasePath,
+    //                 "mediaUri": query[i].mediaUri,
+    //                 "mediaType": query[i].mediaType,
+    //                 "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+    //                 "mediaEndpoint": query[i].mediaEndpoint,
+    //                 "mediaThumbUri": query[i].mediaThumbUri,
+    //                 "createdAt": query[i].createdAt,
+    //                 "updatedAt": query[i].updatedAt,
+    //                 "postID": query[i].postID,
+    //                 "email": query[i].email,
+    //                 "postType": query[i].postType,
+    //                 "description": query[i].description,
+    //                 "title": query[i].title,
+    //                 "active": query[i].active,
+    //                 "metadata": query[i].metadata,
+    //                 "location": query[i].location,
+    //                 "isOwned": query[i].isOwned,
+    //                 "visibility": query[i].visibility,
+    //                 "isViewed": query[i].isViewed,
+    //                 "allowComments": query[i].allowComments,
+    //                 "saleAmount": query[i].saleAmount,
+    //                 "monetize": query[i].monetize,
+    //                 "insight": query[i].insight,
+    //                 "apsaraId": idapsaradefine,
+    //                 "isApsara": apsaradefine,
+    //                 "certified": query[i].certified,
+    //                 "isLiked": isLike,
+    //                 "reportedStatus": query[i].reportedStatus,
+    //                 "reportedUserCount": query[i].reportedUserCount,
+    //                 "media": datas
+    //             };
+
+    //             arrdata.push(objk);
+    //         }
+    //         datadiary = arrdata;
+    //     } catch (e) {
+    //         datadiary = null;
+    //     }
+
+    //     try {
+    //         let query = null;
+    //         query = await this.postsService.findcontentfilters(keys, "pict", skip, limit, email);
+
+    //         var datas = null;
+    //         var arrdata = [];
+    //         let pict: String[] = [];
+    //         var objk = {};
+    //         var type = null;
+    //         var idapsara = null;
+    //         var apsara = null;
+    //         var idapsaradefine = null;
+    //         var apsaradefine = null;
+    //         for (var i = 0; i < query.length; i++) {
+    //             try {
+    //                 idapsara = query[i].apsaraId;
+    //             } catch (e) {
+    //                 idapsara = "";
+    //             }
+    //             try {
+    //                 apsara = query[i].apsara;
+    //             } catch (e) {
+    //                 apsara = false;
+    //             }
+    //             if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+    //                 apsaradefine = false;
+    //             } else {
+    //                 apsaradefine = true;
+    //             }
+
+    //             if (idapsara === undefined || idapsara === "" || idapsara === null) {
+    //                 idapsaradefine = "";
+    //             } else {
+    //                 idapsaradefine = idapsara;
+    //             }
+    //             var type = query[i].postType;
+    //             pict = [idapsara];
+
+    //             if (idapsara === "") {
+    //                 datas = [];
+    //             } else {
+    //                 if (type === "pict") {
+
+    //                     try {
+    //                         datas = await this.postContentService.getImageApsara(pict);
+    //                     } catch (e) {
+    //                         datas = [];
+    //                     }
+    //                 }
+    //                 else if (type === "vid") {
+    //                     try {
+    //                         datas = await this.postContentService.getVideoApsara(pict);
+    //                     } catch (e) {
+    //                         datas = [];
+    //                     }
+
+    //                 }
+    //                 else if (type === "story") {
+    //                     try {
+    //                         datas = await this.postContentService.getVideoApsara(pict);
+    //                     } catch (e) {
+    //                         datas = [];
+    //                     }
+    //                 }
+    //                 else if (type === "diary") {
+    //                     try {
+    //                         datas = await this.postContentService.getVideoApsara(pict);
+    //                     } catch (e) {
+    //                         datas = [];
+    //                     }
+    //                 }
+    //             }
+
+
+    //             let postid = query[i].postID;
+    //             try {
+    //                 dataLike = await this.postsService.isLike(email, postid);
+    //             } catch (e) {
+    //                 dataLike = null;
+
+    //             }
+
+    //             if (dataLike.length > 0) {
+    //                 isLike = true
+    //             } else {
+    //                 isLike = false
+    //             }
+
+    //             objk = {
+    //                 "_id": query[i]._id,
+    //                 "mediaBasePath": query[i].mediaBasePath,
+    //                 "mediaUri": query[i].mediaUri,
+    //                 "mediaType": query[i].mediaType,
+    //                 "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
+    //                 "mediaEndpoint": query[i].mediaEndpoint,
+    //                 "mediaThumbUri": query[i].mediaThumbUri,
+    //                 "createdAt": query[i].createdAt,
+    //                 "updatedAt": query[i].updatedAt,
+    //                 "postID": query[i].postID,
+    //                 "email": query[i].email,
+    //                 "postType": query[i].postType,
+    //                 "description": query[i].description,
+    //                 "title": query[i].title,
+    //                 "active": query[i].active,
+    //                 "metadata": query[i].metadata,
+    //                 "location": query[i].location,
+    //                 "isOwned": query[i].isOwned,
+    //                 "visibility": query[i].visibility,
+    //                 "isViewed": query[i].isViewed,
+    //                 "allowComments": query[i].allowComments,
+    //                 "saleAmount": query[i].saleAmount,
+    //                 "monetize": query[i].monetize,
+    //                 "insight": query[i].insight,
+    //                 "apsaraId": idapsaradefine,
+    //                 "isApsara": apsaradefine,
+    //                 "certified": query[i].certified,
+    //                 "isLiked": isLike,
+    //                 "reportedStatus": query[i].reportedStatus,
+    //                 "reportedUserCount": query[i].reportedUserCount,
+    //                 "media": datas
+    //             };
+
+    //             arrdata.push(objk);
+    //         }
+    //         datapict = arrdata;
+    //     } catch (e) {
+    //         datapict = null;
+    //     }
+
+    //     let data = {
+    //         "users": { "data": arrdatauser, "skip": skip, "limit": limit },
+    //         "vid": { "data": datavids, "skip": skip, "limit": limit },
+    //         "diary": { "data": datadiary, "skip": skip, "limit": limit },
+    //         "pict": { "data": datapict, "skip": skip, "limit": limit },
+    //     };
+    //     return { response_code: 202, data, messages };
+    // }
+
+
     @Post('api/getusercontents/searchdata')
-    @UseGuards(JwtAuthGuard)
-    async contentfilter(@Req() request: Request): Promise<any> {
-
-        var datavids = null;
-        var isLike = null;
-        var datadiary = null;
-        var datapict = null;
-        var keys = null;
-        var datatag = null;
-        var datauser = null;
-        var postType = null;
-        var mediaprofilepicts = null;
-        var skip = 0;
-        var limit = 0;
-        var totalFilterPostVid = null;
-        var totalFilterVid = null;
-        var totalFilterPostDiary = null;
-        var totalFilterDiary = null;
-        var totalFilterPostPic = null;
-        var totalFilterPict = null;
-        var totalFilterPostUser = null;
-        var totalFilterUser = null;
-        var email = null;
-        var dataLike = null;
-
-        var request_json = JSON.parse(JSON.stringify(request.body));
-        if (request_json["skip"] !== undefined) {
-            skip = request_json["skip"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        if (request_json["limit"] !== undefined) {
-            limit = request_json["limit"];
-        } else {
-            throw new BadRequestException("Unabled to proceed");
-        }
-
-        email = request_json["email"];
-        keys = request_json["keys"];
-
-
-        const messages = {
-            "info": ["The process successful"],
-        };
-
-        var arrmediaid = [];
-        var arrdatauser = [];
-        var objuser = {};
-        var mediaprofilepicts_res = {};
-
-
-        if (keys !== undefined) {
-
-
-
-            try {
-
-                datauser = await this.userauthsService.findUserNew(keys, skip, limit);
-
-                for (var i = 0; i < datauser.length; i++) {
-                    var media = datauser[i].mediaId;
-
-                    try {
-
-                        mediaprofilepicts = await this.mediaprofilepictsService.findOnemediaID(media);
-                        console.log(mediaprofilepicts)
-                        var mediaUri = mediaprofilepicts.mediaUri;
-                        let result = "/profilepict/" + mediaUri.replace("_0001.jpeg", "");
-                        mediaprofilepicts_res = {
-                            mediaBasePath: mediaprofilepicts.mediaBasePath,
-                            mediaUri: mediaprofilepicts.mediaUri,
-                            mediaType: mediaprofilepicts.mediaType,
-                            mediaEndpoint: result
-                        };
-                    } catch (e) {
-
-                        mediaprofilepicts_res = {
-                            mediaBasePath: "",
-                            mediaUri: "",
-                            mediaType: "",
-                            mediaEndpoint: ""
-                        };
-                    }
-
-
-                    objuser = {
-
-                        "_id": datauser[i]._id,
-                        "avatar": mediaprofilepicts_res,
-                        "idUserAuth": datauser[i].idUserAuth,
-                        "username": datauser[i].username,
-                        "fullName": datauser[i].fullName,
-                        "email": datauser[i].email,
-                    }
-
-                    arrdatauser.push(objuser);
-                }
-
-            } catch (e) {
-                datauser = null;
-                arrdatauser = [];
-
-            }
-
-        } else {
-            arrdatauser = [];
-        }
-
-
-        try {
-            let query = null;
-            query = await this.postsService.findcontentfilters(keys, "vid", skip, limit, email);
-
-            var datas = null;
-            var arrdata = [];
-            let pict: String[] = [];
-            var objk = {};
-            var type = null;
-            var idapsara = null;
-            var apsara = null;
-            var idapsaradefine = null;
-            var apsaradefine = null;
-            for (var i = 0; i < query.length; i++) {
-                try {
-                    idapsara = query[i].apsaraId;
-                } catch (e) {
-                    idapsara = "";
-                }
-                try {
-                    apsara = query[i].apsara;
-                } catch (e) {
-                    apsara = false;
-                }
-                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
-                    apsaradefine = false;
-                } else {
-                    apsaradefine = true;
-                }
-
-                if (idapsara === undefined || idapsara === "" || idapsara === null) {
-                    idapsaradefine = "";
-                } else {
-                    idapsaradefine = idapsara;
-                }
-                var type = query[i].postType;
-                pict = [idapsara];
-
-                if (idapsara === "") {
-                    datas = [];
-                } else {
-                    if (type === "pict") {
-
-                        try {
-                            datas = await this.postContentService.getImageApsara(pict);
-                        } catch (e) {
-                            datas = [];
-                        }
-                    }
-                    else if (type === "vid") {
-                        try {
-                            datas = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            datas = [];
-                        }
-
-                    }
-                    else if (type === "story") {
-                        try {
-                            datas = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            datas = [];
-                        }
-                    }
-                    else if (type === "diary") {
-                        try {
-                            datas = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            datas = [];
-                        }
-                    }
-                }
-
-                let postid = query[i].postID;
-                try {
-                    dataLike = await this.postsService.isLike(email, postid);
-                } catch (e) {
-                    dataLike = null;
-
-                }
-
-                if (dataLike.length > 0) {
-                    isLike = true
-                } else {
-                    isLike = false
-                }
-                objk = {
-                    "_id": query[i]._id,
-                    "mediaBasePath": query[i].mediaBasePath,
-                    "mediaUri": query[i].mediaUri,
-                    "mediaType": query[i].mediaType,
-                    "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
-                    "mediaEndpoint": query[i].mediaEndpoint,
-                    "mediaThumbUri": query[i].mediaThumbUri,
-                    "createdAt": query[i].createdAt,
-                    "updatedAt": query[i].updatedAt,
-                    "postID": query[i].postID,
-                    "email": query[i].email,
-                    "postType": query[i].postType,
-                    "description": query[i].description,
-                    "title": query[i].title,
-                    "active": query[i].active,
-                    "metadata": query[i].metadata,
-                    "location": query[i].location,
-                    "isOwned": query[i].isOwned,
-                    "visibility": query[i].visibility,
-                    "isViewed": query[i].isViewed,
-                    "allowComments": query[i].allowComments,
-                    "saleAmount": query[i].saleAmount,
-                    "monetize": query[i].monetize,
-                    "insight": query[i].insight,
-                    "apsaraId": idapsaradefine,
-                    "isApsara": apsaradefine,
-                    "certified": query[i].certified,
-                    "isLiked": isLike,
-                    "reportedStatus": query[i].reportedStatus,
-                    "reportedUserCount": query[i].reportedUserCount,
-                    "media": datas
-                };
-
-                arrdata.push(objk);
-            }
-            datavids = arrdata;
-        } catch (e) {
-            datavids = null;
-        }
-
-        try {
-            let query = null;
-            query = await this.postsService.findcontentfilters(keys, "diary", skip, limit, email);
-            var datas = null;
-            var arrdata = [];
-            let pict: String[] = [];
-            var objk = {};
-            var type = null;
-            var idapsara = null;
-            var apsara = null;
-            var idapsaradefine = null;
-            var apsaradefine = null;
-            for (var i = 0; i < query.length; i++) {
-                try {
-                    idapsara = query[i].apsaraId;
-                } catch (e) {
-                    idapsara = "";
-                }
-                try {
-                    apsara = query[i].apsara;
-                } catch (e) {
-                    apsara = false;
-                }
-                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
-                    apsaradefine = false;
-                } else {
-                    apsaradefine = true;
-                }
-
-                if (idapsara === undefined || idapsara === "" || idapsara === null) {
-                    idapsaradefine = "";
-                } else {
-                    idapsaradefine = idapsara;
-                }
-                var type = query[i].postType;
-                pict = [idapsara];
-
-                if (idapsara === "") {
-                    datas = [];
-                } else {
-                    if (type === "pict") {
-
-                        try {
-                            datas = await this.postContentService.getImageApsara(pict);
-                        } catch (e) {
-                            datas = [];
-                        }
-                    }
-                    else if (type === "vid") {
-                        try {
-                            datas = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            datas = [];
-                        }
-
-                    }
-                    else if (type === "story") {
-                        try {
-                            datas = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            datas = [];
-                        }
-                    }
-                    else if (type === "diary") {
-                        try {
-                            datas = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            datas = [];
-                        }
-                    }
-                }
-
-                let postid = query[i].postID;
-                try {
-                    dataLike = await this.postsService.isLike(email, postid);
-                } catch (e) {
-                    dataLike = null;
-
-                }
-
-                if (dataLike.length > 0) {
-                    isLike = true
-                } else {
-                    isLike = false
-                }
-                objk = {
-                    "_id": query[i]._id,
-                    "mediaBasePath": query[i].mediaBasePath,
-                    "mediaUri": query[i].mediaUri,
-                    "mediaType": query[i].mediaType,
-                    "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
-                    "mediaEndpoint": query[i].mediaEndpoint,
-                    "mediaThumbUri": query[i].mediaThumbUri,
-                    "createdAt": query[i].createdAt,
-                    "updatedAt": query[i].updatedAt,
-                    "postID": query[i].postID,
-                    "email": query[i].email,
-                    "postType": query[i].postType,
-                    "description": query[i].description,
-                    "title": query[i].title,
-                    "active": query[i].active,
-                    "metadata": query[i].metadata,
-                    "location": query[i].location,
-                    "isOwned": query[i].isOwned,
-                    "visibility": query[i].visibility,
-                    "isViewed": query[i].isViewed,
-                    "allowComments": query[i].allowComments,
-                    "saleAmount": query[i].saleAmount,
-                    "monetize": query[i].monetize,
-                    "insight": query[i].insight,
-                    "apsaraId": idapsaradefine,
-                    "isApsara": apsaradefine,
-                    "certified": query[i].certified,
-                    "isLiked": isLike,
-                    "reportedStatus": query[i].reportedStatus,
-                    "reportedUserCount": query[i].reportedUserCount,
-                    "media": datas
-                };
-
-                arrdata.push(objk);
-            }
-            datadiary = arrdata;
-        } catch (e) {
-            datadiary = null;
-        }
-
-        try {
-            let query = null;
-            query = await this.postsService.findcontentfilters(keys, "pict", skip, limit, email);
-
-            var datas = null;
-            var arrdata = [];
-            let pict: String[] = [];
-            var objk = {};
-            var type = null;
-            var idapsara = null;
-            var apsara = null;
-            var idapsaradefine = null;
-            var apsaradefine = null;
-            for (var i = 0; i < query.length; i++) {
-                try {
-                    idapsara = query[i].apsaraId;
-                } catch (e) {
-                    idapsara = "";
-                }
-                try {
-                    apsara = query[i].apsara;
-                } catch (e) {
-                    apsara = false;
-                }
-                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
-                    apsaradefine = false;
-                } else {
-                    apsaradefine = true;
-                }
-
-                if (idapsara === undefined || idapsara === "" || idapsara === null) {
-                    idapsaradefine = "";
-                } else {
-                    idapsaradefine = idapsara;
-                }
-                var type = query[i].postType;
-                pict = [idapsara];
-
-                if (idapsara === "") {
-                    datas = [];
-                } else {
-                    if (type === "pict") {
-
-                        try {
-                            datas = await this.postContentService.getImageApsara(pict);
-                        } catch (e) {
-                            datas = [];
-                        }
-                    }
-                    else if (type === "vid") {
-                        try {
-                            datas = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            datas = [];
-                        }
-
-                    }
-                    else if (type === "story") {
-                        try {
-                            datas = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            datas = [];
-                        }
-                    }
-                    else if (type === "diary") {
-                        try {
-                            datas = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            datas = [];
-                        }
-                    }
-                }
-
-
-                let postid = query[i].postID;
-                try {
-                    dataLike = await this.postsService.isLike(email, postid);
-                } catch (e) {
-                    dataLike = null;
-
-                }
-
-                if (dataLike.length > 0) {
-                    isLike = true
-                } else {
-                    isLike = false
-                }
-
-                objk = {
-                    "_id": query[i]._id,
-                    "mediaBasePath": query[i].mediaBasePath,
-                    "mediaUri": query[i].mediaUri,
-                    "mediaType": query[i].mediaType,
-                    "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
-                    "mediaEndpoint": query[i].mediaEndpoint,
-                    "mediaThumbUri": query[i].mediaThumbUri,
-                    "createdAt": query[i].createdAt,
-                    "updatedAt": query[i].updatedAt,
-                    "postID": query[i].postID,
-                    "email": query[i].email,
-                    "postType": query[i].postType,
-                    "description": query[i].description,
-                    "title": query[i].title,
-                    "active": query[i].active,
-                    "metadata": query[i].metadata,
-                    "location": query[i].location,
-                    "isOwned": query[i].isOwned,
-                    "visibility": query[i].visibility,
-                    "isViewed": query[i].isViewed,
-                    "allowComments": query[i].allowComments,
-                    "saleAmount": query[i].saleAmount,
-                    "monetize": query[i].monetize,
-                    "insight": query[i].insight,
-                    "apsaraId": idapsaradefine,
-                    "isApsara": apsaradefine,
-                    "certified": query[i].certified,
-                    "isLiked": isLike,
-                    "reportedStatus": query[i].reportedStatus,
-                    "reportedUserCount": query[i].reportedUserCount,
-                    "media": datas
-                };
-
-                arrdata.push(objk);
-            }
-            datapict = arrdata;
-        } catch (e) {
-            datapict = null;
-        }
-
-        let data = {
-            "users": { "data": arrdatauser, "skip": skip, "limit": limit },
-            "vid": { "data": datavids, "skip": skip, "limit": limit },
-            "diary": { "data": datadiary, "skip": skip, "limit": limit },
-            "pict": { "data": datapict, "skip": skip, "limit": limit },
-        };
-        return { response_code: 202, data, messages };
-    }
-
-
-    @Post('api/getusercontents/searchdatanew')
     @UseGuards(JwtAuthGuard)
     async contentsearch(@Req() request: Request): Promise<any> {
 
-        var datavids = null;
-        var isLike = null;
-        var datadiary = null;
-        var datapict = null;
+
         var keys = null;
-        var datatag = null;
-        var datauser = null;
-        var postType = null;
-        var mediaprofilepicts = null;
         var skip = 0;
         var limit = 0;
-        var totalFilterPostVid = null;
-        var totalFilterVid = null;
-        var totalFilterPostDiary = null;
-        var totalFilterDiary = null;
-        var totalFilterPostPic = null;
-        var totalFilterPict = null;
-        var totalFilterPostUser = null;
-        var totalFilterUser = null;
+
         var email = null;
         var data = null;
+        var datasearch = null;
         var dataLike = null;
 
         var request_json = JSON.parse(JSON.stringify(request.body));
@@ -1407,15 +1394,360 @@ export class GetusercontentsController {
         var objuser = {};
         var mediaprofilepicts_res = {};
         var user = [];
-        var pict = [];
+        var arrpict = [];
+        var arrvid = [];
+        var arrdiary = [];
+        var picts = [];
 
+        var vid = [];
+        var diary = [];
+        var objpict = {};
+        var objvid = {};
+        var objdiary = {};
 
         try {
-            data = await this.postsService.finddatasearchconten(keys, email, skip, limit);
+            datasearch = await this.postsService.finddatasearchconten(keys, email, skip, limit);
+            user = datasearch[0].user;
+            arrpict = datasearch[0].pict;
+            arrvid = datasearch[0].vid;
+            arrdiary = datasearch[0].diary;
         } catch (e) {
-            data = null;
+            datasearch = null;
+            user = [];
+            arrpict = [];
+            arrvid = [];
+            arrdiary = [];
         }
 
+        if (user.length > 0 && user[0].email !== undefined) {
+            user = datasearch[0].user;
+        } else {
+            user = [];
+        }
+
+        if (arrpict.length > 0 && arrpict[0]._id !== undefined) {
+            let idapsara = null;
+            let datas = null;
+            let apsara = null;
+            let apsaradefine = null;
+            let idapsaradefine = null;
+            let pict = null;
+
+            for (let i = 0; i < arrpict.length; i++) {
+
+                try {
+                    idapsara = arrpict[i].apsaraId;
+                } catch (e) {
+                    idapsara = "";
+                }
+                try {
+                    apsara = arrpict[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
+                var type = arrpict[i].postType;
+                pict = [idapsara];
+                if (idapsara === "") {
+                    datas = [];
+                } else {
+                    if (type === "pict") {
+
+                        try {
+                            datas = await this.postContentService.getImageApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                    else if (type === "vid") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+
+                    }
+                    else if (type === "story") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                    else if (type === "diary") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                }
+
+
+
+
+                objpict = {
+                    "_id": arrpict[i]._id,
+                    "createdAt": arrpict[i].createdAt,
+                    "updatedAt": arrpict[i].updatedAt,
+                    "postID": arrpict[i].postID,
+                    "email": arrpict[i].email,
+                    "postType": arrpict[i].postType,
+                    "description": arrpict[i].description,
+                    "active": arrpict[i].active,
+                    "metadata": arrpict[i].metadata,
+                    "location": arrpict[i].location,
+                    "isOwned": arrpict[i].isOwned,
+                    "visibility": arrpict[i].visibility,
+                    "allowComments": arrpict[i].allowComments,
+                    "insight": arrpict[i].insight,
+                    "saleAmount": arrpict[i].saleAmount,
+                    "mediaThumbEndpoint": arrpict[i].mediaThumbEndpoint,
+                    "mediaEndpoint": arrpict[i].mediaEndpoint,
+                    "isLiked": arrpict[i].isLiked,
+                    "certified": arrpict[i].certified,
+                    "boosted": arrpict[i].boosted,
+                    "reportedStatus": arrpict[i].reportedStatus,
+                    "apsara": apsaradefine,
+                    "apsaraId": idapsaradefine,
+                    "media": datas
+
+                }
+
+                picts.push(objpict)
+
+            }
+
+        } else {
+            picts = [];
+        }
+
+        if (arrvid.length > 0 && arrvid[0]._id !== undefined) {
+            let idapsara = null;
+            let datas = null;
+            let apsara = null;
+            let apsaradefine = null;
+            let idapsaradefine = null;
+            let pict = null;
+            for (let i = 0; i < arrvid.length; i++) {
+
+                try {
+                    idapsara = arrvid[i].apsaraId;
+                } catch (e) {
+                    idapsara = "";
+                }
+                try {
+                    apsara = arrvid[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
+                var type = arrvid[i].postType;
+                pict = [idapsara];
+                if (idapsara === "") {
+                    datas = [];
+                } else {
+                    if (type === "pict") {
+
+                        try {
+                            datas = await this.postContentService.getImageApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                    else if (type === "vid") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+
+                    }
+                    else if (type === "story") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                    else if (type === "diary") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                }
+
+
+
+
+                objvid = {
+                    "_id": arrvid[i]._id,
+                    "createdAt": arrvid[i].createdAt,
+                    "updatedAt": arrvid[i].updatedAt,
+                    "postID": arrvid[i].postID,
+                    "email": arrvid[i].email,
+                    "postType": arrvid[i].postType,
+                    "description": arrvid[i].description,
+                    "active": arrvid[i].active,
+                    "metadata": arrvid[i].metadata,
+                    "location": arrvid[i].location,
+                    "isOwned": arrvid[i].isOwned,
+                    "visibility": arrvid[i].visibility,
+                    "allowComments": arrvid[i].allowComments,
+                    "insight": arrvid[i].insight,
+                    "saleAmount": arrvid[i].saleAmount,
+                    "mediaThumbEndpoint": arrvid[i].mediaThumbEndpoint,
+                    "mediaEndpoint": arrvid[i].mediaEndpoint,
+                    "isLiked": arrvid[i].isLiked,
+                    "certified": arrvid[i].certified,
+                    "reportedStatus": arrvid[i].reportedStatus,
+                    "boosted": arrvid[i].boosted,
+                    "apsara": apsaradefine,
+                    "apsaraId": idapsaradefine,
+                    "media": datas
+
+                }
+
+                vid.push(objvid)
+
+            }
+
+        } else {
+            vid = [];
+        }
+
+        if (arrdiary.length > 0 && arrdiary[0]._id !== undefined) {
+            let idapsara = null;
+            let datas = null;
+            let apsara = null;
+            let apsaradefine = null;
+            let idapsaradefine = null;
+            let pict = null;
+            for (let i = 0; i < arrdiary.length; i++) {
+
+                try {
+                    idapsara = arrdiary[i].apsaraId;
+                } catch (e) {
+                    idapsara = "";
+                }
+                try {
+                    apsara = arrdiary[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null) {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
+                var type = arrdiary[i].postType;
+                pict = [idapsara];
+                if (idapsara === "") {
+                    datas = [];
+                } else {
+                    if (type === "pict") {
+
+                        try {
+                            datas = await this.postContentService.getImageApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                    else if (type === "vid") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+
+                    }
+                    else if (type === "story") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                    else if (type === "diary") {
+                        try {
+                            datas = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datas = [];
+                        }
+                    }
+                }
+
+
+
+
+                objdiary = {
+                    "_id": arrdiary[i]._id,
+                    "createdAt": arrdiary[i].createdAt,
+                    "updatedAt": arrdiary[i].updatedAt,
+                    "postID": arrdiary[i].postID,
+                    "email": arrdiary[i].email,
+                    "postType": arrdiary[i].postType,
+                    "description": arrdiary[i].description,
+                    "active": arrdiary[i].active,
+                    "metadata": arrdiary[i].metadata,
+                    "location": arrdiary[i].location,
+                    "isOwned": arrdiary[i].isOwned,
+                    "visibility": arrdiary[i].visibility,
+                    "allowComments": arrdiary[i].allowComments,
+                    "insight": arrdiary[i].insight,
+                    "saleAmount": arrdiary[i].saleAmount,
+                    "mediaThumbEndpoint": arrdiary[i].mediaThumbEndpoint,
+                    "mediaEndpoint": arrdiary[i].mediaEndpoint,
+                    "isLiked": arrdiary[i].isLiked,
+                    "certified": arrdiary[i].certified,
+                    "reportedStatus": arrdiary[i].reportedStatus,
+                    "boosted": arrdiary[i].boosted,
+                    "apsara": apsaradefine,
+                    "apsaraId": idapsaradefine,
+                    "media": datas
+
+                }
+
+                diary.push(objdiary)
+
+            }
+
+        } else {
+            diary = [];
+        }
+
+        data = [{
+
+            user, picts, vid, diary
+        }];
 
 
         return { response_code: 202, data, messages };

@@ -22,6 +22,11 @@ export class Faqs {
   IdUser: { oid: string; }
   @Prop()
   active: boolean;
+  @Prop()
+  child: string;
+
+  @Prop([])
+  detail1: any[];
 
 }
 

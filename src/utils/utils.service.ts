@@ -212,7 +212,7 @@ export class UtilsService {
 
     //SET BODY SAVE
     if ((eventType == "REACTION") || (eventType == "COMMENT") || (eventType == "LIKE") || (eventType == "TRANSACTION")) {
-      if (event == "BOOST_SUCCES") {
+      if (event == "BOOST_SUCCES" || event == "ADS VIEW" || event == "ADS CLICK") {
         body_send['postID'] = idtransaction
         body_send['postType'] = eventType
       } else {
@@ -220,7 +220,7 @@ export class UtilsService {
         body_send['postType'] = postType
       }
 
-      if (event == "REWARDS"){
+      if (event == "ADS VIEW" || event == "ADS CLICK"){
         body_save_id = body_save_id_.toString().replace("${rewards}", customText)
         body_save_en = body_save_en_.toString().replace("${rewards}", customText)
       } else {
@@ -276,13 +276,11 @@ export class UtilsService {
     createNotificationsDto.actionButtons = null;
     createNotificationsDto.contentEventID = null;
     createNotificationsDto.senderOrReceiverInfo = senderOrReceiverInfo;
-    if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION" || eventType == "CONTENT" || eventType == "POST" || eventType == "BANK") {
-      if (postID != undefined) {
-        createNotificationsDto.postID = postID.toString();
-      }
-      if (postID != undefined) {
-        createNotificationsDto.postType = postType.toString();
-      }
+    if (postID != undefined) {
+      createNotificationsDto.postID = postID.toString();
+    }
+    if (postType != undefined) {
+      createNotificationsDto.postType = postType.toString();
     }
     await this.notificationsService.create(createNotificationsDto);
   }

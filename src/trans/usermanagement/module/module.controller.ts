@@ -55,9 +55,9 @@ export class ModuleController {
             skip = 0;
         }
         if (limit == undefined) {
-            limit = 100;
+            limit = 10;
         }
-        var data = await this.moduleService.findAll(search, skip, limit);
+        var data = await this.moduleService.findAll(search, Number(skip), Number(limit));
         var totalRow = (await this.moduleService.findAllCount(search)).length;
         return {
             "response_code": 202, 
