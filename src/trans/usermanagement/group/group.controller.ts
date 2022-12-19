@@ -381,4 +381,20 @@ export class GroupController {
             },
         };
     }
+
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.ACCEPTED)
+    @Get('/division/:id')
+    async getGroupByIdDivisi(@Param('id') id: string) {
+        var data = await this.groupService.findByDvivision(id);
+        return {
+            "response_code": 202,
+            "data": data,
+            "messages": {
+                "info": [
+                    "Get group successfully"
+                ]
+            },
+        };
+    }
 }
