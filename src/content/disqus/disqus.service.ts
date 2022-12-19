@@ -204,7 +204,7 @@ export class DisqusService {
                                         "eventType": "DIRECT_MSG"
                                     },
                                     {
-                                        "mateactive": true
+                                        "mateActive": true
                                     },
                                     
                                 ]
