@@ -8946,6 +8946,8 @@ export class PostsService {
                         "allowComments": 1,
                         "saleAmount": 1,
                         "isLiked": 1,
+                        "certified": 1,
+                        "reportedStatus": 1
 
                       }
                     }
@@ -9075,7 +9077,9 @@ export class PostsService {
                   "visibility": "$pict.visibility",
                   "isViewed": "$pict.isViewed",
                   "allowComments": "$pict.allowComments",
+                  "certified": "$pict.certified",
                   "saleAmount": "$pict.saleAmount",
+                  "reportedStatus": "$pict.reportedStatus",
                   "monetize":
                   {
                     $cond: {
@@ -9208,7 +9212,9 @@ export class PostsService {
                         "isViewed": 1,
                         "allowComments": 1,
                         "saleAmount": 1,
+                        "certified": 1,
                         "isLiked": 1,
+                        "reportedStatus": 1
 
                       }
                     }
@@ -9225,7 +9231,7 @@ export class PostsService {
               },
               {
                 "$lookup": {
-                  from: "mediapicts",
+                  from: "mediavideos",
                   as: "media",
                   let: {
                     localID: '$pict.postID'
@@ -9339,6 +9345,8 @@ export class PostsService {
                   "isViewed": "$pict.isViewed",
                   "allowComments": "$pict.allowComments",
                   "saleAmount": "$pict.saleAmount",
+                  "certified": "$pict.certified",
+                  "reportedStatus": "$pict.reportedStatus",
                   "monetize":
                   {
                     $cond: {
@@ -9471,7 +9479,9 @@ export class PostsService {
                         "isViewed": 1,
                         "allowComments": 1,
                         "saleAmount": 1,
+                        "certified": 1,
                         "isLiked": 1,
+                        "reportedStatus": 1,
 
                       }
                     }
@@ -9488,7 +9498,7 @@ export class PostsService {
               },
               {
                 "$lookup": {
-                  from: "mediapicts",
+                  from: "mediadiaries",
                   as: "media",
                   let: {
                     localID: '$pict.postID'
@@ -9602,6 +9612,8 @@ export class PostsService {
                   "isViewed": "$pict.isViewed",
                   "allowComments": "$pict.allowComments",
                   "saleAmount": "$pict.saleAmount",
+                  "certified": "$pict.certified",
+                  "reportedStatus": "$pict.reportedStatus",
                   "monetize":
                   {
                     $cond: {
