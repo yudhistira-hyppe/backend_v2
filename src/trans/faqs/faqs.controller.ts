@@ -128,17 +128,21 @@ export class FaqsController {
   async all(@Req() request: Request): Promise<any> {
     const mongoose = require('mongoose');
     var tipe = null;
+    var key = null;
+    var kategori = null;
     var request_json = JSON.parse(JSON.stringify(request.body));
     if (request_json["tipe"] !== undefined) {
       tipe = request_json["tipe"];
     } else {
       throw new BadRequestException("Unabled to proceed");
     }
+    key = request_json["key"];
+    kategori = request_json["kategori"];
     const messages = {
       "info": ["The process successful"],
     };
 
-    let data = await this.faqService.datafaq(tipe);
+    let data = await this.faqService.listfaq(tipe, key, kategori);
     if (!data) {
       throw new Error('Todo is not found!');
     }
