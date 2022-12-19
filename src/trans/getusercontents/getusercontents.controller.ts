@@ -1516,6 +1516,7 @@ export class GetusercontentsController {
                     "mediaEndpoint": arrpict[i].mediaEndpoint,
                     "isLiked": arrpict[i].isLiked,
                     "certified": arrpict[i].certified,
+                    "boosted": arrpict[i].boosted,
                     "reportedStatus": arrpict[i].reportedStatus,
                     "apsara": apsaradefine,
                     "apsaraId": idapsaradefine,
@@ -1622,6 +1623,7 @@ export class GetusercontentsController {
                     "isLiked": arrvid[i].isLiked,
                     "certified": arrvid[i].certified,
                     "reportedStatus": arrvid[i].reportedStatus,
+                    "boosted": arrvid[i].boosted,
                     "apsara": apsaradefine,
                     "apsaraId": idapsaradefine,
                     "media": datas
@@ -1727,6 +1729,7 @@ export class GetusercontentsController {
                     "isLiked": arrdiary[i].isLiked,
                     "certified": arrdiary[i].certified,
                     "reportedStatus": arrdiary[i].reportedStatus,
+                    "boosted": arrdiary[i].boosted,
                     "apsara": apsaradefine,
                     "apsaraId": idapsaradefine,
                     "media": datas
