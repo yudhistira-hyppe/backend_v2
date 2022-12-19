@@ -1460,12 +1460,13 @@ export class PostContentService {
     var token = headers['x-auth-token'];
     var auth = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     var profile = await this.userService.findOne(body.email);
+    var profile_ = await this.userService.findOne(headers['x-auth-user']);
     this.logger.log('getUserPost >>> profile: ' + profile);
 
     let res = new PostResponseApps();
     res.response_code = 202;
     let posts = await this.doGetUserPostTheir(body, headers, profile);
-    let pd = await this.loadPostData(posts, body, profile);
+    let pd = await this.loadPostData(posts, body, profile_);
     res.data = pd;
 
     return res;
