@@ -8837,6 +8837,17 @@ export class PostsService {
 
                 }
               },
+              //{
+              //    $group: {
+              //					_id:{
+              //				"fullName": "$userBasic.fullname",
+              //        "profilePict": "$userBasic.profilePict",
+              //        "username": "$userAuth.username",
+              //        "email": "$userAuth.email",
+              //        "avatar": "$avatar"}
+              //        //"idUserAuth": "$userAuth._id",
+              //    }
+              //},
               {
                 $project: {
                   "fullName": "$userBasic.fullname",
@@ -8860,17 +8871,16 @@ export class PostsService {
                       else: "$taslimKONAG"
                     }
                   },
-                  "idUserAuth": "$userAuth._id",
-
+                  //"idUserAuth": "$userAuth._id",
                 }
               },
-
               {
                 $skip: skip
               },
               {
                 $limit: limit
               },
+
             ],
           //pict
           "pict":
@@ -8923,6 +8933,24 @@ export class PostsService {
                     },
                     {
                       $project: {
+                        "boosted":
+                        {
+                          $cond: {
+                            if: {
+                              $gt: [{
+                                "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                    $add: [new Date(), 25200000]
+                                  }
+                                }
+                              }, "$boosted.boostSession.timeEnd"]
+                            },
+                            then: [],
+                            else: '$boosted'
+                          }
+                        },
+                        "reportedStatus": 1,
                         "insight": {
                           "shares": "$shares",
                           "comments": "$comments",
@@ -8946,8 +8974,6 @@ export class PostsService {
                         "allowComments": 1,
                         "saleAmount": 1,
                         "isLiked": 1,
-                        "certified": 1,
-                        "reportedStatus": 1
 
                       }
                     }
@@ -9019,7 +9045,7 @@ export class PostsService {
                             }
                           },
                           {
-                            "email": email,
+                            "email": "ilhamarahman97@gmail.com",
 
                           },
                           {
@@ -9036,6 +9062,8 @@ export class PostsService {
               },
               {
                 $project: {
+                  "boosted": "$pict.boosted",
+                  "reportedStatus": "$pict.reportedStatus",
                   "_id": "$pict._id",
                   "mediaThumbEndpoint":
                   {
@@ -9067,7 +9095,7 @@ export class PostsService {
                   "createdAt": "$pict.createdAt",
                   "updatedAt": "$pict.updatedAt",
                   "postID": "$pict.postID",
-                  "email": "$pict.email",
+                  "email": "$pict.postID",
                   "postType": "$pict.postType",
                   "description": "$pict.description",
                   "active": "$pict.active",
@@ -9077,9 +9105,7 @@ export class PostsService {
                   "visibility": "$pict.visibility",
                   "isViewed": "$pict.isViewed",
                   "allowComments": "$pict.allowComments",
-                  "certified": "$pict.certified",
                   "saleAmount": "$pict.saleAmount",
-                  "reportedStatus": "$pict.reportedStatus",
                   "monetize":
                   {
                     $cond: {
@@ -9190,6 +9216,24 @@ export class PostsService {
                     },
                     {
                       $project: {
+                        "boosted":
+                        {
+                          $cond: {
+                            if: {
+                              $gt: [{
+                                "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                    $add: [new Date(), 25200000]
+                                  }
+                                }
+                              }, "$boosted.boostSession.timeEnd"]
+                            },
+                            then: [],
+                            else: '$boosted'
+                          }
+                        },
+                        "reportedStatus": 1,
                         "insight": {
                           "shares": "$shares",
                           "comments": "$comments",
@@ -9212,9 +9256,7 @@ export class PostsService {
                         "isViewed": 1,
                         "allowComments": 1,
                         "saleAmount": 1,
-                        "certified": 1,
                         "isLiked": 1,
-                        "reportedStatus": 1
 
                       }
                     }
@@ -9286,7 +9328,7 @@ export class PostsService {
                             }
                           },
                           {
-                            "email": email,
+                            "email": "ilhamarahman97@gmail.com",
 
                           },
                           {
@@ -9303,6 +9345,8 @@ export class PostsService {
               },
               {
                 $project: {
+                  "boosted": "$pict.boosted",
+                  "reportedStatus": "$pict.reportedStatus",
                   "_id": "$pict._id",
                   "mediaThumbEndpoint":
                   {
@@ -9334,7 +9378,7 @@ export class PostsService {
                   "createdAt": "$pict.createdAt",
                   "updatedAt": "$pict.updatedAt",
                   "postID": "$pict.postID",
-                  "email": "$pict.email",
+                  "email": "$pict.postID",
                   "postType": "$pict.postType",
                   "description": "$pict.description",
                   "active": "$pict.active",
@@ -9345,8 +9389,6 @@ export class PostsService {
                   "isViewed": "$pict.isViewed",
                   "allowComments": "$pict.allowComments",
                   "saleAmount": "$pict.saleAmount",
-                  "certified": "$pict.certified",
-                  "reportedStatus": "$pict.reportedStatus",
                   "monetize":
                   {
                     $cond: {
@@ -9457,6 +9499,24 @@ export class PostsService {
                     },
                     {
                       $project: {
+                        "boosted":
+                        {
+                          $cond: {
+                            if: {
+                              $gt: [{
+                                "$dateToString": {
+                                  "format": "%Y-%m-%d %H:%M:%S",
+                                  "date": {
+                                    $add: [new Date(), 25200000]
+                                  }
+                                }
+                              }, "$boosted.boostSession.timeEnd"]
+                            },
+                            then: [],
+                            else: '$boosted'
+                          }
+                        },
+                        "reportedStatus": 1,
                         "insight": {
                           "shares": "$shares",
                           "comments": "$comments",
@@ -9479,9 +9539,7 @@ export class PostsService {
                         "isViewed": 1,
                         "allowComments": 1,
                         "saleAmount": 1,
-                        "certified": 1,
                         "isLiked": 1,
-                        "reportedStatus": 1,
 
                       }
                     }
@@ -9553,7 +9611,7 @@ export class PostsService {
                             }
                           },
                           {
-                            "email": email,
+                            "email": "ilhamarahman97@gmail.com",
 
                           },
                           {
@@ -9570,6 +9628,8 @@ export class PostsService {
               },
               {
                 $project: {
+                  "boosted": "$pict.boosted",
+                  "reportedStatus": "$pict.reportedStatus",
                   "_id": "$pict._id",
                   "mediaThumbEndpoint":
                   {
@@ -9601,7 +9661,7 @@ export class PostsService {
                   "createdAt": "$pict.createdAt",
                   "updatedAt": "$pict.updatedAt",
                   "postID": "$pict.postID",
-                  "email": "$pict.email",
+                  "email": "$pict.postID",
                   "postType": "$pict.postType",
                   "description": "$pict.description",
                   "active": "$pict.active",
@@ -9612,8 +9672,6 @@ export class PostsService {
                   "isViewed": "$pict.isViewed",
                   "allowComments": "$pict.allowComments",
                   "saleAmount": "$pict.saleAmount",
-                  "certified": "$pict.certified",
-                  "reportedStatus": "$pict.reportedStatus",
                   "monetize":
                   {
                     $cond: {

@@ -893,14 +893,42 @@ export class UserbasicsService {
                         }
                       },
                       "timestamp": 1,
-                      "description": 1,
+                      "timeStart":
+                      {
+                        $add: [new Date(), 25200000]
+                      },
+                      "description":
+                      {
+                        $cond: {
+                          if: {
+                            $gt: ['$expiredtimeva',
+                              {
+                                $add: [new Date(), 25200000]
+                              },]
+                          },
+                          then: "$description",
+                          else: 'VA expired time'
+                        }
+                      },
                       "noinvoice": 1,
                       "nova": 1,
                       "expiredtimeva": 1,
                       "bank": 1,
                       "amount": 1,
                       "totalamount": 1,
-                      "status": 1,
+                      "status":
+                      {
+                        $cond: {
+                          if: {
+                            $gt: ['$expiredtimeva',
+                              {
+                                $add: [new Date(), 25200000]
+                              }]
+                          },
+                          then: "$status",
+                          else: 'Cancel'
+                        }
+                      },
                       "postid": 1,
                       "iduserbuyer": 1,
                       "idusersell": 1,
@@ -977,7 +1005,7 @@ export class UserbasicsService {
                       "apsaraId": 1,
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
-                        "$concat": ["/pict/", "$postID"]
+                        "$concat": ["/thumb/", "$postID"]
                       },
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
@@ -1233,6 +1261,7 @@ export class UserbasicsService {
                 "transaction": [{
                   //"video": 1,
                   "_id": "$buy-sell._id",
+                  "timestart": "$buy-sell.timeStart",
                   //"did": "$buy-sell.postid",
                   "iduser": "$_id",
                   "type": "$buy-sell.type",
@@ -1778,8 +1807,20 @@ export class UserbasicsService {
           "apsaraId": '$tester.apsaraId',
           "apsara": '$tester.apsara',
           "debetKredit": '$tester.debetKredit',
+          "timestart": "$tester.timestart",
+        }
+      },
+      {
+        $sort: {
+          "timestamp": - 1,
 
         }
+      },
+      {
+        $skip: skip
+      },
+      {
+        $limit: limit
       },
     );
 

@@ -6260,86 +6260,6 @@ export class TransactionsController {
         var ObjectId = require('mongodb').ObjectId;
         var idadmin = mongoose.Types.ObjectId(iduser);
 
-        var datatrpending = null;
-        var datatrpendingjual = null;
-
-        try {
-
-            datatrpending = this.transactionsService.findExpired(iduser);
-
-
-        } catch (e) {
-            datatrpending = null;
-
-        }
-
-        if (datatrpending !== null) {
-            var datenow = new Date(Date.now());
-
-
-            var lengdatatr = datatrpending.length;
-
-            for (var i = 0; i < lengdatatr; i++) {
-
-                var idva = datatrpending[i].idva;
-                var idtransaction = datatrpending[i]._id;
-                var expiredva = new Date(datatrpending[i].expiredtimeva);
-                expiredva.setHours(expiredva.getHours() - 7);
-
-                if (datenow > expiredva) {
-                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
-
-                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
-                        this.transactionsService.updatestatuscancel(idtransaction);
-
-                    }
-
-
-                }
-
-
-            }
-
-        }
-
-        try {
-
-            datatrpendingjual = this.transactionsService.findExpiredSell(iduser);
-
-
-        } catch (e) {
-            datatrpendingjual = null;
-
-        }
-
-        if (datatrpendingjual !== null) {
-            var datenow = new Date(Date.now());
-
-
-            var lengdatatr = datatrpendingjual.length;
-
-            for (var i = 0; i < lengdatatr; i++) {
-
-                var idva = datatrpendingjual[i].idva;
-                var idtransaction = datatrpendingjual[i]._id;
-                var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
-                expiredva.setHours(expiredva.getHours() - 7);
-
-                if (datenow > expiredva) {
-                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
-
-                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
-                        this.transactionsService.updatestatuscancel(idtransaction);
-
-                    }
-
-
-                }
-
-
-            }
-
-        }
 
         try {
             query = await this.userbasicsService.transaksiHistory(email, skip, limit, startdate, enddate, sell, buy, withdrawal, rewards, boost);
@@ -6455,6 +6375,86 @@ export class TransactionsController {
             data.push(objk);
         }
 
+        var datatrpending = null;
+        var datatrpendingjual = null;
+
+        try {
+
+            datatrpending = await this.transactionsService.findExpirednew(iduser);
+
+
+        } catch (e) {
+            datatrpending = null;
+
+        }
+
+        if (datatrpending !== null) {
+            var datenow = new Date(Date.now());
+
+
+            var lengdatatr = datatrpending.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpending[i].idva;
+                var idtransaction = datatrpending[i]._id;
+                var expiredva = new Date(datatrpending[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        this.transactionsService.updatestatuscancel(idtransaction);
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
+
+        try {
+
+            datatrpendingjual = await this.transactionsService.findExpiredSell(iduser);
+
+
+        } catch (e) {
+            datatrpendingjual = null;
+
+        }
+
+        if (datatrpendingjual !== null) {
+            var datenow = new Date(Date.now());
+
+
+            var lengdatatr = datatrpendingjual.length;
+
+            for (var i = 0; i < lengdatatr; i++) {
+
+                var idva = datatrpendingjual[i].idva;
+                var idtransaction = datatrpendingjual[i]._id;
+                var expiredva = new Date(datatrpendingjual[i].expiredtimeva);
+                expiredva.setHours(expiredva.getHours() - 7);
+
+                if (datenow > expiredva) {
+                    let cekstatusva = await this.oyPgService.staticVaInfo(idva);
+
+                    if (cekstatusva.va_status === "STATIC_TRX_EXPIRED" || cekstatusva.va_status === "EXPIRED") {
+                        await this.transactionsService.updatestatuscancel(idtransaction);
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
 
 
 
@@ -6478,7 +6478,7 @@ export class TransactionsController {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed User not found'
             );
-        } 
+        }
         var iduser = new mongoose.Types.ObjectId(data_userbasic._id.toString());
 
         //CECK DATA TRANSACTION
@@ -6495,7 +6495,7 @@ export class TransactionsController {
             console.log("Expired", new Date(expiredtimeva) < CurrentDate)
             expired = (new Date(expiredtimeva) < CurrentDate)
 
-            if (!expired){
+            if (!expired) {
                 var idtr = getDataTransaction._id;
                 var jenis = getDataTransaction.type.toString();
 
@@ -6688,7 +6688,7 @@ export class TransactionsController {
                             "media": dataapsara
 
                         };
-                    }else if (type === "Sell" && jenis === "CONTENT") {
+                    } else if (type === "Sell" && jenis === "CONTENT") {
                         databuy = await this.transactionsService.findhistorydetailsell(idtr, type, jenis, iduser);
                         var postid = databuy[0].postID;
 
@@ -6858,7 +6858,7 @@ export class TransactionsController {
                             "media": dataapsara
 
                         };
-                    }else if (type === "Buy" && jenis === "BOOST_CONTENT") {
+                    } else if (type === "Buy" && jenis === "BOOST_CONTENT") {
                         databuy = await this.transactionsService.findhistorydetailbuy(idtr, type, jenis, iduser);
                         var postid = databuy[0].postID;
 
@@ -7035,7 +7035,7 @@ export class TransactionsController {
                             "media": dataapsara
 
                         };
-                    }else if (type === "Sell" && jenis === "BOOST_CONTENT") {
+                    } else if (type === "Sell" && jenis === "BOOST_CONTENT") {
                         databuy = await this.transactionsService.findhistorydetailsell(idtr, type, jenis, iduser);
                         var postid = databuy[0].postID;
 
@@ -7205,7 +7205,7 @@ export class TransactionsController {
                             "media": dataapsara
 
                         };
-                    }else if (type === "Buy" && jenis === "BOOST_CONTENT+OWNERSHIP") {
+                    } else if (type === "Buy" && jenis === "BOOST_CONTENT+OWNERSHIP") {
                         databuy = await this.transactionsService.findhistorydetailbuy(idtr, type, jenis, iduser);
                         var postid = databuy[0].postID;
 
@@ -7382,7 +7382,7 @@ export class TransactionsController {
                             "media": dataapsara
 
                         };
-                    }else if (type === "Sell" && jenis === "BOOST_CONTENT+OWNERSHIP") {
+                    } else if (type === "Sell" && jenis === "BOOST_CONTENT+OWNERSHIP") {
                         databuy = await this.transactionsService.findhistorydetailsell(idtr, type, jenis, iduser);
                         var postid = databuy[0].postID;
 
@@ -7552,7 +7552,7 @@ export class TransactionsController {
                             "media": dataapsara
 
                         };
-                    }else if (type === "Buy" && jenis === "VOUCHER") {
+                    } else if (type === "Buy" && jenis === "VOUCHER") {
                         databuy = await this.transactionsService.findtransactionvoucher(idtr, type, jenis, iduser);
                         var selluser = databuy[0].idusersell;
                         var userdata = databuy[0].user_data;
@@ -7659,7 +7659,7 @@ export class TransactionsController {
 
                         };
 
-                    }else if (type === "Withdraws") {
+                    } else if (type === "Withdraws") {
                         try {
                             dataWitdraw = await this.withdrawsService.findhistoryWithdrawdetail(idtr, iduser);
                             var idacountbank = dataWitdraw[0].idAccountBank;
@@ -7741,7 +7741,7 @@ export class TransactionsController {
                     }
                     IdTransactionPending.push(data);
                     return {
-                        "response_code": 202, 
+                        "response_code": 202,
                         "waitingCount": IdTransactionPending.length,
                         "data": IdTransactionPending,
                         "messages": {
@@ -7755,7 +7755,7 @@ export class TransactionsController {
                         'Unabled to proceed, Data Transaction Error : ' + e
                     );
                 }
-            }else{
+            } else {
                 await this.transactionsService.updatestatuscancel(getDataTransaction._id)
                 return {
                     "response_code": 202,
@@ -7768,7 +7768,7 @@ export class TransactionsController {
                     }
                 };
             }
-        }else{
+        } else {
             return {
                 "response_code": 202,
                 "waitingCount": IdTransactionPending.length,
