@@ -1379,6 +1379,7 @@ export class GetusercontentsController {
         var totalFilterUser = null;
         var email = null;
         var data = null;
+        var datasearch = null;
         var dataLike = null;
 
         var request_json = JSON.parse(JSON.stringify(request.body));
@@ -1408,14 +1409,38 @@ export class GetusercontentsController {
         var mediaprofilepicts_res = {};
         var user = [];
         var pict = [];
+        var vid = [];
+        var diary = [];
 
 
         try {
-            data = await this.postsService.finddatasearchconten(keys, email, skip, limit);
+            datasearch = await this.postsService.finddatasearchconten(keys, email, skip, limit);
+            user = datasearch[0].user;
+            pict = datasearch[0].pict;
+            vid = datasearch[0].vid;
+            diary = datasearch[0].diary;
         } catch (e) {
-            data = null;
+            datasearch = null;
+            user = [];
+            pict = [];
+            vid = [];
+            diary = [];
         }
 
+        // if (pict.length > 0) {
+
+        //     for (let i = 0; i < pict.length; i++) {
+
+
+
+        //     }
+
+        // }
+
+        data = [{
+
+            user, pict, vid, diary
+        }];
 
 
         return { response_code: 202, data, messages };

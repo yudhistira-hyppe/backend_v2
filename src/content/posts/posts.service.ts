@@ -8827,10 +8827,10 @@ export class PostsService {
                       }
                     },
                     {
-                      $skip: skip
+                      $skip: 0
                     },
                     {
-                      $limit: limit
+                      $limit: 5
                     },
 
                   ],
@@ -8843,11 +8843,34 @@ export class PostsService {
                   "profilePict": "$userBasic.profilePict",
                   "username": "$userAuth.username",
                   "email": "$userAuth.email",
-                  "avatar": 1,
+                  "avatar":
+                  {
+                    $cond: {
+                      if: {
+                        $eq: [{
+                          $arrayElemAt: ["$avatar.mediaType", {
+                            "$indexOfArray": [
+                              "$avatar.mediaID",
+                              '$userBasic.profilePict.$id'
+                            ]
+                          }]
+                        }, "image"]
+                      },
+                      then: "$avatar",
+                      else: "$taslimKONAG"
+                    }
+                  },
                   "idUserAuth": "$userAuth._id",
 
                 }
-              }
+              },
+
+              {
+                $skip: skip
+              },
+              {
+                $limit: limit
+              },
             ],
           //pict
           "pict":
@@ -8897,11 +8920,45 @@ export class PostsService {
                         ]
                       },
 
+                    },
+                    {
+                      $project: {
+                        "insight": {
+                          "shares": "$shares",
+                          "comments": "$comments",
+                          "views": "$views",
+                          "likes": "$likes",
+
+                        },
+                        "_id": 1,
+                        "postID": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1,
+                        "email": 1,
+                        "postType": 1,
+                        "description": 1,
+                        "active": 1,
+                        "metadata": 1,
+                        "location": 1,
+                        "isOwned": 1,
+                        "visibility": 1,
+                        "isViewed": 1,
+                        "allowComments": 1,
+                        "saleAmount": 1,
+                        "isLiked": 1,
+
+                      }
                     }
                   ],
                   as: "pict"
                 },
 
+              },
+              {
+                $unwind: {
+                  path: "$pict",
+                  preserveNullAndEmptyArrays: true
+                }
               },
               {
                 "$lookup": {
@@ -8915,7 +8972,7 @@ export class PostsService {
                       $match:
                       {
                         $expr: {
-                          $in: ['$postID', '$$localID']
+                          $eq: ['$postID', '$$localID']
                         }
                       }
                     },
@@ -8926,11 +8983,11 @@ export class PostsService {
                         "apsaraId": 1,
                         "apsaraThumbId": 1,
                         "mediaEndpoint": {
-                          "$concat": ["/stream/", "$pict.postID"]
+                          "$concat": ["/pict/", "$postID"]
                         },
                         "mediaUri": 1,
                         "mediaThumbEndpoint": {
-                          "$concat": ["/stream/", "$pict.postID"]
+                          "$concat": ["/pict/", "$postID"]
                         },
                         "mediaThumbUri": 1,
                         "mediaType": 1,
@@ -8943,29 +9000,72 @@ export class PostsService {
 
               },
               {
-                $unwind: {
-                  path: "$pict",
-                  preserveNullAndEmptyArrays: true
-                }
+                "$lookup": {
+                  from: "contentevents",
+                  as: "likes",
+                  let: {
+                    localID: '$pict.postID'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $and: [
+                          {
+                            $expr: {
+                              $eq: ['$postID', '$$localID']
+                            }
+                          },
+                          {
+                            "email": email,
+
+                          },
+                          {
+                            "eventType": "LIKE"
+                          }
+                        ]
+                      }
+                    },
+
+                  ],
+
+                },
+
               },
               {
                 $project: {
                   "_id": "$pict._id",
-                  "mediaThumbEndpoint": "$pict.mediaThumbEndpoint",
-                  "mediaEndpoint": "$pict.mediaEndpoint",
+                  "mediaThumbEndpoint":
+                  {
+                    $arrayElemAt: ['$media.mediaThumbEndpoint', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$pict.postID"
+                      ]
+                    }]
+                  },
+                  "mediaEndpoint":
+                  {
+                    $arrayElemAt: ['$media.mediaEndpoint', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$pict.postID"
+                      ]
+                    }]
+                  },
                   "mediaType":
                   {
                     $arrayElemAt: ['$media.mediaType', {
                       "$indexOfArray": [
                         "$media.postID",
-                        "$post.postID"
+                        "$pict.postID"
                       ]
                     }]
                   },
                   "createdAt": "$pict.createdAt",
                   "updatedAt": "$pict.updatedAt",
                   "postID": "$pict.postID",
-                  "email": "$pict.postID",
+                  "email": "$pict.email",
                   "postType": "$pict.postType",
                   "description": "$pict.description",
                   "active": "$pict.active",
@@ -8983,22 +9083,19 @@ export class PostsService {
                         $gte: ["$pict.saleAmount", 1]
                       },
                       then: true,
-                      else: null
+                      else: "$taslimKONAG"
                     }
                   },
-                  "insight": {
-                    "shares": "$pict.shares",
-                    "comments": "$pict.comments",
-                    "views": "$pict.views",
-                    "likes": "$pict.likes",
-
+                  "insight":
+                  {
+                    $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                   },
                   "apsaraId":
                   {
-                    $arrayElemAt: ['$media.apsaraID', {
+                    $arrayElemAt: ['$media.apsaraId', {
                       "$indexOfArray": [
                         "$media.postID",
-                        "$post.postID"
+                        "$pict.postID"
                       ]
                     }]
                   },
@@ -9007,11 +9104,27 @@ export class PostsService {
                     $arrayElemAt: ['$media.apsara', {
                       "$indexOfArray": [
                         "$media.postID",
-                        "$post.postID"
+                        "$pict.postID"
                       ]
                     }]
                   },
-                  "isLiked": "$pict.isLiked",
+                  "isLiked":
+                  {
+                    $cond: {
+                      if: {
+                        $eq: [{
+                          $arrayElemAt: ["$likes.eventType", {
+                            "$indexOfArray": [
+                              "$likes.postID",
+                              "$pict.postID"
+                            ]
+                          }]
+                        }, "LIKE"]
+                      },
+                      then: true,
+                      else: "$taslimKONAG"
+                    }
+                  },
 
                 }
               },
@@ -9070,43 +9183,37 @@ export class PostsService {
                         ]
                       },
 
-                    }
-                  ],
-                  as: "pict"
-                },
-
-              },
-              {
-                "$lookup": {
-                  from: "mediavideos",
-                  as: "media",
-                  let: {
-                    localID: '$pict.postID'
-                  },
-                  pipeline: [
-                    {
-                      $match:
-                      {
-                        $expr: {
-                          $in: ['$postID', '$$localID']
-                        }
-                      }
                     },
                     {
                       $project: {
+                        "insight": {
+                          "shares": "$shares",
+                          "comments": "$comments",
+                          "views": "$views",
+                          "likes": "$likes",
 
-                        "apsara": 1,
-                        "apsaraId": 1,
-                        "apsaraThumbId": 1,
-                        "mediaEndpoint": 1,
-                        "mediaUri": 1,
-                        "mediaThumbEndpoint": 1,
-                        "mediaThumbUri": 1,
+                        },
+                        "_id": 1,
+                        "postID": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1,
+                        "email": 1,
+                        "postType": 1,
+                        "description": 1,
+                        "active": 1,
+                        "metadata": 1,
+                        "location": 1,
+                        "isOwned": 1,
+                        "visibility": 1,
+                        "isViewed": 1,
+                        "allowComments": 1,
+                        "saleAmount": 1,
+                        "isLiked": 1,
 
                       }
                     }
                   ],
-
+                  as: "pict"
                 },
 
               },
@@ -9117,27 +9224,111 @@ export class PostsService {
                 }
               },
               {
+                "$lookup": {
+                  from: "mediapicts",
+                  as: "media",
+                  let: {
+                    localID: '$pict.postID'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $expr: {
+                          $eq: ['$postID', '$$localID']
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+
+                        "apsara": 1,
+                        "apsaraId": 1,
+                        "apsaraThumbId": 1,
+                        "mediaEndpoint": {
+                          "$concat": ["/stream/", "$postID"]
+                        },
+                        "mediaUri": 1,
+                        "mediaThumbEndpoint": {
+                          "$concat": ["/thumb/", "$postID"]
+                        },
+                        "mediaThumbUri": 1,
+                        "mediaType": 1,
+
+                      }
+                    }
+                  ],
+
+                },
+
+              },
+              {
+                "$lookup": {
+                  from: "contentevents",
+                  as: "likes",
+                  let: {
+                    localID: '$pict.postID'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $and: [
+                          {
+                            $expr: {
+                              $eq: ['$postID', '$$localID']
+                            }
+                          },
+                          {
+                            "email": email,
+
+                          },
+                          {
+                            "eventType": "LIKE"
+                          }
+                        ]
+                      }
+                    },
+
+                  ],
+
+                },
+
+              },
+              {
                 $project: {
                   "_id": "$pict._id",
-                  "mediaThumbEndpoint": {
-                    "$concat": ["/thumb/", "$pict.postID"]
+                  "mediaThumbEndpoint":
+                  {
+                    $arrayElemAt: ['$media.mediaThumbEndpoint', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$pict.postID"
+                      ]
+                    }]
                   },
-                  "mediaEndpoint": {
-                    "$concat": ["/stream/", "$pict.postID"]
+                  "mediaEndpoint":
+                  {
+                    $arrayElemAt: ['$media.mediaEndpoint', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$pict.postID"
+                      ]
+                    }]
                   },
                   "mediaType":
                   {
                     $arrayElemAt: ['$media.mediaType', {
                       "$indexOfArray": [
                         "$media.postID",
-                        "$post.postID"
+                        "$pict.postID"
                       ]
                     }]
                   },
                   "createdAt": "$pict.createdAt",
                   "updatedAt": "$pict.updatedAt",
                   "postID": "$pict.postID",
-                  "email": "$pict.postID",
+                  "email": "$pict.email",
                   "postType": "$pict.postType",
                   "description": "$pict.description",
                   "active": "$pict.active",
@@ -9155,22 +9346,19 @@ export class PostsService {
                         $gte: ["$pict.saleAmount", 1]
                       },
                       then: true,
-                      else: null
+                      else: "$taslimKONAG"
                     }
                   },
-                  "insight": {
-                    "shares": "$pict.shares",
-                    "comments": "$pict.comments",
-                    "views": "$pict.views",
-                    "likes": "$pict.likes",
-
+                  "insight":
+                  {
+                    $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                   },
                   "apsaraId":
                   {
-                    $arrayElemAt: ['$media.apsaraID', {
+                    $arrayElemAt: ['$media.apsaraId', {
                       "$indexOfArray": [
                         "$media.postID",
-                        "$post.postID"
+                        "$pict.postID"
                       ]
                     }]
                   },
@@ -9179,11 +9367,27 @@ export class PostsService {
                     $arrayElemAt: ['$media.apsara', {
                       "$indexOfArray": [
                         "$media.postID",
-                        "$post.postID"
+                        "$pict.postID"
                       ]
                     }]
                   },
-                  "isLiked": "$pict.isLiked",
+                  "isLiked":
+                  {
+                    $cond: {
+                      if: {
+                        $eq: [{
+                          $arrayElemAt: ["$likes.eventType", {
+                            "$indexOfArray": [
+                              "$likes.postID",
+                              "$pict.postID"
+                            ]
+                          }]
+                        }, "LIKE"]
+                      },
+                      then: true,
+                      else: "$taslimKONAG"
+                    }
+                  },
 
                 }
               },
@@ -9242,43 +9446,37 @@ export class PostsService {
                         ]
                       },
 
-                    }
-                  ],
-                  as: "pict"
-                },
-
-              },
-              {
-                "$lookup": {
-                  from: "mediadiaries",
-                  as: "media",
-                  let: {
-                    localID: '$pict.postID'
-                  },
-                  pipeline: [
-                    {
-                      $match:
-                      {
-                        $expr: {
-                          $in: ['$postID', '$$localID']
-                        }
-                      }
                     },
                     {
                       $project: {
+                        "insight": {
+                          "shares": "$shares",
+                          "comments": "$comments",
+                          "views": "$views",
+                          "likes": "$likes",
 
-                        "apsara": 1,
-                        "apsaraId": 1,
-                        "apsaraThumbId": 1,
-                        "mediaEndpoint": 1,
-                        "mediaUri": 1,
-                        "mediaThumbEndpoint": 1,
-                        "mediaThumbUri": 1,
+                        },
+                        "_id": 1,
+                        "postID": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1,
+                        "email": 1,
+                        "postType": 1,
+                        "description": 1,
+                        "active": 1,
+                        "metadata": 1,
+                        "location": 1,
+                        "isOwned": 1,
+                        "visibility": 1,
+                        "isViewed": 1,
+                        "allowComments": 1,
+                        "saleAmount": 1,
+                        "isLiked": 1,
 
                       }
                     }
                   ],
-
+                  as: "pict"
                 },
 
               },
@@ -9289,27 +9487,111 @@ export class PostsService {
                 }
               },
               {
+                "$lookup": {
+                  from: "mediapicts",
+                  as: "media",
+                  let: {
+                    localID: '$pict.postID'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $expr: {
+                          $eq: ['$postID', '$$localID']
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+
+                        "apsara": 1,
+                        "apsaraId": 1,
+                        "apsaraThumbId": 1,
+                        "mediaEndpoint": {
+                          "$concat": ["/stream/", "$postID"]
+                        },
+                        "mediaUri": 1,
+                        "mediaThumbEndpoint": {
+                          "$concat": ["/thumb/", "$postID"]
+                        },
+                        "mediaThumbUri": 1,
+                        "mediaType": 1,
+
+                      }
+                    }
+                  ],
+
+                },
+
+              },
+              {
+                "$lookup": {
+                  from: "contentevents",
+                  as: "likes",
+                  let: {
+                    localID: '$pict.postID'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+                        $and: [
+                          {
+                            $expr: {
+                              $eq: ['$postID', '$$localID']
+                            }
+                          },
+                          {
+                            "email": email,
+
+                          },
+                          {
+                            "eventType": "LIKE"
+                          }
+                        ]
+                      }
+                    },
+
+                  ],
+
+                },
+
+              },
+              {
                 $project: {
                   "_id": "$pict._id",
-                  "mediaThumbEndpoint": {
-                    "$concat": ["/thumb/", "$pict.postID"]
+                  "mediaThumbEndpoint":
+                  {
+                    $arrayElemAt: ['$media.mediaThumbEndpoint', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$pict.postID"
+                      ]
+                    }]
                   },
-                  "mediaEndpoint": {
-                    "$concat": ["/stream/", "$pict.postID"]
+                  "mediaEndpoint":
+                  {
+                    $arrayElemAt: ['$media.mediaEndpoint', {
+                      "$indexOfArray": [
+                        "$media.postID",
+                        "$pict.postID"
+                      ]
+                    }]
                   },
                   "mediaType":
                   {
                     $arrayElemAt: ['$media.mediaType', {
                       "$indexOfArray": [
                         "$media.postID",
-                        "$post.postID"
+                        "$pict.postID"
                       ]
                     }]
                   },
                   "createdAt": "$pict.createdAt",
                   "updatedAt": "$pict.updatedAt",
                   "postID": "$pict.postID",
-                  "email": "$pict.postID",
+                  "email": "$pict.email",
                   "postType": "$pict.postType",
                   "description": "$pict.description",
                   "active": "$pict.active",
@@ -9327,22 +9609,19 @@ export class PostsService {
                         $gte: ["$pict.saleAmount", 1]
                       },
                       then: true,
-                      else: null
+                      else: "$taslimKONAG"
                     }
                   },
-                  "insight": {
-                    "shares": "$pict.shares",
-                    "comments": "$pict.comments",
-                    "views": "$pict.views",
-                    "likes": "$pict.likes",
-
+                  "insight":
+                  {
+                    $ifNull: ["$pict.insight", "$TaslimKAMPRET"]
                   },
                   "apsaraId":
                   {
-                    $arrayElemAt: ['$media.apsaraID', {
+                    $arrayElemAt: ['$media.apsaraId', {
                       "$indexOfArray": [
                         "$media.postID",
-                        "$post.postID"
+                        "$pict.postID"
                       ]
                     }]
                   },
@@ -9351,11 +9630,27 @@ export class PostsService {
                     $arrayElemAt: ['$media.apsara', {
                       "$indexOfArray": [
                         "$media.postID",
-                        "$post.postID"
+                        "$pict.postID"
                       ]
                     }]
                   },
-                  "isLiked": "$pict.isLiked",
+                  "isLiked":
+                  {
+                    $cond: {
+                      if: {
+                        $eq: [{
+                          $arrayElemAt: ["$likes.eventType", {
+                            "$indexOfArray": [
+                              "$likes.postID",
+                              "$pict.postID"
+                            ]
+                          }]
+                        }, "LIKE"]
+                      },
+                      then: true,
+                      else: "$taslimKONAG"
+                    }
+                  },
 
                 }
               },
@@ -9366,7 +9661,8 @@ export class PostsService {
                 $limit: limit
               },
 
-            ]
+            ],
+
         },
 
       },);
