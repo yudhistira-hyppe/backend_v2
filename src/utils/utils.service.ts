@@ -166,7 +166,7 @@ export class UtilsService {
 
     let body_save_id = "";
     let body_save_en = "";
-    
+
     let body_save_id_ = "";
     let body_save_en_ = "";
 
@@ -178,6 +178,7 @@ export class UtilsService {
     //SET TITLE AND BODY
     if (langIso_receiverParty == "en") {
       body_save_en_ = Templates_.body_detail.toString();
+      body_save_id_ = Templates_.body_detail_id.toString();
       if (Templates_.subject != undefined) {
         if (Templates_.subject.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
@@ -192,6 +193,7 @@ export class UtilsService {
         }
       }
     } else {
+      body_save_en_ = Templates_.body_detail.toString();
       body_save_id_ = Templates_.body_detail_id.toString();
       if (Templates_.subject_id != undefined) {
         if (Templates_.subject_id.toString() == "${user_name}") {
@@ -209,8 +211,8 @@ export class UtilsService {
     }
 
     //SET BODY SAVE
-    if ((event == "REACTION") || (event == "COMMENT") || (event == "LIKE") || (event == "BOOST_CONTENT") || (event == "BOOST_BUY") || (event == "BOOST_SUCCES") || (event == "REWARDS")) {
-      if (event == "BOOST_SUCCES") {
+    if ((eventType == "REACTION") || (eventType == "COMMENT") || (eventType == "LIKE") || (eventType == "TRANSACTION")) {
+      if (event == "BOOST_SUCCES" || event == "ADS VIEW" || event == "ADS CLICK") {
         body_send['postID'] = idtransaction
         body_send['postType'] = eventType
       } else {
@@ -218,7 +220,7 @@ export class UtilsService {
         body_send['postType'] = postType
       }
 
-      if (event == "REWARDS"){
+      if (event == "ADS VIEW" || event == "ADS CLICK"){
         body_save_id = body_save_id_.toString().replace("${rewards}", customText)
         body_save_en = body_save_en_.toString().replace("${rewards}", customText)
       } else {
@@ -265,8 +267,8 @@ export class UtilsService {
     createNotificationsDto.mate = senderParty;
     createNotificationsDto.devices = device_user;
     createNotificationsDto.title = title_send;
-    createNotificationsDto.body = body_save_id;
-    createNotificationsDto.bodyId = body_save_en;
+    createNotificationsDto.body = body_save_en;
+    createNotificationsDto.bodyId = body_save_id;
     createNotificationsDto.active = true;
     createNotificationsDto.flowIsDone = true;
     createNotificationsDto.createdAt = currentDate;
@@ -274,13 +276,11 @@ export class UtilsService {
     createNotificationsDto.actionButtons = null;
     createNotificationsDto.contentEventID = null;
     createNotificationsDto.senderOrReceiverInfo = senderOrReceiverInfo;
-    if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION" || eventType == "CONTENT" || eventType == "POST" || eventType == "BANK") {
-      if (postID != undefined) {
-        createNotificationsDto.postID = postID.toString();
-      }
-      if (postID != undefined) {
-        createNotificationsDto.postType = postType.toString();
-      }
+    if (postID != undefined) {
+      createNotificationsDto.postID = postID.toString();
+    }
+    if (postType != undefined) {
+      createNotificationsDto.postType = postType.toString();
     }
     await this.notificationsService.create(createNotificationsDto);
   }
