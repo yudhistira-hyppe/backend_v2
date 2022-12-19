@@ -212,7 +212,7 @@ export class UtilsService {
 
     //SET BODY SAVE
     if ((eventType == "REACTION") || (eventType == "COMMENT") || (eventType == "LIKE") || (eventType == "TRANSACTION")) {
-      if (event == "BOOST_SUCCES") {
+      if (event == "BOOST_SUCCES" || event == "ADS VIEW" || event == "ADS CLICK") {
         body_send['postID'] = idtransaction
         body_send['postType'] = eventType
       } else {
@@ -220,7 +220,7 @@ export class UtilsService {
         body_send['postType'] = postType
       }
 
-      if (event == "REWARDS"){
+      if (event == "ADS VIEW" || event == "ADS CLICK"){
         body_save_id = body_save_id_.toString().replace("${rewards}", customText)
         body_save_en = body_save_en_.toString().replace("${rewards}", customText)
       } else {
