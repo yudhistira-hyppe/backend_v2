@@ -1001,11 +1001,18 @@ export class UserbasicsService {
                   {
                     $project: {
                       "postID": 1,
-                      "apsara": 1,
-                      "apsaraId": 1,
-                      "apsaraThumbId": 1,
+                      "apsara": {
+                        $ifNull: ["$apsara", false]
+                      },
+                      "apsaraId": {
+                        $ifNull: ["$apsaraId", false]
+                      },
+                      "apsaraThumbId":
+                      {
+                        "$concat": ["/pict/", "$postID"]
+                      },
                       "mediaEndpoint": {
-                        "$concat": ["/thumb/", "$postID"]
+                        "$concat": ["/pict/", "$postID"]
                       },
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
@@ -1039,14 +1046,21 @@ export class UserbasicsService {
                   {
                     $project: {
                       "postID": 1,
-                      "apsara": 1,
-                      "apsaraId": 1,
+                      "apsara": {
+                        $ifNull: ["$apsara", false]
+                      },
+                      "apsaraId": {
+                        $ifNull: ["$apsaraId", false]
+                      },
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
                         "$concat": ["/stream/", "$postID"]
                       },
                       "mediaUri": 1,
-                      "mediaThumbEndpoint": 1,
+                      "mediaThumbEndpoint": {
+                        "$concat": ["/stream/", "$postID"]
+                      },
+
                       "mediaThumbUri": 1,
 
                     }
@@ -1077,14 +1091,20 @@ export class UserbasicsService {
                   {
                     $project: {
                       "postID": 1,
-                      "apsara": 1,
-                      "apsaraId": 1,
+                      "apsara": {
+                        $ifNull: ["$apsara", false]
+                      },
+                      "apsaraId": {
+                        $ifNull: ["$apsaraId", false]
+                      },
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
                         "$concat": ["/stream/", "$postID"]
                       },
                       "mediaUri": 1,
-                      "mediaThumbEndpoint": 1,
+                      "mediaThumbEndpoint": {
+                        "$concat": ["/stream/", "$postID"]
+                      },
                       "mediaThumbUri": 1,
 
                     }
@@ -1115,14 +1135,20 @@ export class UserbasicsService {
                   {
                     $project: {
                       "postID": 1,
-                      "apsara": 1,
-                      "apsaraId": 1,
+                      "apsara": {
+                        $ifNull: ["$apsara", false]
+                      },
+                      "apsaraId": {
+                        $ifNull: ["$apsaraId", false]
+                      },
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
                         "$concat": ["/stream/", "$postID"]
                       },
                       "mediaUri": 1,
-                      "mediaThumbEndpoint": 1,
+                      "mediaThumbEndpoint": {
+                        "$concat": ["/thumb/", "$postID"]
+                      },
                       "mediaThumbUri": 1,
 
                     }
