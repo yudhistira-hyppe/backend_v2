@@ -80,7 +80,11 @@ export class GetuserprofilesController {
     var data = await this.getuserprofilesService.getUserHyppe(searchemail, search, Number(skip), Number(limit), groupId);
     var totalRow = (await this.getuserprofilesService.countUserHyppe(searchemail, search)).length;
     return {
-      response_code: 202, data: data, totalRow: totalRow, skip: skip, limit: limit, messages: {}
+      response_code: 202, data: data, totalRow: totalRow, skip: skip, limit: limit, messages: {
+        "info": [
+          "successfully"
+        ]
+      }
     }
   }
 

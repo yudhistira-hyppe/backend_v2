@@ -33,6 +33,7 @@ export class ModuleService {
                     _id: 0,
                     id: '$_id',
                     name: '$nameModule',
+                    desc: '$desc',
                     children: [
                         {
                             id: 1,

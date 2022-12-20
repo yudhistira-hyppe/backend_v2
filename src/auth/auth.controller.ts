@@ -51,6 +51,7 @@ import { InsightsService } from '../content/insights/insights.service';
 import { Long } from 'mongodb';
 import { OtpService } from './otp.service';
 import { SocmedService } from './socmed.service';
+import { GroupService } from '../trans/usermanagement/group/group.service';
 
 @Controller()
 export class AuthController {
@@ -58,6 +59,7 @@ export class AuthController {
   private readonly logger = new Logger(AuthController.name);
 
   constructor(
+    private groupService: GroupService,
     private errorHandler: ErrorHandler,
     private authService: AuthService,
     private utilsService: UtilsService,
@@ -2932,4 +2934,10 @@ export class AuthController {
   //   return await this.utilsService.getPin(email);
   // }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('api/user/acces/:id')
+  async getAcces(@Param('id') id: string){
+    var acces = await this.groupService.getAcces(new mongoose.Types.ObjectId(id.toString()));
+    return acces;
+  }
 }
