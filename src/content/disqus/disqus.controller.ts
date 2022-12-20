@@ -957,6 +957,7 @@ export class DisqusController {
     dl.postType = dto.postType;
     dl.txtMessages = dto.txtMessages;
     dl.reactionUri = dto.reactionUri;
+    dl.disqusID = dis.disqusID;
     if (dto.postID != undefined) {
       dl.postID = dto.postID;
     }
