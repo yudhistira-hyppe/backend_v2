@@ -98,7 +98,110 @@ export class FaqService {
     return query;
   }
 
+  async listfaq(tipe: string, key: string, kategori: string) {
+    var pipeline = [];
 
+    pipeline.push({
+      $project: {
+        "kategori": 1,
+        "tipe": 1,
+        "datetime": 1,
+        "IdUser": 1,
+        "active": 1,
+        "child": 1,
+        "detail": 1
+      }
+    },
+      {
+        "$unwind": {
+          "path": "$detail",
+          "preserveNullAndEmptyArrays": true
+        }
+      },);
+
+    pipeline.push({
+      $match: {
+        tipe: tipe, active: true
+      }
+    },);
+    if (key && key !== undefined) {
+      pipeline.push({
+        $match: {
+          'detail.title': {
+            $regex: key,
+            $options: 'i'
+          }
+        }
+      },);
+    }
+    if (kategori && kategori !== undefined) {
+      pipeline.push({
+        $match: {
+          kategori: {
+            $regex: kategori,
+            $options: 'i'
+          },
+        }
+      },);
+    }
+
+
+
+    pipeline.push({
+      "$group": {
+        "_id": "$_id",
+        "kategori": {
+          "$push": "$kategori"
+        },
+        "tipe": {
+          "$push": "$tipe"
+        },
+        "datetime": {
+          "$push": "$datetime"
+        },
+        "IdUser": {
+          "$push": "$IdUser"
+        },
+        "active": {
+          "$push": "$active"
+        },
+        "child": {
+          "$push": "$child"
+        },
+        "detail": {
+          "$push": "$detail"
+        },
+
+      }
+    },
+      {
+        $project: {
+          kategori: {
+            $arrayElemAt: ['$kategori', 0]
+          },
+          tipe: {
+            $arrayElemAt: ['$tipe', 0]
+          },
+          datetime: {
+            $arrayElemAt: ['$datetime', 0]
+          },
+          IdUser: {
+            $arrayElemAt: ['$IdUser', 0]
+          },
+          active: {
+            $arrayElemAt: ['$active', 0]
+          },
+          child: {
+            $arrayElemAt: ['$child', 0]
+          },
+          detail: 1
+        }
+      },
+    );
+    let query = await this.faqsModel.aggregate(pipeline);
+
+    return query;
+  }
 
   async delete(id: string): Promise<Object> {
     let data = await this.faqsModel.updateOne({ "_id": id },

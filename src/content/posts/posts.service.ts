@@ -8850,7 +8850,7 @@ export class PostsService {
               //},
               {
                 $project: {
-                  "fullName": "$userBasic.fullname",
+                  "fullName": "$userBasic.fullName",
                   "profilePict": "$userBasic.profilePict",
                   "username": "$userAuth.username",
                   "email": "$userAuth.email",
@@ -8974,6 +8974,7 @@ export class PostsService {
                         "allowComments": 1,
                         "saleAmount": 1,
                         "isLiked": 1,
+                        "certified": 1,
 
                       }
                     }
@@ -9106,6 +9107,7 @@ export class PostsService {
                   "isViewed": "$pict.isViewed",
                   "allowComments": "$pict.allowComments",
                   "saleAmount": "$pict.saleAmount",
+                  "certified": "$pict.certified",
                   "monetize":
                   {
                     $cond: {
@@ -9256,6 +9258,7 @@ export class PostsService {
                         "isViewed": 1,
                         "allowComments": 1,
                         "saleAmount": 1,
+                        "certified": 1,
                         "isLiked": 1,
 
                       }
@@ -9389,6 +9392,7 @@ export class PostsService {
                   "isViewed": "$pict.isViewed",
                   "allowComments": "$pict.allowComments",
                   "saleAmount": "$pict.saleAmount",
+                  "certified": "$pict.certified",
                   "monetize":
                   {
                     $cond: {
@@ -9540,6 +9544,7 @@ export class PostsService {
                         "allowComments": 1,
                         "saleAmount": 1,
                         "isLiked": 1,
+                        "certified": 1,
 
                       }
                     }
@@ -9672,6 +9677,7 @@ export class PostsService {
                   "isViewed": "$pict.isViewed",
                   "allowComments": "$pict.allowComments",
                   "saleAmount": "$pict.saleAmount",
+                  "certified": "$pict.certified",
                   "monetize":
                   {
                     $cond: {
