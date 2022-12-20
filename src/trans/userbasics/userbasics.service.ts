@@ -1009,10 +1009,10 @@ export class UserbasicsService {
                       },
                       "apsaraThumbId":
                       {
-                        "$concat": ["/thumb/", "$postID"]
+                        "$concat": ["/pict/", "$postID"]
                       },
                       "mediaEndpoint": {
-                        "$concat": ["/stream/", "$postID"]
+                        "$concat": ["/pict/", "$postID"]
                       },
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
