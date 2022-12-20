@@ -227,6 +227,15 @@ export class UtilsService {
         body_save_id = body_save_id_.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
         body_save_en = body_save_en_.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
       }
+    } else {
+      if (eventType == "FOLLOWER" || eventType == "FOLLOWING") {
+        body_send['postType'] = eventType
+      } else {
+        body_send['postType'] = postType
+      }
+      body_send['postID'] = postID
+      body_save_id = body_save_id_.toString();
+      body_save_en = body_save_en_.toString();
     }
 
     //SET BODY SEND

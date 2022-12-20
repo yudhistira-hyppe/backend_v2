@@ -1170,6 +1170,65 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
+  @Post('api/user/getuserprofile/byusername')
+  @FormDataRequest()
+  async getUserProfileByUsername(@Body() SearchUserbasicDto_: SearchUserbasicDto, @Headers() headers) {
+    if (headers['x-auth-user'] == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unauthorized',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed email header dan token not match',
+      );
+    }
+    if (SearchUserbasicDto_.search == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+      //Ceck User Userbasics
+      const tmp = await this.userauthsService.findOneUsername(SearchUserbasicDto_.search.toString());
+      if (tmp === undefined) {
+        return {
+          "response_code": 202,
+          "data": [],
+          "messages": {
+            "info": [
+              "The process successful"
+            ]
+          }
+        };
+      }
+
+      const data_userbasics = await this.userbasicsService.findOne(tmp.email.toString());
+      if (await this.utilsService.ceckData(data_userbasics)) {
+
+        var user_view = headers['x-auth-user'];
+        await this.authService.viewProfile(tmp.email.toString(), user_view);
+        var Data = await this.utilsService.generateProfile(tmp.email.toString(), 'PROFILE');
+        var numPost = await this.postsService.findUserPost(tmp.email.toString());
+        let aNumPost = <any>numPost;
+        Data.insight.posts = <Long>aNumPost;
+        return {
+          "response_code": 202,
+          "data": [Data],
+          "messages": {
+            "info": [
+              "The process successful"
+            ]
+          }
+        };
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unabled to proceed user not found',
+        );
+      }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/user/getuserprofile')
   @FormDataRequest()
   async getuserprofile(@Body() SearchUserbasicDto_: SearchUserbasicDto, @Headers() headers) {
