@@ -1190,7 +1190,15 @@ export class AuthController {
     }
     if (await this.utilsService.validasiEmail(SearchUserbasicDto_.search.toString())) {
       //Ceck User Userbasics
-      const data_userbasics = await this.userbasicsService.findOne(SearchUserbasicDto_.search.toString());
+      let uauth = await this.userauthsService.search(SearchUserbasicDto_.search.toString());
+      let usr: string[] = [];
+      for (let y = 0; y < uauth.length; y++) {
+        let auth = uauth[y];
+        usr.push(auth.email.toString());
+      }
+
+      //const data_userbasics = await this.userbasicsService.findOne(SearchUserbasicDto_.search.toString());
+      const data_userbasics = await this.userbasicsService.findIn(usr);      
       if (await this.utilsService.ceckData(data_userbasics)) {
 
         var user_view = headers['x-auth-user'];

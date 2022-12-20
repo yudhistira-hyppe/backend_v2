@@ -64,6 +64,10 @@ export class UserauthsService {
       .exec();
   }
 
+  async search(search: String): Promise<Userauth[]> {
+    return this.userauthModel.find({$or: [{ email: search }, { username: search }],}).exec();
+  }  
+
   async findOne(email: String): Promise<Userauth> {
     return this.userauthModel.findOne({ email: email }).exec();
   }
