@@ -3,7 +3,6 @@ import { ActivityeventsService } from './activityevents.service';
 import { CreateActivityeventsDto } from './dto/create-activityevents.dto';
 import { Activityevents } from './schemas/activityevents.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { GroupModuleService } from '../../trans/usermanagement/groupmodule/groupmodule.service';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
 
@@ -11,7 +10,6 @@ import { ErrorHandler } from '../../utils/error.handler';
 @Controller('api/activityevents')
 export class ActivityeventsController {
   constructor(private readonly activityeventsService: ActivityeventsService,
-    private readonly groupModuleService: GroupModuleService,
     private readonly utilsService: UtilsService,
     private readonly errorHandler: ErrorHandler) { }
 

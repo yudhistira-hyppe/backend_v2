@@ -6,7 +6,6 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { MediadiariesService } from '../mediadiaries/mediadiaries.service';
 import { MediavideosService } from '../mediavideos/mediavideos.service';
 import { MediastoriesService } from '../mediastories/mediastories.service';
-import { GroupModuleService } from '../../trans/usermanagement/groupmodule/groupmodule.service';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import { Request } from 'express';
@@ -14,7 +13,6 @@ import { Request } from 'express';
 export class MediapictsController {
   constructor(private readonly MediapictsService: MediapictsService, private readonly MediadiariesService: MediadiariesService, private readonly MediavideosService: MediavideosService,
     private readonly MediastoriesService: MediastoriesService,
-    private readonly groupModuleService: GroupModuleService,
     private readonly utilsService: UtilsService,
     private readonly errorHandler: ErrorHandler) { }
 
@@ -49,11 +47,10 @@ export class MediapictsController {
     }
 
     var user_email_header = headers['x-auth-user'];
-    if (!(await this.groupModuleService.validasiModule2(user_email_header, 'Beranda-Card-Activitas', 'view'))) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed, user permission cannot acces module',
-      );
-    }
+    
+    await this.errorHandler.generateNotAcceptableException(
+      'Unabled to proceed, user permission cannot acces module',
+    );
 
     var date = null;
     var request_json = JSON.parse(JSON.stringify(request.body));

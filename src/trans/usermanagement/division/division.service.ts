@@ -48,6 +48,32 @@ export class DivisionService {
         return await this.divisionModel.findByIdAndRemove({ _id: _id }).exec();
     }
 
+    async listGroupUserAllByDivisi(_id: String) {
+        var query = await this.divisionModel.aggregate([
+            {
+                "$match": {
+                    _id: new ObjectId(_id.toString())
+                },
+            },
+            {
+                $lookup: {
+                    from: "group",
+                    localField: "_id",
+                    foreignField: "divisionId",
+                    as: "group"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$group",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+        ]);
+
+        return query;
+    }
+
     async listGroupUserAll() {
         var query = await this.divisionModel.aggregate([
             {

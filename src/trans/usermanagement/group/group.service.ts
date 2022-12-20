@@ -190,11 +190,17 @@ export class GroupService {
     }
 
     async findbyuser(_id: mongoose.Types.ObjectId) {
-        return await this.groupModel.find({ userbasics: { $in: [_id] } }).exec();
+        return await this.groupModel.findOne({ userbasics: { $in: [_id] } }).exec();
     }
 
     async getAcces(_id: mongoose.Types.ObjectId) {
-        var query = await this.groupModel.aggregate([
+
+        var GetGroup = this.groupModel.aggregate([
+            // { 
+            //     $project: { 
+            //         param_id: { "$toObjectId": _id } 
+            //     }
+            // },
             {
                 "$match": {
                     $and: [
@@ -202,9 +208,94 @@ export class GroupService {
                     ]
                 }
             },
-        ]);
+            {
+                $lookup: {
+                    from: 'division',
+                    let: { division_Id: "$divisionId" },
+                    pipeline: [
+                        { "$addFields": { "_id": { "$toString": "$_id" } } },
+                        { "$match": { "$expr": { "$eq": ["$_id", "$$division_Id"] } } }
+                    ],
+                    as: 'division_data'
+                }
+            },
+            {
+                $lookup: {
+                    from: 'groupmodule',
+                    let: { group_id: "$_id" },
+                    pipeline: [
+                        { "$addFields": { "group": { "$toObjectId": "$group" } } },
+                        { "$match": { "$expr": { "$eq": ["$group", "$$group_id"] } } }
+                    ],
+                    as: 'groupmodule_data',
+                },
+            },
+            {
+                $project: {
+                    _id: '$_id',
+                    nameGroup: '$nameGroup',
+                    divisionId: { $arrayElemAt: ['$division_data._id', 0] },
+                    nameDivision: { $arrayElemAt: ['$division_data.nameDivision', 0] },
+                    fullName: '$fullName',
+                    createAt: '$createAt',
+                    updateAt: '$updateAt',
+                    desc: '$desc',
+                    data: {
+                        "$map": {
+                            "input": "$groupmodule_data",
+                            "as": "dline",
+                            "in": {
+                                "id": "$$dline.module",
+                                "createAcces": "$$dline.createAcces",
+                                "updateAcces": "$$dline.updateAcces",
+                                "deleteAcces": "$$dline.deleteAcces",
+                                "viewAcces": "$$dline.viewAcces"
+                            }
+                        }
+                    }
+                },
+            },
+            {
+                $unwind: {
+                    path: "$data",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    _id: '$_id',
+                    nameGroup: '$nameGroup',
+                    divisionId: { $arrayElemAt: ['$division_data._id', 0] },
+                    nameDivision: { $arrayElemAt: ['$division_data.nameDivision', 0] },
+                    fullName: '$fullName',
+                    createAt: '$createAt',
+                    updateAt: '$updateAt',
+                    desc: '$desc',
+                    moduleId: '$data.id',
+                    data: '$data'
+                },
+            },
+            {
+                $lookup: {
+                    from: "module",
+                    localField: "moduleId",
+                    foreignField: "_id",
+                    as: "module_data"
+                }
+            },
+            {
+                $project: {
+                    _id: { $arrayElemAt: ['$module_data._id', 0] },
+                    nameModule: { $arrayElemAt: ['$module_data.nameModule', 0] },
+                    desc: { $arrayElemAt: ['$module_data.desc', 0] },
+                    updateAt: { $arrayElemAt: ['$module_data.updateAt', 0] },
+                    createAt: { $arrayElemAt: ['$module_data.createAt', 0] },
+                    acces: '$data',
+                },
+            },
+        ]).exec();
 
-        return query;
+        return GetGroup;
     }
 
     async listGroupUserAll() {

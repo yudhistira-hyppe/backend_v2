@@ -35,7 +35,7 @@ export class GroupModuleService {
         return this.moduleModel.find().skip(skip).limit(limit).exec();
     }
 
-    async findOne(_id: String): Promise<GroupModuleDto> {
+    async findOne(_id: mongoose.Types.ObjectId): Promise<GroupModuleDto> {
         return this.moduleModel.findOne({ _id: _id }).exec();
     }
 
@@ -43,11 +43,11 @@ export class GroupModuleService {
         return this.moduleModel.findOne({ group: group, module: module }).exec();
     }
 
-    async deleteByGroup(group: String) {
+    async deleteByGroup(group: mongoose.Types.ObjectId) {
         return this.moduleModel.find({ group: group }).remove().exec();
     }
 
-    async findOnebygroupandmodule(group: String, module: String): Promise<GroupModuleDto> {
+    async findOnebygroupandmodule(group: mongoose.Types.ObjectId, module: mongoose.Types.ObjectId): Promise<GroupModuleDto> {
         return this.moduleModel.findOne({ group: group, module: module }).exec();
     }
 

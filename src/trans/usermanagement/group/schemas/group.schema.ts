@@ -9,9 +9,7 @@ export class Group {
   @Prop()
   userbasics: Array<ObjectId>
   @Prop({ type: mongoose.Types.ObjectId })
-  divisionId: {
-      $oid: string
-  }
+  divisionId: mongoose.Types.ObjectId;
   @Prop()
   nameGroup: string
   @Prop()

@@ -2935,9 +2935,16 @@ export class AuthController {
   // }
 
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
   @Get('api/user/acces/:id')
   async getAcces(@Param('id') id: string){
     var acces = await this.groupService.getAcces(new mongoose.Types.ObjectId(id.toString()));
-    return acces;
+    return {
+      response_code: 202,
+      data: acces,
+      messages: {
+        info: ['Get Acces successfully'],
+      },
+    };
   }
 }
