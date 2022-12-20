@@ -7,10 +7,8 @@ import { UtilsService } from '../../../utils/utils.service';
 import { ErrorHandler } from '../../../utils/error.handler';
 import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
 
-
 @Controller('/api/division')
 export class DivisionController {
-
     constructor(
         private readonly divisionService: DivisionService,
         private readonly utilsService: UtilsService,
@@ -72,8 +70,6 @@ export class DivisionController {
         };
     }
 
-
-
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('/update')
@@ -118,6 +114,14 @@ export class DivisionController {
     @Delete('/delete')
     async delete(
         @Query('id') id: string,) {
+        var groupData = await this.divisionService.listGroupUserAllByDivisi(id)
+        if (await this.utilsService.ceckData(groupData)){
+            if (groupData.length>0){
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed Delete division, Division in use',
+                );
+            }
+        }
         var data = await this.divisionService.delete(id);
         return {
             "response_code": 202,

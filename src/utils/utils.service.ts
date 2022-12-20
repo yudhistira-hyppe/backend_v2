@@ -232,9 +232,10 @@ export class UtilsService {
         body_send['postType'] = eventType
         body_send['postID'] = get_username_senderParty
       } else {
+        body_send['postID'] = postID
         body_send['postType'] = postType
       }
-      body_send['postID'] = postID
+      
       body_save_id = body_save_id_.toString();
       body_save_en = body_save_en_.toString();
     }

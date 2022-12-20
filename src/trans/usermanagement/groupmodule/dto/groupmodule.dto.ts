@@ -1,9 +1,9 @@
-import { ObjectId } from "mongoose";
+import mongoose, { ObjectId } from "mongoose";
 
 export class GroupModuleDto {
-  readonly _id: ObjectId;
-  group: String;
-  module: String;
+  readonly _id: mongoose.Types.ObjectId;
+  group: mongoose.Types.ObjectId;
+  module: mongoose.Types.ObjectId;
   createAcces: boolean;
   updateAcces: boolean;
   deleteAcces: boolean;

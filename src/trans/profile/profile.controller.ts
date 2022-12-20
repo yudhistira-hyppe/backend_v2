@@ -19,6 +19,7 @@ import { ProfileDTO } from '../../utils/data/Profile';
 import { UtilsService } from '../../utils/utils.service';
 import { ContenteventsService } from '../../content/contentevents/contentevents.service';
 import { UserbankaccountsService } from '../userbankaccounts/userbankaccounts.service';
+import mongoose from 'mongoose';
 
 @Controller('api/profile')
 export class ProfileController {
@@ -452,7 +453,11 @@ export class ProfileController {
         "databank": dataakunbank,
         "loginSource" : cl
       }];
-
+      var dataGroup = await this.groupService.findbyuser(new mongoose.Types.ObjectId(datauserbasicsService._id.toString()))
+      if (dataGroup != null){
+        data[0]['groupId'] = dataGroup._id;
+        data[0]['group'] = dataGroup.nameGroup;
+      }
       return {
         response_code: 202,
         data,

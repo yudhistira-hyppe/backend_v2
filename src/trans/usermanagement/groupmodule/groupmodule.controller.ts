@@ -11,6 +11,7 @@ import { Group as Group_ } from '../group/schemas/group.schema';
 import { UserbasicsService } from '../../../trans/userbasics/userbasics.service';
 import { ObjectId } from 'mongodb';
 import { DivisionService } from '../division/division.service';
+import mongoose from 'mongoose';
 
 @Controller('api/groupmodule')
 export class GroupModuleController {
@@ -203,7 +204,7 @@ export class GroupModuleController {
 
         var GroupDto_ = new GroupDto();
         GroupDto_.nameGroup = request.nameGroup;
-        GroupDto_.divisionId = request.divisionId;
+        GroupDto_.divisionId = new mongoose.Types.ObjectId(request.divisionId.toString());
         if (request.userbasics != undefined) {
             if (request.userbasics.length > 0) {
                 var data = [];
@@ -237,8 +238,8 @@ export class GroupModuleController {
                     if (await this.utilsService.ceckData(data_module)) {
                         var current_date = await this.utilsService.getDateTimeString();
                         var GroupModuleDto_ = new GroupModuleDto();
-                        GroupModuleDto_.group = _Group_._id.toString();
-                        GroupModuleDto_.module = param[i].module;
+                        GroupModuleDto_.group = new mongoose.Types.ObjectId(_Group_._id.toString());
+                        GroupModuleDto_.module = new mongoose.Types.ObjectId(param[i].module.toString());
                         if (param[i].createAcces != undefined) {
                             GroupModuleDto_.createAcces = param[i].createAcces;
                         }
@@ -379,7 +380,7 @@ export class GroupModuleController {
 
         var GroupDto_ = new GroupDto();
         GroupDto_.nameGroup = request.nameGroup;
-        GroupDto_.divisionId = request.divisionId;
+        GroupDto_.divisionId = new mongoose.Types.ObjectId(request.divisionId.toString());
         if (request.userbasics != undefined) {
             if (request.userbasics.length > 0) {
                 var data = [];
@@ -405,7 +406,7 @@ export class GroupModuleController {
                         );
                     }
                 }
-                await this.groupModuleService.deleteByGroup(request._id);
+                await this.groupModuleService.deleteByGroup(new mongoose.Types.ObjectId(request._id));
                 for (var i = 0; i < param.length; i++) {
                     var data_module = await this.moduleService.findOne(param[i].module);
                     if (await this.utilsService.ceckData(data_module)) {
@@ -413,8 +414,8 @@ export class GroupModuleController {
                         console.log(data_group_module);
                         var current_date = await this.utilsService.getDateTimeString();
                         var GroupModuleDto_ = new GroupModuleDto();
-                        GroupModuleDto_.group = request._id;
-                        GroupModuleDto_.module = param[i].module;
+                        GroupModuleDto_.group = new mongoose.Types.ObjectId(request._id.toString());
+                        GroupModuleDto_.module = new mongoose.Types.ObjectId(param[i].module.toString());
                         if (param[i].createAcces != undefined) {
                             GroupModuleDto_.createAcces = param[i].createAcces;
                         }

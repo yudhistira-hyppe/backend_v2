@@ -4,7 +4,6 @@ import { ContenteventsService } from './contentevents.service';
 import { ContenteventsController } from './contentevents.controller';
 import { ConfigModule } from '@nestjs/config';
 import { Contentevents, ContenteventsSchema } from './schemas/contentevents.schema';
-import { GroupModuleModule } from '../../trans/usermanagement/groupmodule/groupmodule.module';
 import { UtilsModule } from '../../utils/utils.module';
 import { InsightsModule } from '../insights/insights.module';
 import { PostDisqusModule } from '../disqus/post/postdisqus.module';
@@ -23,7 +22,6 @@ import { DisqusContentEventController } from './discus/disquscontentevent.contro
         PostDisqusModule,
         InsightsModule,
         UtilsModule,
-        GroupModuleModule,
         ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Contentevents.name, schema: ContenteventsSchema }], 'SERVER_FULL')
     ],

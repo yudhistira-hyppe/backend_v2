@@ -6,10 +6,10 @@ export type GroupModuleDocument = GroupModule & Document;
 @Schema({ collection: 'groupmodule' })
 export class GroupModule {
   _id: ObjectId;
-  @Prop()
-  group: string
-  @Prop()
-  module: string
+  @Prop({ type: Object })
+  group: mongoose.Types.ObjectId;
+  @Prop({ type: Object })
+  module: mongoose.Types.ObjectId;
   @Prop()
   createAcces: boolean;
   @Prop()

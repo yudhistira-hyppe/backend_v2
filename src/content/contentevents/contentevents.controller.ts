@@ -3,7 +3,6 @@ import { ContenteventsService } from './contentevents.service';
 import { ContentEventId, CreateContenteventsDto } from './dto/create-contentevents.dto';
 import { Contentevents } from './schemas/contentevents.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
-import { GroupModuleService } from '../../trans/usermanagement/groupmodule/groupmodule.service';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
 import { InsightsService } from '../insights/insights.service';
@@ -29,7 +28,6 @@ export class ContenteventsController {
   private readonly logger = new Logger(ContenteventsController.name);
   constructor(
     private readonly contenteventsService: ContenteventsService,
-    private readonly groupModuleService: GroupModuleService,
     private readonly utilsService: UtilsService,
     private readonly insightlogsService: InsightlogsService,
     private readonly insightsService: InsightsService,

@@ -19,7 +19,6 @@ import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
 import { UtilsService } from '../../utils/utils.service';
 import { ErrorHandler } from '../../utils/error.handler';
-import { GroupModuleService } from '../../trans/usermanagement/groupmodule/groupmodule.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PostContentService } from './postcontent.service';
 import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userplaylist.dto';
@@ -52,8 +51,7 @@ export class PostsController {
     private readonly notifService: NotificationsService,
     private readonly cmodService: ContentModService,
     private readonly disqusService: DisqusService,
-    private readonly methodepaymentsService: MethodepaymentsService,     
-    private readonly groupModuleService: GroupModuleService) { }
+    private readonly methodepaymentsService: MethodepaymentsService) { }
 
   @Post()
   async create(@Body() CreatePostsDto: CreatePostsDto) {
@@ -124,12 +122,11 @@ export class PostsController {
     }
 
     var user_email_header = headers['x-auth-user'];
-    if (!(await this.groupModuleService.validasiModule2(user_email_header, 'Beranda-Card-Status-Kepemilikan', 'view'))) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed, user permission cannot acces module',
-      );
-    }
-    return this.PostsService.MonetizeByYear(year);
+   
+    await this.errorHandler.generateNotAcceptableException(
+      'Unabled to proceed, user permission cannot acces module',
+    );
+  return this.PostsService.MonetizeByYear(year);
   }
 
   @UseGuards(JwtAuthGuard)

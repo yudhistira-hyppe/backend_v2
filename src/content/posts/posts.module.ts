@@ -7,7 +7,6 @@ import { Posts, PostsSchema } from './schemas/posts.schema';
 import { UserauthsModule } from '../../trans/userauths/userauths.module';
 import { GetuserprofilesModule } from '../../trans/getuserprofiles/getuserprofiles.module';
 import { UtilsModule } from '../../utils/utils.module';
-import { GroupModuleModule } from '../../trans/usermanagement/groupmodule/groupmodule.module';
 import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
 import { InterestsModule } from '../../infra/interests/interests.module';
 import { MediavideosModule } from '../mediavideos/mediavideos.module';
@@ -34,7 +33,6 @@ import { InsightlogsModule } from '../insightlogs/insightlogs.module';
 import { ContentModService } from './contentmod.service';
 import { OyPgModule } from '../../paymentgateway/oypg/oypg.module';
 import { MethodepaymentsModule } from '../../trans/methodepayments/methodepayments.module';
-import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
 import { SocketModule } from '../socket/socket.module';
 import { PostBoostService } from './postboost.service';
 import { MediamusicModule } from '../mediamusic/mediamusic.module';
@@ -50,7 +48,6 @@ import { MediamusicModule } from '../mediamusic/mediamusic.module';
         NestjsFormDataModule,
         SeaweedfsModule,
         UserplaylistModule,
-        GroupModuleModule,
         UtilsModule,
         ConfigModule.forRoot(), UserauthsModule, GetuserprofilesModule, UserbasicsModule, UtilsModule,InterestsModule,
         UserauthsModule,MediavideosModule,InsightsModule,ContenteventsModule,MediadiariesModule, MediastoriesModule,
