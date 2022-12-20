@@ -91,6 +91,8 @@ export class Posts {
   @Prop()
   contentModerationResponse: string
   @Prop()
+  contentModerationDate: string  
+  @Prop()
   reportedUserHandle: any[];
   @Prop({ type: Object })
   musicId: mongoose.Types.ObjectId;
