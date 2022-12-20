@@ -680,11 +680,6 @@ export class UserbasicsService {
     } catch (e) {
       dateend = "";
     }
-
-    var dt = new Date(Date.now());
-    dt.setHours(dt.getHours() + 7); // timestamp
-    dt = new Date(dt);
-    var datestring = dt.toISOString();
     var pipeline = [];
 
     pipeline.push(
@@ -900,17 +895,61 @@ export class UserbasicsService {
                       "timestamp": 1,
                       "timeStart":
                       {
-                        $add: [new Date(), 25200000]
+                        "$dateToString": {
+                          "format": "%Y-%m-%dT%H:%M:%S",
+                          "date": {
+                            $add: [new Date(), 25200000]
+                          }
+                        }
+                      },
+                      "status":
+                      {
+                        $cond: {
+                          if:
+                          {
+                            $and: [
+                              {
+                                $lt: ['$expiredtimeva', {
+                                  "$dateToString": {
+                                    "format": "%Y-%m-%dT%H:%M:%S",
+                                    "date": {
+                                      $add: [new Date(), 25200000]
+                                    }
+                                  }
+                                },]
+                              },
+                              {
+                                $eq: ['$status', 'WAITING_PAYMENT']
+                              }
+                            ]
+                          },
+                          then: "Cancel",
+                          else: '$status'
+                        }
                       },
                       "description":
                       {
                         $cond: {
-                          if: {
-                            $gt: ['$expiredtimeva',
-                              datestring]
+                          if:
+                          {
+                            $and: [
+                              {
+                                $lt: ['$expiredtimeva', {
+                                  "$dateToString": {
+                                    "format": "%Y-%m-%dT%H:%M:%S",
+                                    "date": {
+                                      $add: [new Date(), 25200000]
+                                    }
+                                  }
+                                },]
+                              },
+                              {
+                                $eq: ['$status', 'WAITING_PAYMENT']
+                              }
+                            ]
                           },
-                          then: "$description",
-                          else: 'VA expired time'
+                          then: "$VA expired time",
+                          else: '$description'
                         }
                       },
                       "noinvoice": 1,
@@ -919,17 +958,7 @@ export class UserbasicsService {
                       "bank": 1,
                       "amount": 1,
                       "totalamount": 1,
-                      "status":
-                      {
-                        $cond: {
-                          if: {
-                            $gt: ['$expiredtimeva',
-                              datestring]
-                          },
-                          then: "$status",
-                          else: 'Cancel'
-                        }
-                      },
+
                       "postid": 1,
                       "iduserbuyer": 1,
                       "idusersell": 1,
@@ -996,6 +1025,7 @@ export class UserbasicsService {
                             $in: ['$postID', '$$localID']
                           }
                         },
+
                       ]
                     }
                   },
@@ -1061,7 +1091,6 @@ export class UserbasicsService {
                       "mediaThumbEndpoint": {
                         "$concat": ["/stream/", "$postID"]
                       },
-
                       "mediaThumbUri": 1,
 
                     }
@@ -1835,6 +1864,7 @@ export class UserbasicsService {
           "apsara": '$tester.apsara',
           "debetKredit": '$tester.debetKredit',
           "timestart": "$tester.timestart",
+
         }
       },
       {
@@ -1848,6 +1878,7 @@ export class UserbasicsService {
       },
       {
         $limit: limit
+
       },
     );
 
