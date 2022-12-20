@@ -31,8 +31,10 @@ import { AdsUserCompareModule } from '../trans/ads/adsusercompare/adsusercompare
 import { UserbasicsnewModule } from '../trans/newuserbasic/userbasicsnew.module';
 import { OtpService } from './otp.service';
 import { SocmedService } from './socmed.service';
+import { GroupModule } from '../trans/usermanagement/group/group.module';
 @Module({
   imports: [
+    GroupModule,
     MediaproofpictsModule,
     UserbasicsnewModule,
     AdsUserCompareModule,

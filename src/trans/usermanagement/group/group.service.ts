@@ -189,8 +189,22 @@ export class GroupService {
         return await this.groupModel.updateOne({ _id: _id }, { $push: { userbasics: userId } }).exec();
     }
 
-    async findbyuser(_id: String) {
+    async findbyuser(_id: mongoose.Types.ObjectId) {
         return await this.groupModel.find({ userbasics: { $in: [_id] } }).exec();
+    }
+
+    async getAcces(_id: mongoose.Types.ObjectId) {
+        var query = await this.groupModel.aggregate([
+            {
+                "$match": {
+                    $and: [
+                        { userbasics: { $in: [_id] } }
+                    ]
+                }
+            },
+        ]);
+
+        return query;
     }
 
     async listGroupUserAll() {

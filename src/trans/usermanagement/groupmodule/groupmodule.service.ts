@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ObjectId } from 'mongodb';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 import { GroupModuleDto } from './dto/groupmodule.dto';
 import { GroupModule, GroupModuleDocument } from './schemas/groupmodule.schema';
 import { GroupService } from '../group/group.service';
@@ -62,7 +62,7 @@ export class GroupModuleService {
     async validasiModule(id_userbasic: string, id_module: string, action: string): Promise<boolean> {
         var permission = false;
 
-        var group = await this.groupService.findbyuser(id_userbasic);
+        var group = await this.groupService.findbyuser(new mongoose.Types.ObjectId(id_userbasic));
         if (!(await this.utilsService.ceckData(group))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed ceck permission, the user does not have a group',
@@ -109,7 +109,7 @@ export class GroupModuleService {
             );
         }
 
-        var data_group = await this.groupService.findbyuser(data_user._id.toString());
+        var data_group = await this.groupService.findbyuser(new mongoose.Types.ObjectId(data_user._id.toString()));
         if (!(await this.utilsService.ceckData(data_group))) {
             await this.errorHandler.generateNotAcceptableException(
                 'Unabled to proceed ceck permission, the user does not have a group',

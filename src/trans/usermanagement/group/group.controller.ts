@@ -68,7 +68,7 @@ export class GroupController {
                 for (var i = 0; i < request.userbasics.length; i++) {
                     var data_userbasic = await this.userbasicsService.findOne(request.userbasics[i]);
                     if (await this.utilsService.ceckData(data_userbasic)) {
-                        var data_user_group = await this.groupService.findbyuser(data_userbasic._id.toString());
+                        var data_user_group = await this.groupService.findbyuser(new mongoose.Types.ObjectId(data_userbasic._id.toString()));
                         if (await this.utilsService.ceckData(data_user_group)) {
                             if (data_user_group[0].nameGroup == request.nameGroup) {
                                 data_user_insert.push(new Object(data_userbasic._id.toString()));
@@ -249,7 +249,7 @@ export class GroupController {
 
         var data_userbasic = await this.userbasicsService.findOne(request.email);
         if (await this.utilsService.ceckData(data_userbasic)) {
-            var group = await this.groupService.findbyuser(data_userbasic._id.toString());
+            var group = await this.groupService.findbyuser(new mongoose.Types.ObjectId(data_userbasic._id.toString()));
             var user_auth = await this.userauthsService.findOneemail(request.email);
             if (await this.utilsService.ceckData(user_auth)) {
                 if (await this.utilsService.ceckData(group)) {
@@ -308,7 +308,7 @@ export class GroupController {
 
         var data_userbasic = await this.userbasicsService.findOne(email);
         if (await this.utilsService.ceckData(data_userbasic)) {
-            var group = await this.groupService.findbyuser(data_userbasic._id.toString());
+            var group = await this.groupService.findbyuser(new mongoose.Types.ObjectId(data_userbasic._id.toString()));
             var user_auth = await this.userauthsService.findOneemail(email);
             if (await this.utilsService.ceckData(user_auth)) {
                 if (await this.utilsService.ceckData(group)) {
