@@ -354,7 +354,8 @@ export class ContentModService {
       pd.contentModeration = false;
       pd.reportedStatus = 'ALL';
     }
-    let today = new Date();
+    let tod = new Date().getDate() + 25200000;
+    let today = new Date(tod);
     pd.contentModerationDate = today.toISOString(); 
     pd.contentModerationResponse = JSON.stringify(body);
 

@@ -3113,6 +3113,10 @@ export class TransactionsService {
     }
 
     async findhistorydetailsell(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var datestring = dt.toISOString();
         const query = await this.transactionsModel.aggregate([
 
 
@@ -3165,7 +3169,6 @@ export class TransactionsService {
                     type: "$type",
                     jenis: "$jenis",
                     timestamp: "$timestamp",
-                    description: "$description",
                     noinvoice: "$noinvoice",
                     nova: "$nova",
                     expiredtimeva: "$expiredtimeva",
@@ -3174,7 +3177,29 @@ export class TransactionsService {
                     bank: "$bank",
                     amount: "$amount",
                     totalamount: "$totalamount",
-                    status: "$status",
+                    description:
+                    {
+                        $cond: {
+                            if: {
+                                $gt: ['$expiredtimeva',
+                                    datestring]
+                            },
+                            then: "$description",
+                            else: 'VA expired time'
+                        }
+                    },
+
+                    status:
+                    {
+                        $cond: {
+                            if: {
+                                $gt: ['$expiredtimeva',
+                                    datestring]
+                            },
+                            then: "$status",
+                            else: 'Cancel'
+                        }
+                    },
                     paymentmethod: "$paymentmethod",
                     user: {
                         $arrayElemAt: [
@@ -3712,6 +3737,11 @@ export class TransactionsService {
     }
 
     async findhistorydetailbuy(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
+        var dt = new Date(Date.now());
+        dt.setHours(dt.getHours() + 7); // timestamp
+        dt = new Date(dt);
+        var datestring = dt.toISOString();
+
         const query = await this.transactionsModel.aggregate([
 
 
@@ -3764,7 +3794,6 @@ export class TransactionsService {
                     type: "$type",
                     jenis: "$jenis",
                     timestamp: "$timestamp",
-                    description: "$description",
                     noinvoice: "$noinvoice",
                     nova: "$nova",
                     expiredtimeva: "$expiredtimeva",
@@ -3773,7 +3802,29 @@ export class TransactionsService {
                     bank: "$bank",
                     amount: "$amount",
                     totalamount: "$totalamount",
-                    status: "$status",
+                    description:
+                    {
+                        $cond: {
+                            if: {
+                                $gt: ['$expiredtimeva',
+                                    datestring]
+                            },
+                            then: "$description",
+                            else: 'VA expired time'
+                        }
+                    },
+
+                    status:
+                    {
+                        $cond: {
+                            if: {
+                                $gt: ['$expiredtimeva',
+                                    datestring]
+                            },
+                            then: "$status",
+                            else: 'Cancel'
+                        }
+                    },
                     paymentmethod: "$paymentmethod",
                     user: {
                         $arrayElemAt: [
