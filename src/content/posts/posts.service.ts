@@ -8830,10 +8830,10 @@ export class PostsService {
                         }
                       },
                       {
-                        $skip: 0
+                        $skip: skip
                       },
                       {
-                        $limit: 5
+                        $limit: limit
                       },
 
                     ],
@@ -9272,10 +9272,10 @@ export class PostsService {
                         }
                       },
                       {
-                        $skip: 0
+                        $skip: skip
                       },
                       {
-                        $limit: 5
+                        $limit: limit
                       },
 
                     ],
@@ -9714,10 +9714,10 @@ export class PostsService {
                         }
                       },
                       {
-                        $skip: 0
+                        $skip: skip
                       },
                       {
-                        $limit: 5
+                        $limit: limit
                       },
 
                     ],
@@ -10155,10 +10155,10 @@ export class PostsService {
                         }
                       },
                       {
-                        $skip: 0
+                        $skip: skip
                       },
                       {
-                        $limit: 5
+                        $limit: limit
                       },
 
                     ],
@@ -10883,10 +10883,10 @@ export class PostsService {
                         }
                       },
                       {
-                        $skip: 0
+                        $skip: skip
                       },
                       {
-                        $limit: 5
+                        $limit: limit
                       },
 
                     ],
@@ -11611,10 +11611,10 @@ export class PostsService {
                         }
                       },
                       {
-                        $skip: 0
+                        $skip: skip
                       },
                       {
-                        $limit: 5
+                        $limit: limit
                       },
 
                     ],
@@ -12338,10 +12338,10 @@ export class PostsService {
                         }
                       },
                       {
-                        $skip: 0
+                        $skip: skip
                       },
                       {
-                        $limit: 5
+                        $limit: limit
                       },
 
                     ],
