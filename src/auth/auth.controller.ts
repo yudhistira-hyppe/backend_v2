@@ -1188,7 +1188,7 @@ export class AuthController {
         'Unabled to proceed',
       );
     }
-    if (await this.utilsService.validasiEmail(SearchUserbasicDto_.search.toString())) {
+    //if (await this.utilsService.validasiEmail(SearchUserbasicDto_.search.toString())) {
       //Ceck User Userbasics
       let uauth = await this.userauthsService.search(SearchUserbasicDto_.search.toString());
       let usr: string[] = [];
@@ -1221,11 +1221,11 @@ export class AuthController {
           'Unabled to proceed user not found',
         );
       }
-    } else {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed wrong format email',
-      );
-    }
+    //} else {
+    //  await this.errorHandler.generateNotAcceptableException(
+    //    'Unabled to proceed wrong format email',
+    //  );
+    //}
   }
 
   @UseGuards(JwtAuthGuard)
