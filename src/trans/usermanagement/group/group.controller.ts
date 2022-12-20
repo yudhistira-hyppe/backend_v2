@@ -9,7 +9,7 @@ import { UserbasicsService } from '../../../trans/userbasics/userbasics.service'
 import { DivisionService } from '../division/division.service';
 import { UserauthsService } from '../../../trans/userauths/userauths.service';
 import { ObjectId } from 'mongodb';
-import { Schema } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 @Controller('/api/group')
 export class GroupController {
@@ -68,7 +68,7 @@ export class GroupController {
                 for (var i = 0; i < request.userbasics.length; i++) {
                     var data_userbasic = await this.userbasicsService.findOne(request.userbasics[i]);
                     if (await this.utilsService.ceckData(data_userbasic)) {
-                        var data_user_group = await this.groupService.findbyuser(data_userbasic._id.toString());
+                        var data_user_group = await this.groupService.findbyuser(new mongoose.Types.ObjectId(data_userbasic._id.toString()));
                         if (await this.utilsService.ceckData(data_user_group)) {
                             if (data_user_group[0].nameGroup == request.nameGroup) {
                                 data_user_insert.push(new Object(data_userbasic._id.toString()));
@@ -249,13 +249,13 @@ export class GroupController {
 
         var data_userbasic = await this.userbasicsService.findOne(request.email);
         if (await this.utilsService.ceckData(data_userbasic)) {
-            var group = await this.groupService.findbyuser(data_userbasic._id.toString());
+            var group = await this.groupService.findbyuser(new mongoose.Types.ObjectId(data_userbasic._id.toString()));
             var user_auth = await this.userauthsService.findOneemail(request.email);
             if (await this.utilsService.ceckData(user_auth)) {
                 if (await this.utilsService.ceckData(group)) {
                     if (group[0]._id != request.groupId) {
-                        await this.groupService.deleteUserGroup(group[0]._id, data_userbasic._id.toString());
-                        await this.groupService.addUserGroup(request.groupId, data_userbasic._id.toString());
+                        await this.groupService.deleteUserGroup(group[0]._id, new mongoose.Types.ObjectId(data_userbasic._id.toString()));
+                        await this.groupService.addUserGroup(request.groupId, new mongoose.Types.ObjectId(data_userbasic._id.toString()));
 
                         var user_auth_role = await this.userauthsService.findRoleEmail(request.email, "ROLE_ADMIN");
                         if (!(await this.utilsService.ceckData(user_auth_role))) {
@@ -268,7 +268,7 @@ export class GroupController {
                         }
                     }
                 } else {
-                    await this.groupService.addUserGroup(request.groupId, data_userbasic._id.toString());
+                    await this.groupService.addUserGroup(request.groupId, new mongoose.Types.ObjectId(data_userbasic._id.toString()));
 
                     var user_auth_role = await this.userauthsService.findRoleEmail(request.email, "ROLE_ADMIN");
                     if (!(await this.utilsService.ceckData(user_auth_role))) {
@@ -308,11 +308,11 @@ export class GroupController {
 
         var data_userbasic = await this.userbasicsService.findOne(email);
         if (await this.utilsService.ceckData(data_userbasic)) {
-            var group = await this.groupService.findbyuser(data_userbasic._id.toString());
+            var group = await this.groupService.findbyuser(new mongoose.Types.ObjectId(data_userbasic._id.toString()));
             var user_auth = await this.userauthsService.findOneemail(email);
             if (await this.utilsService.ceckData(user_auth)) {
                 if (await this.utilsService.ceckData(group)) {
-                    await this.groupService.deleteUserGroup(group[0]._id, data_userbasic._id.toString());
+                    await this.groupService.deleteUserGroup(group[0]._id, new mongoose.Types.ObjectId(data_userbasic._id.toString()));
                 }
 
                 var user_auth_role = await this.userauthsService.findRoleEmail(email, "ROLE_ADMIN");

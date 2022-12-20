@@ -433,6 +433,13 @@ export class GetuserprofilesService {
         },
       },
       {
+        "$match": {
+          $and: [
+            { "email": /@hyppe.id/i }
+          ]
+        }
+      },
+      {
         $lookup: {
           from: 'mediaprofilepicts',
           localField: 'profilePict_id',
@@ -449,18 +456,10 @@ export class GetuserprofilesService {
         },
       },
       {
-        $lookup: {
-          from: 'userauths',
-          localField: 'userAuth_id',
-          foreignField: '_id',
-          as: 'userAuth_data',
-        },
-      },
-      {
         $lookup:
         {
           from: "group",
-          let: { userName: { $toString: '$_id' } },
+          let: { userName: '$_id' },
           pipeline: [
             {
               $match: {
@@ -484,8 +483,8 @@ export class GetuserprofilesService {
           $and: [
             groupId_match,
             { "userAuth_data.username": { $regex: search } },
-            { "userAuth_data.email": { $regex: searchemail } },
-            { "userAuth_data.email": /@hyppe.id/i }]
+            { "userAuth_data.email": { $regex: searchemail } }
+          ]
         }
       },
       {
@@ -497,13 +496,22 @@ export class GetuserprofilesService {
           username: '$userAuth_data.username',
           email: '$email',
           isIdVerified: '$isIdVerified',
+        },
+      },
+      {
+        $project: {
+          group_userbasics: '$group_userbasics',
+          profilpict: '$profilpict',
+          idUserAuth: "$userAuth_data._id",
+          fullName: '$fullName',
+          username: '$userAuth_data.username',
+          email: '$email',
+          isIdVerified: '$isIdVerified',
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
             mediaType: '$profilpict.mediaType',
-            mediaEndpoint: '$profilpict.fsTargetUri',
-            medreplace: { $replaceOne: { input: "$profilpict.mediaUri", find: "_0001.jpeg", replacement: "" } },
-
+            mediaEndpoint: '$profilpict.fsTargetUri'
           },
         },
       },
@@ -523,12 +531,34 @@ export class GetuserprofilesService {
           email: '$email',
           status: '$isIdVerified',
           avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: { $concat: ["$concat", "/", "$pict"] },
-
+            $cond: {
+              if: {
+                $eq: ["$pict", null]
+              },
+              then: null,
+              else: {
+                mediaBasePath: '$profilpict.mediaBasePath',
+                mediaUri: '$profilpict.mediaUri',
+                mediaType: '$profilpict.mediaType',
+                mediaEndpoint: { $concat: ["$concat", "/", "$pict"] },
+              }
+            }
           },
+          // avatar: {
+          //   mediaBasePath: '$profilpict.mediaBasePath',
+          //   mediaUri: '$profilpict.mediaUri',
+          //   mediaType: '$profilpict.mediaType',
+          //   mediaEndpoint: { $concat: ["$concat", "/", "$pict"] },
+          //   asas: {
+          //     $cond: {
+          //       if: {
+          //         $eq: ["$concat", null]
+          //       },
+          //       then: null,
+          //       else: '$gender'
+          //     }
+          //   },
+          // },
         },
       },
 

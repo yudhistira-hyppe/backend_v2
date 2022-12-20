@@ -680,6 +680,11 @@ export class UserbasicsService {
     } catch (e) {
       dateend = "";
     }
+
+    var dt = new Date(Date.now());
+    dt.setHours(dt.getHours() + 7); // timestamp
+    dt = new Date(dt);
+    var datestring = dt.toISOString();
     var pipeline = [];
 
     pipeline.push(
@@ -902,9 +907,7 @@ export class UserbasicsService {
                         $cond: {
                           if: {
                             $gt: ['$expiredtimeva',
-                              {
-                                $add: [new Date(), 25200000]
-                              },]
+                              datestring]
                           },
                           then: "$description",
                           else: 'VA expired time'
@@ -921,9 +924,7 @@ export class UserbasicsService {
                         $cond: {
                           if: {
                             $gt: ['$expiredtimeva',
-                              {
-                                $add: [new Date(), 25200000]
-                              }]
+                              datestring]
                           },
                           then: "$status",
                           else: 'Cancel'
@@ -1001,11 +1002,18 @@ export class UserbasicsService {
                   {
                     $project: {
                       "postID": 1,
-                      "apsara": 1,
-                      "apsaraId": 1,
-                      "apsaraThumbId": 1,
+                      "apsara": {
+                        $ifNull: ["$apsara", false]
+                      },
+                      "apsaraId": {
+                        $ifNull: ["$apsaraId", false]
+                      },
+                      "apsaraThumbId":
+                      {
+                        "$concat": ["/pict/", "$postID"]
+                      },
                       "mediaEndpoint": {
-                        "$concat": ["/thumb/", "$postID"]
+                        "$concat": ["/pict/", "$postID"]
                       },
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
@@ -1039,14 +1047,21 @@ export class UserbasicsService {
                   {
                     $project: {
                       "postID": 1,
-                      "apsara": 1,
-                      "apsaraId": 1,
+                      "apsara": {
+                        $ifNull: ["$apsara", false]
+                      },
+                      "apsaraId": {
+                        $ifNull: ["$apsaraId", false]
+                      },
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
                         "$concat": ["/stream/", "$postID"]
                       },
                       "mediaUri": 1,
-                      "mediaThumbEndpoint": 1,
+                      "mediaThumbEndpoint": {
+                        "$concat": ["/stream/", "$postID"]
+                      },
+
                       "mediaThumbUri": 1,
 
                     }
@@ -1077,14 +1092,20 @@ export class UserbasicsService {
                   {
                     $project: {
                       "postID": 1,
-                      "apsara": 1,
-                      "apsaraId": 1,
+                      "apsara": {
+                        $ifNull: ["$apsara", false]
+                      },
+                      "apsaraId": {
+                        $ifNull: ["$apsaraId", false]
+                      },
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
                         "$concat": ["/stream/", "$postID"]
                       },
                       "mediaUri": 1,
-                      "mediaThumbEndpoint": 1,
+                      "mediaThumbEndpoint": {
+                        "$concat": ["/stream/", "$postID"]
+                      },
                       "mediaThumbUri": 1,
 
                     }
@@ -1115,14 +1136,20 @@ export class UserbasicsService {
                   {
                     $project: {
                       "postID": 1,
-                      "apsara": 1,
-                      "apsaraId": 1,
+                      "apsara": {
+                        $ifNull: ["$apsara", false]
+                      },
+                      "apsaraId": {
+                        $ifNull: ["$apsaraId", false]
+                      },
                       "apsaraThumbId": 1,
                       "mediaEndpoint": {
                         "$concat": ["/stream/", "$postID"]
                       },
                       "mediaUri": 1,
-                      "mediaThumbEndpoint": 1,
+                      "mediaThumbEndpoint": {
+                        "$concat": ["/thumb/", "$postID"]
+                      },
                       "mediaThumbUri": 1,
 
                     }
