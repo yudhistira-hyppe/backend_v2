@@ -235,6 +235,7 @@ export class UtilsService {
         body_send['postID'] = postID
         body_send['postType'] = postType
       }
+      
       body_save_id = body_save_id_.toString();
       body_save_en = body_save_en_.toString();
     }
