@@ -1441,7 +1441,7 @@ export class GetusercontentsController {
                     idapsara = "";
                 }
                 try {
-                    apsara = arrpict[i].apsara;
+                    apsara = arrpict[i].isApsara;
                 } catch (e) {
                     apsara = false;
                 }
@@ -1547,7 +1547,7 @@ export class GetusercontentsController {
                     idapsara = "";
                 }
                 try {
-                    apsara = arrvid[i].apsara;
+                    apsara = arrvid[i].isApsara;
                 } catch (e) {
                     apsara = false;
                 }
@@ -1653,7 +1653,7 @@ export class GetusercontentsController {
                     idapsara = "";
                 }
                 try {
-                    apsara = arrdiary[i].apsara;
+                    apsara = arrdiary[i].isApsara;
                 } catch (e) {
                     apsara = false;
                 }
