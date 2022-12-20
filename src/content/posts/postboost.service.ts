@@ -3615,7 +3615,22 @@ export class PostBoostService {
                             "isBoost": 1,
                             "boostViewer": 1,
                             "boostCount": 1,
-                            "boosted": 1,
+                            "boosted": {
+                              $cond: {
+                                  if : {
+                                      $gt: [{
+                                          "$dateToString": {
+                                              "format": "%Y-%m-%d %H:%M:%S",
+                                              "date": {
+                                                  $add: [new Date(), 25200000]
+                                              }
+                                          }
+                                      }, "$boosted.boostSession.timeEnd"]
+                                  },
+                                  then: [],
+                                  else : '$boosted'
+                              }
+                            },
                             "contentModeration": 1,
                             "reportedStatus": 1,
                             "reportedUserCount": 1,
@@ -4110,7 +4125,22 @@ export class PostBoostService {
                             "isBoost": 1,
                             "boostViewer": 1,
                             "boostCount": 1,
-                            "boosted": 1,
+                            "boosted": {
+                              $cond: {
+                                  if : {
+                                      $gt: [{
+                                          "$dateToString": {
+                                              "format": "%Y-%m-%d %H:%M:%S",
+                                              "date": {
+                                                  $add: [new Date(), 25200000]
+                                              }
+                                          }
+                                      }, "$boosted.boostSession.timeEnd"]
+                                  },
+                                  then: [],
+                                  else : '$boosted'
+                              }
+                            },
                             "contentModeration": 1,
                             "reportedStatus": 1,
                             "reportedUserCount": 1,
@@ -4613,7 +4643,22 @@ export class PostBoostService {
                             "isBoost": 1,
                             "boostViewer": 1,
                             "boostCount": 1,
-                            "boosted": 1,
+                            "boosted": {
+                              $cond: {
+                                  if : {
+                                      $gt: [{
+                                          "$dateToString": {
+                                              "format": "%Y-%m-%d %H:%M:%S",
+                                              "date": {
+                                                  $add: [new Date(), 25200000]
+                                              }
+                                          }
+                                      }, "$boosted.boostSession.timeEnd"]
+                                  },
+                                  then: [],
+                                  else : '$boosted'
+                              }
+                            },
                             "contentModeration": 1,
                             "reportedStatus": 1,
                             "reportedUserCount": 1,
@@ -4996,7 +5041,22 @@ export class PostBoostService {
                             "tagDescription": 1,
                             "metadata": 1,
                             "boostDate": 1,
-                            "boosted": 1,
+                            "boosted": {
+                              $cond: {
+                                  if : {
+                                      $gt: [{
+                                          "$dateToString": {
+                                              "format": "%Y-%m-%d %H:%M:%S",
+                                              "date": {
+                                                  $add: [new Date(), 25200000]
+                                              }
+                                          }
+                                      }, "$boosted.boostSession.timeEnd"]
+                                  },
+                                  then: [],
+                                  else : '$boosted'
+                              }
+                            },
                             "end": "$boosted.boostSession.end",
                             "start": "$boosted.boostSession.start",
                             "isBoost": 1,
