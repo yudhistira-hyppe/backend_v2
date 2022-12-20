@@ -181,12 +181,12 @@ export class GroupService {
         return await this.groupModel.findByIdAndRemove({ _id: _id }).exec();
     }
 
-    async deleteUserGroup(_id: String, userId: String) {
-        return await this.groupModel.updateOne({ _id: _id }, { $pull: { userbasics: Object(userId) } }).exec();
+    async deleteUserGroup(_id: String, userId: mongoose.Types.ObjectId) {
+        return await this.groupModel.updateOne({ _id: _id }, { $pull: { userbasics: userId } }).exec();
     }
 
-    async addUserGroup(_id: String, userId: String) {
-        return await this.groupModel.updateOne({ _id: _id }, { $push: { userbasics: Object(userId) } }).exec();
+    async addUserGroup(_id: String, userId: mongoose.Types.ObjectId) {
+        return await this.groupModel.updateOne({ _id: _id }, { $push: { userbasics: userId } }).exec();
     }
 
     async findbyuser(_id: String) {

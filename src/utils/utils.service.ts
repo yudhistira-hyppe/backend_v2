@@ -230,6 +230,7 @@ export class UtilsService {
     } else {
       if (eventType == "FOLLOWER" || eventType == "FOLLOWING") {
         body_send['postType'] = eventType
+        body_send['postID'] = get_username_senderParty
       } else {
         body_send['postType'] = postType
       }
