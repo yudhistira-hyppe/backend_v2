@@ -356,7 +356,7 @@ export class ContentModService {
       pd.reportedStatus = 'ALL';
     }
     let today = new Date();
-    pd.contentModerationDate = await this.utilService.formatDateString(today); 
+    pd.contentModerationDate = await this.utilService.getDateTimeString(); 
     pd.contentModerationResponse = JSON.stringify(body);
 
     await this.postService.create(pd);
