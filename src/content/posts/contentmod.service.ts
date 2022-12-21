@@ -361,6 +361,7 @@ export class ContentModService {
 
     await this.postService.create(pd);
 
+    this.logger.log('cmodResponse >>> sendFCmMod: ');
     await this.utilService.sendFcmCMod(String(pd.email), "CONTENTMOD", "CONTENTMOD", String(pd.postID), String(pd.postType))
   }
 
