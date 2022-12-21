@@ -1370,6 +1370,7 @@ export class GetusercontentsController {
         var listpict = null;
         var listvid = null;
         var listdiary = null;
+        var listuser = null;
 
         var request_json = JSON.parse(JSON.stringify(request.body));
         if (request_json["skip"] !== undefined) {
@@ -1389,6 +1390,7 @@ export class GetusercontentsController {
         listpict = request_json["listpict"];
         listvid = request_json["listvid"];
         listdiary = request_json["listdiary"];
+        listuser = request_json["listuser"];
 
 
         const messages = {
@@ -1416,7 +1418,7 @@ export class GetusercontentsController {
         var lenguser = null;
 
         try {
-            datasearch = await this.postsService.finddatasearchconten(keys, email, skip, limit, listpict, listvid, listdiary);
+            datasearch = await this.postsService.finddatasearchconten(keys, email, skip, limit, listpict, listvid, listdiary, listuser);
             user = datasearch[0].user;
 
         } catch (e) {

@@ -151,7 +151,7 @@ export class UtilsService {
     //GET LANGISO
     const langIso_receiverParty = (profile_receiverParty.langIso != undefined) ? profile_receiverParty.langIso : "id";
     const langIso_senderParty = (profile_senderParty.langIso != undefined) ? profile_senderParty.langIso : "id";
-    
+
     //SET POST TYPE UPPERCASE
     var Post_type_upper = "";
     if (postType == undefined) {
@@ -220,7 +220,7 @@ export class UtilsService {
         body_send['postType'] = postType
       }
 
-      if (event == "ADS VIEW" || event == "ADS CLICK"){
+      if (event == "ADS VIEW" || event == "ADS CLICK") {
         body_save_id = body_save_id_.toString().replace("${rewards}", customText)
         body_save_en = body_save_en_.toString().replace("${rewards}", customText)
       } else {
@@ -235,7 +235,7 @@ export class UtilsService {
         body_send['postID'] = postID
         body_send['postType'] = postType
       }
-      
+
       body_save_id = body_save_id_.toString();
       body_save_en = body_save_en_.toString();
     }
@@ -296,7 +296,7 @@ export class UtilsService {
     await this.notificationsService.create(createNotificationsDto);
   }
 
-  async sendFcm(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID?: string, postType?: string) {
+  async sendFcm(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID?: string, postType?: string, noinvoice?: string) {
     var emailuserbasic = null;
     var datadevice = null;
     var languages = null;
@@ -387,9 +387,9 @@ export class UtilsService {
         langIso = "";
       }
 
-      if (postID != undefined || postID != "" || postID != null) {
+      if (noinvoice != undefined || noinvoice != "" || noinvoice != null) {
         if (langIso === "id") {
-          bodypayload = { "message": bodyin, "postID": postID, "postType": postType }
+          bodypayload = { "message": bodyin, "postID": noinvoice, "postType": postType }
           payload = {
             notification: {
 
@@ -399,7 +399,7 @@ export class UtilsService {
           };
         }
         else if (langIso === "en") {
-          bodypayload = { "message": bodyen, "postID": postID, "postType": postType }
+          bodypayload = { "message": bodyen, "postID": noinvoice, "postType": postType }
           payload = {
             notification: {
 
@@ -408,7 +408,7 @@ export class UtilsService {
             }
           };
         } else {
-          bodypayload = { "message": bodyin, "postID": postID, "postType": postType }
+          bodypayload = { "message": bodyin, "postID": noinvoice, "postType": postType }
           payload = {
             notification: {
 
