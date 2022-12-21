@@ -317,7 +317,7 @@ export class UtilsService {
 
     //GET LANGISO
     const langIso_receiverParty = (profile_receiverParty.langIso != undefined) ? profile_receiverParty.langIso : "id";
-
+    this.logger.log('sendFcmCMod >>> iso: ' + langIso_receiverParty);
     //SET POST TYPE UPPERCASE
     var Post_type_upper = "";
     if (postType == undefined) {
@@ -355,13 +355,13 @@ export class UtilsService {
     body_send['postID'] = postID
     body_send['postType'] = postType
 
-    this.logger.log('sendFcmCMod >>> res: ' + JSON.stringify(body_send));
     //SET BODY SEND
     if (langIso_receiverParty == "en") {
       body_send.message = body_save_en
     } else {
       body_send.message = body_save_id
     }
+    this.logger.log('sendFcmCMod >>> res: ' + JSON.stringify(body_send));
 
     //SEND FCM
     var datadevice = await this.userdevicesService.findActive(receiverParty);
