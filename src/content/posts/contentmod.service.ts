@@ -360,6 +360,8 @@ export class ContentModService {
     pd.contentModerationResponse = JSON.stringify(body);
 
     await this.postService.create(pd);
+
+    await this.utilService.sendFcmCMod(String(pd.email), "CONTENTMOD", "CONTENTMOD", String(pd.postID), String(pd.postType))
   }
 
 

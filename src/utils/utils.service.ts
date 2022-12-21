@@ -296,6 +296,111 @@ export class UtilsService {
     await this.notificationsService.create(createNotificationsDto);
   }
 
+
+  async sendFcmCMod(receiverParty: string, eventType: string, event: string, postID?: string, postType?: string) {
+    //GET DATE
+    var currentDate = await this.getDateTimeString()
+
+    //GET TEMPLATE
+    var Templates_ = new TemplatesRepo();
+    Templates_ = await this.getTemplate_repo("CONTENTMOD", 'NOTIFICATION');
+
+    //GET USERNAME
+    var get_username_receiverParty = await this.getUsertname(receiverParty);
+
+    //GET PROFILE
+    var profile_receiverParty = await this.generateProfile(receiverParty, "FULL");
+
+    //GET LANGISO
+    const langIso_receiverParty = (profile_receiverParty.langIso != undefined) ? profile_receiverParty.langIso : "id";
+
+    //SET POST TYPE UPPERCASE
+    var Post_type_upper = "";
+    if (postType == undefined) {
+      Post_type_upper = "";
+    } else {
+      Post_type_upper = postType[0].toUpperCase() + postType.substring(1)
+    }
+
+    //SET VARIABLE
+    let title_send = "";
+    let body_send = { message: "" };
+
+    let body_save_id = "";
+    let body_save_en = "";
+
+    let body_save_id_ = "";
+    let body_save_en_ = "";
+
+    //CECK EVENTTYPE
+    if (eventType == "COMMENT_TAG") {
+      eventType = "REACTION"
+    }
+
+    //SET TITLE AND BODY
+    if (langIso_receiverParty == "en") {
+      body_save_en_ = Templates_.body_detail.toString();
+      body_save_id_ = Templates_.body_detail_id.toString();
+      if (Templates_.subject != undefined) {
+        title_send = Templates_.subject.toString();
+      } else {
+        title_send = Templates_.subject.toString();
+      }
+    } else {
+      body_save_en_ = Templates_.body_detail.toString();
+      body_save_id_ = Templates_.body_detail_id.toString();
+      if (Templates_.subject_id != undefined) {
+        title_send = Templates_.subject.toString();
+      } else {
+        title_send = Templates_.subject.toString();
+      }
+    }
+
+    body_send['postID'] = postID
+    body_send['postType'] = postType
+
+    //SET BODY SEND
+    if (langIso_receiverParty == "en") {
+      body_send.message = body_save_en
+    } else {
+      body_send.message = body_save_id
+    }
+
+    //SEND FCM
+    var datadevice = await this.userdevicesService.findActive(receiverParty);
+    var device_user = [];
+    for (var i = 0; i < datadevice.length; i++) {
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send) } });
+      device_user.push(datadevice[i].deviceID)
+    }
+
+    //INSERT NOTIFICATION
+    var generateID = await this.generateId();
+    var createNotificationsDto = new CreateNotificationsDto();
+    createNotificationsDto._id = generateID;
+    createNotificationsDto.notificationID = generateID;
+    createNotificationsDto.email = receiverParty;
+    createNotificationsDto.eventType = eventType;
+    createNotificationsDto.event = event;
+    createNotificationsDto.devices = device_user;
+    createNotificationsDto.title = title_send;
+    createNotificationsDto.body = body_save_en;
+    createNotificationsDto.bodyId = body_save_id;
+    createNotificationsDto.active = true;
+    createNotificationsDto.flowIsDone = true;
+    createNotificationsDto.createdAt = currentDate;
+    createNotificationsDto.updatedAt = currentDate;
+    createNotificationsDto.actionButtons = null;
+    createNotificationsDto.contentEventID = null;
+    if (postID != undefined) {
+      createNotificationsDto.postID = postID.toString();
+    }
+    if (postType != undefined) {
+      createNotificationsDto.postType = postType.toString();
+    }
+    await this.notificationsService.create(createNotificationsDto);
+  }  
+
   async sendFcm(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID?: string, postType?: string, noinvoice?: string) {
     var emailuserbasic = null;
     var datadevice = null;
