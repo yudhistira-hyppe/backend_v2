@@ -48,6 +48,7 @@ export class ContentModService {
 
   constructor(
     private postService: PostsService,
+    private utilService: UtilsService,
     private gtw: AppGateway,
     private readonly configService: ConfigService,
   ) { }
@@ -354,9 +355,8 @@ export class ContentModService {
       pd.contentModeration = false;
       pd.reportedStatus = 'ALL';
     }
-    let tod = new Date().getDate() + 25200000;
-    let today = new Date(tod);
-    pd.contentModerationDate = today.toISOString(); 
+    let today = new Date();
+    pd.contentModerationDate = await this.utilService.formatDateString(today); 
     pd.contentModerationResponse = JSON.stringify(body);
 
     await this.postService.create(pd);
