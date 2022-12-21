@@ -60,7 +60,7 @@ export class GroupService {
                     from: 'division',
                     let: { division_Id: "$divisionId" },
                     pipeline: [
-                        { "$addFields": { "_id": { "$toString": "$_id" } } },
+                        { "$addFields": { "_id": "$_id" } },
                         { "$match": { "$expr": { "$eq": ["$_id", "$$division_Id"] } } }
                     ],
                     as: 'division_data'
@@ -123,7 +123,7 @@ export class GroupService {
                     from: 'division',
                     let: { division_Id: "$divisionId" },
                     pipeline: [
-                        { "$addFields": { "_id": { "$toString": "$_id" } } },
+                        { "$addFields": { "_id": "$_id" } },
                         { "$match": { "$expr": { "$eq": ["$_id", "$$division_Id"] } } }
                     ],
                     as: 'division_data'
