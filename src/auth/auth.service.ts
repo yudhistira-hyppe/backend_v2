@@ -4092,11 +4092,11 @@ export class AuthService {
     datauserauthService_children = await this.userauthsService.findOneemail(user_email_children);
     if (!(await this.utilsService.ceckData(datauserauthService_children))) {
       if (useLanguage == "id") {
-        errorMessages = "Tidak dapat melanjutkan, Pengguna tidak ditemukan atau tidak aktif";
+        errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
       } else if (useLanguage == "en") {
-        errorMessages = "Unabled to proceed, User not found or not active";
+        errorMessages = "User not found, please check the username again";
       } else {
-        errorMessages = "Tidak dapat melanjutkan, Pengguna tidak ditemukan atau tidak aktif";
+        errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
       }
       await this.errorHandler.generateNotAcceptableException(
         errorMessages,
@@ -4110,11 +4110,11 @@ export class AuthService {
         user_email_parent = datauserauthService_parent.email;
       } else {
         if (useLanguage == "id") {
-          errorMessages = "Tidak dapat melanjutkan, Nama pengguna refferal tidak ditemukan";
+          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
         } else if (useLanguage == "en") {
-          errorMessages = "Unabled to proceed, Username referral not found";
+          errorMessages = "User not found, please check the username again";
         } else {
-          errorMessages = "Tidak dapat melanjutkan, Nama pengguna refferal tidak ditemukan";
+          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
         }
         await this.errorHandler.generateNotAcceptableException(
           errorMessages,
@@ -4125,11 +4125,11 @@ export class AuthService {
       datauserauthService_parent = await this.userauthsService.findOneemail(user_email_parent);
       if (!(await this.utilsService.ceckData(datauserauthService_parent))) {
         if (useLanguage == "id") {
-          errorMessages = "Tidak dapat melanjutkan, Email refferal tidak ditemukan";
+          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
         } else if (useLanguage == "en") {
-          errorMessages = "Unabled to proceed, Email referral not found";
+          errorMessages = "User not found, please check the username again";
         } else {
-          errorMessages = "Tidak dapat melanjutkan, Email refferal tidak ditemukan";
+          errorMessages = "Pengguna tidak dapat ditemukan, silahkan cek kembali username pengguna tersebut";
         }
         await this.errorHandler.generateNotAcceptableException(
           errorMessages,
@@ -4233,21 +4233,29 @@ export class AuthService {
           await this.contenteventsService.create(CreateContenteventsDto4);
           await this.insightsService.updateFollower(user_email_parent);
           await this.insightsService.updateFollowing(user_email_children);
+
+          if (useLanguage == "id") {
+            errorMessages = "Selamat kode referral berhasil digunakan";
+          } else if (useLanguage == "en") {
+            errorMessages = "Congratulation referral applied successfully";
+          } else {
+            errorMessages = "Selamat kode referral berhasil digunakan";
+          }
           return {
             "response_code": 202,
             "messages": {
               "info": [
-                "The process successful"
+                errorMessages
               ]
             }
           };
         } else {
           if (useLanguage == "id") {
-            errorMessages = "Tidak dapat melanjutkan, Perangkat Anda sudah terdaftar";
+            errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
           } else if (useLanguage == "en") {
-            errorMessages = "Unabled to proceed, Yours device already register";
+            errorMessages = "Referral Failed, Your device has been registered, please use another device";
           } else {
-            errorMessages = "Tidak dapat melanjutkan, Perangkat Anda sudah terdaftar";
+            errorMessages = "Referral Tidak Berhasil, Perangkat kamu telah terdaftar, harap gunakan perangkat lainnya";
           }
           await this.errorHandler.generateNotAcceptableException(
             errorMessages,
@@ -4255,11 +4263,11 @@ export class AuthService {
         }
       } else {
         if (useLanguage=="id"){
-          errorMessages = "Tidak dapat melanjutkan, Email ini sudah terdaftar sebagai refferal";
+          errorMessages = "Referral Tidak Berhasil, Username telah terdaftar sebagai referral kamu, silahkan ganti dengan username lainnya";
         } else if (useLanguage == "en") {
-          errorMessages = "Unabled to proceed, This email already registered as child";
+          errorMessages = "Referral Failed, Username has been registered, please use another username";
         } else {
-          errorMessages = "Tidak dapat melanjutkan, Email ini sudah terdaftar sebagai refferal";
+          errorMessages = "Referral Tidak Berhasil, Username telah terdaftar sebagai referral kamu, silahkan ganti dengan username lainnya";
         }
         await this.errorHandler.generateNotAcceptableException(
           errorMessages,

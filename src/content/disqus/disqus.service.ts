@@ -344,22 +344,37 @@ export class DisqusService {
                                                         $in: ['$_id', '$$localID']
                                                     }
                                                 },
-                                                {
-                                                    "senderActive": {
-                                                        $ne:false
-                                                    }
-                                                },
+                                                                                    {
+                                                                                            "receiver": "ilhamarahman97@gmail.com"
+                                                                                    },
                                                 {
                                                     "recieverActive": {
-                                                        $ne:false
+                                                        $ne: false
                                                     }
                                                 },
                                                 
                                             ]
                                         },
-                                        
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $in: ['$_id', '$$localID']
+                                                    }
+                                                },
+                                                                                    {
+                                                                                            "sender": "ilhamarahman97@gmail.com"
+                                                                                    },
+                                                {
+                                                    "senderActive": {
+                                                        $ne: false
+                                                    }
+                                                },
+                                                
+                                            ]
+                                        },
                                     ]
-                                },
+                                }
                                 
                             },
                             {
@@ -554,7 +569,7 @@ export class DisqusService {
                 },
                 {
                     $sort: {
-                        "createdAt": -1
+                        "updatedAt": -1
                     }
                 },
                 
