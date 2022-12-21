@@ -31,6 +31,7 @@ import { CreateNotificationsDto } from '../content/notifications/dto/create-noti
 import { TemplatesRepo } from '../infra/templates_repo/schemas/templatesrepo.schema';
 import { BanksService } from '../trans/banks/banks.service';
 import { Banks } from '../trans/banks/schemas/banks.schema';
+import { Logger } from 'mongodb';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -41,6 +42,9 @@ const cryptr = new Cryptr("vgqgveogdwinzlig");
 
 @Injectable()
 export class UtilsService {
+
+  private readonly logger = new Logger(UtilsService.name);
+
   constructor(
     private userauthsService: UserauthsService,
     private jwtrefreshtokenService: JwtrefreshtokenService,
@@ -304,6 +308,7 @@ export class UtilsService {
     //GET TEMPLATE
     var Templates_ = new TemplatesRepo();
     Templates_ = await this.getTemplate_repo("CONTENT", 'NOTIFICATION');
+    this.logger.info("sendFcmCMod: " + JSON.stringify(Templates_));
 
     //GET USERNAME
     var get_username_receiverParty = await this.getUsertname(receiverParty);
