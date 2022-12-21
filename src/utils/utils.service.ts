@@ -345,24 +345,17 @@ export class UtilsService {
     if (langIso_receiverParty == "en") {
       body_save_en_ = Templates_.body_detail.toString();
       body_save_id_ = Templates_.body_detail_id.toString();
-      if (Templates_.subject != undefined) {
-        title_send = Templates_.subject.toString();
-      } else {
-        title_send = Templates_.subject.toString();
-      }
+      title_send = Templates_.subject.toString();
     } else {
       body_save_en_ = Templates_.body_detail.toString();
       body_save_id_ = Templates_.body_detail_id.toString();
-      if (Templates_.subject_id != undefined) {
-        title_send = Templates_.subject.toString();
-      } else {
-        title_send = Templates_.subject.toString();
-      }
+      title_send = Templates_.subject_id.toString();
     }
 
     body_send['postID'] = postID
     body_send['postType'] = postType
 
+    this.logger.log('sendFcmCMod >>> res: ' + JSON.stringify(body_send));
     //SET BODY SEND
     if (langIso_receiverParty == "en") {
       body_send.message = body_save_en
