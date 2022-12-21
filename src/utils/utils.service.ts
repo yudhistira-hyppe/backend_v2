@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UserbasicsService } from '../trans/userbasics/userbasics.service';
 import { UserdevicesService } from '../trans/userdevices/userdevices.service';
@@ -31,7 +31,6 @@ import { CreateNotificationsDto } from '../content/notifications/dto/create-noti
 import { TemplatesRepo } from '../infra/templates_repo/schemas/templatesrepo.schema';
 import { BanksService } from '../trans/banks/banks.service';
 import { Banks } from '../trans/banks/schemas/banks.schema';
-import { Logger } from 'mongodb';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -308,7 +307,7 @@ export class UtilsService {
     //GET TEMPLATE
     var Templates_ = new TemplatesRepo();
     Templates_ = await this.getTemplate_repo("CONTENT", 'NOTIFICATION');
-    this.logger.info("sendFcmCMod: " + JSON.stringify(Templates_));
+    this.logger.log('sendFcmCMod >>> template: ' + JSON.stringify(Templates_));
 
     //GET USERNAME
     var get_username_receiverParty = await this.getUsertname(receiverParty);
@@ -375,6 +374,7 @@ export class UtilsService {
     var datadevice = await this.userdevicesService.findActive(receiverParty);
     var device_user = [];
     for (var i = 0; i < datadevice.length; i++) {
+      this.logger.log('sendFcmCMod >>> send: title-> ' + title_send + ' body: ' + JSON.stringify(body_send));
       await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send) } });
       device_user.push(datadevice[i].deviceID)
     }
