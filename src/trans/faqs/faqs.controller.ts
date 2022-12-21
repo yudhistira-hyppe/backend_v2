@@ -124,7 +124,7 @@ export class FaqsController {
 
 
   @Post('api/faqs/allfaqs')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async all(@Req() request: Request): Promise<any> {
     const mongoose = require('mongoose');
     var tipe = null;

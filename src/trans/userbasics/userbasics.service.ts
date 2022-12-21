@@ -1867,19 +1867,6 @@ export class UserbasicsService {
 
         }
       },
-      {
-        $sort: {
-          "timestamp": - 1,
-
-        }
-      },
-      {
-        $skip: skip
-      },
-      {
-        $limit: limit
-
-      },
     );
 
     if (sell === true && buy === false && withdrawal === false && rewards === false && boost === false) {
