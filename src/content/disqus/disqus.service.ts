@@ -325,6 +325,8 @@ export class DisqusService {
                         
                     }
                 },
+
+
                 {
                     "$lookup": {
                         from: "disquslogs",
@@ -344,55 +346,52 @@ export class DisqusService {
                                                         $in: ['$_id', '$$localID']
                                                     }
                                                 },
-                                                                                    {
-                                                                                            "receiver": "ilhamarahman97@gmail.com"
-                                                                                    },
-                                                {
-                                                    "recieverActive": {
-                                                        $ne: false
-                                                    }
-                                                },
                                                 
+                                            ]
+                                        },
+                                        
+                                    ]
+                                },
+                                
+                            },
+                            {
+                                $match : 
+                                {
+                                    $or: [
+                                        {
+                                            $and: [
+                                                {
+                                                    $or: [
+                                                        { 'senderActive': true},
+                                                        {'senderActive':null},
+                                                    ]
+                                                },
+                                                {
+                                                    'sender':'ilhamarahman97@gmail.com'
+                                                }
                                             ]
                                         },
                                         {
                                             $and: [
                                                 {
-                                                    $expr: {
-                                                        $in: ['$_id', '$$localID']
-                                                    }
+                                                    $or: [
+                                                        {
+                                                            'receiverActive': true
+                                                        },
+                                                        {
+                                                            'receiverActive': null
+                                                        },
+                                                    ]
                                                 },
-                                                                                    {
-                                                                                            "sender": "ilhamarahman97@gmail.com"
-                                                                                    },
                                                 {
-                                                    "senderActive": {
-                                                        $ne: false
-                                                    }
-                                                },
-                                                
+                                                    'receiver': 'ilhamarahman97@gmail.com'
+                                                }
                                             ]
                                         },
                                     ]
-                                }
-                                
+                                },
                             },
-                            {
-                                $project: {
-                                    "createdAt": 1,
-                                    "reactionUri": 1,
-                                    "txtMessages": 1,
-                                    "receiver": 1,
-                                    "postType": 1,
-                                    "sender": 1,
-                                    "lineID": 1,
-                                    "active": 1,
-                                    "disqusID": 1,
-                                    "updatedAt": 1,
-                                    "reaction_icon": "$emot.icon",
-                                    "content":"$medias",
-                                }
-                            },
+                            
                             {
                                 $sort: {
                                     "createdAt": 1
@@ -403,7 +402,9 @@ export class DisqusService {
                         
                     },
                     
-                },
+                },                
+
+
                 {
                     $lookup: {
                         from: 'reactions_repo',
