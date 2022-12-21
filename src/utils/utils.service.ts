@@ -328,7 +328,7 @@ export class UtilsService {
 
     //SET VARIABLE
     let title_send = "";
-    let body_send = { message: "" };
+    let body_send = {};
 
     let body_save_id = "";
     let body_save_en = "";
@@ -343,23 +343,24 @@ export class UtilsService {
 
     //SET TITLE AND BODY
     if (langIso_receiverParty == "en") {
-      body_save_en_ = Templates_.body_detail.toString();
-      body_save_id_ = Templates_.body_detail_id.toString();
       title_send = Templates_.subject.toString();
     } else {
-      body_save_en_ = Templates_.body_detail.toString();
-      body_save_id_ = Templates_.body_detail_id.toString();
       title_send = Templates_.subject_id.toString();
     }
+
+    body_save_en_ = Templates_.body_detail.toString();
+    body_save_id_ = Templates_.body_detail_id.toString();
 
     body_send['postID'] = postID
     body_send['postType'] = postType
 
     //SET BODY SEND
     if (langIso_receiverParty == "en") {
-      body_send.message = body_save_en
+      body_send['message'] = body_save_en;
+      this.logger.log('sendFcmCMod >>> body en: ' + body_save_en);
     } else {
-      body_send.message = body_save_id
+      body_send['message'] = body_save_id;
+      this.logger.log('sendFcmCMod >>> body en: ' + body_save_id);
     }
     this.logger.log('sendFcmCMod >>> res: ' + JSON.stringify(body_send));
 
