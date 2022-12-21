@@ -333,9 +333,6 @@ export class UtilsService {
     let body_save_id = "";
     let body_save_en = "";
 
-    let body_save_id_ = "";
-    let body_save_en_ = "";
-
     //CECK EVENTTYPE
     if (eventType == "COMMENT_TAG") {
       eventType = "REACTION"
@@ -348,8 +345,8 @@ export class UtilsService {
       title_send = Templates_.subject_id.toString();
     }
 
-    body_save_en_ = Templates_.body_detail.toString();
-    body_save_id_ = Templates_.body_detail_id.toString();
+    body_save_en = Templates_.body_detail.toString();
+    body_save_id = Templates_.body_detail_id.toString();
 
     body_send['postID'] = postID
     body_send['postType'] = postType
