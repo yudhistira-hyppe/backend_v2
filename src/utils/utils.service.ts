@@ -303,7 +303,7 @@ export class UtilsService {
 
     //GET TEMPLATE
     var Templates_ = new TemplatesRepo();
-    Templates_ = await this.getTemplate_repo("CONTENTMOD", 'NOTIFICATION');
+    Templates_ = await this.getTemplate_repo("CONTENT", 'NOTIFICATION');
 
     //GET USERNAME
     var get_username_receiverParty = await this.getUsertname(receiverParty);
