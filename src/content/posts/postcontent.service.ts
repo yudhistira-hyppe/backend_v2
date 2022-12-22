@@ -3460,8 +3460,14 @@ export class PostContentService {
         if (dy.senderOrReceiverInfo != null) {
           var getAvatar = await this.utilService.getAvatarUser(dy.mate.toString());
           dy.senderOrReceiverInfo.avatar = getAvatar;
-        }
 
+          var getUsername = await this.userAuthService.findOne(dy.mate.toString());
+          dy.senderOrReceiverInfo.username = getUsername.username;
+
+          var getFullname = await this.userService.findOne(dy.mate.toString());
+          dy.senderOrReceiverInfo.fullName = getFullname.fullName;
+        }
+        
         if (dy.postID != null) {
           let pid = String(dy.postID);
           let ps = await this.postService.findByPostId(pid);
