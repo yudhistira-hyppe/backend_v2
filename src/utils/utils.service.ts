@@ -69,7 +69,7 @@ export class UtilsService {
     private userdevicesService: UserdevicesService,
     private notificationsService: NotificationsService,
     private deepArService: DeepArService
-  ) { } 
+  ) { }
 
   async sendEmail(
     to: string,
@@ -397,7 +397,7 @@ export class UtilsService {
       createNotificationsDto.postType = postType.toString();
     }
     await this.notificationsService.create(createNotificationsDto);
-  }  
+  }
 
   async sendFcm(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID?: string, postType?: string, noinvoice?: string) {
     var emailuserbasic = null;
@@ -497,7 +497,8 @@ export class UtilsService {
             notification: {
 
               title: titlein,
-              body: JSON.stringify(bodypayload)
+              body: JSON.stringify(bodypayload),
+              tag: "background"
             }
           };
         }
@@ -507,7 +508,8 @@ export class UtilsService {
             notification: {
 
               title: titleen,
-              body: JSON.stringify(bodypayload)
+              body: JSON.stringify(bodypayload),
+              tag: "background"
             }
           };
         } else {
@@ -516,7 +518,8 @@ export class UtilsService {
             notification: {
 
               title: titlein,
-              body: JSON.stringify(bodypayload)
+              body: JSON.stringify(bodypayload),
+              tag: "background"
             }
           };
         }
@@ -528,7 +531,8 @@ export class UtilsService {
             notification: {
 
               title: titlein,
-              body: bodyin
+              body: bodyin,
+              tag: "background"
             }
           };
         } else if (langIso === "en") {
@@ -536,14 +540,16 @@ export class UtilsService {
             notification: {
 
               title: titleen,
-              body: bodyen
+              body: bodyen,
+              tag: "background"
             }
           };
         } else {
           payload = {
             notification: {
               title: titlein,
-              body: bodyin
+              body: bodyin,
+              tag: "background"
             }
           };
         }
