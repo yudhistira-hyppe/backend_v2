@@ -75,7 +75,7 @@ export class PostContentService {
     private templateService: TemplatesRepoService,
     private settingsService: SettingsService,
     private readonly notifService: NotificationsService,
-    private errorHandler: ErrorHandler, 
+    private errorHandler: ErrorHandler,
     private mediamusicService: MediamusicService,
   ) { }
 
@@ -251,7 +251,7 @@ export class PostContentService {
       for (var i = 0; i < cats.length; i++) {
         var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
-        if (cat != undefined) {
+        if (tp != undefined || tp != null) {
           var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
           pcats.push(objintrx);
         }
@@ -627,7 +627,7 @@ export class PostContentService {
       });
 
       this.logger.log('updateNewPost >>> checking cmod');
-      let ids : string[] = [];
+      let ids: string[] = [];
       ids.push(body.videoId);
       this.logger.log('updateNewPost >>> checking cmod video');
       let aimg = await this.getVideoApsaraSingle(ids[0]);
@@ -636,7 +636,7 @@ export class PostContentService {
         this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
         //TODO 
         this.cmodService.cmodVideo(body.postID, aim);
-      }      
+      }
 
       let meta = post.metadata;
       let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll };
@@ -670,7 +670,7 @@ export class PostContentService {
       });
 
       this.logger.log('updateNewPost >>> checking cmod');
-      let ids : string[] = [];
+      let ids: string[] = [];
       ids.push(body.videoId);
       this.logger.log('updateNewPost >>> checking cmod image');
       let aimg = await this.getImageApsara(ids);
@@ -714,7 +714,7 @@ export class PostContentService {
 
       if (st.mediaType == 'video') {
         this.logger.log('updateNewPost >>> checking cmod');
-        let ids : string[] = [];
+        let ids: string[] = [];
         ids.push(body.videoId);
         this.logger.log('updateNewPost >>> checking cmod video');
         let aimg = await this.getVideoApsaraSingle(ids[0]);
@@ -723,10 +723,10 @@ export class PostContentService {
           this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
           //TODO 
           this.cmodService.cmodVideo(body.postID, aim);
-        }              
+        }
       } else {
         this.logger.log('updateNewPost >>> checking cmod');
-        let ids : string[] = [];
+        let ids: string[] = [];
         ids.push(body.videoId);
         this.logger.log('updateNewPost >>> checking cmod image');
         let aimg = await this.getImageApsara(ids);
@@ -763,7 +763,7 @@ export class PostContentService {
       });
 
       this.logger.log('updateNewPost >>> checking cmod');
-      let ids : string[] = [];
+      let ids: string[] = [];
       ids.push(body.videoId);
       this.logger.log('updateNewPost >>> checking cmod video');
       let aimg = await this.getVideoApsaraSingle(ids[0]);
@@ -772,7 +772,7 @@ export class PostContentService {
         this.logger.log('updateNewPost >>> checking cmod image img: ' + aim);
         //TODO 
         this.cmodService.cmodVideo(body.postID, aim);
-      }      
+      }
     }
 
     let myus = await this.userAuthService.findOneByEmail(post.email);
@@ -793,12 +793,12 @@ export class PostContentService {
             bodye = bodye + ' HyppeVideo';
           } else if (post.postType == 'diary') {
             bodyi = bodyi + ' HyppeDiary';
-            bodye = bodye + ' HyppeDiary';            
+            bodye = bodye + ' HyppeDiary';
           } else if (post.postType == 'story') {
             bodyi = bodyi + ' HyppeStory';
-            bodye = bodye + ' HyppeStory';            
+            bodye = bodye + ' HyppeStory';
           }
-          this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned',bodyi, bodye, 'REACTION', 'ACCEPT', String(post.postID), String(post.postType));
+          this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned', bodyi, bodye, 'REACTION', 'ACCEPT', String(post.postID), String(post.postType));
         });
       });
     }
@@ -819,12 +819,12 @@ export class PostContentService {
             bodye = bodye + ' HyppeVideo';
           } else if (post.postType == 'diary') {
             bodyi = bodyi + ' HyppeDiary';
-            bodye = bodye + ' HyppeDiary';            
+            bodye = bodye + ' HyppeDiary';
           } else if (post.postType == 'story') {
             bodyi = bodyi + ' HyppeStory';
-            bodye = bodye + ' HyppeStory';            
+            bodye = bodye + ' HyppeStory';
           }
-          this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned',bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
+          this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned', bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
         });
       });
     }
@@ -902,7 +902,7 @@ export class PostContentService {
 
     let res = new PostResponseApps();
     res.response_code = 202;
-    let posts = await this.doGetUserPostBoost(pageNumber,pageRow, profile);
+    let posts = await this.doGetUserPostBoost(pageNumber, pageRow, profile);
     let pd = await this.loadPostBoostData(posts, profile);
     res.data = pd;
 
@@ -916,14 +916,14 @@ export class PostContentService {
     console.log(currentDate)
     console.log(currentDate.toISOString().split('T')[0] + " " + currentDate.toISOString().split('T')[1].split('.')[0])
     var perPage = Math.max(0, pageRow), page = Math.max(0, pageNumber);
-    
+
     const query = await this.PostsModel.aggregate([
       {
         $match: {
           "boosted": {
             $exists: true,
             $ne: null
-          } 
+          }
         }
       },
       {
@@ -1028,7 +1028,7 @@ export class PostContentService {
           media: {
             $switch: {
               branches: [
-                { case: { $gt: ["$cout_mediaPict",0] }, then: "$mediaPict_data", },
+                { case: { $gt: ["$cout_mediaPict", 0] }, then: "$mediaPict_data", },
                 { case: { $gt: ["$cout_mediadiaries", 0] }, then: "$mediadiaries_data" },
                 { case: { $gt: ["$cout_mediavideos", 0] }, then: "$mediavideos_data" },
               ],
@@ -1089,7 +1089,7 @@ export class PostContentService {
           },
         }
       },
-      { $sort: { status: -1, boostDate: -1 }},
+      { $sort: { status: -1, boostDate: -1 } },
       { $skip: (perPage * page) },
       { $limit: perPage },
     ])
@@ -1126,16 +1126,16 @@ export class PostContentService {
         pa.description = String(ps.description);
         pa.email = String(ps.email);
         pa.boosted = [ps.boosted];
-        pa.isBoost = ps.isBoost; 
+        pa.isBoost = ps.isBoost;
         pa.boostJangkauan = ps['boostJangkauan'];
         pa.statusBoost = ps['status'];
-        
+
         if (ps.reportedStatus != undefined) {
           pa.reportedStatus = ps.reportedStatus;
         }
         if (ps.reportedUserCount != undefined) {
           pa.reportedUserCount = Number(ps.reportedUserCount);
-        } 
+        }
 
         let following = await this.contentEventService.findFollowing(pa.email);
 
@@ -1568,17 +1568,17 @@ export class PostContentService {
       if (body.postID != undefined) {
         query.where('postID', body.postID);
       }
-  
+
       if (body.postType != undefined) {
         query.where('postType', body.postType);
       } else {
         query.where('postType').ne('advertise');
       }
-  
+
       if (body.withActive != undefined && (body.withActive == 'true' || body.withActive == true)) {
         query.where('active', true);
       }
-  
+
       if (body.withExp != undefined && (body.withExp == 'true' || body.withExp == true)) {
         this.logger.log("doGetUserPost >>> today: " + this.utilService.now());
         query.where('expiration').gte(this.utilService.generateExpirationFromToday(1));
@@ -1595,12 +1595,12 @@ export class PostContentService {
       let skip = this.paging(page, row);
       query.skip(skip);
       query.limit(row);
-      query.sort({ 'createdAt': 1, 'postType': 1});
+      query.sort({ 'createdAt': 1, 'postType': 1 });
       let res = await query.exec();
       let ed = await this.utilService.getDateTimeDate();
       let gap = ed.getTime() - st.getTime();
       this.logger.log('doGetUserPost >>> exec time: ' + gap);
-      return res;      
+      return res;
     }
 
     return undefined;
@@ -1718,7 +1718,7 @@ export class PostContentService {
       let thumnail_data: string[] = [];
       for (let i = 0; i < posts.length; i++) {
         let data_item = posts[i];
-        if (data_item.musicId!=undefined){
+        if (data_item.musicId != undefined) {
           var dataMusic = await this.mediamusicService.findOneMusic(data_item.musicId.toString());
           if (await this.utilService.ceckData(dataMusic)) {
             if (dataMusic.apsaraThumnail != undefined && dataMusic.apsaraThumnail != "" && dataMusic.apsaraThumnail != null) {
@@ -1743,30 +1743,30 @@ export class PostContentService {
         pa.email = String(ps.email);
 
         //SET DATA BOOST
-        var boostedRes=[];
+        var boostedRes = [];
         if (ps.boosted != undefined) {
           if (ps.boosted.length > 0) {
             pa.boosted = ps.boosted;
             pa.isBoost = ps.isBoost;
-            for (var p = 0; p<ps.boosted.length;p++){
+            for (var p = 0; p < ps.boosted.length; p++) {
               var CurrentDate = new Date(await (await this.utilService.getDateTime()).toISOString());
               console.log("CurrentDate", CurrentDate);
 
-              var DateBoostStart = new Date(ps.boosted[p].boostSession.start.split(" ")[0] + "T" + ps.boosted[p].boostSession.start.split(" ")[1] +".000Z")
+              var DateBoostStart = new Date(ps.boosted[p].boostSession.start.split(" ")[0] + "T" + ps.boosted[p].boostSession.start.split(" ")[1] + ".000Z")
               var DateBoostEnd = new Date(ps.boosted[p].boostSession.end.split(" ")[0] + "T" + ps.boosted[p].boostSession.end.split(" ")[1] + ".000Z")
               console.log("DateBoostStart", DateBoostStart);
               console.log("DateBoostEnd", DateBoostEnd);
               console.log("CurrentDate", CurrentDate);
               var boostedData = {};
               var boostedStatus = "TIDAK ADA";
-              if ((DateBoostStart < CurrentDate) && (CurrentDate < DateBoostEnd)){
+              if ((DateBoostStart < CurrentDate) && (CurrentDate < DateBoostEnd)) {
                 boostedStatus = "BERLANGSUNG";
                 boostedData["type"] = ps.boosted[p].type
                 boostedData["boostDate"] = ps.boosted[p].boostDate
                 boostedData["boostInterval"] = ps.boosted[p].boostInterval
                 boostedData["boostSession"] = ps.boosted[p].boostSession
                 boostedData["boostViewer"] = ps.boosted[p].boostViewer
-              } else if ((DateBoostStart > CurrentDate) && (DateBoostEnd > CurrentDate)){
+              } else if ((DateBoostStart > CurrentDate) && (DateBoostEnd > CurrentDate)) {
                 boostedStatus = "AKAN DATANG";
                 boostedData["type"] = ps.boosted[p].type
                 boostedData["boostDate"] = ps.boosted[p].boostDate
@@ -1782,9 +1782,9 @@ export class PostContentService {
 
             pa.boosted = boostedRes;
             if (boostedRes.length > 0) {
-              pa.boostJangkauan = (boostedRes[0].boostViewer != undefined) ? boostedRes[0].boostViewer.length:0;
+              pa.boostJangkauan = (boostedRes[0].boostViewer != undefined) ? boostedRes[0].boostViewer.length : 0;
             }
-            pa.statusBoost = boostedStatus; 
+            pa.statusBoost = boostedStatus;
           }
         }
         //SET DATA BOOST
@@ -1800,7 +1800,7 @@ export class PostContentService {
 
         //SET DATA MUSIC
         var music = {}
-        if (ps.musicId!=undefined){
+        if (ps.musicId != undefined) {
           var dataMusic = await this.mediamusicService.findOneMusic(ps.musicId.toString());
           if (await this.utilService.ceckData(dataMusic)) {
             music["_id"] = ps.musicId.toString()
@@ -2106,14 +2106,14 @@ export class PostContentService {
         pd.push(pa);
       }
 
-    let insl = await this.contentEventService.findEventByEmail(String(iam.email), postx, 'LIKE');
-    let insh = new Map();
-    for (let i = 0; i < insl.length; i++) {
-      let ins = insl[i];
-      if (insh.has(String(ins.postID)) == false) {
-        insh.set(ins.postID, ins.postID);
+      let insl = await this.contentEventService.findEventByEmail(String(iam.email), postx, 'LIKE');
+      let insh = new Map();
+      for (let i = 0; i < insl.length; i++) {
+        let ins = insl[i];
+        if (insh.has(String(ins.postID)) == false) {
+          insh.set(ins.postID, ins.postID);
+        }
       }
-    }      
 
       if (vids.length > 0) {
         let res = await this.getVideoApsara(vids);
@@ -2129,7 +2129,7 @@ export class PostContentService {
                 ps.isLiked = true;
               } else {
                 ps.isLiked = false;
-              }                          
+              }
             }
           }
         }
@@ -2145,20 +2145,20 @@ export class PostContentService {
               if (ps.apsaraId == vi.ImageId) {
                 ps.mediaEndpoint = vi.URL;
                 ps.mediaUri = vi.URL;
-  
+
                 ps.mediaThumbEndpoint = vi.URL;
-                ps.mediaThumbUri = vi.URL;                                            
+                ps.mediaThumbUri = vi.URL;
               }
 
               if (ps.apsaraThumbId == vi.ImageId) {
                 ps.mediaThumbEndpoint = vi.URL;
-                ps.mediaThumbUri = vi.URL;                                                            
+                ps.mediaThumbUri = vi.URL;
               }
               if (insh.has(String(ps.postID))) {
                 ps.isLiked = true;
               } else {
                 ps.isLiked = false;
-              }                          
+              }
             }
           }
         }
@@ -2821,7 +2821,7 @@ export class PostContentService {
 
     let htmlPdf = pdf.html().toString();
     let file = { content: htmlPdf };
-    let options = { format: 'A4', landscape:true };
+    let options = { format: 'A4', landscape: true };
     pdfWriter.generatePdf(file, options).then(pdfBuffer => {
       this.logger.log('generateCertificate >>> sending email to: ' + String(post.email) + ', with subject: ' + String(template.subject));
       this.utilService.sendEmailWithAttachment(String(post.email), 'no-reply@hyppe.app', String(template.subject), html, { filename: fileName, content: pdfBuffer });
@@ -2966,7 +2966,7 @@ export class PostContentService {
 
     if (body.active != undefined) {
       post.active = body.active;
-    }    
+    }
 
 
     if (body.cats != undefined && body.cats.length > 1) {
@@ -3046,10 +3046,10 @@ export class PostContentService {
     let resDiary: PostData[] = [];
     let resStory: PostData[] = [];
 
-    let pdp : PostData[] = [];
-    let pdv : PostData[] = [];
-    let pds : PostData[] = [];
-    let pdd : PostData[] = [];
+    let pdp: PostData[] = [];
+    let pdv: PostData[] = [];
+    let pds: PostData[] = [];
+    let pdd: PostData[] = [];
 
     if (String(body.postType) == 'pict') {
       this.logger.log('getUserPostLandingPage >>> exec: pict');
@@ -3059,7 +3059,7 @@ export class PostContentService {
       for (let i = 0; i < pdp.length; i++) {
         let ps = pdp[i];
         posts.push(ps.postID);
-      }    
+      }
       data.pict = pdp;
     }
 
@@ -3073,7 +3073,7 @@ export class PostContentService {
       for (let i = 0; i < pdv.length; i++) {
         let ps = pdv[i];
         posts.push(ps.postID);
-      }      
+      }
       data.video = pdv;
     }
 
@@ -3085,8 +3085,8 @@ export class PostContentService {
       for (let i = 0; i < pdd.length; i++) {
         let ps = pdd[i];
         posts.push(ps.postID);
-      }    
-      data.diary = pdd;      
+      }
+      data.diary = pdd;
     }
 
 
@@ -3099,9 +3099,9 @@ export class PostContentService {
       for (let i = 0; i < pds.length; i++) {
         let ps = pds[i];
         posts.push(ps.postID);
-      }    
-      data.story = pds;      
-    }    
+      }
+      data.story = pds;
+    }
 
 
     this.logger.log('getUserPostLandingPage >>> exec: insightlog');
@@ -3114,7 +3114,7 @@ export class PostContentService {
       }
     }
     this.logger.log('getUserPostLandingPage >>> exec: insightlog - done');
-    
+
     let xvids: string[] = [];
     let xpics: string[] = [];
     let xuser: string[] = [];
@@ -3192,7 +3192,7 @@ export class PostContentService {
           }
           resVideo.push(pdvv);
         }
-        
+
       }
       if (pds.length > 0) {
         for (let i = 0; i < pds.length; i++) {
@@ -3211,11 +3211,11 @@ export class PostContentService {
             pdss.isLiked = true;
           } else {
             pdss.isLiked = false;
-          }          
+          }
 
           if (mp.has(String(pdss.email))) {
             pdss.username = pdss.username;
-          }          
+          }
           resStory.push(pdss);
         }
       }
@@ -3236,11 +3236,11 @@ export class PostContentService {
             pddd.isLiked = true;
           } else {
             pddd.isLiked = false;
-          }          
+          }
 
           if (mp.has(String(pddd.email))) {
             pddd.username = pddd.username;
-          }          
+          }
           resDiary.push(pddd);
         }
       }
@@ -3329,11 +3329,11 @@ export class PostContentService {
             pdpp.isLiked = true;
           } else {
             pdpp.isLiked = false;
-          }        
-          
+          }
+
           if (mp.has(String(pdpp.email))) {
             pdpp.username = pdpp.username;
-          }          
+          }
           resPic.push(pdpp);
         }
       }
@@ -3364,7 +3364,7 @@ export class PostContentService {
           let mpobj = mp.get(String(obj.email));
           obj.username = mpobj.username;
           resVideo.push(obj);
-        }                  
+        }
       }
       data.video = resVideo;
     }
@@ -3377,11 +3377,11 @@ export class PostContentService {
           let mpobj = mp.get(String(obj.email));
           obj.username = mpobj.username;
           resPic.push(obj);
-        }                  
+        }
       }
       data.pict = resPic;
     }
-    
+
     if (data.story != undefined && data.story.length > 0) {
       resStory = [];
       for (let x = 0; x < data.story.length; x++) {
@@ -3390,10 +3390,10 @@ export class PostContentService {
           let mpobj = mp.get(String(obj.email));
           obj.username = mpobj.username;
           resStory.push(obj);
-        }                  
+        }
       }
       data.story = resStory;
-    }    
+    }
 
     if (data.diary != undefined && data.diary.length > 0) {
       resDiary = [];
@@ -3403,13 +3403,13 @@ export class PostContentService {
           let mpobj = mp.get(String(obj.email));
           obj.username = mpobj.username;
           resDiary.push(obj);
-        }                  
+        }
       }
       data.diary = resDiary;
     }
 
     res.data = data;
-    
+
 
     var ver = await this.settingsService.findOneByJenis('AppsVersion');
     ver.value;
@@ -3422,7 +3422,7 @@ export class PostContentService {
   }
 
 
-  async getNotification(body: any, headers: any) : Promise<NotifResponseApps> {
+  async getNotification(body: any, headers: any): Promise<NotifResponseApps> {
     let dat = await this.notifService.getNotification(body, headers);
     let dx = dat.data;
 
@@ -3436,7 +3436,7 @@ export class PostContentService {
     let ndat: CreateNotificationsDto[] = [];
 
     if (dx != undefined && dx.length > 0) {
-      for(let i = 0; i < dx.length; i++) {
+      for (let i = 0; i < dx.length; i++) {
         let dy = dx[i];
         let ndy = new CreateNotificationsDto();
         ndy._id = dy._id;
@@ -3456,8 +3456,8 @@ export class PostContentService {
         ndy.senderOrReceiverInfo = dy.senderOrReceiverInfo;
         ndy.title = dy.title;
         ndy.updatedAt = dy.updatedAt;
-        
-        if (dy.senderOrReceiverInfo != null){
+
+        if (dy.senderOrReceiverInfo != null) {
           var getAvatar = await this.utilService.getAvatarUser(dy.mate.toString());
           dy.senderOrReceiverInfo.avatar = getAvatar;
         }
@@ -3483,10 +3483,10 @@ export class PostContentService {
                   cn.mediaEndpoint = '/stream/' + video.mediaUri;
                   cn.mediaThumbEndpoint = '/thumb/' + video.postID;
                 }
-  
+
                 //mediatype
-                cn['mediaType'] = 'video';                
-  
+                cn['mediaType'] = 'video';
+
               } else if (ns == 'mediapicts') {
                 let pic = await this.picService.findOne(String(med.oid));
                 if (pic.apsara == true) {
@@ -3499,9 +3499,9 @@ export class PostContentService {
                   cn.mediaEndpoint = '/pict/' + pic.postID;
                   cn.mediaUri = String(pic.mediaUri);
                 }
-  
+
                 cn.mediaType = 'image';
-                  
+
               } else if (ns == 'mediadiaries') {
                 let diary = await this.diaryService.findOne(String(med.oid));
                 if (diary.apsara == true) {
@@ -3513,13 +3513,13 @@ export class PostContentService {
                   cn.mediaEndpoint = '/stream/' + diary.mediaUri;
                   cn.mediaThumbEndpoint = '/thumb/' + diary.postID;
                 }
-  
+
                 cn.mediaType = 'video';
-  
-                
+
+
               } else if (ns == 'mediastories') {
                 let story = await this.storyService.findOne(String(med.oid));
-  
+
                 if (story.mediaType == 'video') {
                   if (story.apsara == true) {
                     xvids.push(String(story.apsaraId));
@@ -3552,7 +3552,7 @@ export class PostContentService {
               ndat.push(ndy);
             }
           }
-        }else{
+        } else {
           ndat.push(ndy);
         }
       }
@@ -3566,30 +3566,30 @@ export class PostContentService {
           yvids.push(o);
         }
       }
-  
+
       for (let i = 0; i < xpics.length; i++) {
         let o = xpics[i];
         if (o != undefined) {
           ypics.push(o);
         }
       }
-    
+
       let vapsara = undefined;
       let papsara = undefined;
 
-  
+
       if (yvids.length > 0) {
         vapsara = await this.getVideoApsara(xvids);
       }
-  
+
       if (ypics.length > 0) {
         papsara = await this.getImageApsara(xpics);
       }
 
-      for(let i = 0; i < ndat.length; i++) {
+      for (let i = 0; i < ndat.length; i++) {
         let pdvv = ndat[i];
         if (pdvv.content != undefined) {
-          if (vapsara != undefined) { 
+          if (vapsara != undefined) {
             for (let i = 0; i < vapsara.VideoList.length; i++) {
               let vi = vapsara.VideoList[i];
               if (pdvv.content['apsaraId'] == vi.VideoId) {
@@ -3597,16 +3597,16 @@ export class PostContentService {
               }
             }
           }
-  
+
           if (papsara != undefined) {
             for (let i = 0; i < papsara.ImageInfo.length; i++) {
               let vi = papsara.ImageInfo[i];
               if (pdvv.content['apsaraId'] == vi.ImageId) {
                 pdvv.content['mediaThumbEndpoint'] = vi.URL;
                 pdvv.content['mediaThumbUri'] = vi.URL;
-  
+
               }
-            }          
+            }
           }
         }
 
@@ -3626,8 +3626,8 @@ export class PostContentService {
     let pd = await this.postService.findByPostId(postID);
     if (pd == undefined) {
       this.logger.error('cmodResponse >>> post id:' + postID + ' not found');
-      return;      
-    }    
+      return;
+    }
 
     if (pd.statusCB == undefined || pd.statusCB == 'PENDING') {
       let cr = pd.contentModerationResponse;
