@@ -31,6 +31,7 @@ import { CreateNotificationsDto } from '../content/notifications/dto/create-noti
 import { TemplatesRepo } from '../infra/templates_repo/schemas/templatesrepo.schema';
 import { BanksService } from '../trans/banks/banks.service';
 import { Banks } from '../trans/banks/schemas/banks.schema';
+import { DeepArService } from '../trans/deepar/deepar.service';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -66,8 +67,9 @@ export class UtilsService {
     private seaweedfsService: SeaweedfsService,
     private banksService: BanksService,
     private userdevicesService: UserdevicesService,
-    private notificationsService: NotificationsService
-  ) { }
+    private notificationsService: NotificationsService,
+    private deepArService: DeepArService
+  ) { } 
 
   async sendEmail(
     to: string,
@@ -618,14 +620,14 @@ export class UtilsService {
     }
   }
 
-  // async getSetting_new(_id_setting: string) {
-  //   var getSetting = await this.settingsService.findOne_(_id_setting);
-  //   if (getSetting != null) {
-  //     return getSetting.value;
-  //   } else {
-  //     return null;
-  //   }
-  // }
+  async getDeepAr(id: string) {
+    var getDeepAr = await this.deepArService.findOne(id);
+    if (getDeepAr != null) {
+      return getDeepAr.device;
+    } else {
+      return null;
+    }
+  }
 
   async updateSetting_(_id_setting: string, value: any) {
     return await this.settingsService.findOneAndUpdate_(_id_setting, value);

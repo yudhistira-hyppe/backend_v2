@@ -660,7 +660,7 @@ export class AuthController {
   @Post('api/user/deviceactivity')
   @HttpCode(HttpStatus.ACCEPTED)
   async deviceactivity(@Body() DeviceActivityRequest_: DeviceActivityRequest, @Headers() headers) {
-    var getDeviceAr = await this.utilsService.getSetting_("63a18b8011280000c5005a7c");
+    var getDeviceAr = await this.utilsService.getDeepAr("63a3ff2cd42900004b003ec2");
     var user_email_header = headers['x-auth-user'];
     var user_email = DeviceActivityRequest_.email;
     var user_deviceId = DeviceActivityRequest_.deviceId;
