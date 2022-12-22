@@ -618,6 +618,15 @@ export class UtilsService {
     }
   }
 
+  // async getSetting_new(_id_setting: string) {
+  //   var getSetting = await this.settingsService.findOne_(_id_setting);
+  //   if (getSetting != null) {
+  //     return getSetting.value;
+  //   } else {
+  //     return null;
+  //   }
+  // }
+
   async updateSetting_(_id_setting: string, value: any) {
     return await this.settingsService.findOneAndUpdate_(_id_setting, value);
   }
@@ -856,6 +865,12 @@ export class UtilsService {
     var date = new Date();
     var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
     return DateTime.substring(0, DateTime.lastIndexOf('.'));
+  }
+
+  async getDateString(): Promise<string> {
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    return DateTime.substring(0, DateTime.lastIndexOf('.')).split(' ')[0];
   }
 
   async getDateTime(): Promise<Date> {
