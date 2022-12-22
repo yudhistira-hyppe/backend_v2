@@ -927,7 +927,7 @@ export class DisqusService {
                         "active": 1,
                         "eventType": 1,
                         "emot": 1, //}],
-                        "disqusLog": "$disqusLogs",
+                        "disqusLogs": "$disqusLogs",
                         "senderOrReceiverInfo": 
                             {
                             "email": 
