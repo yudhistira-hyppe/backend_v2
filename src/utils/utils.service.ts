@@ -556,8 +556,6 @@ export class UtilsService {
       }
 
 
-
-
       var arraydevice = [];
       datadevice = await this.userdevicesService.findActive(emailuserbasic);
       for (var i = 0; i < datadevice.length; i++) {
