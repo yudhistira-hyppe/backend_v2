@@ -95,7 +95,7 @@ export class TransactionsController {
 
         var titleinsukses = "Selamat";
         var titleensukses = "Congratulations";
-        var bodyinsukses = "Silakan selesaikan pembayaran Anda Klik Di Sini untuk Melihat";
+        var bodyinsukses = "Silahkan selesaikan pembayaran Anda Klik Di Sini untuk Melihat";
         var bodyensukses = "Please complete your payment Click Here to View";
         var eventType = "TRANSACTION";
         var event = "TRANSACTION";

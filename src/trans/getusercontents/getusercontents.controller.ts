@@ -1945,8 +1945,11 @@ export class GetusercontentsController {
         var total = null;
         var username = null;
         var kepemilikan = null;
+        var statusjual = null;
         var data = [];
         var description = null;
+        var celebrity = null;
+        var postType = [];
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -1965,10 +1968,13 @@ export class GetusercontentsController {
         username = request_json["username"];
         description = request_json["description"];
         kepemilikan = request_json["kepemilikan"];
+        statusjual = request_json["statusjual"];
+        celebrity = request_json["celebrity"];
+        postType = request_json["postType"];
         var query = null;
 
         try {
-            query = await this.getusercontentsService.databasekonten(username, description, kepemilikan, page, limit);
+            query = await this.getusercontentsService.databasekonten(username, description, kepemilikan, statusjual, celebrity, postType, page, limit);
             data = query.data;
         } catch (e) {
             query = null;

@@ -10765,118 +10765,91 @@ export class GetusercontentsService {
     return postIDs;
   }
 
-  async databasekonten(username: string, description: string, kepemilikan: string, page: number, limit: number) {
+  async databasekonten(username: string, description: string, kepemilikan: string, statusjual: string, celebrity: any, postType: any[], page: number, limit: number) {
 
     var pipeline = [];
 
     var match = {};
     var matchAll = {};
-
-
-    // if (username && username !== undefined) {
-    //   var uname = {
-    //     $regex: username, $options: 'i'
-    //   };
-    // }
-    // if (description && description !== undefined) {
-    //   var desc = {
-    //     $regex: description, $options: 'i'
-    //   };
-    // }
-
-    // if (kepemilikan && kepemilikan !== undefined) {
-    //   var kepem = {
-    //     $regex: kepemilikan, $options: 'i'
-    //   };
-    // }
-
-    // match = {
-    //   $match: {
-
-    //     username: uname,
-    //     description: desc
-    //   }
-
-    // }
-    if (username !== undefined && description === undefined && kepemilikan === undefined) {
-      match = {
-        $match: {
-
-          username: {
-            $regex: username, $options: 'i'
-          }
-        }
-      };
-    } else if (username === undefined && description !== undefined && kepemilikan === undefined) {
-      match = {
-        $match: {
-
-          description: {
-            $regex: description, $options: 'i'
-          }
-        }
-      };
-    } else if (username === undefined && description === undefined && kepemilikan !== undefined) {
-      match = {
-        $match: {
-
-          kepemilikan: {
-            $regex: kepemilikan, $options: 'i'
-          }
-        }
+    var kepem = {};
+    var uname = {};
+    var desc = {};
+    var jual = {};
+    var artis = {};
+    var tipe = {};
+    if (username && username !== undefined) {
+      uname = {
+        $regex: username, $options: 'i'
       };
     }
-    else if (username !== undefined && description === undefined && kepemilikan !== undefined) {
-      match = {
-        $match: {
-          username: {
-            $regex: username, $options: 'i'
-          },
-          kepemilikan: {
-            $regex: kepemilikan, $options: 'i'
-          }
-        }
+    else {
+      uname = {
+        $ne: null
       };
     }
-    else if (username === undefined && description !== undefined && kepemilikan !== undefined) {
-      match = {
-        $match: {
-
-          description: {
-            $regex: description, $options: 'i'
-          },
-          kepemilikan: {
-            $regex: kepemilikan, $options: 'i'
-          }
-        }
+    if (description && description !== undefined) {
+      desc = {
+        $regex: description, $options: 'i'
       };
     }
-    else if (username !== undefined && description !== undefined && kepemilikan !== undefined) {
-      match = {
-        $match: {
-          username: {
-            $regex: username, $options: 'i'
-          },
-          description: {
-            $regex: description, $options: 'i'
-          },
-          kepemilikan: {
-            $regex: kepemilikan, $options: 'i'
-          }
-        }
+    else {
+      desc = {
+        $ne: null
+      };
+    }
+    if (kepemilikan && kepemilikan !== undefined) {
+      kepem = {
+        $regex: kepemilikan, $options: 'i'
       };
     } else {
-      match = {
-        $match: {
-
-          postID: {
-            $ne: null
-          }
-        }
+      kepem = {
+        $ne: null
+      };
+    }
+    if (statusjual && statusjual !== undefined) {
+      jual = statusjual
+    }
+    else {
+      jual = {
+        $ne: null
+      };
+    }
+    if (celebrity && celebrity !== undefined) {
+      artis = true
+    }
+    else {
+      artis = {
+        $ne: null
       };
     }
 
+    if (postType && postType !== undefined) {
+      tipe = {
 
+        $or: [
+          {
+            type: postType
+          },
+
+        ]
+
+      };
+    }
+    else {
+      tipe = {
+        $ne: null
+      };
+    }
+    match = {
+      $match: {
+        username: uname,
+        description: desc,
+        kepemilikan: kepem,
+        statusJual: jual,
+        isCelebrity: artis,
+        type: tipe
+      }
+    }
 
     matchAll = {
       $match: {
