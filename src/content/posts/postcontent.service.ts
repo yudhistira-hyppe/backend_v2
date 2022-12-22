@@ -251,9 +251,11 @@ export class PostContentService {
       for (var i = 0; i < cats.length; i++) {
         var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
-        if (tp != undefined || tp != null) {
-          var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
-          pcats.push(objintrx);
+        if (cat != undefined) {
+          if (tp != null) {
+            var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+            pcats.push(objintrx);
+          }
         }
       }
       post.tagDescription = pcats;

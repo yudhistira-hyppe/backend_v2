@@ -10772,6 +10772,32 @@ export class GetusercontentsService {
     var match = {};
     var matchAll = {};
 
+
+    // if (username && username !== undefined) {
+    //   var uname = {
+    //     $regex: username, $options: 'i'
+    //   };
+    // }
+    // if (description && description !== undefined) {
+    //   var desc = {
+    //     $regex: description, $options: 'i'
+    //   };
+    // }
+
+    // if (kepemilikan && kepemilikan !== undefined) {
+    //   var kepem = {
+    //     $regex: kepemilikan, $options: 'i'
+    //   };
+    // }
+
+    // match = {
+    //   $match: {
+
+    //     username: uname,
+    //     description: desc
+    //   }
+
+    // }
     if (username !== undefined && description === undefined && kepemilikan === undefined) {
       match = {
         $match: {
@@ -10849,6 +10875,8 @@ export class GetusercontentsService {
         }
       };
     }
+
+
 
     matchAll = {
       $match: {
