@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { UserbasicsService } from '../trans/userbasics/userbasics.service';
 import { UserdevicesService } from '../trans/userdevices/userdevices.service';
@@ -31,6 +31,7 @@ import { CreateNotificationsDto } from '../content/notifications/dto/create-noti
 import { TemplatesRepo } from '../infra/templates_repo/schemas/templatesrepo.schema';
 import { BanksService } from '../trans/banks/banks.service';
 import { Banks } from '../trans/banks/schemas/banks.schema';
+import { DeepArService } from '../trans/deepar/deepar.service';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -41,6 +42,9 @@ const cryptr = new Cryptr("vgqgveogdwinzlig");
 
 @Injectable()
 export class UtilsService {
+
+  private readonly logger = new Logger(UtilsService.name);
+
   constructor(
     private userauthsService: UserauthsService,
     private jwtrefreshtokenService: JwtrefreshtokenService,
@@ -63,8 +67,9 @@ export class UtilsService {
     private seaweedfsService: SeaweedfsService,
     private banksService: BanksService,
     private userdevicesService: UserdevicesService,
-    private notificationsService: NotificationsService
-  ) { }
+    private notificationsService: NotificationsService,
+    private deepArService: DeepArService
+  ) { } 
 
   async sendEmail(
     to: string,
@@ -296,6 +301,104 @@ export class UtilsService {
     await this.notificationsService.create(createNotificationsDto);
   }
 
+
+  async sendFcmCMod(receiverParty: string, eventType: string, event: string, postID?: string, postType?: string) {
+    //GET DATE
+    var currentDate = await this.getDateTimeString()
+
+    //GET TEMPLATE
+    var Templates_ = new TemplatesRepo();
+    Templates_ = await this.getTemplate_repo("CONTENT", 'NOTIFICATION');
+    this.logger.log('sendFcmCMod >>> template: ' + JSON.stringify(Templates_));
+
+    //GET USERNAME
+    var get_username_receiverParty = await this.getUsertname(receiverParty);
+
+    //GET PROFILE
+    var profile_receiverParty = await this.generateProfile(receiverParty, "FULL");
+
+    //GET LANGISO
+    const langIso_receiverParty = (profile_receiverParty.langIso != undefined) ? profile_receiverParty.langIso : "id";
+    this.logger.log('sendFcmCMod >>> iso: ' + langIso_receiverParty);
+    //SET POST TYPE UPPERCASE
+    var Post_type_upper = "";
+    if (postType == undefined) {
+      Post_type_upper = "";
+    } else {
+      Post_type_upper = postType[0].toUpperCase() + postType.substring(1)
+    }
+
+    //SET VARIABLE
+    let title_send = "";
+    let body_send = {};
+
+    let body_save_id = "";
+    let body_save_en = "";
+
+    //CECK EVENTTYPE
+    if (eventType == "COMMENT_TAG") {
+      eventType = "REACTION"
+    }
+
+    //SET TITLE AND BODY
+    if (langIso_receiverParty == "en") {
+      title_send = Templates_.subject.toString();
+    } else {
+      title_send = Templates_.subject_id.toString();
+    }
+
+    body_save_en = Templates_.body_detail.toString();
+    body_save_id = Templates_.body_detail_id.toString();
+
+    body_send['postID'] = postID
+    body_send['postType'] = postType
+
+    //SET BODY SEND
+    if (langIso_receiverParty == "en") {
+      body_send['message'] = body_save_en;
+      this.logger.log('sendFcmCMod >>> body en: ' + body_save_en);
+    } else {
+      body_send['message'] = body_save_id;
+      this.logger.log('sendFcmCMod >>> body en: ' + body_save_id);
+    }
+    this.logger.log('sendFcmCMod >>> res: ' + JSON.stringify(body_send));
+
+    //SEND FCM
+    var datadevice = await this.userdevicesService.findActive(receiverParty);
+    var device_user = [];
+    for (var i = 0; i < datadevice.length; i++) {
+      this.logger.log('sendFcmCMod >>> send: title-> ' + title_send + ' body: ' + JSON.stringify(body_send));
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send) } });
+      device_user.push(datadevice[i].deviceID)
+    }
+
+    //INSERT NOTIFICATION
+    var generateID = await this.generateId();
+    var createNotificationsDto = new CreateNotificationsDto();
+    createNotificationsDto._id = generateID;
+    createNotificationsDto.notificationID = generateID;
+    createNotificationsDto.email = receiverParty;
+    createNotificationsDto.eventType = eventType;
+    createNotificationsDto.event = event;
+    createNotificationsDto.devices = device_user;
+    createNotificationsDto.title = title_send;
+    createNotificationsDto.body = body_save_en;
+    createNotificationsDto.bodyId = body_save_id;
+    createNotificationsDto.active = true;
+    createNotificationsDto.flowIsDone = true;
+    createNotificationsDto.createdAt = currentDate;
+    createNotificationsDto.updatedAt = currentDate;
+    createNotificationsDto.actionButtons = null;
+    createNotificationsDto.contentEventID = null;
+    if (postID != undefined) {
+      createNotificationsDto.postID = postID.toString();
+    }
+    if (postType != undefined) {
+      createNotificationsDto.postType = postType.toString();
+    }
+    await this.notificationsService.create(createNotificationsDto);
+  }  
+
   async sendFcm(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID?: string, postType?: string, noinvoice?: string) {
     var emailuserbasic = null;
     var datadevice = null;
@@ -512,6 +615,15 @@ export class UtilsService {
     var getSetting = await this.settingsService.findOne(_id_setting);
     if (getSetting != null) {
       return getSetting.value;
+    } else {
+      return null;
+    }
+  }
+
+  async getDeepAr(id: string) {
+    var getDeepAr = await this.deepArService.findOne(id);
+    if (getDeepAr != null) {
+      return getDeepAr.device;
     } else {
       return null;
     }
@@ -755,6 +867,12 @@ export class UtilsService {
     var date = new Date();
     var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
     return DateTime.substring(0, DateTime.lastIndexOf('.'));
+  }
+
+  async getDateString(): Promise<string> {
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    return DateTime.substring(0, DateTime.lastIndexOf('.')).split(' ')[0];
   }
 
   async getDateTime(): Promise<Date> {

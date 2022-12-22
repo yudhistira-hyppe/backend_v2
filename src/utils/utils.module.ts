@@ -32,9 +32,11 @@ import { UserdevicesModule } from "../trans/userdevices/userdevices.module";
 import { NotificationsModule } from "../content/notifications/notifications.module";
 import { TemplatesRepoModule } from '../infra/templates_repo/templates_repo.module';
 import { BanksModule } from '../trans/banks/banks.module';
+import { DeepArModule } from '../trans/deepar/deepar.module';
 
 @Module({
   imports: [
+    DeepArModule,
     BanksModule,
     TemplatesRepoModule,
     UserdevicesModule,

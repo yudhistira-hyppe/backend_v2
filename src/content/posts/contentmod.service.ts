@@ -48,6 +48,7 @@ export class ContentModService {
 
   constructor(
     private postService: PostsService,
+    private utilService: UtilsService,
     private gtw: AppGateway,
     private readonly configService: ConfigService,
   ) { }
@@ -354,12 +355,14 @@ export class ContentModService {
       pd.contentModeration = false;
       pd.reportedStatus = 'ALL';
     }
-    let tod = new Date().getDate() + 25200000;
-    let today = new Date(tod);
-    pd.contentModerationDate = today.toISOString(); 
+    let today = new Date();
+    pd.contentModerationDate = await this.utilService.getDateTimeString(); 
     pd.contentModerationResponse = JSON.stringify(body);
 
     await this.postService.create(pd);
+
+    this.logger.log('cmodResponse >>> trying to sendFCmMod: ');
+    await this.utilService.sendFcmCMod(String(pd.email), "CONTENTMOD", "CONTENTMOD", String(pd.postID), String(pd.postType))
   }
 
 

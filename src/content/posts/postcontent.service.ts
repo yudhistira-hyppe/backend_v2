@@ -939,7 +939,7 @@ export class PostContentService {
               coutBoost: { $gt: 0 }
             },
             {
-              email: 'limstudio07@gmail.com'
+              email: whoami.email.toString()
             },
             {
               active: true

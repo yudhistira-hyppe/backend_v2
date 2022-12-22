@@ -37,7 +37,6 @@ export class AdsUserCompareController {
         private mediaprofilepictsService: MediaprofilepictsService,
         private errorHandler: ErrorHandler,) { }
 
-
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.ACCEPTED)
     @Post('/approve')
@@ -123,7 +122,8 @@ export class AdsUserCompareController {
             );
         }
 
-        const data_userads = await this.userAdsService.findOneByuserID(data_userbasic._id.toString(), type_);
+        var getDate = await this.utilsService.getDateString();
+        const data_userads = await this.userAdsService.findOneByuserID(data_userbasic._id.toString(), type_, getDate);
         if (!(await this.utilsService.ceckData(data_userads))) {
             this.logger.log("GET ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed User Ads Playlist not found");
             await this.errorHandler.generateNotAcceptableException(
