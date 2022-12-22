@@ -268,7 +268,7 @@ export class UtilsService {
     var datadevice = await this.userdevicesService.findActive(receiverParty);
     var device_user = [];
     for (var i = 0; i < datadevice.length; i++) {
-      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send) } });
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send), tag: 'background' } });
       device_user.push(datadevice[i].deviceID)
     }
 
@@ -601,9 +601,6 @@ export class UtilsService {
 
     }
   }
-
-
-
 
   async getSetting(jenis: string) {
     return (await this.settingsService.findOneByJenis(jenis)).value;
