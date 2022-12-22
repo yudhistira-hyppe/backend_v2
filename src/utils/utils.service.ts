@@ -267,8 +267,9 @@ export class UtilsService {
     //SEND FCM
     var datadevice = await this.userdevicesService.findActive(receiverParty);
     var device_user = [];
+    var getDate = await this.getDateTimeString();
     for (var i = 0; i < datadevice.length; i++) {
-      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send), tag: 'background' } });
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send), tag: getDate } });
       device_user.push(datadevice[i].deviceID)
     }
 

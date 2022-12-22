@@ -1069,7 +1069,6 @@ export class AuthController {
     }
   }
 
-
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Put('api/userauths/:email')
