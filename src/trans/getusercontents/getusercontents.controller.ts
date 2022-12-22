@@ -1927,12 +1927,85 @@ export class GetusercontentsController {
         return { response_code: 202, data, messages };
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post('api/getusercontents/database')
+    async finddata(@Req() request: Request): Promise<any> {
+        const messages = {
+            "info": ["The process successful"],
+        };
 
-    // async roundUp(num, precision) {
-    //     precision = Math.pow(10, precision)
-    //     return Math.ceil(num * precision) / precision
-    // }
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        var page = null;
+        var startdate = null;
+        var enddate = null;
+        var limit = null;
+        var totalpage = null;
+        var totalallrow = null;
+        var totalsearch = null;
+        var total = null;
+        var username = null;
+        var kepemilikan = null;
+        var data = [];
+        var description = null;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        if (request_json["limit"] !== undefined) {
+            limit = request_json["limit"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
 
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        username = request_json["username"];
+        description = request_json["description"];
+        kepemilikan = request_json["kepemilikan"];
+        var query = null;
+
+        try {
+            query = await this.getusercontentsService.databasekonten(username, description, kepemilikan, page, limit);
+            data = query.data;
+        } catch (e) {
+            query = null;
+            data = [];
+        }
+
+
+        total = query.data.length;
+
+        try {
+            totalsearch = query.countSearch[0].totalpost;
+        } catch (e) {
+            totalsearch = 0;
+        }
+
+
+        try {
+            totalallrow = query.countAll[0].totalpost;
+
+        } catch (e) {
+            totalallrow = 0;
+        }
+
+        var tpage = null;
+        var tpage2 = null;
+
+        tpage2 = (totalsearch / limit).toFixed(0);
+        tpage = (totalsearch % limit);
+        if (tpage > 0 && tpage < 5) {
+            totalpage = parseInt(tpage2) + 1;
+
+        } else {
+            totalpage = parseInt(tpage2);
+        }
+
+        return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
+    }
 
 
 
