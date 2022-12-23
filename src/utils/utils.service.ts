@@ -309,7 +309,7 @@ export class UtilsService {
 
     //GET TEMPLATE
     var Templates_ = new TemplatesRepo();
-    Templates_ = await this.getTemplate_repo("CONTENT", 'NOTIFICATION');
+    Templates_ = await this.getTemplate_repo("CONTENTMOD", 'NOTIFICATION');
     this.logger.log('sendFcmCMod >>> template: ' + JSON.stringify(Templates_));
 
     //GET USERNAME
