@@ -10795,8 +10795,13 @@ export class GetusercontentsService {
     var idkategori = null;
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
+    var lengkategori = null;
 
-    var lengkategori = kategori.length;
+    try {
+      lengkategori = kategori.length;
+    } catch (e) {
+      lengkategori = 0;
+    }
     if (lengkategori > 0) {
 
       for (let i = 0; i < lengkategori; i++) {
@@ -10828,23 +10833,7 @@ export class GetusercontentsService {
         $ne: null
       };
     }
-    // if (kepemilikan && kepemilikan !== undefined) {
-    //   kepem = {
-    //     $regex: kepemilikan, $options: 'i'
-    //   };
-    // } else {
-    //   kepem = {
-    //     $ne: null
-    //   };
-    // }
-    // if (statusjual && statusjual !== undefined) {
-    //   jual = statusjual
-    // }
-    // else {
-    //   jual = {
-    //     $ne: null
-    //   };
-    // }
+
 
 
 
@@ -11205,21 +11194,39 @@ export class GetusercontentsService {
         }
       }
     }
+    else if (postType === undefined && kategori === undefined && kepemilikan === undefined && statusjual === undefined) {
+      match = {
+        $match: {
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
+        }
+      };
+    }
     else {
       match = {
         $match: {
-
-          postID: {
-            $ne: null
-          }
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
         }
       };
     }
 
     matchAll = {
       $match: {
-
-        postID: {
+        username: {
+          $ne: null
+        },
+        description: {
+          $ne: null
+        },
+        createdAt: {
+          $ne: null
+        },
+        saleAmount: {
           $ne: null
         }
       }
@@ -12100,17 +12107,241 @@ export class GetusercontentsService {
               }
             }
           }],
-          "countAll": [
-            matchAll,
-            {
-              $group: {
-                _id: null,
-                totalpost: {
-                  $sum: 1
+
+          "countAll": [{
+            $addFields: {
+
+              salePrice: {
+                $cmp: ["$saleAmount", 0]
+              },
+              sLike: {
+                $cmp: ["$saleLike", 0]
+              },
+              sView: {
+                $cmp: ["$saleView", 0]
+              },
+              certi: {
+                $cmp: ["$certified", 0]
+              },
+
+            }
+          }, {
+            $lookup: {
+              from: 'userauths',
+              localField: 'email',
+              foreignField: 'email',
+              as: 'authdata',
+
+            }
+          }, {
+            $addFields: {
+
+
+              'auth': {
+                $arrayElemAt: ['$authdata', 0]
+              },
+              'basic': {
+                $arrayElemAt: ['$basicdata', 0]
+              },
+
+            }
+          }, {
+            "$lookup": {
+              "from": "interests_repo",
+              "as": "kategori",
+              "let": {
+                "local_id": "$category.$id",
+
+              },
+              "pipeline": [
+                {
+                  $match:
+                  {
+                    $and: [
+                      {
+                        $expr: {
+
+                          $in: ['$_id', {
+                            $ifNull: ['$$local_id', []]
+                          }]
+                        }
+                      },
+
+                    ]
+                  }
+                },
+                {
+                  $project: {
+                    interestName: 1,
+
+                  }
+                },
+
+              ],
+
+            },
+
+          }, {
+            $project: {
+              refs: {
+                $arrayElemAt: ['$contentMedias', 0]
+              },
+              username: "$auth.username",
+              createdAt: 1,
+              updatedAt: 1,
+              postID: 1,
+              email: 1,
+              postType: 1,
+              description: 1,
+              title: 1,
+              active: 1,
+              kategori: 1,
+              certified:
+              {
+                $cond: {
+                  if: {
+                    $or: [{
+                      $eq: ["$certi", - 1]
+                    }, {
+                      $eq: ["$certi", 0]
+                    }]
+                  },
+                  then: false,
+                  else: "$certified"
                 }
+              },
+              visibility: 1,
+              saleAmount: {
+                $cond: {
+                  if: {
+                    $or: [{
+                      $eq: ["$salePrice", - 1]
+                    }, {
+                      $eq: ["$salePrice", 0]
+                    }]
+                  },
+                  then: 0,
+                  else: "$saleAmount"
+                }
+              },
+              monetize: {
+                $cond: {
+                  if: {
+                    $or: [{
+                      $eq: ["$salePrice", - 1]
+                    }, {
+                      $eq: ["$salePrice", 0]
+                    }]
+                  },
+                  then: false,
+                  else: true
+                }
+              },
+
+            }
+          }, {
+            $project: {
+              refs: '$refs.$ref',
+              idmedia: '$refs.$id',
+              username: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              postID: 1,
+              postType: 1,
+              email: 1,
+              type: {
+                $switch: {
+                  branches: [
+                    {
+                      'case': {
+                        '$eq': ['$postType', 'pict']
+                      },
+                      'then': "HyppePic"
+                    },
+                    {
+                      'case': {
+                        '$eq': ['$postType', 'vid']
+                      },
+                      'then': "HyppeVid"
+                    },
+                    {
+                      'case': {
+                        '$eq': ['$postType', 'diary']
+                      },
+                      'then': "HyppeDiary"
+                    },
+                    {
+                      'case': {
+                        '$eq': ['$postType', 'story']
+                      },
+                      'then': "HyppeStory"
+                    },
+
+                  ],
+                  default: ''
+                }
+              },
+              description: 1,
+              title: 1,
+              active: 1,
+              kategori: 1,
+              kepemilikan:
+              {
+                $cond: {
+                  if: {
+                    $or: [{
+                      $eq: ["$certified", false]
+                    }, {
+                      $eq: ["$certified", ""]
+                    }]
+                  },
+                  then: "TIDAK",
+                  else: "YA"
+                }
+              },
+              visibility: 1,
+              saleAmount: 1,
+              statusJual:
+              {
+                $cond: {
+                  if: {
+
+                    $eq: ["$monetize", false]
+                  },
+                  then: "TIDAK",
+                  else: "YA"
+                }
+              },
+
+            }
+          }, {
+            $project: {
+
+              username: 1,
+              createdAt: 1,
+              updatedAt: 1,
+              postID: 1,
+              postType: 1,
+              email: 1,
+              type: 1,
+              description: 1,
+              title: 1,
+              active: 1,
+              kategori: 1,
+              kepemilikan: 1,
+              visibility: 1,
+              saleAmount: 1,
+              statusJual: 1
+            }
+          }, matchAll, {
+            $group: {
+              _id: null,
+              totalpost: {
+                $sum: 1
               }
             }
-          ]
+          }],
+
         }
       }
     );
