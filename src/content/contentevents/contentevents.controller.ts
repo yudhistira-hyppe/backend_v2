@@ -172,7 +172,7 @@ export class ContenteventsController {
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/posts/interactive')
   async interactive(@Req() request: any, @Headers() headers) {
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", request);
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(request.body));
     if (headers['x-auth-user'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed auth-user undefined',
@@ -296,9 +296,13 @@ export class ContenteventsController {
       }
     } else if (eventType == "VIEW") {
       if (email_user != email_receiverParty) {
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", email_user);
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", email_receiverParty);
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
         var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEW", "DONE", email_receiverParty, "", request.body.postID);
         var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEW", "ACCEPT", "", email_user, request.body.postID);
         if (!(await this.utilsService.ceckData(ceck_data_DONE)) && !(await this.utilsService.ceckData(ceck_data_ACCEPT))) {
+          console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW INSERT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
           var _id_1 = (await this.utilsService.generateId());
           var _id_2 = (await this.utilsService.generateId());
           var CreateContenteventsDto1 = new CreateContenteventsDto();
