@@ -351,6 +351,9 @@ export class ContentModService {
     if (pass == false) {
       pd.contentModeration = true;
       pd.reportedStatus = 'OWNED';
+
+      this.logger.log('cmodResponse >>> trying to sendFCmMod: ');
+      await this.utilService.sendFcmCMod(String(pd.email), "CONTENTMOD", "CONTENTMOD", String(pd.postID), String(pd.postType))      
     } else {
       pd.contentModeration = false;
       pd.reportedStatus = 'ALL';
@@ -361,8 +364,6 @@ export class ContentModService {
 
     await this.postService.create(pd);
 
-    this.logger.log('cmodResponse >>> trying to sendFCmMod: ');
-    await this.utilService.sendFcmCMod(String(pd.email), "CONTENTMOD", "CONTENTMOD", String(pd.postID), String(pd.postType))
   }
 
 
