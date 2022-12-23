@@ -10765,107 +10765,447 @@ export class GetusercontentsService {
     return postIDs;
   }
 
-  async databasekonten(username: string, description: string, kepemilikan: string, page: number, limit: number) {
+  async databasekonten(username: string, description: string, kepemilikan: any[], statusjual: any[], postType: any[], kategori: any[], startdate: string, enddate: string, startmount: number, endmount: number, descending: boolean, page: number, limit: number) {
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+
+    var order = null;
+
+    if (descending === true) {
+      order = -1;
+    } else {
+      order = 1;
+    }
     var pipeline = [];
 
     var match = {};
     var matchAll = {};
+    var kepem = {};
+    var uname = {};
+    var desc = {};
+    var jual = {};
+    var date = {};
+    var harga = {};
+    var arrkategori = [];
+    var idkategori = null;
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+
+    var lengkategori = kategori.length;
+    if (lengkategori > 0) {
+
+      for (let i = 0; i < lengkategori; i++) {
+        let idkat = kategori[i];
+        idkategori = mongoose.Types.ObjectId(idkat);
+        arrkategori.push(idkategori);
+      }
+    }
 
 
-    // if (username && username !== undefined) {
-    //   var uname = {
-    //     $regex: username, $options: 'i'
-    //   };
-    // }
-    // if (description && description !== undefined) {
-    //   var desc = {
-    //     $regex: description, $options: 'i'
-    //   };
-    // }
 
+    if (username && username !== undefined) {
+      uname = {
+        $regex: username, $options: 'i'
+      };
+    }
+    else {
+      uname = {
+        $ne: null
+      };
+    }
+    if (description && description !== undefined) {
+      desc = {
+        $regex: description, $options: 'i'
+      };
+    }
+    else {
+      desc = {
+        $ne: null
+      };
+    }
     // if (kepemilikan && kepemilikan !== undefined) {
-    //   var kepem = {
+    //   kepem = {
     //     $regex: kepemilikan, $options: 'i'
     //   };
+    // } else {
+    //   kepem = {
+    //     $ne: null
+    //   };
+    // }
+    // if (statusjual && statusjual !== undefined) {
+    //   jual = statusjual
+    // }
+    // else {
+    //   jual = {
+    //     $ne: null
+    //   };
     // }
 
-    // match = {
-    //   $match: {
 
-    //     username: uname,
-    //     description: desc
-    //   }
 
-    // }
-    if (username !== undefined && description === undefined && kepemilikan === undefined) {
-      match = {
-        $match: {
+    if (startdate !== undefined && enddate !== undefined) {
+      date = { "$gte": startdate, "$lte": dateend };
 
-          username: {
-            $regex: username, $options: 'i'
-          }
-        }
-      };
-    } else if (username === undefined && description !== undefined && kepemilikan === undefined) {
-      match = {
-        $match: {
-
-          description: {
-            $regex: description, $options: 'i'
-          }
-        }
-      };
-    } else if (username === undefined && description === undefined && kepemilikan !== undefined) {
-      match = {
-        $match: {
-
-          kepemilikan: {
-            $regex: kepemilikan, $options: 'i'
-          }
-        }
+    }
+    else {
+      date = {
+        $ne: null
       };
     }
-    else if (username !== undefined && description === undefined && kepemilikan !== undefined) {
-      match = {
-        $match: {
-          username: {
-            $regex: username, $options: 'i'
-          },
-          kepemilikan: {
-            $regex: kepemilikan, $options: 'i'
-          }
-        }
-      };
-    }
-    else if (username === undefined && description !== undefined && kepemilikan !== undefined) {
-      match = {
-        $match: {
 
-          description: {
-            $regex: description, $options: 'i'
-          },
-          kepemilikan: {
-            $regex: kepemilikan, $options: 'i'
-          }
-        }
+    if (startmount !== undefined && endmount !== undefined) {
+      harga = { "$gte": startmount, "$lte": endmount };
+
+    }
+    else {
+      harga = {
+        $ne: null
       };
     }
-    else if (username !== undefined && description !== undefined && kepemilikan !== undefined) {
+
+
+    if (postType !== undefined && kategori === undefined && kepemilikan === undefined && statusjual === undefined) {
+
       match = {
         $match: {
-          username: {
-            $regex: username, $options: 'i'
-          },
-          description: {
-            $regex: description, $options: 'i'
-          },
-          kepemilikan: {
-            $regex: kepemilikan, $options: 'i'
-          }
+          $and: [
+
+            {
+              $or: [{
+                type: {
+                  $in: postType
+                }
+              },]
+            },
+
+          ],
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
+
         }
-      };
-    } else {
+      }
+    }
+    else if (postType === undefined && kategori !== undefined && kepemilikan === undefined && statusjual === undefined) {
+      match = {
+        $match: {
+          $and: [
+
+            {
+              $or: [{
+                'kategori._id': {
+                  $in: arrkategori
+                }
+              },]
+            },
+
+          ],
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
+
+        }
+      }
+    }
+    else if (postType === undefined && kategori === undefined && kepemilikan !== undefined && statusjual === undefined) {
+
+      match = {
+        $match: {
+          $and: [
+
+            {
+              $or: [{
+                kepemilikan: {
+                  $in: kepemilikan
+                }
+              },]
+            },
+
+          ],
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
+
+        }
+      }
+    }
+    else if (postType === undefined && kategori === undefined && kepemilikan === undefined && statusjual !== undefined) {
+
+      match = {
+        $match: {
+          $and: [
+
+            {
+              $or: [{
+                statusJual: {
+                  $in: statusjual
+                }
+              },]
+            },
+
+          ],
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
+
+        }
+      }
+    }
+    else if (postType !== undefined && kategori !== undefined && kepemilikan === undefined && statusjual === undefined) {
+      match = {
+        $match: {
+          $and: [
+
+            {
+              $or: [{
+                'kategori._id': {
+                  $in: arrkategori
+                }
+              },]
+            },
+            {
+              $or: [{
+                type: {
+                  $in: postType
+                }
+              },]
+            },
+          ],
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
+
+        }
+      }
+    }
+    else if (postType !== undefined && kategori === undefined && kepemilikan !== undefined && statusjual === undefined) {
+      match = {
+        $match: {
+          $and: [
+
+            {
+              $or: [{
+                type: {
+                  $in: postType
+                }
+              },]
+            },
+            {
+              $or: [{
+                kepemilikan: {
+                  $in: kepemilikan
+                }
+              },]
+            },
+          ],
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
+
+        }
+      }
+    }
+    else if (postType !== undefined && kategori === undefined && kepemilikan === undefined && statusjual !== undefined) {
+      match = {
+        $match: {
+          $and: [
+
+            {
+              $or: [{
+                type: {
+                  $in: postType
+                }
+              },]
+            },
+            {
+              $or: [{
+                statusJual: {
+                  $in: statusjual
+                }
+              },]
+            },
+          ],
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
+
+        }
+      }
+    }
+    else if (postType === undefined && kategori !== undefined && kepemilikan !== undefined && statusjual === undefined) {
+      match = {
+        $match: {
+          $and: [
+
+            {
+              $or: [{
+                'kategori._id': {
+                  $in: arrkategori
+                }
+              },]
+            },
+            {
+              $or: [{
+                kepemilikan: {
+                  $in: kepemilikan
+                }
+              },]
+            },
+          ],
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
+
+        }
+      }
+    }
+    else if (postType === undefined && kategori !== undefined && kepemilikan === undefined && statusjual !== undefined) {
+      match = {
+        $match: {
+          $and: [
+
+            {
+              $or: [{
+                'kategori._id': {
+                  $in: arrkategori
+                }
+              },]
+            },
+            {
+              $or: [{
+                statusJual: {
+                  $in: statusjual
+                }
+              },]
+            },
+          ],
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
+
+        }
+      }
+    }
+    else if (postType === undefined && kategori === undefined && kepemilikan !== undefined && statusjual !== undefined) {
+      match = {
+        $match: {
+          $and: [
+
+            {
+              $or: [{
+                kepemilikan: {
+                  $in: kepemilikan
+                }
+              },]
+            },
+            {
+              $or: [{
+                statusJual: {
+                  $in: statusjual
+                }
+              },]
+            },
+          ],
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
+
+        }
+      }
+    }
+    else if (postType !== undefined && kategori !== undefined && kepemilikan !== undefined && statusjual === undefined) {
+      match = {
+        $match: {
+          $and: [
+
+            {
+              $or: [{
+                'kategori._id': {
+                  $in: arrkategori
+                }
+              },]
+            },
+            {
+              $or: [{
+                type: {
+                  $in: postType
+                }
+              },]
+            },
+            {
+              $or: [{
+                kepemilikan: {
+                  $in: kepemilikan
+                }
+              },]
+            },
+          ],
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
+
+        }
+      }
+    }
+    else if (postType !== undefined && kategori !== undefined && kepemilikan !== undefined && statusjual !== undefined) {
+      match = {
+        $match: {
+          $and: [
+
+            {
+              $or: [{
+                'kategori._id': {
+                  $in: arrkategori
+                }
+              },]
+            },
+            {
+              $or: [{
+                type: {
+                  $in: postType
+                }
+              },]
+            },
+            {
+              $or: [{
+                kepemilikan: {
+                  $in: kepemilikan
+                }
+              },]
+            },
+            {
+              $or: [{
+                statusJual: {
+                  $in: statusjual
+                }
+              },]
+            },
+          ],
+          username: uname,
+          description: desc,
+          createdAt: date,
+          saleAmount: harga
+
+        }
+      }
+    }
+    else {
       match = {
         $match: {
 
@@ -10875,8 +11215,6 @@ export class GetusercontentsService {
         }
       };
     }
-
-
 
     matchAll = {
       $match: {
@@ -10892,7 +11230,7 @@ export class GetusercontentsService {
         $facet: {
           "data": [{
             $sort: {
-              createdAt: - 1
+              createdAt: order
             },
 
           }, {
@@ -10918,14 +11256,6 @@ export class GetusercontentsService {
               localField: 'email',
               foreignField: 'email',
               as: 'authdata',
-
-            }
-          }, {
-            $lookup: {
-              from: 'userbasics',
-              localField: 'email',
-              foreignField: 'email',
-              as: 'basicdata',
 
             }
           }, {
@@ -10982,7 +11312,6 @@ export class GetusercontentsService {
                 $arrayElemAt: ['$contentMedias', 0]
               },
               username: "$auth.username",
-              isCelebrity: "$basic.isCelebrity",
               createdAt: 1,
               updatedAt: 1,
               postID: 1,
@@ -11040,7 +11369,6 @@ export class GetusercontentsService {
               refs: '$refs.$ref',
               idmedia: '$refs.$id',
               username: 1,
-              isCelebrity: 1,
               createdAt: 1,
               updatedAt: 1,
               postID: 1,
@@ -11092,8 +11420,8 @@ export class GetusercontentsService {
                       $eq: ["$certified", ""]
                     }]
                   },
-                  then: "Bebas",
-                  else: "Terdaftar"
+                  then: "TIDAK",
+                  else: "YA"
                 }
               },
               visibility: 1,
@@ -11105,8 +11433,8 @@ export class GetusercontentsService {
 
                     $eq: ["$monetize", false]
                   },
-                  then: "Tidak Dijual",
-                  else: "Dijual"
+                  then: "TIDAK",
+                  else: "YA"
                 }
               },
 
@@ -11164,7 +11492,6 @@ export class GetusercontentsService {
               refs: 1,
               idmedia: 1,
               username: 1,
-              isCelebrity: 1,
               createdAt: 1,
               updatedAt: 1,
               postID: 1,
@@ -11225,7 +11552,6 @@ export class GetusercontentsService {
             $project: {
 
               username: 1,
-              isCelebrity: 1,
               createdAt: 1,
               updatedAt: 1,
               postID: 1,
@@ -11567,14 +11893,6 @@ export class GetusercontentsService {
 
             }
           }, {
-            $lookup: {
-              from: 'userbasics',
-              localField: 'email',
-              foreignField: 'email',
-              as: 'basicdata',
-
-            }
-          }, {
             $addFields: {
 
 
@@ -11628,7 +11946,6 @@ export class GetusercontentsService {
                 $arrayElemAt: ['$contentMedias', 0]
               },
               username: "$auth.username",
-              isCelebrity: "$basic.isCelebrity",
               createdAt: 1,
               updatedAt: 1,
               postID: 1,
@@ -11686,7 +12003,6 @@ export class GetusercontentsService {
               refs: '$refs.$ref',
               idmedia: '$refs.$id',
               username: 1,
-              isCelebrity: 1,
               createdAt: 1,
               updatedAt: 1,
               postID: 1,
@@ -11738,8 +12054,8 @@ export class GetusercontentsService {
                       $eq: ["$certified", ""]
                     }]
                   },
-                  then: "Bebas",
-                  else: "Terdaftar"
+                  then: "TIDAK",
+                  else: "YA"
                 }
               },
               visibility: 1,
@@ -11751,8 +12067,8 @@ export class GetusercontentsService {
 
                     $eq: ["$monetize", false]
                   },
-                  then: "Tidak Dijual",
-                  else: "Dijual"
+                  then: "TIDAK",
+                  else: "YA"
                 }
               },
 
@@ -11761,7 +12077,6 @@ export class GetusercontentsService {
             $project: {
 
               username: 1,
-              isCelebrity: 1,
               createdAt: 1,
               updatedAt: 1,
               postID: 1,
