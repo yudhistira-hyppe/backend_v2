@@ -505,6 +505,7 @@ export class AdsUserCompareController {
                         // }
 
                         if (rewards) {
+                            var currentDate = await this.utilsService.getDateTime();
                             //Update accountbalace
                             try {
                                 var CreateAccountbalancesDto_ = new CreateAccountbalancesDto();
@@ -512,7 +513,7 @@ export class AdsUserCompareController {
                                 CreateAccountbalancesDto_.debet = 0;
                                 CreateAccountbalancesDto_.kredit = ads_rewards;
                                 CreateAccountbalancesDto_.type = "rewards";
-                                CreateAccountbalancesDto_.timestamp = current_date;
+                                CreateAccountbalancesDto_.timestamp = currentDate.toISOString();
                                 CreateAccountbalancesDto_.description = "rewards form ads view";
                                 CreateAccountbalancesDto_.idtrans = Object(data_userAdsService.adsID.toString());
                                 await this.accountbalancesService.create(CreateAccountbalancesDto_);
