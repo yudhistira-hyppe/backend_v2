@@ -1987,7 +1987,12 @@ export class GetusercontentsController {
             data = [];
         }
 
-        total = query.data.length;
+
+        try {
+            total = query.data.length;
+        } catch (e) {
+            total = 0;
+        }
 
         try {
             totalsearch = query.countSearch[0].totalpost;
