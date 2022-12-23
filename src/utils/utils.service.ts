@@ -446,6 +446,7 @@ export class UtilsService {
     createNotificationsDto.bodyId = body_save_id;
     createNotificationsDto.active = true;
     createNotificationsDto.flowIsDone = true;
+    createNotificationsDto.mate = receiverParty;
     createNotificationsDto.createdAt = currentDate;
     createNotificationsDto.updatedAt = currentDate;
     createNotificationsDto.actionButtons = null;
