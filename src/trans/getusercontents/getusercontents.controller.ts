@@ -1944,12 +1944,15 @@ export class GetusercontentsController {
         var totalsearch = null;
         var total = null;
         var username = null;
-        var kepemilikan = null;
-        var statusjual = null;
+        var kepemilikan = [];
+        var statusjual = [];
         var data = [];
         var description = null;
-        var celebrity = null;
         var postType = [];
+        var kategori = [];
+        var startmount = null;
+        var endmount = null;
+        var descending = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -1969,12 +1972,15 @@ export class GetusercontentsController {
         description = request_json["description"];
         kepemilikan = request_json["kepemilikan"];
         statusjual = request_json["statusjual"];
-        celebrity = request_json["celebrity"];
         postType = request_json["postType"];
+        kategori = request_json["kategori"];
+        startmount = request_json["startmount"];
+        endmount = request_json["endmount"];
+        descending = request_json["descending"];
         var query = null;
 
         try {
-            query = await this.getusercontentsService.databasekonten(username, description, kepemilikan, statusjual, celebrity, postType, page, limit);
+            query = await this.getusercontentsService.databasekonten(username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
             data = query.data;
         } catch (e) {
             query = null;
