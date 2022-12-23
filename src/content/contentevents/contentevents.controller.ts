@@ -172,7 +172,7 @@ export class ContenteventsController {
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/posts/interactive')
   async interactive(@Req() request: any, @Headers() headers) {
-    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", request);
+    console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify(request.body));
     if (headers['x-auth-user'] == undefined) {
       await this.errorHandler.generateNotAcceptableException(
         'Unabled to proceed auth-user undefined',
@@ -295,76 +295,80 @@ export class ContenteventsController {
         }
       }
     } else if (eventType == "VIEW") {
-      var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEW", "DONE", email_receiverParty, "", request.body.postID);
-      var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEW", "ACCEPT", "", email_user, request.body.postID);
-      if (!(await this.utilsService.ceckData(ceck_data_DONE)) && !(await this.utilsService.ceckData(ceck_data_ACCEPT))) {
-        var _id_1 = (await this.utilsService.generateId());
-        var _id_2 = (await this.utilsService.generateId());
-        var CreateContenteventsDto1 = new CreateContenteventsDto();
-        CreateContenteventsDto1._id = _id_1
-        CreateContenteventsDto1.contentEventID = _id_1
-        CreateContenteventsDto1.email = email_user
-        CreateContenteventsDto1.eventType = "VIEW"
-        CreateContenteventsDto1.active = true
-        CreateContenteventsDto1.event = "DONE"
-        CreateContenteventsDto1.createdAt = current_date
-        CreateContenteventsDto1.updatedAt = current_date
-        CreateContenteventsDto1.sequenceNumber = 1
-        CreateContenteventsDto1.flowIsDone = true
-        CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
-        CreateContenteventsDto1.receiverParty = email_receiverParty
-        CreateContenteventsDto1.postID = request.body.postID
+      if (email_user !== email_receiverParty) {
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW Email Not Same >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify({ postID: request.body.postID, email_user: email_user, email_receiverParty: email_receiverParty }));
+        var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEW", "DONE", email_receiverParty, "", request.body.postID);
+        var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEW", "ACCEPT", "", email_user, request.body.postID);
+        if (!(await this.utilsService.ceckData(ceck_data_DONE)) && !(await this.utilsService.ceckData(ceck_data_ACCEPT))) {
+          console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW ceck_data_DONE && ceck_data_ACCEPT = TRUE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify({ postID: request.body.postID, email_user: email_user, email_receiverParty: email_receiverParty }));
+          var _id_1 = (await this.utilsService.generateId());
+          var _id_2 = (await this.utilsService.generateId());
+          var CreateContenteventsDto1 = new CreateContenteventsDto();
+          CreateContenteventsDto1._id = _id_1
+          CreateContenteventsDto1.contentEventID = _id_1
+          CreateContenteventsDto1.email = email_user
+          CreateContenteventsDto1.eventType = "VIEW"
+          CreateContenteventsDto1.active = true
+          CreateContenteventsDto1.event = "DONE"
+          CreateContenteventsDto1.createdAt = current_date
+          CreateContenteventsDto1.updatedAt = current_date
+          CreateContenteventsDto1.sequenceNumber = 1
+          CreateContenteventsDto1.flowIsDone = true
+          CreateContenteventsDto1._class = "io.melody.hyppe.content.domain.ContentEvent"
+          CreateContenteventsDto1.receiverParty = email_receiverParty
+          CreateContenteventsDto1.postID = request.body.postID
 
-        var CreateContenteventsDto2 = new CreateContenteventsDto();
-        CreateContenteventsDto2._id = _id_2
-        CreateContenteventsDto2.contentEventID = _id_2
-        CreateContenteventsDto2.email = email_receiverParty
-        CreateContenteventsDto2.eventType = "VIEW"
-        CreateContenteventsDto2.active = true
-        CreateContenteventsDto2.event = "ACCEPT"
-        CreateContenteventsDto2.createdAt = current_date
-        CreateContenteventsDto2.updatedAt = current_date
-        CreateContenteventsDto2.sequenceNumber = 1
-        CreateContenteventsDto2.flowIsDone = true
-        CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
-        CreateContenteventsDto2.senderParty = email_user
-        CreateContenteventsDto2.postID = request.body.postID
+          var CreateContenteventsDto2 = new CreateContenteventsDto();
+          CreateContenteventsDto2._id = _id_2
+          CreateContenteventsDto2.contentEventID = _id_2
+          CreateContenteventsDto2.email = email_receiverParty
+          CreateContenteventsDto2.eventType = "VIEW"
+          CreateContenteventsDto2.active = true
+          CreateContenteventsDto2.event = "ACCEPT"
+          CreateContenteventsDto2.createdAt = current_date
+          CreateContenteventsDto2.updatedAt = current_date
+          CreateContenteventsDto2.sequenceNumber = 1
+          CreateContenteventsDto2.flowIsDone = true
+          CreateContenteventsDto2._class = "io.melody.hyppe.content.domain.ContentEvent"
+          CreateContenteventsDto2.senderParty = email_user
+          CreateContenteventsDto2.postID = request.body.postID
 
-        if (await this.utilsService.ceckData(Insight_receiver)) {
-          var _id_receiver = (await this.utilsService.generateId());
-          var CreateInsightlogsDto_receiver = new CreateInsightlogsDto()
-          CreateInsightlogsDto_receiver._id = _id_receiver;
-          CreateInsightlogsDto_receiver.insightID = Insight_receiver._id;
-          CreateInsightlogsDto_receiver.createdAt = current_date;
-          CreateInsightlogsDto_receiver.updatedAt = current_date;
-          CreateInsightlogsDto_receiver.mate = email_user
-          CreateInsightlogsDto_receiver.postID = request.body.postID
-          CreateInsightlogsDto_receiver.eventInsight = "VIEW"
-          CreateInsightlogsDto_receiver._class = "io.melody.hyppe.content.domain.InsightLog"
-          await this.insightlogsService.create(CreateInsightlogsDto_receiver);
+          if (await this.utilsService.ceckData(Insight_receiver)) {
+            var _id_receiver = (await this.utilsService.generateId());
+            var CreateInsightlogsDto_receiver = new CreateInsightlogsDto()
+            CreateInsightlogsDto_receiver._id = _id_receiver;
+            CreateInsightlogsDto_receiver.insightID = Insight_receiver._id;
+            CreateInsightlogsDto_receiver.createdAt = current_date;
+            CreateInsightlogsDto_receiver.updatedAt = current_date;
+            CreateInsightlogsDto_receiver.mate = email_user
+            CreateInsightlogsDto_receiver.postID = request.body.postID
+            CreateInsightlogsDto_receiver.eventInsight = "VIEW"
+            CreateInsightlogsDto_receiver._class = "io.melody.hyppe.content.domain.InsightLog"
+            await this.insightlogsService.create(CreateInsightlogsDto_receiver);
 
-          var LogInsught_receiver = Insight_receiver.insightLogs;
-          LogInsught_receiver.push({
-            $ref: 'insightlogs',
-            $id: _id_receiver,
-            $db: 'hyppe_content_db',
-          });
+            var LogInsught_receiver = Insight_receiver.insightLogs;
+            LogInsught_receiver.push({
+              $ref: 'insightlogs',
+              $id: _id_receiver,
+              $db: 'hyppe_content_db',
+            });
 
-          var CreateInsightsDto_receiver = new CreateInsightsDto()
-          CreateInsightsDto_receiver.insightLogs = LogInsught_receiver;
-          await this.insightsService.updateone(email_receiverParty, CreateInsightsDto_receiver)
-        }
+            var CreateInsightsDto_receiver = new CreateInsightsDto()
+            CreateInsightsDto_receiver.insightLogs = LogInsught_receiver;
+            await this.insightsService.updateone(email_receiverParty, CreateInsightsDto_receiver)
+          }
 
-        try {
-          await this.contenteventsService.create(CreateContenteventsDto1);
-          await this.contenteventsService.create(CreateContenteventsDto2);
-          await this.postsService.updateView(email_receiverParty, request.body.postID);
-          await this.insightsService.updateViews(email_receiverParty);
-        } catch (error) {
-          await this.errorHandler.generateNotAcceptableException(
-            'Unabled to proceed, ' +
-            error,
-          );
+          try {
+            await this.contenteventsService.create(CreateContenteventsDto1);
+            await this.contenteventsService.create(CreateContenteventsDto2);
+            await this.postsService.updateView(email_receiverParty, request.body.postID);
+            await this.insightsService.updateViews(email_receiverParty);
+          } catch (error) {
+            await this.errorHandler.generateNotAcceptableException(
+              'Unabled to proceed, ' +
+              error,
+            );
+          }
         }
       }
     } else if (eventType == "LIKE") {

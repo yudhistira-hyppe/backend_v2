@@ -4722,6 +4722,11 @@ export class PostBoostService {
                                             "active": true
                                         },
                                         {
+                                          "email": {
+                                           $ne : profile.email
+                                          }
+                                      },                                        
+                                        {
                                             "postType": "story"
                                         },
                                         {

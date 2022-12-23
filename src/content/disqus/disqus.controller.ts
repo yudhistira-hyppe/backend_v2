@@ -875,6 +875,7 @@ export class DisqusController {
 
   private async aggrDisqusLogV2(eventType: string, DisqusLog: Disquslogs){
     var retVal = new DisquslogsDto();
+    retVal._id = DisqusLog._id;
     retVal.disqusID = DisqusLog.disqusID;
     retVal.postType = DisqusLog.postType;
 
