@@ -306,6 +306,9 @@ export class UtilsService {
   async sendFcmCMod(receiverParty: string, eventType: string, event: string, postID?: string, postType?: string) {
     //GET DATE
     var currentDate = await this.getDateTimeString()
+    var idprofilepict = null;
+    var profilepict = null;
+    var mediaprofilepicts = null;
 
     //GET TEMPLATE
     var Templates_ = new TemplatesRepo();
@@ -363,6 +366,62 @@ export class UtilsService {
       this.logger.log('sendFcmCMod >>> body en: ' + body_save_id);
     }
     this.logger.log('sendFcmCMod >>> res: ' + JSON.stringify(body_send));
+
+    const datauserbasicsService = await this.userbasicsService.findOne(receiverParty);    
+
+    var mediaUri = null;
+    var mediaBasePath = null;
+    var mediaType = null;
+    var mediaEndpoint = null;
+
+    try {
+      profilepict = datauserbasicsService.profilePict;
+      idprofilepict = profilepict.oid;
+      mediaprofilepicts = await this.mediaprofilepictsService.findOne(idprofilepict);
+    } catch (e) {
+      mediaprofilepicts = null;
+    }
+    const user_userAuth = await this.userauthsService.findOne(receiverParty);
+
+    var mediaUri = null;
+    var mediaBasePath = null;
+    var mediaType = null;
+    var mediaEndpoint = null;
+    if (mediaprofilepicts != null) {
+      mediaUri = mediaprofilepicts.mediaUri;
+    }
+
+    let result = null;
+    if (mediaUri != null) {
+      result = '/profilepict/' + mediaUri.replace('_0001.jpeg', '');
+    }
+    if (mediaprofilepicts != null) {
+      if (mediaprofilepicts.mediaBasePath != null) {
+        mediaBasePath = mediaprofilepicts.mediaBasePath;
+      }
+
+      if (mediaprofilepicts.mediaUri != null) {
+        mediaUri = mediaprofilepicts.mediaUri;
+      }
+
+      if (mediaprofilepicts.mediaType != null) {
+        mediaType = mediaprofilepicts.mediaType;
+      }
+    }
+
+    if (result != null) {
+      mediaEndpoint = result;
+    }    
+    var senderreceiver = {
+      fullName: datauserbasicsService.fullName,
+      avatar: {
+        mediaBasePath: mediaBasePath,
+        mediaUri: mediaUri,
+        mediaType: mediaType,
+        mediaEndpoint: mediaEndpoint
+      },
+      username: user_userAuth.username.toString()
+    };    
 
     //SEND FCM
     var datadevice = await this.userdevicesService.findActive(receiverParty);
