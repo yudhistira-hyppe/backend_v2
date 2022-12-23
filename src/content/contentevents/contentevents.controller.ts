@@ -295,14 +295,12 @@ export class ContenteventsController {
         }
       }
     } else if (eventType == "VIEW") {
-      if (email_user != email_receiverParty) {
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", email_user);
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", email_receiverParty);
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+      if (email_user !== email_receiverParty) {
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW Email Not Same >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify({ postID: request.body.postID, email_user: email_user, email_receiverParty: email_receiverParty }));
         var ceck_data_DONE = await this.contenteventsService.ceckData(email_user, "VIEW", "DONE", email_receiverParty, "", request.body.postID);
         var ceck_data_ACCEPT = await this.contenteventsService.ceckData(email_receiverParty, "VIEW", "ACCEPT", "", email_user, request.body.postID);
         if (!(await this.utilsService.ceckData(ceck_data_DONE)) && !(await this.utilsService.ceckData(ceck_data_ACCEPT))) {
-          console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW INSERT >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+          console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> interactive VIEW ceck_data_DONE && ceck_data_ACCEPT = TRUE >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>", JSON.stringify({ postID: request.body.postID, email_user: email_user, email_receiverParty: email_receiverParty }));
           var _id_1 = (await this.utilsService.generateId());
           var _id_2 = (await this.utilsService.generateId());
           var CreateContenteventsDto1 = new CreateContenteventsDto();
