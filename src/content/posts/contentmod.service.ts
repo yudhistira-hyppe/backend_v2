@@ -349,11 +349,16 @@ export class ContentModService {
 
     this.logger.log('cmodResponse >>> pass: ' + pass);
     if (pass == false) {
+      let pold = pd.contentModeration;
+
       pd.contentModeration = true;
       pd.reportedStatus = 'OWNED';
 
-      this.logger.log('cmodResponse >>> trying to sendFCmMod: ');
-      await this.utilService.sendFcmCMod(String(pd.email), "CONTENTMOD", "CONTENTMOD", String(pd.postID), String(pd.postType))      
+      if (pold != true) {
+        this.logger.log('cmodResponse >>> trying to sendFCmMod: ');
+        await this.utilService.sendFcmCMod(String(pd.email), "CONTENTMOD", "CONTENTMOD", String(pd.postID), String(pd.postType));
+      }
+
     } else {
       pd.contentModeration = false;
       pd.reportedStatus = 'ALL';
