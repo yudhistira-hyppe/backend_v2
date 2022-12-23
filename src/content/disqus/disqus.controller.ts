@@ -66,6 +66,11 @@ export class DisqusController {
     return this.DisqusService.delete(id);
   }
 
+  @Post('posts/disqus/test/test')
+  async getDiscusLog(){
+    return await this.DisqusService.getTest("daseho@getnada.com");
+  }
+
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @FormDataRequest()

@@ -29,6 +29,7 @@ import { CreateUserplaylistDto } from '../../trans/userplaylist/dto/create-userp
 import { UserplaylistService } from '../../trans/userplaylist/userplaylist.service';
 import { InjectQueue, Process, Processor } from '@nestjs/bull';
 import { SeaweedfsService } from '../../stream/seaweedfs/seaweedfs.service';
+
 import * as fs from 'fs';
 
 import { Queue, Job } from 'bull';
@@ -58,6 +59,7 @@ export class PostsService {
     private readonly configService: ConfigService,
     private readonly userplaylistService: UserplaylistService,
     private readonly seaweedfsService: SeaweedfsService,
+
   ) { }
 
   async findChild(): Promise<Posts[]> {
@@ -14486,6 +14488,8 @@ export class PostsService {
     let query = await this.contentEventService.findisLike(email, postID);
     return query;
   }
+
+
 
 }
 

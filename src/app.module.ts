@@ -97,8 +97,10 @@ import { MediamusicModule } from './content/mediamusic/mediamusic.module';
 import { IntervalSessionModule } from './content/boostsession/intervarsession/intervarsession.module';
 import { TransactionsPostModule } from './trans/transactionpost/transactionspost.module';
 import { DisqusContentEventModule } from './content/contentevents/discus/disqusdisquscontentevent.module';
+import { DeepArModule } from './trans/deepar/deepar.module';
 @Module({
   imports: [
+    DeepArModule,
     DisqusContentEventModule,
     IntervalSessionModule,
     MediamusicModule,

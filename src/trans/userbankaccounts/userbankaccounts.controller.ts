@@ -130,10 +130,10 @@ export class UserbankaccountsController {
         }
 
         if (language === "id") {
-            messageRespon = "Nama yang Anda masukkan salah, pastikan nama yang Anda masukkan sesuai dengan ID yang terdaftar di hyppe, nama yang sudah terdaftar adalah " + namamediaprof.toUpperCase();;
+            messageRespon = "Nama yang Anda masukkan salah, pastikan nama yang Anda masukkan sesuai dengan ID yang terdaftar di Hyppe, nama yang sudah terdaftar adalah " + namamediaprof.toUpperCase();;
         }
         else if (language === "en") {
-            messageRespon = "The name you entered is wrong, make sure the name you enter matches the ID registered on hyppe, the registered name is " + namamediaprof.toUpperCase();;
+            messageRespon = "The name you entered is wrong, make sure the name you enter matches the ID registered on Hyppe, the registered name is " + namamediaprof.toUpperCase();;
         }
 
 

@@ -31,6 +31,7 @@ import { CreateNotificationsDto } from '../content/notifications/dto/create-noti
 import { TemplatesRepo } from '../infra/templates_repo/schemas/templatesrepo.schema';
 import { BanksService } from '../trans/banks/banks.service';
 import { Banks } from '../trans/banks/schemas/banks.schema';
+import { DeepArService } from '../trans/deepar/deepar.service';
 
 const cheerio = require('cheerio');
 const QRCode = require('qrcode');
@@ -66,7 +67,8 @@ export class UtilsService {
     private seaweedfsService: SeaweedfsService,
     private banksService: BanksService,
     private userdevicesService: UserdevicesService,
-    private notificationsService: NotificationsService
+    private notificationsService: NotificationsService,
+    private deepArService: DeepArService
   ) { }
 
   async sendEmail(
@@ -265,8 +267,9 @@ export class UtilsService {
     //SEND FCM
     var datadevice = await this.userdevicesService.findActive(receiverParty);
     var device_user = [];
+    var getDate = await this.getDateTimeString();
     for (var i = 0; i < datadevice.length; i++) {
-      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send) } });
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send), tag: getDate } });
       device_user.push(datadevice[i].deviceID)
     }
 
@@ -395,7 +398,7 @@ export class UtilsService {
       createNotificationsDto.postType = postType.toString();
     }
     await this.notificationsService.create(createNotificationsDto);
-  }  
+  }
 
   async sendFcm(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID?: string, postType?: string, noinvoice?: string) {
     var emailuserbasic = null;
@@ -495,7 +498,8 @@ export class UtilsService {
             notification: {
 
               title: titlein,
-              body: JSON.stringify(bodypayload)
+              body: JSON.stringify(bodypayload),
+              tag: "background"
             }
           };
         }
@@ -505,7 +509,8 @@ export class UtilsService {
             notification: {
 
               title: titleen,
-              body: JSON.stringify(bodypayload)
+              body: JSON.stringify(bodypayload),
+              tag: "background"
             }
           };
         } else {
@@ -514,7 +519,8 @@ export class UtilsService {
             notification: {
 
               title: titlein,
-              body: JSON.stringify(bodypayload)
+              body: JSON.stringify(bodypayload),
+              tag: "background"
             }
           };
         }
@@ -526,7 +532,8 @@ export class UtilsService {
             notification: {
 
               title: titlein,
-              body: bodyin
+              body: bodyin,
+              tag: "background"
             }
           };
         } else if (langIso === "en") {
@@ -534,20 +541,20 @@ export class UtilsService {
             notification: {
 
               title: titleen,
-              body: bodyen
+              body: bodyen,
+              tag: "background"
             }
           };
         } else {
           payload = {
             notification: {
               title: titlein,
-              body: bodyin
+              body: bodyin,
+              tag: "background"
             }
           };
         }
       }
-
-
 
 
       var arraydevice = [];
@@ -594,9 +601,6 @@ export class UtilsService {
     }
   }
 
-
-
-
   async getSetting(jenis: string) {
     return (await this.settingsService.findOneByJenis(jenis)).value;
   }
@@ -613,6 +617,15 @@ export class UtilsService {
     var getSetting = await this.settingsService.findOne(_id_setting);
     if (getSetting != null) {
       return getSetting.value;
+    } else {
+      return null;
+    }
+  }
+
+  async getDeepAr(id: string) {
+    var getDeepAr = await this.deepArService.findOne(id);
+    if (getDeepAr != null) {
+      return getDeepAr.device;
     } else {
       return null;
     }
@@ -856,6 +869,12 @@ export class UtilsService {
     var date = new Date();
     var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
     return DateTime.substring(0, DateTime.lastIndexOf('.'));
+  }
+
+  async getDateString(): Promise<string> {
+    var date = new Date();
+    var DateTime = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().replace('T', ' ');
+    return DateTime.substring(0, DateTime.lastIndexOf('.')).split(' ')[0];
   }
 
   async getDateTime(): Promise<Date> {

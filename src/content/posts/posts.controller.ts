@@ -30,7 +30,7 @@ import { PostCommentService } from './postcomment.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { DisqusService } from '../disqus/disqus.service';
 import { ContentModService } from './contentmod.service';
-import { OyPgService } from '../../paymentgateway/oypg/oypg.service'; 
+import { OyPgService } from '../../paymentgateway/oypg/oypg.service';
 import { MethodepaymentsService } from '../../trans/methodepayments/methodepayments.service';
 import { PostBoostService } from './postboost.service';
 
@@ -41,7 +41,7 @@ export class PostsController {
   constructor(private readonly PostsService: PostsService,
     private readonly postContentService: PostContentService,
     private readonly userauthsService: UserauthsService,
-    private readonly utilsService: UtilsService, 
+    private readonly utilsService: UtilsService,
     private readonly errorHandler: ErrorHandler,
     private readonly bootsService: PostBoostService,
     private readonly contenteventsService: ContenteventsService,
@@ -122,11 +122,11 @@ export class PostsController {
     }
 
     var user_email_header = headers['x-auth-user'];
-   
+
     await this.errorHandler.generateNotAcceptableException(
       'Unabled to proceed, user permission cannot acces module',
     );
-  return this.PostsService.MonetizeByYear(year);
+    return this.PostsService.MonetizeByYear(year);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -396,7 +396,7 @@ export class PostsController {
     @Headers() headers) {
     const pageNumber_ = (pageNumber != undefined) ? pageNumber : 0;
     const pageRow_ = (pageRow != undefined) ? (pageRow != 0) ? pageRow : 10 : 10;
-    return this.postContentService.getUserPostBoost(pageNumber_, pageRow_,headers);
+    return this.postContentService.getUserPostBoost(pageNumber_, pageRow_, headers);
   }
 
   @Post('api/posts/getnotification')
@@ -435,7 +435,7 @@ export class PostsController {
     this.cmodService.ws();
     let t = { 'response': 'Done' };
     return JSON.stringify(t);
-  }  
+  }
 
   @Post('api/posts/notifyapsara/cmod/image')
   async notifyApsaraCmodImage(@Body() body, @Headers() headers) {
@@ -671,15 +671,15 @@ export class PostsController {
 
   @Get('api/posts/getpostm2m')
   @HttpCode(HttpStatus.ACCEPTED)
-  async getPostM2M(@Query('postID') postID: string,){
+  async getPostM2M(@Query('postID') postID: string,) {
     var response = {};
     var post = await this.PostsService.findByPostId(postID);
-    if (await this.utilsService.ceckData(post)){
+    if (await this.utilsService.ceckData(post)) {
       var media = await this.PostsService.findOnepostID(postID);
-      if (await this.utilsService.ceckData(media)){
+      if (await this.utilsService.ceckData(media)) {
         var data = [];
         var data_ = {};
-        if (media[0].datacontent[0].mediaBasePath != undefined){
+        if (media[0].datacontent[0].mediaBasePath != undefined) {
           data_["mediaBasePath"] = media[0].datacontent[0].mediaBasePath;
         }
         if (post.postType != undefined) {
@@ -771,7 +771,7 @@ export class PostsController {
           }
         }
       }
-    }else{
+    } else {
       response = {
         "response_code": 202,
         "data": [],
@@ -838,7 +838,7 @@ export class PostsController {
           }
           if (dataMedia[0].datacontent[0].mediaMime != undefined) {
             mediaMime = dataMedia[0].datacontent[0].mediaMime;
-          }else{
+          } else {
             mediaMime = "image/jpeg";
           }
           if (image_data != '') {
@@ -872,7 +872,7 @@ export class PostsController {
         var dataMedia = await this.PostsService.findOnepostID(headers['post-id']);
         if (await this.utilsService.ceckData(dataMedia)) {
           var mediaBasePath = "";
-          if (dataMedia!=null){
+          if (dataMedia != null) {
             if (dataMedia[0].datacontent[0].mediaBasePath != undefined) {
               mediaBasePath = dataMedia[0].datacontent[0].mediaBasePath;
             }
@@ -907,5 +907,8 @@ export class PostsController {
     this.logger.log("testdm >>> start");
     this.postContentService.cmodCheckResult('b9b22a4c-25e8-98fe-b414-ff116616dcf8');
     return "sgsg";
-  }  
+  }
+
+
+
 }

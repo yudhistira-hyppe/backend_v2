@@ -91,7 +91,7 @@ export class DisquslogsService {
         if(await this.utilsService.ceckData(data_discuslog)) {
           this.DisquslogsModel.updateOne(
             { _id: request._id },
-            { active: false },
+            { active: false, senderActive: false, receiverActive: false },
             function (err, docs) {
               if (err) {
                 console.log(err);
