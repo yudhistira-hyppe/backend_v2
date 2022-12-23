@@ -450,6 +450,7 @@ export class UtilsService {
     createNotificationsDto.updatedAt = currentDate;
     createNotificationsDto.actionButtons = null;
     createNotificationsDto.contentEventID = null;
+    createNotificationsDto.senderOrReceiverInfo = senderreceiver;
     if (postID != undefined) {
       createNotificationsDto.postID = postID.toString();
     }
