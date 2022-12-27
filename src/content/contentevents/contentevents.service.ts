@@ -1686,7 +1686,7 @@ export class ContenteventsService {
             ],
 						
 						//vid
-            "vid": [
+            "video": [
                 {
                     $sort: {
                         "createdAt": - 1

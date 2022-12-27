@@ -6240,7 +6240,7 @@ export class PostBoostService {
                 }
             ],
             //vid
-            "vid": [
+            "video": [
                 {
                     $sort: {
                         "createdAt": - 1
