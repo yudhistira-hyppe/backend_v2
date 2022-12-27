@@ -2587,16 +2587,19 @@ export class PostContentService {
         method: 'POST'
       };
 
-      let dto = new ApsaraVideoResponse();
-      let result = await client.request('GetVideoInfos', params, requestOption);
-      let ty: ApsaraVideoResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
-      if (ty.VideoList.length > 0) {
-        for (let x = 0; x < ty.VideoList.length; x++) {
-          let vv = ty.VideoList[x];
-          vl.push(vv);
+      try {
+        let dto = new ApsaraVideoResponse();
+        let result = await client.request('GetVideoInfos', params, requestOption);
+        let ty: ApsaraVideoResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
+        if (ty.VideoList.length > 0) {
+          for (let x = 0; x < ty.VideoList.length; x++) {
+            let vv = ty.VideoList[x];
+            vl.push(vv);
+          }
         }
-      }
+      } catch(ex) {
 
+      }
     }
     tx.VideoList = vl;
 
@@ -2638,16 +2641,20 @@ export class PostContentService {
         method: 'POST'
       };
 
-      let dto = new ApsaraImageResponse();
-      let result = await client.request('GetImageInfos', params, requestOption);
-      let ty: ApsaraImageResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
-      this.logger.log("getImageApsara >>> result: " + ty);
-
-      if (ty.ImageInfo.length > 0) {
-        for (let x = 0; x < ty.ImageInfo.length; x++) {
-          let vv = ty.ImageInfo[x];
-          vl.push(vv);
+      try {
+        let dto = new ApsaraImageResponse();
+        let result = await client.request('GetImageInfos', params, requestOption);
+        let ty: ApsaraImageResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
+        this.logger.log("getImageApsara >>> result: " + ty);
+  
+        if (ty.ImageInfo.length > 0) {
+          for (let x = 0; x < ty.ImageInfo.length; x++) {
+            let vv = ty.ImageInfo[x];
+            vl.push(vv);
+          }
         }
+      } catch(e) {
+
       }
     }
     tx.ImageInfo = vl;
