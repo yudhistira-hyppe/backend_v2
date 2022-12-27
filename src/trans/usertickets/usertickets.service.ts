@@ -1015,7 +1015,7 @@ export class UserticketsService {
   }
 
 
-  async filterdata(search: string, assignto: string, sumber: any[], kategori: any[], level: any[], status: any[], startdate: string, enddate: string, skip: number, limit: number, descending: boolean) {
+  async filterdata(search: string, assignto: string, sumber: any[], kategori: any[], level: any[], status: any[], startdate: string, enddate: string, skip: number, limit: number, descending: boolean, iduser?: string) {
 
     var lenghtkategori = 0;
     var lenghtsumber = 0;
@@ -1100,6 +1100,7 @@ export class UserticketsService {
           source: {
             $arrayElemAt: ['$source_data', 0]
           },
+
           nomortiket: 1,
           subject: 1,
           body: 1,
@@ -1123,6 +1124,7 @@ export class UserticketsService {
       {
         $project: {
           userAuth_id: '$user.userAuth.$id',
+          iduser: '$user._id',
           pengirim: '$user.email',
           penerima: '$userasign.email',
           profilpictid: '$userasign.profilePict.$id',
@@ -1177,6 +1179,7 @@ export class UserticketsService {
           userauth: {
             $arrayElemAt: ['$userAuth_data', 0]
           },
+          iduser: 1,
           nomortiket: 1,
           pengirim: 1,
           penerima: 1,
@@ -1204,7 +1207,8 @@ export class UserticketsService {
       },
       {
         $project: {
-          username: '$userauth.username',
+          username: 1,
+          iduser: 1,
           nomortiket: 1,
           pengirim: 1,
           penerima: 1,
@@ -1256,7 +1260,8 @@ export class UserticketsService {
       },
       {
         $project: {
-          username: '$userauth.username',
+          username: 1,
+          iduser: 1,
           nomortiket: 1,
           pengirim: 1,
           penerima: 1,
@@ -1302,12 +1307,22 @@ export class UserticketsService {
       },
       {
         $match: {
-          active: true
+          active: true,
+
         }
       },
 
 
+
     ];
+
+    if (iduser && iduser !== undefined) {
+      pipeline.push({
+        $match: {
+          iduser: mongoose.Types.ObjectId(iduser)
+        }
+      },);
+    }
 
     if (search && search !== undefined) {
 

@@ -5,11 +5,12 @@ import { AccountbalancesService } from './accountbalances.service';
 import { ConfigModule } from '@nestjs/config';
 import { Accountbalances, AccountbalancesSchema } from './schemas/accountbalances.schema';
 import { UserbasicsModule } from '../userbasics/userbasics.module';
+import { PostsModule } from '../../content/posts/posts.module';
 
 @Module({
     imports: [
 
-        ConfigModule.forRoot(), UserbasicsModule,
+        ConfigModule.forRoot(), UserbasicsModule, PostsModule,
         MongooseModule.forFeature([{ name: Accountbalances.name, schema: AccountbalancesSchema }], 'SERVER_FULL')
     ],
     controllers: [AccountbalancesController],

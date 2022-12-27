@@ -625,6 +625,7 @@ export class UserticketsController {
     var enddate = null;
     var assignto = null;
     var descending = null;
+    var iduser = null;
 
     const messages = {
       "info": ["The process successful"],
@@ -640,6 +641,7 @@ export class UserticketsController {
     enddate = request_json["enddate"];
     assignto = request_json["assignto"];
     descending = request_json["descending"];
+    iduser = request_json["iduser"];
     if (request_json["page"] !== undefined) {
       page = request_json["page"];
     } else {
@@ -652,7 +654,7 @@ export class UserticketsController {
       throw new BadRequestException("Unabled to proceed");
     }
 
-    data = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, page, limit, descending);
+    data = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, page, limit, descending, iduser);
     // let datasearch = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, 0, 0, descending);
     //var totalsearch = datasearch.length;
     // var allrow = await this.userticketsService.totalcount();
@@ -666,10 +668,10 @@ export class UserticketsController {
     var totalallrow = null;
     var totalpage = null;
     total = data.length;
-    let datasearch = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, 0, 0, descending);
+    let datasearch = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, 0, 0, descending, iduser);
     totalsearch = datasearch.length;
 
-    let dataall = await this.userticketsService.filterdata(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0, 0, descending);
+    let dataall = await this.userticketsService.filterdata(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0, 0, descending, undefined);
     totalallrow = dataall.length;
 
     var tpage = null;
