@@ -83,6 +83,7 @@ export class AuthController {
   @Post('api/user/login')
   @HttpCode(HttpStatus.ACCEPTED)
   async login(@Body() LoginRequest_: LoginRequest) {
+
     var current_date = await this.utilsService.getDateTimeString();
 
     var _class_ActivityEvent = 'io.melody.hyppe.trans.domain.ActivityEvent';
@@ -116,13 +117,24 @@ export class AuthController {
       LoginRequest_.email,
     );
 
+    var lang = "id";
+    if (LoginRequest_.lang != undefined) {
+      lang = LoginRequest_.lang
+    }
+
     if ((await this.utilsService.ceckData(data_userbasics)) && (await this.utilsService.ceckData(data_jwtrefreshtoken))) {
       if (await this.utilsService.ceckData(data_userauths)) {
         _isEmailVerified = data_userauths.isEmailVerified;
       } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, Data user auths not found',
-        );
+        if (lang == "en") {
+          await this.errorHandler.generateNotAcceptableException(
+            'No users were found. Please check again.',
+          );
+        } else {
+          await this.errorHandler.generateNotAcceptableException(
+            'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
+          );
+        }
       }
 
       if (_isEmailVerified) {
@@ -401,14 +413,26 @@ export class AuthController {
         GlobalResponse_.version = await this.utilsService.getversion();
         return GlobalResponse_;
       } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, Data email not verified ',
-        );
+        if (lang == "en") {
+          await this.errorHandler.generateNotAcceptableException(
+            'Unable to continue, User`s email has not been verified',
+          );
+        } else {
+          await this.errorHandler.generateNotAcceptableException(
+            'Tidak dapat melanjutkan, Email pengguna belum diverifikasi',
+          );
+        }
       }
     } else {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed, Data user basics and jwt not found',
-      );
+      if (lang == "en") {
+        await this.errorHandler.generateNotAcceptableException(
+          'No users were found. Please check again.',
+        );
+      }else{
+        await this.errorHandler.generateNotAcceptableException(
+          'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
+        );
+      }
     }
   }
 

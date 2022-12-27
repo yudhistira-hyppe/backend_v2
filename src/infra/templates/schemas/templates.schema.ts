@@ -31,7 +31,9 @@ export class Templates {
  @Prop()
  category:String
  @Prop()
- action_buttons:String
+  action_buttons: String
+  @Prop()
+  subject_id: String
 }
 
 export const TemplatesSchema = SchemaFactory.createForClass(Templates);
