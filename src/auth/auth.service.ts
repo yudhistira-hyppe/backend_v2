@@ -1412,7 +1412,7 @@ export class AuthService {
                 }
 
                 try {
-                  await this.sendemailOTP(user_email, OTP.toString(), 'ENROL');
+                  await this.sendemailOTP(user_email, OTP.toString(), 'ENROL',"id");
                 } catch (error) {
                   await this.errorHandler.generateNotAcceptableException(
                     'Unabled to proceed Failed Send Email. Error:' +
@@ -1793,7 +1793,7 @@ export class AuthService {
           }
 
           try {
-            await this.sendemailOTP(user_email, OTP.toString(), 'ENROL');
+            await this.sendemailOTP(user_email, OTP.toString(), 'ENROL', "id");
           } catch (error) {
             await this.errorHandler.generateNotAcceptableException(
               'Unabled to proceed Failed Send Email. Error:' +
@@ -2999,6 +2999,13 @@ export class AuthService {
       user_email,
     );
 
+    var userLang = await this.utilsService.getUserlanguages(user_email);
+    var lang = "id";
+    if (await this.utilsService.ceckData(userLang)){
+      lang = userLang.toString();
+    }
+
+
     if (await this.utilsService.ceckData(datauserbasicsService)) {
       if (datauserbasicsService.userAuth != null) {
         //Ceck User ActivityEvent Parent
@@ -3380,7 +3387,7 @@ export class AuthService {
                   await this.sendemailOTP(
                     user_userAuth.email.toString(),
                     OTP.toString(),
-                    'RECOVER_PASS',
+                    'RECOVER_PASS', lang
                   );
 
                   return {
@@ -3488,7 +3495,7 @@ export class AuthService {
             await this.sendemailOTP(
               user_userAuth.email.toString(),
               OTP.toString(),
-              'RECOVER_PASS',
+              'RECOVER_PASS', lang
             );
 
             return {
@@ -3609,7 +3616,7 @@ export class AuthService {
             await this.sendemailOTP(
               user_userAuth.email.toString(),
               OTP.toString(),
-              'RECOVER_PASS',
+              'RECOVER_PASS', lang
             );
 
             return {
@@ -3634,17 +3641,33 @@ export class AuthService {
     }
   }
 
-  async sendemailOTP(email: string, OTP: string, type: string) {
+  async sendemailOTP(email: string, OTP: string, type: string, lang?: string) {
     //Send Email
     try {
       var Templates_ = new Templates();
       Templates_ = await this.utilsService.getTemplate(type, 'EMAIL');
 
+      var subject = "";
+      var body = "";
+      var dataLang = "id";
+
+      if (lang!=undefined){
+        dataLang = lang;
+      }
+
+      if (dataLang=="en"){
+        subject = Templates_.subject_id.toString();
+        body = Templates_.body_detail_id.replace('9021', OTP);
+      } else {
+        subject = Templates_.subject.toString();
+        body = Templates_.body_detail.replace('9021', OTP);
+      }
+
       //var to = email;
       var to = email;
       var from = '"no-reply" <' + Templates_.from.toString() + '>';
-      var subject = Templates_.subject.toString();
-      var html_body = Templates_.body_detail.replace('9021', OTP);
+      var subject = subject;
+      var html_body = body;
       var send = await this.utilsService.sendEmail(
         to,
         from,
@@ -4473,7 +4496,7 @@ export class AuthService {
           await this.sendemailOTP(
             datauserauthsService.email.toString(),
             OTP.toString(),
-            'ENROL',
+            'ENROL', "id"
           );
 
           return {
@@ -4491,7 +4514,7 @@ export class AuthService {
           await this.sendemailOTP(
             datauserauthsService.email.toString(),
             OTP.toString(),
-            'ENROL',
+            'ENROL', "id"
           );
 
           return {

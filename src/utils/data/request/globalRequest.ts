@@ -18,6 +18,8 @@ export class LoginRequest {
     referral: string;
     @IsString()
     imei: string;
+    @IsString()
+    lang: string;
 } 
 
 export class RefreshTokenRequest {
