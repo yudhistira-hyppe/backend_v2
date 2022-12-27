@@ -503,7 +503,7 @@ export class AdsUserCompareController {
                         //         );
                         //     }
                         // }
-
+                        
                         if (rewards) {
                             var currentDate = await this.utilsService.getDateTime();
                             //Update accountbalace
@@ -515,7 +515,7 @@ export class AdsUserCompareController {
                                 CreateAccountbalancesDto_.type = "rewards";
                                 CreateAccountbalancesDto_.timestamp = currentDate.toISOString();
                                 CreateAccountbalancesDto_.description = "rewards form ads view";
-                                CreateAccountbalancesDto_.idtrans = Object(data_userAdsService.adsID.toString());
+                                CreateAccountbalancesDto_.idtrans = new mongoose.Types.ObjectId(data_userAdsService.adsID.toString());
                                 await this.accountbalancesService.create(CreateAccountbalancesDto_);
                             } catch (e) {
                                 this.logger.log("VIEW ADS >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END, Unabled to proceed " + e);
@@ -802,7 +802,7 @@ export class AdsUserCompareController {
                         CreateAccountbalancesDto_.type = "rewards";
                         CreateAccountbalancesDto_.timestamp = currentDate.toISOString();
                         CreateAccountbalancesDto_.description = "rewards form ads click";
-                        CreateAccountbalancesDto_.idtrans = Object(data_userAdsService.adsID.toString());
+                        CreateAccountbalancesDto_.idtrans = new mongoose.Types.ObjectId(data_userAdsService.adsID.toString());
                         await this.accountbalancesService.create(CreateAccountbalancesDto_);
                     } catch (e) {
                         console.log('Unabled to proceed, ' + e);

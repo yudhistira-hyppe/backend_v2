@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 export class CreateAccountbalancesDto {
 
 
@@ -8,7 +10,7 @@ export class CreateAccountbalancesDto {
     type: String;
     timestamp: String;
     description: String;
-    idtrans: { oid: String; };
+    idtrans: mongoose.Types.ObjectId;
 
 
 }
