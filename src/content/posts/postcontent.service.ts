@@ -3637,7 +3637,7 @@ export class PostContentService {
 
     if (pd.statusCB == undefined || pd.statusCB == 'PENDING') {
       let cr = pd.contentModerationResponse;
-      if (cr == undefined) {
+      if (cr == undefined || cr == '') {
         return;
       }
 

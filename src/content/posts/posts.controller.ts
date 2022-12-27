@@ -371,11 +371,11 @@ export class PostsController {
   async getUserPostLandingPage(@Body() body, @Headers() headers): Promise<PostLandingResponseApps> {
     console.log(body);
     this.logger.log("getUserPostLandingPage >>> start: " + JSON.stringify(body));
-    if (body.visibility == 'PUBLIC') {
+    //if (body.visibility == 'PUBLIC') {
       return this.bootsService.getBoostV2(body, headers);
-    } else {
-      return this.postContentService.getUserPostLandingPage(body, headers);
-    }
+    //} else {
+    //  return this.postContentService.getUserPostLandingPage(body, headers);
+    //}
 
 
   }

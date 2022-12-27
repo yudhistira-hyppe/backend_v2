@@ -10770,6 +10770,8 @@ export class GetusercontentsService {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
       var dateend = currentdate.toISOString();
+
+      var dt = dateend.substring(0, 10);
     } catch (e) {
       dateend = "";
     }
@@ -10838,7 +10840,7 @@ export class GetusercontentsService {
 
 
     if (startdate !== undefined && enddate !== undefined) {
-      date = { "$gte": startdate, "$lte": dateend };
+      date = { "$gte": startdate, "$lte": dt };
 
     }
     else {
