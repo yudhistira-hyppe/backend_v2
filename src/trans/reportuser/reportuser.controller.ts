@@ -17,6 +17,7 @@ import { UserauthsService } from '../userauths/userauths.service';
 import { UserAdsService } from '../userads/userads.service';
 import { UserticketsService } from '../usertickets/usertickets.service';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
+import { MediaproofpictsService } from '../../content/mediaproofpicts/mediaproofpicts.service';
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 import { UtilsService } from '../../utils/utils.service';
 @Controller('api/reportuser')
@@ -35,6 +36,7 @@ export class ReportuserController {
         private readonly mediaprofilepictsService: MediaprofilepictsService,
         private readonly utilsService: UtilsService,
         private readonly userticketsService: UserticketsService,
+        private readonly mediaproofpictsService: MediaproofpictsService,
     ) { }
     @UseGuards(JwtAuthGuard)
     @Get('all')
@@ -2339,7 +2341,7 @@ export class ReportuserController {
 
         // Content
         var datacontentreport = null;
-
+        var datakyc = null;
         var reportContent = [];
         var appealContent = [];
         var moderationContent = [];
@@ -2355,6 +2357,7 @@ export class ReportuserController {
         var arrDataContentAppeal = [];
         var objmoderationContent = {}
         var arrDataContentModeration = [];
+        var arrkyc = [];
 
         //ads
         var dataadsreport = null;
@@ -2367,12 +2370,14 @@ export class ReportuserController {
         var sumreportAds = null;
         var sumappealAds = null;
         var summoderationAds = null;
+        var summkyc = null;
         var objreportAds = {}
         var arrDataAds = [];
         var objappealAds = {}
         var arrDataAdsAppeal = [];
         var objmoderationAds = {}
         var arrDataAdsModeration = [];
+        var lengkyc = null;
         var persen = null;
         try {
 
@@ -2973,8 +2978,81 @@ export class ReportuserController {
             ],
         };
 
+        try {
 
-        return { response_code: 202, content, ads, userticket, messages };
+            datakyc = await this.mediaproofpictsService.listkycsummary(startdate, enddate);
+            lengkyc = datakyc.length;
+
+        } catch (e) {
+            datakyc = null;
+            lengkyc = 0;
+
+        }
+
+        if (lengkyc > 0) {
+
+            for (let i = 0; i < lengkyc; i++) {
+                summkyc += datakyc[i].myCount;
+
+            }
+        } else {
+            summkyc = 0;
+        }
+
+        if (lengkyc > 0) {
+
+
+            for (let i = 0; i < lengkyc; i++) {
+                let count = datakyc[i].myCount;
+                let id = datakyc[i]._id;
+                persen = count * 100 / summkyc;
+
+                let objbaru = {}
+                if (id === "BARU") {
+                    objbaru = {
+                        "_id": "BARU",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "red"
+                    };
+                    arrkyc.push(objbaru);
+                }
+                let objkyc = {}
+                if (id === "DITOLAK") {
+                    objkyc = {
+                        "_id": "DITOLAK",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#7C7C7C"
+                    };
+                    arrkyc.push(objkyc);
+                }
+                let objtidakditangguhkan = {}
+                if (id === "DISETUJUI") {
+                    objtidakditangguhkan = {
+                        "_id": "DISETUJUI",
+                        "myCount": count,
+                        "persen": persen.toFixed(2),
+                        "warna": "#71A500D9"
+                    };
+                    arrkyc.push(objtidakditangguhkan);
+                }
+
+            }
+        } else {
+            arrkyc = [];
+        }
+        var kyc = null;
+
+        kyc = {
+            kyc: [{
+                totalReport: summkyc,
+                data: arrkyc
+            }
+            ],
+        };
+
+        return { response_code: 202, content, ads, userticket, kyc, messages };
 
 
 

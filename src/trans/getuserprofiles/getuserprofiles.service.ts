@@ -947,7 +947,8 @@ export class GetuserprofilesService {
     var pipeline = [];
 
 
-    pipeline.push({ $sort: { createdAt: -1 } },
+    pipeline.push(
+      { $sort: { createdAt: -1 } },
       {
         $addFields: {
           userAuth_id: '$userAuth.$id',

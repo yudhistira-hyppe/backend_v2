@@ -6544,7 +6544,7 @@ export class PostsService {
                     $ne: null
                   },
                   active: true,
-                  contentModeration: false
+                  // contentModeration: false
                 }
               },
               {
@@ -6553,7 +6553,7 @@ export class PostsService {
                     $ne: []
                   },
                   active: true,
-                  contentModeration: false
+                  // contentModeration: false
                 }
               },
 
@@ -6604,7 +6604,7 @@ export class PostsService {
                     $ne: null
                   },
                   active: true,
-                  contentModeration: false
+                  // contentModeration: false
                 }
               },
               {
@@ -6613,7 +6613,7 @@ export class PostsService {
                     $ne: []
                   },
                   active: true,
-                  contentModeration: false
+                  // contentModeration: false
                 }
               },
 
