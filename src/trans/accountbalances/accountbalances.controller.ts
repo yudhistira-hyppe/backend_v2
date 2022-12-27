@@ -150,6 +150,33 @@ export class AccountbalancesController {
         return { response_code: 202, data, messages };
     }
 
+    @Post('detailrewards')
+    @UseGuards(JwtAuthGuard)
+    async detailrewards(@Req() request: Request): Promise<any> {
+        var id = null;
+        var data = null;
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+
+
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["id"] !== undefined) {
+            id = request_json["id"];
+
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+        var idtr = mongoose.Types.ObjectId(id);
+
+        data = await this.accountbalancesService.detailrewards(idtr);
+
+        return { response_code: 202, data, messages };
+    }
+
 
     // @Post('history/transaction')
     // @UseGuards(JwtAuthGuard)

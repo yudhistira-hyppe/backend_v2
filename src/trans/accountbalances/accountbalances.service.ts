@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
 import { CreateAccountbalancesDto } from './dto/create-accountbalances.dto';
 import { Accountbalances, AccountbalancesDocument } from './schemas/accountbalances.schema';
+import { PostContentService } from '../../content/posts/postcontent.service';
 
 @Injectable()
 export class AccountbalancesService {
@@ -11,6 +12,7 @@ export class AccountbalancesService {
     constructor(
         @InjectModel(Accountbalances.name, 'SERVER_FULL')
         private readonly accountbalancesModel: Model<AccountbalancesDocument>,
+        private readonly postContentService: PostContentService,
     ) { }
     async findOne(iduser: Types.ObjectId): Promise<Accountbalances> {
         return this.accountbalancesModel.findOne({ $and: [{ "iduser": iduser }, { "type": "sell" }] }).sort({
@@ -663,36 +665,36 @@ export class AccountbalancesService {
     }
 
     async findreward(iduser: ObjectId, startdate: string, enddate: string, skip: number, limit: number) {
-        
-        var pipeline=[];
-        if(startdate!==undefined){
-            pipeline.push({$match:{timestamp:{"$gte":startdate}}});
-            
+
+        var pipeline = [];
+        if (startdate !== undefined) {
+            pipeline.push({ $match: { timestamp: { "$gte": startdate } } });
+
         }
-        if(enddate!==undefined){
+        if (enddate !== undefined) {
             pipeline.push({
-                $match:{
-                    timestamp:{"$lte":enddate}
+                $match: {
+                    timestamp: { "$lte": enddate }
                 }
             });
         }
-        pipeline.push({$match:{iduser:iduser}});
-        pipeline.push({$match:{type:"rewards"}});
-        if(skip>0){
+        pipeline.push({ $match: { iduser: iduser } });
+        pipeline.push({ $match: { type: "rewards" } });
+        if (skip > 0) {
             pipeline.push({
                 "$skip": skip
             });
         }
-        if(limit>0){
+        if (limit > 0) {
             pipeline.push({
                 "$limit": limit
             });
         }
-        pipeline.push({ $sort: { timestamp: -1 }});
+        pipeline.push({ $sort: { timestamp: -1 } });
         // console.log(pipeline);
         let query = await this.accountbalancesModel.aggregate(pipeline);
         return query;
-        
+
 
 
     }
@@ -728,6 +730,167 @@ export class AccountbalancesService {
         }
 
 
+    }
+
+    async detailrewards(id: ObjectId) {
+        let query = await this.accountbalancesModel.aggregate([
+
+            {
+                $match: {
+                    _id: id
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "ads",
+                    "as": "adsdata",
+                    "let": {
+                        "localID": "$idtrans",
+
+                    },
+                    "pipeline": [
+                        {
+                            "$match": {
+                                "$expr": {
+                                    "$eq": [
+                                        "$_id",
+                                        "$$localID"
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            "$lookup": {
+                                "from": "adstypes",
+                                "as": "typesdata",
+                                "let": {
+                                    "localID": "$typeAdsID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$localID"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        }
+                    ],
+
+                }
+            },
+            {
+                $unwind: {
+                    path: "$adsdata",
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+
+            {
+                $project: {
+                    kredit: 1,
+                    type: '$adsdata.type',
+                    idApsara: '$adsdata.idApsara',
+                    duration: '$adsdata.duration',
+                    description: '$adsdata.description',
+                    timestamp: 1,
+                    datatype: { $arrayElemAt: ['$adsdata.typesdata', 0] },
+
+
+                }
+            },
+            {
+                $project: {
+                    kredit: 1,
+                    type: 1,
+                    idApsara: 1,
+                    duration: 1,
+                    description: 1,
+                    timestamp: 1,
+                    from: '$datatype.nameType',
+                    status: "Recieved Successfully"
+
+                }
+            }
+
+
+        ]);
+
+
+        var dataquery = null;
+        dataquery = query;
+        var datanew = null;
+        var data = [];
+        let pict: String[] = [];
+        var objk = {};
+        var type = null;
+        var idapsara = null;
+        var apsara = null;
+        var idapsaradefine = null;
+        var apsaradefine = null;
+        for (var i = 0; i < dataquery.length; i++) {
+            try {
+                idapsara = dataquery[i].idApsara;
+            } catch (e) {
+                idapsara = "";
+            }
+
+
+            if (idapsara === undefined || idapsara === "" || idapsara === null || idapsara === "other") {
+                idapsaradefine = "";
+            } else {
+                idapsaradefine = idapsara;
+            }
+            var type = dataquery[i].type;
+            pict = [idapsara];
+
+            if (idapsara === "") {
+
+            } else {
+                if (type === "image") {
+
+                    try {
+                        datanew = await this.postContentService.getImageApsara(pict);
+                    } catch (e) {
+                        datanew = [];
+                    }
+                }
+                else if (type === "video") {
+                    try {
+                        datanew = await this.postContentService.getVideoApsara(pict);
+                    } catch (e) {
+                        datanew = [];
+                    }
+
+                }
+
+                objk = {
+                    "_id": dataquery[i]._id,
+                    "kredit": dataquery[i].kredit,
+                    "timestamp": dataquery[i].timestamp,
+                    "type": dataquery[i].type,
+                    "duration": dataquery[i].duration,
+                    "description": dataquery[i].description,
+                    "from": dataquery[i].from,
+                    "status": dataquery[i].status,
+                    "apsaraId": idapsaradefine,
+                    "media": datanew
+
+                };
+
+                data.push(objk);
+            }
+        }
+
+
+        return data;
     }
 
 }
