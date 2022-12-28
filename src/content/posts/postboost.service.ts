@@ -5916,6 +5916,7 @@ export class PostBoostService {
                                     "mediaUri": 1,
                                     "mediaThumbEndpoint": 1,
                                     "mediaThumbUri": 1,
+                                    "mediaType": 1,
                                     
                                 }
                             }
@@ -6312,6 +6313,7 @@ export class PostBoostService {
                                     "mediaUri": 1,
                                     "mediaThumbEndpoint": 1,
                                     "mediaThumbUri": 1,
+                                    "mediaType": 1,
                                     
                                 }
                             }
@@ -6708,7 +6710,7 @@ export class PostBoostService {
                                     "mediaUri": 1,
                                     "mediaThumbEndpoint": 1,
                                     "mediaThumbUri": 1,
-                                    
+                                    "mediaType": 1,
                                 }
                             }
                         ],
@@ -7112,7 +7114,7 @@ export class PostBoostService {
                                     "mediaUri": 1,
                                     "mediaThumbEndpoint": 1,
                                     "mediaThumbUri": 1,
-                                    
+                                    "mediaType": 1,
                                 }
                             }
                         ],
