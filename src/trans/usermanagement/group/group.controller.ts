@@ -220,7 +220,14 @@ export class GroupController {
     async delete(
         @Query('id') id: string,) {
 
-        //var data_ceck = await this.groupService.findOne(id);
+        var data_ceck = await this.groupService.findOne(id);
+        if (await this.utilsService.ceckData(data_ceck)){
+            if (data_ceck.userbasics.length > 0) {
+                await this.errorHandler.generateNotAcceptableException(
+                    'Unabled to proceed delete group user, group is use',
+                );
+            }
+        }
         await this.groupService.delete(id);
         return {
             "response_code": 202,
@@ -355,7 +362,14 @@ export class GroupController {
             );
         }
 
-        await this.userbasicsService.updateStatus(req.body.email, req.body.status);
+        if (req.body.status){
+            var user_auth_role = await this.userauthsService.findRoleEmail(req.body.email, "ROLE_ADMIN");
+            if (!(await this.utilsService.ceckData(user_auth_role))) {
+                await this.userauthsService.addUserRole(req.body.email, "ROLE_ADMIN");
+            }
+        }else{
+            await this.userauthsService.deleteUserRole(req.body.email, 'ROLE_ADMIN')
+        }
         return {
             "response_code": 202,
             "messages": {
