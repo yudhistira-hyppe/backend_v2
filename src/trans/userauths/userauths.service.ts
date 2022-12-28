@@ -49,6 +49,11 @@ export class UserauthsService {
   async findRoleEmail(email: String, roles_: String): Promise<Userauth[]> {
     return this.userauthModel.find({ email: email, roles: { $in: [roles_] } }).exec();
   }
+
+  async removeRoleEmail(email: String, roles_: String) {
+    return await this.userauthModel.updateOne({ email: email }, { $pull: { roles: roles_ } }).exec();
+  }
+        
   // async findOne(username: String): Promise<Userauth> {
   //   return this.userauthModel.findOne({ username: username }).exec();
   // }
@@ -136,11 +141,11 @@ export class UserauthsService {
   }
 
   async deleteUserRole(email: String, Role: String) {
-    return await this.userauthModel.updateOne({ email: email }, { $pull: { roles: Role.toString() } }).exec();
+    return await this.userauthModel.updateOne({ email: email }, { $pull: { roles: Role } }).exec();
   }
 
   async addUserRole(email: String, Role: String) {
-    return await this.userauthModel.updateOne({ email: email }, { $push: { roles: Role.toString() } }).exec();
+    return await this.userauthModel.updateOne({ email: email }, { $push: { roles: Role } }).exec();
   }
 
   async findUpdateEmailStatusRole(email: String, upgradeRole: String) {
