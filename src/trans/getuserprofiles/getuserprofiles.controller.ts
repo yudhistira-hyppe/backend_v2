@@ -96,14 +96,17 @@ export class GetuserprofilesController {
     var request_json = JSON.parse(JSON.stringify(request.body));
     var username = null;
     var gender = null;
-    var age = null;
-    var roles = null;
+    var startage = null;
+    var endage = null;
+    var jenis = null;
     var data = null;
-    var skip = null;
-    var interest = null;
+    var page = null;
+    var lokasi = null;
     var countrow = null;
     var startdate = null;
     var enddate = null;
+    var startlogin = null;
+    var endlogin = null;
     var limit = null;
     var datafilter = null;
     var totalfilter = null;
@@ -111,18 +114,21 @@ export class GetuserprofilesController {
       "info": ["The process successful"],
     };
 
-    age = request_json["age"];
+    startage = request_json["startage"];
+    endage = request_json["endage"];
     username = request_json["username"];
     gender = request_json["gender"];
-    roles = request_json["roles"];
-    interest = request_json["interest"];
+    jenis = request_json["jenis"];
+    lokasi = request_json["lokasi"];
     startdate = request_json["startdate"];
     enddate = request_json["enddate"];
+    startlogin = request_json["startlogin"];
+    endlogin = request_json["endlogin"];
     var allrow = null;
     var totalallrow = null;
     var totalrow = null;
-    if (request_json["skip"] !== undefined) {
-      skip = request_json["skip"];
+    if (request_json["page"] !== undefined) {
+      page = request_json["page"];
     } else {
       throw new BadRequestException("Unabled to proceed");
     }
@@ -133,7 +139,7 @@ export class GetuserprofilesController {
     }
 
     try {
-      data = await this.getuserprofilesService.findataNew(username, gender, roles, age, startdate, enddate, interest, skip, limit);
+      data = await this.getuserprofilesService.filteruser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin, page, limit);
       totalrow = data.length;
     } catch (e) {
       data = [];
@@ -142,8 +148,8 @@ export class GetuserprofilesController {
 
 
     try {
-      datafilter = await this.getuserprofilesService.findataNew(username, gender, roles, age, startdate, enddate, interest, 0, 0);
-      totalfilter = datafilter.length;
+      datafilter = await this.getuserprofilesService.countdbuser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin, 0, 0);
+      totalfilter = datafilter[0].totalpost;
     } catch (e) {
       totalfilter = 0;
     }
@@ -155,7 +161,20 @@ export class GetuserprofilesController {
       totalallrow = 0;
     }
 
-    return { response_code: 202, data, skip, limit, totalrow, totalfilter, totalallrow, messages };
+    var tpage = null;
+    var tpage2 = null;
+    var totalpage = null;
+
+    tpage2 = (totalfilter / limit).toFixed(0);
+    tpage = (totalfilter % limit);
+    if (tpage > 0 && tpage < 5) {
+      totalpage = parseInt(tpage2) + 1;
+
+    } else {
+      totalpage = parseInt(tpage2);
+    }
+
+    return { response_code: 202, data, page, limit, totalrow, totalallrow, totalfilter, totalpage, messages };
 
   }
 
