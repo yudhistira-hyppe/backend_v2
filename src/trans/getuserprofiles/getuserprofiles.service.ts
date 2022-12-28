@@ -482,8 +482,10 @@ export class GetuserprofilesService {
         "$match": {
           $and: [
             groupId_match,
-            { "userAuth_data.username": { $regex: search } },
-            { "userAuth_data.email": { $regex: searchemail } }
+            {
+              "userAuth_data.username": {
+                $regex: search, $options: 'i' } },
+            { "userAuth_data.email": { $regex: searchemail, $options: 'i' } }
           ]
         }
       },
@@ -650,7 +652,7 @@ export class GetuserprofilesService {
       },
       {
         "$match": {
-          $and: [{ "userAuth_data.username": { $regex: search } }, { "userAuth_data.email": { $regex: searchemail } }, { "userAuth_data.email": /@hyppe.id/i }]
+          $and: [{ "userAuth_data.username": { $regex: search, $options: 'i' } }, { "userAuth_data.email": { $regex: searchemail, $options: 'i' } }, { "userAuth_data.email": /@hyppe.id/i }]
         }
       },
       {
