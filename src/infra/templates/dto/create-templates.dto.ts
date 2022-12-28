@@ -13,4 +13,5 @@ export class CreateTemplatesDto {
     readonly category:String;
     readonly action_buttons:String;
     body_detail_id: String
+    subject_id: String
   }

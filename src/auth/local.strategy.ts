@@ -23,6 +23,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     var deviceId = null;
     var longitude = null;
     var latitude = null;
+    var lang = "id";
 
     if (request_json['deviceId'] != undefined) {
       deviceId = request_json.deviceId;
@@ -40,21 +41,45 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
         latitude = request_json.location.latitude;
       }
     }
+
+    if (request_json['lang'] != undefined) {
+      lang = request_json['lang'] 
+    }
     
     const user = await this.authService.validateUser(email, password);
     
     if (user == 'INVALIDCREDENTIALSLID') {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed, Invalid credentials',
-      );
+      if (lang == "en") {
+        await this.errorHandler.generateNotAcceptableException(
+          'Sorry, your password is incorrect. Please double-check your password.',
+        );
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Maaf, kata sandi kamu salah. Silahkan Periksa kembali kata sandi kamu.',
+        );
+      }
     }
     if (user == 'NOTFOUND') {
-      await this.errorHandler.generateNotAcceptableException('Unabled to proceed, User not found');
+      if (lang == "en") {
+        await this.errorHandler.generateNotAcceptableException(
+          'No users were found. Please check again.',
+        );
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
+        );
+      }
     }
     if (user == 'UNABLEDTOPROCEED') {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
-      );
+      if (lang == "en") {
+        await this.errorHandler.generateNotAcceptableException(
+          'Unable to proceed',
+        );
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Tidak dapat melanjutkan',
+        );
+      }
     }
     return user;
   }
