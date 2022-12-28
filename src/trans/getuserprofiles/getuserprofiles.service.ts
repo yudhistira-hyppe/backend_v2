@@ -484,7 +484,9 @@ export class GetuserprofilesService {
             groupId_match,
             {
               "userAuth_data.username": {
-                $regex: search, $options: 'i' } },
+                $regex: search, $options: 'i'
+              }
+            },
             { "userAuth_data.email": { $regex: searchemail, $options: 'i' } }
           ]
         }
@@ -1952,7 +1954,7 @@ export class GetuserprofilesService {
     return query;
   }
 
-  async countdbuser(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number) {
+  async countdbuser(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string) {
 
     var arrlokasi = [];
     var idlokasi = null;
@@ -2316,12 +2318,7 @@ export class GetuserprofilesService {
       }
     },);
 
-    if (page > 0) {
-      pipeline.push({ $skip: (page * limit) });
-    }
-    if (limit > 0) {
-      pipeline.push({ $limit: limit });
-    }
+
     let query = await this.getuserprofilesModel.aggregate(pipeline);
 
     return query;
