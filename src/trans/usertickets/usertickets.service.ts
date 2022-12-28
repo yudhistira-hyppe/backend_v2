@@ -1040,7 +1040,9 @@ export class UserticketsService {
       order = 1;
     }
     var pipeline = [];
+
     pipeline = [
+      { $sort: { datetime: order }, },
       {
         $lookup: {
           from: "userbasics",
@@ -1455,7 +1457,7 @@ export class UserticketsService {
       );
     }
 
-    pipeline.push({ $sort: { datetime: order }, });
+
     if (skip > 0) {
       pipeline.push({ $skip: (skip * limit) });
     }
