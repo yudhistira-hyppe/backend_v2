@@ -66,7 +66,6 @@ export class DivisionService {
             {
                 $unwind: {
                     path: "$group",
-                    preserveNullAndEmptyArrays: true
                 }
             },
         ]);
