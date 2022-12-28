@@ -1510,7 +1510,423 @@ export class GetuserprofilesService {
 
   }
 
+  async filteruser(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number) {
 
+    var arrlokasi = [];
+    var idlokasi = null;
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+    var lenglokasi = null;
+
+    try {
+      lenglokasi = lokasi.length;
+    } catch (e) {
+      lenglokasi = 0;
+    }
+    if (lenglokasi > 0) {
+
+      for (let i = 0; i < lenglokasi; i++) {
+        let idkat = lokasi[i];
+        idlokasi = mongoose.Types.ObjectId(idkat);
+        arrlokasi.push(idlokasi);
+      }
+    }
+
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+
+    try {
+      var currentdatelogin = new Date(new Date(endlogin).setDate(new Date(endlogin).getDate() + 1));
+
+      var dateendlogin = currentdatelogin.toISOString();
+    } catch (e) {
+      dateendlogin = "";
+    }
+    var pipeline = [];
+    pipeline.push(
+      {
+        $addFields: {
+          userAuth_id: '$userAuth.$id',
+          countries_id: '$countries.$id',
+          cities_id: '$cities.$id',
+          areas_id: '$states.$id',
+          profilePict_id: '$profilePict.$id',
+          age: {
+            $cond: {
+              if: {
+                $and: ['$dob', {
+                  $ne: ["$dob", ""]
+                }]
+              },
+              then: {
+                $toInt: {
+                  $divide: [{
+                    $subtract: [new Date(), {
+                      $toDate: "$dob"
+                    }]
+                  }, (365 * 24 * 60 * 60 * 1000)]
+                }
+              },
+              else: 0
+            }
+          },
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts',
+          localField: 'profilePict_id',
+          foreignField: '_id',
+          as: 'profilePict_data',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'countries',
+          localField: 'countries_id',
+          foreignField: '_id',
+          as: 'countries_data',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'cities',
+          localField: 'cities_id',
+          foreignField: '_id',
+          as: 'cities_data',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'areas',
+          localField: 'areas_id',
+          foreignField: '_id',
+          as: 'areas_data',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: "activityevents",
+          as: "activity_data",
+          let: {
+            local_id: '$email'
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    {
+                      $eq: ['$payload.email', {
+                        $ifNull: ['$$local_id', []]
+                      }]
+                    },
+
+
+                  ]
+                }
+              }
+            },
+            {
+              $project: {
+                createdAt: 1,
+                event: 1
+
+              }
+            },
+            {
+              $match: { event: "AWAKE" }
+            },
+            {
+              $sort: { createdAt: -1 }
+            }
+
+
+          ],
+
+        }
+      },
+      {
+        $project: {
+
+          createdAt: 1,
+          auth: {
+            $arrayElemAt: ['$userAuth_data', 0]
+          },
+          citi: {
+            $arrayElemAt: ['$cities_data', 0]
+          },
+          countri: {
+            $arrayElemAt: ['$countries_data', 0]
+          },
+          areas: {
+            $arrayElemAt: ['$areas_data', 0]
+          },
+          profilpict: {
+            $arrayElemAt: ['$profilePict_data', 0]
+          },
+          activity: {
+            $arrayElemAt: ['$activity_data', 0]
+          },
+          fullName: 1,
+          age: 1,
+          email: 1,
+          gender: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: ['$gender', 'FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', ' FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Perempuan']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Wanita']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', ' MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Laki-laki']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Pria']
+                  },
+                  then: 'MALE',
+
+                },
+
+              ],
+              default: "OTHER",
+
+            },
+
+          },
+          roles: '$auth.roles',
+          isIdVerified: 1,
+          dob: 1,
+          event: 1,
+          isComplete: 1,
+          status: '$status',
+
+        }
+      },
+      {
+        $addFields: {
+
+          concat: '/profilepict',
+          pict: {
+            $replaceOne: {
+              input: "$profilpict.mediaUri",
+              find: "_0001.jpeg",
+              replacement: ""
+            }
+          },
+
+        },
+
+      },
+      {
+        $project: {
+          jenis: {
+
+            $cond: {
+              if: {
+
+                $eq: ["$isIdVerified", true]
+              },
+              then: "PREMIUM",
+              else: "BASIC"
+            },
+
+          },
+          activity: 1,
+          age: 1,
+          lastlogin: '$activity.createdAt',
+          createdAt: '$createdAt',
+          username: '$auth.username',
+          fullName: '$fullName',
+          countries: '$countri.country',
+          area: '$areas.stateName',
+          areaId: '$areas._id',
+          cities: '$citi.cityName',
+          dob: 1,
+          email: 1,
+          gender: 1,
+          roles: '$auth.roles',
+          event: 1,
+          isComplete: 1,
+          status: 1,
+          avatar: {
+            mediaBasePath: '$profilpict.mediaBasePath',
+            mediaUri: '$profilpict.mediaUri',
+            mediaType: '$profilpict.mediaType',
+            mediaEndpoint: {
+              $concat: ["$concat", "/", "$pict"]
+            },
+
+          },
+
+        },
+
+      },
+      {
+        $sort: {
+          lastlogin: - 1
+        }
+      },
+    );
+
+    if (username && username !== undefined) {
+
+      pipeline.push({
+        $match: {
+          username: {
+            $regex: username,
+            $options: 'i'
+          },
+
+        }
+      },);
+
+    }
+
+    if (regender && regender !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              gender: {
+                $in: regender
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (startage && startage !== undefined) {
+      pipeline.push({ $match: { age: { "$gt": startage } } });
+    }
+    if (endage && endage !== undefined) {
+      pipeline.push({ $match: { age: { "$lt": endage } } });
+    }
+
+    if (startdate && startdate !== undefined) {
+      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+    }
+    if (enddate && enddate !== undefined) {
+      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+    }
+
+    if (jenis && jenis !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              jenis: {
+                $in: jenis
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (lokasi && lokasi !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              areaId: {
+                $in: arrlokasi
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (startlogin && startlogin !== undefined) {
+      pipeline.push({ $match: { lastlogin: { "$gte": startlogin } } });
+    }
+    if (endlogin && endlogin !== undefined) {
+      pipeline.push({ $match: { lastlogin: { "$lte": dateendlogin } } });
+    }
+
+    if (page > 0) {
+      pipeline.push({ $skip: (page * limit) });
+    }
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
+    let query = await this.getuserprofilesModel.aggregate(pipeline);
+
+    return query;
+
+  }
   async totalcount() {
     const query = await this.getuserprofilesModel.aggregate([
       {
@@ -1526,6 +1942,382 @@ export class GetuserprofilesService {
         }
       }]);
     return query;
+  }
+
+  async countdbuser(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number) {
+
+    var arrlokasi = [];
+    var idlokasi = null;
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+    var lenglokasi = null;
+
+    try {
+      lenglokasi = lokasi.length;
+    } catch (e) {
+      lenglokasi = 0;
+    }
+    if (lenglokasi > 0) {
+
+      for (let i = 0; i < lenglokasi; i++) {
+        let idkat = lokasi[i];
+        idlokasi = mongoose.Types.ObjectId(idkat);
+        arrlokasi.push(idlokasi);
+      }
+    }
+
+    try {
+      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+      var dateend = currentdate.toISOString();
+    } catch (e) {
+      dateend = "";
+    }
+
+    try {
+      var currentdatelogin = new Date(new Date(endlogin).setDate(new Date(endlogin).getDate() + 1));
+
+      var dateendlogin = currentdatelogin.toISOString();
+    } catch (e) {
+      dateendlogin = "";
+    }
+    var pipeline = [];
+    pipeline.push(
+
+      {
+        $addFields: {
+          userAuth_id: '$userAuth.$id',
+          countries_id: '$countries.$id',
+          cities_id: '$cities.$id',
+          areas_id: '$states.$id',
+          profilePict_id: '$profilePict.$id',
+          age: {
+            $cond: {
+              if: {
+                $and: ['$dob', {
+                  $ne: ["$dob", ""]
+                }]
+              },
+              then: {
+                $toInt: {
+                  $divide: [{
+                    $subtract: [new Date(), {
+                      $toDate: "$dob"
+                    }]
+                  }, (365 * 24 * 60 * 60 * 1000)]
+                }
+              },
+              else: 0
+            }
+          },
+        },
+
+      },
+
+      {
+        $lookup: {
+          from: 'areas',
+          localField: 'areas_id',
+          foreignField: '_id',
+          as: 'areas_data',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'userAuth_id',
+          foreignField: '_id',
+          as: 'userAuth_data',
+
+        },
+
+      },
+      {
+        $lookup: {
+          from: "activityevents",
+          as: "activity_data",
+          let: {
+            local_id: '$email'
+          },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    {
+                      $eq: ['$payload.email', {
+                        $ifNull: ['$$local_id', []]
+                      }]
+                    },
+
+
+                  ]
+                }
+              }
+            },
+            {
+              $project: {
+                createdAt: 1,
+                event: 1
+
+              }
+            },
+            {
+              $match: { event: "AWAKE" }
+            },
+            {
+              $sort: { createdAt: -1 }
+            }
+
+
+          ],
+
+        }
+      },
+      {
+        $project: {
+
+          createdAt: 1,
+          auth: {
+            $arrayElemAt: ['$userAuth_data', 0]
+          },
+
+          areas: {
+            $arrayElemAt: ['$areas_data', 0]
+          },
+
+          activity: {
+            $arrayElemAt: ['$activity_data', 0]
+          },
+          fullName: 1,
+          age: 1,
+          email: 1,
+          gender: {
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: ['$gender', 'FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', ' FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Perempuan']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Wanita']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', ' MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Laki-laki']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Pria']
+                  },
+                  then: 'MALE',
+
+                },
+
+              ],
+              default: "OTHER",
+
+            },
+
+          },
+
+          isIdVerified: 1,
+          dob: 1,
+          event: 1,
+          isComplete: 1,
+          status: '$status',
+
+        }
+      },
+      {
+        $addFields: {
+
+          concat: '/profilepict',
+          pict: {
+            $replaceOne: {
+              input: "$profilpict.mediaUri",
+              find: "_0001.jpeg",
+              replacement: ""
+            }
+          },
+
+        },
+
+      },
+      {
+        $project: {
+          jenis: {
+
+            $cond: {
+              if: {
+
+                $eq: ["$isIdVerified", true]
+              },
+              then: "PREMIUM",
+              else: "BASIC"
+            },
+
+          },
+          activity: 1,
+          lastlogin: '$activity.createdAt',
+          createdAt: '$createdAt',
+          username: '$auth.username',
+          area: '$areas.stateName',
+          areaId: '$areas._id',
+          dob: 1,
+          email: 1,
+          gender: 1,
+          roles: '$auth.roles',
+          event: 1,
+          isComplete: 1,
+          age: 1,
+          status: 1,
+
+
+        },
+
+      },
+    );
+
+    if (username && username !== undefined) {
+
+      pipeline.push({
+        $match: {
+          username: {
+            $regex: username,
+            $options: 'i'
+          },
+
+        }
+      },);
+
+    }
+
+    if (regender && regender !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              gender: {
+                $in: regender
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (startage && startage !== undefined) {
+      pipeline.push({ $match: { age: { "$gt": startage } } });
+    }
+    if (endage && endage !== undefined) {
+      pipeline.push({ $match: { age: { "$lt": endage } } });
+    }
+
+    if (startdate && startdate !== undefined) {
+      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+    }
+    if (enddate && enddate !== undefined) {
+      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+    }
+
+    if (jenis && jenis !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              jenis: {
+                $in: jenis
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (lokasi && lokasi !== undefined) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              areaId: {
+                $in: arrlokasi
+              }
+            },
+
+          ]
+        }
+      },);
+    }
+
+    if (startlogin && startlogin !== undefined) {
+      pipeline.push({ $match: { lastlogin: { "$gte": startlogin } } });
+    }
+    if (endlogin && endlogin !== undefined) {
+      pipeline.push({ $match: { lastlogin: { "$lte": dateendlogin } } });
+    }
+
+    pipeline.push({
+      $group: {
+        _id: null,
+        totalpost: {
+          $sum: 1
+        }
+      }
+    },);
+
+    if (page > 0) {
+      pipeline.push({ $skip: (page * limit) });
+    }
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
+    let query = await this.getuserprofilesModel.aggregate(pipeline);
+
+    return query;
+
   }
 
   async findUserDetailCount(username: string) {
