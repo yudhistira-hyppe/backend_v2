@@ -1978,10 +1978,11 @@ export class GetusercontentsController {
         endmount = request_json["endmount"];
         descending = request_json["descending"];
         var query = null;
-
+        var datasearch = null;
+        var dataall = null;
         try {
-            query = await this.getusercontentsService.databasekonten(username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
-            data = query.data;
+            query = await this.getusercontentsService.databasenew(username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
+            data = query;
         } catch (e) {
             query = null;
             data = [];
@@ -1989,20 +1990,23 @@ export class GetusercontentsController {
 
 
         try {
-            total = query.data.length;
+            total = query.length;
         } catch (e) {
             total = 0;
         }
 
         try {
-            totalsearch = query.countSearch[0].totalpost;
+            datasearch = await this.getusercontentsService.databasenewcount(username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+            totalsearch = datasearch[0].totalpost;
         } catch (e) {
             totalsearch = 0;
         }
 
 
         try {
-            totalallrow = query.countAll[0].totalpost;
+
+            dataall = await this.getusercontentsService.findcountall();
+            totalallrow = dataall[0].totalpost;
 
         } catch (e) {
             totalallrow = 0;
