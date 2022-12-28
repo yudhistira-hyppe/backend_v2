@@ -21,11 +21,11 @@ export class GroupService {
     }
 
     async findAll(search: string, skip: number, limit: number): Promise<Group[]> {
-        return this.groupModel.find({ nameGroup: { $regex: search } }).skip(skip).limit(limit).exec();
+        return this.groupModel.find({ nameGroup: { $regex: search, $options: 'i' } }).skip(skip).limit(limit).exec();
     }
 
     async findAllCount(search: string): Promise<Group[]> {
-        return this.groupModel.find({ nameGroup: { $regex: search } }).exec();
+        return this.groupModel.find({ nameGroup: { $regex: search, $options: 'i' } }).exec();
     }
 
     async findAllnoSkip(): Promise<Group[]> {

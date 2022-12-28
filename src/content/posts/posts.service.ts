@@ -4120,7 +4120,7 @@ export class PostsService {
     return query;
   }
 
-  async findreport(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean, reasonAppeal: any[], username: string, jenis: string) {
+  async findreport(keys: string, postType: string, startdate: string, enddate: string, page: number, limit: number, startreport: number, endreport: number, status: any[], reason: any[], descending: boolean, reasonAppeal: any[], username: string, jenis: string, email: string) {
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
 
@@ -4819,6 +4819,9 @@ export class PostsService {
       },);
     }
 
+    if (email && email !== undefined) {
+      pipeline.push({ $match: { email: email } });
+    }
     if (keys && keys !== undefined) {
 
       pipeline.push({
