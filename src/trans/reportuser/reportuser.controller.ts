@@ -1645,7 +1645,7 @@ export class ReportuserController {
                 pict = [idapsara];
 
                 if (idapsara === "") {
-                    dataapsara = [];
+                    dataapsara = {};
                 }
                 else {
                     if (type === "pict") {
@@ -1653,14 +1653,14 @@ export class ReportuserController {
                         try {
                             dataapsara = await this.postContentService.getImageApsara(pict);
                         } catch (e) {
-                            dataapsara = [];
+                            dataapsara = {};
                         }
                     }
                     else if (type === "vid") {
                         try {
                             dataapsara = await this.postContentService.getVideoApsara(pict);
                         } catch (e) {
-                            dataapsara = [];
+                            dataapsara = {};
                         }
 
                     }
@@ -1668,14 +1668,14 @@ export class ReportuserController {
                         try {
                             dataapsara = await this.postContentService.getVideoApsara(pict);
                         } catch (e) {
-                            dataapsara = [];
+                            dataapsara = {};
                         }
                     }
                     else if (type === "diary") {
                         try {
                             dataapsara = await this.postContentService.getVideoApsara(pict);
                         } catch (e) {
-                            dataapsara = [];
+                            dataapsara = {};
                         }
                     }
                 }
@@ -1842,21 +1842,21 @@ export class ReportuserController {
                 pict = [idapsara];
 
                 if (idapsara === "") {
-                    data = [];
+                    dataapsara = {};
                 } else {
                     if (type === "image") {
 
                         try {
                             dataapsara = await this.postContentService.getImageApsara(pict);
                         } catch (e) {
-                            dataapsara = [];
+                            dataapsara = {};
                         }
                     }
                     else if (type === "video") {
                         try {
                             dataapsara = await this.postContentService.getVideoApsara(pict);
                         } catch (e) {
-                            dataapsara = [];
+                            dataapsara = {};
                         }
 
                     }
