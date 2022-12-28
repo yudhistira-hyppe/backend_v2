@@ -148,7 +148,7 @@ export class GetuserprofilesController {
 
 
     try {
-      datafilter = await this.getuserprofilesService.countdbuser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin, 0, 0);
+      datafilter = await this.getuserprofilesService.countdbuser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin);
       totalfilter = datafilter[0].totalpost;
     } catch (e) {
       totalfilter = 0;
