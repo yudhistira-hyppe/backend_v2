@@ -2999,10 +2999,9 @@ export class AuthService {
       user_email,
     );
 
-    var userLang = await this.utilsService.getUserlanguages(user_email);
     var lang = "id";
-    if (await this.utilsService.ceckData(userLang)){
-      lang = userLang.toString();
+    if (req.body.lang != undefined){
+      lang = req.body.lang;
     }
 
 
@@ -3259,6 +3258,13 @@ export class AuthService {
                     otpNextAttemptAllow: new Long(0),
                   });
 
+                  var messages = "";
+                  if (lang == "en") {
+                    messages = "Verify OTP successful";
+                  } else {
+                    messages = "Verifikasi OTP berhasil";
+                  }
+
                   return {
                     response_code: 202,
                     messages: {
@@ -3278,9 +3284,15 @@ export class AuthService {
                         otpNextAttemptAllow: OTP_expires,
                       });
                     }
-                    await this.errorHandler.generateNotAcceptableException(
-                      'Unexpected problem, please check your email and re-verify the OTP',
-                    );
+                    if (lang == "en") {
+                      await this.errorHandler.generateNotAcceptableException(
+                        'The OTP code you entered is incorrect, please check again.',
+                      );
+                    } else {
+                      await this.errorHandler.generateNotAcceptableException(
+                        'Kode OTP yang kamu masukan salah, silahkan cek kembali.',
+                      );
+                    }
                   } else {
                     await this.errorHandler.generateNotAcceptableException(
                       'Unabled to proceed',
@@ -3390,24 +3402,44 @@ export class AuthService {
                     'RECOVER_PASS', lang
                   );
 
+                  var messages = "";
+                  if (lang == "en") {
+                    messages = "Recovery password request successful";
+                  } else {
+                    messages = "Permintaan kata sandi pemulihan berhasil";
+                  }
+
                   return {
                     response_code: 202,
                     messages: {
-                      info: ['Recovery password request successful'],
+                      info: [messages],
                     },
                   };
                 } else {
-                  await this.errorHandler.generateNotAcceptableException(
-                    'OTP max attempt exceeded, please try after ' +
-                    process.env.OTP_NEXT_ALLOW_MINUTE +
-                    ' minute',
-                  );
+                  if (lang == "en") {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'OTP max attempt exceeded, please try after ' +
+                      process.env.OTP_NEXT_ALLOW_MINUTE +
+                      ' minute',
+                    );
+                  } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Upaya maksimal OTP terlampaui, silakan coba setelah '+process.env.OTP_NEXT_ALLOW_MINUTE +
+                    ' menit',
+                    );
+                  }
                 }
               }
             } else {
-              await this.errorHandler.generateNotAcceptableException(
-                'User not found',
-              );
+              if (lang == "en") {
+                await this.errorHandler.generateNotAcceptableException(
+                  'No users were found. Please check again.',
+                );
+              } else {
+                await this.errorHandler.generateNotAcceptableException(
+                  'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
+                );
+              }
             }
           } else {
 
@@ -3498,10 +3530,17 @@ export class AuthService {
               'RECOVER_PASS', lang
             );
 
+            var messages = "";
+            if (lang == "en") {
+              messages = "Recovery password request successful";
+            } else {
+              messages = "Permintaan kata sandi pemulihan berhasil";
+            }
+
             return {
               response_code: 202,
               messages: {
-                info: ['Recovery password request successful'],
+                info: [messages],
               },
             };
           }
@@ -3617,12 +3656,19 @@ export class AuthService {
               user_userAuth.email.toString(),
               OTP.toString(),
               'RECOVER_PASS', lang
-            );
+            ); 
+            
+            var messages = "";
+            if (lang == "en") {
+              messages = "Recovery password request successful";
+            } else {
+              messages = "Permintaan kata sandi pemulihan berhasil";
+            }
 
             return {
               response_code: 202,
               messages: {
-                info: ['Recovery password request successful'],
+                info: [messages],
               },
             };
           } catch (error) {
@@ -3632,12 +3678,26 @@ export class AuthService {
           }
         }
       } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'User not found',
-        );
+        if (lang == "en") {
+          await this.errorHandler.generateNotAcceptableException(
+            'No users were found. Please check again.',
+          );
+        } else {
+          await this.errorHandler.generateNotAcceptableException(
+            'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
+          );
+        }
       }
     } else {
-      await this.errorHandler.generateNotAcceptableException('User not found');
+      if (lang == "en") {
+        await this.errorHandler.generateNotAcceptableException(
+          'No users were found. Please check again.',
+        );
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
+        );
+      }
     }
   }
 
@@ -3736,6 +3796,11 @@ export class AuthService {
     const datauserbasicsService = await this.userbasicsService.findOne(
       user_email,
     );
+
+    var lang = "id";
+    if (req.body.lang != undefined) {
+      lang = req.body.lang;
+    }
 
     if (await this.utilsService.ceckData(datauserbasicsService)) {
       //Ceck User ActivityEvent Parent
@@ -3960,20 +4025,41 @@ export class AuthService {
             );
           }
 
+          var messages = "";
+          if (lang == "en") {
+            messages = "Change password successful";
+          } else {
+            messages = "Ubah kata sandi berhasil";
+          }
+
           return {
             response_code: 202,
             messages: {
-              info: ['Change password successful'],
+              info: [messages],
             },
           };
         } else {
-          await this.errorHandler.generateNotAcceptableException(
-            'Password not Match',
-          );
+          if (lang == "en") {
+            await this.errorHandler.generateNotAcceptableException(
+              'Password not Match',
+            );
+          } else {
+            await this.errorHandler.generateNotAcceptableException(
+              'Kata sandi tidak Cocok',
+            );
+          }
         }
       }
     } else {
-      await this.errorHandler.generateNotAcceptableException('User not found');
+      if (lang == "en") {
+        await this.errorHandler.generateNotAcceptableException(
+          'No users were found. Please check again.',
+        );
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
+        );
+      }
     }
   }
 

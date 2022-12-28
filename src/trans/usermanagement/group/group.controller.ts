@@ -253,8 +253,9 @@ export class GroupController {
             var user_auth = await this.userauthsService.findOneemail(request.email);
             if (await this.utilsService.ceckData(user_auth)) {
                 if (await this.utilsService.ceckData(group)) {
-                    if (group[0]._id != request.groupId) {
-                        await this.groupService.deleteUserGroup(group[0]._id, new mongoose.Types.ObjectId(data_userbasic._id.toString()));
+                    console.log(group._id.toString());
+                    if (group._id.toString() != request.groupId) {
+                        await this.groupService.deleteUserGroup(group._id, new mongoose.Types.ObjectId(data_userbasic._id.toString()));
                         await this.groupService.addUserGroup(request.groupId, new mongoose.Types.ObjectId(data_userbasic._id.toString()));
 
                         var user_auth_role = await this.userauthsService.findRoleEmail(request.email, "ROLE_ADMIN");
