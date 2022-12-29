@@ -2971,4 +2971,13 @@ export class AuthController {
       },
     };
   }
+
+
+
+  @Get('api/user/userdetail/:id')
+  @HttpCode(HttpStatus.ACCEPTED)
+  @UseGuards(JwtAuthGuard)
+  async userdetail(@Param('id') id: string): Promise<any> {
+    return await this.userbasicsService.getUserDetails(id);
+  }
 }
