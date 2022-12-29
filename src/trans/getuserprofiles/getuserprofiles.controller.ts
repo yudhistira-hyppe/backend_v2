@@ -110,6 +110,7 @@ export class GetuserprofilesController {
     var limit = null;
     var datafilter = null;
     var totalfilter = null;
+    var descending = null;
     const messages = {
       "info": ["The process successful"],
     };
@@ -124,6 +125,7 @@ export class GetuserprofilesController {
     enddate = request_json["enddate"];
     startlogin = request_json["startlogin"];
     endlogin = request_json["endlogin"];
+    descending = request_json["descending"];
     var allrow = null;
     var totalallrow = null;
     var totalrow = null;
@@ -139,7 +141,7 @@ export class GetuserprofilesController {
     }
 
     try {
-      data = await this.getuserprofilesService.filteruser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin, page, limit);
+      data = await this.getuserprofilesService.filteruser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin, page, limit, descending);
       totalrow = data.length;
     } catch (e) {
       data = [];

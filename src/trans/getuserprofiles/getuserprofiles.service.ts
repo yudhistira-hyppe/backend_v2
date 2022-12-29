@@ -925,609 +925,22 @@ export class GetuserprofilesService {
 
   }
 
-  async findataNew(username: string, regender: any[], roles: any[], age: string, startdate: string, enddate: string, interest: any[], page: number, limit: number) {
-
-    var gender = null;
-
-    if (regender !== undefined) {
-      var genMale = regender.find(element => element === "MALE");
-      var genFeMale = regender.find(element => element === "FEMALE");
-
-      if (genFeMale !== "" && genMale === "") {
-        gender = ["FEMALE", " FEMALE", "Perempuan"];
-
-      }
-      else if (genMale !== "" && genFeMale === "") {
-        gender = ["MALE", " MALE", "Laki-laki",];
-      } else {
-        gender = ["MALE", " MALE", "Laki-laki", "FEMALE", " FEMALE", "Perempuan"];
-
-      }
-    } else {
-      gender = null;
-    }
-    try {
-      var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
-
-      var dateend = currentdate.toISOString();
-    } catch (e) {
-      dateend = "";
-    }
-
-    var pipeline = [];
 
 
-    pipeline.push(
-      { $sort: { createdAt: -1 } },
-      {
-        $addFields: {
-          userAuth_id: '$userAuth.$id',
-          countries_id: '$countries.$id',
-          cities_id: '$cities.$id',
-          areas_id: '$states.$id',
-          languages_id: '$languages.$id',
-          insight_id: '$insight.$id',
-          profilePict_id: '$profilePict.$id',
-          interest_id: '$userInterests.$id',
-          email: '$email',
-
-        },
-
-      },
-      {
-        $lookup: {
-          from: 'interests_repo',
-          localField: 'interest_id',
-          foreignField: '_id',
-          as: 'interes_data',
-
-        },
-
-      },
-      {
-        $lookup: {
-          from: 'mediaprofilepicts',
-          localField: 'profilePict_id',
-          foreignField: '_id',
-          as: 'profilePict_data',
-
-        },
-
-      },
-      {
-        $lookup: {
-          from: 'countries',
-          localField: 'countries_id',
-          foreignField: '_id',
-          as: 'countries_data',
-
-        },
-
-      },
-      {
-        $lookup: {
-          from: 'languages',
-          localField: 'languages_id',
-          foreignField: '_id',
-          as: 'languages_data',
-
-        },
-
-      },
-      {
-        $lookup: {
-          from: 'cities',
-          localField: 'cities_id',
-          foreignField: '_id',
-          as: 'cities_data',
-
-        },
-
-      },
-      {
-        $lookup: {
-          from: 'areas',
-          localField: 'areas_id',
-          foreignField: '_id',
-          as: 'areas_data',
-
-        },
-
-      },
-      {
-        $lookup: {
-          from: 'insights',
-          localField: 'insight_id',
-          foreignField: '_id',
-          as: 'insight_data',
-
-        },
-
-      },
-      {
-        $lookup: {
-          from: 'userauths',
-          localField: 'userAuth_id',
-          foreignField: '_id',
-          as: 'userAuth_data',
-
-        },
-
-      },
-      {
-        $project: {
-          activity: '$activity',
-          createdAt: '$createdAt',
-          auth: {
-            $arrayElemAt: ['$userAuth_data', 0]
-          },
-          citi: {
-            $arrayElemAt: ['$cities_data', 0]
-          },
-          countri: {
-            $arrayElemAt: ['$countries_data', 0]
-          },
-          language: {
-            $arrayElemAt: ['$languages_data', 0]
-          },
-          areas: {
-            $arrayElemAt: ['$areas_data', 0]
-          },
-          insights: {
-            $arrayElemAt: ['$insight_data', 0]
-          },
-          profilpict: {
-            $arrayElemAt: ['$profilePict_data', 0]
-          },
-          fullName: '$fullName',
-          email: '$email',
-          gender: '$gender',
-          bio: '$bio',
-          idProofNumber: '$idProofNumber',
-          mobileNumber: '$mobileNumber',
-          roles: '$auth.roles',
-          dob: '$dob',
-          event: '$event',
-          isComplete: '$isComplete',
-          status: '$status',
-          interest: '$interes_data',
-
-        }
-      },
-      {
-        $addFields: {
-
-          concat: '/profilepict',
-          pict: {
-            $replaceOne: {
-              input: "$profilpict.mediaUri",
-              find: "_0001.jpeg",
-              replacement: ""
-            }
-          },
-
-        },
-
-      },
-      {
-        $project: {
-
-          createdAt: '$createdAt',
-          interest: '$interest',
-          username: '$auth.username',
-          fullName: '$fullName',
-          countries: '$countri.country',
-          area: '$areas.stateName',
-          cities: '$citi.cityName',
-          dob: '$dob',
-          email: '$email',
-          gender: '$gender',
-          bio: '$bio',
-          idProofNumber: '$idProofNumber',
-          mobileNumber: '$mobileNumber',
-          roles: '$auth.roles',
-          event: '$event',
-          isComplete: '$isComplete',
-          status: '$status',
-          langIso: '$language.langIso',
-          insight: {
-            shares: '$insights.shares',
-            followers: '$insights.followers',
-            comments: '$insights.comments',
-            followings: '$insights.followings',
-            reactions: '$insights.reactions',
-            posts: '$insights.posts',
-            views: '$insights.views',
-            likes: '$insights.likes'
-          },
-          avatar: {
-            mediaBasePath: '$profilpict.mediaBasePath',
-            mediaUri: '$profilpict.mediaUri',
-            mediaType: '$profilpict.mediaType',
-            mediaEndpoint: {
-              $concat: ["$concat", "/", "$pict"]
-            },
-
-          },
-
-        },
-
-      },
-      {
-        $lookup: {
-          from: "activityevents",
-          localField: "email",
-          foreignField: "payload.email",
-          as: "activity_data"
-        }
-      },
-      {
-        "$unwind": {
-          "path": "$activity_data",
-          "preserveNullAndEmptyArrays": false
-        }
-      }, {
-      "$match": {
-        "activity_data.event": "AWAKE",
-      }
-    });
-
-    if (startdate && startdate !== undefined) {
-      pipeline.push({
-        "$match": {
-          "activity_data.payload.login_date": {
-            "$gte": startdate
-          }
-        }
-      });
-    }
-
-    if (enddate && enddate !== undefined) {
-      pipeline.push({
-        "$match": {
-          "activity_data.payload.login_date": {
-            "$lte": dateend
-          }
-        }
-      });
-    }
-
-    pipeline.push({
-      "$group": {
-        "_id": "$_id",
-        "name": {
-          "$first": "$fullName"
-        },
-        "tables": {
-          "$push": "$activity_data"
-        },
-        "createdAt": {
-          "$push": "$createdAt"
-        },
-        "fullName": {
-          "$push": "$fullName"
-        },
-        "interest": {
-          "$push": "$interest"
-        },
-        "username": {
-          "$push": "$username"
-        },
-        "avatar": {
-          "$push": "$avatar"
-        },
-        "insight": {
-          "$push": "$insight"
-        },
-        "countries": {
-          "$push": "$countries"
-        },
-        "area": {
-          "$push": "$area"
-        },
-        "cities": {
-          "$push": "$cities"
-        },
-        "dob": {
-          "$push": "$dob"
-        },
-        "age": {
-          "$push": "$age"
-        },
-        "email": {
-          "$push": "$email"
-        },
-        "gender": {
-          "$push": "$gender"
-        },
-        "bio": {
-          "$push": "$bio"
-        },
-        "idProofNumber": {
-          "$push": "$idProofNumber"
-        },
-        "mobileNumber": {
-          "$push": "$mobileNumber"
-        },
-        "roles": {
-          "$push": "$roles"
-        },
-        "event": {
-          "$push": "$event"
-        },
-        "isComplete": {
-          "$push": "$isComplete"
-        },
-        "status": {
-          "$push": "$status"
-        },
-        "langIso": {
-          "$push": "$langIso"
-        },
-
-      }
-    },
-      {
-        $project: {
-          createdAt: {
-            $arrayElemAt: ['$createdAt', 0]
-          },
-          activity: {
-            $arrayElemAt: ['$tables', 0]
-          },
-          fullName: {
-            $arrayElemAt: ['$fullName', 0]
-          },
-          interest: {
-            $arrayElemAt: ['$interest', 0]
-          },
-          username: {
-            $arrayElemAt: ['$username', 0]
-          },
-          avatar: {
-            $arrayElemAt: ['$avatar', 0]
-          },
-          insight: {
-            $arrayElemAt: ['$insight', 0]
-          },
-          countries: {
-            $arrayElemAt: ['$countries', 0]
-          },
-          area: {
-            $arrayElemAt: ['$area', 0]
-          },
-          cities: {
-            $arrayElemAt: ['$cities', 0]
-          },
-          dob: {
-            $arrayElemAt: ['$dob', 0]
-          },
-          email: {
-            $arrayElemAt: ['$email', 0]
-          },
-          gender: {
-            $arrayElemAt: ['$gender', 0]
-          },
-          bio: {
-            $arrayElemAt: ['$bio', 0]
-          },
-          idProofNumber: {
-            $arrayElemAt: ['$idProofNumber', 0]
-          },
-          mobileNumber: {
-            $arrayElemAt: ['$mobileNumber', 0]
-          },
-          roles: {
-            $arrayElemAt: ['$roles', 0]
-          },
-          event: {
-            $arrayElemAt: ['$event', 0]
-          },
-          isComplete: {
-            $arrayElemAt: ['$isComplete', 0]
-          },
-          status: {
-            $arrayElemAt: ['$status', 0]
-          },
-          langIso: {
-            $arrayElemAt: ['$langIso', 0]
-          },
-
-        }
-      },
-      {
-        $project: {
-          createdAt: '$createdAt',
-          activity: '$activity',
-          fullName: '$fullName',
-          interest: '$interest',
-          username: '$username',
-          avatar: '$avatar',
-          insight: '$insight',
-          countries: '$countries',
-          area: '$area',
-          cities: '$cities',
-          dob: '$dob',
-          email: '$email',
-          gender: '$gender',
-          bio: '$bio',
-          idProofNumber: '$idProofNumber',
-          mobileNumber: '$mobileNumber',
-          roles: '$roles',
-          event: '$event',
-          isComplete: '$isComplete',
-          status: '$status',
-          langIso: '$langIso',
-
-        }
-      },
-      {
-        $project: {
-          createdAt: '$createdAt',
-          activity: '$activity',
-          fullName: '$fullName',
-          interest: '$interest',
-          username: '$username',
-          avatar: '$avatar',
-          insight: '$insight',
-          countries: '$countries',
-          area: '$area',
-          cities: '$cities',
-          dob: '$dob',
-          email: '$email',
-          gender: '$gender',
-          bio: '$bio',
-          idProofNumber: '$idProofNumber',
-          mobileNumber: '$mobileNumber',
-          roles: '$roles',
-          event: '$event',
-          isComplete: '$isComplete',
-          status: '$status',
-          langIso: '$langIso',
-          age: {
-
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$dob", null]
-                }, {
-                  $eq: ["$dob", ""]
-                }, {
-                  $eq: ["$dob", []]
-                },]
-              },
-              then: 0,
-              else: {
-                $round: [
-
-                  {
-                    $divide: [{
-                      $subtract: [new Date(), {
-                        $toDate: '$dob'
-                      }]
-                    }, (365 * 24 * 60 * 60 * 1000)]
-                  }
-                ]
-              }
-            },
-
-          }
-        }
-      },
-      {
-        $project: {
-          createdAt: '$createdAt',
-          activity: '$activity',
-          fullName: '$fullName',
-          interest: '$interest',
-          username: '$username',
-          avatar: '$avatar',
-          insight: '$insight',
-          countries: '$countries',
-          area: '$area',
-          cities: '$cities',
-          dob: '$dob',
-          email: '$email',
-          gender: '$gender',
-          bio: '$bio',
-          idProofNumber: '$idProofNumber',
-          mobileNumber: '$mobileNumber',
-          roles: '$roles',
-          event: '$event',
-          isComplete: '$isComplete',
-          status: '$status',
-          langIso: '$langIso',
-          age: {
-            $ifNull: ["$age", 0]
-          },
-
-        }
-      });
-
-    if (username && username !== undefined) {
-      pipeline.push({
-        $match: {
-          username: {
-            $regex: username,
-            $options: 'i'
-          },
-
-        }
-      },);
-
-    }
-    if (regender && regender !== undefined) {
-      pipeline.push({
-        $match: {
-          $or: [
-            {
-              gender: {
-                $in: gender
-              }
-            },
-
-          ]
-        }
-      },);
-    }
-
-    if (roles && roles !== undefined) {
-      pipeline.push({
-        $match: {
-          $or: [
-            {
-              roles: {
-                $in: roles
-              }
-            },
-
-          ]
-        }
-      },);
-    }
-
-    if (age && age !== undefined) {
-      if (age == "<15") {
-        pipeline.push({ $match: { age: { $lt: 15 } } },);
-      }
-      else if (age == "15-25") {
-        pipeline.push({ $match: { age: { $gt: 14, $lt: 26 } } },);
-      }
-      else if (age == "26-35") {
-        pipeline.push({ $match: { age: { $gt: 25, $lt: 36 } } },);
-
-      }
-      else if (age == "36-50") {
-        pipeline.push({ $match: { age: { $gt: 35, $lt: 51 } } },);
-      }
-      else if (age == ">50") {
-        pipeline.push({ $match: { age: { $gt: 50 } } },);
-      }
-    }
-    if (interest && interest !== undefined) {
-      pipeline.push({ "$match": { "interest.interestName": { "$in": interest } } },);
-    }
-
-    if (page > 0) {
-      pipeline.push({ $skip: (page * limit) });
-    }
-    if (limit > 0) {
-      pipeline.push({ $limit: limit });
-    }
-    const query = await this.getuserprofilesModel.aggregate(pipeline);
-
-    return query;
-
-  }
-
-  async filteruser(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number) {
+  async filteruser(username: string, regender: any[], jenis: any[], lokasi: [], startage: number, endage: number, startdate: string, enddate: string, startlogin: string, endlogin: string, page: number, limit: number, descending: any) {
 
     var arrlokasi = [];
     var idlokasi = null;
     const mongoose = require('mongoose');
     var ObjectId = require('mongodb').ObjectId;
     var lenglokasi = null;
+    var order = null;
 
+    if (descending === true) {
+      order = -1;
+    } else {
+      order = 1;
+    }
     try {
       lenglokasi = lokasi.length;
     } catch (e) {
@@ -1549,7 +962,7 @@ export class GetuserprofilesService {
     } catch (e) {
       dateend = "";
     }
-
+    var dt = dateend.substring(0, 10);
     try {
       var currentdatelogin = new Date(new Date(endlogin).setDate(new Date(endlogin).getDate() + 1));
 
@@ -1557,6 +970,7 @@ export class GetuserprofilesService {
     } catch (e) {
       dateendlogin = "";
     }
+    var dtlogin = dateendlogin.substring(0, 10);
     var pipeline = [];
     pipeline.push(
       {
@@ -1672,7 +1086,7 @@ export class GetuserprofilesService {
               $match: { event: "AWAKE" }
             },
             {
-              $sort: { createdAt: -1 }
+              $sort: { createdAt: order }
             }
 
 
@@ -1841,7 +1255,7 @@ export class GetuserprofilesService {
       },
       {
         $sort: {
-          lastlogin: - 1
+          lastlogin: order
         }
       },
     );
@@ -1876,17 +1290,17 @@ export class GetuserprofilesService {
     }
 
     if (startage && startage !== undefined) {
-      pipeline.push({ $match: { age: { "$gt": startage } } });
+      pipeline.push({ $match: { age: { $gt: startage } } });
     }
     if (endage && endage !== undefined) {
-      pipeline.push({ $match: { age: { "$lt": endage } } });
+      pipeline.push({ $match: { age: { $lt: endage } } });
     }
 
     if (startdate && startdate !== undefined) {
-      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+      pipeline.push({ $match: { createdAt: { $gte: startdate } } });
     }
     if (enddate && enddate !== undefined) {
-      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+      pipeline.push({ $match: { createdAt: { $lte: dt } } });
     }
 
     if (jenis && jenis !== undefined) {
@@ -1920,10 +1334,10 @@ export class GetuserprofilesService {
     }
 
     if (startlogin && startlogin !== undefined) {
-      pipeline.push({ $match: { lastlogin: { "$gte": startlogin } } });
+      pipeline.push({ $match: { lastlogin: { $gte: startlogin } } });
     }
     if (endlogin && endlogin !== undefined) {
-      pipeline.push({ $match: { lastlogin: { "$lte": dateendlogin } } });
+      pipeline.push({ $match: { lastlogin: { $lte: dtlogin } } });
     }
 
     if (page > 0) {
@@ -1983,7 +1397,7 @@ export class GetuserprofilesService {
     } catch (e) {
       dateend = "";
     }
-
+    var dt = dateend.substring(0, 10);
     try {
       var currentdatelogin = new Date(new Date(endlogin).setDate(new Date(endlogin).getDate() + 1));
 
@@ -1991,6 +1405,7 @@ export class GetuserprofilesService {
     } catch (e) {
       dateendlogin = "";
     }
+    var dtlogin = dateendlogin.substring(0, 10);
     var pipeline = [];
     pipeline.push(
 
@@ -2259,17 +1674,17 @@ export class GetuserprofilesService {
     }
 
     if (startage && startage !== undefined) {
-      pipeline.push({ $match: { age: { "$gt": startage } } });
+      pipeline.push({ $match: { age: { $gt: startage } } });
     }
     if (endage && endage !== undefined) {
-      pipeline.push({ $match: { age: { "$lt": endage } } });
+      pipeline.push({ $match: { age: { $lt: endage } } });
     }
 
     if (startdate && startdate !== undefined) {
-      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+      pipeline.push({ $match: { createdAt: { $gte: startdate } } });
     }
     if (enddate && enddate !== undefined) {
-      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+      pipeline.push({ $match: { createdAt: { $lte: dt } } });
     }
 
     if (jenis && jenis !== undefined) {
@@ -2303,10 +1718,10 @@ export class GetuserprofilesService {
     }
 
     if (startlogin && startlogin !== undefined) {
-      pipeline.push({ $match: { lastlogin: { "$gte": startlogin } } });
+      pipeline.push({ $match: { lastlogin: { $gte: startlogin } } });
     }
     if (endlogin && endlogin !== undefined) {
-      pipeline.push({ $match: { lastlogin: { "$lte": dateendlogin } } });
+      pipeline.push({ $match: { lastlogin: { $lte: dtlogin } } });
     }
 
     pipeline.push({
