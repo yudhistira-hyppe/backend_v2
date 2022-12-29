@@ -11550,16 +11550,16 @@ export class GetusercontentsService {
       },);
     }
     if (startmount && startmount !== undefined) {
-      pipeline.push({ $match: { saleAmount: { "$gte": startmount } } });
+      pipeline.push({ $match: { saleAmount: { $gte: startmount } } });
     }
     if (endmount && endmount !== undefined) {
-      pipeline.push({ $match: { saleAmount: { "$lte": endmount } } });
+      pipeline.push({ $match: { saleAmount: { $lte: endmount } } });
     }
     if (startdate && startdate !== undefined) {
-      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+      pipeline.push({ $match: { createdAt: { $gte: startdate } } });
     }
     if (enddate && enddate !== undefined) {
-      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+      pipeline.push({ $match: { createdAt: { $lte: dt } } });
     }
     if (page > 0) {
       pipeline.push({ $skip: (page * limit) });
@@ -12037,16 +12037,16 @@ export class GetusercontentsService {
       },);
     }
     if (startmount && startmount !== undefined) {
-      pipeline.push({ $match: { saleAmount: { "$gte": startmount } } });
+      pipeline.push({ $match: { saleAmount: { $gte: startmount } } });
     }
     if (endmount && endmount !== undefined) {
-      pipeline.push({ $match: { saleAmount: { "$lte": endmount } } });
+      pipeline.push({ $match: { saleAmount: { $lte: endmount } } });
     }
     if (startdate && startdate !== undefined) {
-      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+      pipeline.push({ $match: { createdAt: { $gte: startdate } } });
     }
     if (enddate && enddate !== undefined) {
-      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+      pipeline.push({ $match: { createdAt: { $lte: dt } } });
     }
 
     pipeline.push({

@@ -1543,7 +1543,7 @@ export class GetuserprofilesService {
     } catch (e) {
       dateend = "";
     }
-
+    var dt = dateend.substring(0, 10);
     try {
       var currentdatelogin = new Date(new Date(endlogin).setDate(new Date(endlogin).getDate() + 1));
 
@@ -1551,6 +1551,7 @@ export class GetuserprofilesService {
     } catch (e) {
       dateendlogin = "";
     }
+    var dtlogin = dateendlogin.substring(0, 10);
     var pipeline = [];
     pipeline.push(
       {
@@ -1870,17 +1871,17 @@ export class GetuserprofilesService {
     }
 
     if (startage && startage !== undefined) {
-      pipeline.push({ $match: { age: { "$gt": startage } } });
+      pipeline.push({ $match: { age: { $gt: startage } } });
     }
     if (endage && endage !== undefined) {
-      pipeline.push({ $match: { age: { "$lt": endage } } });
+      pipeline.push({ $match: { age: { $lt: endage } } });
     }
 
     if (startdate && startdate !== undefined) {
-      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+      pipeline.push({ $match: { createdAt: { $gte: startdate } } });
     }
     if (enddate && enddate !== undefined) {
-      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+      pipeline.push({ $match: { createdAt: { $lte: dt } } });
     }
 
     if (jenis && jenis !== undefined) {
@@ -1914,10 +1915,10 @@ export class GetuserprofilesService {
     }
 
     if (startlogin && startlogin !== undefined) {
-      pipeline.push({ $match: { lastlogin: { "$gte": startlogin } } });
+      pipeline.push({ $match: { lastlogin: { $gte: startlogin } } });
     }
     if (endlogin && endlogin !== undefined) {
-      pipeline.push({ $match: { lastlogin: { "$lte": dateendlogin } } });
+      pipeline.push({ $match: { lastlogin: { $lte: dtlogin } } });
     }
 
     if (page > 0) {
@@ -1977,7 +1978,7 @@ export class GetuserprofilesService {
     } catch (e) {
       dateend = "";
     }
-
+    var dt = dateend.substring(0, 10);
     try {
       var currentdatelogin = new Date(new Date(endlogin).setDate(new Date(endlogin).getDate() + 1));
 
@@ -1985,6 +1986,7 @@ export class GetuserprofilesService {
     } catch (e) {
       dateendlogin = "";
     }
+    var dtlogin = dateendlogin.substring(0, 10);
     var pipeline = [];
     pipeline.push(
 
@@ -2253,17 +2255,17 @@ export class GetuserprofilesService {
     }
 
     if (startage && startage !== undefined) {
-      pipeline.push({ $match: { age: { "$gt": startage } } });
+      pipeline.push({ $match: { age: { $gt: startage } } });
     }
     if (endage && endage !== undefined) {
-      pipeline.push({ $match: { age: { "$lt": endage } } });
+      pipeline.push({ $match: { age: { $lt: endage } } });
     }
 
     if (startdate && startdate !== undefined) {
-      pipeline.push({ $match: { createdAt: { "$gte": startdate } } });
+      pipeline.push({ $match: { createdAt: { $gte: startdate } } });
     }
     if (enddate && enddate !== undefined) {
-      pipeline.push({ $match: { createdAt: { "$lte": dateend } } });
+      pipeline.push({ $match: { createdAt: { $lte: dt } } });
     }
 
     if (jenis && jenis !== undefined) {
@@ -2297,10 +2299,10 @@ export class GetuserprofilesService {
     }
 
     if (startlogin && startlogin !== undefined) {
-      pipeline.push({ $match: { lastlogin: { "$gte": startlogin } } });
+      pipeline.push({ $match: { lastlogin: { $gte: startlogin } } });
     }
     if (endlogin && endlogin !== undefined) {
-      pipeline.push({ $match: { lastlogin: { "$lte": dateendlogin } } });
+      pipeline.push({ $match: { lastlogin: { $lte: dtlogin } } });
     }
 
     pipeline.push({
