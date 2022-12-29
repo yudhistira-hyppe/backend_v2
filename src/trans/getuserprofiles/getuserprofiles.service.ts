@@ -500,6 +500,7 @@ export class GetuserprofilesService {
           username: '$userAuth_data.username',
           email: '$email',
           isIdVerified: '$isIdVerified',
+          roles: '$userAuth_data.roles',
         },
       },
       {
@@ -510,7 +511,12 @@ export class GetuserprofilesService {
           fullName: '$fullName',
           username: '$userAuth_data.username',
           email: '$email',
-          isIdVerified: '$isIdVerified',
+          isIdVerified: {
+            $in: [
+              "ROLE_ADMIN",
+              "$roles"
+            ],
+          },
           avatar: {
             mediaBasePath: '$profilpict.mediaBasePath',
             mediaUri: '$profilpict.mediaUri',
