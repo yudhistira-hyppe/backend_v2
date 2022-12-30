@@ -666,6 +666,7 @@ export class MediaController {
                         await this.userauthsService.update(emailuserbasic, 'ROLE_PREMIUM');
                         await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
+                        await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_VERIFIED');
                         return {
                             "response_code": 202,
                             "data": {
@@ -679,6 +680,7 @@ export class MediaController {
                             }
                         };
                     } else {
+                        await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REVIEW');
                         var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                         _CreateMediaproofpictsDto.status = 'FAILED';
                         _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict dan Selfie Pict';
@@ -702,6 +704,7 @@ export class MediaController {
                         );
                     }
                 } catch (err) {
+                    await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REVIEW');
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.status = 'FAILED';
                     _CreateMediaproofpictsDto.state = 'Kesalahan KTP Pict';
@@ -1308,6 +1311,7 @@ export class MediaController {
                         $db: 'hyppe_content_db'
                     }
                 });
+                await this.utilsService.sendFcmV2(datauserbasicsService.email.toString(), datauserbasicsService.email.toString(), 'KYC', 'REQUEST', 'KYC_REVIEW');
 
                 // await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
             } catch (err) {
@@ -1620,6 +1624,7 @@ export class MediaController {
 
                 let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "FINISH", kycHandle);
                 await this.userbasicsService.updateStatusKycName(nama, jenisKelamin, email, true, "verified", tglLahir);
+                await this.utilsService.sendFcmV2(email.toString(), email.toString(), 'KYC', 'REQUEST', 'KYC_VERIFIED');
 
                 return { response_code: 202, data, messages };
 
@@ -1647,6 +1652,7 @@ export class MediaController {
             try {
                 let data = await this.mediaproofpictsService.updateKyc(id, noktp, nama, tglLahir, tempatLahir, jenisKelamin, "FAILED", kycHandle);
                 await this.userbasicsService.updateStatusKycName(nama, jenisKelamin, email, false, "unverified", tglLahir);
+                await this.utilsService.sendFcmV2(email.toString(), email.toString(), 'KYC', 'REQUEST', 'KYC_REJECT');
 
                 return { response_code: 202, data, messages };
 
