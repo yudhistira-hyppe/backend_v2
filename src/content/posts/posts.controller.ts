@@ -33,6 +33,7 @@ import { ContentModService } from './contentmod.service';
 import { OyPgService } from '../../paymentgateway/oypg/oypg.service';
 import { MethodepaymentsService } from '../../trans/methodepayments/methodepayments.service';
 import { PostBoostService } from './postboost.service';
+import { TransactionsPostService } from '../../trans/transactionpost/transactionspost.service';
 
 @Controller()
 export class PostsController {
@@ -51,6 +52,7 @@ export class PostsController {
     private readonly notifService: NotificationsService,
     private readonly cmodService: ContentModService,
     private readonly disqusService: DisqusService,
+    private transactionsPostService: TransactionsPostService,
     private readonly methodepaymentsService: MethodepaymentsService) { }
 
   @Post()
@@ -347,7 +349,21 @@ export class PostsController {
     var email = headers['x-auth-user'];
     var saleAmount = body.saleAmount;
     var data = null;
+    var lang = await this.utilsService.getUserlanguages(email);
+    
 
+    var dataTransaction = await this.transactionsPostService.findpostid(body.postID);
+    if (await this.utilsService.ceckData(dataTransaction)){
+      if (lang == "en") {
+        await this.errorHandler.generateNotAcceptableException(
+          'ada transaction pending',
+        );
+      } else {
+        await this.errorHandler.generateNotAcceptableException(
+          'ada transaction pending',
+        );
+      }
+    }
     data = await this.postContentService.updatePost(body, headers);
 
     if (saleAmount > 0) {
