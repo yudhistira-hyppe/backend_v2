@@ -1015,7 +1015,7 @@ export class UserticketsService {
   }
 
 
-  async filterdata(search: string, assignto: string, sumber: any[], kategori: any[], level: any[], status: any[], startdate: string, enddate: string, skip: number, limit: number, descending: boolean, iduser?: string) {
+  async filterdata(search: string, assignto: string, sumber: any[], kategori: any[], level: any[], status: any[], startdate: string, enddate: string, skip: number, limit: number, descending: boolean, iduser?: string, close?: any) {
 
     var lenghtkategori = 0;
     var lenghtsumber = 0;
@@ -1317,6 +1317,15 @@ export class UserticketsService {
 
 
     ];
+
+    if (close === false && close !== undefined) {
+      pipeline.push({
+        $match: {
+          status: { $ne: "close" }
+
+        }
+      },);
+    }
 
     if (iduser && iduser !== undefined) {
       pipeline.push({

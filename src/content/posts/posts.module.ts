@@ -36,9 +36,11 @@ import { MethodepaymentsModule } from '../../trans/methodepayments/methodepaymen
 import { SocketModule } from '../socket/socket.module';
 import { PostBoostService } from './postboost.service';
 import { MediamusicModule } from '../mediamusic/mediamusic.module';
+import { TransactionsPostModule } from '../../trans/transactionpost/transactionspost.module';
 @Module({
 
     imports: [
+        TransactionsPostModule,
         MediamusicModule,
         MethodepaymentsModule,
         OyPgModule,
