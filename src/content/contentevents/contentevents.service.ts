@@ -1235,6 +1235,20 @@ export class ContenteventsService {
     return this.ContenteventsModel.aggregate(
 
 [
+
+  {
+      $set: {
+            "storyDate": 
+            {
+                "$dateToString": {
+                    "format": "%Y-%m-%d %H:%M:%S",
+                    "date": {
+                        $add: [new Date(), - 61200000]
+                    }
+                }
+            }
+        }
+    },  
     {
         $match: 
         {
@@ -2568,7 +2582,11 @@ export class ContenteventsService {
                                                 }
                                             }
                                         },
-                                        
+                                        {
+                                          $expr: {
+                                              $gte: ["$createdAt", "$storyDate", ]
+                                          }
+                                      },
                                     ]
                                 }
                             },
