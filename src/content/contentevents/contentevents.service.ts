@@ -1374,6 +1374,7 @@ export class ContenteventsService {
                                     "mediaUri": 1,
                                     "mediaThumbEndpoint": 1,
                                     "mediaThumbUri": 1,
+                                    "mediaType": 1,
                                     
                                 }
                             }
@@ -1692,7 +1693,7 @@ export class ContenteventsService {
                 }
             ],
             //vid
-            "vid": [
+            "video": [
                 {
                     $sort: {
                         "createdAt": - 1
@@ -1786,6 +1787,7 @@ export class ContenteventsService {
                                     "mediaUri": 1,
                                     "mediaThumbEndpoint": 1,
                                     "mediaThumbUri": 1,
+                                    "mediaType": 1,
                                     
                                 }
                             }
@@ -2198,7 +2200,7 @@ export class ContenteventsService {
                                     "mediaUri": 1,
                                     "mediaThumbEndpoint": 1,
                                     "mediaThumbUri": 1,
-                                    
+                                    "mediaType": 1,
                                 }
                             }
                         ],
@@ -2610,7 +2612,7 @@ export class ContenteventsService {
                                     "mediaUri": 1,
                                     "mediaThumbEndpoint": 1,
                                     "mediaThumbUri": 1,
-                                    
+                                    "mediaType": 1,
                                 }
                             }
                         ],
