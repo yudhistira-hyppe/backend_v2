@@ -1109,6 +1109,7 @@ export class UserticketsService {
           },
 
           nomortiket: 1,
+          IdUser: 1,
           subject: 1,
           body: 1,
           status: 1,
@@ -1131,7 +1132,7 @@ export class UserticketsService {
       {
         $project: {
           userAuth_id: '$user.userAuth.$id',
-          iduser: '$user._id',
+          IdUser: 1,
           pengirim: '$user.email',
           penerima: '$userasign.email',
           profilpictid: '$userasign.profilePict.$id',
@@ -1186,7 +1187,7 @@ export class UserticketsService {
           userauth: {
             $arrayElemAt: ['$userAuth_data', 0]
           },
-          iduser: 1,
+          IdUser: 1,
           nomortiket: 1,
           pengirim: 1,
           penerima: 1,
@@ -1215,7 +1216,7 @@ export class UserticketsService {
       {
         $project: {
           username: 1,
-          iduser: 1,
+          IdUser: 1,
           nomortiket: 1,
           pengirim: 1,
           penerima: 1,
@@ -1268,7 +1269,7 @@ export class UserticketsService {
       {
         $project: {
           username: 1,
-          iduser: 1,
+          IdUser: 1,
           nomortiket: 1,
           pengirim: 1,
           penerima: 1,
@@ -1335,7 +1336,7 @@ export class UserticketsService {
     if (iduser && iduser !== undefined) {
       pipeline.push({
         $match: {
-          iduser: mongoose.Types.ObjectId(iduser)
+          IdUser: mongoose.Types.ObjectId(iduser)
         }
       },);
     }
