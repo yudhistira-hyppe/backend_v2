@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId, Types } from 'mongoose';
+import mongoose, { Model, ObjectId, Types } from 'mongoose';
 import { CreateUserbasicDto } from './dto/create-userbasic.dto';
 import { Userbasic, UserbasicDocument } from './schemas/userbasic.schema';
 import { LanguagesService } from '../../infra/languages/languages.service';
@@ -1951,6 +1951,208 @@ export class UserbasicsService {
     var query = await this.userbasicModel.aggregate(pipeline);
 
     return query;
+  }
+
+  async getUserDetails(id: string): Promise<any> {
+    var ObjectId_ = new mongoose.Types.ObjectId(id);
+    return await this.userbasicModel.aggregate([
+      {
+        $match:
+        {
+          "_id": ObjectId_
+        }
+      },
+      {
+        $lookup: {
+          from: 'userauths',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'userauths_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'insights',
+          localField: 'email',
+          foreignField: 'email',
+          as: 'insights_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'cities',
+          localField: 'cities.$id',
+          foreignField: '_id',
+          as: 'cities_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'areas',
+          localField: 'states.$id',
+          foreignField: '_id',
+          as: 'areas_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'countries',
+          localField: 'countries.$id',
+          foreignField: '_id',
+          as: 'countries_data',
+        },
+      },
+      {
+        "$lookup": {
+          from: "interests_repo",
+          as: "interests_repo_data",
+          let: {
+            "localID": "$userInterests.$id"
+          },
+          pipeline: [
+            { $match: { $expr: { $in: ["$_id", "$$localID"] } } },
+            {
+              $project: {
+                "interestName": 1,
+                "icon": 1,
+              }
+            },
+          ],
+        },
+      },
+      {
+        $lookup: {
+          from: 'mediaproofpicts',
+          localField: 'proofPict.$id',
+          foreignField: '_id',
+          as: 'mediaproofpicts_data',
+        },
+      },
+      {
+        $lookup: {
+          from: 'userbankaccounts',
+          let: {
+            "id": "$_id"
+          },
+          pipeline: [
+            { $match: { $expr: { $eq: ["$userId", "$$id"] } } },
+            { $project: { idBank: 1, noRek: 1, nama: 1, active: 1 } }
+          ],
+          as: 'userbankaccounts_data'
+        }
+      }, 
+      {
+        $unwind: {
+          path: "$userbankaccounts_data",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: "banks",
+          localField: "userbankaccounts_data.idBank",
+          foreignField: "_id",
+          as: "userbankaccounts_data.bankName",
+        }
+      },
+      {
+        $project: {
+          fullName: '$fullName',
+          username: { $arrayElemAt: ['$userauths_data.username', 0] },
+          email: '$email',
+          createdAt: '$createdAt',
+          status: '$isIdVerified',
+          dob: '$dob',
+          gender: '$gender',
+          insights: {
+            followers: { $arrayElemAt: ['$insights_data.followers', 0] },
+            followings: { $arrayElemAt: ['$insights_data.followings', 0] },
+          },
+          states: { $arrayElemAt: ['$areas_data.stateName', 0] },
+          cities: { $arrayElemAt: ['$cities_data.cityName', 0] },
+          countries: { $arrayElemAt: ['$countries_data.country', 0] },
+          userbankaccounts: {
+            _id: '$userbankaccounts_data._id',
+            idBank: '$userbankaccounts_data.idBank',
+            bankcode: { $arrayElemAt: ['$userbankaccounts_data.bankName.bankcode', 0] },
+            bankname: { $arrayElemAt: ['$userbankaccounts_data.bankName.bankname', 0] },
+            noRek: '$userbankaccounts_data.noRek',
+            nama: '$userbankaccounts_data.nama',
+            active: '$userbankaccounts_data.active'
+          },
+          interests: '$interests_repo_data',
+          dokument: {
+            mediaproofpicts: {
+              mediaId: { $arrayElemAt: ['$mediaproofpicts_data._id', 0] },
+              mediaBasePath: { $arrayElemAt: ['$mediaproofpicts_data.mediaBasePath', 0] },
+              mediaUri: { $arrayElemAt: ['$mediaproofpicts_data.mediaUri', 0] },
+              postType: { $arrayElemAt: ['$mediaproofpicts_data.mediaType', 0] },
+              mediaEndpoint: { $concat: ["profilepict", "/", { $arrayElemAt: ['$mediaproofpicts_data._id', 0] }] },
+            },
+            mediaSelfiepicts: {
+              mediaId: { $arrayElemAt: ['$mediaproofpicts_data._id', 0] },
+              mediaBasePath: { $arrayElemAt: ['$mediaproofpicts_data.mediaSelfieBasePath', 0] },
+              mediaUri: { $arrayElemAt: ['$mediaproofpicts_data.mediaSelfieUri', 0] },
+              postType: { $arrayElemAt: ['$mediaproofpicts_data.mediaSelfieType', 0] },
+              mediaEndpoint: { $concat: ["selfiepict", "/", { $arrayElemAt: ['$mediaproofpicts_data._id', 0] }] },
+            },
+            mediaSupportfile: {
+              mediaEndpoint: {
+                $map: {
+                  "input": { "$range": [0, { "$size": { $arrayElemAt: ['$mediaproofpicts_data.SupportfsSourceUri', 0] } }] },
+                  "in": {
+                    "$cond": [
+                      { "$eq": ["$$this", "$$this"] },
+                      { $concat: ["supportfile", "/", { $arrayElemAt: ['$mediaproofpicts_data._id', 0] }, '/', { $toString: "$$this" }] },
+                      { "$arrayElemAt": [{ $arrayElemAt: ['$mediaproofpicts_data.SupportfsSourceUri', 0] }, "$$this"] }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          fullName: { $first: "$fullName" },
+          username: { $first: "$username" },
+          email: { $first: "$email" },
+          createdAt: { $first: "$createdAt" },
+          status: { $first: "$status" },
+          dob: { $first: "$dob" },
+          gender: { $first: "$gender" },
+          insights: { $first: "$insights" },
+          states: { $first: "$states" },
+          cities: { $first: "$cities" },
+          countries: { $first: "$countries" },
+          interests: { $first: "$interests" },
+          dokument: { $first: "$dokument" },
+          userbankaccounts: { $push: "$userbankaccounts" }
+        }
+      },
+      {
+        $project: {
+          _id: 1,
+          fullName: 1,
+          username: 1,
+          email: 1,
+          createdAt: 1,
+          status: 1,
+          placeofbirth: '-',
+          dob: 1,
+          gender: 1,
+          insights: 1,
+          states: 1,
+          cities: 1,
+          countries: 1,
+          interests: 1,
+          dokument: 1,
+          userbankaccounts: '$userbankaccounts'
+        }
+      }
+    ]);
   }
 
 }
