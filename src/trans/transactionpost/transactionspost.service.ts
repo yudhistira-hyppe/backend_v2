@@ -12,6 +12,6 @@ export class TransactionsPostService {
     ) { }
 
     async findpostid(postid: string): Promise<Transactions> {
-        return this.transactionsModel.findOne({ postid: postid }).exec();
+        return this.transactionsModel.findOne({ postid: postid, status:"WAITING_PAYMENT"}).exec();
     }
 }
