@@ -470,7 +470,6 @@ export class GroupModuleController {
     @Post('detail')
     async findgroupdetail(@Req() request: Request) {
         var divisionId = null;
-        const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
 
         var request_json = JSON.parse(JSON.stringify(request.body));
@@ -480,7 +479,7 @@ export class GroupModuleController {
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
-        var divid = mongoose.Types.ObjectId(divisionId);
+        var divid = new mongoose.Types.ObjectId(divisionId);
         var data = await this.groupService.listGroup(divid);
         return {
             "response_code": 202,

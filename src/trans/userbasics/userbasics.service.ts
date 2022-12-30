@@ -1955,6 +1955,11 @@ export class UserbasicsService {
 
   async getUserDetails(id: string): Promise<any> {
     var ObjectId_ = new mongoose.Types.ObjectId(id);
+    var today = new Date(),
+      oneDay = (1000 * 60 * 60 * 24),
+      thirtyDays = new Date(today.valueOf() - (30 * oneDay)),
+      fifteenDays = new Date(today.valueOf() - (15 * oneDay)),
+      sevenDays = new Date(today.valueOf() - (7 * oneDay));
     return await this.userbasicModel.aggregate([
       {
         $match:
@@ -2030,128 +2035,162 @@ export class UserbasicsService {
       },
       {
         $lookup: {
-          from: 'userbankaccounts',
-          let: {
-            "id": "$_id"
-          },
-          pipeline: [
-            { $match: { $expr: { $eq: ["$userId", "$$id"] } } },
-            { $project: { idBank: 1, noRek: 1, nama: 1, active: 1 } }
-          ],
-          as: 'userbankaccounts_data'
-        }
-      }, 
-      {
-        $unwind: {
-          path: "$userbankaccounts_data",
-          preserveNullAndEmptyArrays: true
-        }
+          from: 'accountbalances',
+          localField: '_id',
+          foreignField: 'iduser',
+          as: 'accountbalances_data',
+        },
       },
-      {
-        $lookup: {
-          from: "banks",
-          localField: "userbankaccounts_data.idBank",
-          foreignField: "_id",
-          as: "userbankaccounts_data.bankName",
-        }
-      },
+      // {
+      //   $lookup: {
+      //     from: 'contentevents',
+      //     let: {
+      //       "email": "$email"
+      //     },
+      //     pipeline: [
+      //       {
+      //         $match: {
+      //           $expr: {
+      //             $eq: ["$receiverParty", "$$email"]
+      //           },
+      //           'eventType': 'VIEW_PROFILE'
+      //         }
+      //       }
+      //     ],
+      //     as: 'contentevents_data'
+      //   }
+      // },
+      { $group: { _id: null, kredit: { $sum: "$kredit" } } },
       {
         $project: {
-          fullName: '$fullName',
-          username: { $arrayElemAt: ['$userauths_data.username', 0] },
-          email: '$email',
-          createdAt: '$createdAt',
-          status: '$isIdVerified',
-          dob: '$dob',
-          gender: '$gender',
-          insights: {
-            followers: { $arrayElemAt: ['$insights_data.followers', 0] },
-            followings: { $arrayElemAt: ['$insights_data.followings', 0] },
-          },
-          states: { $arrayElemAt: ['$areas_data.stateName', 0] },
-          cities: { $arrayElemAt: ['$cities_data.cityName', 0] },
-          countries: { $arrayElemAt: ['$countries_data.country', 0] },
-          userbankaccounts: {
-            _id: '$userbankaccounts_data._id',
-            idBank: '$userbankaccounts_data.idBank',
-            bankcode: { $arrayElemAt: ['$userbankaccounts_data.bankName.bankcode', 0] },
-            bankname: { $arrayElemAt: ['$userbankaccounts_data.bankName.bankname', 0] },
-            noRek: '$userbankaccounts_data.noRek',
-            nama: '$userbankaccounts_data.nama',
-            active: '$userbankaccounts_data.active'
-          },
-          interests: '$interests_repo_data',
-          dokument: {
-            mediaproofpicts: {
-              mediaId: { $arrayElemAt: ['$mediaproofpicts_data._id', 0] },
-              mediaBasePath: { $arrayElemAt: ['$mediaproofpicts_data.mediaBasePath', 0] },
-              mediaUri: { $arrayElemAt: ['$mediaproofpicts_data.mediaUri', 0] },
-              postType: { $arrayElemAt: ['$mediaproofpicts_data.mediaType', 0] },
-              mediaEndpoint: { $concat: ["profilepict", "/", { $arrayElemAt: ['$mediaproofpicts_data._id', 0] }] },
-            },
-            mediaSelfiepicts: {
-              mediaId: { $arrayElemAt: ['$mediaproofpicts_data._id', 0] },
-              mediaBasePath: { $arrayElemAt: ['$mediaproofpicts_data.mediaSelfieBasePath', 0] },
-              mediaUri: { $arrayElemAt: ['$mediaproofpicts_data.mediaSelfieUri', 0] },
-              postType: { $arrayElemAt: ['$mediaproofpicts_data.mediaSelfieType', 0] },
-              mediaEndpoint: { $concat: ["selfiepict", "/", { $arrayElemAt: ['$mediaproofpicts_data._id', 0] }] },
-            },
-            mediaSupportfile: {
-              mediaEndpoint: {
-                $map: {
-                  "input": { "$range": [0, { "$size": { $arrayElemAt: ['$mediaproofpicts_data.SupportfsSourceUri', 0] } }] },
-                  "in": {
-                    "$cond": [
-                      { "$eq": ["$$this", "$$this"] },
-                      { $concat: ["supportfile", "/", { $arrayElemAt: ['$mediaproofpicts_data._id', 0] }, '/', { $toString: "$$this" }] },
-                      { "$arrayElemAt": [{ $arrayElemAt: ['$mediaproofpicts_data.SupportfsSourceUri', 0] }, "$$this"] }
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      {
-        $group: {
-          _id: "$_id",
-          fullName: { $first: "$fullName" },
-          username: { $first: "$username" },
-          email: { $first: "$email" },
-          createdAt: { $first: "$createdAt" },
-          status: { $first: "$status" },
-          dob: { $first: "$dob" },
-          gender: { $first: "$gender" },
-          insights: { $first: "$insights" },
-          states: { $first: "$states" },
-          cities: { $first: "$cities" },
-          countries: { $first: "$countries" },
-          interests: { $first: "$interests" },
-          dokument: { $first: "$dokument" },
-          userbankaccounts: { $push: "$userbankaccounts" }
-        }
-      },
-      {
-        $project: {
-          _id: 1,
-          fullName: 1,
-          username: 1,
-          email: 1,
-          createdAt: 1,
-          status: 1,
-          placeofbirth: '-',
-          dob: 1,
-          gender: 1,
-          insights: 1,
-          states: 1,
-          cities: 1,
-          countries: 1,
-          interests: 1,
-          dokument: 1,
-          userbankaccounts: '$userbankaccounts'
+          contentevents_data: '$accountbalances_data',
+          
         }
       }
+      // {
+      //   $lookup: {
+      //     from: 'userbankaccounts',
+      //     let: {
+      //       "id": "$_id"
+      //     },
+      //     pipeline: [
+      //       { $match: { $expr: { $eq: ["$userId", "$$id"] } } },
+      //       { $project: { idBank: 1, noRek: 1, nama: 1, active: 1 } }
+      //     ],
+      //     as: 'userbankaccounts_data'
+      //   }
+      // }, 
+      // {
+      //   $unwind: {
+      //     path: "$userbankaccounts_data",
+      //     preserveNullAndEmptyArrays: true
+      //   }
+      // },
+      // {
+      //   $lookup: {
+      //     from: "banks",
+      //     localField: "userbankaccounts_data.idBank",
+      //     foreignField: "_id",
+      //     as: "userbankaccounts_data.bankName",
+      //   }
+      // },
+      // {
+      //   $project: {
+      //     fullName: '$fullName',
+      //     username: { $arrayElemAt: ['$userauths_data.username', 0] },
+      //     email: '$email',
+      //     createdAt: '$createdAt',
+      //     status: '$isIdVerified',
+      //     dob: '$dob',
+      //     gender: '$gender',
+      //     insights: {
+      //       followers: { $arrayElemAt: ['$insights_data.followers', 0] },
+      //       followings: { $arrayElemAt: ['$insights_data.followings', 0] },
+      //     },
+      //     states: { $arrayElemAt: ['$areas_data.stateName', 0] },
+      //     cities: { $arrayElemAt: ['$cities_data.cityName', 0] },
+      //     countries: { $arrayElemAt: ['$countries_data.country', 0] },
+      //     userbankaccounts: {
+      //       _id: '$userbankaccounts_data._id',
+      //       idBank: '$userbankaccounts_data.idBank',
+      //       bankcode: { $arrayElemAt: ['$userbankaccounts_data.bankName.bankcode', 0] },
+      //       bankname: { $arrayElemAt: ['$userbankaccounts_data.bankName.bankname', 0] },
+      //       noRek: '$userbankaccounts_data.noRek',
+      //       nama: '$userbankaccounts_data.nama',
+      //       active: '$userbankaccounts_data.active'
+      //     },
+      //     interests: '$interests_repo_data',
+      //     dokument: {
+      //       mediaproofpicts: {
+      //         mediaId: { $arrayElemAt: ['$mediaproofpicts_data._id', 0] },
+      //         mediaBasePath: { $arrayElemAt: ['$mediaproofpicts_data.mediaBasePath', 0] },
+      //         mediaUri: { $arrayElemAt: ['$mediaproofpicts_data.mediaUri', 0] },
+      //         postType: { $arrayElemAt: ['$mediaproofpicts_data.mediaType', 0] },
+      //         mediaEndpoint: { $concat: ["profilepict", "/", { $arrayElemAt: ['$mediaproofpicts_data._id', 0] }] },
+      //       },
+      //       mediaSelfiepicts: {
+      //         mediaId: { $arrayElemAt: ['$mediaproofpicts_data._id', 0] },
+      //         mediaBasePath: { $arrayElemAt: ['$mediaproofpicts_data.mediaSelfieBasePath', 0] },
+      //         mediaUri: { $arrayElemAt: ['$mediaproofpicts_data.mediaSelfieUri', 0] },
+      //         postType: { $arrayElemAt: ['$mediaproofpicts_data.mediaSelfieType', 0] },
+      //         mediaEndpoint: { $concat: ["selfiepict", "/", { $arrayElemAt: ['$mediaproofpicts_data._id', 0] }] },
+      //       },
+      //       mediaSupportfile: {
+      //         mediaEndpoint: {
+      //           $map: {
+      //             "input": { "$range": [0, { "$size": { $arrayElemAt: ['$mediaproofpicts_data.SupportfsSourceUri', 0] } }] },
+      //             "in": {
+      //               "$cond": [
+      //                 { "$eq": ["$$this", "$$this"] },
+      //                 { $concat: ["supportfile", "/", { $arrayElemAt: ['$mediaproofpicts_data._id', 0] }, '/', { $toString: "$$this" }] },
+      //                 { "$arrayElemAt": [{ $arrayElemAt: ['$mediaproofpicts_data.SupportfsSourceUri', 0] }, "$$this"] }
+      //               ]
+      //             }
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      // },
+      // {
+      //   $group: {
+      //     _id: "$_id",
+      //     fullName: { $first: "$fullName" },
+      //     username: { $first: "$username" },
+      //     email: { $first: "$email" },
+      //     createdAt: { $first: "$createdAt" },
+      //     status: { $first: "$status" },
+      //     dob: { $first: "$dob" },
+      //     gender: { $first: "$gender" },
+      //     insights: { $first: "$insights" },
+      //     states: { $first: "$states" },
+      //     cities: { $first: "$cities" },
+      //     countries: { $first: "$countries" },
+      //     interests: { $first: "$interests" },
+      //     dokument: { $first: "$dokument" },
+      //     userbankaccounts: { $push: "$userbankaccounts" }
+      //   }
+      // },
+      // {
+      //   $project: {
+      //     _id: 1,
+      //     fullName: 1,
+      //     username: 1,
+      //     email: 1,
+      //     createdAt: 1,
+      //     status: 1,
+      //     placeofbirth: '-',
+      //     dob: 1,
+      //     gender: 1,
+      //     insights: 1,
+      //     states: 1,
+      //     cities: 1,
+      //     countries: 1,
+      //     interests: 1,
+      //     dokument: 1,
+      //     userbankaccounts: '$userbankaccounts'
+      //   }
+      // }
     ]);
   }
 

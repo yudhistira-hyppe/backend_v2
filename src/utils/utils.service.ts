@@ -168,6 +168,7 @@ export class UtilsService {
     //SET VARIABLE
     let title_send = "";
     let body_send = { message: "" };
+    let body_send2 = "";
 
     let body_save_id = "";
     let body_save_en = "";
@@ -203,13 +204,17 @@ export class UtilsService {
       if (Templates_.subject_id != undefined) {
         if (Templates_.subject_id.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
+        } else if (Templates_.subject_id.toString() == "Hi, ${user_name}") {
+          title_send = "Hi, @" + get_username_senderParty;
         } else {
           title_send = Templates_.subject.toString();
         }
       } else {
         if (Templates_.subject.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
-        } else {
+        } else if (Templates_.subject.toString() == "Hi, ${user_name}") {
+          title_send = "Hi, @" + get_username_senderParty;
+        }else {
           title_send = Templates_.subject.toString();
         }
       }
@@ -241,8 +246,13 @@ export class UtilsService {
         body_send['postType'] = postType
       }
 
-      body_save_id = body_save_id_.toString();
-      body_save_en = body_save_en_.toString();
+      if (eventType == "KYC") {
+        body_save_id = body_save_id_.toString().replace("${user_name}", get_username_senderParty)
+        body_save_en = body_save_en_.toString().replace("${user_name}", get_username_senderParty)
+      } else {
+        body_save_id = body_save_id_.toString();
+        body_save_en = body_save_en_.toString();
+      }
     }
 
     //SET BODY SEND
@@ -250,6 +260,14 @@ export class UtilsService {
       body_send.message = body_save_en
     } else {
       body_send.message = body_save_id
+    }
+
+    if (eventType == "KYC") {
+      if (langIso_receiverParty == "en") {
+        body_send2 = body_save_en
+      } else {
+        body_send2 = body_save_id
+      }
     }
 
     //SET RECEIVER OR SENDER
@@ -269,7 +287,11 @@ export class UtilsService {
     var device_user = [];
     var getDate = await this.getDateTimeString();
     for (var i = 0; i < datadevice.length; i++) {
-      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send), tag: getDate } });
+      if (eventType == "KYC") {
+        await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send), tag: getDate } });
+      } else {
+        await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body_send2, tag: getDate } });
+      }
       device_user.push(datadevice[i].deviceID)
     }
 
