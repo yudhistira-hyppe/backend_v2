@@ -24,6 +24,9 @@ export class UserticketdetailsService {
     async findOne(id: ObjectId): Promise<Userticketdetails[]> {
         return this.userticketsModel.find({ _id: id }).exec();
     }
+    async findOneid(id: string): Promise<Userticketdetails> {
+        return this.userticketsModel.findOne({ _id: id }).exec();
+    }
     async findOneType(id: ObjectId, type: string): Promise<Userticketdetails[]> {
 
         return this.userticketsModel.find({ IdUserticket: id, type: type }).exec();

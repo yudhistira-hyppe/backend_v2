@@ -33,9 +33,11 @@ import { OtpService } from './otp.service';
 import { SocmedService } from './socmed.service';
 import { GroupModule } from '../trans/usermanagement/group/group.module';
 import { UserticketsModule } from '../trans/usertickets/usertickets.module';
+import { UserticketdetailsModule } from '../trans/usertickets/userticketdetails/userticketdetails.module';
 @Module({
   imports: [
     GroupModule,
+    UserticketdetailsModule,
     MediaproofpictsModule,
     UserbasicsnewModule,
     AdsUserCompareModule,
