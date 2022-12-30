@@ -356,11 +356,11 @@ export class PostsController {
     if (await this.utilsService.ceckData(dataTransaction)){
       if (lang == "id") {
         await this.errorHandler.generateNotAcceptableException(
-          "Kamu tidak bisa mengedit postingan, harap selesaikan pembayaran terlebih dahulu.",
+          "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
         );
       } else {
         await this.errorHandler.generateNotAcceptableException(
-          "You can't edit posts; please complete the payment in advance.",
+          " Unable to edit the post because it is in the process of payment.",
         );
       }
     }
