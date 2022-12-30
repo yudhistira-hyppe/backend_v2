@@ -32,6 +32,7 @@ import { UserbasicsnewModule } from '../trans/newuserbasic/userbasicsnew.module'
 import { OtpService } from './otp.service';
 import { SocmedService } from './socmed.service';
 import { GroupModule } from '../trans/usermanagement/group/group.module';
+import { UserticketsModule } from '../trans/usertickets/usertickets.module';
 @Module({
   imports: [
     GroupModule,
@@ -59,6 +60,7 @@ import { GroupModule } from '../trans/usermanagement/group/group.module';
     CitiesModule,
     ReferralModule,
     PostsModule,
+    UserticketsModule,
     ActivityeventsModule, JwtModule.register({
       secret: process.env.JWT_ACCESS_TOKEN_SECRET,
       signOptions: { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION_TIME },
