@@ -626,6 +626,7 @@ export class UserticketsController {
     var assignto = null;
     var descending = null;
     var iduser = null;
+    var close = null;
 
     const messages = {
       "info": ["The process successful"],
@@ -641,7 +642,7 @@ export class UserticketsController {
     enddate = request_json["enddate"];
     assignto = request_json["assignto"];
     descending = request_json["descending"];
-    iduser = request_json["iduser"];
+    close = request_json["close"];
     if (request_json["page"] !== undefined) {
       page = request_json["page"];
     } else {
@@ -654,7 +655,7 @@ export class UserticketsController {
       throw new BadRequestException("Unabled to proceed");
     }
 
-    data = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, page, limit, descending, iduser);
+    data = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, page, limit, descending, iduser, close);
 
 
     var total = null;
@@ -662,10 +663,10 @@ export class UserticketsController {
     var totalallrow = null;
     var totalpage = null;
     total = data.length;
-    let datasearch = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, 0, 0, descending, iduser);
+    let datasearch = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, 0, 0, descending, iduser, close);
     totalsearch = datasearch.length;
 
-    let dataall = await this.userticketsService.filterdata(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0, 0, descending, undefined);
+    let dataall = await this.userticketsService.filterdata(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0, 0, descending, undefined, undefined);
     totalallrow = dataall.length;
 
     var tpage = null;
