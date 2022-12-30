@@ -168,6 +168,7 @@ export class UtilsService {
     //SET VARIABLE
     let title_send = "";
     let body_send = { message: "" };
+    let body_send2 = "";
 
     let body_save_id = "";
     let body_save_en = "";
@@ -261,6 +262,14 @@ export class UtilsService {
       body_send.message = body_save_id
     }
 
+    if (eventType == "KYC") {
+      if (langIso_receiverParty == "en") {
+        body_send2 = body_save_en
+      } else {
+        body_send2 = body_save_id
+      }
+    }
+
     //SET RECEIVER OR SENDER
     var senderOrReceiverInfo = {
       fullName: (profile_senderParty.fullName != undefined) ? profile_senderParty.fullName : null,
@@ -278,7 +287,11 @@ export class UtilsService {
     var device_user = [];
     var getDate = await this.getDateTimeString();
     for (var i = 0; i < datadevice.length; i++) {
-      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send), tag: getDate } });
+      if (eventType == "KYC") {
+        await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send), tag: getDate } });
+      } else {
+        await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body_send2, tag: getDate } });
+      }
       device_user.push(datadevice[i].deviceID)
     }
 
