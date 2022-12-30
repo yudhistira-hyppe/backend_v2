@@ -1235,6 +1235,20 @@ export class ContenteventsService {
     return this.ContenteventsModel.aggregate(
 
 [
+
+  {
+      $set: {
+            "storyDate": 
+            {
+                "$dateToString": {
+                    "format": "%Y-%m-%d %H:%M:%S",
+                    "date": {
+                        $add: [new Date(), - 61200000]
+                    }
+                }
+            }
+        }
+    },  
     {
         $match: 
         {
@@ -1374,6 +1388,7 @@ export class ContenteventsService {
                                     "mediaUri": 1,
                                     "mediaThumbEndpoint": 1,
                                     "mediaThumbUri": 1,
+                                    "mediaType": 1,
                                     
                                 }
                             }
@@ -1692,7 +1707,7 @@ export class ContenteventsService {
                 }
             ],
             //vid
-            "vid": [
+            "video": [
                 {
                     $sort: {
                         "createdAt": - 1
@@ -1786,6 +1801,7 @@ export class ContenteventsService {
                                     "mediaUri": 1,
                                     "mediaThumbEndpoint": 1,
                                     "mediaThumbUri": 1,
+                                    "mediaType": 1,
                                     
                                 }
                             }
@@ -2198,7 +2214,7 @@ export class ContenteventsService {
                                     "mediaUri": 1,
                                     "mediaThumbEndpoint": 1,
                                     "mediaThumbUri": 1,
-                                    
+                                    "mediaType": 1,
                                 }
                             }
                         ],
@@ -2566,7 +2582,11 @@ export class ContenteventsService {
                                                 }
                                             }
                                         },
-                                        
+                                        {
+                                          $expr: {
+                                              $gte: ["$createdAt", "$storyDate", ]
+                                          }
+                                      },
                                     ]
                                 }
                             },
@@ -2610,7 +2630,7 @@ export class ContenteventsService {
                                     "mediaUri": 1,
                                     "mediaThumbEndpoint": 1,
                                     "mediaThumbUri": 1,
-                                    
+                                    "mediaType": 1,
                                 }
                             }
                         ],
