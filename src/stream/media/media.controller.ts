@@ -727,6 +727,7 @@ export class MediaController {
                 return face_detect_selfiepict;
             } else {
                 if (face_detect_selfiepict.FaceDetails.length == 0) {
+                    await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REVIEW');
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.status = 'FAILED';
                     _CreateMediaproofpictsDto.state = 'Kesalahan Selfie Pict';
@@ -750,6 +751,7 @@ export class MediaController {
                     );
                 }
                 if (face_detect_cardPict.FaceDetails.length == 0) {
+                    await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_REVIEW');
                     var _CreateMediaproofpictsDto = new CreateMediaproofpictsDto();
                     _CreateMediaproofpictsDto.state = 'KTP Pict';
                     iduserbasic = datauserbasicsService._id;

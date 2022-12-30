@@ -203,13 +203,17 @@ export class UtilsService {
       if (Templates_.subject_id != undefined) {
         if (Templates_.subject_id.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
+        } else if (Templates_.subject_id.toString() == "Hi, ${user_name}") {
+          title_send = "Hi, @" + get_username_senderParty;
         } else {
           title_send = Templates_.subject.toString();
         }
       } else {
         if (Templates_.subject.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
-        } else {
+        } else if (Templates_.subject.toString() == "Hi, ${user_name}") {
+          title_send = "Hi, @" + get_username_senderParty;
+        }else {
           title_send = Templates_.subject.toString();
         }
       }
@@ -241,8 +245,13 @@ export class UtilsService {
         body_send['postType'] = postType
       }
 
-      body_save_id = body_save_id_.toString();
-      body_save_en = body_save_en_.toString();
+      if (eventType == "KYC") {
+        body_save_id = body_save_id_.toString().replace("${user_name}", get_username_senderParty)
+        body_save_en = body_save_en_.toString().replace("${user_name}", get_username_senderParty)
+      } else {
+        body_save_id = body_save_id_.toString();
+        body_save_en = body_save_en_.toString();
+      }
     }
 
     //SET BODY SEND

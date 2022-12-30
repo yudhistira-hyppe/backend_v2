@@ -2060,7 +2060,7 @@ export class UserbasicsService {
       //     as: 'contentevents_data'
       //   }
       // },
-      { $group: { _id: null, amount: { $sum: "$kredit" } } },
+      { $group: { _id: null, kredit: { $sum: "$kredit" } } },
       {
         $project: {
           contentevents_data: '$accountbalances_data',
