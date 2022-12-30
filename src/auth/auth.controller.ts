@@ -38,6 +38,7 @@ import { ErrorHandler } from '../utils/error.handler';
 import { MediaprofilepictsService } from '../content/mediaprofilepicts/mediaprofilepicts.service';
 import { MediaproofpictsService } from '../content/mediaproofpicts/mediaproofpicts.service';
 import { UserticketsService } from '../trans/usertickets/usertickets.service';
+import { UserticketdetailsService } from '../trans/usertickets/userticketdetails/userticketdetails.service';
 import mongoose from 'mongoose';
 import { Int32 } from 'mongodb';
 import { ProfileDTO } from '../utils/data/Profile';
@@ -79,6 +80,7 @@ export class AuthController {
     private mediaprofilepictsService: MediaprofilepictsService,
     private mediaproofpictsService: MediaproofpictsService,
     private userticketsService: UserticketsService,
+    private userticketdetailsService: UserticketdetailsService,
   ) { }
 
   @UseGuards(LocalAuthGuard)
@@ -1105,6 +1107,56 @@ export class AuthController {
     if ((id != undefined) && (token != undefined) && (email != undefined) && (index != undefined)) {
       if (await this.utilsService.validasiTokenEmailParam(token, email)) {
         var mediaproofpicts = await this.userticketsService.findOneid(id);
+        if (await this.utilsService.ceckData(mediaproofpicts)) {
+          var mediaproofpicts_SupportfsSourceUri = '';
+          var mediaMime = "";
+          if (mediaproofpicts != null) {
+            if (mediaproofpicts.fsSourceUri != null) {
+              mediaproofpicts_SupportfsSourceUri = mediaproofpicts.fsSourceUri[index].toString();
+            }
+          }
+          if (mediaproofpicts.mediaMime != undefined) {
+            mediaMime = mediaproofpicts.mediaMime.toString();
+          } else {
+            mediaMime = "image/jpeg";
+          }
+          if (mediaproofpicts_SupportfsSourceUri != '') {
+            // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
+            // const response_ = await fetch(url);
+            // const blob = await response_.blob();
+            // const arrayBuffer = await blob.arrayBuffer();
+            // const buffer = Buffer.from(arrayBuffer);
+            var data = await this.authService.profilePict(mediaproofpicts_SupportfsSourceUri);
+            if (data != null) {
+              response.set("Content-Type", "image/png");
+              response.send(data);
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        } else {
+          response.send(null);
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
+
+  @Get('ticket/detail/supportfile/:id/:index')
+  @HttpCode(HttpStatus.OK)
+  async supportfileticketdetail(
+    @Param('id') id: string,
+    @Param('index') index: number,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response) {
+    if ((id != undefined) && (token != undefined) && (email != undefined) && (index != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var mediaproofpicts = await this.userticketdetailsService.findOneid(id);
         if (await this.utilsService.ceckData(mediaproofpicts)) {
           var mediaproofpicts_SupportfsSourceUri = '';
           var mediaMime = "";
