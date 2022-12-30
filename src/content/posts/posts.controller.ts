@@ -354,13 +354,13 @@ export class PostsController {
 
     var dataTransaction = await this.transactionsPostService.findpostid(body.postID);
     if (await this.utilsService.ceckData(dataTransaction)){
-      if (lang == "en") {
+      if (lang == "id") {
         await this.errorHandler.generateNotAcceptableException(
-          'ada transaction pending',
+          "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
         );
       } else {
         await this.errorHandler.generateNotAcceptableException(
-          'ada transaction pending',
+          " Unable to edit the post because it is in the process of payment.",
         );
       }
     }

@@ -41,6 +41,11 @@ export class UserticketsService {
     return data;
   }
 
+  async findOneid(id: string): Promise<Usertickets> {
+    return this.userticketsModel.findOne({ _id: id }).exec();
+  }
+
+
   async retrieve(id: object): Promise<object> {
     const query = await this.userticketsModel.aggregate([
       {

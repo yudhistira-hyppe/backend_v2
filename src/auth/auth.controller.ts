@@ -37,6 +37,7 @@ import { LanguagesService } from '../infra/languages/languages.service';
 import { ErrorHandler } from '../utils/error.handler';
 import { MediaprofilepictsService } from '../content/mediaprofilepicts/mediaprofilepicts.service';
 import { MediaproofpictsService } from '../content/mediaproofpicts/mediaproofpicts.service';
+import { UserticketsService } from '../trans/usertickets/usertickets.service';
 import mongoose from 'mongoose';
 import { Int32 } from 'mongodb';
 import { ProfileDTO } from '../utils/data/Profile';
@@ -77,6 +78,7 @@ export class AuthController {
     private socmed: SocmedService,
     private mediaprofilepictsService: MediaprofilepictsService,
     private mediaproofpictsService: MediaproofpictsService,
+    private userticketsService: UserticketsService,
   ) { }
 
   @UseGuards(LocalAuthGuard)
@@ -428,7 +430,7 @@ export class AuthController {
         await this.errorHandler.generateNotAcceptableException(
           'No users were found. Please check again.',
         );
-      }else{
+      } else {
         await this.errorHandler.generateNotAcceptableException(
           'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
         );
@@ -1093,6 +1095,56 @@ export class AuthController {
     }
   }
 
+  @Get('ticket/supportfile/:id/:index')
+  @HttpCode(HttpStatus.OK)
+  async supportfileticket(
+    @Param('id') id: string,
+    @Param('index') index: number,
+    @Query('x-auth-token') token: string,
+    @Query('x-auth-user') email: string, @Res() response) {
+    if ((id != undefined) && (token != undefined) && (email != undefined) && (index != undefined)) {
+      if (await this.utilsService.validasiTokenEmailParam(token, email)) {
+        var mediaproofpicts = await this.userticketsService.findOneid(id);
+        if (await this.utilsService.ceckData(mediaproofpicts)) {
+          var mediaproofpicts_SupportfsSourceUri = '';
+          var mediaMime = "";
+          if (mediaproofpicts != null) {
+            if (mediaproofpicts.fsSourceUri != null) {
+              mediaproofpicts_SupportfsSourceUri = mediaproofpicts.fsSourceUri[index].toString();
+            }
+          }
+          if (mediaproofpicts.mediaMime != undefined) {
+            mediaMime = mediaproofpicts.mediaMime.toString();
+          } else {
+            mediaMime = "image/jpeg";
+          }
+          if (mediaproofpicts_SupportfsSourceUri != '') {
+            // const url = "http://172.16.0.5:9555/localrepo/61db97a9548ae516042f0bff/profilepict/0f0f5137-93dd-4c96-a584-bcfde56a5d0b_0001.jpeg";
+            // const response_ = await fetch(url);
+            // const blob = await response_.blob();
+            // const arrayBuffer = await blob.arrayBuffer();
+            // const buffer = Buffer.from(arrayBuffer);
+            var data = await this.authService.profilePict(mediaproofpicts_SupportfsSourceUri);
+            if (data != null) {
+              response.set("Content-Type", "image/png");
+              response.send(data);
+            } else {
+              response.send(null);
+            }
+          } else {
+            response.send(null);
+          }
+        } else {
+          response.send(null);
+        }
+      } else {
+        response.send(null);
+      }
+    } else {
+      response.send(null);
+    }
+  }
+
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Put('api/userauths/:email')
@@ -1214,43 +1266,43 @@ export class AuthController {
         'Unabled to proceed',
       );
     }
-      //Ceck User Userbasics
-      const tmp = await this.userauthsService.findOneUsername(SearchUserbasicDto_.search.toString());
-      if (tmp === undefined) {
-        return {
-          "response_code": 202,
-          "data": [],
-          "messages": {
-            "info": [
-              "The process successful"
-            ]
-          }
-        };
-      }
+    //Ceck User Userbasics
+    const tmp = await this.userauthsService.findOneUsername(SearchUserbasicDto_.search.toString());
+    if (tmp === undefined) {
+      return {
+        "response_code": 202,
+        "data": [],
+        "messages": {
+          "info": [
+            "The process successful"
+          ]
+        }
+      };
+    }
 
-      const data_userbasics = await this.userbasicsService.findOne(tmp.email.toString());
-      if (await this.utilsService.ceckData(data_userbasics)) {
+    const data_userbasics = await this.userbasicsService.findOne(tmp.email.toString());
+    if (await this.utilsService.ceckData(data_userbasics)) {
 
-        var user_view = headers['x-auth-user'];
-        await this.authService.viewProfile(tmp.email.toString(), user_view);
-        var Data = await this.utilsService.generateProfile(tmp.email.toString(), 'PROFILE');
-        var numPost = await this.postsService.findUserPost(tmp.email.toString());
-        let aNumPost = <any>numPost;
-        Data.insight.posts = <Long>aNumPost;
-        return {
-          "response_code": 202,
-          "data": [Data],
-          "messages": {
-            "info": [
-              "The process successful"
-            ]
-          }
-        };
-      } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed user not found',
-        );
-      }
+      var user_view = headers['x-auth-user'];
+      await this.authService.viewProfile(tmp.email.toString(), user_view);
+      var Data = await this.utilsService.generateProfile(tmp.email.toString(), 'PROFILE');
+      var numPost = await this.postsService.findUserPost(tmp.email.toString());
+      let aNumPost = <any>numPost;
+      Data.insight.posts = <Long>aNumPost;
+      return {
+        "response_code": 202,
+        "data": [Data],
+        "messages": {
+          "info": [
+            "The process successful"
+          ]
+        }
+      };
+    } else {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed user not found',
+      );
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -2961,7 +3013,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Get('api/user/acces/:id')
-  async getAcces(@Param('id') id: string){
+  async getAcces(@Param('id') id: string) {
     var acces = await this.groupService.getAcces(new mongoose.Types.ObjectId(id.toString()));
     return {
       response_code: 202,
