@@ -214,7 +214,7 @@ export class UtilsService {
           title_send = "@" + get_username_senderParty;
         } else if (Templates_.subject.toString() == "Hi, ${user_name}") {
           title_send = "Hi, @" + get_username_senderParty;
-        }else {
+        } else {
           title_send = Templates_.subject.toString();
         }
       }
@@ -389,7 +389,7 @@ export class UtilsService {
     }
     this.logger.log('sendFcmCMod >>> res: ' + JSON.stringify(body_send));
 
-    const datauserbasicsService = await this.userbasicsService.findOne(receiverParty);    
+    const datauserbasicsService = await this.userbasicsService.findOne(receiverParty);
 
     var mediaUri = null;
     var mediaBasePath = null;
@@ -433,7 +433,7 @@ export class UtilsService {
 
     if (result != null) {
       mediaEndpoint = result;
-    }    
+    }
     var senderreceiver = {
       fullName: datauserbasicsService.fullName,
       avatar: {
@@ -443,7 +443,7 @@ export class UtilsService {
         mediaEndpoint: mediaEndpoint
       },
       username: user_userAuth.username.toString()
-    };    
+    };
 
     //SEND FCM
     var datadevice = await this.userdevicesService.findActive(receiverParty);
@@ -576,34 +576,44 @@ export class UtilsService {
 
       if (noinvoice != undefined || noinvoice != "" || noinvoice != null) {
         if (langIso === "id") {
-          bodypayload = { "message": bodyin, "postID": noinvoice, "postType": postType }
-          payload = {
-            notification: {
 
+          payload = {
+
+            notification: {
               title: titlein,
-              body: JSON.stringify(bodypayload),
+              body: bodyin,
               tag: "background"
+            },
+            data: {
+              PostID: noinvoice,
+              PostType: postType
             }
           };
         }
         else if (langIso === "en") {
-          bodypayload = { "message": bodyen, "postID": noinvoice, "postType": postType }
           payload = {
-            notification: {
 
+            notification: {
               title: titleen,
-              body: JSON.stringify(bodypayload),
+              body: bodyen,
               tag: "background"
+            },
+            data: {
+              PostID: noinvoice,
+              PostType: postType
             }
           };
         } else {
-          bodypayload = { "message": bodyin, "postID": noinvoice, "postType": postType }
           payload = {
-            notification: {
 
+            notification: {
               title: titlein,
-              body: JSON.stringify(bodypayload),
+              body: bodyin,
               tag: "background"
+            },
+            data: {
+              PostID: noinvoice,
+              PostType: postType
             }
           };
         }

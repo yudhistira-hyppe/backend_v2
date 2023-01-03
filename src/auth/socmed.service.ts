@@ -27,7 +27,7 @@ import { CitiesService } from '../infra/cities/cities.service';
 import { ReferralService } from '../trans/referral/referral.service';
 import { CreateReferralDto } from '../trans/referral/dto/create-referral.dto';
 import mongoose from 'mongoose';
-import { SeaweedfsService } from '../stream/seaweedfs/seaweedfs.service'; 
+import { SeaweedfsService } from '../stream/seaweedfs/seaweedfs.service';
 import { AdsUserCompareService } from '../trans/ads/adsusercompare/adsusercompare.service';
 import { Long } from 'mongodb';
 import * as fs from 'fs';
@@ -62,10 +62,10 @@ export class SocmedService {
     private errorHandler: ErrorHandler,
     private citiesService: CitiesService,
     private referralService: ReferralService,
-    private seaweedfsService: SeaweedfsService, 
+    private seaweedfsService: SeaweedfsService,
     private adsUserCompareService: AdsUserCompareService,
     private contenteventsService: ContenteventsService,
-    private postsService: PostsService,  
+    private postsService: PostsService,
   ) { }
 
   async signupsosmed(req: any) {
@@ -451,7 +451,7 @@ export class SocmedService {
           for (let i = 0; i < ins.length; i++) {
             let idx = ins[i];
             let ns = idx.namespace;
-            let oid =idx.oid;
+            let oid = idx.oid;
             let inss = await this.interestsRepoService.findOne(String(oid));
             user_interest.push(inss);
           }
@@ -484,7 +484,7 @@ export class SocmedService {
             event: "UPDATE_BIO",
             email: user_email,
             username: username_,
-            idUser: String(datauserbasicsService._id),
+            iduser: String(datauserbasicsService._id),
             isComplete: "false",
             status: "INITIAL",
             refreshToken: datajwtrefreshtoken_data.refresh_token_id
@@ -503,7 +503,7 @@ export class SocmedService {
         );
       }
     } else {
-        
+
       type = 'ENROL';
       CurrentStatus = 'INITIAL';
       CurrentEvent = 'SIGN_UP';
@@ -512,9 +512,9 @@ export class SocmedService {
       //Ceck User ActivityEvent Parent
       var dataactivityevents = null;
       if (user_deviceId != null) {
-        dataactivityevents = await this.activityeventsService.findParent(user_email,user_deviceId,type,false);
+        dataactivityevents = await this.activityeventsService.findParent(user_email, user_deviceId, type, false);
       } else {
-        dataactivityevents = await this.activityeventsService.findParentWitoutDevice(user_email,type,false,);
+        dataactivityevents = await this.activityeventsService.findParentWitoutDevice(user_email, type, false,);
       }
 
       if (!(await this.utilsService.ceckData(dataactivityevents))) {
@@ -822,7 +822,7 @@ export class SocmedService {
                 //await this.contenteventsService.create(CreateContenteventsDto3);
                 await this.contenteventsService.create(CreateContenteventsDto4);
                 await this.insightsService.updateFollower(req.body.referral);
-                await this.insightsService.updateFollowing(req.body.email);                
+                await this.insightsService.updateFollowing(req.body.email);
               } catch (error) {
                 await this.errorHandler.generateNotAcceptableException(
                   'Unabled to proceed Create Refferal. Error:' +

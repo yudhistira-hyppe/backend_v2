@@ -12063,11 +12063,11 @@ export class GetusercontentsService {
     return query;
   }
 
-  async detailcontent(postID: string) {
+  async detailcontent(postID: string, page: number, limit: number) {
     let query = await this.getusercontentsModel.aggregate([
       {
         $match: {
-          postID: "1e761d37-01de-ee65-a94e-735a06934cee"
+          postID: postID
         },
 
       },
@@ -12913,7 +12913,6 @@ export class GetusercontentsService {
 
         }
       },
-
       {
         "$lookup": {
           "from": "contentevents",
@@ -12986,7 +12985,6 @@ export class GetusercontentsService {
 
               }
             },
-
             {
               $project: {
 
@@ -13331,7 +13329,6 @@ export class GetusercontentsService {
 
               }
             },
-
             {
               $project: {
 
@@ -13369,7 +13366,6 @@ export class GetusercontentsService {
                 }
               }
             }
-
           ],
 
         },
@@ -13410,11 +13406,12 @@ export class GetusercontentsService {
                 status: "Success"
               }
             },
+            { $sort: { timestamp: -1 } },
             {
-              $skip: 0
+              $skip: (page * limit)
             },
             {
-              $limit: 10
+              $limit: limit
             },
             {
               "$lookup": {
@@ -13599,11 +13596,12 @@ export class GetusercontentsService {
                 active: true
               }
             },
+            { $sort: { createdAt: -1 } },
             {
-              $skip: 0
+              $skip: (page * limit)
             },
             {
-              $limit: 10
+              $limit: limit
             },
             {
               "$lookup": {
@@ -13665,7 +13663,7 @@ export class GetusercontentsService {
             },
             {
               $project: {
-
+                emailsender: '$authsender.email',
                 sender: '$authsender.username',
                 authreceive: {
                   $arrayElemAt: ['$authreceiver', 0]
@@ -13679,7 +13677,7 @@ export class GetusercontentsService {
             },
             {
               $project: {
-
+                emailsender: 1,
                 sender: 1,
                 receiver: '$authreceive.username',
                 postID: 1,
@@ -13687,14 +13685,132 @@ export class GetusercontentsService {
                 createdAt: 1,
                 active: 1
               }
-            }
+            },
+            {
+              "$lookup": {
+                "from": "userbasics",
+                "as": "ubasic",
+                "let": {
+                  "local_id": "$emailsender"
+                },
+                "pipeline": [
+                  {
+                    "$match": {
+                      "$expr": {
+                        "$eq": [
+                          "$email",
+                          "$$local_id"
+                        ]
+                      }
+                    }
+                  },
+
+                ],
+
+              }
+            },
+            {
+              $project: {
+                ubasic: {
+                  $arrayElemAt: ['$ubasic', 0]
+                },
+                sender: 1,
+                receiver: 1,
+                postID: 1,
+                txtMessages: 1,
+                createdAt: 1,
+                active: 1,
+                emailsender: 1
+
+              }
+            },
+            {
+              $project: {
+
+                sender: 1,
+                receiver: 1,
+                postID: 1,
+                txtMessages: 1,
+                createdAt: 1,
+                active: 1,
+                emailsender: 1,
+                ubasic: 1
+
+              }
+            },
+            {
+              $project: {
+
+                sender: 1,
+                receiver: 1,
+                postID: 1,
+                txtMessages: 1,
+                createdAt: 1,
+                active: 1,
+                emailsender: 1,
+
+                profilePict: '$ubasic.profilePict.$id'
+              }
+            },
+            {
+              "$lookup": {
+                from: "mediaprofilepicts",
+                as: "avatar",
+                let: {
+                  localID: '$profilePict'
+                },
+                pipeline: [
+                  {
+                    $match:
+                    {
+
+                      $expr: {
+                        $eq: ['$mediaID', '$$localID']
+                      }
+                    }
+                  },
+                  {
+                    $project: {
+                      "mediaBasePath": 1,
+                      "mediaUri": 1,
+                      "originalName": 1,
+                      "fsSourceUri": 1,
+                      "fsSourceName": 1,
+                      "fsTargetUri": 1,
+                      "mediaType": 1,
+                      "mediaEndpoint": {
+                        "$concat": ["/profilepict/", "$mediaID"]
+                      }
+                    }
+                  }
+                ],
+
+              }
+            },
+
+            {
+              $project: {
+
+                sender: 1,
+                receiver: 1,
+                postID: 1,
+                txtMessages: 1,
+                createdAt: 1,
+                active: 1,
+                emailsender: 1,
+
+                avatar: 1
+              }
+            },
+
           ],
 
         }
       },
 
-
     ]);
+
+    return query;
 
   }
 
