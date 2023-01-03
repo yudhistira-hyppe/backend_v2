@@ -231,9 +231,12 @@ export class UtilsService {
       if (event == "ADS VIEW" || event == "ADS CLICK") {
         body_save_id = body_save_id_get.toString().replace("${rewards}", customText)
         body_save_en = body_save_en_get.toString().replace("${rewards}", customText)
+      } else if (eventType == "REACTION") {
+        body_save_id = body_save_id_get.toString().replace("${emoticon}", customText)
+        body_save_en = body_save_en_get.toString().replace("${emoticon}", customText)
       } else {
-        body_save_id = body_save_id_get.toString().replace("${post_type}", "Hyppe" + customText)
-        body_save_en = body_save_en_get.toString().replace("${post_type}", "Hyppe" + customText)
+        body_save_id = body_save_id_get.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+        body_save_en = body_save_en_get.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
       }
     } else {
       if (eventType == "FOLLOWER" || eventType == "FOLLOWING") {
@@ -247,9 +250,6 @@ export class UtilsService {
       if (eventType == "KYC") {
         body_save_id = body_save_id_get.toString().replace("${user_name}", get_username_senderParty)
         body_save_en = body_save_en_get.toString().replace("${user_name}", get_username_senderParty)
-      } else if (eventType == "REACTION") {
-        body_save_id = body_save_id_get.toString().replace("${emoticon}", get_username_senderParty)
-        body_save_en = body_save_en_get.toString().replace("${emoticon}", get_username_senderParty)
       } else {
         body_save_id = body_save_id_get.toString();
         body_save_en = body_save_en_get.toString();
