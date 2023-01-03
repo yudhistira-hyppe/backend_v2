@@ -35,6 +35,10 @@ export class ReactionsRepoService {
     return this.ReactionsrepoModel.find().exec();
   }
 
+  async findByUrl(URL_: string): Promise<Reactionsrepo> {
+    return this.ReactionsrepoModel.findOne({ URL: URL_ }).exec();
+  }
+
   async findOne(id: string): Promise<Reactionsrepo> {
     return this.ReactionsrepoModel.findOne({ _id: id }).exec();
   }

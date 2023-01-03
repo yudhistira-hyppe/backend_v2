@@ -21,6 +21,7 @@ import { Posts } from '../posts/schemas/posts.schema';
 import { DisqusContentEventService } from './discus/disqusdisquscontentevent.service';
 import { DisqusContentEventController } from './discus/disquscontentevent.controller';
 import { Disquslogs } from '../disquslogs/schemas/disquslogs.schema';
+import { ReactionsRepoService } from '../../infra/reactions_repo/reactions_repo.service'; 
 
 
 @Controller()
@@ -34,7 +35,8 @@ export class ContenteventsController {
     private readonly postsService: PostDisqusService,
     private readonly disquscontactsService: DisquscontactsService,
     private readonly disquslogsService: DisquslogsService, 
-    private readonly disqusContentEventService: DisqusContentEventService, 
+    private readonly disqusContentEventService: DisqusContentEventService,
+    private readonly reactionsRepoService: ReactionsRepoService, 
     private readonly disqusContentEventController: DisqusContentEventController,
     private readonly errorHandler: ErrorHandler) { }
 
@@ -801,13 +803,14 @@ export class ContenteventsController {
         }
         
         console.log("retVal",retVal);
-
+      var dataEmote = await this.reactionsRepoService.findByUrl(request.body.reactionUri);
+      var Emote = (await this.utilsService.ceckData(dataEmote)) ? dataEmote.icon:"";
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);
           await this.postsService.updateReaction(email_receiverParty, request.body.postID);
           await this.insightsService.updateReactions(email_user);
-          this.sendInteractiveFCM(email_receiverParty, "REACTION", request.body.postID, email_user);
+          this.sendInteractiveFCM(email_receiverParty, "REACTION", request.body.postID, email_user, Emote);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
@@ -825,7 +828,7 @@ export class ContenteventsController {
     }
   }
 
-  async sendInteractiveFCM(email: string, type: string, postID: string, receiverParty: string) {
+  async sendInteractiveFCM(email: string, type: string, postID: string, receiverParty: string, customText?: any) {
     // var Templates_ = new TemplatesRepo();
     // Templates_ = await this.utilsService.getTemplate_repo(type, 'NOTIFICATION');
 
@@ -870,7 +873,7 @@ export class ContenteventsController {
       }
     } else {
       if (type == "REACTION") {
-        await this.utilsService.sendFcmV2(email, receiverParty, eventType, event, type, postID, post_type)
+        await this.utilsService.sendFcmV2(email, receiverParty, eventType, event, type, postID, post_type, null, customText)
         //await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event, postID, post_type);
       } else {
         await this.utilsService.sendFcmV2(email, receiverParty, eventType, event, type)

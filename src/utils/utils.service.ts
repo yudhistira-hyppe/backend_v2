@@ -167,14 +167,14 @@ export class UtilsService {
 
     //SET VARIABLE
     let title_send = "";
-    let body_send = { message: "" };
-    let body_send2 = "";
+    let body_send = "";
+    let data_send = {};
 
     let body_save_id = "";
     let body_save_en = "";
 
-    let body_save_id_ = "";
-    let body_save_en_ = "";
+    let body_save_id_get = "";
+    let body_save_en_get = "";
 
     //CECK EVENTTYPE
     if (eventType == "COMMENT_TAG") {
@@ -182,9 +182,9 @@ export class UtilsService {
     }
 
     //SET TITLE AND BODY
+    body_save_en_get = Templates_.body_detail.toString();
+    body_save_id_get = Templates_.body_detail_id.toString();
     if (langIso_receiverParty == "en") {
-      body_save_en_ = Templates_.body_detail.toString();
-      body_save_id_ = Templates_.body_detail_id.toString();
       if (Templates_.subject != undefined) {
         if (Templates_.subject.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
@@ -199,8 +199,6 @@ export class UtilsService {
         }
       }
     } else {
-      body_save_en_ = Templates_.body_detail.toString();
-      body_save_id_ = Templates_.body_detail_id.toString();
       if (Templates_.subject_id != undefined) {
         if (Templates_.subject_id.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
@@ -223,52 +221,55 @@ export class UtilsService {
     //SET BODY SAVE
     if ((eventType == "REACTION") || (eventType == "COMMENT") || (eventType == "LIKE") || (eventType == "TRANSACTION")) {
       if (event == "BOOST_SUCCES" || event == "ADS VIEW" || event == "ADS CLICK") {
-        body_send['postID'] = idtransaction
-        body_send['postType'] = eventType
+        data_send['postID'] = idtransaction
+        data_send['postType'] = eventType
       } else {
-        body_send['postID'] = postID
-        body_send['postType'] = postType
+        data_send['postID'] = postID
+        data_send['postType'] = postType
       }
 
       if (event == "ADS VIEW" || event == "ADS CLICK") {
-        body_save_id = body_save_id_.toString().replace("${rewards}", customText)
-        body_save_en = body_save_en_.toString().replace("${rewards}", customText)
+        body_save_id = body_save_id_get.toString().replace("${rewards}", customText)
+        body_save_en = body_save_en_get.toString().replace("${rewards}", customText)
       } else {
-        body_save_id = body_save_id_.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
-        body_save_en = body_save_en_.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+        body_save_id = body_save_id_get.toString().replace("${post_type}", "Hyppe" + customText)
+        body_save_en = body_save_en_get.toString().replace("${post_type}", "Hyppe" + customText)
       }
     } else {
       if (eventType == "FOLLOWER" || eventType == "FOLLOWING") {
-        body_send['postType'] = eventType
-        body_send['postID'] = get_username_senderParty
+        data_send['postType'] = eventType
+        data_send['postID'] = get_username_senderParty
       } else {
-        body_send['postID'] = postID
-        body_send['postType'] = postType
+        data_send['postID'] = postID
+        data_send['postType'] = postType
       }
 
       if (eventType == "KYC") {
-        body_save_id = body_save_id_.toString().replace("${user_name}", get_username_senderParty)
-        body_save_en = body_save_en_.toString().replace("${user_name}", get_username_senderParty)
-      } else {
-        body_save_id = body_save_id_.toString();
-        body_save_en = body_save_en_.toString();
+        body_save_id = body_save_id_get.toString().replace("${user_name}", get_username_senderParty)
+        body_save_en = body_save_en_get.toString().replace("${user_name}", get_username_senderParty)
+      } else if (eventType == "KYC") {
+        body_save_id = body_save_id_get.toString().replace("${emoticon}", get_username_senderParty)
+        body_save_en = body_save_en_get.toString().replace("${emoticon}", get_username_senderParty)
+      }else{
+        body_save_id = body_save_id_get.toString();
+        body_save_en = body_save_en_get.toString();
       }
     }
 
     //SET BODY SEND
     if (langIso_receiverParty == "en") {
-      body_send.message = body_save_en
+      body_send = body_save_en
     } else {
-      body_send.message = body_save_id
+      body_send = body_save_id
     }
 
-    if (eventType == "KYC") {
-      if (langIso_receiverParty == "en") {
-        body_send2 = body_save_en
-      } else {
-        body_send2 = body_save_id
-      }
-    }
+    // if (eventType == "KYC") {
+    //   if (langIso_receiverParty == "en") {
+    //     body_send = body_save_en
+    //   } else {
+    //     body_send = body_save_id
+    //   }
+    // }
 
     //SET RECEIVER OR SENDER
     var senderOrReceiverInfo = {
@@ -287,11 +288,15 @@ export class UtilsService {
     var device_user = [];
     var getDate = await this.getDateTimeString();
     for (var i = 0; i < datadevice.length; i++) {
-      if (eventType == "KYC") {
-        await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send), tag: getDate } });
-      } else {
-        await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body_send2, tag: getDate } });
+      var notification = {
+        notification: {
+          title: title_send,
+          body: body_send,
+          tag: getDate
+        },
+        data: data_send,
       }
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, notification );
       device_user.push(datadevice[i].deviceID)
     }
 
@@ -356,7 +361,8 @@ export class UtilsService {
 
     //SET VARIABLE
     let title_send = "";
-    let body_send = {};
+    let body_send = "";
+    let data_send = {};
 
     let body_save_id = "";
     let body_save_en = "";
@@ -376,15 +382,15 @@ export class UtilsService {
     body_save_en = Templates_.body_detail.toString();
     body_save_id = Templates_.body_detail_id.toString();
 
-    body_send['postID'] = postID
-    body_send['postType'] = postType
+    data_send['postID'] = postID
+    data_send['postType'] = postType
 
     //SET BODY SEND
     if (langIso_receiverParty == "en") {
-      body_send['message'] = body_save_en;
+      body_send = body_save_en;
       this.logger.log('sendFcmCMod >>> body en: ' + body_save_en);
     } else {
-      body_send['message'] = body_save_id;
+      body_send = body_save_id;
       this.logger.log('sendFcmCMod >>> body en: ' + body_save_id);
     }
     this.logger.log('sendFcmCMod >>> res: ' + JSON.stringify(body_send));
@@ -450,7 +456,14 @@ export class UtilsService {
     var device_user = [];
     for (var i = 0; i < datadevice.length; i++) {
       this.logger.log('sendFcmCMod >>> send: title-> ' + title_send + ' body: ' + JSON.stringify(body_send));
-      await admin.messaging().sendToDevice(datadevice[i].deviceID, { notification: { title: title_send, body: JSON.stringify(body_send) } });
+      var notification = {
+        notification: {
+          title: title_send,
+          body: body_send,
+        },
+        data: data_send,
+      }
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
       device_user.push(datadevice[i].deviceID)
     }
 
