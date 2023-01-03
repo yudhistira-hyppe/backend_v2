@@ -13,8 +13,10 @@ import { DisquscontactsModule } from '../disquscontacts/disquscontacts.module';
 import { DisquslogsModule } from '../disquslogs/disquslogs.module';
 import { DisqusContentEventModule } from './discus/disqusdisquscontentevent.module';
 import { DisqusContentEventController } from './discus/disquscontentevent.controller';
+import { ReactionsRepoModule } from '../../infra/reactions_repo/reactions_repo.module';
 @Module({
     imports: [
+        ReactionsRepoModule,
         DisqusContentEventModule,
         DisquslogsModule,
         DisquscontactsModule,
