@@ -2030,7 +2030,7 @@ export class GetusercontentsController {
     @Post('api/getusercontents/database/details')
     @UseGuards(JwtAuthGuard)
     async detailcontent(@Req() request: Request): Promise<any> {
-        var data = null;
+
         var postID = null;
         var page = null;
         var limit = null;
@@ -2057,55 +2057,282 @@ export class GetusercontentsController {
             lengdetail = 0;
         }
         if (lengdetail > 0) {
-            data = {
 
-                "_id": datadetail[0]._id,
-                "postID": datadetail[0].postID,
-                "email": datadetail[0].email,
-                "postType": datadetail[0].postType,
-                "description": datadetail[0].description,
-                "active": datadetail[0].active,
-                "createdAt": datadetail[0].createdAt,
-                "updatedAt": datadetail[0].updatedAt,
-                "visibility": datadetail[0].visibility,
-                "location": datadetail[0].location,
-                "tags": datadetail[0].tags,
-                "allowComments": datadetail[0].allowComments,
-                "likes": datadetail[0].likes,
-                "views": datadetail[0].views,
-                "shares": datadetail[0].shares,
-                "tagPeople": datadetail[0].tagPeople,
-                "tagDescription": datadetail[0].tagDescription,
-                "musicId": datadetail[0].musicId,
-                "kategori": datadetail[0].kategori,
-                "username": datadetail[0].username,
-                "saleAmount": datadetail[0].saleAmount,
-                "saleView": datadetail[0].saleView,
-                "saleLike": datadetail[0].saleLike,
-                "musicTitle": datadetail[0].musicTitle,
-                "albumName": datadetail[0].albumName,
-                "type": datadetail[0].type,
-                "kepemilikan": datadetail[0].kepemilikan,
-                "statusJual": datadetail[0].statusJual,
-                "mediaType": datadetail[0].mediaType,
-                "mediaThumbEndpoint": datadetail[0].mediaThumbEndpoint,
-                "mediaEndpoint": datadetail[0].mediaEndpoint,
-                "apsaraId": datadetail[0].apsaraId,
-                "apsara": datadetail[0].apsara,
-                "originalName": datadetail[0].originalName,
-                "age": datadetail[0].age,
-                "gender": datadetail[0].gender,
-                "wilayah": datadetail[0].wilayah,
-                "riwayat": datadetail[0].riwayat,
-                "comment": datadetail[0].comment,
-            };
-        } else {
+
+            var dataquery = null;
+            dataquery = datadetail;
+            var datanew = null;
+            var data = [];
+            let pict: String[] = [];
+            var objk = {};
+            var type = null;
+            var idapsara = null;
+            var apsara = null;
+            var idapsaradefine = null;
+            var apsaradefine = null;
+            var dataage = null;
+            var lengage = null;
+            var sumage = null;
+            var objcoun = {};
+            var dataSum = [];
+
+            var datagender = null;
+            var lenggender = null;
+            var sumgender = null;
+            var objcoungender = {};
+            var dataSumgender = [];
+
+            var datawilayah = null;
+            var lengwilayah = null;
+            var sumwilayah = null;
+            var objcounwilayah = {};
+            var dataSumwilayah = [];
+            var createdate = datadetail[0].createdAt;
+
+            var subtahun = createdate.substring(0, 4);
+            var subbulan = createdate.substring(7, 5);
+            var subtanggal = createdate.substring(10, 8);
+            var datatimestr = subtahun + "-" + subbulan + "-" + subtanggal;
+
+
+
+
+            var today = new Date();
+            var date1 = new Date(datatimestr);
+
+
+            var diffDays = Math.floor(today.getTime() - date1.getTime()) / (1000 * 60 * 60 * 24);
+            var diffsec = Math.round(today.getTime() - date1.getTime()) / (1000) % 60;
+            var diffMins = Math.round(today.getTime() - date1.getTime()) / (1000 * 60) % 60;
+            var diffHrs = Math.floor(today.getTime() - date1.getTime()) / (1000 * 60 * 60) % 24;
+            var days = diffDays.toFixed(0);
+            var hours = diffHrs.toFixed(0);
+            var minutes = diffMins.toFixed(0);;
+            var seconds = diffsec.toFixed(0);
+            try {
+                dataage = datadetail[0].age;
+                lengage = dataage.length;
+            } catch (e) {
+                lengage = 0;
+            }
+            if (lengage > 0) {
+
+                for (let i = 0; i < lengage; i++) {
+                    sumage += dataage[i].count;
+
+                }
+
+            } else {
+                sumage = 0;
+            }
+
+            if (lengage > 0) {
+
+                for (let i = 0; i < lengage; i++) {
+                    let count = dataage[i].count;
+
+
+                    let persen = count * 100 / sumage;
+                    objcoun = {
+
+                        count: count,
+                        persen: persen.toFixed(2)
+                    }
+                    dataSum.push(objcoun);
+                }
+
+            } else {
+                dataSum = [];
+            }
+
+            try {
+                datagender = datadetail[0].gender;
+                lenggender = datagender.length;
+            } catch (e) {
+                lenggender = 0;
+            }
+            if (lenggender > 0) {
+
+                for (let i = 0; i < lenggender; i++) {
+                    sumgender += datagender[i].count;
+
+                }
+
+            } else {
+                sumgender = 0;
+            }
+
+            if (lenggender > 0) {
+
+                for (let i = 0; i < lenggender; i++) {
+                    let count = datagender[i].count;
+
+
+                    let persen = count * 100 / sumgender;
+                    objcoungender = {
+
+                        count: count,
+                        persen: persen.toFixed(2)
+                    }
+                    dataSumgender.push(objcoungender);
+                }
+
+            } else {
+                dataSumgender = [];
+            }
+
+            try {
+                datawilayah = datadetail[0].wilayah;
+                lengwilayah = datawilayah.length;
+            } catch (e) {
+                lengwilayah = 0;
+            }
+            if (lengwilayah > 0) {
+
+                for (let i = 0; i < lengwilayah; i++) {
+                    sumwilayah += datawilayah[i].count;
+
+                }
+
+            } else {
+                sumwilayah = 0;
+            }
+
+            if (lengwilayah > 0) {
+
+                for (let i = 0; i < lengwilayah; i++) {
+                    let count = datawilayah[i].count;
+
+
+                    let persen = count * 100 / sumwilayah;
+                    objcounwilayah = {
+
+                        count: count,
+                        persen: persen.toFixed(2)
+                    }
+                    dataSumwilayah.push(objcounwilayah);
+                }
+
+            } else {
+                dataSumwilayah = [];
+            }
+            for (var i = 0; i < dataquery.length; i++) {
+                try {
+                    idapsara = dataquery[i].apsaraId;
+                } catch (e) {
+                    idapsara = "";
+                }
+                try {
+                    apsara = dataquery[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null || idapsara === "other") {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
+                var type = dataquery[i].postType;
+                pict = [idapsara];
+
+                if (idapsara === "") {
+
+                } else {
+                    if (type === "pict") {
+
+                        try {
+                            datanew = await this.postContentService.getImageApsara(pict);
+                        } catch (e) {
+                            datanew = {};
+                        }
+                    }
+                    else if (type === "vid") {
+                        try {
+                            datanew = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datanew = {};
+                        }
+
+                    }
+                    else if (type === "story") {
+                        try {
+                            datanew = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datanew = {};
+                        }
+                    }
+                    else if (type === "diary") {
+                        try {
+                            datanew = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datanew = {};
+                        }
+                    }
+                }
+                objk = {
+
+                    "_id": datadetail[0]._id,
+                    "postID": datadetail[0].postID,
+                    "email": datadetail[0].email,
+                    "postType": datadetail[0].postType,
+                    "description": datadetail[0].description,
+                    "active": datadetail[0].active,
+                    "createdAt": datadetail[0].createdAt,
+                    "updatedAt": datadetail[0].updatedAt,
+                    "visibility": datadetail[0].visibility,
+                    "location": datadetail[0].location,
+                    "tags": datadetail[0].tags,
+                    "allowComments": datadetail[0].allowComments,
+                    "likes": datadetail[0].likes,
+                    "views": datadetail[0].views,
+                    "shares": datadetail[0].shares,
+                    "tagPeople": datadetail[0].tagPeople,
+                    "tagDescription": datadetail[0].tagDescription,
+                    "musicId": datadetail[0].musicId,
+                    "kategori": datadetail[0].kategori,
+                    "username": datadetail[0].username,
+                    "saleAmount": datadetail[0].saleAmount,
+                    "saleView": datadetail[0].saleView,
+                    "saleLike": datadetail[0].saleLike,
+                    "musicTitle": datadetail[0].musicTitle,
+                    "albumName": datadetail[0].albumName,
+                    "type": datadetail[0].type,
+                    "kepemilikan": datadetail[0].kepemilikan,
+                    "statusJual": datadetail[0].statusJual,
+                    "mediaType": datadetail[0].mediaType,
+                    "mediaThumbEndpoint": datadetail[0].mediaThumbEndpoint,
+                    "mediaEndpoint": datadetail[0].mediaEndpoint,
+                    "originalName": datadetail[0].originalName,
+                    "age": dataSum,
+                    "gender": dataSumgender,
+                    "wilayah": dataSumwilayah,
+                    "riwayat": datadetail[0].riwayat,
+                    "comment": datadetail[0].comment,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
+                    "total": days + ":" + hours + ":" + minutes + ":" + seconds,
+                    "media": datanew
+                };
+
+                data.push(objk);
+            }
+
+            return { response_code: 202, data, messages };
+        }
+
+        else {
             throw new BadRequestException("Data is not found..!");
         }
 
-
-
-        return { response_code: 202, data, messages };
     }
-
 }
+
+
+

@@ -250,7 +250,7 @@ export class UtilsService {
       } else if (eventType == "KYC") {
         body_save_id = body_save_id_get.toString().replace("${emoticon}", get_username_senderParty)
         body_save_en = body_save_en_get.toString().replace("${emoticon}", get_username_senderParty)
-      }else{
+      } else {
         body_save_id = body_save_id_get.toString();
         body_save_en = body_save_en_get.toString();
       }
@@ -296,7 +296,7 @@ export class UtilsService {
         },
         data: data_send,
       }
-      await admin.messaging().sendToDevice(datadevice[i].deviceID, notification );
+      await admin.messaging().sendToDevice(datadevice[i].deviceID, notification);
       device_user.push(datadevice[i].deviceID)
     }
 
@@ -598,8 +598,8 @@ export class UtilsService {
               tag: "background"
             },
             data: {
-              PostID: noinvoice,
-              PostType: postType
+              postID: noinvoice,
+              postType: postType
             }
           };
         }
@@ -612,8 +612,8 @@ export class UtilsService {
               tag: "background"
             },
             data: {
-              PostID: noinvoice,
-              PostType: postType
+              postID: noinvoice,
+              postType: postType
             }
           };
         } else {
@@ -625,8 +625,8 @@ export class UtilsService {
               tag: "background"
             },
             data: {
-              PostID: noinvoice,
-              PostType: postType
+              postID: noinvoice,
+              postType: postType
             }
           };
         }
