@@ -292,7 +292,7 @@ export class UtilsService {
         notification: {
           title: title_send,
           body: body_send,
-          tag: getDate
+          tag: await this.makeid(7)
         },
         data: data_send,
       }
@@ -1523,5 +1523,15 @@ export class UtilsService {
     var DayName = await this.getDayName(lang, dateString);
     var MonthName = await this.getMontName(lang, dateString);
     return DayName + ", " + (day < 10 ? '0' + day : day) + " " + MonthName + " " + year + ", " + timeData;
+  }
+
+  async makeid(length) {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
   }
 }
