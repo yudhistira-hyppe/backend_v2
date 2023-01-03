@@ -247,7 +247,7 @@ export class UtilsService {
       if (eventType == "KYC") {
         body_save_id = body_save_id_get.toString().replace("${user_name}", get_username_senderParty)
         body_save_en = body_save_en_get.toString().replace("${user_name}", get_username_senderParty)
-      } else if (eventType == "KYC") {
+      } else if (eventType == "REACTION") {
         body_save_id = body_save_id_get.toString().replace("${emoticon}", get_username_senderParty)
         body_save_en = body_save_en_get.toString().replace("${emoticon}", get_username_senderParty)
       } else {
