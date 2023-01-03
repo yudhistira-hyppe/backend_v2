@@ -2277,6 +2277,7 @@ export class ReportuserController {
 
             if (reportedUserHandle.length > 0) {
                 await this.postsService.updateActive(postID, dt.toISOString(), remark);
+                await this.sendReportAppealFCM("NOTIFY_APPEAL", "DELETE", "CONTENT", postID);
 
             } else {
 
@@ -2289,6 +2290,7 @@ export class ReportuserController {
                 arrayreportedHandle.push(objreporthandle);
 
                 await this.postsService.updateActiveEmpty(postID, dt.toISOString(), arrayreportedHandle);
+                await this.sendReportAppealFCM("NOTIFY_APPEAL", "DELETE", "CONTENT", postID);
             }
 
         }
