@@ -299,6 +299,7 @@ export class PostsController {
     data_post['email'] = dataquery[0].datauser.email;
     data_post['updatedAt'] = dataquery[0].updatedAt;
     data_post['username'] = dataquery[0].datauser.username;
+    data_post['fullName'] = dataquery[0].datauser.fullName;
 
     var data = [data_post];
     var response = {
