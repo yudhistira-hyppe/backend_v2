@@ -2130,11 +2130,11 @@ export class GetusercontentsController {
 
                 for (let i = 0; i < lengage; i++) {
                     let count = dataage[i].count;
-
+                    let id = dataage[i]._id;
 
                     let persen = count * 100 / sumage;
                     objcoun = {
-
+                        _id: id,
                         count: count,
                         persen: persen.toFixed(2)
                     }
@@ -2166,11 +2166,12 @@ export class GetusercontentsController {
 
                 for (let i = 0; i < lenggender; i++) {
                     let count = datagender[i].count;
+                    let id = datagender[i]._id;
 
 
                     let persen = count * 100 / sumgender;
                     objcoungender = {
-
+                        _id: id,
                         count: count,
                         persen: persen.toFixed(2)
                     }
@@ -2202,11 +2203,11 @@ export class GetusercontentsController {
 
                 for (let i = 0; i < lengwilayah; i++) {
                     let count = datawilayah[i].count;
-
+                    let id = datawilayah[i]._id;
 
                     let persen = count * 100 / sumwilayah;
                     objcounwilayah = {
-
+                        _id: id,
                         count: count,
                         persen: persen.toFixed(2)
                     }
