@@ -1138,6 +1138,10 @@ export class TransactionsController {
         var bodyensukses = "Your Content Has Been Sold The balance will be forwarded to your Hyppe Account.";
         var eventType = "TRANSACTION";
         var event = "TRANSACTION";
+        var titleinsuksesbeli = "Selamat!";
+        var titleensuksesbeli = "Congratulation!";
+        var bodyinsuksesbeli = "Konten Berhasil Dibeli";
+        var bodyensuksesbeli = "Content Successfully Purchased";
         var dt = new Date(Date.now());
         dt.setHours(dt.getHours() + 7); // timestamp
         dt = new Date(dt);
@@ -1263,7 +1267,7 @@ export class TransactionsController {
 
                         await this.transactionsService.updateone(idtransaction, idbalance, payload);
                         await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postid, "TRANSACTION", noinvoice);
-
+                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsuksesbeli, titleensuksesbeli, bodyinsuksesbeli, bodyensuksesbeli, eventType, event, postid, "TRANSACTION", noinvoice);
 
                         await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy, timedate);
                         if (datapost.boosted != undefined) {
@@ -1434,6 +1438,7 @@ export class TransactionsController {
                         var idbalance = databalance._id;
                         await this.transactionsService.updateoneVoucher(idtransaction, idbalance, payload);
                         await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", noinvoice);
+                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsuksesbeli, titleensuksesbeli, bodyinsuksesbeli, bodyensuksesbeli, eventType, event, postid, "TRANSACTION", noinvoice);
                         for (var i = 0; i < lengtvoucherid; i++) {
                             var postvcid = detail[i].id.toString();
                             var jml = detail[i].qty;

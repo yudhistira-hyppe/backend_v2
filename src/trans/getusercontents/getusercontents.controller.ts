@@ -2317,7 +2317,7 @@ export class GetusercontentsController {
                     "comment": datadetail[0].comment,
                     "apsaraId": idapsaradefine,
                     "apsara": apsaradefine,
-                    "total": days + ":" + hours + ":" + minutes + ":" + seconds,
+                    "total": ((parseInt(days) * 24) + parseInt(hours)).toString() + ":" + minutes + ":" + seconds,
                     "media": datanew
                 };
 
