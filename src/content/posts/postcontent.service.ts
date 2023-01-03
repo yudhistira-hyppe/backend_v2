@@ -643,7 +643,7 @@ export class PostContentService {
       post.metadata = metadata;
       post.active = true;
       //TODO 
-      this.postService.create(post);
+      await this.postService.create(post);
     } else if (ns == 'mediapicts') {
       this.logger.log('updateNewPost >>> checking picture oid: ' + cm.oid);
       let pic = await this.picService.findOne(cm.oid);
@@ -660,7 +660,7 @@ export class PostContentService {
 
       post.active = true;
       //TODO 
-      this.postService.create(post);
+      await this.postService.create(post);
 
       let todel = body.filedel + "";
       unlink(todel, (err) => {
@@ -703,7 +703,7 @@ export class PostContentService {
 
       post.active = true;
       //TODO 
-      this.postService.create(post);
+      await this.postService.create(post);
 
       let todel = body.filedel + "";
       unlink(todel, (err) => {
@@ -753,7 +753,7 @@ export class PostContentService {
       post.metadata = metadata;
       post.active = true;
       //TODO 
-      this.postService.create(post);
+      await this.postService.create(post);
 
       let todel = body.filedel + "";
       unlink(todel, (err) => {
