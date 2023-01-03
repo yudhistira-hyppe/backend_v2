@@ -2027,6 +2027,85 @@ export class GetusercontentsController {
         return { response_code: 202, data, page, limit, total, totalallrow, totalsearch, totalpage, messages };
     }
 
+    @Post('api/getusercontents/database/details')
+    @UseGuards(JwtAuthGuard)
+    async detailcontent(@Req() request: Request): Promise<any> {
+        var data = null;
+        var postID = null;
+        var page = null;
+        var limit = null;
+        var datadetail = null;
+        var lengdetail = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["postID"] !== undefined) {
+            postID = request_json["postID"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+        page = request_json["page"];
+        limit = request_json["limit"];
 
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        try {
+            datadetail = await this.getusercontentsService.detailcontent(postID, page, limit);
+            lengdetail = datadetail.length;
+        } catch (e) {
+            datadetail = null;
+            lengdetail = 0;
+        }
+        if (lengdetail > 0) {
+            data = {
+
+                "_id": datadetail[0]._id,
+                "postID": datadetail[0].postID,
+                "email": datadetail[0].email,
+                "postType": datadetail[0].postType,
+                "description": datadetail[0].description,
+                "active": datadetail[0].active,
+                "createdAt": datadetail[0].createdAt,
+                "updatedAt": datadetail[0].updatedAt,
+                "visibility": datadetail[0].visibility,
+                "location": datadetail[0].location,
+                "tags": datadetail[0].tags,
+                "allowComments": datadetail[0].allowComments,
+                "likes": datadetail[0].likes,
+                "views": datadetail[0].views,
+                "shares": datadetail[0].shares,
+                "tagPeople": datadetail[0].tagPeople,
+                "tagDescription": datadetail[0].tagDescription,
+                "musicId": datadetail[0].musicId,
+                "kategori": datadetail[0].kategori,
+                "username": datadetail[0].username,
+                "saleAmount": datadetail[0].saleAmount,
+                "saleView": datadetail[0].saleView,
+                "saleLike": datadetail[0].saleLike,
+                "musicTitle": datadetail[0].musicTitle,
+                "albumName": datadetail[0].albumName,
+                "type": datadetail[0].type,
+                "kepemilikan": datadetail[0].kepemilikan,
+                "statusJual": datadetail[0].statusJual,
+                "mediaType": datadetail[0].mediaType,
+                "mediaThumbEndpoint": datadetail[0].mediaThumbEndpoint,
+                "mediaEndpoint": datadetail[0].mediaEndpoint,
+                "apsaraId": datadetail[0].apsaraId,
+                "apsara": datadetail[0].apsara,
+                "originalName": datadetail[0].originalName,
+                "age": datadetail[0].age,
+                "gender": datadetail[0].gender,
+                "wilayah": datadetail[0].wilayah,
+                "riwayat": datadetail[0].riwayat,
+                "comment": datadetail[0].comment,
+            };
+        } else {
+            throw new BadRequestException("Data is not found..!");
+        }
+
+
+
+        return { response_code: 202, data, messages };
+    }
 
 }

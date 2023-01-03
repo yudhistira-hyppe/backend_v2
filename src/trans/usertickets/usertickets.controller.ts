@@ -656,19 +656,36 @@ export class UserticketsController {
       throw new BadRequestException("Unabled to proceed");
     }
 
-    data = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, page, limit, descending, iduser, close);
+    try {
+      data = await this.userticketsService.filterdata(search, assignto, sumber, kategori, level, status, startdate, enddate, page, limit, descending, iduser, close);
+    } catch (e) {
+      data = null;
+    }
 
 
     var total = null;
     var totalsearch = null;
     var totalallrow = null;
     var totalpage = null;
+    var datasearch = null;
+    var dataall = null;
     total = data.length;
-    let datasearch = await this.userticketsService.filterdatacount(search, assignto, sumber, kategori, level, status, startdate, enddate, iduser, close);
-    totalsearch = datasearch[0].count;
 
-    let dataall = await this.userticketsService.filterdatacount(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
-    totalallrow = dataall[0].count;
+    try {
+      datasearch = await this.userticketsService.filterdatacount(search, assignto, sumber, kategori, level, status, startdate, enddate, iduser, close);
+      totalsearch = datasearch[0].count;
+    } catch (e) {
+      datasearch = null;
+      totalsearch = 0;
+    }
+
+    try {
+      dataall = await this.userticketsService.filterdatacount(undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+      totalallrow = dataall[0].count;
+    } catch (e) {
+      totalallrow = 0;
+    }
+
 
     var tpage = null;
     var tpage2 = null;
