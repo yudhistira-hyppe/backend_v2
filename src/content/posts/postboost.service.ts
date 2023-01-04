@@ -3656,7 +3656,7 @@ export class PostBoostService {
             "$dateToString": {
               "format": "%Y-%m-%d %H:%M:%S",
               "date": {
-                $add: [new Date(), - 61200000]
+                $add: [new Date(), -61200000]
               }
             }
           }
@@ -3866,7 +3866,7 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$category.$id'
+                  localID: '$category.id'
                 },
                 pipeline: [
                   {
@@ -4406,7 +4406,7 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$category.$id'
+                  localID: '$category.id'
                 },
                 pipeline: [
                   {
@@ -4934,7 +4934,7 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$category.$id'
+                  localID: '$category.id'
                 },
                 pipeline: [
                   {
@@ -5360,7 +5360,7 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$category.$id'
+                  localID: '$category.id'
                 },
                 pipeline: [
                   {
