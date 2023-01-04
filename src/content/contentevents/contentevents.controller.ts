@@ -759,7 +759,7 @@ export class ContenteventsController {
               CreateDisqusDto_.room = id_discus;
               CreateDisqusDto_.createdAt = current_date;
               CreateDisqusDto_.updatedAt = current_date;
-              CreateDisqusDto_.lastestMessage = Emote;
+              CreateDisqusDto_.lastestMessage = Emote.toString();
               CreateDisqusDto_.emailActive = true;
               CreateDisqusDto_.mateActive = true;
               CreateDisqusDto_.disqusLogs = [{
@@ -782,6 +782,7 @@ export class ContenteventsController {
                 $db: 'hyppe_content_db',
               });
               CreateDisqusDto_.disqusLogs = data_disqusLogs;
+              CreateDisqusDto_.lastestMessage = Emote.toString();
               this.disqusContentEventService.update(id_discus, CreateDisqusDto_);
             } catch (error) {
               this.logger.log("ERROR UPDATE DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
