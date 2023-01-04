@@ -638,7 +638,7 @@ export class UtilsService {
           data_send['postID'] = postID.toString();
         }
         if (postType != undefined || postType != "" || postType != null) {
-          data_send['postID'] = postType.toString();
+          data_send['postType'] = postType.toString();
         }
         if (langIso === "id") {
           payload = {
