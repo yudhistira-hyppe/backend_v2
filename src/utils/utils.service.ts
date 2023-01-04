@@ -633,6 +633,13 @@ export class UtilsService {
 
 
       } else {
+        let data_send = {};
+        if (postID != undefined || postID != "" || postID != null) {
+          data_send['postID'] = postID;
+        }
+        if (postType != undefined || postType != "" || postType != null) {
+          data_send['postID'] = postType;
+        }
         if (langIso === "id") {
           payload = {
             notification: {
@@ -641,10 +648,7 @@ export class UtilsService {
               body: bodyin,
               tag: "background"
             },
-            data: {
-              postID: postID,
-              postType: postType
-            }
+            data: data_send
           };
         } else if (langIso === "en") {
           payload = {
@@ -654,10 +658,7 @@ export class UtilsService {
               body: bodyen,
               tag: "background"
             },
-            data: {
-              postID: postID,
-              postType: postType
-            }
+            data: data_send
           };
         } else {
           payload = {
@@ -666,10 +667,7 @@ export class UtilsService {
               body: bodyin,
               tag: "background"
             },
-            data: {
-              postID: postID,
-              postType: postType
-            }
+            data: data_send
           };
         }
       }
