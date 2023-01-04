@@ -96,6 +96,7 @@ export class DisqusResDto {
   createdAt: String;
   updatedAt: String;
   lastestMessage: String;
+  fcmMessage: String;
   username: String;
   fullName: String;
   avatar: AvatarDTO;

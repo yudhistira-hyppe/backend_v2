@@ -20,7 +20,7 @@ export class DisqusContentEventController {
     private readonly disqusLogService: DisquslogsService,
     private readonly postDisqusService: PostDisqusService,) { }
 
-  async buildDisqus(CreateDisqusDto_: CreateDisqusDto, CreateDisquslogsDto_: Disquslogs) {
+  async buildDisqus(CreateDisqusDto_: CreateDisqusDto, CreateDisquslogsDto_: Disquslogs,Messages:string) {
     let retVal = new DisqusResDto();
     let getValDisquslogs = await this.retvalDisqusLog(CreateDisquslogsDto_);
     let arrayisquslogs: DisquslogsDto[] = [];
@@ -30,6 +30,7 @@ export class DisqusContentEventController {
     retVal.disqusLogs = arrayisquslogs;
     retVal.email = CreateDisqusDto_.email;
     retVal.room = CreateDisqusDto_.room;
+    retVal.fcmMessage = Messages;
 
     retVal.eventType = CreateDisqusDto_.eventType;
     retVal.active = CreateDisqusDto_.active;
