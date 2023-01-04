@@ -669,6 +669,7 @@ export class UtilsService {
           };
         }
       }
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
 
 
       var arraydevice = [];
