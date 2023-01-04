@@ -188,6 +188,7 @@ export class DisqusController {
                   let dl = o.disqusLogs[x]; 
                   if (dl.reactionUri != undefined) {
                     for (let y = 0; y < o.emot.length; y++) {
+                      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Y - ' + y, JSON.stringify(o.emot[y]));
                       if (dl.reactionUri == o.emot[y].URL) {
                         o.disqusLogs[x].reaction_icon = o.emot[y].icon;
                         break;
@@ -197,10 +198,11 @@ export class DisqusController {
                 }
 
               }
+              console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> O - ' + i, JSON.stringify(o));
               tmp.push(o);
             }
           }
-
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TMP', JSON.stringify(tmp));
           res.data = tmp;
 
           /*
