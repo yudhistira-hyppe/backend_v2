@@ -1956,18 +1956,18 @@ export class UserbasicsService {
   async getUserDetails(id: string): Promise<any> {
     var ObjectId_ = new mongoose.Types.ObjectId(id);
 
-    var dateNow = new Date("2022-12-01");
-    var currentDateNowString = new Date(dateNow.getTime() - (dateNow.getTimezoneOffset() * 60000)).toISOString();
-    var currentDateNow = new Date(currentDateNowString);
-    var currentDateNowFormat = currentDateNow.toISOString().split('T')[0] + " " + currentDateNow.toISOString().split('T')[1].split('.')[0];
-    console.log("currentDateNowFormat START",currentDateNowFormat);
+    // var dateNow = new Date("2022-12-01");
+    // var currentDateNowString = new Date(dateNow.getTime() - (dateNow.getTimezoneOffset() * 60000)).toISOString();
+    // var currentDateNow = new Date(currentDateNowString);
+    // var currentDateNowFormat = currentDateNow.toISOString().split('T')[0] + " " + currentDateNow.toISOString().split('T')[1].split('.')[0];
+    // console.log("currentDateNowFormat START",currentDateNowFormat);
 
-    var dateNow_ = new Date("2022-12-02");
-    dateNow_.setDate(dateNow_.getDate() + 7)
-    var currentDateNowString_ = new Date(dateNow_.getTime() - (dateNow_.getTimezoneOffset() * 60000)).toISOString();
-    var currentDateNow_ = new Date(currentDateNowString_);
-    var currentDateNowFormat_ = currentDateNow_.toISOString().split('T')[0] + " " + currentDateNow_.toISOString().split('T')[1].split('.')[0];
-    console.log("currentDateNowFormat_ END", currentDateNowFormat_);
+    // var dateNow_ = new Date("2022-12-02");
+    // dateNow_.setDate(dateNow_.getDate() + 7)
+    // var currentDateNowString_ = new Date(dateNow_.getTime() - (dateNow_.getTimezoneOffset() * 60000)).toISOString();
+    // var currentDateNow_ = new Date(currentDateNowString_);
+    // var currentDateNowFormat_ = currentDateNow_.toISOString().split('T')[0] + " " + currentDateNow_.toISOString().split('T')[1].split('.')[0];
+    // console.log("currentDateNowFormat_ END", currentDateNowFormat_);
 
     return await this.userbasicModel.aggregate([
       {
@@ -2042,39 +2042,39 @@ export class UserbasicsService {
           as: 'mediaproofpicts_data',
         },
       },
-      {
-        $lookup: {
-          from: 'contentevents',
-          let: {
-            "email": "$email",
-          },
-          pipeline: [
-            {
-              $match: {
-                $and: [
-                  {
-                    $expr: {
-                      $eq: ["$receiverParty", "$$email"]
-                    },
-                    'eventType': 'VIEW_PROFILE',
-                  },
-                  {
-                    $expr: {
-                      $gte: ["$createdAt", currentDateNowFormat]
-                    },
-                  },
-                  {
-                    $expr: {
-                      $lte: ["$createdAt", currentDateNowFormat_]
-                    },
-                  }
-                ]
-              }
-            }
-          ],
-          as: 'contentevents_data'
-        }
-      },
+      // {
+      //   $lookup: {
+      //     from: 'contentevents',
+      //     let: {
+      //       "email": "$email",
+      //     },
+      //     pipeline: [
+      //       {
+      //         $match: {
+      //           $and: [
+      //             {
+      //               $expr: {
+      //                 $eq: ["$receiverParty", "$$email"]
+      //               },
+      //               'eventType': 'VIEW_PROFILE',
+      //             },
+      //             {
+      //               $expr: {
+      //                 $gte: ["$createdAt", currentDateNowFormat]
+      //               },
+      //             },
+      //             {
+      //               $expr: {
+      //                 $lte: ["$createdAt", currentDateNowFormat_]
+      //               },
+      //             }
+      //           ]
+      //         }
+      //       }
+      //     ],
+      //     as: 'contentevents_data'
+      //   }
+      // },
       {
         $lookup: {
           from: 'userbankaccounts',
@@ -2087,7 +2087,7 @@ export class UserbasicsService {
           ],
           as: 'userbankaccounts_data'
         }
-      }, 
+      },
       {
         $unwind: {
           path: "$userbankaccounts_data",
@@ -2158,7 +2158,7 @@ export class UserbasicsService {
               }
             }
           },
-          contentevents_data:'$contentevents_data'
+          contentevents_data: '$contentevents_data'
         }
       },
       {
@@ -2178,7 +2178,7 @@ export class UserbasicsService {
           interests: { $first: "$interests" },
           dokument: { $first: "$dokument" },
           userbankaccounts: { $push: "$userbankaccounts" },
-          contentevents_data: { $first: "$contentevents_data" },
+          //  contentevents_data: { $first: "$contentevents_data" },
         }
       },
       {
@@ -2198,7 +2198,7 @@ export class UserbasicsService {
           countries: 1,
           interests: 1,
           dokument: 1,
-          contentevents_data: 1,
+          // contentevents_data: 1,
           userbankaccounts: '$userbankaccounts'
         }
       }
