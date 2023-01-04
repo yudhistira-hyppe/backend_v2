@@ -649,6 +649,20 @@ export class ContenteventsController {
           }
         }
 
+        var body_messages = "";
+        var body_ = "";
+        var dataEmote = await this.reactionsRepoService.findByUrl(request.body.reactionUri);
+        var Emote = (await this.utilsService.ceckData(dataEmote)) ? dataEmote.icon : "";
+        var Templates_ = await this.utilsService.getTemplate_repo('REACTION', 'NOTIFICATION');
+        var get_languages = await this.utilsService.getUserlanguages(email_receiverParty);
+        if (get_languages == "en") {
+          body_ = Templates_.body_detail.toString()
+          body_messages = body_.toString().replace("${emoticon}", Emote.toString())
+        } else {
+          body_ = Templates_.body_detail_id.toString()
+          body_messages = body_.toString().replace("${emoticon}", Emote.toString())
+        }
+
         if (!(await this.utilsService.ceckData(CeckDataDiscusContact))) {
           id_discus_contact = await this.utilsService.generateId()
           id_discus = await this.utilsService.generateId()
@@ -685,7 +699,7 @@ export class ContenteventsController {
             CreateDisqusDto_.room = id_discus;
             CreateDisqusDto_.createdAt = current_date;
             CreateDisqusDto_.updatedAt = current_date;
-            CreateDisqusDto_.lastestMessage = "";
+            CreateDisqusDto_.lastestMessage = Emote;
             CreateDisqusDto_.emailActive = true;
             CreateDisqusDto_.mateActive = true;
             CreateDisqusDto_.disqusLogs = [{
@@ -723,7 +737,7 @@ export class ContenteventsController {
             this.logger.log("ERROR INSERT DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
           }
 
-          retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_);
+          retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_, body_messages);
           this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
         }else{
           id_discus = (JSON.parse(JSON.stringify(CeckDataDiscusContact[0].disqus))).$id;
@@ -745,7 +759,7 @@ export class ContenteventsController {
               CreateDisqusDto_.room = id_discus;
               CreateDisqusDto_.createdAt = current_date;
               CreateDisqusDto_.updatedAt = current_date;
-              CreateDisqusDto_.lastestMessage = "";
+              CreateDisqusDto_.lastestMessage = Emote.toString();
               CreateDisqusDto_.emailActive = true;
               CreateDisqusDto_.mateActive = true;
               CreateDisqusDto_.disqusLogs = [{
@@ -768,6 +782,7 @@ export class ContenteventsController {
                 $db: 'hyppe_content_db',
               });
               CreateDisqusDto_.disqusLogs = data_disqusLogs;
+              CreateDisqusDto_.lastestMessage = Emote.toString();
               this.disqusContentEventService.update(id_discus, CreateDisqusDto_);
             } catch (error) {
               this.logger.log("ERROR UPDATE DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
@@ -798,19 +813,18 @@ export class ContenteventsController {
             this.logger.log("ERROR INSERT DISQUS LOG >>>>>>>>>>>>>>>>>>> ", error);
           }
 
-          retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_);
+          retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_, body_messages);
+          this.logger.log("REVAL DATA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", JSON.stringify(retVal));
           this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
         }
         
         console.log("retVal",retVal);
-      var dataEmote = await this.reactionsRepoService.findByUrl(request.body.reactionUri);
-      var Emote = (await this.utilsService.ceckData(dataEmote)) ? dataEmote.icon:"";
         try {
           await this.contenteventsService.create(CreateContenteventsDto1);
           await this.contenteventsService.create(CreateContenteventsDto2);
           await this.postsService.updateReaction(email_receiverParty, request.body.postID);
           await this.insightsService.updateReactions(email_user);
-          this.sendInteractiveFCM(email_receiverParty, "REACTION", request.body.postID, email_user, Emote);
+          //this.sendInteractiveFCM(email_receiverParty, "REACTION", request.body.postID, email_user, Emote);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +

@@ -341,19 +341,14 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('postContent'))
   async updatePost(@Body() body, @Headers() headers): Promise<CreatePostResponse> {
     this.logger.log("updatePost >>> start");
-    var titleinsukses = "Selamat";
-    var titleensukses = "Congratulations";
-    var bodyinsukses = "Konten Anda siap dijual";
-    var bodyensukses = "Your content is ready for sale";
-    var eventType = "POST";
-    var event = "POST";
     var email = headers['x-auth-user'];
     var saleAmount = body.saleAmount;
     var data = null;
     var lang = await this.utilsService.getUserlanguages(email);
     
 
-    var dataTransaction = await this.transactionsPostService.findpostid(body.postID);
+    var posts = await this.PostsService.findid(body.postID.toString());
+    var dataTransaction = await this.transactionsPostService.findpostid(body.postID.toString());
     if (await this.utilsService.ceckData(dataTransaction)){
       if (lang == "id") {
         await this.errorHandler.generateNotAcceptableException(
@@ -366,9 +361,11 @@ export class PostsController {
       }
     }
     data = await this.postContentService.updatePost(body, headers);
-
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID', body.postID.toString());
+    console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postType', posts.postType.toString());
     if (saleAmount > 0) {
-      await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+      await this.utilsService.sendFcmV2(email, email.toString(), "POST", "POST", "UPDATE_POST_SELL", body.postID.toString(), posts.postType.toString())
+      //await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString(), posts.postType.toString());
     }
 
     return data;

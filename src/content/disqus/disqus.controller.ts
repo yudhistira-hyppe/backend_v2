@@ -179,7 +179,13 @@ export class DisqusController {
           } else {
             dm = await this.disqusService.queryDiscussV2(String(ContentDto_.email));
           }
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DM ', JSON.stringify(dm));
 
+          var ApsaraArrayImage = [];
+          var ApsaraArrayVideo = [];
+
+          let vapsara = undefined;
+          let papsara = undefined;
           if (dm != undefined && dm.length > 0) {
             for (let i = 0; i < dm.length; i++) {
               let o = dm[i];
@@ -189,18 +195,45 @@ export class DisqusController {
                   if (dl.reactionUri != undefined) {
                     for (let y = 0; y < o.emot.length; y++) {
                       if (dl.reactionUri == o.emot[y].URL) {
+                        if (o.disqusLogs[x].medias !=undefined){
+                          if (o.disqusLogs[x].medias.length>0) {
+                            if (o.disqusLogs[x].medias.length > 0) {
+                              if (o.disqusLogs[x].medias[0] != undefined){
+                                if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
+                                  if (o.disqusLogs[x].medias[0].mediaType != undefined){
+                                    if (o.disqusLogs[x].medias[0].mediaType == 'image') {
+                                      ApsaraArrayImage.push((o.disqusLogs[x].medias[0].apsaraId));
+                                    } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
+                                      ApsaraArrayVideo.push((o.disqusLogs[x].medias[0].apsaraId));
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
                         o.disqusLogs[x].reaction_icon = o.emot[y].icon;
                         break;
                       }
                     }
                   }
                 }
-
               }
               tmp.push(o);
             }
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ApsaraArrayImage ', ApsaraArrayImage);
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ApsaraArrayVideo ', ApsaraArrayVideo);
           }
 
+          if (ApsaraArrayVideo.length > 0) {
+            vapsara = await this.postDisqusService.getVideoApsara(ApsaraArrayVideo);
+          }
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> vapsara', JSON.stringify(vapsara));
+
+          if (ApsaraArrayImage.length > 0) {
+            papsara = await this.postDisqusService.getImageApsara(ApsaraArrayImage);
+          }
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> papsara', JSON.stringify(papsara));
           res.data = tmp;
 
           /*

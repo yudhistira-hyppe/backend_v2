@@ -219,8 +219,8 @@ export class UtilsService {
     }
 
     //SET BODY SAVE
-    if ((eventType == "REACTION") || (eventType == "COMMENT") || (eventType == "LIKE") || (eventType == "TRANSACTION")) {
-      if (event == "BOOST_SUCCES" || event == "ADS VIEW" || event == "ADS CLICK") {
+    if ((eventType == "REACTION") || (eventType == "COMMENT") || (eventType == "LIKE") || (eventType == "TRANSACTION") || (event == "POST")) {
+      if (event == "BOOST_SUCCES" || event == "ADS VIEW" || event == "ADS CLICK" ) {
         data_send['postID'] = idtransaction
         data_send['postType'] = eventType
       } else {
@@ -496,7 +496,10 @@ export class UtilsService {
     await this.notificationsService.create(createNotificationsDto);
   }
 
-  async sendFcm(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID?: string, postType?: string, noinvoice?: string) {
+  async sendFcm(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID_?: string, postType?: string, noinvoice?: string) {
+
+    console.log(typeof postID_);
+    console.log(postID_);
     var emailuserbasic = null;
     var datadevice = null;
     var languages = null;
@@ -633,34 +636,45 @@ export class UtilsService {
 
 
       } else {
+        let data_send = {};
+        if (postID_ != undefined || postID_ != "" || postID_ != null) {
+          console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID", postID_);
+          data_send['postID'] = postID_.toString();
+        }
+        if (postType != undefined || postType != "" || postType != null) {
+          data_send['postType'] = postType.toString();
+        }
+        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> data_send", JSON.stringify(data_send));
         if (langIso === "id") {
           payload = {
             notification: {
-
               title: titlein,
               body: bodyin,
-              tag: "background"
-            }
+              tag: await this.makeid(7)
+            },
+            data: data_send
           };
         } else if (langIso === "en") {
           payload = {
             notification: {
-
               title: titleen,
               body: bodyen,
-              tag: "background"
-            }
+              tag: await this.makeid(7)
+            },
+            data: data_send
           };
         } else {
           payload = {
             notification: {
               title: titlein,
               body: bodyin,
-              tag: "background"
-            }
+              tag: await this.makeid(7)
+            },
+            data: data_send
           };
         }
       }
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
 
 
       var arraydevice = [];
@@ -692,10 +706,10 @@ export class UtilsService {
       createNotificationsDto.senderOrReceiverInfo = senderreceiver;
 
       if (eventType == "LIKE" || eventType == "REACTION" || eventType == "APPEAL" || eventType == "TRANSACTION" || eventType == "CONTENT" || eventType == "POST" || eventType == "BANK") {
-        if (postID != undefined) {
-          createNotificationsDto.postID = postID;
+        if (postID_ != undefined) {
+          createNotificationsDto.postID = postID_;
         }
-        if (postID != undefined) {
+        if (postID_ != undefined) {
           createNotificationsDto.postType = postType;
         }
       }
