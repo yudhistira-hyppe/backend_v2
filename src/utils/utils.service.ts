@@ -640,6 +640,10 @@ export class UtilsService {
               title: titlein,
               body: bodyin,
               tag: "background"
+            },
+            data: {
+              postID: postID,
+              postType: postType
             }
           };
         } else if (langIso === "en") {
@@ -649,6 +653,10 @@ export class UtilsService {
               title: titleen,
               body: bodyen,
               tag: "background"
+            },
+            data: {
+              postID: postID,
+              postType: postType
             }
           };
         } else {
@@ -657,6 +665,10 @@ export class UtilsService {
               title: titlein,
               body: bodyin,
               tag: "background"
+            },
+            data: {
+              postID: postID,
+              postType: postType
             }
           };
         }

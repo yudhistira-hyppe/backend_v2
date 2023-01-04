@@ -368,7 +368,7 @@ export class PostsController {
     data = await this.postContentService.updatePost(body, headers);
 
     if (saleAmount > 0) {
-      await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, null, null, body.postID);
+      await this.utilsService.sendFcm(email.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, body.postID.toString());
     }
 
     return data;
