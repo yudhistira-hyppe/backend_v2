@@ -231,9 +231,12 @@ export class UtilsService {
       if (event == "ADS VIEW" || event == "ADS CLICK") {
         body_save_id = body_save_id_get.toString().replace("${rewards}", customText)
         body_save_en = body_save_en_get.toString().replace("${rewards}", customText)
+      } else if (eventType == "REACTION") {
+        body_save_id = body_save_id_get.toString().replace("${emoticon}", customText)
+        body_save_en = body_save_en_get.toString().replace("${emoticon}", customText)
       } else {
-        body_save_id = body_save_id_get.toString().replace("${post_type}", "Hyppe" + customText)
-        body_save_en = body_save_en_get.toString().replace("${post_type}", "Hyppe" + customText)
+        body_save_id = body_save_id_get.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+        body_save_en = body_save_en_get.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
       }
     } else {
       if (eventType == "FOLLOWER" || eventType == "FOLLOWING") {
@@ -247,9 +250,6 @@ export class UtilsService {
       if (eventType == "KYC") {
         body_save_id = body_save_id_get.toString().replace("${user_name}", get_username_senderParty)
         body_save_en = body_save_en_get.toString().replace("${user_name}", get_username_senderParty)
-      } else if (eventType == "REACTION") {
-        body_save_id = body_save_id_get.toString().replace("${emoticon}", get_username_senderParty)
-        body_save_en = body_save_en_get.toString().replace("${emoticon}", get_username_senderParty)
       } else {
         body_save_id = body_save_id_get.toString();
         body_save_en = body_save_en_get.toString();
@@ -286,13 +286,13 @@ export class UtilsService {
     //SEND FCM
     var datadevice = await this.userdevicesService.findActive(receiverParty);
     var device_user = [];
-    var getDate = await this.getDateTimeString();
+    var getDate = await ((await this.getDateTime()).getTime()).toString();
     for (var i = 0; i < datadevice.length; i++) {
       var notification = {
         notification: {
           title: title_send,
           body: body_send,
-          tag: getDate
+          tag: await this.makeid(7)
         },
         data: data_send,
       }
@@ -1523,5 +1523,15 @@ export class UtilsService {
     var DayName = await this.getDayName(lang, dateString);
     var MonthName = await this.getMontName(lang, dateString);
     return DayName + ", " + (day < 10 ? '0' + day : day) + " " + MonthName + " " + year + ", " + timeData;
+  }
+
+  async makeid(length) {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
   }
 }
