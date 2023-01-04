@@ -635,28 +635,26 @@ export class UtilsService {
       } else {
         let data_send = {};
         if (postID != undefined || postID != "" || postID != null) {
-          data_send['postID'] = postID;
+          data_send['postID'] = postID.toString();
         }
         if (postType != undefined || postType != "" || postType != null) {
-          data_send['postID'] = postType;
+          data_send['postID'] = postType.toString();
         }
         if (langIso === "id") {
           payload = {
             notification: {
-
               title: titlein,
               body: bodyin,
-              tag: "background"
+              tag: await this.makeid(7)
             },
             data: data_send
           };
         } else if (langIso === "en") {
           payload = {
             notification: {
-
               title: titleen,
               body: bodyen,
-              tag: "background"
+              tag: await this.makeid(7)
             },
             data: data_send
           };
@@ -665,7 +663,7 @@ export class UtilsService {
             notification: {
               title: titlein,
               body: bodyin,
-              tag: "background"
+              tag: await this.makeid(7)
             },
             data: data_send
           };
