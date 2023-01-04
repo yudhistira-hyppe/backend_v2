@@ -194,18 +194,17 @@ export class DisqusController {
                   let dl = o.disqusLogs[x]; 
                   if (dl.reactionUri != undefined) {
                     for (let y = 0; y < o.emot.length; y++) {
-                      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Y - ' + y, JSON.stringify(o.emot[y]));
                       if (dl.reactionUri == o.emot[y].URL) {
-                        if (o.disqusLogs[x].media!=undefined){
-                          if (o.disqusLogs[x].media.length>0) {
-                            if (o.disqusLogs[x].media.length > 0) {
-                              if (o.disqusLogs[x].media[0] != undefined){
-                                if (o.disqusLogs[x].media[0].apsaraId != undefined) {
-                                  if (o.disqusLogs[x].media[0].mediaType != undefined){
-                                    if (o.disqusLogs[x].media[0].mediaType == 'image') {
-                                      ApsaraArrayImage.push((o.disqusLogs[x].media[0].apsaraId));
-                                    } else if (o.disqusLogs[x].media[0].mediaType == 'video') {
-                                      ApsaraArrayVideo.push((o.disqusLogs[x].media[0].apsaraId));
+                        if (o.disqusLogs[x].medias !=undefined){
+                          if (o.disqusLogs[x].medias.length>0) {
+                            if (o.disqusLogs[x].medias.length > 0) {
+                              if (o.disqusLogs[x].medias[0] != undefined){
+                                if (o.disqusLogs[x].medias[0].apsaraId != undefined) {
+                                  if (o.disqusLogs[x].medias[0].mediaType != undefined){
+                                    if (o.disqusLogs[x].medias[0].mediaType == 'image') {
+                                      ApsaraArrayImage.push((o.disqusLogs[x].medias[0].apsaraId));
+                                    } else if (o.disqusLogs[x].medias[0].mediaType == 'video') {
+                                      ApsaraArrayVideo.push((o.disqusLogs[x].medias[0].apsaraId));
                                     }
                                   }
                                 }
@@ -220,7 +219,6 @@ export class DisqusController {
                   }
                 }
               }
-              console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> O - ' + i, JSON.stringify(o));
               tmp.push(o);
             }
             console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ApsaraArrayImage ', ApsaraArrayImage);
