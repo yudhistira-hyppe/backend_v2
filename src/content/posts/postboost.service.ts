@@ -3730,7 +3730,7 @@ export class PostBoostService {
                           {
                             "reportedUser": {
                               "$elemMatch": {
-                                "email": "ranger-putih@getnada.com",
+                                "email": profile.email,
                                 "active": false,
 
                               }
@@ -3797,7 +3797,7 @@ export class PostBoostService {
                           {
                             "reportedUser": {
                               "$elemMatch": {
-                                "email": "ranger-putih@getnada.com",
+                                "email": profile.email,
                                 "active": false,
 
                               }
@@ -3806,7 +3806,7 @@ export class PostBoostService {
                           {
                             "reportedUser.email": {
                               $not: {
-                                $regex: "ranger-putih@getnada.com"
+                                $regex: profile.email,
                               }
                             }
                           },
@@ -4337,7 +4337,7 @@ export class PostBoostService {
                           {
                             "reportedUser": {
                               "$elemMatch": {
-                                "email": "ranger-putih@getnada.com",
+                                "email": profile.email,
                                 "active": false,
 
                               }
@@ -4346,7 +4346,7 @@ export class PostBoostService {
                           {
                             "reportedUser.email": {
                               $not: {
-                                $regex: "ranger-putih@getnada.com"
+                                $regex: profile.email,
                               }
                             }
                           },
@@ -4865,7 +4865,7 @@ export class PostBoostService {
                           {
                             "reportedUser": {
                               "$elemMatch": {
-                                "email": "ranger-putih@getnada.com",
+                                "email": profile.email,
                                 "active": false,
 
                               }
@@ -4874,7 +4874,7 @@ export class PostBoostService {
                           {
                             "reportedUser.email": {
                               $not: {
-                                $regex: "ranger-putih@getnada.com"
+                                $regex: profile.email,
                               }
                             }
                           },
@@ -5295,7 +5295,7 @@ export class PostBoostService {
                           {
                             "reportedUser": {
                               "$elemMatch": {
-                                "email": "ranger-putih@getnada.com",
+                                "email": profile.email,
                                 "active": false,
 
                               }
@@ -5304,7 +5304,7 @@ export class PostBoostService {
                           {
                             "reportedUser.email": {
                               $not: {
-                                $regex: "ranger-putih@getnada.com"
+                                $regex: profile.email,
                               }
                             }
                           },
@@ -5693,7 +5693,7 @@ export class PostBoostService {
                         }
                       },
                       {
-                        "email": "ranger-putih@getnada.com"
+                        "email": profile.email,
                       },
                       {
                         "eventType": "LIKE"
@@ -5712,7 +5712,7 @@ export class PostBoostService {
                         }
                       },
                       {
-                        "email": "ranger-putih@getnada.com"
+                        "email": profile.email,
                       },
                       {
                         "eventType": "LIKE"
@@ -5730,7 +5730,7 @@ export class PostBoostService {
                         }
                       },
                       {
-                        "email": "ranger-putih@getnada.com"
+                        "email": profile.email,
                       },
                       {
                         "eventType": "LIKE"
@@ -5745,7 +5745,7 @@ export class PostBoostService {
                         }
                       },
                       {
-                        "email": "ranger-putih@getnada.com"
+                        "email": profile.email,
                       },
                       {
                         "eventType": "LIKE"
@@ -5794,7 +5794,7 @@ export class PostBoostService {
                         }
                       },
                       {
-                        "email": "ranger-putih@getnada.com"
+                        "email": profile.email,
                       },
                       {
                         "eventType": "VIEW"
@@ -5809,7 +5809,7 @@ export class PostBoostService {
                         }
                       },
                       {
-                        "email": "ranger-putih@getnada.com"
+                        "email": profile.email,
                       },
                       {
                         "eventType": "VIEW"
@@ -5824,7 +5824,7 @@ export class PostBoostService {
                         }
                       },
                       {
-                        "email": "ranger-putih@getnada.com"
+                        "email": profile.email,
                       },
                       {
                         "eventType": "VIEW"
@@ -5839,7 +5839,7 @@ export class PostBoostService {
                         }
                       },
                       {
-                        "email": "ranger-putih@getnada.com"
+                        "email": profile.email,
                       },
                       {
                         "eventType": "VIEW"
