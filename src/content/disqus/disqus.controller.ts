@@ -179,8 +179,13 @@ export class DisqusController {
           } else {
             dm = await this.disqusService.queryDiscussV2(String(ContentDto_.email));
           }
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DM ', JSON.stringify(dm));
 
-          var ApsaraArray = [];
+          var ApsaraArrayImage = [];
+          var ApsaraArrayVideo = [];
+
+          let vapsara = undefined;
+          let papsara = undefined;
           if (dm != undefined && dm.length > 0) {
             for (let i = 0; i < dm.length; i++) {
               let o = dm[i];
@@ -196,7 +201,13 @@ export class DisqusController {
                             if (o.disqusLogs[x].media.length > 0) {
                               if (o.disqusLogs[x].media[0] != undefined){
                                 if (o.disqusLogs[x].media[0].apsaraId != undefined) {
-                                  ApsaraArray.push((o.disqusLogs[x].media[0].apsaraId));
+                                  if (o.disqusLogs[x].media[0].mediaType != undefined){
+                                    if (o.disqusLogs[x].media[0].mediaType == 'image') {
+                                      ApsaraArrayImage.push((o.disqusLogs[x].media[0].apsaraId));
+                                    } else if (o.disqusLogs[x].media[0].mediaType == 'video') {
+                                      ApsaraArrayVideo.push((o.disqusLogs[x].media[0].apsaraId));
+                                    }
+                                  }
                                 }
                               }
                             }
@@ -212,9 +223,19 @@ export class DisqusController {
               console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> O - ' + i, JSON.stringify(o));
               tmp.push(o);
             }
-            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ApsaraArray ',ApsaraArray);
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ApsaraArrayImage ', ApsaraArrayImage);
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ApsaraArrayVideo ', ApsaraArrayVideo);
           }
-          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TMP', JSON.stringify(tmp));
+
+          if (ApsaraArrayVideo.length > 0) {
+            vapsara = await this.postDisqusService.getVideoApsara(ApsaraArrayVideo);
+          }
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> vapsara', JSON.stringify(vapsara));
+
+          if (ApsaraArrayImage.length > 0) {
+            papsara = await this.postDisqusService.getImageApsara(ApsaraArrayImage);
+          }
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> papsara', JSON.stringify(papsara));
           res.data = tmp;
 
           /*
