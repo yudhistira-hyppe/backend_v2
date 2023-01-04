@@ -180,6 +180,7 @@ export class DisqusController {
             dm = await this.disqusService.queryDiscussV2(String(ContentDto_.email));
           }
 
+          var ApsaraArray = [];
           if (dm != undefined && dm.length > 0) {
             for (let i = 0; i < dm.length; i++) {
               let o = dm[i];
@@ -190,17 +191,28 @@ export class DisqusController {
                     for (let y = 0; y < o.emot.length; y++) {
                       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Y - ' + y, JSON.stringify(o.emot[y]));
                       if (dl.reactionUri == o.emot[y].URL) {
+                        if (o.disqusLogs[x].media!=undefined){
+                          if (o.disqusLogs[x].media.length>0) {
+                            if (o.disqusLogs[x].media.length > 0) {
+                              if (o.disqusLogs[x].media[0] != undefined){
+                                if (o.disqusLogs[x].media[0].apsaraId != undefined) {
+                                  ApsaraArray.push((o.disqusLogs[x].media[0].apsaraId));
+                                }
+                              }
+                            }
+                          }
+                        }
                         o.disqusLogs[x].reaction_icon = o.emot[y].icon;
                         break;
                       }
                     }
                   }
                 }
-
               }
               console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> O - ' + i, JSON.stringify(o));
               tmp.push(o);
             }
+            console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ApsaraArray ',ApsaraArray);
           }
           console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> TMP', JSON.stringify(tmp));
           res.data = tmp;
