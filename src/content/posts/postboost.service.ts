@@ -332,7 +332,7 @@ export class PostBoostService {
           from: "interests_repo",
           as: "cats",
           let: {
-            localID: '$category.id'
+            localID: '$category.$id'
           },
           pipeline: [
             {
@@ -918,7 +918,7 @@ export class PostBoostService {
           from: "interests_repo",
           as: "cats",
           let: {
-            localID: '$category.id'
+            localID: '$category.$id'
           },
           pipeline: [
             {
@@ -1501,7 +1501,7 @@ export class PostBoostService {
           from: "interests_repo",
           as: "cats",
           let: {
-            localID: '$category.id'
+            localID: '$category.$id'
           },
           pipeline: [
             {
@@ -2068,7 +2068,7 @@ export class PostBoostService {
           from: "interests_repo",
           as: "cats",
           let: {
-            localID: '$category.id'
+            localID: '$category.$id'
           },
           pipeline: [
             {
@@ -3866,7 +3866,7 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$category.id'
+                  localID: '$category.$id'
                 },
                 pipeline: [
                   {
@@ -4406,7 +4406,7 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$category.id'
+                  localID: '$category.$id'
                 },
                 pipeline: [
                   {
@@ -4934,7 +4934,7 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$category.id'
+                  localID: '$category.$id'
                 },
                 pipeline: [
                   {
@@ -5360,7 +5360,7 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$category.id'
+                  localID: '$category.$id'
                 },
                 pipeline: [
                   {
@@ -5961,7 +5961,7 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$category.id'
+                  localID: '$category.$id'
                 },
                 pipeline: [
                   {
@@ -6358,7 +6358,7 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$category.id'
+                  localID: '$category.$id'
                 },
                 pipeline: [
                   {
@@ -6754,7 +6754,7 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$category.id'
+                  localID: '$category.$id'
                 },
                 pipeline: [
                   {
@@ -7158,7 +7158,7 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$category.id'
+                  localID: '$category.$id'
                 },
                 pipeline: [
                   {
