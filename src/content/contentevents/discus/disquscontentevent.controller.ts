@@ -26,6 +26,7 @@ export class DisqusContentEventController {
     let arrayisquslogs: DisquslogsDto[] = [];
     arrayisquslogs.push(getValDisquslogs);
 
+    retVal.disqusID = CreateDisquslogsDto_.disqusID;
     retVal.disqusLogs = arrayisquslogs;
     retVal.email = CreateDisqusDto_.email;
     retVal.room = CreateDisqusDto_.room;

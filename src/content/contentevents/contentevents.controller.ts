@@ -799,6 +799,7 @@ export class ContenteventsController {
           }
 
           retVal = await this.disqusContentEventController.buildDisqus(CreateDisqusDto_, CreateDisquslogsDto_);
+          this.logger.log("REVAL DATA >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ", JSON.stringify(retVal));
           this.disqusContentEventService.sendDMNotif(String(retVal.room), JSON.stringify(retVal));
         }
         
