@@ -179,7 +179,7 @@ export class DisqusController {
           } else {
             dm = await this.disqusService.queryDiscussV2(String(ContentDto_.email));
           }
-          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DM ', JSON.stringify(dm));
+          //console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> DM ', JSON.stringify(dm));
 
           var ApsaraArrayImage = [];
           var ApsaraArrayVideo = [];
@@ -226,12 +226,12 @@ export class DisqusController {
           if (ApsaraArrayVideo.length > 0) {
             vapsara = await this.postDisqusService.getVideoApsara(ApsaraArrayVideo);
           }
-          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> vapsara', JSON.stringify(vapsara));
+          //console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> vapsara', JSON.stringify(vapsara));
 
           if (ApsaraArrayImage.length > 0) {
             papsara = await this.postDisqusService.getImageApsara(ApsaraArrayImage);
           }
-          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> papsara', JSON.stringify(papsara));
+          //console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> papsara', JSON.stringify(papsara));
 
           if (dm != undefined && dm.length > 0) {
             for (let i = 0; i < dm.length; i++) {
@@ -272,7 +272,7 @@ export class DisqusController {
               tmp.push(o);
             }
           }
-          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> papsara', JSON.stringify(papsara));
+          console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> tmp', JSON.stringify(tmp));
 
           res.data = tmp;
 
