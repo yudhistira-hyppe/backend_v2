@@ -1272,7 +1272,6 @@ export class ContenteventsService {
               //        $ne: ""
               //    }
               //},
-
             ]
           }
         },
@@ -1348,6 +1347,11 @@ export class ContenteventsService {
                         ]
                       }
                     },
+                    {
+                      $sort: {
+                        "createdAt": - 1
+                      }
+                    },
 
                   ],
 
@@ -1376,6 +1380,11 @@ export class ContenteventsService {
                         $expr: {
                           $eq: ['$postID', '$$localID']
                         }
+                      }
+                    },
+                    {
+                      $sort: {
+                        "createdAt": - 1
                       }
                     },
                     {
@@ -1703,7 +1712,13 @@ export class ContenteventsService {
                   }]
                 },
 
-              }
+              },
+              {
+                $sort: {
+                  "createdAt": - 1
+                }
+              },
+
             ],
             //vid
             "vid": [
@@ -1761,6 +1776,11 @@ export class ContenteventsService {
                       }
                     },
 
+                    {
+                      $sort: {
+                        "createdAt": - 1
+                      }
+                    },
                   ],
 
                 },
@@ -2173,6 +2193,11 @@ export class ContenteventsService {
                       }
                     },
 
+                    {
+                      $sort: {
+                        "createdAt": - 1
+                      }
+                    },
                   ],
 
                 },
@@ -2580,16 +2605,21 @@ export class ContenteventsService {
                               }
                             }
                           },
-
                           {
                             $expr: {
                               $gte: ["$createdAt", "$storyDate",]
                             }
                           },
+
                         ]
                       }
                     },
 
+                    {
+                      $sort: {
+                        "createdAt": - 1
+                      }
+                    },
                   ],
 
                 },
@@ -2949,7 +2979,6 @@ export class ContenteventsService {
 
           }
         },
-
         //{
         //    $unwind: {
         //        path: "$pict",
@@ -3067,6 +3096,7 @@ export class ContenteventsService {
                 $project: {
                   "email": 1,
                   "postID": 1,
+
                 }
               }
             ],
@@ -3120,7 +3150,6 @@ export class ContenteventsService {
 
           }
         },
-
       ]
 
 
