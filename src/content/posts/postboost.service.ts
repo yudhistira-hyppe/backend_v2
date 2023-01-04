@@ -4074,10 +4074,10 @@ export class PostBoostService {
               }
             },
             {
-              $skip: 0
+              $skip: skip
             },
             {
-              $limit: 10
+              $limit: row
             },
             {
               $unwind: {
@@ -4614,10 +4614,10 @@ export class PostBoostService {
               }
             },
             {
-              $skip: 0
+              $skip: skip
             },
             {
-              $limit: 10
+              $limit: row
             },
             {
               $unwind: {
@@ -5142,10 +5142,10 @@ export class PostBoostService {
               }
             },
             {
-              $skip: 0
+              $skip: skip
             },
             {
-              $limit: 10
+              $limit: row
             },
             {
               $unwind: {
@@ -5550,10 +5550,10 @@ export class PostBoostService {
               }
             },
             {
-              $skip: 0
+              $skip: skip
             },
             {
-              $limit: 10
+              $limit: row
             },
             {
               $unwind: {
@@ -5865,6 +5865,7 @@ export class PostBoostService {
 
     ]).exec();
   }
+
 
 
   private buildQueryPrivate(profile: Userbasic, vis: string, stoday: string, skip: number, row: number) {
