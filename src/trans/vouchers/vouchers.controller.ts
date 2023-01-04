@@ -174,6 +174,9 @@ export class VouchersController {
         dt = new Date(dt);
         var exday = null;
         var createdAt = null;
+        var creditValue = 0;
+        var creditPromo = 0;
+        var creditTotal = 0;
 
         try {
             datavoucher = await this.vouchersService.findByid(id);
@@ -198,8 +201,16 @@ export class VouchersController {
                 exday = null;
 
             }
+            try {
+                creditValue = CreateVouchersDto.creditValue;
+                creditPromo = CreateVouchersDto.creditPromo;
+                creditTotal = creditValue + creditPromo;
+            } catch (e) {
+                creditTotal = 0;
+            }
 
             CreateVouchersDto.updatedAt = dt.toISOString();
+            CreateVouchersDto.creditTotal = creditTotal;
             let data = await this.vouchersService.update(id, CreateVouchersDto);
 
             res.status(HttpStatus.OK).json({

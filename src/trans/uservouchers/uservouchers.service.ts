@@ -216,7 +216,7 @@ export class UservouchersService {
                 $match: {
                     "userID": userID,
                     "field.codeVoucher": codeVoucher,
-                    "isActive": true,
+                    // "isActive": true,
                     // "expiredAt": {
                     //     $gte: date
                     // }
