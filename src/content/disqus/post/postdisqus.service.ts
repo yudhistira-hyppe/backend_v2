@@ -133,6 +133,56 @@ export class PostDisqusService {
     );
   }
 
+  async getImageApsara(ids: String[]): Promise<ApsaraImageResponse> {
+    let san: String[] = [];
+    for (let i = 0; i < ids.length; i++) {
+      let obj = ids[i];
+      if (obj != undefined && obj != 'undefined') {
+        san.push(obj);
+      }
+    }
+
+    let tx = new ApsaraImageResponse();
+    let vl: ImageInfo[] = [];
+    let chunk = this.chunkify(san, 15);
+    for (let i = 0; i < chunk.length; i++) {
+      let c = chunk[i];
+
+      let vids = c.join(',');
+      //this.logger.log("getImageApsara >>> video id: " + vids);
+      var RPCClient = require('@alicloud/pop-core').RPCClient;
+
+      let client = new RPCClient({
+        accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
+        accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
+        endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
+        apiVersion: '2017-03-21'
+      });
+
+      let params = {
+        "RegionId": this.configService.get("APSARA_REGION_ID"),
+        "ImageIds": vids
+      }
+
+      let requestOption = {
+        method: 'POST'
+      };
+
+      let dto = new ApsaraImageResponse();
+      let result = await client.request('GetImageInfos', params, requestOption);
+      let ty: ApsaraImageResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
+
+      if (ty.ImageInfo.length > 0) {
+        for (let x = 0; x < ty.ImageInfo.length; x++) {
+          let vv = ty.ImageInfo[x];
+          vl.push(vv);
+        }
+      }
+    }
+    tx.ImageInfo = vl;
+    return tx;
+  }
+
   public async getVideoApsara(ids: String[]): Promise<ApsaraVideoResponse> {
     let san: String[] = [];
     for (let i = 0; i < ids.length; i++) {
@@ -168,77 +218,19 @@ export class PostDisqusService {
         method: 'POST'
       };
 
-      try {
-        let dto = new ApsaraVideoResponse();
-        let result = await client.request('GetVideoInfos', params, requestOption);
-        let ty: ApsaraVideoResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
-        if (ty.VideoList.length > 0) {
-          for (let x = 0; x < ty.VideoList.length; x++) {
-            let vv = ty.VideoList[x];
-            vl.push(vv);
-          }
+      let dto = new ApsaraVideoResponse();
+      let result = await client.request('GetVideoInfos', params, requestOption);
+      let ty: ApsaraVideoResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
+      if (ty.VideoList.length > 0) {
+        for (let x = 0; x < ty.VideoList.length; x++) {
+          let vv = ty.VideoList[x];
+          vl.push(vv);
         }
-      } catch (ex) {
-
       }
+
     }
     tx.VideoList = vl;
 
-    return tx;
-  }
-
-  public async getImageApsara(ids: String[]): Promise<ApsaraImageResponse> {
-    let san: String[] = [];
-    for (let i = 0; i < ids.length; i++) {
-      let obj = ids[i];
-      if (obj != undefined && obj != 'undefined') {
-        san.push(obj);
-      }
-    }
-
-    let tx = new ApsaraImageResponse();
-    let vl: ImageInfo[] = [];
-    let chunk = this.chunkify(san, 15);
-    for (let i = 0; i < chunk.length; i++) {
-      let c = chunk[i];
-
-      let vids = c.join(',');
-      this.logger.log("getImageApsara >>> video id: " + vids);
-      var RPCClient = require('@alicloud/pop-core').RPCClient;
-
-      let client = new RPCClient({
-        accessKeyId: this.configService.get("APSARA_ACCESS_KEY"),
-        accessKeySecret: this.configService.get("APSARA_ACCESS_SECRET"),
-        endpoint: 'https://vod.ap-southeast-5.aliyuncs.com',
-        apiVersion: '2017-03-21'
-      });
-
-      let params = {
-        "RegionId": this.configService.get("APSARA_REGION_ID"),
-        "ImageIds": vids
-      }
-
-      let requestOption = {
-        method: 'POST'
-      };
-
-      try {
-        let dto = new ApsaraImageResponse();
-        let result = await client.request('GetImageInfos', params, requestOption);
-        let ty: ApsaraImageResponse = Object.assign(dto, JSON.parse(JSON.stringify(result)));
-        this.logger.log("getImageApsara >>> result: " + ty);
-
-        if (ty.ImageInfo.length > 0) {
-          for (let x = 0; x < ty.ImageInfo.length; x++) {
-            let vv = ty.ImageInfo[x];
-            vl.push(vv);
-          }
-        }
-      } catch (e) {
-
-      }
-    }
-    tx.ImageInfo = vl;
     return tx;
   }
 
