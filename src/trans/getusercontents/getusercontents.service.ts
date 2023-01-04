@@ -8266,7 +8266,7 @@ export class GetusercontentsService {
   }
 
 
-  async findalldatakontenmultiple(iduserbuy: Types.ObjectId, email: string, ownership: boolean, monetesisasi: boolean, buy: boolean, archived: boolean, reported: boolean, postType: string, startdate: string, enddate: string, skip: number, limit: number) {
+  async findalldatakontenmultiple(iduserbuy: Types.ObjectId, email: string, ownership: any, monetesisasi: boolean, buy: boolean, archived: boolean, reported: boolean, postType: string, startdate: string, enddate: string, skip: number, limit: number) {
 
     try {
       var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
@@ -8427,6 +8427,7 @@ export class GetusercontentsService {
             shares: 1,
             comments: 1,
             isOwned: 1,
+            certified: 1,
             privacy: {
               isPostPrivate: '$basic.isPostPrivate',
               isCelebrity: '$basic.isCelebrity',
@@ -8716,6 +8717,7 @@ export class GetusercontentsService {
             shares: 1,
             comments: 1,
             isOwned: 1,
+            certified: 1,
             privacy: {
               isPostPrivate: '$basic.isPostPrivate',
               isCelebrity: '$basic.isCelebrity',
@@ -8865,8 +8867,8 @@ export class GetusercontentsService {
         }
       );
       pipeline.push({ $match: { email: email, active: true } });
-      if (ownership !== undefined) {
-        pipeline.push({ $match: { isOwned: ownership } });
+      if (ownership !== undefined && ownership === true) {
+        pipeline.push({ $match: { certified: true } });
       }
       if (archived && archived !== undefined) {
         pipeline.push({ $match: { postType: "story" } });
@@ -8987,6 +8989,7 @@ export class GetusercontentsService {
         "saleView": query[i].saleView,
         "monetize": query[i].monetize,
         "salePrice": query[i].salePrice,
+        "certified": query[i].certified,
         "media": data,
         "trans": query[i].trans
       };
