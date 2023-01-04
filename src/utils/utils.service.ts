@@ -219,8 +219,8 @@ export class UtilsService {
     }
 
     //SET BODY SAVE
-    if ((eventType == "REACTION") || (eventType == "COMMENT") || (eventType == "LIKE") || (eventType == "TRANSACTION")) {
-      if (event == "BOOST_SUCCES" || event == "ADS VIEW" || event == "ADS CLICK") {
+    if ((eventType == "REACTION") || (eventType == "COMMENT") || (eventType == "LIKE") || (eventType == "TRANSACTION") || (event == "POST")) {
+      if (event == "BOOST_SUCCES" || event == "ADS VIEW" || event == "ADS CLICK" ) {
         data_send['postID'] = idtransaction
         data_send['postType'] = eventType
       } else {
