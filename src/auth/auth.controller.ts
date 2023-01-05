@@ -3082,6 +3082,7 @@ export class AuthController {
   @HttpCode(HttpStatus.ACCEPTED)
   @UseGuards(JwtAuthGuard)
   async userdetail(@Param('id') id: string): Promise<any> {
+
     return await this.userbasicsService.getUserDetails(id);
   }
 }

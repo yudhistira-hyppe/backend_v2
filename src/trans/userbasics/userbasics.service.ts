@@ -1969,7 +1969,7 @@ export class UserbasicsService {
     // var currentDateNowFormat_ = currentDateNow_.toISOString().split('T')[0] + " " + currentDateNow_.toISOString().split('T')[1].split('.')[0];
     // console.log("currentDateNowFormat_ END", currentDateNowFormat_);
 
-    return await this.userbasicModel.aggregate([
+    var query = await this.userbasicModel.aggregate([
       {
         $match:
         {
@@ -2203,6 +2203,8 @@ export class UserbasicsService {
         }
       }
     ]);
+
+    return query;
   }
 
 }

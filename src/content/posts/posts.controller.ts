@@ -345,11 +345,11 @@ export class PostsController {
     var saleAmount = body.saleAmount;
     var data = null;
     var lang = await this.utilsService.getUserlanguages(email);
-    
+
 
     var posts = await this.PostsService.findid(body.postID.toString());
     var dataTransaction = await this.transactionsPostService.findpostid(body.postID.toString());
-    if (await this.utilsService.ceckData(dataTransaction)){
+    if (await this.utilsService.ceckData(dataTransaction)) {
       if (lang == "id") {
         await this.errorHandler.generateNotAcceptableException(
           "Tidak bisa mengedit postingan karena sedang dalam proses pembayaran",
@@ -386,7 +386,8 @@ export class PostsController {
     console.log(body);
     this.logger.log("getUserPostLandingPage >>> start: " + JSON.stringify(body));
     //if (body.visibility == 'PUBLIC') {
-      return this.bootsService.getBoostV2(body, headers);
+
+    return this.bootsService.getBoostV2(body, headers);
     //} else {
     //  return this.postContentService.getUserPostLandingPage(body, headers);
     //}
