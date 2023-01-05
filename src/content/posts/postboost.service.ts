@@ -2975,16 +2975,16 @@ export class PostBoostService {
 
       }
 
-      // if (obj.boosted != undefined) {
-      //   console.log("boosted: " + pd.postID);
-      //   this.postxService.updateBoostViewer(pd.postID, email);
-      //   pd.boostJangkauan = this.countBoosted(obj, email);
-      // }
+      if (obj.boosted != undefined) {
+        console.log("boosted: " + pd.postID);
+        this.postxService.updateBoostViewer(pd.postID, email);
+        pd.boostJangkauan = this.countBoosted(obj, email);
+      }
 
-      // if (obj.statusCB == undefined || obj.statusCB == 'PENDING') {
-      //   console.log("statusCB: " + obj.statusCB);
-      //   this.postService.cmodCheckResult(obj.postID);
-      // }
+      if (obj.statusCB == undefined || obj.statusCB == 'PENDING') {
+        console.log("statusCB: " + obj.statusCB);
+        this.postService.cmodCheckResult(obj.postID);
+      }
 
 
       res.push(pd);
