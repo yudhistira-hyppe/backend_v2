@@ -3083,6 +3083,98 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async userdetail(@Param('id') id: string): Promise<any> {
 
-    return await this.userbasicsService.getUserDetails(id);
+    var datauserdetail = null;
+    var data = [];
+    var dokumen = [];
+    var filesupport = null;
+    var lengsupport = null;
+    var arrsuport = [];
+    var newsupport = null;
+    var mediaId = null;
+    var fileselfiepict = null;
+    var fileproofpict = null;
+
+    try {
+      datauserdetail = await this.userbasicsService.getUserDetails(id);
+
+    } catch (e) {
+      datauserdetail = null;
+    }
+
+
+
+    if (datauserdetail !== null) {
+
+
+      try {
+
+        mediaId = datauserdetail[0].mediaId;
+      } catch (e) {
+        mediaId = "";
+      }
+
+      try {
+        fileselfiepict = "/" + datauserdetail[0].dokument[0].mediaSelfiepicts.mediaEndpoint;
+        arrsuport.push(fileselfiepict);
+
+      } catch (e) {
+        fileselfiepict = "";
+
+      }
+      try {
+
+        fileproofpict = "/" + datauserdetail[0].dokument[0].mediaproofpicts.mediaEndpoint;
+        arrsuport.push(fileproofpict);
+
+      } catch (e) {
+        fileproofpict = "";
+
+      }
+      try {
+
+        filesupport = datauserdetail[0].dokument[0].mediaSupportfile.mediaEndpoint;
+        lengsupport = filesupport.length;
+      } catch (e) {
+        filesupport = [];
+        lengsupport = 0;
+      }
+
+
+      if (lengsupport > 0) {
+        for (let i = 0; i < lengsupport; i++) {
+
+          newsupport = "/supportfile/" + mediaId + "/" + i;
+          arrsuport.push(newsupport);
+
+        }
+      }
+
+
+      let obj = {
+
+        "_id": datauserdetail[0]._id,
+        "fullName": datauserdetail[0].fullName,
+        "username": datauserdetail[0].username,
+        "email": datauserdetail[0].email,
+        "createdAt": datauserdetail[0].createdAt,
+        "status": datauserdetail[0].status,
+        "dob": datauserdetail[0].dob,
+        "gender": datauserdetail[0].gender,
+        "insights": datauserdetail[0].insights,
+        "states": datauserdetail[0].states,
+        "cities": datauserdetail[0].cities,
+        "countries": datauserdetail[0].countries,
+        "interests": datauserdetail[0].interests,
+        "dokument": arrsuport,
+        "placeofbirth": datauserdetail[0].placeofbirth,
+        "userbankaccounts": datauserdetail[0].userbankaccounts,
+      };
+
+      data.push(obj);
+    } else {
+      data = [];
+    }
+
+    return data;
   }
 }

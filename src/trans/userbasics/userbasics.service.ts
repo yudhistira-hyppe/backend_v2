@@ -1969,7 +1969,7 @@ export class UserbasicsService {
     // var currentDateNowFormat_ = currentDateNow_.toISOString().split('T')[0] + " " + currentDateNow_.toISOString().split('T')[1].split('.')[0];
     // console.log("currentDateNowFormat_ END", currentDateNowFormat_);
 
-    var query = await this.userbasicModel.aggregate([
+    const query = await this.userbasicModel.aggregate([
       {
         $match:
         {
@@ -1982,7 +1982,9 @@ export class UserbasicsService {
           localField: 'email',
           foreignField: 'email',
           as: 'userauths_data',
+
         },
+
       },
       {
         $lookup: {
@@ -1990,7 +1992,9 @@ export class UserbasicsService {
           localField: 'email',
           foreignField: 'email',
           as: 'insights_data',
+
         },
+
       },
       {
         $lookup: {
@@ -1998,7 +2002,9 @@ export class UserbasicsService {
           localField: 'cities.$id',
           foreignField: '_id',
           as: 'cities_data',
+
         },
+
       },
       {
         $lookup: {
@@ -2006,7 +2012,9 @@ export class UserbasicsService {
           localField: 'states.$id',
           foreignField: '_id',
           as: 'areas_data',
+
         },
+
       },
       {
         $lookup: {
@@ -2014,7 +2022,9 @@ export class UserbasicsService {
           localField: 'countries.$id',
           foreignField: '_id',
           as: 'countries_data',
+
         },
+
       },
       {
         "$lookup": {
@@ -2024,15 +2034,25 @@ export class UserbasicsService {
             "localID": "$userInterests.$id"
           },
           pipeline: [
-            { $match: { $expr: { $in: ["$_id", "$$localID"] } } },
+            {
+              $match: {
+                $expr: {
+                  $in: ["$_id", "$$localID"]
+                }
+              }
+            },
             {
               $project: {
                 "interestName": 1,
                 "icon": 1,
+
               }
             },
+
           ],
+
         },
+
       },
       {
         $lookup: {
@@ -2040,7 +2060,9 @@ export class UserbasicsService {
           localField: 'proofPict.$id',
           foreignField: '_id',
           as: 'mediaproofpicts_data',
+
         },
+
       },
       // {
       //   $lookup: {
@@ -2082,8 +2104,21 @@ export class UserbasicsService {
             "id": "$_id"
           },
           pipeline: [
-            { $match: { $expr: { $eq: ["$userId", "$$id"] } } },
-            { $project: { idBank: 1, noRek: 1, nama: 1, active: 1 } }
+            {
+              $match: {
+                $expr: {
+                  $eq: ["$userId", "$$id"]
+                }
+              }
+            },
+            {
+              $project: {
+                idBank: 1,
+                noRek: 1,
+                nama: 1,
+                active: 1
+              }
+            }
           ],
           as: 'userbankaccounts_data'
         }
@@ -2095,89 +2130,158 @@ export class UserbasicsService {
         }
       },
       {
+        $unwind: {
+          path: "$mediaproofpicts_data",
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
         $lookup: {
           from: "banks",
           localField: "userbankaccounts_data.idBank",
           foreignField: "_id",
           as: "userbankaccounts_data.bankName",
+
         }
       },
       {
         $project: {
           fullName: '$fullName',
-          username: { $arrayElemAt: ['$userauths_data.username', 0] },
+          username: {
+            $arrayElemAt: ['$userauths_data.username', 0]
+          },
           email: '$email',
           createdAt: '$createdAt',
           status: '$isIdVerified',
           dob: '$dob',
           gender: '$gender',
+          mediaId: '$mediaproofpicts_data._id',
           insights: {
-            followers: { $arrayElemAt: ['$insights_data.followers', 0] },
-            followings: { $arrayElemAt: ['$insights_data.followings', 0] },
+            followers: {
+              $arrayElemAt: ['$insights_data.followers', 0]
+            },
+            followings: {
+              $arrayElemAt: ['$insights_data.followings', 0]
+            },
+
           },
-          states: { $arrayElemAt: ['$areas_data.stateName', 0] },
-          cities: { $arrayElemAt: ['$cities_data.cityName', 0] },
-          countries: { $arrayElemAt: ['$countries_data.country', 0] },
+          states: {
+            $arrayElemAt: ['$areas_data.stateName', 0]
+          },
+          cities: {
+            $arrayElemAt: ['$cities_data.cityName', 0]
+          },
+          countries: {
+            $arrayElemAt: ['$countries_data.country', 0]
+          },
           userbankaccounts: {
             _id: '$userbankaccounts_data._id',
             idBank: '$userbankaccounts_data.idBank',
-            bankcode: { $arrayElemAt: ['$userbankaccounts_data.bankName.bankcode', 0] },
-            bankname: { $arrayElemAt: ['$userbankaccounts_data.bankName.bankname', 0] },
+            bankcode: {
+              $arrayElemAt: ['$userbankaccounts_data.bankName.bankcode', 0]
+            },
+            bankname: {
+              $arrayElemAt: ['$userbankaccounts_data.bankName.bankname', 0]
+            },
             noRek: '$userbankaccounts_data.noRek',
             nama: '$userbankaccounts_data.nama',
             active: '$userbankaccounts_data.active'
           },
           interests: '$interests_repo_data',
-          dokument: {
+          dokument: [{
             mediaproofpicts: {
-              mediaId: { $arrayElemAt: ['$mediaproofpicts_data._id', 0] },
-              mediaBasePath: { $arrayElemAt: ['$mediaproofpicts_data.mediaBasePath', 0] },
-              mediaUri: { $arrayElemAt: ['$mediaproofpicts_data.mediaUri', 0] },
-              postType: { $arrayElemAt: ['$mediaproofpicts_data.mediaType', 0] },
-              mediaEndpoint: { $concat: ["profilepict", "/", { $arrayElemAt: ['$mediaproofpicts_data._id', 0] }] },
+              mediaId: '$mediaproofpicts_data._id',
+              mediaBasePath: '$mediaproofpicts_data.mediaBasePath',
+              mediaUri: '$mediaproofpicts_data.mediaUri',
+              postType: '$mediaproofpicts_data.mediaType',
+              mediaEndpoint: {
+                $concat: ["profilepict", "/", '$mediaproofpicts_data._id']
+              },
+
             },
             mediaSelfiepicts: {
-              mediaId: { $arrayElemAt: ['$mediaproofpicts_data._id', 0] },
-              mediaBasePath: { $arrayElemAt: ['$mediaproofpicts_data.mediaSelfieBasePath', 0] },
-              mediaUri: { $arrayElemAt: ['$mediaproofpicts_data.mediaSelfieUri', 0] },
-              postType: { $arrayElemAt: ['$mediaproofpicts_data.mediaSelfieType', 0] },
-              mediaEndpoint: { $concat: ["selfiepict", "/", { $arrayElemAt: ['$mediaproofpicts_data._id', 0] }] },
+              mediaId: '$mediaproofpicts_data._id',
+              mediaBasePath: '$mediaproofpicts_data.mediaSelfieBasePath',
+              mediaUri: '$mediaproofpicts_data.mediaSelfieUri',
+              postType: '$mediaproofpicts_data.mediaSelfieType',
+              mediaEndpoint: {
+                $concat: ["selfiepict", "/", '$mediaproofpicts_data._id']
+              },
+
             },
             mediaSupportfile: {
               mediaEndpoint: {
-                $map: {
-                  "input": { "$range": [0, { "$size": { $arrayElemAt: ['$mediaproofpicts_data.SupportfsSourceUri', 0] } }] },
-                  "in": {
-                    "$cond": [
-                      { "$eq": ["$$this", "$$this"] },
-                      { $concat: ["supportfile", "/", { $arrayElemAt: ['$mediaproofpicts_data._id', 0] }, '/', { $toString: "$$this" }] },
-                      { "$arrayElemAt": [{ $arrayElemAt: ['$mediaproofpicts_data.SupportfsSourceUri', 0] }, "$$this"] }
-                    ]
-                  }
-                }
+
+                $cond: {
+                  if: {
+                    $or: [{
+                      $eq: ['$mediaproofpicts_data.SupportfsSourceUri', null]
+                    }, {
+                      $eq: ['$mediaproofpicts_data.SupportfsSourceUri', ""]
+                    }, {
+                      $eq: ['$mediaproofpicts_data.SupportfsSourceUri', []]
+                    }, {
+                      $eq: ['$mediaproofpicts_data.SupportfsSourceUri', {}]
+                    }]
+                  },
+                  then: {},
+                  else: '$mediaproofpicts_data.SupportfsSourceUri'
+                },
+
               }
             }
-          },
-          contentevents_data: '$contentevents_data'
+          }],
+
         }
       },
       {
         $group: {
           _id: "$_id",
-          fullName: { $first: "$fullName" },
-          username: { $first: "$username" },
-          email: { $first: "$email" },
-          createdAt: { $first: "$createdAt" },
-          status: { $first: "$status" },
-          dob: { $first: "$dob" },
-          gender: { $first: "$gender" },
-          insights: { $first: "$insights" },
-          states: { $first: "$states" },
-          cities: { $first: "$cities" },
-          countries: { $first: "$countries" },
-          interests: { $first: "$interests" },
-          dokument: { $first: "$dokument" },
-          userbankaccounts: { $push: "$userbankaccounts" },
+          fullName: {
+            $first: "$fullName"
+          },
+          username: {
+            $first: "$username"
+          },
+          email: {
+            $first: "$email"
+          },
+          createdAt: {
+            $first: "$createdAt"
+          },
+          status: {
+            $first: "$status"
+          },
+          mediaId: {
+            $first: "$mediaId"
+          },
+          dob: {
+            $first: "$dob"
+          },
+          gender: {
+            $first: "$gender"
+          },
+          insights: {
+            $first: "$insights"
+          },
+          states: {
+            $first: "$states"
+          },
+          cities: {
+            $first: "$cities"
+          },
+          countries: {
+            $first: "$countries"
+          },
+          interests: {
+            $first: "$interests"
+          },
+          dokument: {
+            $first: "$dokument"
+          },
+          userbankaccounts: {
+            $push: "$userbankaccounts"
+          },
           //  contentevents_data: { $first: "$contentevents_data" },
         }
       },
@@ -2186,6 +2290,7 @@ export class UserbasicsService {
           _id: 1,
           fullName: 1,
           username: 1,
+          mediaId: 1,
           email: 1,
           createdAt: 1,
           status: 1,
@@ -2197,9 +2302,39 @@ export class UserbasicsService {
           cities: 1,
           countries: 1,
           interests: 1,
-          dokument: 1,
-          // contentevents_data: 1,
-          userbankaccounts: '$userbankaccounts'
+          dokument: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$dokument", null]
+                }, {
+                  $eq: ["$dokument", ""]
+                }, {
+                  $eq: ["$dokument", []]
+                }]
+              },
+              then: [],
+              else: "$dokument"
+            },
+
+          },
+          userbankaccounts: {
+            $cond: {
+              if: {
+                $or: [{
+                  $eq: ["$userbankaccounts", null]
+                }, {
+                  $eq: ["$userbankaccounts", ""]
+                }, {
+                  $eq: ["$userbankaccounts", []]
+                }]
+              },
+              then: [],
+              else: "$userbankaccounts"
+            },
+
+          },
+
         }
       }
     ]);
