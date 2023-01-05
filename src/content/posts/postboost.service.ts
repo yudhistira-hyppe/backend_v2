@@ -4202,7 +4202,7 @@ export class PostBoostService {
             }
           ],
           //video
-          "video": [
+          "vid": [
             {
               $sort: {
                 "isBoost": - 1,
@@ -5271,6 +5271,13 @@ export class PostBoostService {
                 $or: [
                   {
                     $and: [
+                      {
+                        "email": {
+                          $not: {
+                            $regex: profile.email
+                          }
+                        }
+                      },
                       {
                         "reportedStatus": {
                           $ne: "OWNED"
