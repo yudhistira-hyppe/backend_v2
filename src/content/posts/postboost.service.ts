@@ -2858,7 +2858,7 @@ export class PostBoostService {
       pd.apsaraThumbId = obj.apsaraThumbId;
       pd.avatar = obj.avatar[0];
 
-      pd.cats = obj.cats;
+      pd.cats = obj.category;
       pd.certified = obj.certified;
       pd.createdAt = obj.createdAt;
       pd.description = obj.description;
