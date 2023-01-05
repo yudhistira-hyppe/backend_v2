@@ -664,7 +664,7 @@ export class MediaController {
                         iduserbasic = datauserbasicsService._id;
                         await this.userbasicsService.updateIdVerifiedUser(iduserbasic, true, 'verified');
                         await this.userauthsService.update(emailuserbasic, 'ROLE_PREMIUM');
-                        await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
+                        //await this.utilsService.sendFcm(emailuserbasic, titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event);
 
                         await this.utilsService.sendFcmV2(emailuserbasic, emailuserbasic, 'KYC', 'REQUEST', 'KYC_VERIFIED');
                         return {
@@ -687,7 +687,7 @@ export class MediaController {
                         iduserbasic = datauserbasicsService._id;
                         await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
                         await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
-                        await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
+                        //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                         await this.errorHandler.generateCustomNotAcceptableException(
                             {
                                 "response_code": 202,
@@ -711,7 +711,7 @@ export class MediaController {
                     iduserbasic = datauserbasicsService._id;
                     await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
-                    await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
+                    //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
                         {
                             "response_code": 202,
@@ -737,7 +737,7 @@ export class MediaController {
                     iduserbasic = datauserbasicsService._id;
                     await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
-                    await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
+                    //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
                         {
                             "response_code": 202,
@@ -760,7 +760,7 @@ export class MediaController {
                     iduserbasic = datauserbasicsService._id;
                     await this.userbasicsService.updateIdVerifiedUser(iduserbasic, false, 'review');
                     await this.mediaproofpictsService.updatebyId(id_mediaproofpicts_, _CreateMediaproofpictsDto);
-                    await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
+                    //await this.utilsService.sendFcm(emailuserbasic, titleingagal, titleengagal, bodyingagal, bodyengagal, eventType, event);
                     await this.errorHandler.generateCustomNotAcceptableException(
                         {
                             "response_code": 202,

@@ -802,7 +802,8 @@ export class PostContentService {
             bodyi = bodyi + ' HyppeStory';
             bodye = bodye + ' HyppeStory';
           }
-          this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned', bodyi, bodye, 'REACTION', 'ACCEPT', String(post.postID), String(post.postType));
+          this.utilService.sendFcmV2(as.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString())
+          //this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned', bodyi, bodye, 'REACTION', 'ACCEPT', String(post.postID), String(post.postType));
         });
       });
     }
@@ -828,7 +829,8 @@ export class PostContentService {
             bodyi = bodyi + ' HyppeStory';
             bodye = bodye + ' HyppeStory';
           }
-          this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned', bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
+          this.utilService.sendFcmV2(as.email.toString(), post.email.toString(), 'REACTION', 'ACCEPT', "POST_TAG", body.postID.toString(), post.postType.toString())
+          //this.utilService.sendFcm(String(as.email), 'Disebut', 'Mentioned', bodyi, bodye, 'REACTION', 'ACCEPT', null, null);
         });
       });
     }
