@@ -1405,37 +1405,7 @@ export class ContenteventsService {
                 },
 
               },
-              {
-                "$lookup": {
-                  from: "interests_repo",
-                  as: "cats",
-                  let: {
-                    localID: '$post.category.$id'
-                  },
-                  pipeline: [
-                    {
-                      $match:
-                      {
 
-
-                        $expr: {
-                          $eq: ['$_id', '$$localID']
-                        }
-                      }
-                    },
-                    {
-                      $project: {
-                        "interestName": 1,
-                        "langIso": 1,
-                        "icon": 1,
-                        "createdAt": 1,
-                        "updatedAt": 1
-                      }
-                    }
-                  ],
-
-                }
-              },
               {
                 "$lookup": {
                   from: "insights",
@@ -1681,7 +1651,7 @@ export class ContenteventsService {
                   "shares": "$post.shares",
                   "userProfile": "$post.userProfile",
                   "contentMedias": "$post.contentMedias",
-                  "category": "$cats",
+                  "category": "$post.category",
                   "tagDescription": "$post.tagDescription",
                   "metadata": "$post.metadata",
                   "isBoost": "$post.isBoost",
@@ -1713,11 +1683,101 @@ export class ContenteventsService {
 
               },
               {
+                $unwind: {
+                  path: "$category",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+
+              {
+                "$lookup": {
+                  from: "interests_repo",
+                  as: "cats",
+                  let: {
+                    localID: '$category.$id'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+
+
+                        $expr: {
+                          $eq: ['$_id', '$$localID']
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+                        "interestName": 1,
+                        "langIso": 1,
+                        "icon": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1
+                      }
+                    }
+                  ],
+
+                }
+              },
+              {
+                $project: {
+                  "isLike": 1,
+                  "tagPeople": 1,
+                  "mediaType": 1,
+                  "email": 1,
+                  "postType": 1,
+                  "description": 1,
+                  "active": 1,
+                  "createdAt": 1,
+                  "updatedAt": 1,
+                  "expiration": 1,
+                  "visibility": 1,
+                  "location": 1,
+                  "tags": 1,
+                  "allowComments": 1,
+                  "isSafe": 1,
+                  "isOwned": 1,
+                  "certified": 1,
+                  "saleAmount": 1,
+                  "saleLike": 1,
+                  "saleView": 1,
+                  "likes": 1,
+                  "views": 1,
+                  "shares": 1,
+                  "userProfile": 1,
+                  "contentMedias": 1,
+                  "tagDescription": 1,
+                  "metadata": 1,
+                  "isBoost": 1,
+                  "boostCount": 1,
+                  "contentModeration": 1,
+                  "reportedStatus": 1,
+                  "reportedUserCount": 1,
+                  "contentModerationResponse": 1,
+                  "reportedUser": 1,
+                  "apsara": 1,
+                  "apsaraId": 1,
+                  "apsaraThumbId": 1,
+                  "mediaEndpoint": 1,
+                  "mediaUri": 1,
+                  "mediaThumbEndpoint": 1,
+                  "mediaThumbUri": 1,
+                  "category": "$cats",
+                  "insight": 1,
+                  "fullName": 1,
+                  "username": 1,
+                  "avatar": 1,
+                  "privacy": 1
+                },
+
+              },
+
+              {
                 $sort: {
                   "createdAt": - 1
                 }
               },
-
             ],
             //vid
             "vid": [
@@ -1827,37 +1887,7 @@ export class ContenteventsService {
                 },
 
               },
-              {
-                "$lookup": {
-                  from: "interests_repo",
-                  as: "cats",
-                  let: {
-                    localID: '$post.category.$id'
-                  },
-                  pipeline: [
-                    {
-                      $match:
-                      {
 
-
-                        $expr: {
-                          $eq: ['$_id', '$$localID']
-                        }
-                      }
-                    },
-                    {
-                      $project: {
-                        "interestName": 1,
-                        "langIso": 1,
-                        "icon": 1,
-                        "createdAt": 1,
-                        "updatedAt": 1
-                      }
-                    }
-                  ],
-
-                }
-              },
               {
                 "$lookup": {
                   from: "insights",
@@ -2103,7 +2133,7 @@ export class ContenteventsService {
                   "shares": "$post.shares",
                   "userProfile": "$post.userProfile",
                   "contentMedias": "$post.contentMedias",
-                  "category": "$cats",
+                  "category": "$post.category",
                   "tagDescription": "$post.tagDescription",
                   "metadata": "$post.metadata",
                   "isBoost": "$post.isBoost",
@@ -2133,7 +2163,98 @@ export class ContenteventsService {
                   }]
                 },
 
-              }
+              },
+              {
+                $unwind: {
+                  path: "$category",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+
+              {
+                "$lookup": {
+                  from: "interests_repo",
+                  as: "cats",
+                  let: {
+                    localID: '$category.$id'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+
+
+                        $expr: {
+                          $eq: ['$_id', '$$localID']
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+                        "interestName": 1,
+                        "langIso": 1,
+                        "icon": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1
+                      }
+                    }
+                  ],
+
+                }
+              },
+              {
+                $project: {
+                  "isLike": 1,
+                  "tagPeople": 1,
+                  "mediaType": 1,
+                  "email": 1,
+                  "postType": 1,
+                  "description": 1,
+                  "active": 1,
+                  "createdAt": 1,
+                  "updatedAt": 1,
+                  "expiration": 1,
+                  "visibility": 1,
+                  "location": 1,
+                  "tags": 1,
+                  "allowComments": 1,
+                  "isSafe": 1,
+                  "isOwned": 1,
+                  "certified": 1,
+                  "saleAmount": 1,
+                  "saleLike": 1,
+                  "saleView": 1,
+                  "likes": 1,
+                  "views": 1,
+                  "shares": 1,
+                  "userProfile": 1,
+                  "contentMedias": 1,
+                  "tagDescription": 1,
+                  "metadata": 1,
+                  "isBoost": 1,
+                  "boostCount": 1,
+                  "contentModeration": 1,
+                  "reportedStatus": 1,
+                  "reportedUserCount": 1,
+                  "contentModerationResponse": 1,
+                  "reportedUser": 1,
+                  "apsara": 1,
+                  "apsaraId": 1,
+                  "apsaraThumbId": 1,
+                  "mediaEndpoint": 1,
+                  "mediaUri": 1,
+                  "mediaThumbEndpoint": 1,
+                  "mediaThumbUri": 1,
+                  "category": "$cats",
+                  "insight": 1,
+                  "fullName": 1,
+                  "username": 1,
+                  "avatar": 1,
+                  "privacy": 1
+                },
+
+              },
+
             ],
             //diary
             "diary": [
@@ -2243,37 +2364,7 @@ export class ContenteventsService {
                 },
 
               },
-              {
-                "$lookup": {
-                  from: "interests_repo",
-                  as: "cats",
-                  let: {
-                    localID: '$post.category.$id'
-                  },
-                  pipeline: [
-                    {
-                      $match:
-                      {
 
-
-                        $expr: {
-                          $eq: ['$_id', '$$localID']
-                        }
-                      }
-                    },
-                    {
-                      $project: {
-                        "interestName": 1,
-                        "langIso": 1,
-                        "icon": 1,
-                        "createdAt": 1,
-                        "updatedAt": 1
-                      }
-                    }
-                  ],
-
-                }
-              },
               {
                 "$lookup": {
                   from: "insights",
@@ -2519,7 +2610,7 @@ export class ContenteventsService {
                   "shares": "$post.shares",
                   "userProfile": "$post.userProfile",
                   "contentMedias": "$post.contentMedias",
-                  "category": "$cats",
+                  "category": "$post.category",
                   "tagDescription": "$post.tagDescription",
                   "metadata": "$post.metadata",
                   "isBoost": "$post.isBoost",
@@ -2549,7 +2640,99 @@ export class ContenteventsService {
                   }]
                 },
 
-              }
+              },
+              {
+                $unwind: {
+                  path: "$category",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+
+              {
+                "$lookup": {
+                  from: "interests_repo",
+                  as: "cats",
+                  let: {
+                    localID: '$category.$id'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+
+
+                        $expr: {
+                          $eq: ['$_id', '$$localID']
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+                        "interestName": 1,
+                        "langIso": 1,
+                        "icon": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1
+                      }
+                    }
+                  ],
+
+                }
+              },
+              {
+                $project: {
+                  "isLike": 1,
+                  "tagPeople": 1,
+                  "mediaType": 1,
+                  "email": 1,
+                  "postType": 1,
+                  "description": 1,
+                  "active": 1,
+                  "createdAt": 1,
+                  "updatedAt": 1,
+                  "expiration": 1,
+                  "visibility": 1,
+                  "location": 1,
+                  "tags": 1,
+                  "allowComments": 1,
+                  "isSafe": 1,
+                  "isOwned": 1,
+                  "certified": 1,
+                  "saleAmount": 1,
+                  "saleLike": 1,
+                  "saleView": 1,
+                  "likes": 1,
+                  "views": 1,
+                  "shares": 1,
+                  "userProfile": 1,
+                  "contentMedias": 1,
+                  "tagDescription": 1,
+                  "metadata": 1,
+                  "isBoost": 1,
+                  "boostCount": 1,
+                  "contentModeration": 1,
+                  "reportedStatus": 1,
+                  "reportedUserCount": 1,
+                  "contentModerationResponse": 1,
+                  "reportedUser": 1,
+                  "apsara": 1,
+                  "apsaraId": 1,
+                  "apsaraThumbId": 1,
+                  "mediaEndpoint": 1,
+                  "mediaUri": 1,
+                  "mediaThumbEndpoint": 1,
+                  "mediaThumbUri": 1,
+                  "category": "$cats",
+                  "insight": 1,
+                  "fullName": 1,
+                  "username": 1,
+                  "avatar": 1,
+                  "privacy": 1
+                },
+
+              },
+
+
             ],
             //story
             "story": [
@@ -2664,37 +2847,7 @@ export class ContenteventsService {
                 },
 
               },
-              {
-                "$lookup": {
-                  from: "interests_repo",
-                  as: "cats",
-                  let: {
-                    localID: '$post.category.$id'
-                  },
-                  pipeline: [
-                    {
-                      $match:
-                      {
 
-
-                        $expr: {
-                          $eq: ['$_id', '$$localID']
-                        }
-                      }
-                    },
-                    {
-                      $project: {
-                        "interestName": 1,
-                        "langIso": 1,
-                        "icon": 1,
-                        "createdAt": 1,
-                        "updatedAt": 1
-                      }
-                    }
-                  ],
-
-                }
-              },
               {
                 "$lookup": {
                   from: "insights",
@@ -2940,7 +3093,7 @@ export class ContenteventsService {
                   "shares": "$post.shares",
                   "userProfile": "$post.userProfile",
                   "contentMedias": "$post.contentMedias",
-                  "category": "$cats",
+                  "category": "$post.category",
                   "tagDescription": "$post.tagDescription",
                   "metadata": "$post.metadata",
                   "isBoost": "$post.isBoost",
@@ -2970,7 +3123,99 @@ export class ContenteventsService {
                   }]
                 },
 
-              }
+              },
+              {
+                $unwind: {
+                  path: "$category",
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+
+              {
+                "$lookup": {
+                  from: "interests_repo",
+                  as: "cats",
+                  let: {
+                    localID: '$category.$id'
+                  },
+                  pipeline: [
+                    {
+                      $match:
+                      {
+
+
+                        $expr: {
+                          $eq: ['$_id', '$$localID']
+                        }
+                      }
+                    },
+                    {
+                      $project: {
+                        "interestName": 1,
+                        "langIso": 1,
+                        "icon": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1
+                      }
+                    }
+                  ],
+
+                }
+              },
+              {
+                $project: {
+                  "isLike": 1,
+                  "tagPeople": 1,
+                  "mediaType": 1,
+                  "email": 1,
+                  "postType": 1,
+                  "description": 1,
+                  "active": 1,
+                  "createdAt": 1,
+                  "updatedAt": 1,
+                  "expiration": 1,
+                  "visibility": 1,
+                  "location": 1,
+                  "tags": 1,
+                  "allowComments": 1,
+                  "isSafe": 1,
+                  "isOwned": 1,
+                  "certified": 1,
+                  "saleAmount": 1,
+                  "saleLike": 1,
+                  "saleView": 1,
+                  "likes": 1,
+                  "views": 1,
+                  "shares": 1,
+                  "userProfile": 1,
+                  "contentMedias": 1,
+                  "tagDescription": 1,
+                  "metadata": 1,
+                  "isBoost": 1,
+                  "boostCount": 1,
+                  "contentModeration": 1,
+                  "reportedStatus": 1,
+                  "reportedUserCount": 1,
+                  "contentModerationResponse": 1,
+                  "reportedUser": 1,
+                  "apsara": 1,
+                  "apsaraId": 1,
+                  "apsaraThumbId": 1,
+                  "mediaEndpoint": 1,
+                  "mediaUri": 1,
+                  "mediaThumbEndpoint": 1,
+                  "mediaThumbUri": 1,
+                  "category": "$cats",
+                  "insight": 1,
+                  "fullName": 1,
+                  "username": 1,
+                  "avatar": 1,
+                  "privacy": 1
+                },
+
+              },
+
+
             ],
 
           }
