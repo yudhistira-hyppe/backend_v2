@@ -138,15 +138,16 @@ export class PostData {
     musicId: mongoose.Types.ObjectId;
     boosted: any[];
     boostCount: number;
-    isBoost: number; 
-    boostJangkauan: number; 
+    isBoost: number;
+    boostJangkauan: number;
     statusBoost: string;
     music: any;
     apsaraMusic: string;
-    apsaraThumnail: string;   
+    apsaraThumnail: string;
     reportedStatus: string;
-    reportedUserCount: number;   
-    
+    reportedUserCount: number;
+    category: any;
+
 }
 
 export class Messages {
