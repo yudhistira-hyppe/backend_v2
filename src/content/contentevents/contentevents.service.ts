@@ -1410,7 +1410,7 @@ export class ContenteventsService {
                   from: "interests_repo",
                   as: "cats",
                   let: {
-                    localID: '$post.category.id'
+                    localID: '$post.category.$id'
                   },
                   pipeline: [
                     {
@@ -1681,7 +1681,7 @@ export class ContenteventsService {
                   "shares": "$post.shares",
                   "userProfile": "$post.userProfile",
                   "contentMedias": "$post.contentMedias",
-                  "category": "$post.category",
+                  "category": "$cats",
                   "tagDescription": "$post.tagDescription",
                   "metadata": "$post.metadata",
                   "isBoost": "$post.isBoost",
@@ -1698,7 +1698,6 @@ export class ContenteventsService {
                   "mediaUri": "$media.mediaUri",
                   "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                   "mediaThumbUri": "$media.mediaThumbUri",
-                  "cats": 1,
                   "insight": 1,
                   "fullName": "$userBasic.fullName",
                   "username": "$username.username",
@@ -1833,7 +1832,7 @@ export class ContenteventsService {
                   from: "interests_repo",
                   as: "cats",
                   let: {
-                    localID: '$post.category.id'
+                    localID: '$post.category.$id'
                   },
                   pipeline: [
                     {
@@ -1842,7 +1841,7 @@ export class ContenteventsService {
 
 
                         $expr: {
-                          $eq: ['$id', '$$localID']
+                          $eq: ['$_id', '$$localID']
                         }
                       }
                     },
@@ -2104,7 +2103,7 @@ export class ContenteventsService {
                   "shares": "$post.shares",
                   "userProfile": "$post.userProfile",
                   "contentMedias": "$post.contentMedias",
-                  "category": "$post.category",
+                  "category": "$cats",
                   "tagDescription": "$post.tagDescription",
                   "metadata": "$post.metadata",
                   "isBoost": "$post.isBoost",
@@ -2121,7 +2120,6 @@ export class ContenteventsService {
                   "mediaUri": "$media.mediaUri",
                   "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                   "mediaThumbUri": "$media.mediaThumbUri",
-                  "cats": 1,
                   "insight": 1,
                   "fullName": "$userBasic.fullName",
                   "username": "$username.username",
@@ -2250,7 +2248,7 @@ export class ContenteventsService {
                   from: "interests_repo",
                   as: "cats",
                   let: {
-                    localID: '$post.category.id'
+                    localID: '$post.category.$id'
                   },
                   pipeline: [
                     {
@@ -2259,7 +2257,7 @@ export class ContenteventsService {
 
 
                         $expr: {
-                          $eq: ['$id', '$$localID']
+                          $eq: ['$_id', '$$localID']
                         }
                       }
                     },
@@ -2521,7 +2519,7 @@ export class ContenteventsService {
                   "shares": "$post.shares",
                   "userProfile": "$post.userProfile",
                   "contentMedias": "$post.contentMedias",
-                  "category": "$post.category",
+                  "category": "$cats",
                   "tagDescription": "$post.tagDescription",
                   "metadata": "$post.metadata",
                   "isBoost": "$post.isBoost",
@@ -2538,7 +2536,6 @@ export class ContenteventsService {
                   "mediaUri": "$media.mediaUri",
                   "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                   "mediaThumbUri": "$media.mediaThumbUri",
-                  "cats": 1,
                   "insight": 1,
                   "fullName": "$userBasic.fullName",
                   "username": "$username.username",
@@ -2672,7 +2669,7 @@ export class ContenteventsService {
                   from: "interests_repo",
                   as: "cats",
                   let: {
-                    localID: '$post.category.id'
+                    localID: '$post.category.$id'
                   },
                   pipeline: [
                     {
@@ -2681,7 +2678,7 @@ export class ContenteventsService {
 
 
                         $expr: {
-                          $eq: ['$id', '$$localID']
+                          $eq: ['$_id', '$$localID']
                         }
                       }
                     },
@@ -2943,7 +2940,7 @@ export class ContenteventsService {
                   "shares": "$post.shares",
                   "userProfile": "$post.userProfile",
                   "contentMedias": "$post.contentMedias",
-                  "category": "$post.category",
+                  "category": "$cats",
                   "tagDescription": "$post.tagDescription",
                   "metadata": "$post.metadata",
                   "isBoost": "$post.isBoost",
@@ -2960,7 +2957,6 @@ export class ContenteventsService {
                   "mediaUri": "$media.mediaUri",
                   "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                   "mediaThumbUri": "$media.mediaThumbUri",
-                  "cats": 1,
                   "insight": 1,
                   "fullName": "$userBasic.fullName",
                   "username": "$username.username",
