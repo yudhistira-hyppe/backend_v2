@@ -3075,8 +3075,9 @@ export class PostBoostService {
       opic = this.processDataV2(obj.pict, xvids, xpics, isLike, isView, String(profile.email));
     }
     if (body.postType == 'ALL' || body.postType == 'vid') {
-      ovid = this.processDataV2(obj.vid, xvids, xpics, isLike, isView, String(profile.email));
+      ovid = this.processDataV2(obj.video, xvids, xpics, isLike, isView, String(profile.email));
     }
+
     if (body.postType == 'ALL' || body.postType == 'diary') {
       odia = this.processDataV2(obj.diary, xvids, xpics, isLike, isView, String(profile.email));
     }
@@ -4202,7 +4203,7 @@ export class PostBoostService {
             }
           ],
           //video
-          "vid": [
+          "video": [
             {
               $sort: {
                 "isBoost": - 1,
@@ -6278,7 +6279,7 @@ export class PostBoostService {
             }
           ],
           //vid
-          "vid": [
+          "video": [
             {
               $sort: {
                 "createdAt": - 1

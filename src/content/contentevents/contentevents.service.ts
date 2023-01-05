@@ -1563,6 +1563,9 @@ export class ContenteventsService {
                         "fsSourceName": 1,
                         "fsTargetUri": 1,
                         "mediaType": 1,
+                        "mediaEndpoint": {
+                          "$concat": ["/profilepict/", "$_id"]
+                        }
 
                       }
                     }
@@ -1780,7 +1783,7 @@ export class ContenteventsService {
               },
             ],
             //vid
-            "vid": [
+            "video": [
               {
                 $sort: {
                   "createdAt": - 1
@@ -2045,6 +2048,9 @@ export class ContenteventsService {
                         "fsSourceName": 1,
                         "fsTargetUri": 1,
                         "mediaType": 1,
+                        "mediaEndpoint": {
+                          "$concat": ["/profilepict/", "$_id"]
+                        }
 
                       }
                     }
@@ -2522,6 +2528,9 @@ export class ContenteventsService {
                         "fsSourceName": 1,
                         "fsTargetUri": 1,
                         "mediaType": 1,
+                        "mediaEndpoint": {
+                          "$concat": ["/profilepict/", "$_id"]
+                        }
 
                       }
                     }
@@ -3005,6 +3014,9 @@ export class ContenteventsService {
                         "fsSourceName": 1,
                         "fsTargetUri": 1,
                         "mediaType": 1,
+                        "mediaEndpoint": {
+                          "$concat": ["/profilepict/", "$_id"]
+                        }
 
                       }
                     }
