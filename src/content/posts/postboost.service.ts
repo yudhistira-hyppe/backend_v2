@@ -4097,12 +4097,12 @@ export class PostBoostService {
                 preserveNullAndEmptyArrays: true
               }
             },
-            {
-              $unwind: {
-                path: "$cats",
-                preserveNullAndEmptyArrays: true
-              }
-            },
+            // {
+            //   $unwind: {
+            //     path: "$cats",
+            //     preserveNullAndEmptyArrays: true
+            //   }
+            // },
             {
               $project: {
                 "musicTitle": "$music.musicTitle",
@@ -5947,7 +5947,6 @@ export class PostBoostService {
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
                       "mediaThumbUri": 1,
-                      "mediaType": 1,
 
                     }
                   }
@@ -5970,7 +5969,7 @@ export class PostBoostService {
 
 
                       $expr: {
-                        $eq: ['$id', '$$localID']
+                        $in: ['$_id', '$$localID']
                       }
                     }
                   },
@@ -6152,10 +6151,10 @@ export class PostBoostService {
               }
             },
             {
-              $skip: skip
+              $skip: 0
             },
             {
-              $limit: row
+              $limit: 5
             },
             {
               $unwind: {
@@ -6272,7 +6271,7 @@ export class PostBoostService {
             }
           ],
           //vid
-          "video": [
+          "vid": [
             {
               $sort: {
                 "createdAt": - 1
@@ -6344,7 +6343,6 @@ export class PostBoostService {
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
                       "mediaThumbUri": 1,
-                      "mediaType": 1,
 
                     }
                   }
@@ -6367,7 +6365,7 @@ export class PostBoostService {
 
 
                       $expr: {
-                        $eq: ['$id', '$$localID']
+                        $in: ['$_id', '$$localID']
                       }
                     }
                   },
@@ -6549,10 +6547,10 @@ export class PostBoostService {
               }
             },
             {
-              $skip: skip
+              $skip: 0
             },
             {
-              $limit: row
+              $limit: 5
             },
             {
               $unwind: {
@@ -6741,7 +6739,7 @@ export class PostBoostService {
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
                       "mediaThumbUri": 1,
-                      "mediaType": 1,
+
                     }
                   }
                 ],
@@ -6763,7 +6761,7 @@ export class PostBoostService {
 
 
                       $expr: {
-                        $eq: ['$id', '$$localID']
+                        $eq: ['$_id', '$$localID']
                       }
                     }
                   },
@@ -6945,10 +6943,10 @@ export class PostBoostService {
               }
             },
             {
-              $skip: skip
+              $skip: 0
             },
             {
-              $limit: row
+              $limit: 5
             },
             {
               $unwind: {
@@ -7145,7 +7143,7 @@ export class PostBoostService {
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
                       "mediaThumbUri": 1,
-                      "mediaType": 1,
+
                     }
                   }
                 ],
@@ -7167,7 +7165,7 @@ export class PostBoostService {
 
 
                       $expr: {
-                        $eq: ['$id', '$$localID']
+                        $in: ['$_id', '$$localID']
                       }
                     }
                   },
@@ -7349,10 +7347,10 @@ export class PostBoostService {
               }
             },
             {
-              $skip: skip
+              $skip: 0
             },
             {
-              $limit: row
+              $limit: 5
             },
             {
               $unwind: {
@@ -7384,7 +7382,7 @@ export class PostBoostService {
                           }
                         },
                         {
-                          "email": "ilhamarahman97@gmail.com"
+                          "email": profile.email
                         },
                         {
                           "eventType": "LIKE"
