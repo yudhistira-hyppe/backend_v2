@@ -146,7 +146,7 @@ export class PostData {
     apsaraThumnail: string;
     reportedStatus: string;
     reportedUserCount: number;
-    category: any;
+
 
 
 }

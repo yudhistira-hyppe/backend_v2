@@ -3077,6 +3077,7 @@ export class PostBoostService {
     if (body.postType == 'ALL' || body.postType == 'vid') {
       ovid = this.processDataV2(obj.video, xvids, xpics, isLike, isView, String(profile.email));
     }
+
     if (body.postType == 'ALL' || body.postType == 'diary') {
       odia = this.processDataV2(obj.diary, xvids, xpics, isLike, isView, String(profile.email));
     }
@@ -5272,6 +5273,13 @@ export class PostBoostService {
                   {
                     $and: [
                       {
+                        "email": {
+                          $not: {
+                            $regex: profile.email
+                          }
+                        }
+                      },
+                      {
                         "reportedStatus": {
                           $ne: "OWNED"
                         }
@@ -6151,10 +6159,10 @@ export class PostBoostService {
               }
             },
             {
-              $skip: 0
+              $skip: skip
             },
             {
-              $limit: 5
+              $limit: row
             },
             {
               $unwind: {
@@ -6271,7 +6279,7 @@ export class PostBoostService {
             }
           ],
           //vid
-          "vid": [
+          "video": [
             {
               $sort: {
                 "createdAt": - 1
@@ -6547,10 +6555,10 @@ export class PostBoostService {
               }
             },
             {
-              $skip: 0
+              $skip: skip
             },
             {
-              $limit: 5
+              $limit: row
             },
             {
               $unwind: {
@@ -6943,10 +6951,10 @@ export class PostBoostService {
               }
             },
             {
-              $skip: 0
+              $skip: skip
             },
             {
-              $limit: 5
+              $limit: row
             },
             {
               $unwind: {
@@ -7347,10 +7355,10 @@ export class PostBoostService {
               }
             },
             {
-              $skip: 0
+              $skip: skip
             },
             {
-              $limit: 5
+              $limit: row
             },
             {
               $unwind: {
