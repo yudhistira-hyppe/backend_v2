@@ -1288,9 +1288,13 @@ export class ContenteventsService {
         },
         {
           $facet: {
-            //"following": [
-            //    
-            //],
+            "following": [
+              {
+                $project: {
+                  "receiver": "$senderParty",
+                }
+              },
+            ],
 
             //pict
             "pict": [
@@ -1405,43 +1409,43 @@ export class ContenteventsService {
                 },
 
               },
-
               {
                 "$lookup": {
-                  from: "insights",
-                  as: "insight",
+                  from: "interests_repo",
+                  as: "cats",
                   let: {
-                    localID: '$post.email'
+                    localID: '$post.category.$id'
                   },
                   pipeline: [
                     {
-                      $match:
-                      {
-
+                      $match: {
 
                         $expr: {
-                          $eq: ['$email', '$$localID']
+                          $and: [
+                            {
+                              $in: ['$_id', {
+                                $ifNull: ['$$localID', []]
+                              }]
+                            },
+
+                          ]
                         }
                       }
                     },
                     {
                       $project: {
-                        "followers": 1,
-                        "followings": 1,
-                        "unfollows": 1,
-                        "likes": 1,
-                        "views": 1,
-                        "comments": 1,
-                        "posts": 1,
-                        "shares": 1,
-                        "reactions": 1,
-                        "views_profile": 1
+                        "interestName": 1,
+                        "langIso": 1,
+                        "icon": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1
                       }
                     }
                   ],
 
                 }
               },
+
               {
                 "$lookup": {
                   from: "userauths",
@@ -1566,7 +1570,6 @@ export class ContenteventsService {
                         "mediaEndpoint": {
                           "$concat": ["/profilepict/", "$_id"]
                         }
-
                       }
                     }
                   ],
@@ -1644,6 +1647,7 @@ export class ContenteventsService {
                   "tags": 1,
                   "allowComments": "$post.allowComments",
                   "isSafe": "$post.isSafe",
+                  "postID": "$post.postID",
                   "isOwned": "$post.isOwned",
                   "certified": "$post.certified",
                   "saleAmount": "$post.saleAmount",
@@ -1654,7 +1658,7 @@ export class ContenteventsService {
                   "shares": "$post.shares",
                   "userProfile": "$post.userProfile",
                   "contentMedias": "$post.contentMedias",
-                  "category": "$post.category",
+                  "category": "$cats",
                   "tagDescription": "$post.tagDescription",
                   "metadata": "$post.metadata",
                   "isBoost": "$post.isBoost",
@@ -1671,7 +1675,15 @@ export class ContenteventsService {
                   "mediaUri": "$media.mediaUri",
                   "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                   "mediaThumbUri": "$media.mediaThumbUri",
-                  "insight": 1,
+
+                  "insight": [
+                    {
+                      "likes": "$post.likes",
+                      "views": "$post.views",
+                      "shares": "$post.shares",
+                      "comments": "$post.comments",
+                    }
+                  ],
                   "fullName": "$userBasic.fullName",
                   "username": "$username.username",
                   "avatar": 1,
@@ -1686,101 +1698,11 @@ export class ContenteventsService {
 
               },
               {
-                $unwind: {
-                  path: "$category",
-                  preserveNullAndEmptyArrays: true
-                }
-              },
-
-              {
-                "$lookup": {
-                  from: "interests_repo",
-                  as: "cats",
-                  let: {
-                    localID: '$category.$id'
-                  },
-                  pipeline: [
-                    {
-                      $match:
-                      {
-
-
-                        $expr: {
-                          $eq: ['$_id', '$$localID']
-                        }
-                      }
-                    },
-                    {
-                      $project: {
-                        "interestName": 1,
-                        "langIso": 1,
-                        "icon": 1,
-                        "createdAt": 1,
-                        "updatedAt": 1
-                      }
-                    }
-                  ],
-
-                }
-              },
-              {
-                $project: {
-                  "isLike": 1,
-                  "tagPeople": 1,
-                  "mediaType": 1,
-                  "email": 1,
-                  "postType": 1,
-                  "description": 1,
-                  "active": 1,
-                  "createdAt": 1,
-                  "updatedAt": 1,
-                  "expiration": 1,
-                  "visibility": 1,
-                  "location": 1,
-                  "tags": 1,
-                  "allowComments": 1,
-                  "isSafe": 1,
-                  "isOwned": 1,
-                  "certified": 1,
-                  "saleAmount": 1,
-                  "saleLike": 1,
-                  "saleView": 1,
-                  "likes": 1,
-                  "views": 1,
-                  "shares": 1,
-                  "userProfile": 1,
-                  "contentMedias": 1,
-                  "tagDescription": 1,
-                  "metadata": 1,
-                  "isBoost": 1,
-                  "boostCount": 1,
-                  "contentModeration": 1,
-                  "reportedStatus": 1,
-                  "reportedUserCount": 1,
-                  "contentModerationResponse": 1,
-                  "reportedUser": 1,
-                  "apsara": 1,
-                  "apsaraId": 1,
-                  "apsaraThumbId": 1,
-                  "mediaEndpoint": 1,
-                  "mediaUri": 1,
-                  "mediaThumbEndpoint": 1,
-                  "mediaThumbUri": 1,
-                  "category": "$cats",
-                  "insight": 1,
-                  "fullName": 1,
-                  "username": 1,
-                  "avatar": 1,
-                  "privacy": 1
-                },
-
-              },
-
-              {
                 $sort: {
                   "createdAt": - 1
                 }
               },
+
             ],
             //vid
             "video": [
@@ -1890,43 +1812,43 @@ export class ContenteventsService {
                 },
 
               },
-
               {
                 "$lookup": {
-                  from: "insights",
-                  as: "insight",
+                  from: "interests_repo",
+                  as: "cats",
                   let: {
-                    localID: '$post.email'
+                    localID: '$post.category.$id'
                   },
                   pipeline: [
                     {
-                      $match:
-                      {
-
+                      $match: {
 
                         $expr: {
-                          $eq: ['$email', '$$localID']
+                          $and: [
+                            {
+                              $in: ['$_id', {
+                                $ifNull: ['$$localID', []]
+                              }]
+                            },
+
+                          ]
                         }
                       }
                     },
                     {
                       $project: {
-                        "followers": 1,
-                        "followings": 1,
-                        "unfollows": 1,
-                        "likes": 1,
-                        "views": 1,
-                        "comments": 1,
-                        "posts": 1,
-                        "shares": 1,
-                        "reactions": 1,
-                        "views_profile": 1
+                        "interestName": 1,
+                        "langIso": 1,
+                        "icon": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1
                       }
                     }
                   ],
 
                 }
               },
+
               {
                 "$lookup": {
                   from: "userauths",
@@ -2114,6 +2036,8 @@ export class ContenteventsService {
               },
               {
                 $project: {
+
+                  "postID": "$post.postID",
                   "isLike": "$isLike",
                   "tagPeople": "$userTag",
                   "mediaType": "$media.mediaType",
@@ -2139,7 +2063,7 @@ export class ContenteventsService {
                   "shares": "$post.shares",
                   "userProfile": "$post.userProfile",
                   "contentMedias": "$post.contentMedias",
-                  "category": "$post.category",
+                  "category": "$cats",
                   "tagDescription": "$post.tagDescription",
                   "metadata": "$post.metadata",
                   "isBoost": "$post.isBoost",
@@ -2156,7 +2080,14 @@ export class ContenteventsService {
                   "mediaUri": "$media.mediaUri",
                   "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                   "mediaThumbUri": "$media.mediaThumbUri",
-                  "insight": 1,
+                  "insight": [
+                    {
+                      "likes": "$post.likes",
+                      "views": "$post.views",
+                      "shares": "$post.shares",
+                      "comments": "$post.comments",
+                    }
+                  ],
                   "fullName": "$userBasic.fullName",
                   "username": "$username.username",
                   "avatar": 1,
@@ -2169,98 +2100,7 @@ export class ContenteventsService {
                   }]
                 },
 
-              },
-              {
-                $unwind: {
-                  path: "$category",
-                  preserveNullAndEmptyArrays: true
-                }
-              },
-
-              {
-                "$lookup": {
-                  from: "interests_repo",
-                  as: "cats",
-                  let: {
-                    localID: '$category.$id'
-                  },
-                  pipeline: [
-                    {
-                      $match:
-                      {
-
-
-                        $expr: {
-                          $eq: ['$_id', '$$localID']
-                        }
-                      }
-                    },
-                    {
-                      $project: {
-                        "interestName": 1,
-                        "langIso": 1,
-                        "icon": 1,
-                        "createdAt": 1,
-                        "updatedAt": 1
-                      }
-                    }
-                  ],
-
-                }
-              },
-              {
-                $project: {
-                  "isLike": 1,
-                  "tagPeople": 1,
-                  "mediaType": 1,
-                  "email": 1,
-                  "postType": 1,
-                  "description": 1,
-                  "active": 1,
-                  "createdAt": 1,
-                  "updatedAt": 1,
-                  "expiration": 1,
-                  "visibility": 1,
-                  "location": 1,
-                  "tags": 1,
-                  "allowComments": 1,
-                  "isSafe": 1,
-                  "isOwned": 1,
-                  "certified": 1,
-                  "saleAmount": 1,
-                  "saleLike": 1,
-                  "saleView": 1,
-                  "likes": 1,
-                  "views": 1,
-                  "shares": 1,
-                  "userProfile": 1,
-                  "contentMedias": 1,
-                  "tagDescription": 1,
-                  "metadata": 1,
-                  "isBoost": 1,
-                  "boostCount": 1,
-                  "contentModeration": 1,
-                  "reportedStatus": 1,
-                  "reportedUserCount": 1,
-                  "contentModerationResponse": 1,
-                  "reportedUser": 1,
-                  "apsara": 1,
-                  "apsaraId": 1,
-                  "apsaraThumbId": 1,
-                  "mediaEndpoint": 1,
-                  "mediaUri": 1,
-                  "mediaThumbEndpoint": 1,
-                  "mediaThumbUri": 1,
-                  "category": "$cats",
-                  "insight": 1,
-                  "fullName": 1,
-                  "username": 1,
-                  "avatar": 1,
-                  "privacy": 1
-                },
-
-              },
-
+              }
             ],
             //diary
             "diary": [
@@ -2370,43 +2210,43 @@ export class ContenteventsService {
                 },
 
               },
-
               {
                 "$lookup": {
-                  from: "insights",
-                  as: "insight",
+                  from: "interests_repo",
+                  as: "cats",
                   let: {
-                    localID: '$post.email'
+                    localID: '$post.category.$id'
                   },
                   pipeline: [
                     {
-                      $match:
-                      {
-
+                      $match: {
 
                         $expr: {
-                          $eq: ['$email', '$$localID']
+                          $and: [
+                            {
+                              $in: ['$_id', {
+                                $ifNull: ['$$localID', []]
+                              }]
+                            },
+
+                          ]
                         }
                       }
                     },
                     {
                       $project: {
-                        "followers": 1,
-                        "followings": 1,
-                        "unfollows": 1,
-                        "likes": 1,
-                        "views": 1,
-                        "comments": 1,
-                        "posts": 1,
-                        "shares": 1,
-                        "reactions": 1,
-                        "views_profile": 1
+                        "interestName": 1,
+                        "langIso": 1,
+                        "icon": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1
                       }
                     }
                   ],
 
                 }
               },
+
               {
                 "$lookup": {
                   from: "userauths",
@@ -2594,6 +2434,8 @@ export class ContenteventsService {
               },
               {
                 $project: {
+
+                  "postID": "$post.postID",
                   "isLike": "$isLike",
                   "tagPeople": "$userTag",
                   "mediaType": "$media.mediaType",
@@ -2619,7 +2461,7 @@ export class ContenteventsService {
                   "shares": "$post.shares",
                   "userProfile": "$post.userProfile",
                   "contentMedias": "$post.contentMedias",
-                  "category": "$post.category",
+                  "category": "$cats",
                   "tagDescription": "$post.tagDescription",
                   "metadata": "$post.metadata",
                   "isBoost": "$post.isBoost",
@@ -2636,7 +2478,14 @@ export class ContenteventsService {
                   "mediaUri": "$media.mediaUri",
                   "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                   "mediaThumbUri": "$media.mediaThumbUri",
-                  "insight": 1,
+                  "insight": [
+                    {
+                      "likes": "$post.likes",
+                      "views": "$post.views",
+                      "shares": "$post.shares",
+                      "comments": "$post.comments",
+                    }
+                  ],
                   "fullName": "$userBasic.fullName",
                   "username": "$username.username",
                   "avatar": 1,
@@ -2649,99 +2498,7 @@ export class ContenteventsService {
                   }]
                 },
 
-              },
-              {
-                $unwind: {
-                  path: "$category",
-                  preserveNullAndEmptyArrays: true
-                }
-              },
-
-              {
-                "$lookup": {
-                  from: "interests_repo",
-                  as: "cats",
-                  let: {
-                    localID: '$category.$id'
-                  },
-                  pipeline: [
-                    {
-                      $match:
-                      {
-
-
-                        $expr: {
-                          $eq: ['$_id', '$$localID']
-                        }
-                      }
-                    },
-                    {
-                      $project: {
-                        "interestName": 1,
-                        "langIso": 1,
-                        "icon": 1,
-                        "createdAt": 1,
-                        "updatedAt": 1
-                      }
-                    }
-                  ],
-
-                }
-              },
-              {
-                $project: {
-                  "isLike": 1,
-                  "tagPeople": 1,
-                  "mediaType": 1,
-                  "email": 1,
-                  "postType": 1,
-                  "description": 1,
-                  "active": 1,
-                  "createdAt": 1,
-                  "updatedAt": 1,
-                  "expiration": 1,
-                  "visibility": 1,
-                  "location": 1,
-                  "tags": 1,
-                  "allowComments": 1,
-                  "isSafe": 1,
-                  "isOwned": 1,
-                  "certified": 1,
-                  "saleAmount": 1,
-                  "saleLike": 1,
-                  "saleView": 1,
-                  "likes": 1,
-                  "views": 1,
-                  "shares": 1,
-                  "userProfile": 1,
-                  "contentMedias": 1,
-                  "tagDescription": 1,
-                  "metadata": 1,
-                  "isBoost": 1,
-                  "boostCount": 1,
-                  "contentModeration": 1,
-                  "reportedStatus": 1,
-                  "reportedUserCount": 1,
-                  "contentModerationResponse": 1,
-                  "reportedUser": 1,
-                  "apsara": 1,
-                  "apsaraId": 1,
-                  "apsaraThumbId": 1,
-                  "mediaEndpoint": 1,
-                  "mediaUri": 1,
-                  "mediaThumbEndpoint": 1,
-                  "mediaThumbUri": 1,
-                  "category": "$cats",
-                  "insight": 1,
-                  "fullName": 1,
-                  "username": 1,
-                  "avatar": 1,
-                  "privacy": 1
-                },
-
-              },
-
-
+              }
             ],
             //story
             "story": [
@@ -2856,43 +2613,43 @@ export class ContenteventsService {
                 },
 
               },
-
               {
                 "$lookup": {
-                  from: "insights",
-                  as: "insight",
+                  from: "interests_repo",
+                  as: "cats",
                   let: {
-                    localID: '$post.email'
+                    localID: '$post.category.$id'
                   },
                   pipeline: [
                     {
-                      $match:
-                      {
-
+                      $match: {
 
                         $expr: {
-                          $eq: ['$email', '$$localID']
+                          $and: [
+                            {
+                              $in: ['$_id', {
+                                $ifNull: ['$$localID', []]
+                              }]
+                            },
+
+                          ]
                         }
                       }
                     },
                     {
                       $project: {
-                        "followers": 1,
-                        "followings": 1,
-                        "unfollows": 1,
-                        "likes": 1,
-                        "views": 1,
-                        "comments": 1,
-                        "posts": 1,
-                        "shares": 1,
-                        "reactions": 1,
-                        "views_profile": 1
+                        "interestName": 1,
+                        "langIso": 1,
+                        "icon": 1,
+                        "createdAt": 1,
+                        "updatedAt": 1
                       }
                     }
                   ],
 
                 }
               },
+
               {
                 "$lookup": {
                   from: "userauths",
@@ -3105,7 +2862,7 @@ export class ContenteventsService {
                   "shares": "$post.shares",
                   "userProfile": "$post.userProfile",
                   "contentMedias": "$post.contentMedias",
-                  "category": "$post.category",
+                  "category": "$cats",
                   "tagDescription": "$post.tagDescription",
                   "metadata": "$post.metadata",
                   "isBoost": "$post.isBoost",
@@ -3122,7 +2879,14 @@ export class ContenteventsService {
                   "mediaUri": "$media.mediaUri",
                   "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                   "mediaThumbUri": "$media.mediaThumbUri",
-                  "insight": 1,
+                  "insight": [
+                    {
+                      "likes": "$post.likes",
+                      "views": "$post.views",
+                      "shares": "$post.shares",
+                      "comments": "$post.comments",
+                    }
+                  ],
                   "fullName": "$userBasic.fullName",
                   "username": "$username.username",
                   "avatar": 1,
@@ -3135,103 +2899,35 @@ export class ContenteventsService {
                   }]
                 },
 
-              },
-              {
-                $unwind: {
-                  path: "$category",
-                  preserveNullAndEmptyArrays: true
-                }
-              },
-
-              {
-                "$lookup": {
-                  from: "interests_repo",
-                  as: "cats",
-                  let: {
-                    localID: '$category.$id'
-                  },
-                  pipeline: [
-                    {
-                      $match:
-                      {
-
-
-                        $expr: {
-                          $eq: ['$_id', '$$localID']
-                        }
-                      }
-                    },
-                    {
-                      $project: {
-                        "interestName": 1,
-                        "langIso": 1,
-                        "icon": 1,
-                        "createdAt": 1,
-                        "updatedAt": 1
-                      }
-                    }
-                  ],
-
-                }
-              },
-              {
-                $project: {
-                  "isLike": 1,
-                  "tagPeople": 1,
-                  "mediaType": 1,
-                  "email": 1,
-                  "postType": 1,
-                  "description": 1,
-                  "active": 1,
-                  "createdAt": 1,
-                  "updatedAt": 1,
-                  "expiration": 1,
-                  "visibility": 1,
-                  "location": 1,
-                  "tags": 1,
-                  "allowComments": 1,
-                  "isSafe": 1,
-                  "isOwned": 1,
-                  "certified": 1,
-                  "saleAmount": 1,
-                  "saleLike": 1,
-                  "saleView": 1,
-                  "likes": 1,
-                  "views": 1,
-                  "shares": 1,
-                  "userProfile": 1,
-                  "contentMedias": 1,
-                  "tagDescription": 1,
-                  "metadata": 1,
-                  "isBoost": 1,
-                  "boostCount": 1,
-                  "contentModeration": 1,
-                  "reportedStatus": 1,
-                  "reportedUserCount": 1,
-                  "contentModerationResponse": 1,
-                  "reportedUser": 1,
-                  "apsara": 1,
-                  "apsaraId": 1,
-                  "apsaraThumbId": 1,
-                  "mediaEndpoint": 1,
-                  "mediaUri": 1,
-                  "mediaThumbEndpoint": 1,
-                  "mediaThumbUri": 1,
-                  "category": "$cats",
-                  "insight": 1,
-                  "fullName": 1,
-                  "username": 1,
-                  "avatar": 1,
-                  "privacy": 1
-                },
-
-              },
-
-
+              }
             ],
 
+            //"test":[
+            //	{
+            //		$project:{
+            //				"ded":"root",
+            //			 "picts": '$pict.postID',
+            //			"vids": '$video.postID',
+            //			"diarys": '$diary.postID',
+            //			"storys": '$story.postID',																					
+            //		}
+            //	}
+            //]
           }
         },
+        //{
+        //						$project:{
+        //								"following":"$following",
+        //							 "pict": '$pict',
+        //							"video": '$video',
+        //							"diary": '$diary',
+        //							"story": '$story',		
+        //							picts: '$pict.postID',
+        //            vids: '$video.postID',
+        //            diarys: '$diary.postID',
+        //            storys: '$story.postID',																			
+        //						}
+        //					},
         //{
         //    $unwind: {
         //        path: "$pict",

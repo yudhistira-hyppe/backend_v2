@@ -137,7 +137,7 @@ export class UserticketsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.ACCEPTED)
   @Post('api/usertickets/createticket')
-  @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 3 }], multerOptions))
+  @UseInterceptors(FileFieldsInterceptor([{ name: 'supportFile', maxCount: 4 }], multerOptions))
   async upload(
     @UploadedFiles() files: {
       supportFile?: Express.Multer.File[],

@@ -1046,13 +1046,7 @@ export class UserticketsService {
     }
     var pipeline = [];
     var userid = mongoose.Types.ObjectId(iduser)
-    // pipeline.push({
-    //   $match: {
-    //     active: true,
 
-
-    //   }
-    // },);
     if (iduser && iduser !== undefined) {
 
       pipeline = [
@@ -1968,16 +1962,157 @@ export class UserticketsService {
 
           }
         },
-        {
-          "$group": {
-            "_id": null,
-            "count": {
-              "$sum": 1
-            }
-          }
-        }
+
 
       ];
+
+      if (close === false && close !== undefined) {
+        pipeline.push({
+          $match: {
+            status: { $ne: "close" }
+
+          }
+        },);
+      }
+
+      if (search && search !== undefined) {
+
+        pipeline.push(
+          {
+            $match: {
+              $or: [{
+                username: {
+                  $regex: search,
+                  $options: 'i'
+                },
+
+              }, {
+                nomortiket: {
+                  $regex: search,
+                  $options: 'i'
+                },
+
+              }],
+
+            }
+          },
+        );
+
+
+      }
+
+      if (sumber && sumber !== undefined) {
+        lenghtsumber = sumber.length;
+
+        for (var i = 0; i < lenghtsumber; i++) {
+          var id = sumber[i];
+          var idsumber = mongoose.Types.ObjectId(id);
+          arraySumber.push(idsumber);
+        }
+        pipeline.push(
+          {
+            $match: {
+              $or: [
+                {
+                  sourceTicket: {
+                    $in: arraySumber
+                  }
+                },
+
+              ],
+            }
+          },
+        );
+      }
+      if (kategori && kategori !== undefined) {
+        lenghtkategori = kategori.length;
+
+        for (var i = 0; i < lenghtkategori; i++) {
+          var id = kategori[i];
+          var idkategori = mongoose.Types.ObjectId(id);
+          arrayKategory.push(idkategori);
+        }
+        pipeline.push(
+          {
+            $match: {
+              $or: [
+                {
+                  categoryTicket: {
+                    $in: arrayKategory
+                  }
+                },
+
+              ],
+            }
+          },
+        );
+      }
+      if (level && level !== undefined) {
+        lenghtlevel = level.length;
+
+        for (var i = 0; i < lenghtlevel; i++) {
+          var id = level[i];
+          var idlevel = mongoose.Types.ObjectId(id);
+          arrayLevel.push(idlevel);
+        }
+        pipeline.push(
+          {
+            $match: {
+              $or: [
+                {
+                  levelTicket: {
+                    $in: arrayLevel
+                  }
+                },
+
+              ],
+            }
+          },
+        );
+      }
+      if (status && status !== undefined) {
+
+        pipeline.push(
+          {
+            $match: {
+              $or: [
+                {
+                  status: {
+                    $in: status
+                  }
+                },
+
+              ],
+            }
+          });
+      }
+      if (startdate && startdate !== undefined) {
+        pipeline.push({ $match: { datetime: { "$gte": startdate } } });
+      }
+      if (enddate && enddate !== undefined) {
+        pipeline.push({ $match: { datetime: { "$lte": dateend } } });
+      }
+      if (assignto && assignto !== undefined) {
+        pipeline.push({
+          $match: {
+
+            penerima: {
+              $regex: assignto,
+              $options: 'i'
+            },
+
+          }
+        },
+        );
+      }
+      pipeline.push({
+        "$group": {
+          "_id": null,
+          "count": {
+            "$sum": 1
+          }
+        }
+      });
 
     } else {
       pipeline = [
@@ -2161,159 +2296,158 @@ export class UserticketsService {
 
           }
         },
-        {
-          "$group": {
-            "_id": null,
-            "count": {
-              "$sum": 1
-            }
-          }
-        }
 
       ];
-    }
-
-    if (close === false && close !== undefined) {
-      pipeline.push({
-        $match: {
-          status: { $ne: "close" }
-
-        }
-      },);
-    }
-
-
-
-    if (search && search !== undefined) {
-
-      pipeline.push(
-        {
+      if (close === false && close !== undefined) {
+        pipeline.push({
           $match: {
-            $or: [{
-              username: {
-                $regex: search,
-                $options: 'i'
-              },
-
-            }, {
-              nomortiket: {
-                $regex: search,
-                $options: 'i'
-              },
-
-            }],
+            status: { $ne: "close" }
 
           }
-        },
-      );
-
-
-    }
-
-    if (sumber && sumber !== undefined) {
-      lenghtsumber = sumber.length;
-
-      for (var i = 0; i < lenghtsumber; i++) {
-        var id = sumber[i];
-        var idsumber = mongoose.Types.ObjectId(id);
-        arraySumber.push(idsumber);
+        },);
       }
-      pipeline.push(
-        {
-          $match: {
-            $or: [
-              {
-                sourceTicket: {
-                  $in: arraySumber
-                }
-              },
 
-            ],
-          }
-        },
-      );
-    }
-    if (kategori && kategori !== undefined) {
-      lenghtkategori = kategori.length;
+      if (search && search !== undefined) {
 
-      for (var i = 0; i < lenghtkategori; i++) {
-        var id = kategori[i];
-        var idkategori = mongoose.Types.ObjectId(id);
-        arrayKategory.push(idkategori);
-      }
-      pipeline.push(
-        {
-          $match: {
-            $or: [
-              {
-                categoryTicket: {
-                  $in: arrayKategory
-                }
-              },
+        pipeline.push(
+          {
+            $match: {
+              $or: [{
+                username: {
+                  $regex: search,
+                  $options: 'i'
+                },
 
-            ],
-          }
-        },
-      );
-    }
-    if (level && level !== undefined) {
-      lenghtlevel = level.length;
+              }, {
+                nomortiket: {
+                  $regex: search,
+                  $options: 'i'
+                },
 
-      for (var i = 0; i < lenghtlevel; i++) {
-        var id = level[i];
-        var idlevel = mongoose.Types.ObjectId(id);
-        arrayLevel.push(idlevel);
-      }
-      pipeline.push(
-        {
-          $match: {
-            $or: [
-              {
-                levelTicket: {
-                  $in: arrayLevel
-                }
-              },
+              }],
 
-            ],
-          }
-        },
-      );
-    }
-    if (status && status !== undefined) {
-
-      pipeline.push(
-        {
-          $match: {
-            $or: [
-              {
-                status: {
-                  $in: status
-                }
-              },
-
-            ],
-          }
-        });
-    }
-    if (startdate && startdate !== undefined) {
-      pipeline.push({ $match: { datetime: { "$gte": startdate } } });
-    }
-    if (enddate && enddate !== undefined) {
-      pipeline.push({ $match: { datetime: { "$lte": dateend } } });
-    }
-    if (assignto && assignto !== undefined) {
-      pipeline.push({
-        $match: {
-
-          penerima: {
-            $regex: assignto,
-            $options: 'i'
+            }
           },
+        );
 
+
+      }
+
+      if (sumber && sumber !== undefined) {
+        lenghtsumber = sumber.length;
+
+        for (var i = 0; i < lenghtsumber; i++) {
+          var id = sumber[i];
+          var idsumber = mongoose.Types.ObjectId(id);
+          arraySumber.push(idsumber);
         }
-      },
-      );
+        pipeline.push(
+          {
+            $match: {
+              $or: [
+                {
+                  sourceTicket: {
+                    $in: arraySumber
+                  }
+                },
+
+              ],
+            }
+          },
+        );
+      }
+      if (kategori && kategori !== undefined) {
+        lenghtkategori = kategori.length;
+
+        for (var i = 0; i < lenghtkategori; i++) {
+          var id = kategori[i];
+          var idkategori = mongoose.Types.ObjectId(id);
+          arrayKategory.push(idkategori);
+        }
+        pipeline.push(
+          {
+            $match: {
+              $or: [
+                {
+                  categoryTicket: {
+                    $in: arrayKategory
+                  }
+                },
+
+              ],
+            }
+          },
+        );
+      }
+      if (level && level !== undefined) {
+        lenghtlevel = level.length;
+
+        for (var i = 0; i < lenghtlevel; i++) {
+          var id = level[i];
+          var idlevel = mongoose.Types.ObjectId(id);
+          arrayLevel.push(idlevel);
+        }
+        pipeline.push(
+          {
+            $match: {
+              $or: [
+                {
+                  levelTicket: {
+                    $in: arrayLevel
+                  }
+                },
+
+              ],
+            }
+          },
+        );
+      }
+      if (status && status !== undefined) {
+
+        pipeline.push(
+          {
+            $match: {
+              $or: [
+                {
+                  status: {
+                    $in: status
+                  }
+                },
+
+              ],
+            }
+          });
+      }
+      if (startdate && startdate !== undefined) {
+        pipeline.push({ $match: { datetime: { "$gte": startdate } } });
+      }
+      if (enddate && enddate !== undefined) {
+        pipeline.push({ $match: { datetime: { "$lte": dateend } } });
+      }
+      if (assignto && assignto !== undefined) {
+        pipeline.push({
+          $match: {
+
+            penerima: {
+              $regex: assignto,
+              $options: 'i'
+            },
+
+          }
+        },
+        );
+      }
+      pipeline.push({
+        "$group": {
+          "_id": null,
+          "count": {
+            "$sum": 1
+          }
+        }
+      });
     }
+
+
     let query = await this.userticketsModel.aggregate(pipeline);
     return query;
   }
