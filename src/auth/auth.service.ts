@@ -1884,22 +1884,22 @@ export class AuthService {
         } else {
           if (lang == "en") {
             await this.errorHandler.generateNotAcceptableException(
-              'Maaf! Email ini sudah terdaftar.',
+              'Sorry! This email already registered.',
             );
           } else {
             await this.errorHandler.generateNotAcceptableException(
-              'Sorry! This email already registered.',
+              'Maaf! Email ini sudah terdaftar.',
             );
           }
         }
       } else {
         if (lang == "en") {
           await this.errorHandler.generateNotAcceptableException(
-            'Maaf! Email ini sudah terdaftar.',
+            'Sorry! This email already registered.',
           );
         } else {
           await this.errorHandler.generateNotAcceptableException(
-            'Sorry! This email already registered.',
+            'Maaf! Email ini sudah terdaftar.',
           );
         }
       }
