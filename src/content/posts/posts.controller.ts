@@ -762,6 +762,12 @@ export class PostsController {
             data_["username"] = dataUserauth.username;
           }
         }
+        if (post.email != undefined) {
+          var dataUserbasic = await this.userbasicsService.findOne(post.email.toString());
+          if (await this.utilsService.ceckData(dataUserbasic)) {
+            data_["fullName"] = dataUserbasic.fullName;
+          }
+        }
         if (post.updatedAt != undefined) {
           data_["updatedAt"] = post.updatedAt;
         }

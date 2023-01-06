@@ -589,6 +589,11 @@ export class AuthService {
     var CurrentStatus = '';
     var CurrentEvent = '';
 
+    var lang = "id";
+    if (req.body.lang != undefined) {
+      lang = req.body.lang.toString();
+    }
+
     var current_date = await this.utilsService.getDateTimeString();
 
     if (req.body.email == undefined) {
@@ -1298,13 +1303,25 @@ export class AuthService {
                       );
                     }
                   }
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unexpected problem, please check your email and re-verify the OTP',
-                  );
+                  if (lang == "en") {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Kode OTP yang kamu masukan salah, silahkan cek kembali.',
+                    );
+                  } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'The OTP code you entered is incorrect; please check again.',
+                    );
+                  }
                 } else {
-                  await this.errorHandler.generateNotAcceptableException(
-                    'Unexpected problem, data userauths not axist',
-                  );
+                  if (lang == "en") {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'No users were found. Please check again.',
+                    );
+                  } else {
+                    await this.errorHandler.generateNotAcceptableException(
+                      'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
+                    );
+                  }
                 }
               }
             } else {
@@ -1420,29 +1437,56 @@ export class AuthService {
                   );
                 }
 
+                var messages = "";
+                if (lang == "en") {
+                  messages = "Recovery password request successful";
+                } else {
+                  messages = "Permintaan pemulihan kata sandi berhasil";
+                }
+
                 return {
                   response_code: 202,
                   messages: {
-                    info: ['Recovery password request successful'],
+                    info: [messages],
                   },
                 };
               } else {
-                await this.errorHandler.generateNotAcceptableException(
-                  'OTP max attempt exceeded, please try after ' +
-                  process.env.OTP_NEXT_ALLOW_MINUTE +
-                  ' minute',
-                );
+                if (lang == "en") {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'OTP max attempt exceeded, please try after ' +
+                    process.env.OTP_NEXT_ALLOW_MINUTE +
+                    ' minute',
+                  );
+                } else {
+                  await this.errorHandler.generateNotAcceptableException(
+                    'Upaya maksimal OTP terlampaui, harap coba setelahnya ' +
+                    process.env.OTP_NEXT_ALLOW_MINUTE +
+                    ' menit',
+                  );
+                }
               }
             }
           } else {
-            await this.errorHandler.generateNotAcceptableException(
-              'Unexpected problem, please check your email and re-verify the OTP',
-            );
+            if (lang == "en") {
+              await this.errorHandler.generateNotAcceptableException(
+                'Kode OTP yang kamu masukan salah, silahkan cek kembali.',
+              );
+            } else {
+              await this.errorHandler.generateNotAcceptableException(
+                'The OTP code you entered is incorrect; please check again.',
+              );
+            }
           }
         } else {
-          await this.errorHandler.generateNotAcceptableException(
-            'Unexpected problem, please check your email and re-verify the OTP',
-          );
+          if (lang == "en") {
+            await this.errorHandler.generateNotAcceptableException(
+              'Kode OTP yang kamu masukan salah, silahkan cek kembali.',
+            );
+          } else {
+            await this.errorHandler.generateNotAcceptableException(
+              'The OTP code you entered is incorrect; please check again.',
+            );
+          }
         }
       } else {
         await this.errorHandler.generateNotAcceptableException(
@@ -1838,14 +1882,26 @@ export class AuthService {
             },
           };
         } else {
-          await this.errorHandler.generateNotAcceptableException(
-            'Sorry! This email already registered',
-          );
+          if (lang == "en") {
+            await this.errorHandler.generateNotAcceptableException(
+              'Sorry! This email already registered.',
+            );
+          } else {
+            await this.errorHandler.generateNotAcceptableException(
+              'Maaf! Email ini sudah terdaftar.',
+            );
+          }
         }
       } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'Sorry! This email already registered',
-        );
+        if (lang == "en") {
+          await this.errorHandler.generateNotAcceptableException(
+            'Sorry! This email already registered.',
+          );
+        } else {
+          await this.errorHandler.generateNotAcceptableException(
+            'Maaf! Email ini sudah terdaftar.',
+          );
+        }
       }
     }
   }
@@ -3268,7 +3324,7 @@ export class AuthService {
                   return {
                     response_code: 202,
                     messages: {
-                      info: ['Verify OTP successful'],
+                      info: [messages],
                     },
                   };
                 } else {
@@ -3797,9 +3853,11 @@ export class AuthService {
       user_email,
     );
 
+    var userLang = await this.utilsService.getUserlanguages(user_email_header);
+
     var lang = "id";
     if (req.body.lang != undefined) {
-      lang = req.body.lang;
+      lang = userLang.toString();
     }
 
     if (await this.utilsService.ceckData(datauserbasicsService)) {
@@ -3914,15 +3972,29 @@ export class AuthService {
             );
           }
 
+          var messages = "Change password successful";
+          if (lang == 'id') {
+            messages = 'Ubah kata sandi berhasil'
+          }else{
+            messages = 'Change password successful'
+          }
+
           return {
             response_code: 202,
             messages: {
-              info: ['Change password successful'],
+              info: [messages],
             },
           };
         } else {
+
+          var messages = "Password not Match";
+          if (lang == 'id') {
+            messages = 'Kata sandi tidak Cocok'
+          } else {
+            messages = 'Password not Match'
+          }
           await this.errorHandler.generateNotAcceptableException(
-            'Password not Match',
+            'Kata sandi tidak Cocok',
           );
         }
       } else {
