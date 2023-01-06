@@ -220,7 +220,7 @@ export class UtilsService {
 
     //SET BODY SAVE
     if ((eventType == "REACTION") || (eventType == "COMMENT") || (eventType == "LIKE") || (eventType == "TRANSACTION") || (event == "POST")) {
-      if (event == "BOOST_SUCCES" || event == "ADS VIEW" || event == "ADS CLICK" ) {
+      if (event == "BOOST_SUCCES" || event == "ADS VIEW" || event == "ADS CLICK") {
         data_send['postID'] = idtransaction
         data_send['postType'] = eventType
       } else {
@@ -496,9 +496,8 @@ export class UtilsService {
     await this.notificationsService.create(createNotificationsDto);
   }
 
-  async sendFcm(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID_?: string, postType?: string, noinvoice?: string) {
+  async sendFcm(email: string, titlein: string, titleen: string, bodyin: any, bodyen: any, eventType: string, event: string, postID_?: string, postType?: string, noinvoice?: string, jenis?: string) {
 
-    console.log(typeof postID_);
     console.log(postID_);
     var emailuserbasic = null;
     var datadevice = null;
@@ -589,91 +588,65 @@ export class UtilsService {
         datalanguage = null;
         langIso = "";
       }
+      var pid = null;
+      if (jenis === "TRANSACTION" && noinvoice !== undefined) {
 
-      if (noinvoice != undefined || noinvoice != "" || noinvoice != null) {
-        if (langIso === "id") {
-
-          payload = {
-
-            notification: {
-              title: titlein,
-              body: bodyin,
-              tag: "background"
-            },
-            data: {
-              postID: noinvoice,
-              postType: postType
-            }
-          };
-        }
-        else if (langIso === "en") {
-          payload = {
-
-            notification: {
-              title: titleen,
-              body: bodyen,
-              tag: "background"
-            },
-            data: {
-              postID: noinvoice,
-              postType: postType
-            }
-          };
-        } else {
-          payload = {
-
-            notification: {
-              title: titlein,
-              body: bodyin,
-              tag: "background"
-            },
-            data: {
-              postID: noinvoice,
-              postType: postType
-            }
-          };
-        }
-
-
-      } else {
-        let data_send = {};
-        if (postID_ != undefined || postID_ != "" || postID_ != null) {
-          console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> postID", postID_);
-          data_send['postID'] = postID_.toString();
-        }
-        if (postType != undefined || postType != "" || postType != null) {
-          data_send['postType'] = postType.toString();
-        }
-        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> data_send", JSON.stringify(data_send));
-        if (langIso === "id") {
-          payload = {
-            notification: {
-              title: titlein,
-              body: bodyin,
-              tag: await this.makeid(7)
-            },
-            data: data_send
-          };
-        } else if (langIso === "en") {
-          payload = {
-            notification: {
-              title: titleen,
-              body: bodyen,
-              tag: await this.makeid(7)
-            },
-            data: data_send
-          };
-        } else {
-          payload = {
-            notification: {
-              title: titlein,
-              body: bodyin,
-              tag: await this.makeid(7)
-            },
-            data: data_send
-          };
-        }
+        pid = noinvoice;
       }
+      else if (jenis === "APPEAL" && postID_ !== undefined) {
+
+        pid = postID_;
+      } else {
+        pid = "";
+      }
+
+
+      if (langIso === "id") {
+
+        payload = {
+
+          notification: {
+            title: titlein,
+            body: bodyin,
+            tag: "background"
+          },
+          data: {
+            postID: pid,
+            postType: postType
+          }
+        };
+      }
+      else if (langIso === "en") {
+        payload = {
+
+          notification: {
+            title: titleen,
+            body: bodyen,
+            tag: "background"
+          },
+          data: {
+            postID: pid,
+            postType: postType
+          }
+        };
+      } else {
+        payload = {
+
+          notification: {
+            title: titlein,
+            body: bodyin,
+            tag: "background"
+          },
+          data: {
+            postID: pid,
+            postType: postType
+          }
+        };
+      }
+
+
+
+
       console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> payload', JSON.stringify(payload));
 
 

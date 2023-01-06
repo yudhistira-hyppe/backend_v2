@@ -6254,10 +6254,10 @@ export class PostBoostService {
                 "mediaThumbUri": "$media.mediaThumbUri",
                 "insight": [
                   {
-                    "likes": "$post.likes",
-                    "views": "$post.views",
-                    "shares": "$post.shares",
-                    "comments": "$post.comments",
+                    "likes": "$likes",
+                    "views": "$views",
+                    "shares": "$shares",
+                    "comments": "$comments",
                   }
                 ],
                 "fullName": "$userBasic.fullName",
@@ -6626,10 +6626,10 @@ export class PostBoostService {
                 "mediaThumbUri": "$media.mediaThumbUri",
                 "insight": [
                   {
-                    "likes": "$post.likes",
-                    "views": "$post.views",
-                    "shares": "$post.shares",
-                    "comments": "$post.comments",
+                    "likes": "$likes",
+                    "views": "$views",
+                    "shares": "$shares",
+                    "comments": "$comments",
                   }
                 ],
                 "fullName": "$userBasic.fullName",
@@ -6998,10 +6998,10 @@ export class PostBoostService {
                 "mediaThumbUri": "$media.mediaThumbUri",
                 "insight": [
                   {
-                    "likes": "$post.likes",
-                    "views": "$post.views",
-                    "shares": "$post.shares",
-                    "comments": "$post.comments",
+                    "likes": "$likes",
+                    "views": "$views",
+                    "shares": "$shares",
+                    "comments": "$comments",
                   }
                 ],
                 "fullName": "$userBasic.fullName",
@@ -7378,10 +7378,10 @@ export class PostBoostService {
                 "mediaThumbUri": "$media.mediaThumbUri",
                 "insight": [
                   {
-                    "likes": "$post.likes",
-                    "views": "$post.views",
-                    "shares": "$post.shares",
-                    "comments": "$post.comments",
+                    "likes": "$likes",
+                    "views": "$views",
+                    "shares": "$shares",
+                    "comments": "$comments",
                   }
                 ],
                 "fullName": "$userBasic.fullName",

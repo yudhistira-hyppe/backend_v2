@@ -3113,10 +3113,7 @@ export class TransactionsService {
     }
 
     async findhistorydetailsell(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
-        var dt = new Date(Date.now());
-        dt.setHours(dt.getHours() + 7); // timestamp
-        dt = new Date(dt);
-        var datestring = dt.toISOString();
+
         const query = await this.transactionsModel.aggregate([
 
 
@@ -3177,27 +3174,55 @@ export class TransactionsService {
                     bank: "$bank",
                     amount: "$amount",
                     totalamount: "$totalamount",
-                    description:
+                    "description":
                     {
                         $cond: {
-                            if: {
-                                $gt: ['$expiredtimeva',
-                                    datestring]
+                            if:
+                            {
+                                $and: [
+                                    {
+                                        $lt: ['$expiredtimeva', {
+                                            "$dateToString": {
+                                                "format": "%Y-%m-%dT%H:%M:%S",
+                                                "date": {
+                                                    $add: [new Date(), 25200000]
+                                                }
+                                            }
+                                        },]
+                                    },
+                                    {
+                                        $eq: ['$status', 'WAITING_PAYMENT']
+                                    }
+                                ]
                             },
-                            then: "$description",
-                            else: 'VA expired time'
+                            then: "$VA expired time",
+                            else: '$description'
                         }
                     },
 
-                    status:
+                    "status":
                     {
                         $cond: {
-                            if: {
-                                $gt: ['$expiredtimeva',
-                                    datestring]
+                            if:
+                            {
+                                $and: [
+                                    {
+                                        $lt: ['$expiredtimeva', {
+                                            "$dateToString": {
+                                                "format": "%Y-%m-%dT%H:%M:%S",
+                                                "date": {
+                                                    $add: [new Date(), 25200000]
+                                                }
+                                            }
+                                        },]
+                                    },
+                                    {
+                                        $eq: ['$status', 'WAITING_PAYMENT']
+                                    }
+                                ]
                             },
-                            then: "$status",
-                            else: 'Cancel'
+                            then: "Cancel",
+                            else: '$status'
                         }
                     },
                     paymentmethod: "$paymentmethod",
@@ -3737,10 +3762,7 @@ export class TransactionsService {
     }
 
     async findhistorydetailbuy(id: ObjectId, type: string, jenis: string, iduser: ObjectId) {
-        var dt = new Date(Date.now());
-        dt.setHours(dt.getHours() + 7); // timestamp
-        dt = new Date(dt);
-        var datestring = dt.toISOString();
+
 
         const query = await this.transactionsModel.aggregate([
 
@@ -3802,27 +3824,55 @@ export class TransactionsService {
                     bank: "$bank",
                     amount: "$amount",
                     totalamount: "$totalamount",
-                    description:
+                    "description":
                     {
                         $cond: {
-                            if: {
-                                $gt: ['$expiredtimeva',
-                                    datestring]
+                            if:
+                            {
+                                $and: [
+                                    {
+                                        $lt: ['$expiredtimeva', {
+                                            "$dateToString": {
+                                                "format": "%Y-%m-%dT%H:%M:%S",
+                                                "date": {
+                                                    $add: [new Date(), 25200000]
+                                                }
+                                            }
+                                        },]
+                                    },
+                                    {
+                                        $eq: ['$status', 'WAITING_PAYMENT']
+                                    }
+                                ]
                             },
-                            then: "$description",
-                            else: 'VA expired time'
+                            then: "$VA expired time",
+                            else: '$description'
                         }
                     },
 
-                    status:
+                    "status":
                     {
                         $cond: {
-                            if: {
-                                $gt: ['$expiredtimeva',
-                                    datestring]
+                            if:
+                            {
+                                $and: [
+                                    {
+                                        $lt: ['$expiredtimeva', {
+                                            "$dateToString": {
+                                                "format": "%Y-%m-%dT%H:%M:%S",
+                                                "date": {
+                                                    $add: [new Date(), 25200000]
+                                                }
+                                            }
+                                        },]
+                                    },
+                                    {
+                                        $eq: ['$status', 'WAITING_PAYMENT']
+                                    }
+                                ]
                             },
-                            then: "$status",
-                            else: 'Cancel'
+                            then: "Cancel",
+                            else: '$status'
                         }
                     },
                     paymentmethod: "$paymentmethod",
