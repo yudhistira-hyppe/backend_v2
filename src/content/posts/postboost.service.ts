@@ -6229,7 +6229,7 @@ export class PostBoostService {
                 "shares": 1,
                 "userProfile": 1,
                 "contentMedias": 1,
-                "category": 1,
+                "category": "$cats",
                 "tagDescription": 1,
                 "metadata": 1,
                 "boostDate": 1,
