@@ -123,7 +123,7 @@ export class AuthController {
 
     var lang = "id";
     if (LoginRequest_.lang != undefined) {
-      lang = LoginRequest_.lang
+      lang = LoginRequest_.lang.toString();
     }
 
     if ((await this.utilsService.ceckData(data_userbasics)) && (await this.utilsService.ceckData(data_jwtrefreshtoken))) {
