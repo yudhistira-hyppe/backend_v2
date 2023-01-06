@@ -1537,6 +1537,7 @@ export class AuthController {
       );
     }
     var user_email = headers['x-auth-user'];
+    var lang = await this.utilsService.getUserlanguages(user_email.toString());
     var user_otp = null;
     var type = null;
     var otp_attemp = null;
@@ -1734,8 +1735,14 @@ export class AuthController {
                     };
                   } else {
                     await this.userbasicsService.findOneupdatebyEmail(user_email);
+                    var messages = "";
+                    if (lang == "en") {
+                      messages = "The OTP code you entered is incorrect; please check again.";
+                    } else {
+                      messages = "Kode OTP yang kamu masukan salah, silahkan cek kembali.";
+                    }
                     await this.errorHandler.generateNotAcceptableException(
-                      'Unexpected problem, please check your email and re-verify the OTP',
+                      messages,
                     );
                   }
                 } else {
@@ -2035,7 +2042,7 @@ export class AuthController {
                 };
               } catch (error) {
                 await this.errorHandler.generateNotAcceptableException(
-                  'Unabled to proceed Gnerate OTP. Error: ' + error,
+                  'Unabled to proceed Generate OTP. Error: ' + error,
                 );
               }
             }
@@ -2269,8 +2276,14 @@ export class AuthController {
                     };
                   } else {
                     await this.userbasicsService.findOneupdatebyEmail(user_email);
+                    var messages = "";
+                    if (lang == "en") {
+                      messages = "The OTP code you entered is incorrect; please check again.";
+                    } else {
+                      messages = "Kode OTP yang kamu masukan salah, silahkan cek kembali.";
+                    }
                     await this.errorHandler.generateNotAcceptableException(
-                      'Unexpected problem, please check your email and re-verify the OTP',
+                      messages,
                     );
                   }
                 } else {
@@ -2479,10 +2492,17 @@ export class AuthController {
                 'RECOVER_PASS',
               );
 
+              var messages = "";
+              if (lang == "en") {
+                messages = "Email Sent, We have sent a verification code to your email.";
+              } else {
+                messages = "Email Terkirim, Kami telah mengirimkan kode verifikasi ke email kamu.";
+              }
+                
               return {
                 response_code: 202,
                 messages: {
-                  info: ['Request OTP request successful'],
+                  info: messages,
                 },
               };
             }
@@ -2887,13 +2907,25 @@ export class AuthController {
           }
         }
       } else {
+        var messages = "";
+        if (lang == "en") {
+          messages = "No users were found. Please check again.";
+        } else {
+          messages = "Tidak ada pengguna yang ditemukan. Silahkan cek kembali.";
+        }
         await this.errorHandler.generateNotAcceptableException(
-          'Unabled to proceed, user not found',
+          messages,
         );
       }
     } else {
+      var messages = "";
+      if (lang == "en") {
+        messages = "No users were found. Please check again.";
+      } else {
+        messages = "Tidak ada pengguna yang ditemukan. Silahkan cek kembali.";
+      }
       await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed, user not found',
+        messages,
       );
     }
 
