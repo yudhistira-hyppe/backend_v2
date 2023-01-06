@@ -70,6 +70,7 @@ export class SocmedService {
 
   async signupsosmed(req: any) {
     this.logger.log("signupsosmedv2 >>> start: ");
+    console.log(JSON.stringify(req.body));
     var user_email = null;
     var user_socmedSource = null;
     var user_deviceId = null;

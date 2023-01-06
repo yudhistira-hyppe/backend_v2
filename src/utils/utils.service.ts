@@ -966,7 +966,7 @@ export class UtilsService {
     var username = email.substring(0, email.indexOf('@'));
     var list_username = await this.userauthsService.findOneUsername(username);
     if (await this.ceckData(list_username)) {
-      username += '_' + this.generateOTP();
+      username += '_' + await this.generateOTP();
     }
     return username;
   }
