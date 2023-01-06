@@ -2975,16 +2975,16 @@ export class PostBoostService {
 
       }
 
-      // if (obj.boosted != undefined) {
-      //   console.log("boosted: " + pd.postID);
-      //   this.postxService.updateBoostViewer(pd.postID, email);
-      //   pd.boostJangkauan = this.countBoosted(obj, email);
-      // }
+      if (obj.boosted != undefined) {
+        console.log("boosted: " + pd.postID);
+        this.postxService.updateBoostViewer(pd.postID, email);
+        pd.boostJangkauan = this.countBoosted(obj, email);
+      }
 
-      // if (obj.statusCB == undefined || obj.statusCB == 'PENDING') {
-      //   console.log("statusCB: " + obj.statusCB);
-      //   this.postService.cmodCheckResult(obj.postID);
-      // }
+      if (obj.statusCB == undefined || obj.statusCB == 'PENDING') {
+        console.log("statusCB: " + obj.statusCB);
+        this.postService.cmodCheckResult(obj.postID);
+      }
 
 
       res.push(pd);
@@ -5900,66 +5900,8 @@ export class PostBoostService {
     return this.PostsModel.aggregate([
 
       {
-        $set: {
-          "storyDate":
-          {
-            "$dateToString": {
-              "format": "%Y-%m-%d %H:%M:%S",
-              "date": {
-                $add: [new Date(), - 61200000]
-              }
-            }
-          }
-        }
-      },
-      {
-        $match:
-        {
-          $and: [
-            {
-              "eventType": "FOLLOWING"
-            },
-            {
-              "email": profile.email
-            },
-            {
-              "active": true
-            },
-            //{
-            //    "receiverParty": {
-            //        $ne: null
-            //    }
-            //},
-            //{
-            //    "receiverParty": {
-            //        $ne: ""
-            //    }
-            //},
-          ]
-        }
-      },
-      {
-        $sort: {
-          "createdAt": - 1
-        }
-      },
-      {
-        $project: {
-          "senderParty": 1,
-
-        }
-      },
-      {
         $facet: {
-          "following": [
-            {
-              $project: {
-                "receiver": "$senderParty",
 
-              }
-            },
-
-          ],
           //pict
           "pict": [
             {
@@ -5968,68 +5910,41 @@ export class PostBoostService {
               }
             },
             {
-              "$lookup": {
-                from: "posts",
-                as: "post",
-                let: {
-                  localID: '$senderParty'
-                },
-                pipeline: [
+              $match:
+              {
+                $and: [
                   {
-                    $match:
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$email', '$$localID']
-                          }
-                        },
-                        {
-                          $or: [
-                            {
-                              "reportedStatus": "ALL"
-                            },
-                            {
-                              "reportedStatus": null
-                            },
-
-                          ]
-                        },
-                        {
-                          "visibility": "PUBLIC"
-                        },
-                        {
-                          "active": true
-                        },
-                        {
-                          "postType": "pict"
-                        },
-                        {
-                          "reportedUser.email": {
-                            $not: {
-                              $regex: profile.email
-                            }
-                          }
-                        },
-
-                      ]
-                    }
+                    "email": profile.email
                   },
                   {
-                    $sort: {
-                      "createdAt": - 1
+                    $or: [
+                      {
+                        "reportedStatus": "ALL"
+                      },
+                      {
+                        "reportedStatus": null
+                      },
+
+                    ]
+                  },
+                  {
+                    "visibility": "PUBLIC"
+                  },
+                  {
+                    "active": true
+                  },
+                  {
+                    "postType": "pict"
+                  },
+                  {
+                    "reportedUser.email": {
+                      $not: {
+                        $regex: profile.email
+                      }
                     }
                   },
 
-                ],
-
-              },
-
-            },
-            {
-              $unwind: {
-                path: "$post",
-                preserveNullAndEmptyArrays: true
+                ]
               }
             },
             {
@@ -6037,7 +5952,7 @@ export class PostBoostService {
                 from: "mediapicts",
                 as: "media",
                 let: {
-                  localID: '$post.postID'
+                  localID: '$postID'
                 },
                 pipeline: [
                   {
@@ -6048,11 +5963,6 @@ export class PostBoostService {
                       $expr: {
                         $eq: ['$postID', '$$localID']
                       }
-                    }
-                  },
-                  {
-                    $sort: {
-                      "createdAt": - 1
                     }
                   },
                   {
@@ -6078,10 +5988,9 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$post.category.$id'
+                  localID: '$category.$id'
                 },
                 pipeline: [
-
                   {
                     $match: {
 
@@ -6110,12 +6019,13 @@ export class PostBoostService {
 
               }
             },
+
             {
               "$lookup": {
                 from: "userauths",
                 as: "userTag",
                 let: {
-                  localID: '$post.tagPeople.$id'
+                  localID: '$tagPeople.$id'
                 },
                 pipeline: [
                   {
@@ -6143,7 +6053,7 @@ export class PostBoostService {
                 from: "userauths",
                 as: "username",
                 let: {
-                  localID: '$post.email'
+                  localID: '$email'
                 },
                 pipeline: [
                   {
@@ -6171,7 +6081,7 @@ export class PostBoostService {
                 from: "userbasics",
                 as: "userBasic",
                 let: {
-                  localID: '$post.email'
+                  localID: '$email'
                 },
                 pipeline: [
                   {
@@ -6231,9 +6141,7 @@ export class PostBoostService {
                       "fsSourceName": 1,
                       "fsTargetUri": 1,
                       "mediaType": 1,
-                      "mediaEndpoint": {
-                        "$concat": ["/profilepict/", "$_id"]
-                      }
+
                     }
                   }
                 ],
@@ -6263,7 +6171,7 @@ export class PostBoostService {
                 from: "contentevents",
                 as: "isLike",
                 let: {
-                  localID: '$post.postID'
+                  localID: '$postID'
                 },
                 pipeline: [
                   {
@@ -6299,39 +6207,44 @@ export class PostBoostService {
                 "isLike": "$isLike",
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
-                "email": "$post.email",
-                "postType": "$post.postType",
-                "description": "$post.description",
-                "active": "$post.active",
-                "createdAt": "$post.createdAt",
-                "updatedAt": "$post.updatedAt",
-                "expiration": "$post.expiration",
-                "visibility": "$post.visibility",
-                "location": "$post.location",
+                "email": 1,
+                "postType": 1,
+                "description": 1,
+                "active": 1,
+                "createdAt": 1,
+                "updatedAt": 1,
+                "expiration": 1,
+                "visibility": 1,
+                "location": 1,
                 "tags": 1,
-                "allowComments": "$post.allowComments",
-                "isSafe": "$post.isSafe",
-                "postID": "$post.postID",
-                "isOwned": "$post.isOwned",
-                "certified": "$post.certified",
-                "saleAmount": "$post.saleAmount",
-                "saleLike": "$post.saleLike",
-                "saleView": "$post.saleView",
-                "likes": "$post.likes",
-                "views": "$post.views",
-                "shares": "$post.shares",
-                "userProfile": "$post.userProfile",
-                "contentMedias": "$post.contentMedias",
-                "category": "$cats",
-                "tagDescription": "$post.tagDescription",
-                "metadata": "$post.metadata",
-                "isBoost": "$post.isBoost",
-                "boostCount": "$post.boostCount",
-                "contentModeration": "$post.contentModeration",
-                "reportedStatus": "$post.reportedStatus",
-                "reportedUserCount": "$post.reportedUserCount",
-                "contentModerationResponse": "$post.views",
-                "reportedUser": "$post.reportedUser",
+                "allowComments": 1,
+                "isSafe": 1,
+                "isOwned": 1,
+                "certified": 1,
+                "saleAmount": 1,
+                "saleLike": 1,
+                "saleView": 1,
+                "likes": 1,
+                "views": 1,
+                "shares": 1,
+                "userProfile": 1,
+                "contentMedias": 1,
+                "category": 1,
+                "tagDescription": 1,
+                "metadata": 1,
+                "boostDate": 1,
+                "boostInterval": 1,
+                "boostSession": 1,
+                "isBoost": 1,
+                "boostViewer": 1,
+                "boostCount": 1,
+                "contentModeration": 1,
+                "reportedStatus": 1,
+                "reportedUserCount": 1,
+                "contentModerationResponse": 1,
+                "reportedUser": 1,
+                "timeStart": 1,
+                "timeEnd": 1,
                 "apsara": "$media.apsara",
                 "apsaraId": "$media.apsaraId",
                 "apsaraThumbId": "$media.apsaraThumbId",
@@ -6339,14 +6252,12 @@ export class PostBoostService {
                 "mediaUri": "$media.mediaUri",
                 "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                 "mediaThumbUri": "$media.mediaThumbUri",
-                //"insight": 1,
                 "insight": [
                   {
                     "likes": "$post.likes",
                     "views": "$post.views",
                     "shares": "$post.shares",
                     "comments": "$post.comments",
-
                   }
                 ],
                 "fullName": "$userBasic.fullName",
@@ -6361,13 +6272,7 @@ export class PostBoostService {
                 }]
               },
 
-            },
-            {
-              $sort: {
-                "createdAt": - 1
-              }
-            },
-
+            }
           ],
           //vid
           "video": [
@@ -6377,68 +6282,41 @@ export class PostBoostService {
               }
             },
             {
-              "$lookup": {
-                from: "posts",
-                as: "post",
-                let: {
-                  localID: '$senderParty'
-                },
-                pipeline: [
+              $match:
+              {
+                $and: [
                   {
-                    $match:
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$email', '$$localID']
-                          }
-                        },
-                        {
-                          $or: [
-                            {
-                              "reportedStatus": "ALL"
-                            },
-                            {
-                              "reportedStatus": null
-                            },
-
-                          ]
-                        },
-                        {
-                          "visibility": "PUBLIC"
-                        },
-                        {
-                          "active": true
-                        },
-                        {
-                          "postType": "vid"
-                        },
-                        {
-                          "reportedUser.email": {
-                            $not: {
-                              $regex: profile.email
-                            }
-                          }
-                        },
-
-                      ]
-                    }
+                    "email": profile.email
                   },
                   {
-                    $sort: {
-                      "createdAt": - 1
+                    $or: [
+                      {
+                        "reportedStatus": "ALL"
+                      },
+                      {
+                        "reportedStatus": null
+                      },
+
+                    ]
+                  },
+                  {
+                    "visibility": "PUBLIC"
+                  },
+                  {
+                    "active": true
+                  },
+                  {
+                    "postType": "vid"
+                  },
+                  {
+                    "reportedUser.email": {
+                      $not: {
+                        $regex: profile.email
+                      }
                     }
                   },
 
-                ],
-
-              },
-
-            },
-            {
-              $unwind: {
-                path: "$post",
-                preserveNullAndEmptyArrays: true
+                ]
               }
             },
             {
@@ -6446,7 +6324,7 @@ export class PostBoostService {
                 from: "mediavideos",
                 as: "media",
                 let: {
-                  localID: '$post.postID'
+                  localID: '$postID'
                 },
                 pipeline: [
                   {
@@ -6482,11 +6360,12 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$post.category.$id'
+                  localID: '$category.$id'
                 },
                 pipeline: [
                   {
                     $match: {
+
                       $expr: {
                         $and: [
                           {
@@ -6512,12 +6391,13 @@ export class PostBoostService {
 
               }
             },
+
             {
               "$lookup": {
                 from: "userauths",
                 as: "userTag",
                 let: {
-                  localID: '$post.tagPeople.$id'
+                  localID: '$tagPeople.$id'
                 },
                 pipeline: [
                   {
@@ -6545,7 +6425,7 @@ export class PostBoostService {
                 from: "userauths",
                 as: "username",
                 let: {
-                  localID: '$post.email'
+                  localID: '$email'
                 },
                 pipeline: [
                   {
@@ -6573,7 +6453,7 @@ export class PostBoostService {
                 from: "userbasics",
                 as: "userBasic",
                 let: {
-                  localID: '$post.email'
+                  localID: '$email'
                 },
                 pipeline: [
                   {
@@ -6633,9 +6513,7 @@ export class PostBoostService {
                       "fsSourceName": 1,
                       "fsTargetUri": 1,
                       "mediaType": 1,
-                      "mediaEndpoint": {
-                        "$concat": ["/profilepict/", "$_id"]
-                      }
+
                     }
                   }
                 ],
@@ -6665,7 +6543,7 @@ export class PostBoostService {
                 from: "contentevents",
                 as: "isLike",
                 let: {
-                  localID: '$post.postID'
+                  localID: '$postID'
                 },
                 pipeline: [
                   {
@@ -6698,43 +6576,47 @@ export class PostBoostService {
             },
             {
               $project: {
-
-                "postID": "$post.postID",
                 "isLike": "$isLike",
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
-                "email": "$post.email",
-                "postType": "$post.postType",
-                "description": "$post.description",
-                "active": "$post.active",
-                "createdAt": "$post.createdAt",
-                "updatedAt": "$post.updatedAt",
-                "expiration": "$post.expiration",
-                "visibility": "$post.visibility",
-                "location": "$post.location",
+                "email": 1,
+                "postType": 1,
+                "description": 1,
+                "active": 1,
+                "createdAt": 1,
+                "updatedAt": 1,
+                "expiration": 1,
+                "visibility": 1,
+                "location": 1,
                 "tags": 1,
-                "allowComments": "$post.allowComments",
-                "isSafe": "$post.isSafe",
-                "isOwned": "$post.isOwned",
-                "certified": "$post.certified",
-                "saleAmount": "$post.saleAmount",
-                "saleLike": "$post.saleLike",
-                "saleView": "$post.saleView",
-                "likes": "$post.likes",
-                "views": "$post.views",
-                "shares": "$post.shares",
-                "userProfile": "$post.userProfile",
-                "contentMedias": "$post.contentMedias",
+                "allowComments": 1,
+                "isSafe": 1,
+                "isOwned": 1,
+                "certified": 1,
+                "saleAmount": 1,
+                "saleLike": 1,
+                "saleView": 1,
+                "likes": 1,
+                "views": 1,
+                "shares": 1,
+                "userProfile": 1,
+                "contentMedias": 1,
                 "category": "$cats",
-                "tagDescription": "$post.tagDescription",
-                "metadata": "$post.metadata",
-                "isBoost": "$post.isBoost",
-                "boostCount": "$post.boostCount",
-                "contentModeration": "$post.contentModeration",
-                "reportedStatus": "$post.reportedStatus",
-                "reportedUserCount": "$post.reportedUserCount",
-                "contentModerationResponse": "$post.views",
-                "reportedUser": "$post.reportedUser",
+                "tagDescription": 1,
+                "metadata": 1,
+                "boostDate": 1,
+                "boostInterval": 1,
+                "boostSession": 1,
+                "isBoost": 1,
+                "boostViewer": 1,
+                "boostCount": 1,
+                "contentModeration": 1,
+                "reportedStatus": 1,
+                "reportedUserCount": 1,
+                "contentModerationResponse": 1,
+                "reportedUser": 1,
+                "timeStart": 1,
+                "timeEnd": 1,
                 "apsara": "$media.apsara",
                 "apsaraId": "$media.apsaraId",
                 "apsaraThumbId": "$media.apsaraThumbId",
@@ -6748,7 +6630,6 @@ export class PostBoostService {
                     "views": "$post.views",
                     "shares": "$post.shares",
                     "comments": "$post.comments",
-
                   }
                 ],
                 "fullName": "$userBasic.fullName",
@@ -6773,68 +6654,41 @@ export class PostBoostService {
               }
             },
             {
-              "$lookup": {
-                from: "posts",
-                as: "post",
-                let: {
-                  localID: '$senderParty'
-                },
-                pipeline: [
+              $match:
+              {
+                $and: [
                   {
-                    $match:
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$email', '$$localID']
-                          }
-                        },
-                        {
-                          $or: [
-                            {
-                              "reportedStatus": "ALL"
-                            },
-                            {
-                              "reportedStatus": null
-                            },
-
-                          ]
-                        },
-                        {
-                          "visibility": "PUBLIC"
-                        },
-                        {
-                          "active": true
-                        },
-                        {
-                          "postType": "diary"
-                        },
-                        {
-                          "reportedUser.email": {
-                            $not: {
-                              $regex: profile.email
-                            }
-                          }
-                        },
-
-                      ]
-                    }
+                    "email": profile.email
                   },
                   {
-                    $sort: {
-                      "createdAt": - 1
+                    $or: [
+                      {
+                        "reportedStatus": "ALL"
+                      },
+                      {
+                        "reportedStatus": null
+                      },
+
+                    ]
+                  },
+                  {
+                    "visibility": "PUBLIC"
+                  },
+                  {
+                    "active": true
+                  },
+                  {
+                    "postType": "diary"
+                  },
+                  {
+                    "reportedUser.email": {
+                      $not: {
+                        $regex: profile.email
+                      }
                     }
                   },
 
-                ],
-
-              },
-
-            },
-            {
-              $unwind: {
-                path: "$post",
-                preserveNullAndEmptyArrays: true
+                ]
               }
             },
             {
@@ -6842,7 +6696,7 @@ export class PostBoostService {
                 from: "mediadiaries",
                 as: "media",
                 let: {
-                  localID: '$post.postID'
+                  localID: '$postID'
                 },
                 pipeline: [
                   {
@@ -6878,11 +6732,12 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$post.category.$id'
+                  localID: '$category.$id'
                 },
                 pipeline: [
                   {
                     $match: {
+
                       $expr: {
                         $and: [
                           {
@@ -6908,12 +6763,13 @@ export class PostBoostService {
 
               }
             },
+
             {
               "$lookup": {
                 from: "userauths",
                 as: "userTag",
                 let: {
-                  localID: '$post.tagPeople.$id'
+                  localID: '$tagPeople.$id'
                 },
                 pipeline: [
                   {
@@ -6941,7 +6797,7 @@ export class PostBoostService {
                 from: "userauths",
                 as: "username",
                 let: {
-                  localID: '$post.email'
+                  localID: '$email'
                 },
                 pipeline: [
                   {
@@ -6969,7 +6825,7 @@ export class PostBoostService {
                 from: "userbasics",
                 as: "userBasic",
                 let: {
-                  localID: '$post.email'
+                  localID: '$email'
                 },
                 pipeline: [
                   {
@@ -7029,9 +6885,7 @@ export class PostBoostService {
                       "fsSourceName": 1,
                       "fsTargetUri": 1,
                       "mediaType": 1,
-                      "mediaEndpoint": {
-                        "$concat": ["/profilepict/", "$_id"]
-                      }
+
                     }
                   }
                 ],
@@ -7061,7 +6915,7 @@ export class PostBoostService {
                 from: "contentevents",
                 as: "isLike",
                 let: {
-                  localID: '$post.postID'
+                  localID: '$postID'
                 },
                 pipeline: [
                   {
@@ -7094,43 +6948,47 @@ export class PostBoostService {
             },
             {
               $project: {
-
-                "postID": "$post.postID",
                 "isLike": "$isLike",
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
-                "email": "$post.email",
-                "postType": "$post.postType",
-                "description": "$post.description",
-                "active": "$post.active",
-                "createdAt": "$post.createdAt",
-                "updatedAt": "$post.updatedAt",
-                "expiration": "$post.expiration",
-                "visibility": "$post.visibility",
-                "location": "$post.location",
+                "email": 1,
+                "postType": 1,
+                "description": 1,
+                "active": 1,
+                "createdAt": 1,
+                "updatedAt": 1,
+                "expiration": 1,
+                "visibility": 1,
+                "location": 1,
                 "tags": 1,
-                "allowComments": "$post.allowComments",
-                "isSafe": "$post.isSafe",
-                "isOwned": "$post.isOwned",
-                "certified": "$post.certified",
-                "saleAmount": "$post.saleAmount",
-                "saleLike": "$post.saleLike",
-                "saleView": "$post.saleView",
-                "likes": "$post.likes",
-                "views": "$post.views",
-                "shares": "$post.shares",
-                "userProfile": "$post.userProfile",
-                "contentMedias": "$post.contentMedias",
+                "allowComments": 1,
+                "isSafe": 1,
+                "isOwned": 1,
+                "certified": 1,
+                "saleAmount": 1,
+                "saleLike": 1,
+                "saleView": 1,
+                "likes": 1,
+                "views": 1,
+                "shares": 1,
+                "userProfile": 1,
+                "contentMedias": 1,
                 "category": "$cats",
-                "tagDescription": "$post.tagDescription",
-                "metadata": "$post.metadata",
-                "isBoost": "$post.isBoost",
-                "boostCount": "$post.boostCount",
-                "contentModeration": "$post.contentModeration",
-                "reportedStatus": "$post.reportedStatus",
-                "reportedUserCount": "$post.reportedUserCount",
-                "contentModerationResponse": "$post.views",
-                "reportedUser": "$post.reportedUser",
+                "tagDescription": 1,
+                "metadata": 1,
+                "boostDate": 1,
+                "boostInterval": 1,
+                "boostSession": 1,
+                "isBoost": 1,
+                "boostViewer": 1,
+                "boostCount": 1,
+                "contentModeration": 1,
+                "reportedStatus": 1,
+                "reportedUserCount": 1,
+                "contentModerationResponse": 1,
+                "reportedUser": 1,
+                "timeStart": 1,
+                "timeEnd": 1,
                 "apsara": "$media.apsara",
                 "apsaraId": "$media.apsaraId",
                 "apsaraThumbId": "$media.apsaraThumbId",
@@ -7144,7 +7002,6 @@ export class PostBoostService {
                     "views": "$post.views",
                     "shares": "$post.shares",
                     "comments": "$post.comments",
-
                   }
                 ],
                 "fullName": "$userBasic.fullName",
@@ -7169,81 +7026,57 @@ export class PostBoostService {
               }
             },
             {
-              "$lookup": {
-                from: "posts",
-                as: "post",
-                let: {
-                  localID: '$senderParty'
-                },
-                pipeline: [
+              $match:
+              {
+                $and: [
                   {
-                    $match:
-                    {
-                      $and: [
-                        {
-                          $expr: {
-                            $eq: ['$email', '$$localID']
-                          }
-                        },
-                        {
-                          $or: [
-                            {
-                              "reportedStatus": "ALL"
-                            },
-                            {
-                              "reportedStatus": null
-                            },
+                    'email': profile.email
+                  },
+                  {
+                    $or: [
+                      {
+                        "reportedStatus": "ALL"
+                      },
+                      {
+                        "reportedStatus": null
+                      },
 
-                          ]
-                        },
-                        {
-                          "visibility": "PUBLIC"
-                        },
-                        {
-                          "active": true
-                        },
-                        {
-                          "postType": "story"
-                        },
-                        {
-                          "reportedUser.email": {
-                            $not: {
-                              $regex: profile.email
-                            }
-                          }
-                        },
-                        {
-                          $expr: {
-                            $gte: ["$createdAt", "$storyDate",]
-                          }
-                        },
-
-                      ]
+                    ]
+                  },
+                  {
+                    "visibility": "PUBLIC"
+                  },
+                  {
+                    "active": true
+                  },
+                  {
+                    "postType": "story"
+                  },
+                  {
+                    "reportedUser.email": {
+                      $not: {
+                        $regex: profile.email
+                      }
                     }
                   },
                   {
-                    $sort: {
-                      "createdAt": - 1
+                    "boosted.boostSession.start": {
+                      $lte: {
+                        $add: [new Date(), 25200000]
+                      }
                     }
                   },
 
-                ],
-
-              },
-
-            },
-            {
-              $unwind: {
-                path: "$post",
-                preserveNullAndEmptyArrays: true
+                ]
               }
             },
+
             {
               "$lookup": {
                 from: "mediastories",
                 as: "media",
                 let: {
-                  localID: '$post.postID'
+                  localID: '$postID'
                 },
                 pipeline: [
                   {
@@ -7279,11 +7112,12 @@ export class PostBoostService {
                 from: "interests_repo",
                 as: "cats",
                 let: {
-                  localID: '$post.category.$id'
+                  localID: '$category.$id'
                 },
                 pipeline: [
                   {
                     $match: {
+
                       $expr: {
                         $and: [
                           {
@@ -7309,12 +7143,13 @@ export class PostBoostService {
 
               }
             },
+
             {
               "$lookup": {
                 from: "userauths",
                 as: "userTag",
                 let: {
-                  localID: '$post.tagPeople.$id'
+                  localID: '$tagPeople.$id'
                 },
                 pipeline: [
                   {
@@ -7342,7 +7177,7 @@ export class PostBoostService {
                 from: "userauths",
                 as: "username",
                 let: {
-                  localID: '$post.email'
+                  localID: '$email'
                 },
                 pipeline: [
                   {
@@ -7370,7 +7205,7 @@ export class PostBoostService {
                 from: "userbasics",
                 as: "userBasic",
                 let: {
-                  localID: '$post.email'
+                  localID: '$email'
                 },
                 pipeline: [
                   {
@@ -7430,9 +7265,7 @@ export class PostBoostService {
                       "fsSourceName": 1,
                       "fsTargetUri": 1,
                       "mediaType": 1,
-                      "mediaEndpoint": {
-                        "$concat": ["/profilepict/", "$_id"]
-                      }
+
                     }
                   }
                 ],
@@ -7462,7 +7295,7 @@ export class PostBoostService {
                 from: "contentevents",
                 as: "isLike",
                 let: {
-                  localID: '$post.postID'
+                  localID: '$postID'
                 },
                 pipeline: [
                   {
@@ -7498,38 +7331,44 @@ export class PostBoostService {
                 "isLike": "$isLike",
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
-                "email": "$post.email",
-                "postType": "$post.postType",
-                "description": "$post.description",
-                "active": "$post.active",
-                "createdAt": "$post.createdAt",
-                "updatedAt": "$post.updatedAt",
-                "expiration": "$post.expiration",
-                "visibility": "$post.visibility",
-                "location": "$post.location",
+                "email": 1,
+                "postType": 1,
+                "description": 1,
+                "active": 1,
+                "createdAt": 1,
+                "updatedAt": 1,
+                "expiration": 1,
+                "visibility": 1,
+                "location": 1,
                 "tags": 1,
-                "allowComments": "$post.allowComments",
-                "isSafe": "$post.isSafe",
-                "isOwned": "$post.isOwned",
-                "certified": "$post.certified",
-                "saleAmount": "$post.saleAmount",
-                "saleLike": "$post.saleLike",
-                "saleView": "$post.saleView",
-                "likes": "$post.likes",
-                "views": "$post.views",
-                "shares": "$post.shares",
-                "userProfile": "$post.userProfile",
-                "contentMedias": "$post.contentMedias",
+                "allowComments": 1,
+                "isSafe": 1,
+                "isOwned": 1,
+                "certified": 1,
+                "saleAmount": 1,
+                "saleLike": 1,
+                "saleView": 1,
+                "likes": 1,
+                "views": 1,
+                "shares": 1,
+                "userProfile": 1,
+                "contentMedias": 1,
                 "category": "$cats",
-                "tagDescription": "$post.tagDescription",
-                "metadata": "$post.metadata",
-                "isBoost": "$post.isBoost",
-                "boostCount": "$post.boostCount",
-                "contentModeration": "$post.contentModeration",
-                "reportedStatus": "$post.reportedStatus",
-                "reportedUserCount": "$post.reportedUserCount",
-                "contentModerationResponse": "$post.views",
-                "reportedUser": "$post.reportedUser",
+                "tagDescription": 1,
+                "metadata": 1,
+                "boostDate": 1,
+                "boostInterval": 1,
+                "boostSession": 1,
+                "isBoost": 1,
+                "boostViewer": 1,
+                "boostCount": 1,
+                "contentModeration": 1,
+                "reportedStatus": 1,
+                "reportedUserCount": 1,
+                "contentModerationResponse": 1,
+                "reportedUser": 1,
+                "timeStart": 1,
+                "timeEnd": 1,
                 "apsara": "$media.apsara",
                 "apsaraId": "$media.apsaraId",
                 "apsaraThumbId": "$media.apsaraThumbId",
@@ -7537,14 +7376,12 @@ export class PostBoostService {
                 "mediaUri": "$media.mediaUri",
                 "mediaThumbEndpoint": "$media.mediaThumbEndpoint",
                 "mediaThumbUri": "$media.mediaThumbUri",
-                "cats": 1,
                 "insight": [
                   {
                     "likes": "$post.likes",
                     "views": "$post.views",
                     "shares": "$post.shares",
                     "comments": "$post.comments",
-
                   }
                 ],
                 "fullName": "$userBasic.fullName",
@@ -7561,203 +7398,10 @@ export class PostBoostService {
 
             }
           ],
-          //"test":[
-          //	{
-          //		$project:{
-          //				"ded":"root",
-          //			 "picts": '$pict.postID',
-          //			"vids": '$video.postID',
-          //			"diarys": '$diary.postID',
-          //			"storys": '$story.postID',																					
-          //		}
-          //	}
-          //]
-        }
-      },
-      //{
-      //						$project:{
-      //								"following":"$following",
-      //							 "pict": '$pict',
-      //							"video": '$video',
-      //							"diary": '$diary',
-      //							"story": '$story',		
-      //							picts: '$pict.postID',
-      //            vids: '$video.postID',
-      //            diarys: '$diary.postID',
-      //            storys: '$story.postID',																			
-      //						}
-      //					},
-      //{
-      //    $unwind: {
-      //        path: "$pict",
-      //        preserveNullAndEmptyArrays: true
-      //    }
-      //},
-      //{
-      //    $unwind: {
-      //        path: "$vid",
-      //        preserveNullAndEmptyArrays: true
-      //    }
-      //},
-      //{
-      //    $unwind: {
-      //        path: "$story",
-      //        preserveNullAndEmptyArrays: true
-      //    }
-      //},
-      //{
-      //    $unwind: {
-      //        path: "$diary",
-      //        preserveNullAndEmptyArrays: true
-      //    }
-      //},
-      {
-        "$lookup": {
-          from: "contentevents",
-          as: "isLike",
-          let: {
-            picts: '$pict.postID',
-            vids: '$video.postID',
-            diarys: '$diary.postID',
-            storys: '$story.postID',
-
-          },
-          pipeline: [
-            {
-              $match:
-              {
-                $or: [
-                  {
-                    $and: [
-                      {
-                        $expr: {
-                          $eq: ['$postID', '$$picts']
-                        }
-                      },
-                      {
-                        "email": profile.email
-                      },
-                      {
-                        "eventType": "LIKE"
-                      }
-                    ]
-                  },
-                  {
-                    $and: [
-                      {
-                        $expr: {
-                          $eq: ['$postID', '$$vids']
-                        }
-                      },
-                      {
-                        "email": profile.email
-                      },
-                      {
-                        "eventType": "LIKE"
-                      },
-                      {
-                        "active": true
-                      }
-                    ]
-                  },
-                  {
-                    $and: [
-                      {
-                        $expr: {
-                          $eq: ['$postID', '$$storys']
-                        }
-                      },
-                      {
-                        "email": profile.email
-                      },
-                      {
-                        "eventType": "LIKE"
-                      },
-                      {
-                        "active": true
-                      }
-                    ]
-                  },
-                  {
-                    $and: [
-                      {
-                        $expr: {
-                          $eq: ['$postID', '$$diarys']
-                        }
-                      },
-                      {
-                        "email": profile.email
-                      },
-                      {
-                        "eventType": "LIKE"
-                      },
-                      {
-                        "active": true
-                      }
-                    ]
-                  },
-
-                ]
-              }
-            },
-            {
-              $project: {
-                "email": 1,
-                "postID": 1,
-
-              }
-            }
-          ],
 
         }
       },
-      {
-        "$lookup": {
-          from: "contentevents",
-          as: "storyView",
-          let: {
-            picts: '$pict.postID',
-            vids: '$video.postID',
-            diarys: '$diary.postID',
-            storys: '$story.postID',
 
-          },
-          pipeline: [
-            {
-              $match:
-              {
-                $or: [
-
-                  {
-                    $and: [
-                      {
-                        $expr: {
-                          $eq: ['$postID', '$$storys']
-                        }
-                      },
-                      {
-                        "email": profile.email
-                      },
-                      {
-                        "eventType": "VIEW"
-                      }
-                    ]
-                  },
-
-                ]
-              }
-            },
-            {
-              $project: {
-                "email": 1,
-                "postID": 1,
-
-              }
-            }
-          ],
-
-        }
-      },
     ]).exec();
   }
 }
