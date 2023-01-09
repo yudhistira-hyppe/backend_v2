@@ -3147,6 +3147,6 @@ export class ReportuserController {
         }
 
         var eventType = type.toString();
-        await this.utilsService.sendFcm(email_post, titlein, titleen, bodyin_get, bodyen_get, eventType, event, postID, post_type);
+        await this.utilsService.sendFcm(email_post, titlein, titleen, bodyin_get, bodyen_get, eventType, event, postID, post_type, undefined, "APPEAL");
     }
 }

@@ -423,7 +423,7 @@ export class TransactionsController {
                                 CreateTransactionsDto.response = datareqva;
                                 let datatr = await this.transactionsService.create(CreateTransactionsDto);
 
-                                await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postIds, "TRANSACTION", no);
+                                await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postIds, "TRANSACTION", no, "TRANSACTION");
                                 await this.transactionsService.updatestatuscancel(idtransaction);
 
 
@@ -577,7 +577,7 @@ export class TransactionsController {
                             CreateTransactionsDto.postid = postidTR;
                             CreateTransactionsDto.response = datareqva;
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
-                            await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postidTR, "TRANSACTION", no);
+                            await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postidTR, "TRANSACTION", no, "TRANSACTION");
 
                             var data = {
                                 "noinvoice": datatr.noinvoice,
@@ -813,7 +813,7 @@ export class TransactionsController {
                                 CreateTransactionsDto.postid = postidTRvoucer.toString();
                                 CreateTransactionsDto.response = datareqva;
                                 let datatr = await this.transactionsService.create(CreateTransactionsDto);
-                                await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", no);
+                                await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", no, "TRANSACTION");
                                 //var lengArrDetail = arrayDetailvc.length;
 
                                 // for (var i = 0; i < lengArrDetail; i++) {
@@ -988,7 +988,7 @@ export class TransactionsController {
                             CreateTransactionsDto.postid = postidTRvoucer;
                             CreateTransactionsDto.response = datareqva;
                             let datatr = await this.transactionsService.create(CreateTransactionsDto);
-                            await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", no);
+                            await this.utilsService.sendFcm(emailbuy.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", no, "TRANSACTION");
                             // var lengArrDetail = arrayDetailvc.length;
 
                             // for (var i = 0; i < lengArrDetail; i++) {
@@ -1266,8 +1266,8 @@ export class TransactionsController {
 
 
                         await this.transactionsService.updateone(idtransaction, idbalance, payload);
-                        await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postid, "TRANSACTION", noinvoice);
-                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsuksesbeli, titleensuksesbeli, bodyinsuksesbeli, bodyensuksesbeli, eventType, event, postid, "TRANSACTION", noinvoice);
+                        await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
+                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsuksesbeli, titleensuksesbeli, bodyinsuksesbeli, bodyensuksesbeli, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
 
                         await this.postsService.updateemail(postid, emailbuyer.toString(), iduserbuy, timedate);
                         if (datapost.boosted != undefined) {
@@ -1437,8 +1437,8 @@ export class TransactionsController {
 
                         var idbalance = databalance._id;
                         await this.transactionsService.updateoneVoucher(idtransaction, idbalance, payload);
-                        await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", noinvoice);
-                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsuksesbeli, titleensuksesbeli, bodyinsuksesbeli, bodyensuksesbeli, eventType, event, postid, "TRANSACTION", noinvoice);
+                        await this.utilsService.sendFcm(emailseller.toString(), titleinsukses, titleensukses, bodyinsukses, bodyensukses, eventType, event, undefined, "TRANSACTION", noinvoice, "TRANSACTION");
+                        await this.utilsService.sendFcm(emailbuyer.toString(), titleinsuksesbeli, titleensuksesbeli, bodyinsuksesbeli, bodyensuksesbeli, eventType, event, postid, "TRANSACTION", noinvoice, "TRANSACTION");
                         for (var i = 0; i < lengtvoucherid; i++) {
                             var postvcid = detail[i].id.toString();
                             var jml = detail[i].qty;
