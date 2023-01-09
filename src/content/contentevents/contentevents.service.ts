@@ -2844,6 +2844,7 @@ export class ContenteventsService {
               },
               {
                 $project: {
+                  "postID": "$post.postID",
                   "isLike": "$isLike",
                   "tagPeople": "$userTag",
                   "mediaType": "$media.mediaType",
