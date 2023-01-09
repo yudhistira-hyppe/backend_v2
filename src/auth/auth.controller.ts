@@ -3126,6 +3126,11 @@ export class AuthController {
     var fileselfiepict = null;
     var fileproofpict = null;
     var bankacount = [];
+    var datafrend = null;
+    var lengfrend = null;
+    var email = null;
+    var emailfrend = null;
+    var tempatLahir = null;
 
     try {
       datauserdetail = await this.userbasicsService.getUserDetails(id);
@@ -3137,13 +3142,20 @@ export class AuthController {
 
 
     if (datauserdetail !== null) {
-
+      email = datauserdetail[0].email;
 
       try {
 
         mediaId = datauserdetail[0].mediaId;
       } catch (e) {
         mediaId = "";
+      }
+
+      try {
+
+        tempatLahir = datauserdetail[0].tempatLahir
+      } catch (e) {
+        tempatLahir = "";
       }
 
       try {
@@ -3188,6 +3200,27 @@ export class AuthController {
         bankacount = [];
       }
 
+      if (bankacount[0]._id === undefined) {
+        bankacount = [];
+      } else {
+        bankacount = bankacount;
+      }
+
+      try {
+        datafrend = await this.contenteventsService.findfriend(email);
+        console.log(datafrend);
+        lengfrend = datafrend.length;
+        for (var i = 0; i < lengfrend; i++) {
+          emailfrend = datafrend[i]._id.email;
+
+          if (email === emailfrend) {
+            lengfrend = lengfrend - 1;
+          }
+        }
+      } catch (e) {
+        datafrend = null;
+      }
+
       let obj = {
 
         "_id": datauserdetail[0]._id,
@@ -3204,7 +3237,11 @@ export class AuthController {
         "countries": datauserdetail[0].countries,
         "interests": datauserdetail[0].interests,
         "dokument": arrsuport,
-        "placeofbirth": datauserdetail[0].placeofbirth,
+        "avatar": datauserdetail[0].avatar,
+        "mobileNumber": datauserdetail[0].mobileNumber,
+        "tempatLahir": tempatLahir,
+        "statusUser": datauserdetail[0].statusUser,
+        "friend": lengfrend,
         "userbankaccounts": bankacount,
       };
 
