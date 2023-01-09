@@ -224,8 +224,8 @@ export class UtilsService {
         data_send['postID'] = idtransaction
         data_send['postType'] = eventType
       } else if ((eventType == "KYC")){
-        data_send['postID'] = null
-        data_send['postType'] = null
+        data_send['postID'] = ""
+        data_send['postType'] = ""
       } else {
         data_send['postID'] = postID
         data_send['postType'] = postType
