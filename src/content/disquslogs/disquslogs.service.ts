@@ -68,12 +68,12 @@ export class DisquslogsService {
 
         ]);
         return query;
-      }
+  }
 
-      async update(
-        id: string,
-        createDisquslogsDto: CreateDisquslogsDto,
-      ): Promise < Disquslogs > {
+  async update(
+      id: string,
+      createDisquslogsDto: CreateDisquslogsDto,
+    ): Promise < Disquslogs > {
         let data = await this.DisquslogsModel.findByIdAndUpdate(
           id,
           createDisquslogsDto,
@@ -84,36 +84,36 @@ export class DisquslogsService {
           throw new Error('Todo is not found!');
         }
     return data;
-      }
+  }
 
   async deletedicusslog(request: any): Promise < any > {
-        const data_discuslog = await this.DisquslogsModel.findOne({ _id: request._id }).exec();
-        if(await this.utilsService.ceckData(data_discuslog)) {
-          this.DisquslogsModel.updateOne(
-            { _id: request._id },
-            { active: false, senderActive: false, receiverActive: false },
-            function (err, docs) {
-              if (err) {
-                console.log(err);
-              } else {
-                console.log(docs);
-              }
-            });
-
-    return {
-      response_code: 202,
-      messages: {
-        info: ['Delete Disqus successful'],
-      }
+    const data_discuslog = await this.DisquslogsModel.findOne({ _id: request._id }).exec();
+    if(await this.utilsService.ceckData(data_discuslog)) {
+      this.DisquslogsModel.updateOne(
+      { _id: request._id },
+      { active: false, senderActive: false, receiverActive: false },
+      function (err, docs) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(docs);
+        }
+        });
+      return {
+        status: true,
+        discustId: data_discuslog.disqusID.toString()
+      };
+    } else {
+      return {
+        status: false,
+        discustId: null
+      };
     }
-  } else {
-  throw new NotAcceptableException({
-    response_code: 406,
-    messages: {
-      info: ['Unabled to proceed, Disquslog not found'],
-    },
-  });
-}
+  }
+
+  async finddiscussLogByDiscussID(_id: string): Promise<Disquslogs[]> {
+    const data_discuslog = await this.DisquslogsModel.find({ disqusID: _id, active: true }).sort({ createdAt: -1 }).exec();
+    return data_discuslog;
   }
 
   async updateBydiscusid(disqusID: string, email: string) {

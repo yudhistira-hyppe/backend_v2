@@ -60,26 +60,26 @@ export class DisquslogsController {
     }
   }
 
-  @Post('posts/disqus/deletedicusslog')
-  @UseGuards(JwtAuthGuard)
-  async deletedicusslog(
-    @Headers() headers,
-    @Body() request: any) {
-    if (!(await this.utilsService.validasiTokenEmail(headers))) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
-      );
-    }
-    if (request._id == undefined) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
-      );
-    }
-    if (!(await this.utilsService.validasiTokenEmail(headers))) {
-      await this.errorHandler.generateNotAcceptableException(
-        'Unabled to proceed',
-      );
-    }
-    return this.DisquslogsService.deletedicusslog(request);
-  }
+  // @Post('posts/disqus/deletedicusslog')
+  // @UseGuards(JwtAuthGuard)
+  // async deletedicusslog(
+  //   @Headers() headers,
+  //   @Body() request: any) {
+  //   if (!(await this.utilsService.validasiTokenEmail(headers))) {
+  //     await this.errorHandler.generateNotAcceptableException(
+  //       'Unabled to proceed',
+  //     );
+  //   }
+  //   if (request._id == undefined) {
+  //     await this.errorHandler.generateNotAcceptableException(
+  //       'Unabled to proceed',
+  //     );
+  //   }
+  //   if (!(await this.utilsService.validasiTokenEmail(headers))) {
+  //     await this.errorHandler.generateNotAcceptableException(
+  //       'Unabled to proceed',
+  //     );
+  //   }
+  //   return this.DisquslogsService.deletedicusslog(request);
+  // }
 }

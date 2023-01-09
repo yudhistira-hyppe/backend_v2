@@ -511,6 +511,35 @@ export class DisqusService {
         }
     }
 
+    async discussLog(request: any): Promise<any> {
+        var deleteDiscussLog = await this.disquslogsService.deletedicusslog(request);
+        if (deleteDiscussLog!=undefined){
+            if (deleteDiscussLog.status!=undefined) {
+                if (deleteDiscussLog.status) {
+                    var discustId = null;
+                    if (deleteDiscussLog.discustId != undefined) {
+                        discustId = deleteDiscussLog.discustId;
+                    }
+                    var getDiscussLog = await this.disquslogsService.finddiscussLogByDiscussID(discustId.toString());
+                    if (await this.utilsService.ceckData(getDiscussLog)){
+                        var lastestMessage = getDiscussLog[0].txtMessages.toString();
+                        this.DisqusModel.updateOne(
+                            { _id: discustId.toString() },
+                            { lastestMessage: lastestMessage },
+                            function (err, docs) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log(docs);
+                                }
+                            }
+                        );
+                    }
+                }
+            }
+        }
+    }
+
     // async finddisqus() {
     //   const query = await this.DisqusModel.aggregate([
 

@@ -1231,4 +1231,33 @@ export class DisqusController {
     // await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event, postID, post_type);
     await this.utilsService.sendFcmV2(email, receiverParty, type.toString(), "ACCEPT", type, postID, post_type)
   }
+
+  @Post('posts/disqus/deletedicusslog')
+  @UseGuards(JwtAuthGuard)
+  async deletedicusslog(
+    @Headers() headers,
+    @Body() request: any) {
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    if (request._id == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    await this.disqusService.discussLog(request);
+    return {
+      response_code: 202,
+      messages: {
+        info: ['Delete Disqus successful'],
+      }
+    }
+  }
 }
