@@ -2064,39 +2064,24 @@ export class UserbasicsService {
         },
 
       },
-      // {
-      //   $lookup: {
-      //     from: 'contentevents',
-      //     let: {
-      //       "email": "$email",
-      //     },
-      //     pipeline: [
-      //       {
-      //         $match: {
-      //           $and: [
-      //             {
-      //               $expr: {
-      //                 $eq: ["$receiverParty", "$$email"]
-      //               },
-      //               'eventType': 'VIEW_PROFILE',
-      //             },
-      //             {
-      //               $expr: {
-      //                 $gte: ["$createdAt", currentDateNowFormat]
-      //               },
-      //             },
-      //             {
-      //               $expr: {
-      //                 $lte: ["$createdAt", currentDateNowFormat_]
-      //               },
-      //             }
-      //           ]
-      //         }
-      //       }
-      //     ],
-      //     as: 'contentevents_data'
-      //   }
-      // },
+      {
+        $lookup: {
+          from: 'mediaprofilepicts',
+          localField: 'profilePict.$id',
+          foreignField: '_id',
+          as: 'avatardata',
+
+        },
+
+      },
+      {
+        $addFields: {
+          'avatar': {
+            $arrayElemAt: ['$avatardata', 0]
+          },
+
+        }
+      },
       {
         $lookup: {
           from: 'userbankaccounts',
@@ -2146,16 +2131,36 @@ export class UserbasicsService {
       },
       {
         $project: {
-          fullName: '$fullName',
+          fullName: 1,
           username: {
             $arrayElemAt: ['$userauths_data.username', 0]
           },
-          email: '$email',
-          createdAt: '$createdAt',
-          status: '$isIdVerified',
-          dob: '$dob',
-          gender: '$gender',
+          mobileNumber: 1,
+          email: 1,
+          createdAt: 1,
+          status: 1,
+          dob: 1,
+          gender: 1,
+          statusUser:
+          {
+            $cond: {
+              if: {
+                $eq: ["$isIdVerified", true]
+              },
+              then: "PREMIUM",
+              else: "BASIC"
+            }
+          },
           mediaId: '$mediaproofpicts_data._id',
+          tempatLahir: '$mediaproofpicts_data.tempatLahir',
+          avatar: {
+
+            mediaEndpoint: {
+              "$concat": ["/profilepict/", "$avatar.mediaID"]
+            },
+
+
+          },
           insights: {
             followers: {
               $arrayElemAt: ['$insights_data.followers', 0]
@@ -2282,7 +2287,18 @@ export class UserbasicsService {
           userbankaccounts: {
             $push: "$userbankaccounts"
           },
-          //  contentevents_data: { $first: "$contentevents_data" },
+          avatar: {
+            $first: "$avatar"
+          },
+          mobileNumber: {
+            $first: "$mobileNumber"
+          },
+          tempatLahir: {
+            $first: "$tempatLahir"
+          },
+          statusUser: {
+            $first: "$statusUser"
+          },
         }
       },
       {
@@ -2302,6 +2318,10 @@ export class UserbasicsService {
           cities: 1,
           countries: 1,
           interests: 1,
+          avatar: 1,
+          mobileNumber: 1,
+          tempatLahir: 1,
+          statusUser: 1,
           dokument: {
             $cond: {
               if: {

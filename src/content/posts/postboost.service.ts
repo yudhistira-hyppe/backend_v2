@@ -6211,6 +6211,7 @@ export class PostBoostService {
             },
             {
               $project: {
+                "postID": 1,
                 "isLike": "$isLike",
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
@@ -6585,6 +6586,7 @@ export class PostBoostService {
             },
             {
               $project: {
+                "postID": 1,
                 "isLike": "$isLike",
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
@@ -6959,6 +6961,7 @@ export class PostBoostService {
             },
             {
               $project: {
+                "postID": 1,
                 "isLike": "$isLike",
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
@@ -7340,6 +7343,7 @@ export class PostBoostService {
             },
             {
               $project: {
+                "postID": 1,
                 "isLike": "$isLike",
                 "tagPeople": "$userTag",
                 "mediaType": "$media.mediaType",
