@@ -6,10 +6,11 @@ import { Disqus, DisqusDocument } from './schemas/disqus.schema';
 import { UtilsService } from '../../utils/utils.service';
 import { DisquslogsService } from '../disquslogs/disquslogs.service';
 import { UserbasicsService } from '../../trans/userbasics/userbasics.service';
-import { Userbasic } from 'src/trans/userbasics/schemas/userbasic.schema';
+import { Userbasic } from '../../trans/userbasics/schemas/userbasic.schema';
 import { DisquscontactsService } from '../disquscontacts/disquscontacts.service';
 import { Disquscontacts } from '../disquscontacts/schemas/disquscontacts.schema';
 import { AppGateway } from '../socket/socket.gateway';
+import { ReactionsRepoService } from '../../infra/reactions_repo/reactions_repo.service';
 
 @Injectable()
 export class DisqusService {
@@ -23,6 +24,7 @@ export class DisqusService {
         private disquslogsService: DisquslogsService,
         private disqconService: DisquscontactsService,
         private userService: UserbasicsService,
+        private reactionsRepoService: ReactionsRepoService,
         private gtw: AppGateway,
     ) { }
 
@@ -508,6 +510,47 @@ export class DisqusService {
                     info: ['Unabled to proceed, Disqus not found'],
                 },
             });
+        }
+    }
+
+    async discussLog(request: any): Promise<any> {
+        var deleteDiscussLog = await this.disquslogsService.deletedicusslog(request);
+        if (deleteDiscussLog!=undefined){
+            if (deleteDiscussLog.status!=undefined) {
+                if (deleteDiscussLog.status) {
+                    var discustId = null;
+                    if (deleteDiscussLog.discustId != undefined) {
+                        discustId = deleteDiscussLog.discustId;
+                    }
+                    var getDiscussLog = await this.disquslogsService.finddiscussLogByDiscussID(discustId.toString());
+                    if (await this.utilsService.ceckData(getDiscussLog)){
+                        var lastestMessage = "";
+                        if (getDiscussLog[0].txtMessages!=undefined){
+                            lastestMessage = getDiscussLog[0].txtMessages.toString();
+                        }else{
+                            var reactionUri = "";
+                            if (getDiscussLog[0].reactionUri != undefined){
+                                reactionUri = getDiscussLog[0].reactionUri.toString();
+                                var getReaction = await this.reactionsRepoService.findByUrl(reactionUri);
+                                if (await this.utilsService.ceckData(getReaction)) {
+                                    lastestMessage = getReaction.icon.toString();
+                                }
+                            }
+                        }
+                        this.DisqusModel.updateOne(
+                            { _id: discustId.toString() },
+                            { lastestMessage: lastestMessage },
+                            function (err, docs) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log(docs);
+                                }
+                            }
+                        );
+                    }
+                }
+            }
         }
     }
 

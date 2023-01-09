@@ -27,7 +27,7 @@ import { Disquslogs } from '../disquslogs/schemas/disquslogs.schema';
 import { DBRef, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
-import { TemplatesRepo } from 'src/infra/templates_repo/schemas/templatesrepo.schema';
+import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 
 const Long = require('mongodb').Long;
 @Controller('api/')
@@ -1230,5 +1230,34 @@ export class DisqusController {
     // var event = "ACCEPT";
     // await this.utilsService.sendFcm(email, titlein, titleen, bodyin, bodyen, eventType, event, postID, post_type);
     await this.utilsService.sendFcmV2(email, receiverParty, type.toString(), "ACCEPT", type, postID, post_type)
+  }
+
+  @Post('posts/disqus/deletedicusslog')
+  @UseGuards(JwtAuthGuard)
+  async deletedicusslog(
+    @Headers() headers,
+    @Body() request: any) {
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    if (request._id == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed',
+      );
+    }
+    await this.disqusService.discussLog(request);
+    return {
+      response_code: 202,
+      messages: {
+        info: ['Delete Disqus successful'],
+      }
+    }
   }
 }
