@@ -89,7 +89,7 @@ export class DisquslogsService {
   async deletedicusslog(request: any): Promise < any > {
     const data_discuslog = await this.DisquslogsModel.findOne({ _id: request._id }).exec();
     if(await this.utilsService.ceckData(data_discuslog)) {
-      this.DisquslogsModel.updateOne(
+      await this.DisquslogsModel.updateOne(
       { _id: request._id },
       { active: false, senderActive: false, receiverActive: false },
       function (err, docs) {
@@ -98,7 +98,7 @@ export class DisquslogsService {
         } else {
           console.log(docs);
         }
-        });
+        }).clone().exec();
       return {
         status: true,
         discustId: data_discuslog.disqusID.toString()
@@ -112,7 +112,7 @@ export class DisquslogsService {
   }
 
   async finddiscussLogByDiscussID(_id: string): Promise<Disquslogs[]> {
-    const data_discuslog = await this.DisquslogsModel.find({ disqusID: _id, active: true }).sort({ createdAt: -1 }).exec();
+    const data_discuslog = await this.DisquslogsModel.find({ disqusID: _id, active: { $ne: false } }).sort({ createdAt: -1 }).exec();
     return data_discuslog;
   }
 

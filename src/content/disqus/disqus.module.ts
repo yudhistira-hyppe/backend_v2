@@ -14,10 +14,12 @@ import { ContenteventsModule } from '../contentevents/contentevents.module';
 import { UserbasicsModule } from '../../trans/userbasics/userbasics.module';
 import { UserauthsModule } from '../../trans/userauths/userauths.module';
 import { SocketModule } from '../socket/socket.module';
+import { ReactionsRepoModule } from '../../infra/reactions_repo/reactions_repo.module';
 
 @Module({
 
     imports: [
+        ReactionsRepoModule,
         ContenteventsModule,
         InsightsModule,
         PostDisqusModule,

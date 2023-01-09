@@ -27,7 +27,7 @@ import { Disquslogs } from '../disquslogs/schemas/disquslogs.schema';
 import { DBRef, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
-import { TemplatesRepo } from 'src/infra/templates_repo/schemas/templatesrepo.schema';
+import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 
 const Long = require('mongodb').Long;
 @Controller('api/')
