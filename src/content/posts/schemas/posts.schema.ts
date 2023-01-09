@@ -53,8 +53,8 @@ export class Posts {
     midRoll: Number
     postID: String
     email: String
-      width: Number
-      height: Number
+    width: Number
+    height: Number
   }
   @Prop()
   likes: Long;

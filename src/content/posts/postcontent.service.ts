@@ -1199,6 +1199,8 @@ export class PostContentService {
           md1.postRoll = Number(md.postRoll);
           md1.postType = String(md.postType);
           md1.preRoll = Number(md.preRoll);
+          md1.width = (md.width != undefined) ? Number(md.width) : 0;
+          md1.height = (md.height != undefined) ? Number(md.height) : 0;
           pa.metadata = md1;
         }
 
@@ -1880,6 +1882,8 @@ export class PostContentService {
           md1.postRoll = Number(md.postRoll);
           md1.postType = String(md.postType);
           md1.preRoll = Number(md.preRoll);
+          md1.width = (md.width != undefined) ? Number(md.width) : 0;
+          md1.height = (md.height != undefined) ? Number(md.height) : 0;
           pa.metadata = md1;
         }
 
@@ -2254,6 +2258,8 @@ export class PostContentService {
           md1.postRoll = Number(md.postRoll);
           md1.postType = String(md.postType);
           md1.preRoll = Number(md.preRoll);
+          md1.width = (md.width != undefined) ? Number(md.width) : 0;
+          md1.height = (md.height != undefined) ? Number(md.height) : 0;
           pa.metadata = md1;
         }
 
@@ -2937,14 +2943,6 @@ export class PostContentService {
 
     let post = await this.postService.findByPostId(body.postID);
     post.updatedAt = await this.utilService.getDateTimeString();
-
-  
-    if (body.width != undefined) {
-      post.metadata.width = parseInt(body.width.toString());
-    }
-    if (body.height != undefined) {
-      post.metadata.height = parseInt(body.height.toString());
-    }
 
     if (body.description != undefined) {
       post.description = body.description;

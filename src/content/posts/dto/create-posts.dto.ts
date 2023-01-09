@@ -69,6 +69,8 @@ export class Metadata {
     postRoll: number;
     midRoll: number;
     preRoll: number;
+    width: Number;
+    height: Number;
 }
 
 export class Cat {
