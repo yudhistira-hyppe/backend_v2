@@ -2975,16 +2975,16 @@ export class PostBoostService {
 
       }
 
-      if (obj.boosted != undefined) {
-        console.log("boosted: " + pd.postID);
-        this.postxService.updateBoostViewer(pd.postID, email);
-        pd.boostJangkauan = this.countBoosted(obj, email);
-      }
+      // if (obj.boosted != undefined) {
+      //   console.log("boosted: " + pd.postID);
+      //   this.postxService.updateBoostViewer(pd.postID, email);
+      //   pd.boostJangkauan = this.countBoosted(obj, email);
+      // }
 
-      if (obj.statusCB == undefined || obj.statusCB == 'PENDING') {
-        console.log("statusCB: " + obj.statusCB);
-        this.postService.cmodCheckResult(obj.postID);
-      }
+      // if (obj.statusCB == undefined || obj.statusCB == 'PENDING') {
+      //   console.log("statusCB: " + obj.statusCB);
+      //   this.postService.cmodCheckResult(obj.postID);
+      // }
 
 
       res.push(pd);
@@ -3048,6 +3048,8 @@ export class PostBoostService {
       body.postType = 'ALL';
     }
     let skip = this.paging(page, row);
+    var datatest = null;
+    var lengdata = null;
 
     let xvids: string[] = [];
     let xpics: string[] = [];
@@ -3084,6 +3086,9 @@ export class PostBoostService {
     if (body.postType == 'ALL' || body.postType == 'story') {
       osto = this.processDataV2(obj.story, xvids, xpics, isLike, isView, String(profile.email));
     }
+
+
+
 
     let vapsara = undefined;
     let papsara = undefined;
@@ -5975,6 +5980,8 @@ export class PostBoostService {
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
                       "mediaThumbUri": 1,
+                      "mediaType": 1
+
 
                     }
                   }
@@ -6347,6 +6354,8 @@ export class PostBoostService {
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
                       "mediaThumbUri": 1,
+                      "mediaType": 1
+
 
                     }
                   }
@@ -6719,6 +6728,8 @@ export class PostBoostService {
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
                       "mediaThumbUri": 1,
+                      "mediaType": 1
+
 
                     }
                   }
@@ -7099,6 +7110,7 @@ export class PostBoostService {
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
                       "mediaThumbUri": 1,
+                      "mediaType": 1
 
                     }
                   }
