@@ -223,9 +223,6 @@ export class UtilsService {
       if (event == "BOOST_SUCCES" || event == "ADS VIEW" || event == "ADS CLICK") {
         data_send['postID'] = idtransaction
         data_send['postType'] = eventType
-      } else if ((eventType == "KYC")){
-        data_send['postID'] = ""
-        data_send['postType'] = ""
       } else {
         data_send['postID'] = postID
         data_send['postType'] = postType
@@ -245,7 +242,10 @@ export class UtilsService {
       if (eventType == "FOLLOWER" || eventType == "FOLLOWING") {
         data_send['postType'] = eventType
         data_send['postID'] = get_username_senderParty
-      } else {
+      } else if (eventType == "KYC") {
+        data_send['postID'] = ''
+        data_send['postType'] = ''
+      }else {
         data_send['postID'] = postID
         data_send['postType'] = postType
       }
