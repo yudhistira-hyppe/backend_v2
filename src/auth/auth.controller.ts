@@ -2498,7 +2498,7 @@ export class AuthController {
               } else {
                 messages = "Email Terkirim, Kami telah mengirimkan kode verifikasi ke email kamu.";
               }
-                
+
               return {
                 response_code: 202,
                 messages: {
@@ -3125,6 +3125,7 @@ export class AuthController {
     var mediaId = null;
     var fileselfiepict = null;
     var fileproofpict = null;
+    var bankacount = [];
 
     try {
       datauserdetail = await this.userbasicsService.getUserDetails(id);
@@ -3181,6 +3182,11 @@ export class AuthController {
         }
       }
 
+      try {
+        bankacount = datauserdetail[0].userbankaccounts;
+      } catch (e) {
+        bankacount = [];
+      }
 
       let obj = {
 
@@ -3199,7 +3205,7 @@ export class AuthController {
         "interests": datauserdetail[0].interests,
         "dokument": arrsuport,
         "placeofbirth": datauserdetail[0].placeofbirth,
-        "userbankaccounts": datauserdetail[0].userbankaccounts,
+        "userbankaccounts": bankacount,
       };
 
       data.push(obj);
