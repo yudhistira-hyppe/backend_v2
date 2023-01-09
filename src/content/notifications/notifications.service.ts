@@ -140,7 +140,11 @@ export class NotificationsService {
     }
 
     if (body.eventType != undefined) {
-      query.where('eventType', body.eventType);
+      if (body.eventType =="GENERAL"){
+        query.where('eventType', { $in: ['VERIFICATIONID', 'SUPPORTFILE', 'TRANSACTION', 'POST', 'ADS VIEW', 'BOOST_CONTENT', 'BOOST_BUY', 'CONTENT', 'ADS CLICK', 'BANK', 'CONTENTMOD', 'KYC'] }); 
+      } else {
+        query.where('eventType', body.eventType);
+      }
     }
 
     let row = 20;

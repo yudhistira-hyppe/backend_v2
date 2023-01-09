@@ -25,6 +25,8 @@ export class CreatePostsDto {
         midRoll: Number;
         postID: String;
         email: String;
+        width: Number;
+        height: Number;
     };
     readonly likes: Long;
     readonly views: Long;
@@ -67,6 +69,8 @@ export class Metadata {
     postRoll: number;
     midRoll: number;
     preRoll: number;
+    width: Number;
+    height: Number;
 }
 
 export class Cat {
