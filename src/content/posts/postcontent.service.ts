@@ -1,6 +1,6 @@
 import { Logger, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { DBRef, Long, ObjectId } from 'mongodb';
+import { DBRef, Int32, Long, ObjectId } from 'mongodb';
 import { Model, Types } from 'mongoose';
 import { ApsaraImageResponse, ApsaraVideoResponse, Cat, CreatePostResponse, CreatePostsDto, Metadata, PostData, PostResponseApps, Privacy, TagPeople, Messages, InsightPost, ApsaraPlayResponse, Avatar, PostLandingResponseApps, PostLandingData, PostBuildData, VideoList, ImageInfo } from './dto/create-posts.dto';
 import { Posts, PostsDocument } from './schemas/posts.schema';
@@ -319,7 +319,15 @@ export class PostContentService {
 
     let mediaId = "";
     if (postType == 'vid') {
-      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0 };
+      var width_ = 0;
+      var height_ = 0;
+      if (body.width!=undefined){
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
       post.metadata = metadata;
 
       var med = new Mediavideos();
@@ -350,7 +358,15 @@ export class PostContentService {
 
       var mime = file.mimetype;
       if (mime.startsWith('video')) {
-        let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0 };
+        var width_ = 0;
+        var height_ = 0;
+        if (body.width != undefined) {
+          width_ = parseInt(body.width.toString());
+        }
+        if (body.height != undefined) {
+          height_ = parseInt(body.height.toString());
+        }
+        let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
         post.metadata = metadata;
       }
 
@@ -378,8 +394,15 @@ export class PostContentService {
       mediaId = String(rets.mediaID);
 
     } else if (postType == 'diary') {
-
-      let metadata = { postType: 'diary', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0 };
+      var width_ = 0;
+      var height_ = 0;
+      if (body.width != undefined) {
+        width_ = parseInt(body.width.toString());
+      }
+      if (body.height != undefined) {
+        height_ = parseInt(body.height.toString());
+      }
+      let metadata = { postType: 'diary', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: width_, height: height_ };
       post.metadata = metadata;
 
       var mer = new Mediadiaries();
@@ -406,7 +429,7 @@ export class PostContentService {
       mediaId = String(retr.mediaID);
     } else if (postType == 'pict') {
 
-      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0 };
+      let metadata = { postType: 'vid', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
       post.metadata = metadata;
 
       var medx = new Mediapicts();
@@ -516,7 +539,7 @@ export class PostContentService {
 
       mediaId = String(retm.mediaID);
     } else if (postType == 'story') {
-      let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0 };
+      let metadata = { postType: 'story', duration: 0, postID: post._id, email: auth.email, postRoll: 0, midRoll: 0, preRoll: 0, width: 0, height: 0 };
       post.metadata = metadata;
 
       var mes = new Mediastories();
@@ -639,7 +662,7 @@ export class PostContentService {
       }
 
       let meta = post.metadata;
-      let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll };
+      let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: meta.width, height: meta.height };
       post.metadata = metadata;
       post.active = true;
       //TODO 
@@ -697,7 +720,7 @@ export class PostContentService {
       this.logger.log('updateNewPost >>> mediatype: ' + st.mediaType);
       if (st.mediaType == 'video') {
         let meta = post.metadata;
-        let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll };
+        let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: meta.width, height: meta.height };
         post.metadata = metadata;
       }
 
@@ -749,7 +772,7 @@ export class PostContentService {
       this.diaryService.create(dy);
 
       let meta = post.metadata;
-      let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll };
+      let metadata = { postType: meta.postType, duration: parseInt(body.duration), postID: post._id, email: meta.email, postRoll: meta.postRoll, midRoll: meta.midRoll, preRoll: meta.preRoll, width: meta.width, height: meta.height };
       post.metadata = metadata;
       post.active = true;
       //TODO 
@@ -2870,6 +2893,8 @@ export class PostContentService {
       }
     }
 
+    
+
     let post = await this.buildUpdatePost(body, headers);
     let apost = await this.PostsModel.create(post);
 
@@ -2912,6 +2937,14 @@ export class PostContentService {
 
     let post = await this.postService.findByPostId(body.postID);
     post.updatedAt = await this.utilService.getDateTimeString();
+
+  
+    if (body.width != undefined) {
+      post.metadata.width = parseInt(body.width.toString());
+    }
+    if (body.height != undefined) {
+      post.metadata.height = parseInt(body.height.toString());
+    }
 
     if (body.description != undefined) {
       post.description = body.description;
