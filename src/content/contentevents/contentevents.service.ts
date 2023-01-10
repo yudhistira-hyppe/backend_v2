@@ -1365,7 +1365,7 @@ export class ContenteventsService {
               {
                 $unwind: {
                   path: "$post",
-                  preserveNullAndEmptyArrays: true
+
                 }
               },
               {
@@ -1774,7 +1774,7 @@ export class ContenteventsService {
               {
                 $unwind: {
                   path: "$post",
-                  preserveNullAndEmptyArrays: true
+
                 }
               },
               {
@@ -2174,7 +2174,7 @@ export class ContenteventsService {
               {
                 $unwind: {
                   path: "$post",
-                  preserveNullAndEmptyArrays: true
+
                 }
               },
               {
@@ -2579,7 +2579,7 @@ export class ContenteventsService {
               {
                 $unwind: {
                   path: "$post",
-                  preserveNullAndEmptyArrays: true
+
                 }
               },
               {
