@@ -332,7 +332,6 @@ export class UtilsService {
     await this.notificationsService.create(createNotificationsDto);
   }
 
-
   async sendFcmCMod(receiverParty: string, eventType: string, event: string, postID?: string, postType?: string) {
     //GET DATE
     var currentDate = await this.getDateTimeString()
@@ -444,7 +443,7 @@ export class UtilsService {
       mediaEndpoint = result;
     }
     var senderreceiver = {
-      fullName: datauserbasicsService.fullName,
+      fullName: datauserbasicsService.fullName.toString(),
       avatar: {
         mediaBasePath: mediaBasePath,
         mediaUri: mediaUri,
