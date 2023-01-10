@@ -193,6 +193,63 @@ export class GetusercontentsService {
     return obj;
   }
 
+  async getapsaraDatabaseAds(obj: object, n: number) {
+    let idapsara = null;
+    let apsara = null;
+    let apsaradefine = null;
+    let idapsaradefine = null;
+    let pict = null;
+
+    try {
+      idapsara = obj[n].idApsara;
+    } catch (e) {
+      idapsara = "";
+    }
+    try {
+      apsara = obj[n].apsara;
+    } catch (e) {
+      apsara = false;
+    }
+
+    if (idapsara === undefined || idapsara === "" || idapsara === null) {
+      idapsaradefine = "";
+      apsaradefine = false
+    } else {
+      idapsaradefine = idapsara;
+      apsaradefine = true
+    }
+    var type = obj[n].type;
+    pict = [idapsara];
+
+    if (idapsara === "") {
+
+    } else {
+      if (type === "image") {
+
+        try {
+          obj[n].apsaraId = idapsaradefine;
+          obj[n].apsara = apsaradefine;
+          obj[n].media = await this.postContentService.getImageApsara(pict);
+        } catch (e) {
+          obj[n].media = {};
+        }
+      }
+      else if (type === "video") {
+        try {
+          obj[n].apsaraId = idapsaradefine;
+          obj[n].apsara = apsaradefine;
+          obj[n].media = await this.postContentService.getVideoApsara(pict);
+        } catch (e) {
+          obj[n].media = {};
+        }
+
+      }
+
+    }
+
+    return obj;
+  }
+
   async getapsaraDatabaseDetail(obj: object, days: any, hours: any, minutes: any, seconds: any, age: any[], gender: any[], wilayah: any[]) {
     let idapsara = null;
     let apsara = null;

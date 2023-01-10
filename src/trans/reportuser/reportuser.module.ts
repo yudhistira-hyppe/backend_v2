@@ -16,10 +16,11 @@ import { UtilsModule } from '../../utils/utils.module';
 import { MediaprofilepictsModule } from '../../content/mediaprofilepicts/mediaprofilepicts.module';
 import { MediaproofpictsModule } from '../../content/mediaproofpicts/mediaproofpicts.module';
 import { UserticketsModule } from '../usertickets/usertickets.module';
+import { GetusercontentsModule } from '../getusercontents/getusercontents.module';
 @Module({
 
     imports: [
-        UserticketsModule, UtilsModule, UserbasicsModule, MediaprofilepictsModule, UserAdsModule, UserauthsModule, TransactionsModule, PostsModule, AdsModule, ReportreasonsModule, MediaproofpictsModule, RemovedreasonsModule, ConfigModule.forRoot(),
+        GetusercontentsModule, UserticketsModule, UtilsModule, UserbasicsModule, MediaprofilepictsModule, UserAdsModule, UserauthsModule, TransactionsModule, PostsModule, AdsModule, ReportreasonsModule, MediaproofpictsModule, RemovedreasonsModule, ConfigModule.forRoot(),
         MongooseModule.forFeature([{ name: Reportuser.name, schema: ReportuserSchema }], 'SERVER_FULL')
     ],
     controllers: [ReportuserController],
