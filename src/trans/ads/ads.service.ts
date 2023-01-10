@@ -819,6 +819,14 @@ export class AdsService {
             },
             {
                 $lookup: {
+                    from: "adstypes",
+                    localField: "typeAdsID",
+                    foreignField: "_id",
+                    as: "typesData"
+                }
+            },
+            {
+                $lookup: {
                     from: "userbasics",
                     localField: "userID",
                     foreignField: "_id",
@@ -843,13 +851,150 @@ export class AdsService {
                     totalView: 1,
                     urlLink: 1,
                     isActive: 1,
-                    namePlace: '$placeData[0].namePlace',
+                    namePlace: {
+                        $arrayElemAt: ['$placeData.namePlace', 0]
+                    },
+                    nameType: {
+                        $arrayElemAt: ['$typesData.nameType', 0]
+                    },
                     idApsara: 1,
                     duration: 1,
                     tayang: 1,
                     type: 1
                 }
-            }
+            },
+            {
+                "$lookup": {
+                    from: "userads",
+                    as: "view",
+                    let: {
+                        local_id: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "statusClick": 1,
+                                "statusView": 1,
+
+                            }
+                        },
+                        {
+                            $match: {
+
+
+                                statusView: true
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$adsID",
+                                myCount: {
+                                    $sum: 1
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: "$_id",
+                                "totalView": "$myCount",
+
+                            }
+                        }
+                    ],
+
+                }
+            },
+            {
+                "$lookup": {
+                    from: "userads",
+                    as: "click",
+                    let: {
+                        local_id: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "statusClick": 1,
+                                "statusView": 1,
+
+                            }
+                        },
+                        {
+                            $match: {
+
+
+                                statusClick: true
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$adsID",
+                                myCount: {
+                                    $sum: 1
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: "$_id",
+                                "totalClick": "$myCount",
+
+                            }
+                        }
+                    ],
+
+                }
+            },
+            {
+                $project: {
+                    userID: 1,
+                    fullName: 1,
+                    email: 1,
+                    timestamp: 1,
+                    expiredAt: 1,
+                    gender: 1,
+                    liveAt: 1,
+                    name: 1,
+                    description: 1,
+                    objectifitas: 1,
+                    status: 1,
+                    totalUsedCredit: 1,
+                    urlLink: 1,
+                    isActive: 1,
+                    namePlace: 1,
+                    nameType: 1,
+                    idApsara: 1,
+                    duration: 1,
+                    tayang: 1,
+                    type: 1,
+                    totalView: {
+                        $arrayElemAt: ['$view.totalView', 0]
+                    },
+                    totalClick: {
+                        $arrayElemAt: ['$click.totalClick', 0]
+                    },
+                }
+            },
         );
         if (userid && userid !== undefined) {
             pipeline.push({ $match: { userID: userid } });
@@ -896,12 +1041,39 @@ export class AdsService {
         var objk = {};
         var type = null;
         var idapsara = null;
+        var tview = null;
+        var tclick = null;
+        var view = null;
+        var click = null;
         for (var i = 0; i < query.length; i++) {
             try {
                 idapsara = query[i].idApsara;
             } catch (e) {
                 idapsara = "";
             }
+            try {
+                tview = query[i].totalView;
+            } catch (e) {
+                tview = 0;
+            }
+            try {
+                tclick = query[i].totalClick;
+            } catch (e) {
+                tclick = 0;
+            }
+
+            if (tview !== undefined) {
+                view = tview;
+            } else {
+                view = 0;
+            }
+
+            if (tclick !== undefined) {
+                click = tclick;
+            } else {
+                click = 0;
+            }
+
 
             var type = query[i].type;
             pict = [idapsara];
@@ -938,15 +1110,16 @@ export class AdsService {
                 name: query[i].name,
                 objectifitas: query[i].objectifitas,
                 status: query[i].status,
-                totalClick: query[i].totalClick,
+                totalClick: click,
+                totalView: view,
                 totalUsedCredit: query[i].totalUsedCredit,
-                totalView: query[i].totalView,
                 urlLink: query[i].urlLink,
                 isActive: query[i].isActive,
                 namePlace: query[i].namePlace,
                 idApsara: query[i].idApsara,
                 duration: query[i].duration,
                 tayang: query[i].tayang,
+                nameType: query[i].nameType,
                 media: data
             };
 
@@ -954,6 +1127,80 @@ export class AdsService {
         }
         return arrdata;
     }
+
+
+    async listusercount(userid: ObjectID, search: string, startdate: string, enddate: string) {
+        try {
+            var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+            var dateend = currentdate.toISOString();
+        } catch (e) {
+            dateend = "";
+        }
+        var pipeline = new Array<any>(
+
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "userID",
+                    foreignField: "_id",
+                    as: "userbasics_data"
+                }
+            },
+            {
+                $project: {
+                    userID: 1,
+                    fullName: '$user.fullName',
+                    email: '$user.email',
+                    timestamp: 1,
+
+                }
+            },
+
+
+        );
+        if (userid && userid !== undefined) {
+            pipeline.push({ $match: { userID: userid } });
+        }
+        if (search && search !== undefined && search != "") {
+            pipeline.push({
+                $match: {
+                    $or: [{
+                        name: {
+                            $regex: search,
+                            $options: 'i'
+                        },
+
+                    }, {
+                        description: {
+                            $regex: search,
+                            $options: 'i'
+                        },
+
+                    }],
+                }
+            });
+        }
+        if (startdate && startdate !== undefined) {
+            pipeline.push({ $match: { timestamp: { $gte: startdate } } });
+        }
+        if (enddate && enddate !== undefined) {
+            pipeline.push({ $match: { timestamp: { $lte: enddate } } });
+        }
+        pipeline.push({
+            "$group": {
+                "_id": null,
+                "count": {
+                    "$sum": 1
+                }
+            }
+        });
+        let query = await this.adsModel.aggregate(pipeline);
+
+
+        return query;
+    }
+
 
     async listcount(userid: ObjectID, search: string, startdate: string, enddate: string): Promise<Ads[]> {
         try {
