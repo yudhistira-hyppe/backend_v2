@@ -627,7 +627,7 @@ export class AdsController {
 
 
         let data = await this.adsService.list(userid, search, startdate, enddate, skip, limit);
-        let datacount = await this.adsService.list(userid, search, startdate, enddate,0 ,0);
+        let datacount = await this.adsService.list(userid, search, startdate, enddate, 0, 0);
 
         var totalSearch = datacount.length;
 
@@ -640,16 +640,74 @@ export class AdsController {
         const messages = {
             "info": ["The process successful"],
         };
-        let data=await this.userbasicsService.countBy('gender');
 
-        var totaluser=0;
-        for(var i=0;i<data.length;i++){
-            totaluser+=data[i].countuser;
+        var datacount = null;
+        var lengdata = null;
+        var datagender = null;
+        var lenggender = null;
+        var sumgender = null;
+        var objgender = {};
+        var dataSumGender = [];
+        var data = null;
+        try {
+            datacount = await this.userbasicsService.countBy();
+            lengdata = datacount.length;
+        } catch (e) {
+            datacount = [];
+            lengdata = 0;
         }
 
-        return { response_code: 202, data, totaluser, messages };
+
+        if (lengdata > 0) {
+            try {
+                datagender = datacount[0].gender;
+                lenggender = datagender.length;
+            } catch (e) {
+                lenggender = 0;
+            }
+            if (lenggender > 0) {
+
+                for (let i = 0; i < lenggender; i++) {
+                    sumgender += datagender[i].count;
+
+                }
+
+            } else {
+                sumgender = 0;
+            }
+
+            if (lenggender > 0) {
+
+                for (let i = 0; i < lenggender; i++) {
+                    let count = datagender[i].count;
+                    let id = datagender[i]._id;
+
+                    let persen = count * 100 / sumgender;
+                    objgender = {
+                        _id: id,
+                        count: count,
+                        persen: persen.toFixed(2)
+                    }
+                    dataSumGender.push(objgender);
+                }
+
+            } else {
+                dataSumGender = [];
+            }
+
+        }
+
+        data = [
+
+            {
+                "gender": dataSumGender,
+                "userActive": datacount[0].userActive,
+                "ads": datacount[0].ads
+            }
+        ];
+        return { response_code: 202, data, messages };
     }
-    
+
     async parseJwt(token) {
         return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     };
