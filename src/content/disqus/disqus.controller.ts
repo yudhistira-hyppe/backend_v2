@@ -76,6 +76,8 @@ export class DisqusController {
   @FormDataRequest()
   @Post('posts/disqus')
   async disqus(@Headers() headers, @Body() ContentDto_: ContentDto, ) {
+    console.log('>>>>>>>>>> HEADER <<<<<<<<<<', JSON.stringify(headers))
+    console.log('>>>>>>>>>> CONTENT DTO <<<<<<<<<<', JSON.stringify(ContentDto_))
     var email_header = headers['x-auth-user'];
     let type = "";
     let isQuery = 'false';

@@ -654,18 +654,208 @@ export class UserbasicsService {
     const query = await this.userbasicModel.aggregate(Query_aggregate);
     return query;
   }
-  async countBy(field: String) {
+  async countBy() {
     const query = await this.userbasicModel.aggregate([
       {
-        $group: {
-          _id: "$" + field,
-          countuser: {
-            $sum: 1
-          }
+        $facet: {
+
+          "gender": [
+            {
+              $lookup: {
+                from: 'userauths',
+                localField: 'email',
+                foreignField: 'email',
+                as: 'authdata',
+
+              },
+
+            },
+            {
+              $unwind: {
+                path: "$authdata",
+
+              }
+            },
+            {
+              $match: {
+                'authdata.isEnabled': true
+              }
+            },
+            {
+              $project: {
+                gender: 1
+              }
+            },
+            {
+              $project: {
+
+                gender: {
+
+                  $switch: {
+                    branches: [
+                      {
+                        case: {
+                          $eq: ['$gender', 'FEMALE']
+                        },
+                        then: 'FEMALE',
+
+                      },
+                      {
+                        case: {
+                          $eq: ['$gender', ' FEMALE']
+                        },
+                        then: 'FEMALE',
+
+                      },
+                      {
+                        case: {
+                          $eq: ['$gender', 'Perempuan']
+                        },
+                        then: 'FEMALE',
+
+                      },
+                      {
+                        case: {
+                          $eq: ['$gender', 'Wanita']
+                        },
+                        then: 'FEMALE',
+
+                      },
+                      {
+                        case: {
+                          $eq: ['$gender', 'MALE']
+                        },
+                        then: 'MALE',
+
+                      },
+                      {
+                        case: {
+                          $eq: ['$gender', ' MALE']
+                        },
+                        then: 'MALE',
+
+                      },
+                      {
+                        case: {
+                          $eq: ['$gender', 'Laki-laki']
+                        },
+                        then: 'MALE',
+
+                      },
+                      {
+                        case: {
+                          $eq: ['$gender', 'Pria']
+                        },
+                        then: 'MALE',
+
+                      },
+
+                    ],
+                    default: "OTHER",
+
+                  },
+
+                },
+
+              }
+            },
+            {
+              $project: {
+                gender: 1,
+
+              }
+            },
+            {
+              "$group": {
+                "_id": "$gender",
+                "count": {
+                  "$sum": 1
+                }
+              }
+            }
+          ],
+          "userActive": [
+
+            {
+              $lookup: {
+                from: 'userauths',
+                localField: 'email',
+                foreignField: 'email',
+                as: 'authdata',
+
+              },
+
+            },
+            {
+              $unwind: {
+                path: "$authdata",
+
+              }
+            },
+            {
+              $match: {
+                'authdata.isEnabled': true
+              }
+            },
+            {
+              $project: {
+                gender: 1
+              }
+            },
+            {
+              "$group": {
+                "_id": null,
+                "count": {
+                  "$sum": 1
+                }
+              }
+            }
+          ],
+          "ads": [
+            {
+              $lookup: {
+                from: 'ads',
+                localField: '_id',
+                foreignField: 'userID',
+                as: 'adsdata',
+
+              },
+
+            },
+            {
+              $unwind: {
+                path: "$adsdata",
+
+              }
+            },
+            {
+              $project: {
+                userid: "$adsdata.userID"
+              }
+            },
+            {
+              "$group": {
+                "_id": null,
+                "count": {
+                  "$sum": 1
+                }
+              }
+            }
+          ]
         }
       },
       {
-        $project: { _id: 1, countuser: 1 }
+        $project: {
+
+          gender: '$gender',
+          userActive: {
+            $arrayElemAt: ['$userActive.count', 0]
+          },
+          ads: {
+            $arrayElemAt: ['$ads.count', 0]
+          },
+
+        }
       }
     ]);
     return query;
@@ -2200,7 +2390,7 @@ export class UserbasicsService {
               mediaUri: '$mediaproofpicts_data.mediaUri',
               postType: '$mediaproofpicts_data.mediaType',
               mediaEndpoint: {
-                $concat: ["profilepict", "/", '$mediaproofpicts_data._id']
+                $concat: ["proofpict", "/", '$mediaproofpicts_data._id']
               },
 
             },
@@ -2361,5 +2551,7 @@ export class UserbasicsService {
 
     return query;
   }
+
+
 
 }
