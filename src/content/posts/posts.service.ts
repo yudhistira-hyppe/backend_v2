@@ -14305,7 +14305,7 @@ export class PostsService {
         },);
     }
 
-    let query = await this.PostsModel.aggregate(pipeline);
+    const query = await this.PostsModel.aggregate(pipeline);
     return query;
   }
   async thum(thum_data: string): Promise<any> {
