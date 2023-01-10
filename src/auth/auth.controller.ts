@@ -368,6 +368,7 @@ export class AuthController {
               );
             }
           }
+          
 
           //Update Devices Userauths
           try {

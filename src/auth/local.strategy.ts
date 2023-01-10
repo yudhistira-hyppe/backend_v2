@@ -19,6 +19,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     password: string,
   ): Promise<any> {
     var request_json = JSON.parse(JSON.stringify(request.body));
+    console.log(">>>>>>>>>> PAYLOAD LOGIN <<<<<<<<<<",JSON.stringify(request.body));
 
     var deviceId = null;
     var longitude = null;

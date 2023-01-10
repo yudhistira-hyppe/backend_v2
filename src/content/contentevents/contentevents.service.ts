@@ -3112,4 +3112,145 @@ export class ContenteventsService {
 
     ).exec();
   }
+
+  public genderChartbyEmail(email: string){
+    let query = this.ContenteventsModel.aggregate([
+      {
+        $match: {
+            eventType: "VIEW",
+            event: "ACCEPT",
+            active: true,
+            email: email
+        }
+      },
+      {
+        "$lookup": {
+          "from": "userbasics",
+          "as": "ubasic",
+          "let": {
+            "local_id": "$senderParty"
+          },
+          "pipeline": [
+            {
+              "$match": {
+                "$expr": {
+                  "$eq": [
+                    "$email",
+                    "$$local_id"
+                  ]
+                }
+              }
+            },
+
+          ],
+
+        }
+      },
+      {
+        $project: {
+          ubasic: {
+            $arrayElemAt: ['$ubasic', 0]
+          },
+
+        }
+      },
+      {
+        $project: {
+
+          gender: '$ubasic.gender',
+
+        }
+      },
+        {
+        $project: {
+
+          gender: {
+
+            $switch: {
+              branches: [
+                {
+                  case: {
+                    $eq: ['$gender', 'FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', ' FEMALE']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Perempuan']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Wanita']
+                  },
+                  then: 'FEMALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', ' MALE']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Laki-laki']
+                  },
+                  then: 'MALE',
+
+                },
+                {
+                  case: {
+                    $eq: ['$gender', 'Pria']
+                  },
+                  then: 'MALE',
+
+                },
+
+              ],
+              default: "OTHER",
+
+            },
+
+          },
+
+        }
+      },
+      
+      {
+        $project: {
+          gender: 1,
+
+        }
+      },
+      {
+        "$group": {
+          "_id": "$gender",
+          "count": {
+            "$sum": 1
+          }
+        }
+      }
+    ]);
+
+    return query;
+  }
 }
