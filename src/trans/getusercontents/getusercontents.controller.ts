@@ -14,6 +14,7 @@ import { GetuserprofilesService } from '../getuserprofiles/getuserprofiles.servi
 import { PostsService } from '../../content/posts/posts.service';
 import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediaprofilepicts.service';
 import { PostContentService } from '../../content/posts/postcontent.service';
+import { ContenteventsService } from '../../content/contentevents/contentevents.service';
 @Controller()
 export class GetusercontentsController {
     constructor(private readonly getusercontentsService: GetusercontentsService,
@@ -26,6 +27,7 @@ export class GetusercontentsController {
         private readonly postsService: PostsService,
         private readonly postContentService: PostContentService,
         private readonly mediaprofilepictsService: MediaprofilepictsService,
+        private readonly contenteventsService: ContenteventsService,
     ) { }
 
     @Post('api/getusercontents/all')
@@ -258,6 +260,7 @@ export class GetusercontentsController {
     @Post('api/getusercontents/management/grouping')
     @UseGuards(JwtAuthGuard)
     async contentmanagemen(@Req() request: Request): Promise<any> {
+
         var data = null;
         var email = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
@@ -271,19 +274,210 @@ export class GetusercontentsController {
         const messages = {
             "info": ["The process successful"],
         };
+        var result =  await this.getusercontentsService.detaildasbor(email);
+        var content = result[0];
+        /*
+        
+                try {
+                    idapsara = dataquery[i].apsaraId;
+                } catch (e) {
+                    idapsara = "";
+                }
+                try {
+                    apsara = dataquery[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
+
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
+
+                if (idapsara === undefined || idapsara === "" || idapsara === null || idapsara === "other") {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
+                var type = dataquery[i].postType;
+                pict = [idapsara];
+
+                if (idapsara === "") {
+
+                } else {
+                    if (type === "pict") {
+
+                        try {
+                            datanew = await this.postContentService.getImageApsara(pict);
+                        } catch (e) {
+                            datanew = {};
+                        }
+                    }
+                    else if (type === "vid") {
+                        try {
+                            datanew = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datanew = {};
+                        }
+
+                    }
+                    else if (type === "story") {
+                        try {
+                            datanew = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datanew = {};
+                        }
+                    }
+                    else if (type === "diary") {
+                        try {
+                            datanew = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datanew = {};
+                        }
+                    }
+                }
+                objk = {
+
+                    "_id": datadetail[0]._id,
+                    "postID": datadetail[0].postID,
+                    "email": datadetail[0].email,
+                    "postType": datadetail[0].postType,
+                    "description": datadetail[0].description,
+                    "active": datadetail[0].active,
+                    "createdAt": datadetail[0].createdAt,
+                    "updatedAt": datadetail[0].updatedAt,
+                    "visibility": datadetail[0].visibility,
+                    "location": datadetail[0].location,
+                    "tags": datadetail[0].tags,
+                    "allowComments": datadetail[0].allowComments,
+                    "likes": datadetail[0].likes,
+                    "views": datadetail[0].views,
+                    "shares": datadetail[0].shares,
+                    "tagPeople": datadetail[0].tagPeople,
+                    "tagDescription": datadetail[0].tagDescription,
+                    "musicId": datadetail[0].musicId,
+                    "kategori": datadetail[0].kategori,
+                    "username": datadetail[0].username,
+                    "saleAmount": datadetail[0].saleAmount,
+                    "saleView": datadetail[0].saleView,
+                    "saleLike": datadetail[0].saleLike,
+                    "musicTitle": datadetail[0].musicTitle,
+                    "albumName": datadetail[0].albumName,
+                    "type": datadetail[0].type,
+                    "kepemilikan": datadetail[0].kepemilikan,
+                    "statusJual": datadetail[0].statusJual,
+                    "mediaType": datadetail[0].mediaType,
+                    "mediaThumbEndpoint": datadetail[0].mediaThumbEndpoint,
+                    "mediaEndpoint": datadetail[0].mediaEndpoint,
+                    "originalName": datadetail[0].originalName,
+                    "age": dataSum,
+                    "gender": dataSumgender,
+                    "wilayah": dataSumwilayah,
+                    "riwayat": datadetail[0].riwayat,
+                    "comment": datadetail[0].comment,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
+                    "total": ((parseInt(days) * 24) + parseInt(hours)).toString() + ":" + minutes + ":" + seconds,
+                    "media": datanew
+                };
+
+        */
+        var loopdb = {};
+        var objecttarget = ['popular', 'likes', 'shares', 'lastPost', 'monetize', 'ownership', 'lastreportContent'];
+        var test = content.popular[0];
+        //703a76408d9071edbf62442380ea0102
+        //d9e8c1e0705e71edb91f442290eb0101
+        //ambil data apsara untuk ambil data videonya
+        // Object.entries(content).find(([key, value]) => {
+        //     //value[0]['test'] = 'test';
+        //     let idapsara = null;
+        //     let datas = null;
+        //     let apsara = null;
+        //     let apsaradefine = null;
+        //     let idapsaradefine = null;
+        //     let pict = null;
+
+        //     try {
+        //         idapsara = value[0].apsaraId;
+        //     } catch (e) {
+        //         idapsara = "";
+        //     }
+        //     try {
+        //         apsara = value[0].apsara;
+        //     } catch (e) {
+        //         apsara = false;
+        //     }
+
+        //     if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+        //         apsaradefine = false;
+        //     } else {
+        //         apsaradefine = true;
+        //     }
+
+        //     if (idapsara === undefined || idapsara === "" || idapsara === null || idapsara === "other") {
+        //         idapsaradefine = "";
+        //     } else {
+        //         idapsaradefine = idapsara;
+        //     }
+        //     var type = value[0].postType;
+        //     pict = [idapsara];
+
+        //     if (idapsara === "") {
+
+        //     } else {
+        //         if (type === "pict") {
+
+        //             try {
+        //                 value[0].media = await this.postContentService.getImageApsara(pict);
+        //             } catch (e) {
+        //                 value[0].media = {};
+        //             }
+        //         }
+        //         else if (type === "vid") {
+        //             try {
+        //                 value[0].media = await this.postContentService.getVideoApsara(pict);
+        //             } catch (e) {
+        //                 value[0].media = {};
+        //             }
+
+        //         }
+        //         else if (type === "story") {
+        //             try {
+        //                 value[0].media = await this.postContentService.getVideoApsara(pict);
+        //             } catch (e) {
+        //                 value[0].media = {};
+        //             }
+        //         }
+        //         else if (type === "diary") {
+        //             try {
+        //                 value[0].media = await this.postContentService.getVideoApsara(pict);
+        //             } catch (e) {
+        //                 value[0].media = {};
+        //             }
+        //         }
+        //     }
+        // });
+        // objecttarget.forEach(function (getvar){
+        //     console.log(getvar);
+        //     console.log(content.getvar);
+        // });
+
         var dataregion = null;
-        var datapopular = await this.getusercontentsService.findmanagementcontentpopular(email);
-        var popular = datapopular[0];
-        var datalike = await this.getusercontentsService.findmanagementcontentlikes(email);
-        var mostlikes = datalike[0];
-        var datashare = await this.getusercontentsService.findmanagementcontentshare(email);
-        var mostshares = datashare[0];
-        var datalatepos = await this.getusercontentsService.findmanagementcontentlatepos(email);
-        var latestpost = datalatepos[0];
-        var datamonetize = await this.getusercontentsService.findmanagementcontentmonetize(email);
-        var latestmonetize = datamonetize[0];
-        var dataowner = await this.getusercontentsService.findmanagementcontentowner(email);
-        var latestownership = dataowner[0];
+        //var datapopular = await this.getusercontentsService.findmanagementcontentpopular(email);
+        //var popular = content.popular[0];
+        var popular = await this.getusercontentsService.getsourcecontentdata(content.popular);
+        //var datalike = await this.getusercontentsService.findmanagementcontentlikes(email);
+        var mostlikes = await this.getusercontentsService.getsourcecontentdata(content.likes);
+        //var datashare = await this.getusercontentsService.findmanagementcontentshare(email);
+        var mostshares = await this.getusercontentsService.getsourcecontentdata(content.shares);
+        //var datalatepos = await this.getusercontentsService.findmanagementcontentlatepos(email);
+        var latestpost = await this.getusercontentsService.getsourcecontentdata(content.lastPost);
+        //var datamonetize = await this.getusercontentsService.findmanagementcontentmonetize(email);
+        var latestmonetize = await this.getusercontentsService.getsourcecontentdata(content.monetize);
+        //var dataowner = await this.getusercontentsService.findmanagementcontentowner(email);
+        var latestownership = await this.getusercontentsService.getsourcecontentdata(content.ownership);
+        var lastReport = await this.getusercontentsService.getsourcecontentdata(content.lastreportContent);
 
         // var datacountri = await this.countriesService.findAll();
         // var lengcountri = datacountri.length;
@@ -306,16 +500,34 @@ export class GetusercontentsController {
         // var datatraffic = await this.getusercontentsService.findmanagementcontenttrafic(email);
         // var traffic = datatraffic[0];
 
-        var postIDs = await this.getusercontentsService.findPostIDsByEmail(email);
-        var events = await this.getcontenteventsService.findByPostID(postIDs, ['VIEW']);
-        var byGenders = await this.getcontenteventsService.groupEventsBy(events, 'genderp');
-        var byYms = await this.getcontenteventsService.groupEventsBy(events, 'ym');
-        var datamoderate = await this.getusercontentsService.findmanagementcontentmoderate(email);
-        var moderate = datamoderate[0];
+        // var postIDs = await this.getusercontentsService.findPostIDsByEmail(email);
+        // var events = await this.getcontenteventsService.findByPostID(postIDs, ['VIEW']);
+        // var byGenders = await this.getcontenteventsService.groupEventsBy(events, 'genderp');
+        // var byYms = await this.getcontenteventsService.groupEventsBy(events, 'ym');
+        // var datamoderate = await this.getusercontentsService.findmanagementcontentmoderate(email);
+        // var moderate = datamoderate[0];
+        
+        //persentase 
+        var genderChart = await this.contenteventsService.genderChartbyEmail(email);
+        //OTHER -> FEMALE -> MALE
+        var arrGenderChart = [];
+        var total = parseInt('0');
+        genderChart.forEach(function (data) {
+            total = total + parseInt(data.count);
+        });
+
+        genderChart.forEach(function (data) {
+            var temparray = {};
+
+            temparray['gender'] = data._id;
+            temparray['total'] = data.count;
+            var temptotal = (parseInt(data.count) / total) * 100 ;
+            temparray['persentase'] = temptotal.toFixed(2);
+            arrGenderChart.push(temparray);
+        });
 
         data = [{
-            "popular": popular, "mostlikes": mostlikes, "mostshares": mostshares, "latestpost": latestpost, "latestmonetize": latestmonetize, "latestownership": latestownership,
-            "moderate": moderate, "byGenders": byGenders, "byYms": byYms
+            "popular": popular, "mostlikes": mostlikes, "mostshares": mostshares, "latestpost": latestpost, "latestmonetize": latestmonetize, "latestownership": latestownership, "lastReport" : lastReport, "genderViewer" : arrGenderChart,
         }];
         // console.log(data);
         // console.log('returning data');

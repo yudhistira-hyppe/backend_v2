@@ -22,13 +22,14 @@ import { UserbasicsModule } from '../userbasics/userbasics.module';
 import { CountriesModule } from '../../infra/countries/countries.module';
 import { SettingsModule } from '../settings/settings.module';
 import { GetuserprofilesModule } from '../getuserprofiles/getuserprofiles.module';
+import { ContenteventsModule } from '../../content/contentevents/contentevents.module';
 
 
 @Module({
 
     imports: [
         ConfigModule.forRoot(), UserauthsModule, MediaprofilepictsModule, InsightsModule, PostsModule, MediavideosModule, MediapictsModule, MediadiariesModule, DisquslogsModule, DisqusModule, CommentModule, UserbasicsModule,
-        GetcontenteventsModule, SettingsModule, CountriesModule, GetuserprofilesModule,
+        GetcontenteventsModule, SettingsModule, CountriesModule, GetuserprofilesModule, ContenteventsModule,
 
         MongooseModule.forFeature([{ name: Getusercontents.name, schema: GetusercontentsSchema }], 'SERVER_FULL'),
 
