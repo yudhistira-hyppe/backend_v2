@@ -74,7 +74,7 @@ export class UserauthsService {
   }  
 
   async findOne(email: String): Promise<Userauth> {
-    return this.userauthModel.findOne({ email: email }).exec();
+    return await this.userauthModel.findOne({ email: email }).exec();
   }
 
   async updatebyId(id: string, data: Object) {

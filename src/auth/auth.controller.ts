@@ -446,14 +446,34 @@ export class AuthController {
         // }
       }
     } else {
-      if (lang == "en") {
-        await this.errorHandler.generateNotAcceptableException(
-          'No users were found. Please check again.',
-        );
+      if (await this.utilsService.ceckData(data_userauths)) {
+        _isEmailVerified = data_userauths.isEmailVerified;
+        var messages = "Tidak dapat melanjutkan, Email pengguna belum diverifikasi";
+        if (lang == "en") {
+          messages = 'Unable to continue, User`s email has not been verified';
+        } else {
+          messages = "Tidak dapat melanjutkan, Email pengguna belum diverifikasi";
+        }
+        throw new NotAcceptableException({
+          response_code: 406,
+          data: {
+            email: LoginRequest_.email,
+            isEmailVerified: _isEmailVerified
+          },
+          messages: {
+            info: [messages],
+          },
+        });
       } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
-        );
+        if (lang == "en") {
+          await this.errorHandler.generateNotAcceptableException(
+            'No users were found. Please check again.',
+          );
+        } else {
+          await this.errorHandler.generateNotAcceptableException(
+            'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
+          );
+        }
       }
     }
   }
