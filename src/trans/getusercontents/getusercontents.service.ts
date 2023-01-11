@@ -18317,8 +18317,10 @@ export class GetusercontentsService {
     var arrayData = [];
     leng = query[0].data.length;
 
-    let dataquery = await this.getsourcecontentdata(query[0].data);
-    arrayData.push(dataquery)
+    for (let i = 0; i < leng; i++) {
+      let data = await this.getapsaraDatabase(query[0].data, i);
+      arrayData.push(data[i])
+    }
 
     // persentase 
     var genderChart = await this.contenteventsService.genderChartbyEmail(email);
