@@ -2875,7 +2875,11 @@ export class PostBoostService {
       if (obj.apsara) {
         pd.mediaEndpoint = obj.mediaEndpoint;
       }else{
-        pd.mediaEndpoint = '/stream/' + obj.mediaUri;
+        if (obj.mediaType == "image") {
+          pd.mediaEndpoint = '/pict/' + obj.mediaUri;
+        } else {
+          pd.mediaEndpoint = '/stream/' + obj.mediaUri;
+        }
       }
 
       if (obj.apsara) {
