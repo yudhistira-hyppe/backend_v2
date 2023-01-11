@@ -1305,11 +1305,11 @@ export class AuthService {
                   }
                   if (lang == "en") {
                     await this.errorHandler.generateNotAcceptableException(
-                      'Kode OTP yang kamu masukan salah, silahkan cek kembali.',
+                      'The OTP code you entered is incorrect; please check again.',
                     );
                   } else {
                     await this.errorHandler.generateNotAcceptableException(
-                      'The OTP code you entered is incorrect; please check again.',
+                      'Kode OTP yang kamu masukan salah, silahkan cek kembali.',
                     );
                   }
                 } else {
@@ -1469,22 +1469,22 @@ export class AuthService {
           } else {
             if (lang == "en") {
               await this.errorHandler.generateNotAcceptableException(
-                'Kode OTP yang kamu masukan salah, silahkan cek kembali.',
+                'The OTP code you entered is incorrect; please check again.',
               );
             } else {
               await this.errorHandler.generateNotAcceptableException(
-                'The OTP code you entered is incorrect; please check again.',
+                'Kode OTP yang kamu masukan salah, silahkan cek kembali.',
               );
             }
           }
         } else {
           if (lang == "en") {
             await this.errorHandler.generateNotAcceptableException(
-              'Kode OTP yang kamu masukan salah, silahkan cek kembali.',
+              'The OTP code you entered is incorrect; please check again.',
             );
           } else {
             await this.errorHandler.generateNotAcceptableException(
-              'The OTP code you entered is incorrect; please check again.',
+              'Kode OTP yang kamu masukan salah, silahkan cek kembali.',
             );
           }
         }
