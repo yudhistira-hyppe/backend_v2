@@ -1025,7 +1025,7 @@ export class AdsService {
             pipeline.push({ $match: { timestamp: { $lte: enddate } } });
         }
         if (skip > 0) {
-            pipeline.push({ $skip: skip });
+            pipeline.push({ $skip: (skip * limit) });
         }
         if (limit > 0) {
             pipeline.push({ $limit: limit });

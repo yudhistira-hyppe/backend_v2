@@ -584,17 +584,18 @@ export class AdsController {
         var ubasic = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
         var email = null;
-        var skip = 0;
+        var page = 0;
         var limit = 0;
         var startdate = null;
         var enddate = null;
         var search = null;
-        var totalSearch = null;
+        var totalsearch = null;
         var datacount = null;
+        var totalpage = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
 
-        if (request_json["skip"] !== undefined) {
-            skip = request_json["skip"];
+        if (request_json["page"] !== undefined) {
+            page = request_json["page"];
         } else {
             throw new BadRequestException("Unabled to proceed");
         }
@@ -627,18 +628,27 @@ export class AdsController {
             throw new BadRequestException("User not found");
         }
 
-        let data = await this.adsService.list(userid, search, startdate, enddate, skip, limit);
+        let data = await this.adsService.list(userid, search, startdate, enddate, page, limit);
 
         try {
             datacount = await this.adsService.listusercount(userid, search, startdate, enddate);
-            totalSearch = datacount[0].count;
+            totalsearch = datacount[0].count;
         } catch (e) {
-            totalSearch = 0;
+            totalsearch = 0;
         }
 
+        var tpage = null;
+        var tpage2 = null;
 
+        tpage2 = (totalsearch / limit).toFixed(0);
+        tpage = (totalsearch % limit);
+        if (tpage > 0 && tpage < 5) {
+            totalpage = parseInt(tpage2) + 1;
 
-        return { response_code: 202, data, totalSearch, skip, limit, messages };
+        } else {
+            totalpage = parseInt(tpage2);
+        }
+        return { response_code: 202, data, page, limit, totalsearch, totalpage, messages };
     }
 
     @Post('management/adscenter')

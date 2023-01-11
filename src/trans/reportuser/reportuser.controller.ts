@@ -1118,10 +1118,7 @@ export class ReportuserController {
             let pict: String[] = [];
             var objk = {};
             var type = null;
-            var idapsara = null;
-            var apsara = null;
-            var idapsaradefine = null;
-            var apsaradefine = null;
+
             for (var i = 0; i < query.length; i++) {
                 let dataquery = await this.getusercontentsService.getapsaraDatabase(query, i);
                 arrdata.push(dataquery[i]);
