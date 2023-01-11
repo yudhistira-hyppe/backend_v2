@@ -820,6 +820,8 @@ export class PostsController {
           var thum_data = "";
           if (dataMedia[0].datacontent[0].fsTargetThumbUri != undefined) {
             thum_data = dataMedia[0].datacontent[0].fsTargetThumbUri;
+          }else{
+            thum_data = dataMedia[0].datacontent[0].fsSourceUri;
           }
           if (thum_data != '') {
             var data = await this.PostsService.thum(thum_data);
@@ -866,9 +868,8 @@ export class PostsController {
           if (image_data != '') {
             var data = await this.PostsService.pict(image_data);
             if (data != null) {
-              response.set("Content-Type", mediaMime);
+              response.set("Content-Type", "image/png");
               response.send(data);
-              return data;
             } else {
               response.send(null);
             }
