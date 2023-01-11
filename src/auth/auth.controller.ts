@@ -17,6 +17,7 @@ import {
   UploadedFile,
   BadRequestException,
   Logger,
+  NotAcceptableException,
 } from '@nestjs/common';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { LocalAuthGuard } from './local-auth.guard';
@@ -418,25 +419,61 @@ export class AuthController {
         GlobalResponse_.version = await this.utilsService.getversion();
         return GlobalResponse_;
       } else {
+        var messages = "Tidak dapat melanjutkan, Email pengguna belum diverifikasi";
+        if (lang == "en") {
+          messages = 'Unable to continue, User`s email has not been verified';
+        }else{
+          messages = "Tidak dapat melanjutkan, Email pengguna belum diverifikasi";
+        }
+        throw new NotAcceptableException({
+          response_code: 406,
+          data:{
+            email: LoginRequest_.email,
+            isEmailVerified: _isEmailVerified
+          },
+          messages: {
+            info: [messages],
+          },
+        });
+        // if (lang == "en") {
+        //   await this.errorHandler.generateNotAcceptableException(
+        //     'Unable to continue, User`s email has not been verified',
+        //   );
+        // } else {
+        //   await this.errorHandler.generateNotAcceptableException(
+        //     'Tidak dapat melanjutkan, Email pengguna belum diverifikasi',
+        //   );
+        // }
+      }
+    } else {
+      if (await this.utilsService.ceckData(data_userauths)) {
+        _isEmailVerified = data_userauths.isEmailVerified;
+        var messages = "Tidak dapat melanjutkan, Email pengguna belum diverifikasi";
+        if (lang == "en") {
+          messages = 'Unable to continue, User`s email has not been verified';
+        } else {
+          messages = "Tidak dapat melanjutkan, Email pengguna belum diverifikasi";
+        }
+        throw new NotAcceptableException({
+          response_code: 406,
+          data: {
+            email: LoginRequest_.email,
+            isEmailVerified: _isEmailVerified
+          },
+          messages: {
+            info: [messages],
+          },
+        });
+      } else {
         if (lang == "en") {
           await this.errorHandler.generateNotAcceptableException(
-            'Unable to continue, User`s email has not been verified',
+            'No users were found. Please check again.',
           );
         } else {
           await this.errorHandler.generateNotAcceptableException(
-            'Tidak dapat melanjutkan, Email pengguna belum diverifikasi',
+            'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
           );
         }
-      }
-    } else {
-      if (lang == "en") {
-        await this.errorHandler.generateNotAcceptableException(
-          'No users were found. Please check again.',
-        );
-      } else {
-        await this.errorHandler.generateNotAcceptableException(
-          'Tidak ada pengguna yang ditemukan. Silahkan cek kembali.',
-        );
       }
     }
   }

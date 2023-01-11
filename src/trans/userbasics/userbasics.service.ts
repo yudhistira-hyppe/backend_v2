@@ -181,7 +181,7 @@ export class UserbasicsService {
     return this.userbasicModel.findOne({ _id: new Types.ObjectId(id) }).exec();
   }
   async findOne(email: string): Promise<Userbasic> {
-    return this.userbasicModel.findOne({ email: email }).exec();
+    return await this.userbasicModel.findOne({ email: email }).exec();
   }
   async findOneUsername(username: string): Promise<Userbasic> {
     return this.userbasicModel.findOne({ username: username }).exec();
