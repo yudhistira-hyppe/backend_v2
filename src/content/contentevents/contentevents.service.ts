@@ -3113,14 +3113,14 @@ export class ContenteventsService {
     ).exec();
   }
 
-  public genderChartbyEmail(email: string){
+  public genderChartbyEmail(email: string) {
     let query = this.ContenteventsModel.aggregate([
       {
         $match: {
-            eventType: "VIEW",
-            event: "ACCEPT",
-            active: true,
-            email: email
+          eventType: "VIEW",
+          event: "ACCEPT",
+          active: true,
+          email: email
         }
       },
       {
@@ -3161,7 +3161,7 @@ export class ContenteventsService {
 
         }
       },
-        {
+      {
         $project: {
 
           gender: {
@@ -3234,13 +3234,7 @@ export class ContenteventsService {
 
         }
       },
-      
-      {
-        $project: {
-          gender: 1,
 
-        }
-      },
       {
         "$group": {
           "_id": "$gender",

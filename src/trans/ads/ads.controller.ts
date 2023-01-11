@@ -589,6 +589,8 @@ export class AdsController {
         var startdate = null;
         var enddate = null;
         var search = null;
+        var totalSearch = null;
+        var datacount = null;
         var request_json = JSON.parse(JSON.stringify(request.body));
 
         if (request_json["skip"] !== undefined) {
@@ -626,9 +628,15 @@ export class AdsController {
         }
 
         let data = await this.adsService.list(userid, search, startdate, enddate, skip, limit);
-        let datacount = await this.adsService.listusercount(userid, search, startdate, enddate);
 
-        var totalSearch = datacount[0].count;
+        try {
+            datacount = await this.adsService.listusercount(userid, search, startdate, enddate);
+            totalSearch = datacount[0].count;
+        } catch (e) {
+            totalSearch = 0;
+        }
+
+
 
         return { response_code: 202, data, totalSearch, skip, limit, messages };
     }
