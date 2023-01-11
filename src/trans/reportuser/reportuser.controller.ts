@@ -1124,7 +1124,7 @@ export class ReportuserController {
             var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
                 let dataquery = await this.getusercontentsService.getapsaraDatabase(query, i);
-                arrdata.push(dataquery);
+                arrdata.push(dataquery[i]);
             }
 
             total = query.length;
@@ -1187,7 +1187,7 @@ export class ReportuserController {
             for (var i = 0; i < query.length; i++) {
                 let dataquery = await this.getusercontentsService.getapsaraDatabaseAds(query, i);
 
-                arrdata.push(dataquery);
+                arrdata.push(dataquery[i]);
             }
             total = query.length;
             let datasearch = await this.adsService.findreportads(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis, email);

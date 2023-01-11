@@ -11889,11 +11889,8 @@ export class GetusercontentsService {
     for (var i = 0; i < query.length; i++) {
       let dataconten = await this.getapsaraDatabase(query, i);
 
-      data.push(dataconten);
+      data.push(dataconten[i]);
     }
-
-
-
 
     return data;
   }

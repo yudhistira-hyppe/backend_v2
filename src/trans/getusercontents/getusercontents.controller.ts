@@ -1430,7 +1430,7 @@ export class GetusercontentsController {
 
                 for (let i = 0; i < lengpict; i++) {
                     let datapicture = await this.getusercontentsService.getapsara(arrpict, i);
-                    picts.push(datapicture)
+                    picts.push(datapicture[i])
 
                 }
 
@@ -1448,7 +1448,7 @@ export class GetusercontentsController {
             if (arrvid[0]._id !== undefined) {
                 for (let i = 0; i < lengvid; i++) {
                     let datavid = await this.getusercontentsService.getapsara(arrvid, i);
-                    vid.push(datavid)
+                    vid.push(datavid[i])
 
                 }
             } else {
@@ -1464,7 +1464,7 @@ export class GetusercontentsController {
             if (arrdiary[0]._id !== undefined) {
                 for (let i = 0; i < lengdiary; i++) {
                     let datadiary = await this.getusercontentsService.getapsara(arrdiary, i);
-                    diary.push(datadiary)
+                    diary.push(datadiary[i])
 
                 }
             }
@@ -1874,7 +1874,7 @@ export class GetusercontentsController {
             }
 
             let datadet = await this.getusercontentsService.getapsaraDatabaseDetail(dataquery, days, hours, minutes, seconds, dataSum, dataSumgender, dataSumwilayah);
-            data.push(datadet);
+            data.push(datadet[0]);
 
             return { response_code: 202, data, messages };
         }
