@@ -2876,7 +2876,7 @@ export class PostBoostService {
         pd.mediaEndpoint = obj.mediaEndpoint;
       }else{
         if (obj.mediaType == "image") {
-          pd.mediaEndpoint = '/pict/' + obj.mediaUri;
+          pd.mediaEndpoint = '/pict/' + obj.postID;
         } else {
           pd.mediaEndpoint = '/stream/' + obj.mediaUri;
         }
