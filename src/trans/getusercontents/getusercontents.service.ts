@@ -224,7 +224,7 @@ export class GetusercontentsService {
     if (idapsara === "") {
 
     } else {
-      if (type === "image") {
+      if (type === "images") {
 
         try {
           obj[n].apsaraId = idapsaradefine;
@@ -249,6 +249,7 @@ export class GetusercontentsService {
 
     return obj;
   }
+
 
   async getapsaraDatabaseDetail(obj: object, days: any, hours: any, minutes: any, seconds: any, age: any[], gender: any[], wilayah: any[]) {
     let idapsara = null;
