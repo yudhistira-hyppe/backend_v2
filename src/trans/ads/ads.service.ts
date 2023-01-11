@@ -1022,7 +1022,7 @@ export class AdsService {
             pipeline.push({ $match: { timestamp: { $gte: startdate } } });
         }
         if (enddate && enddate !== undefined) {
-            pipeline.push({ $match: { timestamp: { $lte: enddate } } });
+            pipeline.push({ $match: { timestamp: { $lte: dateend } } });
         }
         if (skip > 0) {
             pipeline.push({ $skip: (skip * limit) });
