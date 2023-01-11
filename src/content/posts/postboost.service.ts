@@ -2872,8 +2872,18 @@ export class PostBoostService {
 
       pd.location = obj.location;
       pd.mediaBasePath = obj.mediaBasePath;
-      pd.mediaEndpoint = obj.mediaEndpoint;
-      pd.mediaThumbEndpoint = obj.mediaThumbEndpoint;
+      if (obj.apsara) {
+        pd.mediaEndpoint = obj.mediaEndpoint;
+      }else{
+        pd.mediaEndpoint = '/stream/' + obj.mediaUri;
+      }
+
+      if (obj.apsara) {
+        pd.mediaThumbEndpoint = obj.mediaThumbEndpoint;
+      } else {
+        pd.mediaThumbEndpoint = '/thumb/' + obj.postID;
+      }
+
       pd.mediaThumbUri = obj.mediaThumbUri;
       pd.mediaType = obj.mediaType;
       pd.mediaUri = obj.mediaUri;
@@ -5981,8 +5991,6 @@ export class PostBoostService {
                       "mediaThumbEndpoint": 1,
                       "mediaThumbUri": 1,
                       "mediaType": 1
-
-
                     }
                   }
                 ],
@@ -6148,6 +6156,9 @@ export class PostBoostService {
                       "fsSourceName": 1,
                       "fsTargetUri": 1,
                       "mediaType": 1,
+                      "mediaEndpoint": {
+                        "$concat": ["/profilepict/", "$_id"]
+                      }
 
                     }
                   }

@@ -422,19 +422,20 @@ export class AuthController {
         var messages = "Tidak dapat melanjutkan, Email pengguna belum diverifikasi";
         if (lang == "en") {
           messages = 'Unable to continue, User`s email has not been verified';
-        }else{
+        } else {
           messages = "Tidak dapat melanjutkan, Email pengguna belum diverifikasi";
         }
-        throw new NotAcceptableException({
-          response_code: 406,
-          data:{
+        var response = {
+          response_code: 202,
+          data: {
             email: LoginRequest_.email,
             isEmailVerified: _isEmailVerified
           },
           messages: {
             info: [messages],
           },
-        });
+        }
+        return response;
         // if (lang == "en") {
         //   await this.errorHandler.generateNotAcceptableException(
         //     'Unable to continue, User`s email has not been verified',
@@ -454,8 +455,8 @@ export class AuthController {
         } else {
           messages = "Tidak dapat melanjutkan, Email pengguna belum diverifikasi";
         }
-        throw new NotAcceptableException({
-          response_code: 406,
+        var response = {
+          response_code: 202,
           data: {
             email: LoginRequest_.email,
             isEmailVerified: _isEmailVerified
@@ -463,7 +464,8 @@ export class AuthController {
           messages: {
             info: [messages],
           },
-        });
+        }
+        return response;
       } else {
         if (lang == "en") {
           await this.errorHandler.generateNotAcceptableException(
