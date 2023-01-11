@@ -625,11 +625,10 @@ export class AdsController {
             throw new BadRequestException("User not found");
         }
 
-
         let data = await this.adsService.list(userid, search, startdate, enddate, skip, limit);
-        let datacount = await this.adsService.list(userid, search, startdate, enddate, 0, 0);
+        let datacount = await this.adsService.listusercount(userid, search, startdate, enddate);
 
-        var totalSearch = datacount.length;
+        var totalSearch = datacount[0].count;
 
         return { response_code: 202, data, totalSearch, skip, limit, messages };
     }

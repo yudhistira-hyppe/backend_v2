@@ -20,6 +20,7 @@ import { MediaprofilepictsService } from '../../content/mediaprofilepicts/mediap
 import { MediaproofpictsService } from '../../content/mediaproofpicts/mediaproofpicts.service';
 import { TemplatesRepo } from '../../infra/templates_repo/schemas/templatesrepo.schema';
 import { UtilsService } from '../../utils/utils.service';
+import { GetusercontentsService } from '../getusercontents/getusercontents.service';
 @Controller('api/reportuser')
 export class ReportuserController {
 
@@ -37,6 +38,7 @@ export class ReportuserController {
         private readonly utilsService: UtilsService,
         private readonly userticketsService: UserticketsService,
         private readonly mediaproofpictsService: MediaproofpictsService,
+        private readonly getusercontentsService: GetusercontentsService,
     ) { }
     @UseGuards(JwtAuthGuard)
     @Get('all')
@@ -49,151 +51,6 @@ export class ReportuserController {
 
         return { response_code: 202, data, messages };
     }
-
-
-    // @UseGuards(JwtAuthGuard)
-    // @Post()
-    // async create(@Res() res, @Headers() headers, @Body() CreateReportsuserDto: CreateReportsuserDto, @Request() request) {
-    //     var userid = null;
-    //     const messages = {
-    //         "info": ["The create successful"],
-    //     };
-
-    //     const messagesEror = {
-    //         "info": ["Todo is not found!"],
-    //     };
-    //     if (headers['x-auth-token'] == undefined) {
-    //         throw new BadRequestException("Unabled to proceed email is required");
-    //     }
-    //     try {
-    //         const datauserbasicsService = await this.userbasicsService.findOne(
-    //             headers['x-auth-user'],
-    //         );
-    //         userid = datauserbasicsService._id;
-    //     } catch (e) {
-    //         throw new BadRequestException("Unabled to proceed email is required");
-    //     }
-
-    //     var type = null;
-    //     var reportTypeId = null;
-    //     var cekdata = null;
-    //     var cektypeid = null;
-    //     var iduser = null;
-    //     var reportReasonId = null;
-    //     var detail = [];
-    //     var objdetail = {};
-    //     const mongoose = require('mongoose');
-    //     var ObjectId = require('mongodb').ObjectId;
-    //     // var idadmin = mongoose.Types.ObjectId(iduseradmin);
-    //     var dt = new Date(Date.now());
-    //     dt.setHours(dt.getHours() + 7); // timestamp
-    //     dt = new Date(dt);
-    //     var detailreport = CreateReportsuserDto.detailReport;
-    //     var lenghtdetail = detailreport.length;
-
-    //     for (var i = 0; i < lenghtdetail; i++) {
-    //         iduser = mongoose.Types.ObjectId(detailreport[i].userId);
-    //         reportReasonId = mongoose.Types.ObjectId(detailreport[i].reportReasonId);
-
-    //         let detailrpt = new DetailReport();
-    //         detailrpt.userId = iduser;
-    //         detailrpt.reportReasonId = reportReasonId;
-    //         detailrpt.createdAt = dt.toISOString();
-    //         detail.push(detailrpt);
-    //     }
-    //     try {
-    //         type = CreateReportsuserDto.type;
-    //     } catch (e) {
-    //         type = "";
-    //     }
-    //     try {
-    //         reportTypeId = CreateReportsuserDto.reportTypeId;
-    //     } catch (e) {
-    //         reportTypeId = "";
-    //     }
-
-
-    //     if (type === "post") {
-
-    //         cekdata = await this.postsService.findOnepostID(reportTypeId);
-    //     }
-    //     else if (type === "account") {
-
-    //         cekdata = await this.userbasicsService.findid(reportTypeId);
-    //     }
-    //     else if (type === "ads") {
-
-    //         cekdata = await this.adsService.findOne(reportTypeId);
-    //     }
-
-    //     if (cekdata === null) {
-    //         throw new BadRequestException("reportTypeId not found...!");
-    //     } else {
-    //         cektypeid = await this.reportuserService.findType(reportTypeId);
-
-    //         if (cektypeid === null) {
-
-    //             try {
-    //                 CreateReportsuserDto.createdAt = dt.toISOString();
-    //                 CreateReportsuserDto.detailReport = detail;
-    //                 let data = await this.reportuserService.create(CreateReportsuserDto);
-
-    //                 res.status(HttpStatus.OK).json({
-    //                     response_code: 202,
-    //                     "data": data,
-    //                     "message": messages
-    //                 });
-    //             } catch (e) {
-    //                 res.status(HttpStatus.BAD_REQUEST).json({
-
-    //                     "message": messagesEror + "" + e
-    //                 });
-    //             }
-    //         } else {
-    //             var isremoved = cektypeid._doc.isRemoved;
-    //             var id = cektypeid._id;
-
-    //             if (isremoved === false) {
-    //                 try {
-    //                     CreateReportsuserDto.createdAt = dt.toISOString();
-    //                     CreateReportsuserDto.detailReport = detail;
-    //                     let data = await this.reportuserService.create(CreateReportsuserDto);
-
-    //                     res.status(HttpStatus.OK).json({
-    //                         response_code: 202,
-    //                         "data": data,
-    //                         "message": messages
-    //                     });
-    //                 } catch (e) {
-    //                     res.status(HttpStatus.BAD_REQUEST).json({
-
-    //                         "message": messagesEror + "" + e
-    //                     });
-    //                 }
-    //             } else {
-    //                 try {
-
-    //                     let data = await this.reportuserService.updateid(id, userid, dt.toISOString());
-
-    //                     res.status(HttpStatus.OK).json({
-    //                         response_code: 202,
-    //                         "message": "Update is success"
-    //                     });
-    //                 } catch (e) {
-    //                     res.status(HttpStatus.BAD_REQUEST).json({
-
-    //                         "message": messagesEror + "" + e
-    //                     });
-    //                 }
-    //             }
-    //         }
-    //     }
-
-
-
-
-
-    // }
 
     @UseGuards(JwtAuthGuard)
     @Post('create')
@@ -1266,100 +1123,8 @@ export class ReportuserController {
             var idapsaradefine = null;
             var apsaradefine = null;
             for (var i = 0; i < query.length; i++) {
-                try {
-                    idapsara = query[i].apsaraId;
-                } catch (e) {
-                    idapsara = "";
-                }
-                try {
-                    apsara = query[i].apsara;
-                } catch (e) {
-                    apsara = false;
-                }
-                var type = query[i].postType;
-                pict = [idapsara];
-
-                if (idapsara === "") {
-                    data = {};
-                } else {
-                    if (type === "pict") {
-
-                        try {
-                            data = await this.postContentService.getImageApsara(pict);
-                        } catch (e) {
-                            data = {};
-                        }
-                    }
-                    else if (type === "vid") {
-                        try {
-                            data = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            data = {};
-                        }
-
-                    }
-                    else if (type === "story") {
-                        try {
-                            data = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            data = {};
-                        }
-                    }
-                    else if (type === "diary") {
-                        try {
-                            data = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            data = {};
-                        }
-                    }
-                }
-
-                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
-                    apsaradefine = false;
-                } else {
-                    apsaradefine = true;
-                }
-
-                if (idapsara === undefined || idapsara === "" || idapsara === null) {
-                    idapsaradefine = "";
-                } else {
-                    idapsaradefine = idapsara;
-                }
-                objk = {
-                    "_id": query[i]._id,
-                    "mediaType": query[i].mediaType,
-                    "mediaThumbEndpoint": query[i].mediaThumbEndpoint,
-                    "mediaEndpoint": query[i].mediaEndpoint,
-                    "idmedia": query[i].idmedia,
-                    "createdAt": query[i].createdAt,
-                    "updatedAt": query[i].updatedAt,
-                    "postID": query[i].postID,
-                    "email": query[i].email,
-                    "fullName": query[i].fullName,
-                    "username": query[i].username,
-                    "postType": query[i].postType,
-                    "description": query[i].description,
-                    "title": query[i].title,
-                    "active": query[i].active,
-                    "contentModeration": query[i].contentModeration,
-                    "contentModerationResponse": query[i].contentModerationResponse,
-                    "reportedStatus": query[i].reportedStatus,
-                    "reportedUserCount": query[i].reportedUserCount,
-                    "reportedUser": query[i].reportedUser,
-                    "reportedUserHandle": query[i].reportedUserHandle,
-                    "reportReasonIdLast": query[i].reportReasonIdLast,
-                    "reasonLast": query[i].reasonLast,
-                    "createdAtReportLast": query[i].createdAtReportLast,
-                    "createdAtAppealLast": query[i].createdAtAppealLast,
-                    "reportStatusLast": query[i].reportStatusLast,
-                    "reasonLastAppeal": query[i].reasonLastAppeal,
-                    "apsaraId": idapsaradefine,
-                    "apsara": apsaradefine,
-                    "avatar": query[i].avatar,
-                    "media": data
-                };
-
-                arrdata.push(objk);
+                let dataquery = await this.getusercontentsService.getapsaraDatabase(query, i);
+                arrdata.push(dataquery);
             }
 
             total = query.length;
@@ -1414,95 +1179,15 @@ export class ReportuserController {
                 }
             }
             let query = await this.adsService.findreportads(key, postType, startdate, enddate, page, limit, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis, email);
-            var data = null;
+
             var arrdata = [];
             let pict: String[] = [];
-            var objk = {};
             var type = null;
-            var idapsara = null;
-            var apsara = null;
-            var idapsaradefine = null;
-            var apsaradefine = null;
+
             for (var i = 0; i < query.length; i++) {
-                try {
-                    idapsara = query[i].idApsara;
-                } catch (e) {
-                    idapsara = "";
-                }
+                let dataquery = await this.getusercontentsService.getapsaraDatabaseAds(query, i);
 
-                var type = query[i].type;
-                pict = [idapsara];
-
-                if (idapsara === "") {
-                    data = {};
-                } else {
-                    if (type === "image") {
-
-                        try {
-                            data = await this.postContentService.getImageApsara(pict);
-                        } catch (e) {
-                            data = {};
-                        }
-                    }
-                    else if (type === "video") {
-                        try {
-                            data = await this.postContentService.getVideoApsara(pict);
-                        } catch (e) {
-                            data = {};
-                        }
-
-                    }
-
-                }
-
-
-
-                if (idapsara === undefined || idapsara === "" || idapsara === null) {
-                    idapsaradefine = "";
-                    apsaradefine = false
-                } else {
-                    idapsaradefine = idapsara;
-                    apsaradefine = true
-                }
-                objk = {
-                    "_id": query[i]._id,
-                    "userID": query[i].userID,
-                    "email": query[i].email,
-                    "fullName": query[i].fullName,
-                    "username": query[i].username,
-                    "idApsara": query[i].idApsara,
-                    "name": query[i].name,
-                    "nameType": query[i].nameType,
-                    "status": query[i].status,
-                    "timestamp": query[i].timestamp,
-                    "totalUsedCredit": query[i].totalUsedCredit,
-                    "tayang": query[i].tayang,
-                    "usedCredit": query[i].usedCredit,
-                    "usedCreditFree": query[i].usedCreditFree,
-                    "creditFree": query[i].creditFree,
-                    "creditValue": query[i].creditValue,
-                    "totalCredit": query[i].totalCredit,
-                    "tipeads": query[i].tipeads,
-                    "contentModeration": query[i].contentModeration,
-                    "contentModerationResponse": query[i].contentModerationResponse,
-                    "reportedStatus": query[i].reportedStatus,
-                    "reportedUserCount": query[i].reportedUserCount,
-                    "reportedUser": query[i].reportedUser,
-                    "reportedUserHandle": query[i].reportedUserHandle,
-                    "reportReasonIdLast": query[i].reportReasonIdLast,
-                    "reasonLast": query[i].reasonLast,
-                    "createdAtReportLast": query[i].createdAtReportLast,
-                    "createdAtAppealLast": query[i].createdAtAppealLast,
-                    "place": query[i].place,
-                    "reportStatusLast": query[i].reportStatusLast,
-                    "reasonLastAppeal": query[i].reasonLastAppeal,
-                    "apsaraId": idapsaradefine,
-                    "apsara": apsaradefine,
-                    "avatar": query[i].avatar,
-                    "media": data
-                };
-
-                arrdata.push(objk);
+                arrdata.push(dataquery);
             }
             total = query.length;
             let datasearch = await this.adsService.findreportads(key, postType, startdate, enddate, 0, 0, startreport, endreport, status, reason, descending, reasonAppeal, username, jenis, email);
