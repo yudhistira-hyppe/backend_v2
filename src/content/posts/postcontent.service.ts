@@ -1743,6 +1743,8 @@ export class PostContentService {
       let vids: String[] = [];
       let pics: String[] = [];
 
+      let pics_thumnail: String[] = [];
+
       let postx: string[] = [];
 
       //GET THUMNAIL MUSIC
@@ -2036,8 +2038,10 @@ export class PostContentService {
               let pic = await this.picService.findOne(String(med.oid));
               if (pic.apsara == true) {
                 pics.push(pic.apsaraId);
+                pics_thumnail.push(pic.apsaraThumbId);
                 pa.apsaraId = String(pic.apsaraId);
                 pa.isApsara = true;
+                pa.apsaraThumbId = String(pic.apsaraThumbId);
               } else {
                 pa.mediaEndpoint = '/pict/' + pic.postID;
                 pa.mediaUri = pic.mediaUri;
@@ -2179,18 +2183,27 @@ export class PostContentService {
                 ps.mediaEndpoint = vi.URL;
                 ps.mediaUri = vi.URL;
 
-                ps.mediaThumbEndpoint = vi.URL;
-                ps.mediaThumbUri = vi.URL;
-              }
-
-              if (ps.apsaraThumbId == vi.ImageId) {
-                ps.mediaThumbEndpoint = vi.URL;
-                ps.mediaThumbUri = vi.URL;
+                //ps.mediaThumbEndpoint = vi.URL;
+                //ps.mediaThumbUri = vi.URL;
               }
               if (insh.has(String(ps.postID))) {
                 ps.isLiked = true;
               } else {
                 ps.isLiked = false;
+              }
+            }
+          }
+        }
+
+        let res2 = await this.getImageApsara(pics_thumnail);
+        if (res2 != undefined && res2.ImageInfo != undefined && res2.ImageInfo.length > 0) {
+          for (let i = 0; i < res2.ImageInfo.length; i++) {
+            let vi = res2.ImageInfo[i];
+            for (let j = 0; j < pd.length; j++) {
+              let ps = pd[j];
+              if (ps.apsaraThumbId == vi.ImageId) {
+                ps.mediaThumbEndpoint = vi.URL;
+                ps.mediaThumbUri = vi.URL;
               }
             }
           }
