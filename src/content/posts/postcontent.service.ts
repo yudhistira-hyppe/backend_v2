@@ -236,9 +236,11 @@ export class PostContentService {
       for (var i = 0; i < cats.length; i++) {
         var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
-        if (cat != undefined) {
-          var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
-          pcats.push(objintr);
+        if (await this.utilService.ceckData(tp)) {
+          if (cat != undefined) {
+            var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
+            pcats.push(objintr);
+          }
         }
       }
       post.tagPeople = pcats;
