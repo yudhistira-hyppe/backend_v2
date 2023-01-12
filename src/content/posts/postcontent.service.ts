@@ -1899,7 +1899,7 @@ export class PostContentService {
           let atp1 = Array<TagPeople>();
 
           for (let x = 0; x < atp.length; x++) {
-            let tp = atp[i];
+            let tp = atp[x];
             if (tp?.namespace) {
               let oid = tp.oid;
               let ua = await this.userAuthService.findById(oid.toString());
