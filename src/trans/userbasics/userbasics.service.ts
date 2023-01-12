@@ -1139,7 +1139,7 @@ export class UserbasicsService {
                             ]
                           },
                           then: "$VA expired time",
-                          else: '$description'
+                          else: 'description'
                         }
                       },
                       "noinvoice": 1,
@@ -1230,10 +1230,10 @@ export class UserbasicsService {
                       },
                       "apsaraThumbId":
                       {
-                        "$concat": ["/pict/", "$postID"]
+                        "$concat": ["/thumb/", "$postID"]
                       },
                       "mediaEndpoint": {
-                        "$concat": ["/pict/", "$postID"]
+                        "$concat": ["/stream/", "$postID"]
                       },
                       "mediaUri": 1,
                       "mediaThumbEndpoint": 1,
@@ -1531,8 +1531,8 @@ export class UserbasicsService {
                   },
                   "status": "$buy-sell.status",
                   "email": "$email",
-                  "fullName": "$fullName",
-                  "userame": "$fullName",
+                  "fullName": "$fullname",
+                  "userame": "$fullname",
                   "penjual":
                   {
                     $cond: {
@@ -1776,7 +1776,7 @@ export class UserbasicsService {
                         },
 
                       ],
-                      "default": "other"
+                      "default": "$kampret"
                     }
                   },
                   "apsaraId":
@@ -1869,7 +1869,7 @@ export class UserbasicsService {
                         },
 
                       ],
-                      "default": "other"
+                      "default": "$kampret"
                     }
                   },
                   "apsara":
@@ -1962,7 +1962,7 @@ export class UserbasicsService {
                         },
 
                       ],
-                      "default": "false"
+                      "default": "$kampret"
                     }
                   },
                   "debetKredit":
@@ -1983,7 +1983,7 @@ export class UserbasicsService {
                         },
 
                       ],
-                      "default": null
+                      "default": "$kampret"
                     }
                   },
 
@@ -2024,7 +2024,16 @@ export class UserbasicsService {
       {
         $project: {
           "_id": '$tester._id',
-          "iduser": '$tester.iduser',
+          "iduser":
+          {
+            $cond: {
+              if: {
+                $gt: ['$tester.amount', 0]
+              },
+              then: '$tester.iduser',
+              else: "$kodok"
+            }
+          },
           "type": '$tester.type',
           "jenis": '$tester.jenis',
           "timestamp": '$tester.timestamp',
@@ -2037,7 +2046,16 @@ export class UserbasicsService {
           "totalamount": '$tester.totalamount',
           "status": '$tester.status',
           "fullName": '$tester.fullName',
-          "email": '$tester.email',
+          "email":
+          {
+            $cond: {
+              if: {
+                $gt: ['$tester.amount', 0]
+              },
+              then: '$tester.email',
+              else: "$kodok"
+            }
+          },
           "penjual": '$tester.penjual',
           "emailpenjual": '$tester.emailpenjual',
           "userNamePenjual": '$tester.userNamePenjual',
