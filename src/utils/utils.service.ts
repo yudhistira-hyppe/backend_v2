@@ -234,6 +234,9 @@ export class UtilsService {
       } else if (eventType == "REACTION") {
         body_save_id = body_save_id_get.toString().replace("${emoticon}", customText)
         body_save_en = body_save_en_get.toString().replace("${emoticon}", customText)
+      } else if (eventType == "REACTION" && typeTemplate == "POST_TAG") {
+        body_save_id = body_save_id_get.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
+        body_save_en = body_save_en_get.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
       } else {
         body_save_id = body_save_id_get.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
         body_save_en = body_save_en_get.toString().replace("${post_type}", "Hyppe" + Post_type_upper)
