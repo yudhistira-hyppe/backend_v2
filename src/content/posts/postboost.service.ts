@@ -2874,7 +2874,7 @@ export class PostBoostService {
       pd.mediaBasePath = obj.mediaBasePath;
       if (obj.apsara) {
         pd.mediaEndpoint = obj.mediaEndpoint;
-      }else{
+      } else {
         if (obj.mediaType == "image") {
           pd.mediaEndpoint = '/pict/' + obj.postID;
         } else {
@@ -3933,7 +3933,9 @@ export class PostBoostService {
 
 
                       $expr: {
-                        $eq: ['$_id', '$$localID']
+                        $in: ['$_id', {
+                          $ifNull: ['$$localID', []]
+                        }]
                       }
                     }
                   },
@@ -4478,7 +4480,9 @@ export class PostBoostService {
 
 
                       $expr: {
-                        $eq: ['$_id', '$$localID']
+                        $in: ['$_id', {
+                          $ifNull: ['$$localID', []]
+                        }]
                       }
                     }
                   },
@@ -5011,7 +5015,9 @@ export class PostBoostService {
 
 
                       $expr: {
-                        $eq: ['$_id', '$$localID']
+                        $in: ['$_id', {
+                          $ifNull: ['$$localID', []]
+                        }]
                       }
                     }
                   },
@@ -5449,7 +5455,9 @@ export class PostBoostService {
 
 
                       $expr: {
-                        $eq: ['$_id', '$$localID']
+                        $in: ['$_id', {
+                          $ifNull: ['$$localID', []]
+                        }]
                       }
                     }
                   },
@@ -6055,7 +6063,9 @@ export class PostBoostService {
 
 
                       $expr: {
-                        $eq: ['$_id', '$$localID']
+                        $in: ['$_id', {
+                          $ifNull: ['$$localID', []]
+                        }]
                       }
                     }
                   },
@@ -6433,7 +6443,9 @@ export class PostBoostService {
 
 
                       $expr: {
-                        $eq: ['$_id', '$$localID']
+                        $in: ['$_id', {
+                          $ifNull: ['$$localID', []]
+                        }]
                       }
                     }
                   },
@@ -6811,7 +6823,9 @@ export class PostBoostService {
 
 
                       $expr: {
-                        $eq: ['$_id', '$$localID']
+                        $in: ['$_id', {
+                          $ifNull: ['$$localID', []]
+                        }]
                       }
                     }
                   },
@@ -7196,7 +7210,9 @@ export class PostBoostService {
 
 
                       $expr: {
-                        $eq: ['$_id', '$$localID']
+                        $in: ['$_id', {
+                          $ifNull: ['$$localID', []]
+                        }]
                       }
                     }
                   },

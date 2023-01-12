@@ -1461,7 +1461,10 @@ export class ContenteventsService {
 
 
                         $expr: {
-                          $eq: ['$_id', '$$localID']
+
+                          $in: ['$_id', {
+                            $ifNull: ['$$localID', []]
+                          }]
                         }
                       }
                     },
@@ -1866,7 +1869,9 @@ export class ContenteventsService {
 
 
                         $expr: {
-                          $eq: ['$_id', '$$localID']
+                          $in: ['$_id', {
+                            $ifNull: ['$$localID', []]
+                          }]
                         }
                       }
                     },
@@ -2266,7 +2271,9 @@ export class ContenteventsService {
 
 
                         $expr: {
-                          $eq: ['$_id', '$$localID']
+                          $in: ['$_id', {
+                            $ifNull: ['$$localID', []]
+                          }]
                         }
                       }
                     },
@@ -2558,7 +2565,12 @@ export class ContenteventsService {
                           },
                           {
                             $expr: {
-                              $gte: ["$createdAt", "$storyDate",]
+                              $gte: ["$expiration", {
+                                $toLong: {
+                                  $add: [new Date(), - 61200000]
+                                }
+
+                              }]
                             }
                           },
 
@@ -2671,7 +2683,9 @@ export class ContenteventsService {
 
 
                         $expr: {
-                          $eq: ['$_id', '$$localID']
+                          $in: ['$_id', {
+                            $ifNull: ['$$localID', []]
+                          }]
                         }
                       }
                     },
