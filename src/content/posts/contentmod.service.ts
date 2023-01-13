@@ -324,6 +324,7 @@ export class ContentModService {
       this.logger.error('cmodResponse >>> body content is undefined');
       return;
     }
+    this.logger.error('cmodResponse >>> ' + JSON.stringify(body));
 
     let con = JSON.parse(body.content);
     if (con.code == undefined || con.code != 200) {
