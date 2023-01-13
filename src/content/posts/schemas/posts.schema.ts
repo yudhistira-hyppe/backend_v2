@@ -109,7 +109,7 @@ export class Posts {
   @Prop()
   statusCB: string;
   @Prop()
-  moderationReason: string[];
+  moderationReason: string;
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

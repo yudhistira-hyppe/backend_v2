@@ -338,13 +338,11 @@ export class ContentModService {
       return;      
     }    
 
-    let reason = [];
+    let reason = '';
     let res = con.results;
-    var dataResult = await this.getReason(res);
-    this.logger.log('cmodResponse >>> dataResult: ' + JSON.stringify(dataResult));
-    if (await this.utilService.ceckData(dataResult)) {
-      reason = dataResult;
-    }
+    var dataResult = await this.getMax(res);
+    this.logger.log('cmodResponse >>> dataResult: ' + dataResult);
+    reason = dataResult;
     pd.moderationReason = reason;
     let pass = true;
     for (let i = 0; i < res.length; i++) {
@@ -390,16 +388,18 @@ export class ContentModService {
     var filteredArray = Array_.filter(function (itm) {
       return itm['rate'] == highest['rate'];
     });
-    if (filteredArray.length > 1) {
-      var resion = 'porn';
-      for (var i = 0; i < filteredArray.length;i++){
-        // if(){
 
-        // }
+    if (filteredArray.length > 1) {
+      var filteredArrayPorn = filteredArray.filter(function (itm) {
+        return itm['scene'] == 'porn';
+      });
+      if (filteredArrayPorn.length > 0) {
+        return 'porn';
+      } else {
+        return highest['scene'];
       }
-      return highest;
     } else {
-      return highest;
+      return highest['scene'];
     }
   }
 
@@ -414,8 +414,7 @@ export class ContentModService {
   }
 
   async getMax2() {
-    var reason = [];
-    var data = [
+    var Array_ = [
       {
         "label": "normal",
         "rate": 99.9,
@@ -443,11 +442,24 @@ export class ContentModService {
         "suggestion": "pass"
       }
     ]
-    for (var i = 0; i < data.length; i++) {
-      this.logger.log('reasoni: ', reason);
-      reason.push(data[i]["scene"]);
+    const highest = Array_.reduce((previous, current) => {
+      return current['rate'] > previous['rate'] ? current : previous;
+    });
+    var filteredArray = Array_.filter(function (itm) {
+      return itm['rate'] == highest['rate'];
+    });
+
+    if (filteredArray.length > 1) {
+      var filteredArrayPorn = filteredArray.filter(function (itm) {
+        return itm['scene'] == 'porn';
+      });
+      if (filteredArrayPorn.length > 0) {
+        return 'porn';
+      } else {
+        return highest;
+      }
+    } else {
+      return highest;
     }
-    this.logger.log('reason: ', reason);
-    return reason;
   }
 }
