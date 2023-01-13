@@ -324,6 +324,7 @@ export class ContentModService {
       this.logger.error('cmodResponse >>> body content is undefined');
       return;
     }
+    this.logger.error('cmodResponse >>> ' + JSON.stringify(body));
 
     let con = JSON.parse(body.content);
     if (con.code == undefined || con.code != 200) {
@@ -342,7 +343,11 @@ export class ContentModService {
     let res = con.results;
     var dataResult = await this.getMax(res);
     this.logger.log('cmodResponse >>> dataResult: ' + dataResult);
-    reason = dataResult;
+    if (dataResult == "ad") {
+      reason = dataResult+"s";
+    }else{
+      reason = dataResult;
+    }
     pd.moderationReason = reason;
     let pass = true;
     for (let i = 0; i < res.length; i++) {
@@ -381,10 +386,11 @@ export class ContentModService {
     this.gtw.coba('fssttertertet');
   }
 
-  async getMax(Array_:Array<Object>){
+  async getMax(Array_: Array<Object>) {
     const highest = Array_.reduce((previous, current) => {
       return current['rate'] > previous['rate'] ? current : previous;
     });
+
     var filteredArray = Array_.filter(function (itm) {
       return itm['rate'] == highest['rate'];
     });
@@ -393,13 +399,14 @@ export class ContentModService {
       var filteredArrayPorn = filteredArray.filter(function (itm) {
         return itm['scene'] == 'porn';
       });
+      
       if (filteredArrayPorn.length > 0) {
         return 'porn';
       } else {
-        return highest['scene'];
+        return highest['scene']
       }
     } else {
-      return highest['scene'];
+      return highest['scene']
     }
   }
 
@@ -456,10 +463,10 @@ export class ContentModService {
       if (filteredArrayPorn.length > 0) {
         return 'porn';
       } else {
-        return highest;
+        return highest['scene']
       }
     } else {
-      return highest;
+      return highest['scene']
     }
   }
 }

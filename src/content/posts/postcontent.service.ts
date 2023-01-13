@@ -253,9 +253,11 @@ export class PostContentService {
       for (var i = 0; i < cats.length; i++) {
         var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
-        if (tp != undefined || tp != null) {
-          var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
-          pcats.push(objintrx);
+        if (await this.utilService.ceckData(tp)) {
+          if (tp != undefined || tp != null) {
+            var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+            pcats.push(objintrx);
+          }
         }
       }
       post.tagDescription = pcats;
@@ -3050,9 +3052,11 @@ export class PostContentService {
       for (var i = 0; i < cats.length; i++) {
         var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
-        if (cat != undefined) {
-          var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
-          pcats.push(objintr);
+        if (await this.utilService.ceckData(tp)) {
+          if (cat != undefined) {
+            var objintr = { "$ref": "userauths", "$id": mongoose.Types.ObjectId(tp._id), "$db": "hyppe_trans_db" };
+            pcats.push(objintr);
+          }
         }
       }
       post.tagPeople = pcats;
@@ -3065,9 +3069,11 @@ export class PostContentService {
       for (var i = 0; i < cats.length; i++) {
         var tmp = cats[i];
         var tp = await this.userAuthService.findOneUsername(tmp);
-        if (cat != undefined) {
-          var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
-          pcats.push(objintrx);
+        if (await this.utilService.ceckData(tp)) {
+          if (cat != undefined) {
+            var objintrx = { "$ref": "userauths", "$id": tp._id, "$db": "hyppe_trans_db" };
+            pcats.push(objintrx);
+          }
         }
       }
       post.tagDescription = pcats;

@@ -2801,15 +2801,22 @@ export class ReportuserController {
             peaks = await this.postsService.countReason(postID);
             var post = await this.postsService.findByPostId(postID);
             if (await this.utilsService.ceckData(post)) {
+                var get_languages = await this.utilsService.getUserlanguages(post.email.toString());
+                var messages_data = "Detects Moderation Content in a Hyppe" + post.postType.toString();
+                if (get_languages == "id") {
+                    messages_data = "Mendeteksi Konten Moderasi di Hyppe" + post.postType.toString();
+                } else {
+                    messages_data = "Detects Moderation Content in a Hyppe" + post.postType.toString();
+                }
                 if (post.contentModeration){
                     if (post.moderationReason!=undefined){
                         data = {
-                            "_id": "Detects " + post.moderationReason + " in a Hypper" + post.postType,
+                            "_id": messages_data,
                             "myCount": 1
                         }
                     } else {
                         data = {
-                            "_id": "Detects Moderation in a Hypper" + post.postType,
+                            "_id": messages_data,
                             "myCount": 1
                         }
                     }

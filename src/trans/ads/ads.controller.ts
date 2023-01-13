@@ -758,6 +758,29 @@ export class AdsController {
         return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     };
 
+    @Post('management/adscenter/chartanalytics')
+    @UseGuards(JwtAuthGuard)
+    async graphadsanalytics(@Req() request: Request): Promise<any> {
+        const mongoose = require('mongoose');
+        var data = null;
+        var requserid = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        //console.log("masuk");
+        if (request_json["userid"] !== undefined) {
+            requserid = request_json["userid"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        var userid = mongoose.Types.ObjectId(requserid);
+        data = await this.adsService.getgraphadsanalytics(userid);
+
+        return { response_code: 202, data, messages };
+    }
 }
 
 
