@@ -5548,7 +5548,6 @@ export class AdsService {
                     email: '$user.email',
                     timestamp: 1,
                     expiredAt: 1,
-                    gender: 1,
                     liveAt: 1,
                     name: 1,
                     description: 1,
@@ -5685,7 +5684,6 @@ export class AdsService {
                     email: 1,
                     timestamp: 1,
                     expiredAt: 1,
-                    gender: 1,
                     liveAt: 1,
                     name: 1,
                     description: 1,
@@ -5962,7 +5960,6 @@ export class AdsService {
                     email: 1,
                     timestamp: 1,
                     expiredAt: 1,
-                    gender: 1,
                     liveAt: 1,
                     name: 1,
                     description: 1,
@@ -6108,7 +6105,6 @@ export class AdsService {
                     email: 1,
                     timestamp: 1,
                     expiredAt: 1,
-                    gender: 1,
                     liveAt: 1,
                     name: 1,
                     description: 1,
@@ -6155,7 +6151,6 @@ export class AdsService {
                     email: 1,
                     timestamp: 1,
                     expiredAt: 1,
-                    gender: 1,
                     liveAt: 1,
                     name: 1,
                     description: 1,
@@ -6220,7 +6215,15 @@ export class AdsService {
                             $project: {
 
                                 userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
 
+                            }
+                        },
+                        {
+                            $match: {
+                                statusView: true
                             }
                         },
                         {
@@ -6326,7 +6329,15 @@ export class AdsService {
                             $project: {
 
                                 userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
 
+                            }
+                        },
+                        {
+                            $match: {
+                                statusView: true
                             }
                         },
                         {
@@ -6489,11 +6500,15 @@ export class AdsService {
                             $project: {
 
                                 userID: 1,
-                                createdAt: 1
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
                             }
                         },
                         {
                             $match: {
+                                statusView: true,
                                 createdAt: {
                                     $gte: startdate,
                                     $lte: dateend
@@ -6612,19 +6627,14 @@ export class AdsService {
                             }
                         },
                         {
-                            $project: {
-                                gender: 1,
-
-                            }
-                        },
-                        {
                             "$group": {
                                 "_id": "$gender",
                                 "count": {
                                     "$sum": 1
                                 }
                             }
-                        }
+                        },
+
                     ],
 
                 },
