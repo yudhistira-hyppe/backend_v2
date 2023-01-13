@@ -2808,16 +2808,16 @@ export class ReportuserController {
                             if ((post.moderationReason.length - 1) == i) {
                                 text += post.moderationReason[i]
                             } else {
-                                text += post.moderationReason[i] + " OR"
+                                text += post.moderationReason[i] + " or "
                             }
                         }
                         data = {
-                            "_id": "DETECTS " + text.toUpperCase() + " in a Hypper" + post.postType,
+                            "_id": "Detects " + text + " in a Hypper" + post.postType,
                             "myCount": 1
                         }
                     } else {
                         data = {
-                            "_id": "DETECTS MODERION in a Hypper" + post.postType,
+                            "_id": "Detects Moderation in a Hypper" + post.postType,
                             "myCount": 1
                         }
                     }
