@@ -2970,7 +2970,7 @@ export class PostBoostService {
       pd.apsaraMusic = undefined;
 
       pd.isBoost = obj.isBoost;
-
+      pd.boosted = obj.boosted;
       pd.music = null;
       if (obj.music != undefined) {
         if (Array.isArray(obj.music)) {

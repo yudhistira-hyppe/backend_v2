@@ -149,12 +149,12 @@ export class GetuserprofilesController {
     }
 
 
-    try {
-      datafilter = await this.getuserprofilesService.countdbuser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin);
-      totalfilter = datafilter[0].totalpost;
-    } catch (e) {
-      totalfilter = 0;
-    }
+    // try {
+    //   datafilter = await this.getuserprofilesService.countdbuser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin);
+    //   totalfilter = datafilter[0].totalpost;
+    // } catch (e) {
+    //   totalfilter = 0;
+    // }
 
     try {
       allrow = await this.getuserprofilesService.totalcount();
@@ -162,7 +162,7 @@ export class GetuserprofilesController {
     } catch (e) {
       totalallrow = 0;
     }
-
+    totalfilter = totalallrow;
     var tpage = null;
     var tpage2 = null;
     var totalpage = null;
@@ -177,6 +177,7 @@ export class GetuserprofilesController {
     }
 
     return { response_code: 202, data, page, limit, totalrow, totalallrow, totalfilter, totalpage, messages };
+
 
   }
 
