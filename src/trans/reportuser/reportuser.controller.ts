@@ -2802,17 +2802,9 @@ export class ReportuserController {
             var post = await this.postsService.findByPostId(postID);
             if (await this.utilsService.ceckData(post)) {
                 if (post.contentModeration){
-                    if (post.moderationReason.length>0){
-                        var text = '';
-                        for (var i = 0; i < post.moderationReason.length; i++) {
-                            if ((post.moderationReason.length - 1) == i) {
-                                text += post.moderationReason[i]
-                            } else {
-                                text += post.moderationReason[i] + " or "
-                            }
-                        }
+                    if (post.moderationReason!=undefined){
                         data = {
-                            "_id": "Detects " + text + " in a Hypper" + post.postType,
+                            "_id": "Detects " + post.moderationReason + " in a Hypper" + post.postType,
                             "myCount": 1
                         }
                     } else {
