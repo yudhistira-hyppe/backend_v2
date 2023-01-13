@@ -2802,17 +2802,24 @@ export class ReportuserController {
             var post = await this.postsService.findByPostId(postID);
             if (await this.utilsService.ceckData(post)) {
                 if (post.contentModeration){
-                    var text = '';
-                    for (var i = 0; i < post.moderationReason.length; i++) {
-                        if ((post.moderationReason.length - 1) == i) {
-                            text += post.moderationReason[i]
-                        } else {
-                            text += post.moderationReason[i] + " OR"
+                    if (post.moderationReason.length>0){
+                        var text = '';
+                        for (var i = 0; i < post.moderationReason.length; i++) {
+                            if ((post.moderationReason.length - 1) == i) {
+                                text += post.moderationReason[i]
+                            } else {
+                                text += post.moderationReason[i] + " OR"
+                            }
                         }
-                    }
-                    data = {
-                        "_id": "DETECTS " + text.toUpperCase() + " in a Hypper" + post.postType,
-                        "myCount": 1
+                        data = {
+                            "_id": "DETECTS " + text.toUpperCase() + " in a Hypper" + post.postType,
+                            "myCount": 1
+                        }
+                    } else {
+                        data = {
+                            "_id": "DETECTS MODERION in a Hypper" + post.postType,
+                            "myCount": 1
+                        }
                     }
                 } else {
                     data = peaks.reduce((maxPeak, peak) => !maxPeak || maxPeak.myCount < peak.myCount ? peak : maxPeak, null);

@@ -405,13 +405,16 @@ export class ContentModService {
 
   async getReason(Array_: Array<Object>) {
     var reason = [];
-    for (var i = 0; i < Array_.length; i++){
-      reason.push(Array_["scene"]);
+    for (var i = 0; i < Array_.length; i++) {
+      this.logger.log('reasoni: ', reason);
+      reason.push(Array_[i]["scene"]);
     }
+    this.logger.log('reason: ', reason);
     return reason;
   }
 
   async getMax2() {
+    var reason = [];
     var data = [
       {
         "label": "normal",
@@ -440,9 +443,11 @@ export class ContentModService {
         "suggestion": "pass"
       }
     ]
-    const highest = data.reduce((previous, current) => {
-      return current['rate'] > previous['rate'] ? current : previous;
-    });
-    return highest;
+    for (var i = 0; i < data.length; i++) {
+      this.logger.log('reasoni: ', reason);
+      reason.push(data[i]["scene"]);
+    }
+    this.logger.log('reason: ', reason);
+    return reason;
   }
 }
