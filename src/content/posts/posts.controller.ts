@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { FormDataRequest } from 'nestjs-form-data';
 import { PostsService } from './posts.service';
-import { CreatePostResponse, CreatePostsDto, PostLandingResponseApps, PostResponseApps } from './dto/create-posts.dto';
+import { CreatePostResponse, CreatePostsDto, PostLandingResponseApps, PostResponseApps, TagPeople } from './dto/create-posts.dto';
 import { Posts } from './schemas/posts.schema';
 import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { UserauthsService } from '../../trans/userauths/userauths.service';
@@ -427,6 +427,86 @@ export class PostsController {
   @Post('api/posts/getnotificationAll')
   async getNotificationAll() {
     return await this.notifService.getNotificationAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Post('api/posts/tagpeople')
+  async getTagpeople(@Headers() headers, @Body() body) {
+    //CECK BAEARER TOKEN
+    if (!(await this.utilsService.validasiTokenEmail(headers))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed token and email not match',
+      );
+    }
+
+    //CECK DATA USER
+    const data_userbasic = await this.userbasicsService.findOne(headers['x-auth-user']);
+    if (!(await this.utilsService.ceckData(data_userbasic))) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed User not found'
+      );
+    }
+
+    if (body.postId == undefined) {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, Param PostID required'
+      );
+    }
+
+    var userEmail = headers['x-auth-user'];
+    var post = await this.PostsService.findByPostId(body.postId.toString());
+    let following = await this.contenteventsService.findFollowing(userEmail);
+    if (await this.utilsService.ceckData(post)){
+      if (post.tagPeople != undefined && post.tagPeople.length > 0) {
+        let atp = post.tagPeople;
+        let atp1 = Array<TagPeople>();
+
+        for (let x = 0; x < atp.length; x++) {
+          let tp = atp[x];
+          if (tp?.namespace) {
+            let oid = tp.oid;
+            let ua = await this.userauthsService.findById(oid.toString());
+            if (ua != undefined) {
+              let tp1 = new TagPeople();
+              tp1.email = String(ua.email);
+              tp1.username = String(ua.username);
+
+              let ub = await this.userbasicsService.findOne(String(ua.email));
+              if (ub != undefined) {
+                tp1.avatar = await this.postContentService.getProfileAvatar(ub);
+              }
+
+              tp1.status = 'TOFOLLOW';
+              if (tp1.email == userEmail) {
+                tp1.status = "UNLINK";
+              } else {
+                for (let i = 0; i < following.length; i++) {
+                  let fol = following[i];
+                  if (fol.email == tp1.email) {
+                    tp1.status = "FOLLOWING";
+                  }
+                }
+              }
+              atp1.push(tp1);
+            }
+          }
+        }
+
+
+        return {
+          response_code: 202,
+          data: atp1,
+          messages: {
+            info: ['successfuly'],
+          },
+        };
+      }
+    } else {
+      await this.errorHandler.generateNotAcceptableException(
+        'Unabled to proceed, Data Post not found'
+      );
+    }
   }
 
   @UseGuards(JwtAuthGuard)

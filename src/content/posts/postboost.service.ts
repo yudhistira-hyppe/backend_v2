@@ -4196,7 +4196,7 @@ export class PostBoostService {
                             $add: [new Date(), 25200000]
                           }
                         }
-                      }, "$boosted.boostSession.timeEnd"]
+                      }, "$boosted.boostSession.end"]
                     },
                     then: [],
                     else: '$boosted'
@@ -4722,7 +4722,7 @@ export class PostBoostService {
                             $add: [new Date(), 25200000]
                           }
                         }
-                      }, "$boosted.boostSession.timeEnd"]
+                      }, "$boosted.boostSession.end"]
                     },
                     then: [],
                     else: '$boosted'
@@ -5257,7 +5257,7 @@ export class PostBoostService {
                             $add: [new Date(), 25200000]
                           }
                         }
-                      }, "$boosted.boostSession.timeEnd"]
+                      }, "$boosted.boostSession.end"]
                     },
                     then: [],
                     else: '$boosted'
@@ -5675,7 +5675,7 @@ export class PostBoostService {
                             $add: [new Date(), 25200000]
                           }
                         }
-                      }, "$boosted.boostSession.timeEnd"]
+                      }, "$boosted.boostSession.end"]
                     },
                     then: [],
                     else: '$boosted'
