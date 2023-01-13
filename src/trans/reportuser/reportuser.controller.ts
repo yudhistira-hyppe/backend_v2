@@ -2799,7 +2799,35 @@ export class ReportuserController {
 
         try {
             peaks = await this.postsService.countReason(postID);
-            data = peaks.reduce((maxPeak, peak) => !maxPeak || maxPeak.myCount < peak.myCount ? peak : maxPeak, null);
+            var post = await this.postsService.findByPostId(postID);
+            if (await this.utilsService.ceckData(post)) {
+                if (post.contentModeration){
+                    if (post.moderationReason.length>0){
+                        var text = '';
+                        for (var i = 0; i < post.moderationReason.length; i++) {
+                            if ((post.moderationReason.length - 1) == i) {
+                                text += post.moderationReason[i]
+                            } else {
+                                text += post.moderationReason[i] + " or "
+                            }
+                        }
+                        data = {
+                            "_id": "Detects " + text + " in a Hypper" + post.postType,
+                            "myCount": 1
+                        }
+                    } else {
+                        data = {
+                            "_id": "Detects Moderation in a Hypper" + post.postType,
+                            "myCount": 1
+                        }
+                    }
+                } else {
+                    data = peaks.reduce((maxPeak, peak) => !maxPeak || maxPeak.myCount < peak.myCount ? peak : maxPeak, null);
+                }
+            } else {
+                peaks = null;
+                data = null;
+            }
 
         } catch (e) {
             peaks = null;

@@ -338,7 +338,14 @@ export class ContentModService {
       return;      
     }    
 
+    let reason = [];
     let res = con.results;
+    var dataResult = await this.getReason(res);
+    this.logger.log('cmodResponse >>> dataResult: ' + JSON.stringify(dataResult));
+    if (await this.utilService.ceckData(dataResult)) {
+      reason = dataResult;
+    }
+    pd.moderationReason = reason;
     let pass = true;
     for (let i = 0; i < res.length; i++) {
       let re = res[i];
@@ -374,5 +381,73 @@ export class ContentModService {
 
   async ws() {
     this.gtw.coba('fssttertertet');
+  }
+
+  async getMax(Array_:Array<Object>){
+    const highest = Array_.reduce((previous, current) => {
+      return current['rate'] > previous['rate'] ? current : previous;
+    });
+    var filteredArray = Array_.filter(function (itm) {
+      return itm['rate'] == highest['rate'];
+    });
+    if (filteredArray.length > 1) {
+      var resion = 'porn';
+      for (var i = 0; i < filteredArray.length;i++){
+        // if(){
+
+        // }
+      }
+      return highest;
+    } else {
+      return highest;
+    }
+  }
+
+  async getReason(Array_: Array<Object>) {
+    var reason = [];
+    for (var i = 0; i < Array_.length; i++) {
+      this.logger.log('reasoni: ', reason);
+      reason.push(Array_[i]["scene"]);
+    }
+    this.logger.log('reason: ', reason);
+    return reason;
+  }
+
+  async getMax2() {
+    var reason = [];
+    var data = [
+      {
+        "label": "normal",
+        "rate": 99.9,
+        "scene": "porn",
+        "suggestion": "pass"
+      },
+      {
+        "frames": [
+          {
+            "label": "bloody",
+            "offset": 19,
+            "rate": 82.81,
+            "url": "https://aligreen-singapore.oss-ap-southeast-1.aliyuncs.com/prod/hammal/13174820f/18451_46709b5562a34e01917a49f0540d41ea-17094b5515ae49c7401e46aaf6b0d442-fd.mp4-frames/f00020.jpg?Expires=1673580654&OSSAccessKeyId=H4sp5QfNbuDghquU&Signature=QxosA%2BmQ%2Fxq%2FweylaadPktGDMZE%3D"
+          }
+        ],
+        "label": "terrorism",
+        "rate": 82.81,
+        "scene": "terrorism",
+        "suggestion": "review"
+      },
+      {
+        "label": "normal",
+        "rate": 99.9,
+        "scene": "ad",
+        "suggestion": "pass"
+      }
+    ]
+    for (var i = 0; i < data.length; i++) {
+      this.logger.log('reasoni: ', reason);
+      reason.push(data[i]["scene"]);
+    }
+    this.logger.log('reason: ', reason);
+    return reason;
   }
 }

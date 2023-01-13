@@ -18704,25 +18704,32 @@ export class GetusercontentsService {
       }
     ]);
 
-    if(query[0].arrayData.length == 0)
+    //console.log(query[0].arrayData);
+
+    //cek apabila data kosong atau ada yang kosong di antara hasil result database
+    var tempobj = query[0].arrayData;
+    var newobject = [];
+    for(var i = 0; i < 6; i++)
     {
-      var tempobj = query[0].arrayData;
-      for(var i = 0; i < 6; i++)
+      const cekexist = tempobj.find(({ _id }) => _id === lasttanggal[i]);
+      const temp = {};
+      Object.assign(temp, {_id: lasttanggal[i].toString()});
+      if(cekexist == undefined)
       {
-        const temp = {};
-        Object.assign(temp, {_id: lasttanggal[i].toString()});
         Object.assign(temp, {count: 0});
-        tempobj.push(temp); 
       }
+      else
+      {
+        Object.assign(temp, {count: cekexist.count});
+      }
+
+      var gettanggal = new Date(lasttanggal[i]);
+      Object.assign(temp, {bulan: gettanggal.toDateString().split(" ")[1]});
+
+      newobject.push(temp);
     }
 
-    //cara panggil object hasil database => data = data[0].data;
-    var loopdata = query[0].arrayData;
-    for(var i = 0; i < loopdata.length; i++)
-    {
-      var gettanggal = new Date(loopdata[i]._id);
-      loopdata[i].bulan = gettanggal.toDateString().split(" ")[1];
-    }
+    query[0].arrayData = newobject;
     
     return query;
   }

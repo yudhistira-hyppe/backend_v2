@@ -1004,12 +1004,9 @@ export class PostsController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('api/posts/testdm')
-  async testdm(@Body() body, @Headers() headers): Promise<string> {
-    this.logger.log("testdm >>> start");
-    this.postContentService.cmodCheckResult('b9b22a4c-25e8-98fe-b414-ff116616dcf8');
-    return "sgsg";
+  @Get('api/posts/getMax')
+  async testdm() {
+    return await this.cmodService.getMax2();
   }
 
 
