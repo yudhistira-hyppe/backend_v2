@@ -107,7 +107,9 @@ export class Posts {
   @Prop()
   apsaraThumnail: string;
   @Prop()
-  statusCB: string;  
+  statusCB: string;
+  @Prop()
+  moderationReason: string;
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

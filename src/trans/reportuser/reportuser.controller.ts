@@ -2799,7 +2799,20 @@ export class ReportuserController {
 
         try {
             peaks = await this.postsService.countReason(postID);
-            data = peaks.reduce((maxPeak, peak) => !maxPeak || maxPeak.myCount < peak.myCount ? peak : maxPeak, null);
+            var post = await this.postsService.findByPostId(postID);
+            if (await this.utilsService.ceckData(post)) {
+                if (post.contentModeration){
+                    data = {
+                        "_id": post.moderationReason,
+                            "myCount": 1
+                    }
+                } else {
+                    data = peaks.reduce((maxPeak, peak) => !maxPeak || maxPeak.myCount < peak.myCount ? peak : maxPeak, null);
+                }
+            } else {
+                peaks = null;
+                data = null;
+            }
 
         } catch (e) {
             peaks = null;
