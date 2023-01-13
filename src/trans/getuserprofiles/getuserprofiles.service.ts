@@ -972,6 +972,13 @@ export class GetuserprofilesService {
     }
     var dtlogin = dateendlogin.substring(0, 10);
     var pipeline = [];
+
+    if (page > 0) {
+      pipeline.push({ $skip: (page * limit) });
+    }
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
     pipeline.push(
       {
         $addFields: {
@@ -1087,9 +1094,9 @@ export class GetuserprofilesService {
             },
             {
               $sort: { createdAt: order }
-            }
+            },
 
-
+            { $limit: 1 }
           ],
 
         }
@@ -1340,12 +1347,7 @@ export class GetuserprofilesService {
       pipeline.push({ $match: { lastlogin: { $lte: dtlogin } } });
     }
 
-    if (page > 0) {
-      pipeline.push({ $skip: (page * limit) });
-    }
-    if (limit > 0) {
-      pipeline.push({ $limit: limit });
-    }
+
     let query = await this.getuserprofilesModel.aggregate(pipeline);
 
     return query;
@@ -1494,8 +1496,8 @@ export class GetuserprofilesService {
             },
             {
               $sort: { createdAt: -1 }
-            }
-
+            },
+            { $limit: 1 }
 
           ],
 

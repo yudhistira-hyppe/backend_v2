@@ -725,6 +725,35 @@ export class AdsController {
         return { response_code: 202, data, messages };
     }
 
+    @Post('management/adscenter/details')
+    @UseGuards(JwtAuthGuard)
+    async contentuserdetail(@Req() request: Request): Promise<any> {
+
+        var id = null;
+        var startdate = null;
+        var enddate = null;
+        var request_json = JSON.parse(JSON.stringify(request.body));
+        if (request_json["id"] !== undefined) {
+            id = request_json["id"];
+        } else {
+            throw new BadRequestException("Unabled to proceed");
+        }
+
+        const mongoose = require('mongoose');
+        var ObjectId = require('mongodb').ObjectId;
+        var idads = mongoose.Types.ObjectId(id);
+        startdate = request_json["startdate"];
+        enddate = request_json["enddate"];
+        const messages = {
+            "info": ["The process successful"],
+        };
+
+        let data = await this.adsService.detailAds(idads, startdate, enddate);
+
+        return { response_code: 202, data, messages };
+    }
+
+
     async parseJwt(token) {
         return JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
     };
