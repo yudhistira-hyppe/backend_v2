@@ -728,6 +728,7 @@ export class AuthController {
   @HttpCode(HttpStatus.ACCEPTED)
   async deviceactivity(@Body() DeviceActivityRequest_: DeviceActivityRequest, @Headers() headers) {
     var getDeviceAr = await this.utilsService.getDeepAr("63a3ff2cd42900004b003ec2");
+    var getSetting = await this.utilsService.getSetting_("62bbdb4ba7520000050077a7");
     var user_email_header = headers['x-auth-user'];
     var user_email = DeviceActivityRequest_.email;
     var user_deviceId = DeviceActivityRequest_.deviceId;
@@ -860,6 +861,7 @@ export class AuthController {
           messages: {
             info: ['Device activity logging successful'],
           },
+          version: getSetting,
         };
       } else {
         await this.errorHandler.generateNotAcceptableException(
