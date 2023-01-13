@@ -26,6 +26,147 @@ export class AdsService {
         }
         return data;
     }
+    async getapsaraDatabaseAds(obj: object) {
+        let idapsara = null;
+        let apsara = null;
+        let apsaradefine = null;
+        let idapsaradefine = null;
+        let pict = null;
+
+        var lengage = null;
+        var sumage = null;
+        var dataSum = [];
+        var age = [];
+        var wilayah = [];
+        var lengwilayah = null;
+        var sumwilayah = null;
+        var dataSumwilayah = [];
+        try {
+            idapsara = obj[0].idApsara;
+        } catch (e) {
+            idapsara = "";
+        }
+        try {
+            apsara = obj[0].apsara;
+        } catch (e) {
+            apsara = false;
+        }
+        try {
+            wilayah = obj[0].wilayah;
+            lengwilayah = wilayah.length;
+        } catch (e) {
+            wilayah = [];
+            lengwilayah = 0;
+        }
+
+        try {
+            age = obj[0].age;
+            lengage = age.length;
+        } catch (e) {
+            age = [];
+            lengage = 0;
+        }
+        if (lengage > 0) {
+
+            for (let i = 0; i < lengage; i++) {
+                sumage += age[i].count;
+
+            }
+
+        } else {
+            sumage = 0;
+        }
+
+        if (lengage > 0) {
+
+            for (let i = 0; i < lengage; i++) {
+                let count = age[i].count;
+                let id = age[i]._id;
+
+                let persen = count * 100 / sumage;
+                var objcoun = {
+                    _id: id,
+                    count: count,
+                    persen: persen.toFixed(2)
+                }
+                dataSum.push(objcoun);
+            }
+
+        } else {
+            dataSum = [];
+        }
+
+        if (lengwilayah > 0) {
+
+            for (let i = 0; i < lengwilayah; i++) {
+                sumwilayah += wilayah[i].count;
+
+            }
+
+        } else {
+            sumwilayah = 0;
+        }
+
+        if (lengwilayah > 0) {
+
+            for (let i = 0; i < lengwilayah; i++) {
+                let count = wilayah[i].count;
+                let id = wilayah[i]._id;
+
+                let persen = count * 100 / sumwilayah;
+                var objcounwilayah = {
+                    _id: id,
+                    count: count,
+                    persen: persen.toFixed(2)
+                }
+                dataSumwilayah.push(objcounwilayah);
+            }
+
+        } else {
+            dataSumwilayah = [];
+        }
+        if (idapsara === undefined || idapsara === "" || idapsara === null) {
+            idapsaradefine = "";
+            apsaradefine = false
+        } else {
+            idapsaradefine = idapsara;
+            apsaradefine = true
+        }
+        var type = obj[0].type;
+        pict = [idapsara];
+
+        if (idapsara === "") {
+
+        } else {
+            if (type === "images") {
+
+                try {
+                    obj[0].apsaraId = idapsaradefine;
+                    obj[0].apsara = apsaradefine;
+                    obj[0].age = dataSum;
+                    obj[0].wilayah = dataSumwilayah;
+                    obj[0].media = await this.postContentService.getImageApsara(pict);
+                } catch (e) {
+                    obj[0].media = {};
+                }
+            }
+            else if (type === "video") {
+                try {
+                    obj[0].apsaraId = idapsaradefine;
+                    obj[0].apsara = apsaradefine;
+                    obj[0].age = dataSum;
+                    obj[0].wilayah = dataSumwilayah;
+                    obj[0].media = await this.postContentService.getVideoApsara(pict);
+                } catch (e) {
+                    obj[0].media = {};
+                }
+
+            }
+
+        }
+
+        return obj;
+    }
 
     async findAll(): Promise<Ads[]> {
         return this.adsModel.find().exec();
@@ -5362,6 +5503,1177 @@ export class AdsService {
         }
 
 
+    }
+
+    async detailAds(id: ObjectID, startdate: string, enddate: string) {
+        var currentdate = new Date(new Date(enddate).setDate(new Date(enddate).getDate() + 1));
+
+        var dateend = currentdate.toISOString();
+
+        var query = await this.adsModel.aggregate([
+            {
+                $match: {
+                    _id: id,
+
+                }
+            },
+            {
+                $lookup: {
+                    from: "adsplaces",
+                    localField: "placingID",
+                    foreignField: "_id",
+                    as: "placeData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "adstypes",
+                    localField: "typeAdsID",
+                    foreignField: "_id",
+                    as: "typesData"
+                }
+            },
+            {
+                $lookup: {
+                    from: "userbasics",
+                    localField: "userID",
+                    foreignField: "_id",
+                    as: "userbasics_data"
+                }
+            },
+            {
+                $project: {
+                    userID: 1,
+                    fullName: '$user.fullName',
+                    email: '$user.email',
+                    timestamp: 1,
+                    expiredAt: 1,
+                    gender: 1,
+                    liveAt: 1,
+                    name: 1,
+                    description: 1,
+                    objectifitas: 1,
+                    status: 1,
+                    totalClick: 1,
+                    totalUsedCredit: 1,
+                    totalView: 1,
+                    urlLink: 1,
+                    isActive: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    namePlace: {
+                        $arrayElemAt: ['$placeData.namePlace', 0]
+                    },
+                    nameType: {
+                        $arrayElemAt: ['$typesData.nameType', 0]
+                    },
+                    idApsara: 1,
+                    duration: 1,
+                    tayang: 1,
+                    type: 1
+                }
+            },
+            {
+                "$lookup": {
+                    from: "userads",
+                    as: "view",
+                    let: {
+                        local_id: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "statusClick": 1,
+                                "statusView": 1,
+
+                            }
+                        },
+                        {
+                            $match: {
+
+
+                                statusView: true
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$adsID",
+                                myCount: {
+                                    $sum: 1
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: "$_id",
+                                "totalView": "$myCount",
+
+                            }
+                        }
+                    ],
+
+                }
+            },
+            {
+                "$lookup": {
+                    from: "userads",
+                    as: "click",
+                    let: {
+                        local_id: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "statusClick": 1,
+                                "statusView": 1,
+
+                            }
+                        },
+                        {
+                            $match: {
+
+
+                                statusClick: true
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "$adsID",
+                                myCount: {
+                                    $sum: 1
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: "$_id",
+                                "totalClick": "$myCount",
+
+                            }
+                        }
+                    ],
+
+                }
+            },
+            {
+                $project: {
+                    userID: 1,
+                    fullName: 1,
+                    email: 1,
+                    timestamp: 1,
+                    expiredAt: 1,
+                    gender: 1,
+                    liveAt: 1,
+                    name: 1,
+                    description: 1,
+                    objectifitas: 1,
+                    status: 1,
+                    totalUsedCredit: 1,
+                    urlLink: 1,
+                    isActive: 1,
+                    namePlace: 1,
+                    nameType: 1,
+                    idApsara: 1,
+                    duration: 1,
+                    tayang: 1,
+                    type: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    totalView: {
+                        $arrayElemAt: ['$view.totalView', 0]
+                    },
+                    totalClick: {
+                        $arrayElemAt: ['$click.totalClick', 0]
+                    },
+
+                }
+            },
+            {
+                "$lookup": {
+                    from: "userads",
+                    as: "viewrange",
+                    let: {
+                        local_id: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "statusClick": 1,
+                                "statusView": 1,
+                                "createdAt": 1
+                            }
+                        },
+                        {
+                            $match: {
+
+
+                                statusView: true,
+                                createdAt: {
+                                    $gte: startdate,
+                                    $lte: dateend
+                                }
+                            }
+                        },
+
+                    ],
+
+                }
+            },
+            {
+                "$lookup": {
+                    from: "userads",
+                    as: "clickrange",
+                    let: {
+                        local_id: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "statusClick": 1,
+                                "statusView": 1,
+                                "createdAt": 1
+                            }
+                        },
+                        {
+                            $match: {
+
+
+                                statusClick: true,
+                                createdAt: {
+                                    $gte: startdate,
+                                    $lte: dateend
+                                }
+                            }
+                        },
+
+                    ],
+
+                }
+            },
+            {
+                "$lookup": {
+                    from: "userads",
+                    as: "sumview",
+                    let: {
+                        local_id: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "statusClick": 1,
+                                "statusView": 1,
+                                "createdAt": 1
+                            }
+                        },
+                        {
+                            $match: {
+
+
+                                statusView: true,
+                                createdAt: {
+                                    $gte: startdate,
+                                    $lte: dateend
+                                }
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: {
+                                    tanggal: {
+                                        $substrCP: [
+                                            "$createdAt",
+                                            0,
+                                            10
+                                        ]
+                                    }
+                                },
+                                total: {
+                                    $sum: 1
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                date: "$_id.tanggal",
+                                total: 1,
+
+                            }
+                        },
+                        {
+                            $sort: {
+                                date: 1
+                            }
+                        },
+
+                    ],
+
+                }
+            },
+            {
+                "$lookup": {
+                    from: "userads",
+                    as: "sumclick",
+                    let: {
+                        local_id: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "statusClick": 1,
+                                "statusView": 1,
+                                "createdAt": 1
+                            }
+                        },
+                        {
+                            $match: {
+
+
+                                statusClick: true,
+                                createdAt: {
+                                    $gte: startdate,
+                                    $lte: dateend
+                                }
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: {
+                                    tanggal: {
+                                        $substrCP: [
+                                            "$createdAt",
+                                            0,
+                                            10
+                                        ]
+                                    }
+                                },
+                                total: {
+                                    $sum: 1
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                date: "$_id.tanggal",
+                                total: 1,
+
+                            }
+                        },
+                        {
+                            $sort: {
+                                date: 1
+                            }
+                        },
+
+                    ],
+
+                }
+            },
+            {
+                $addFields:
+                {
+                    view:
+                    {
+                        $size: "$viewrange"
+                    },
+                    click:
+                    {
+                        $size: "$clickrange"
+                    },
+                    tview: {
+                        $cmp: ["$totalView", 0]
+                    },
+                    tclick: {
+                        $cmp: ["$totalClick", 0]
+                    }
+                }
+            },
+            {
+                $project: {
+                    userID: 1,
+                    fullName: 1,
+                    email: 1,
+                    timestamp: 1,
+                    expiredAt: 1,
+                    gender: 1,
+                    liveAt: 1,
+                    name: 1,
+                    description: 1,
+                    objectifitas: 1,
+                    status: 1,
+                    totalUsedCredit: 1,
+                    urlLink: 1,
+                    isActive: 1,
+                    namePlace: 1,
+                    nameType: 1,
+                    idApsara: 1,
+                    duration: 1,
+                    tayang: 1,
+                    type: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    totalView: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$tview", - 1]
+                                }, {
+                                    $eq: ["$tview", 0]
+                                },]
+                            },
+                            then: 0,
+                            else: "$totalView"
+                        },
+
+                    },
+                    totalClick: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$tclick", - 1]
+                                }, {
+                                    $eq: ["$tclick", 0]
+                                },]
+                            },
+                            then: 0,
+                            else: "$totalClick"
+                        },
+
+                    },
+                    view: 1,
+                    click: 1,
+                    sumview: 1,
+                    sumclick: 1
+                }
+            },
+            {
+                "$lookup": {
+                    from: "accountbalances",
+                    as: "reward",
+                    let: {
+                        local_id: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$idtrans', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "type": 1,
+                                "kredit": 1
+                            }
+                        },
+                        {
+                            $match: {
+
+                                "type": "rewards",
+
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: null,
+                                totalbiaya: {
+                                    $sum: "$kredit"
+                                }
+                            }
+                        },
+
+                    ],
+
+                }
+            },
+            {
+                "$lookup": {
+                    from: "userads",
+                    as: "clickrange",
+                    let: {
+                        local_id: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                "statusClick": 1,
+                                "statusView": 1,
+                                "createdAt": 1
+                            }
+                        },
+                        {
+                            $match: {
+
+
+                                statusClick: true,
+                                createdAt: {
+                                    $gte: startdate,
+                                    $lte: dateend
+                                }
+                            }
+                        },
+
+                    ],
+
+                }
+            },
+            {
+                $project: {
+                    userID: 1,
+                    fullName: 1,
+                    email: 1,
+                    timestamp: 1,
+                    expiredAt: 1,
+                    gender: 1,
+                    liveAt: 1,
+                    name: 1,
+                    description: 1,
+                    objectifitas: 1,
+                    status: 1,
+                    totalUsedCredit: 1,
+                    urlLink: 1,
+                    isActive: 1,
+                    namePlace: 1,
+                    nameType: 1,
+                    idApsara: 1,
+                    duration: 1,
+                    tayang: 1,
+                    type: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    totalView: 1,
+                    totalClick: 1,
+                    view: 1,
+                    click: 1,
+                    totalbiaya: {
+                        $arrayElemAt: ['$reward.totalbiaya', 0]
+                    },
+                    sumview: 1,
+                    sumclick: 1
+                }
+            },
+            {
+                $addFields:
+                {
+
+                    tbiaya: {
+                        $cmp: ["$totalbiaya", 0]
+                    }
+                }
+            },
+            {
+                $project: {
+                    userID: 1,
+                    fullName: 1,
+                    email: 1,
+                    timestamp: 1,
+                    expiredAt: 1,
+                    gender: 1,
+                    liveAt: 1,
+                    name: 1,
+                    description: 1,
+                    objectifitas: 1,
+                    status: 1,
+                    totalUsedCredit: 1,
+                    urlLink: 1,
+                    isActive: 1,
+                    namePlace: 1,
+                    nameType: 1,
+                    idApsara: 1,
+                    duration: 1,
+                    tayang: 1,
+                    type: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    totalView: 1,
+                    totalClick: 1,
+                    view: 1,
+                    click: 1,
+                    totalbiaya: {
+                        $cond: {
+                            if: {
+                                $or: [{
+                                    $eq: ["$tbiaya", - 1]
+                                }, {
+                                    $eq: ["$tbiaya", 0]
+                                },]
+                            },
+                            then: 0,
+                            else: "$totalbiaya"
+                        },
+
+                    },
+                    sumview: 1,
+                    sumclick: 1
+                }
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "wilayah",
+                    "let": {
+                        "local_id": "$_id",
+
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+
+                            }
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+
+                            }
+                        },
+                        {
+                            $project: {
+
+                                states: '$ubasic.states',
+
+                            }
+                        },
+                        {
+                            $project: {
+
+                                states: 1,
+
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'areas',
+                                localField: 'states.$id',
+                                foreignField: '_id',
+                                as: 'areas_data',
+
+                            },
+
+                        },
+                        {
+                            $unwind: {
+                                path: "$areas_data",
+
+                            }
+                        },
+                        {
+                            $project: {
+
+                                stateName: '$areas_data.stateName'
+                            }
+                        },
+                        {
+                            "$group": {
+                                "_id": "$stateName",
+                                "count": {
+                                    "$sum": 1
+                                }
+                            }
+                        }
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "age",
+                    "let": {
+                        "local_id": "$_id",
+
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+
+                            }
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+
+                            }
+                        },
+                        {
+                            $project: {
+                                dob: '$ubasic.dob',
+
+                            }
+                        },
+                        {
+                            $project: {
+
+                                age: {
+                                    $cond: {
+                                        if: {
+                                            $and: [
+                                                '$dob',
+                                                {
+                                                    $ne: ["$dob", ""]
+                                                }
+                                            ]
+                                        },
+                                        then: {
+                                            $toInt: {
+                                                $divide: [{
+                                                    $subtract: [new Date(), {
+                                                        $toDate: "$dob"
+                                                    }]
+                                                }, (365 * 24 * 60 * 60 * 1000)]
+                                            }
+                                        },
+                                        else: 0
+                                    }
+                                },
+
+                            }
+                        },
+                        {
+                            $project: {
+
+                                ageQualication: {
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $gt: ["$age", 44]
+                                                },
+                                                then: "< 44 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: ["$age", 36]
+                                                    }, {
+                                                        $lte: ["$age", 44]
+                                                    }]
+                                                },
+                                                then: "35-44 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: ["$age", 25]
+                                                    }, {
+                                                        $lte: ["$age", 35]
+                                                    }]
+                                                },
+                                                then: "24-35 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: ["$age", 14]
+                                                    }, {
+                                                        $lte: ["$age", 24]
+                                                    }]
+                                                },
+                                                then: "14-24 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: ["$age", 1]
+                                                    }, {
+                                                        $lt: ["$age", 14]
+                                                    }]
+                                                },
+                                                then: "< 14 Tahun"
+                                            }
+                                        ],
+                                        "default": "other"
+                                    }
+                                },
+
+                            }
+                        },
+                        {
+                            "$group": {
+                                "_id": "$ageQualication",
+                                "count": {
+                                    "$sum": 1
+                                }
+                            }
+                        }
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "gender",
+                    "let": {
+                        "local_id": "$_id",
+
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $match: {
+                                createdAt: {
+                                    $gte: startdate,
+                                    $lte: dateend
+                                }
+                            }
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $project: {
+                                gender: 1,
+
+                            }
+                        },
+                        {
+                            "$group": {
+                                "_id": "$gender",
+                                "count": {
+                                    "$sum": 1
+                                }
+                            }
+                        }
+                    ],
+
+                },
+
+            },
+            {
+                $project: {
+                    userID: 1,
+                    fullName: 1,
+                    email: 1,
+                    timestamp: 1,
+                    expiredAt: 1,
+                    liveAt: 1,
+                    name: 1,
+                    description: 1,
+                    objectifitas: 1,
+                    status: 1,
+                    totalUsedCredit: 1,
+                    urlLink: 1,
+                    isActive: 1,
+                    namePlace: 1,
+                    nameType: 1,
+                    idApsara: 1,
+                    duration: 1,
+                    tayang: 1,
+                    type: 1,
+                    usedCredit: 1,
+                    usedCreditFree: 1,
+                    creditFree: 1,
+                    creditValue: 1,
+                    totalCredit: 1,
+                    totalView: 1,
+                    totalClick: 1,
+                    view: 1,
+                    click: 1,
+                    totalbiaya: 1,
+                    wilayah: 1,
+                    age: 1,
+                    gender: 1,
+                    sumview: 1,
+                    sumclick: 1
+                }
+            },
+
+        ]);
+        var arrayData = [];
+        let data = await this.getapsaraDatabaseAds(query);
+        arrayData.push(data[0])
+        return arrayData;
     }
 
 }
