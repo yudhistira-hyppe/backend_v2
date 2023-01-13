@@ -824,7 +824,7 @@ export class ContenteventsController {
           await this.contenteventsService.create(CreateContenteventsDto2);
           await this.postsService.updateReaction(email_receiverParty, request.body.postID);
           await this.insightsService.updateReactions(email_user);
-          this.sendInteractiveFCM(email_receiverParty, "REACTION", request.body.postID, email_user, Emote);
+          //this.sendInteractiveFCM(email_receiverParty, "REACTION", request.body.postID, email_user, Emote);
         } catch (error) {
           await this.errorHandler.generateNotAcceptableException(
             'Unabled to proceed, ' +
