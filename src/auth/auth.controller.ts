@@ -861,7 +861,7 @@ export class AuthController {
           messages: {
             info: ['Device activity logging successful'],
           },
-          version: getSetting,
+          version: getSetting.toString(),
         };
       } else {
         await this.errorHandler.generateNotAcceptableException(
