@@ -53,7 +53,7 @@ export class CreatePostsDto {
     boosted: any[];
     boostCount: number;
     isBoost: number;
-    moderationReason: string;
+    moderationReason: string[];
 }
 
 export class CreatePostResponse {

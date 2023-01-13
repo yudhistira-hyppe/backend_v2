@@ -338,12 +338,12 @@ export class ContentModService {
       return;      
     }    
 
-    let reason = "";
+    let reason = [];
     let res = con.results;
-    var dataResult = await this.getMax(res);
+    var dataResult = await this.getReason(res);
     this.logger.log('cmodResponse >>> dataResult: ' + JSON.stringify(dataResult));
     if (await this.utilService.ceckData(dataResult)) {
-      reason = dataResult['scene'];
+      reason = dataResult;
     }
     pd.moderationReason = reason;
     let pass = true;
@@ -387,7 +387,28 @@ export class ContentModService {
     const highest = Array_.reduce((previous, current) => {
       return current['rate'] > previous['rate'] ? current : previous;
     });
-    return highest;
+    var filteredArray = Array_.filter(function (itm) {
+      return itm['rate'] == highest['rate'];
+    });
+    if (filteredArray.length > 1) {
+      var resion = 'porn';
+      for (var i = 0; i < filteredArray.length;i++){
+        // if(){
+
+        // }
+      }
+      return highest;
+    } else {
+      return highest;
+    }
+  }
+
+  async getReason(Array_: Array<Object>) {
+    var reason = [];
+    for (var i = 0; i < Array_.length; i++){
+      reason.push(Array_["scene"]);
+    }
+    return reason;
   }
 
   async getMax2() {
