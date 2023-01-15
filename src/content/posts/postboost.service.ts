@@ -2989,16 +2989,16 @@ export class PostBoostService {
 
       }
 
-      if (obj.boosted != undefined) {
-        console.log("boosted: " + pd.postID);
-        this.postxService.updateBoostViewer(pd.postID, email);
-        pd.boostJangkauan = this.countBoosted(obj, email);
-      }
+      // if (obj.boosted != undefined) {
+      //   console.log("boosted: " + pd.postID);
+      //   this.postxService.updateBoostViewer(pd.postID, email);
+      //   pd.boostJangkauan = this.countBoosted(obj, email);
+      // }
 
-      if (obj.statusCB == undefined || obj.statusCB == 'PENDING') {
-        console.log("statusCB: " + obj.statusCB);
-        this.postService.cmodCheckResult(obj.postID);
-      }
+      // if (obj.statusCB == undefined || obj.statusCB == 'PENDING') {
+      //   console.log("statusCB: " + obj.statusCB);
+      //   this.postService.cmodCheckResult(obj.postID);
+      // }
 
 
       res.push(pd);
@@ -4186,22 +4186,22 @@ export class PostBoostService {
                 "boostViewer": 1,
                 "boostCount": 1,
                 "boosted":
-                {
-                  $cond: {
-                    if: {
-                      $gt: [{
-                        "$dateToString": {
-                          "format": "%Y-%m-%d %H:%M:%S",
-                          "date": {
-                            $add: [new Date(), 25200000]
+                  [{
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                              $add: [new Date(), 25200000]
+                            }
                           }
-                        }
-                      }, "$boosted.boostSession.end"]
-                    },
-                    then: [],
-                    else: '$boosted'
-                  }
-                },
+                        }, "$boosted.boostSession.end"]
+                      },
+                      then: {},
+                      else: '$boosted'
+                    }
+                  }],
                 "contentModeration": 1,
                 "reportedStatus": 1,
                 "reportedUserCount": 1,
@@ -4712,22 +4712,22 @@ export class PostBoostService {
                 "boostViewer": 1,
                 "boostCount": 1,
                 "boosted":
-                {
-                  $cond: {
-                    if: {
-                      $gt: [{
-                        "$dateToString": {
-                          "format": "%Y-%m-%d %H:%M:%S",
-                          "date": {
-                            $add: [new Date(), 25200000]
+                  [{
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                              $add: [new Date(), 25200000]
+                            }
                           }
-                        }
-                      }, "$boosted.boostSession.end"]
-                    },
-                    then: [],
-                    else: '$boosted'
-                  }
-                },
+                        }, "$boosted.boostSession.end"]
+                      },
+                      then: {},
+                      else: '$boosted'
+                    }
+                  }],
                 "contentModeration": 1,
                 "reportedStatus": 1,
                 "reportedUserCount": 1,
@@ -5247,22 +5247,22 @@ export class PostBoostService {
                 "boostViewer": 1,
                 "boostCount": 1,
                 "boosted":
-                {
-                  $cond: {
-                    if: {
-                      $gt: [{
-                        "$dateToString": {
-                          "format": "%Y-%m-%d %H:%M:%S",
-                          "date": {
-                            $add: [new Date(), 25200000]
+                  [{
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                              $add: [new Date(), 25200000]
+                            }
                           }
-                        }
-                      }, "$boosted.boostSession.end"]
-                    },
-                    then: [],
-                    else: '$boosted'
-                  }
-                },
+                        }, "$boosted.boostSession.end"]
+                      },
+                      then: {},
+                      else: '$boosted'
+                    }
+                  }],
                 "contentModeration": 1,
                 "reportedStatus": 1,
                 "reportedUserCount": 1,
@@ -5665,22 +5665,22 @@ export class PostBoostService {
                 "metadata": 1,
                 "boostDate": 1,
                 "boosted":
-                {
-                  $cond: {
-                    if: {
-                      $gt: [{
-                        "$dateToString": {
-                          "format": "%Y-%m-%d %H:%M:%S",
-                          "date": {
-                            $add: [new Date(), 25200000]
+                  [{
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                              $add: [new Date(), 25200000]
+                            }
                           }
-                        }
-                      }, "$boosted.boostSession.end"]
-                    },
-                    then: [],
-                    else: '$boosted'
-                  }
-                },
+                        }, "$boosted.boostSession.end"]
+                      },
+                      then: {},
+                      else: '$boosted'
+                    }
+                  }],
                 "end": "$boosted.boostSession.end",
                 "start": "$boosted.boostSession.start",
                 "isBoost": 1,
