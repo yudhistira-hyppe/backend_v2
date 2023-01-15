@@ -149,12 +149,7 @@ export class GetuserprofilesController {
     }
 
 
-    // try {
-    //   datafilter = await this.getuserprofilesService.countdbuser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin);
-    //   totalfilter = datafilter[0].totalpost;
-    // } catch (e) {
-    //   totalfilter = 0;
-    // }
+
 
     try {
       allrow = await this.getuserprofilesService.totalcount();
@@ -162,6 +157,19 @@ export class GetuserprofilesController {
     } catch (e) {
       totalallrow = 0;
     }
+
+
+    // if (startlogin === undefined && endlogin === undefined && jenis === undefined && lokasi === undefined && gender === undefined && username === undefined && startdate === undefined && enddate === undefined && startage === undefined && endage === undefined) {
+    //   totalfilter = totalallrow;
+    // } else {
+
+    //   try {
+    //     datafilter = await this.getuserprofilesService.countdbuser(username, gender, jenis, lokasi, startage, endage, startdate, enddate, startlogin, endlogin);
+    //     totalfilter = datafilter[0].totalpost;
+    //   } catch (e) {
+    //     totalfilter = 0;
+    //   }
+    // }
     totalfilter = totalallrow;
     var tpage = null;
     var tpage2 = null;
