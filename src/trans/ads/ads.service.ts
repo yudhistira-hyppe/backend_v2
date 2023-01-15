@@ -7031,6 +7031,27 @@ export class AdsService {
                                 
                         }
                     ],
+                    "age":[
+                        {
+                            $unwind: {
+                                path: "$dobView",
+                                
+                            }
+                        },
+                        {
+                            $project: {
+                                "umur": "$dobView"
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: '$umur',
+                                count: {
+                                    $sum: 1
+                                }
+                            }
+                        }
+                    ],
                     "areas": [
                         {
                             $unwind: {
