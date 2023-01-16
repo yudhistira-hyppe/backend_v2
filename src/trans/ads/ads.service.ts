@@ -26,7 +26,7 @@ export class AdsService {
         }
         return data;
     }
-    async getapsaraDatabaseAds(obj: object) {
+    async getapsaraDatabaseAds(obj: object, startdate: string, enddate: string) {
         let idapsara = null;
         let apsara = null;
         let apsaradefine = null;
@@ -41,6 +41,29 @@ export class AdsService {
         var lengwilayah = null;
         var sumwilayah = null;
         var dataSumwilayah = [];
+        var datasumview = [];
+        var lengview = null;
+        var arrdata = [];
+
+        var datasumclick = [];
+        var lengclick = null;
+        var arrdataclick = [];
+
+        var datasumdetailgender = [];
+        var lengdetailgender = null;
+        var arrdatadetailgender = [];
+
+
+        var date1 = new Date(startdate);
+        var date2 = new Date(enddate);
+
+        //calculate time difference  
+        var time_difference = date2.getTime() - date1.getTime();
+
+        //calculate days difference by dividing total milliseconds in a day  
+        var resultTime = time_difference / (1000 * 60 * 60 * 24);
+        console.log(resultTime);
+
         try {
             idapsara = obj[0].idApsara;
         } catch (e) {
@@ -57,6 +80,29 @@ export class AdsService {
         } catch (e) {
             wilayah = [];
             lengwilayah = 0;
+        }
+
+        try {
+            datasumview = obj[0].sumview;
+            lengview = datasumview.length;
+        } catch (e) {
+            datasumview = [];
+            lengview = 0;
+        }
+        try {
+            datasumdetailgender = obj[0].detailgender;
+            lengdetailgender = datasumdetailgender.length;
+        } catch (e) {
+            datasumdetailgender = [];
+            lengdetailgender = 0;
+        }
+
+        try {
+            datasumclick = obj[0].sumclick;
+            lengclick = datasumclick.length;
+        } catch (e) {
+            datasumclick = [];
+            lengclick = 0;
         }
 
         try {
@@ -125,6 +171,68 @@ export class AdsService {
         } else {
             dataSumwilayah = [];
         }
+
+        if (resultTime > 0) {
+            for (var i = 0; i < resultTime + 1; i++) {
+                var dt = new Date(startdate);
+                dt.setDate(dt.getDate() + i);
+                var splitdt = dt.toISOString();
+                var dts = splitdt.split('T');
+                var stdt = dts[0].toString();
+                var count = 0;
+                for (var j = 0; j < lengview; j++) {
+                    if (datasumview[j].date == stdt) {
+                        count = datasumview[j].total;
+                        break;
+                    }
+                }
+                arrdata.push({
+                    'date': stdt,
+                    'count': count
+                });
+
+            }
+
+        }
+
+        if (resultTime > 0) {
+            for (var i = 0; i < resultTime + 1; i++) {
+                var dt = new Date(startdate);
+                dt.setDate(dt.getDate() + i);
+                var splitdt = dt.toISOString();
+                var dts = splitdt.split('T');
+                var stdt = dts[0].toString();
+                var count = 0;
+                for (var j = 0; j < lengclick; j++) {
+                    if (datasumclick[j].date == stdt) {
+                        count = datasumclick[j].total;
+                        break;
+                    }
+                }
+                arrdataclick.push({
+                    'date': stdt,
+                    'count': count
+                });
+
+            }
+
+        }
+
+
+
+
+        const groupByMake = (arr = []) => {
+            let result = [];
+            result = arr.reduce((r, a) => {
+                r[a.date] = r[a.date] || [];
+                r[a.date].push(a);
+                return r;
+            }, Object.create(null));
+            return result;
+        };
+
+        var arrgen = groupByMake(datasumdetailgender);
+
         if (idapsara === undefined || idapsara === "" || idapsara === null) {
             idapsaradefine = "";
             apsaradefine = false
@@ -145,6 +253,9 @@ export class AdsService {
                     obj[0].apsara = apsaradefine;
                     obj[0].age = dataSum;
                     obj[0].wilayah = dataSumwilayah;
+                    obj[0].sumview = arrdata;
+                    obj[0].sumclick = arrdataclick;
+                    obj[0].detailgender = arrgen;
                     obj[0].media = await this.postContentService.getImageApsara(pict);
                 } catch (e) {
                     obj[0].media = {};
@@ -156,6 +267,9 @@ export class AdsService {
                     obj[0].apsara = apsaradefine;
                     obj[0].age = dataSum;
                     obj[0].wilayah = dataSumwilayah;
+                    obj[0].sumview = arrdata;
+                    obj[0].sumclick = arrdataclick;
+                    obj[0].detailgender = arrgen;
                     obj[0].media = await this.postContentService.getVideoApsara(pict);
                 } catch (e) {
                     obj[0].media = {};
@@ -6034,13 +6148,18 @@ export class AdsService {
                         {
                             $project: {
                                 "type": 1,
-                                "kredit": 1
+                                "kredit": 1,
+                                "timestamp": 1
                             }
                         },
                         {
                             $match: {
 
                                 "type": "rewards",
+                                "timestamp": {
+                                    $gte: startdate,
+                                    $lte: dateend
+                                }
 
                             }
                         },
@@ -6641,6 +6760,194 @@ export class AdsService {
 
             },
             {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "detailgender",
+                    "let": {
+                        "local_id": "$_id",
+
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match: {
+                                statusView: true,
+                                createdAt: {
+                                    $gte: "2023-01-12",
+                                    $lte: "2023-01-13"
+                                }
+                            }
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+
+                            }
+                        },
+
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: {
+                                    gender: '$gender',
+                                    tanggal: {
+                                        $substrCP: [
+                                            "$createdAt",
+                                            0,
+                                            10
+                                        ]
+                                    }
+                                },
+                                total: {
+                                    $sum: 1
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                date: "$_id.tanggal",
+                                gender: "$_id.gender",
+                                total: 1,
+
+                            }
+                        },
+                        {
+                            $sort: {
+                                date: 1
+                            }
+                        },
+
+                    ],
+
+                },
+
+            },
+            {
                 $project: {
                     userID: 1,
                     fullName: 1,
@@ -6675,21 +6982,22 @@ export class AdsService {
                     age: 1,
                     gender: 1,
                     sumview: 1,
-                    sumclick: 1
+                    sumclick: 1,
+                    detailgender: 1
                 }
             },
 
         ]);
         var arrayData = [];
-        let data = await this.getapsaraDatabaseAds(query);
+        let data = await this.getapsaraDatabaseAds(query, startdate, enddate);
         arrayData.push(data[0])
         return arrayData;
     }
 
-    async getgraphadsanalytics(userid : Types.ObjectId){
+    async getgraphadsanalytics(userid: Types.ObjectId) {
         const query = await this.adsModel.aggregate([
             {
-                $match: 
+                $match:
                 {
                     $and: [
                         {
@@ -6710,7 +7018,7 @@ export class AdsService {
                         //},
                     ]
                 },
-                
+
             },
             {
                 $lookup: {
@@ -6721,7 +7029,7 @@ export class AdsService {
                     },
                     pipeline: [
                         {
-                            $match: 
+                            $match:
                             {
                                 $and: [
                                     {
@@ -6731,17 +7039,17 @@ export class AdsService {
                                     },
                                     {
                                         "statusView": true,
-                                        
+
                                     },
-                                    
+
                                 ]
                             }
                         },
-                        
+
                     ],
-                    
+
                 },
-                
+
             },
             {
                 $lookup: {
@@ -6752,7 +7060,7 @@ export class AdsService {
                     },
                     pipeline: [
                         {
-                            $match: 
+                            $match:
                             {
                                 $and: [
                                     {
@@ -6762,17 +7070,17 @@ export class AdsService {
                                     },
                                     {
                                         "statusClick": true,
-                                        
+
                                     },
-                                    
+
                                 ]
                             }
                         },
-                        
+
                     ],
-                    
+
                 },
-                
+
             },
             {
                 "$lookup": {
@@ -6783,7 +7091,7 @@ export class AdsService {
                     },
                     pipeline: [
                         {
-                            $match: 
+                            $match:
                             {
                                 $expr: {
                                     $in: ['$_id', '$$localID']
@@ -6794,7 +7102,7 @@ export class AdsService {
                             $project: {
                                 "_id": 1,
                                 "gender": {
-                                    
+
                                     $switch: {
                                         branches: [
                                             {
@@ -6802,69 +7110,69 @@ export class AdsService {
                                                     $eq: ['$gender', 'FEMALE']
                                                 },
                                                 then: 'FEMALE',
-                                                
+
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' FEMALE']
                                                 },
                                                 then: 'FEMALE',
-                                                
+
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Perempuan']
                                                 },
                                                 then: 'FEMALE',
-                                                
+
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Wanita']
                                                 },
                                                 then: 'FEMALE',
-                                                
+
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'MALE']
                                                 },
                                                 then: 'MALE',
-                                                
+
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', ' MALE']
                                                 },
                                                 then: 'MALE',
-                                                
+
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Laki-laki']
                                                 },
                                                 then: 'MALE',
-                                                
+
                                             },
                                             {
                                                 case: {
                                                     $eq: ['$gender', 'Pria']
                                                 },
                                                 then: 'MALE',
-                                                
+
                                             },
-                                            
+
                                         ],
                                         default: "OTHER",
-                                        
+
                                     },
-                                              
+
                                 },
                                 "cities": 1,
-                                "dob": 
+                                "dob":
                                 {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $and: ['$dob', {
                                                 $ne: ["$dob", ""]
                                             }]
@@ -6878,10 +7186,10 @@ export class AdsService {
                                                 }, (365 * 24 * 60 * 60 * 1000)]
                                             }
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
-                                
+
                             }
                         },
                         {
@@ -6889,7 +7197,7 @@ export class AdsService {
                                 "_id": 1,
                                 "gender": 1,
                                 "cities": 1,
-                                "dob": 
+                                "dob":
                                 {
                                     $switch: {
                                         branches: [
@@ -6943,11 +7251,11 @@ export class AdsService {
                                         "default": "other"
                                     }
                                 },
-                                
+
                             }
                         }
                     ],
-                    
+
                 }
             },
             {
@@ -6956,9 +7264,9 @@ export class AdsService {
                     localField: 'userView.cities.$id',
                     foreignField: '_id',
                     as: 'citiesView',
-                    
+
                 },
-                
+
             },
             {
                 $lookup: {
@@ -6966,9 +7274,9 @@ export class AdsService {
                     localField: 'citiesView.stateID',
                     foreignField: 'stateID',
                     as: 'areasView',
-                    
+
                 },
-                
+
             },
             {
                 $project: {
@@ -6982,27 +7290,27 @@ export class AdsService {
                     "dobClick": "$userView.dob",
                     "view": {
                         $cond: {
-                            if : {
+                            if: {
                                 $isArray: "$view"
                             },
                             then: {
                                 $size: "$view"
                             },
-                            else : 0
+                            else: 0
                         }
                     },
                     "click": {
                         $cond: {
-                            if : {
+                            if: {
                                 $isArray: "$click"
                             },
                             then: {
                                 $size: "$click"
                             },
-                            else : 0
+                            else: 0
                         }
                     },
-                    
+
                 }
             },
             {
@@ -7014,9 +7322,9 @@ export class AdsService {
                                 view: {
                                     $sum: "$view"
                                 },
-                                        
+
                             }
-                                
+
                         }
                     ],
                     "click": [
@@ -7026,16 +7334,16 @@ export class AdsService {
                                 click: {
                                     $sum: "$click"
                                 },
-                                        
+
                             }
-                                
+
                         }
                     ],
-                    "age":[
+                    "age": [
                         {
                             $unwind: {
                                 path: "$dobView",
-                                
+
                             }
                         },
                         {
@@ -7056,7 +7364,7 @@ export class AdsService {
                         {
                             $unwind: {
                                 path: "$areaView",
-                                
+
                             }
                         },
                         {
@@ -7077,7 +7385,7 @@ export class AdsService {
                         {
                             $unwind: {
                                 path: "$genderView",
-                                
+
                             }
                         },
                         {
@@ -7097,7 +7405,7 @@ export class AdsService {
                     "day7": [
                         {
                             $set: {
-                                "timeStart": 
+                                "timeStart":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -7110,7 +7418,7 @@ export class AdsService {
                         },
                         {
                             $set: {
-                                "timeEnd": 
+                                "timeEnd":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -7130,7 +7438,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7151,16 +7459,16 @@ export class AdsService {
                                                         $lt: ["$liveAt", "$timeEnd"]
                                                     }
                                                 },
-                                                
+
                                             ]
                                         },
-                                        
+
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -7171,7 +7479,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7181,17 +7489,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusView": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -7202,7 +7510,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7212,17 +7520,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusClick": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $project: {
@@ -7230,27 +7538,27 @@ export class AdsService {
                                 "end": "$timeEnd",
                                 "view": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$view"
                                         },
                                         then: {
                                             $size: "$view"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
                                 "click": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$click"
                                         },
                                         then: {
                                             $size: "$click"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
-                                
+
                             }
                         },
                         {
@@ -7268,15 +7576,15 @@ export class AdsService {
                                 timeEndt: {
                                     $first: "$end"
                                 },
-                                             
+
                             }
-                                
+
                         }
                     ],
                     "day6": [
                         {
                             $set: {
-                                "timeStart": 
+                                "timeStart":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -7289,7 +7597,7 @@ export class AdsService {
                         },
                         {
                             $set: {
-                                "timeEnd": 
+                                "timeEnd":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -7309,7 +7617,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7330,16 +7638,16 @@ export class AdsService {
                                                         $lt: ["$liveAt", "$timeEnd"]
                                                     }
                                                 },
-                                                
+
                                             ]
                                         },
-                                        
+
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -7350,7 +7658,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7360,17 +7668,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusView": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -7381,7 +7689,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7391,17 +7699,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusClick": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $project: {
@@ -7409,27 +7717,27 @@ export class AdsService {
                                 "end": "$timeEnd",
                                 "view": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$view"
                                         },
                                         then: {
                                             $size: "$view"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
                                 "click": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$click"
                                         },
                                         then: {
                                             $size: "$click"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
-                                
+
                             }
                         },
                         {
@@ -7447,16 +7755,16 @@ export class AdsService {
                                 timeEndt: {
                                     $first: "$end"
                                 },
-                                 
-                                        
+
+
                             }
-                                
+
                         }
                     ],
                     "day5": [
                         {
                             $set: {
-                                "timeStart": 
+                                "timeStart":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -7469,7 +7777,7 @@ export class AdsService {
                         },
                         {
                             $set: {
-                                "timeEnd": 
+                                "timeEnd":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -7489,7 +7797,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7510,16 +7818,16 @@ export class AdsService {
                                                         $lt: ["$liveAt", "$timeEnd"]
                                                     }
                                                 },
-                                                
+
                                             ]
                                         },
-                                        
+
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -7530,7 +7838,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7540,17 +7848,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusView": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -7561,7 +7869,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7571,17 +7879,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusClick": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $project: {
@@ -7589,27 +7897,27 @@ export class AdsService {
                                 "end": "$timeEnd",
                                 "view": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$view"
                                         },
                                         then: {
                                             $size: "$view"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
                                 "click": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$click"
                                         },
                                         then: {
                                             $size: "$click"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
-                                
+
                             }
                         },
                         {
@@ -7627,16 +7935,16 @@ export class AdsService {
                                 timeEndt: {
                                     $first: "$end"
                                 },
-                                 
-                                        
+
+
                             }
-                                
+
                         }
                     ],
                     "day4": [
                         {
                             $set: {
-                                "timeStart": 
+                                "timeStart":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -7649,7 +7957,7 @@ export class AdsService {
                         },
                         {
                             $set: {
-                                "timeEnd": 
+                                "timeEnd":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -7669,7 +7977,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7690,16 +7998,16 @@ export class AdsService {
                                                         $lt: ["$liveAt", "$timeEnd"]
                                                     }
                                                 },
-                                                
+
                                             ]
                                         },
-                                        
+
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -7710,7 +8018,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7720,17 +8028,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusView": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -7741,7 +8049,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7751,17 +8059,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusClick": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $project: {
@@ -7769,27 +8077,27 @@ export class AdsService {
                                 "end": "$timeEnd",
                                 "view": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$view"
                                         },
                                         then: {
                                             $size: "$view"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
                                 "click": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$click"
                                         },
                                         then: {
                                             $size: "$click"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
-                                
+
                             }
                         },
                         {
@@ -7807,16 +8115,16 @@ export class AdsService {
                                 timeEndt: {
                                     $first: "$end"
                                 },
-                                 
-                                        
+
+
                             }
-                                
+
                         }
                     ],
                     "day3": [
                         {
                             $set: {
-                                "timeStart": 
+                                "timeStart":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -7829,7 +8137,7 @@ export class AdsService {
                         },
                         {
                             $set: {
-                                "timeEnd": 
+                                "timeEnd":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -7849,7 +8157,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7870,16 +8178,16 @@ export class AdsService {
                                                         $lt: ["$liveAt", "$timeEnd"]
                                                     }
                                                 },
-                                                
+
                                             ]
                                         },
-                                        
+
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -7890,7 +8198,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7900,17 +8208,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusView": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -7921,7 +8229,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -7931,17 +8239,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusClick": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $project: {
@@ -7949,27 +8257,27 @@ export class AdsService {
                                 "end": "$timeEnd",
                                 "view": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$view"
                                         },
                                         then: {
                                             $size: "$view"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
                                 "click": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$click"
                                         },
                                         then: {
                                             $size: "$click"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
-                                
+
                             }
                         },
                         {
@@ -7987,16 +8295,16 @@ export class AdsService {
                                 timeEndt: {
                                     $first: "$end"
                                 },
-                                 
-                                        
+
+
                             }
-                                
+
                         }
                     ],
                     "day2": [
                         {
                             $set: {
-                                "timeStart": 
+                                "timeStart":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -8009,7 +8317,7 @@ export class AdsService {
                         },
                         {
                             $set: {
-                                "timeEnd": 
+                                "timeEnd":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -8029,7 +8337,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -8050,16 +8358,16 @@ export class AdsService {
                                                         $lt: ["$liveAt", "$timeEnd"]
                                                     }
                                                 },
-                                                
+
                                             ]
                                         },
-                                        
+
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -8070,7 +8378,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -8080,17 +8388,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusView": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -8101,7 +8409,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -8111,17 +8419,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusClick": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $project: {
@@ -8129,27 +8437,27 @@ export class AdsService {
                                 "end": "$timeEnd",
                                 "view": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$view"
                                         },
                                         then: {
                                             $size: "$view"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
                                 "click": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$click"
                                         },
                                         then: {
                                             $size: "$click"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
-                                
+
                             }
                         },
                         {
@@ -8167,16 +8475,16 @@ export class AdsService {
                                 timeEndt: {
                                     $first: "$end"
                                 },
-                                 
-                                        
+
+
                             }
-                                
+
                         }
                     ],
                     "day1": [
                         {
                             $set: {
-                                "timeStart": 
+                                "timeStart":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -8189,7 +8497,7 @@ export class AdsService {
                         },
                         {
                             $set: {
-                                "timeEnd": 
+                                "timeEnd":
                                 {
                                     "$dateToString": {
                                         "format": "%Y-%m-%d %H:%M:%S",
@@ -8209,7 +8517,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -8230,16 +8538,16 @@ export class AdsService {
                                                         $lt: ["$liveAt", "$timeEnd"]
                                                     }
                                                 },
-                                                
+
                                             ]
                                         },
-                                        
+
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -8250,7 +8558,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -8260,17 +8568,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusView": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $lookup: {
@@ -8281,7 +8589,7 @@ export class AdsService {
                                 },
                                 pipeline: [
                                     {
-                                        $match: 
+                                        $match:
                                         {
                                             $and: [
                                                 {
@@ -8291,17 +8599,17 @@ export class AdsService {
                                                 },
                                                 {
                                                     "statusClick": true,
-                                                    
+
                                                 },
-                                                
+
                                             ]
                                         }
                                     },
-                                    
+
                                 ],
-                                
+
                             },
-                            
+
                         },
                         {
                             $project: {
@@ -8309,27 +8617,27 @@ export class AdsService {
                                 "end": "$timeEnd",
                                 "view": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$view"
                                         },
                                         then: {
                                             $size: "$view"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
                                 "click": {
                                     $cond: {
-                                        if : {
+                                        if: {
                                             $isArray: "$click"
                                         },
                                         then: {
                                             $size: "$click"
                                         },
-                                        else : 0
+                                        else: 0
                                     }
                                 },
-                                
+
                             }
                         },
                         {
@@ -8347,13 +8655,13 @@ export class AdsService {
                                 timeEndt: {
                                     $first: "$end"
                                 },
-                                        
+
                             }
-                                
+
                         },
-                        
+
                     ],
-                    
+
                 }
             },
         ]);
