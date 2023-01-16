@@ -298,7 +298,7 @@ export class GetusercontentsController {
         };
 
         data = await this.getusercontentsService.getactivitygraph(email);
-        
+
         return { response_code: 202, data, messages };
     }
 
@@ -1139,6 +1139,9 @@ export class GetusercontentsController {
         var startmount = null;
         var endmount = null;
         var descending = null;
+        var iduser = null;
+        var buy = null;
+        var report = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -1163,11 +1166,15 @@ export class GetusercontentsController {
         startmount = request_json["startmount"];
         endmount = request_json["endmount"];
         descending = request_json["descending"];
+        iduser = request_json["iduser"];
+        buy = request_json["buy"];
+        report = request_json["report"];
+        var userid = mongoose.Types.ObjectId(iduser);
         var query = null;
         var datasearch = null;
         var dataall = null;
         try {
-            query = await this.getusercontentsService.databasenew(username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
+            query = await this.getusercontentsService.databasenew(buy, report, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
             data = query;
         } catch (e) {
             query = null;
@@ -1181,13 +1188,16 @@ export class GetusercontentsController {
             total = 0;
         }
 
-        try {
-            datasearch = await this.getusercontentsService.databasenewcount(username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
-            totalsearch = datasearch[0].totalpost;
-        } catch (e) {
-            totalsearch = 0;
+        if (total <= 10) {
+            totalsearch = total;
+        } else {
+            try {
+                datasearch = await this.getusercontentsService.databasenewcount(buy, report, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+                totalsearch = datasearch[0].totalpost;
+            } catch (e) {
+                totalsearch = 0;
+            }
         }
-
 
         try {
 
