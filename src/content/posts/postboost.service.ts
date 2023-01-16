@@ -2841,6 +2841,7 @@ export class PostBoostService {
 
   private processDataV2(src: any[], xvids: string[], xpics: string[], isLike: any[], isView: any[], email: string): PostData[] {
     let res: PostData[] = [];
+    var boost = null;
 
     if (src == undefined) {
       return res;
@@ -2848,6 +2849,9 @@ export class PostBoostService {
 
     for (let i = 0; i < src.length; i++) {
       let obj = src[i];
+      boost = obj.boosted[0];
+
+
 
       //console.log(JSON.stringify(obj));
 
@@ -2970,7 +2974,12 @@ export class PostBoostService {
       pd.apsaraMusic = undefined;
 
       pd.isBoost = obj.isBoost;
-      pd.boosted = obj.boosted;
+      if (boost === null || boost === "") {
+        pd.boosted = [];
+      } else {
+        pd.boosted = obj.boosted;
+      }
+
       pd.music = null;
       if (obj.music != undefined) {
         if (Array.isArray(obj.music)) {
@@ -4198,7 +4207,7 @@ export class PostBoostService {
                           }
                         }, "$boosted.boostSession.end"]
                       },
-                      then: {},
+                      then: "$kampretTaslim",
                       else: '$boosted'
                     }
                   }],
@@ -4724,7 +4733,7 @@ export class PostBoostService {
                           }
                         }, "$boosted.boostSession.end"]
                       },
-                      then: {},
+                      then: "$kampretTaslim",
                       else: '$boosted'
                     }
                   }],
@@ -5259,7 +5268,7 @@ export class PostBoostService {
                           }
                         }, "$boosted.boostSession.end"]
                       },
-                      then: {},
+                      then: "$kampretTaslim",
                       else: '$boosted'
                     }
                   }],
@@ -5677,7 +5686,7 @@ export class PostBoostService {
                           }
                         }, "$boosted.boostSession.end"]
                       },
-                      then: {},
+                      then: "$kampretTaslim",
                       else: '$boosted'
                     }
                   }],
