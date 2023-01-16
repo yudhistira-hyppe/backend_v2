@@ -11148,771 +11148,1546 @@ export class GetusercontentsService {
     if (limit > 0) {
       pipeline.push({ $limit: limit });
     }
-    pipeline.push(
 
-      {
-        $addFields: {
+    if (iduser && iduser !== undefined) {
+      pipeline.push(
 
-          salePrice: {
-            $cmp: ["$saleAmount", 0]
-          },
-          sLike: {
-            $cmp: ["$saleLike", 0]
-          },
-          sView: {
-            $cmp: ["$saleView", 0]
-          },
-          certi: {
-            $cmp: ["$certified", 0]
-          },
-          reportedCount: {
-            $cmp: ["$reportedUserCount", 0]
-          },
+        {
+          $addFields: {
 
-        }
-      },
-
-      {
-        $lookup: {
-          from: 'userauths',
-          localField: 'email',
-          foreignField: 'email',
-          as: 'authdata',
-
-        }
-      },
-      {
-        "$lookup": {
-          "from": "userbasics",
-          "as": "basicdata",
-          "let": {
-            "local_id": "$email",
-
-          },
-          "pipeline": [
-            {
-              $match:
-              {
-                $expr: {
-                  $eq: ['$email', '$$local_id']
-                }
-              }
+            salePrice: {
+              $cmp: ["$saleAmount", 0]
             },
-            {
-              $project: {
-                iduser: "$_id",
-
-              }
+            sLike: {
+              $cmp: ["$saleLike", 0]
+            },
+            sView: {
+              $cmp: ["$saleView", 0]
+            },
+            certi: {
+              $cmp: ["$certified", 0]
+            },
+            reportedCount: {
+              $cmp: ["$reportedUserCount", 0]
             },
 
-
-          ],
-
+          }
         },
 
-      },
-      {
-        "$lookup": {
-          "from": "transactions",
-          "as": "trans",
-          "let": {
-            "local_id": "$postID",
+        {
+          $lookup: {
+            from: 'userauths',
+            localField: 'email',
+            foreignField: 'email',
+            as: 'authdata',
 
-          },
-          "pipeline": [
-            {
-              $match:
+          }
+        },
+        {
+          "$lookup": {
+            "from": "userbasics",
+            "as": "basicdata",
+            "let": {
+              "local_id": "$email",
+
+            },
+            "pipeline": [
               {
-                $expr: {
-                  $eq: ['$postid', '$$local_id']
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$email', '$$local_id']
+                  }
                 }
-              }
-            },
-            {
-              $project: {
-                iduserbuyer: 1,
-                status: 1,
-                timestamp: 1
-              }
-            },
-            {
-              $match: {
-                "iduserbuyer": iduser,
-                "status": "Success"
-              }
-            },
-            {
-              $sort: {
-                timestamp: - 1
+              },
+              {
+                $project: {
+                  iduser: "$_id",
+
+                }
               },
 
-            },
-            {
-              $limit: 1
-            },
 
-          ],
+            ],
+
+          },
 
         },
+        {
+          "$lookup": {
+            "from": "transactions",
+            "as": "trans",
+            "let": {
+              "local_id": "$postID",
 
-      },
-      {
-        $addFields: {
-
-
-          'auth': {
-            $arrayElemAt: ['$authdata', 0]
-          },
-          'iduser': {
-            $arrayElemAt: ['$basicdata.iduser', 0]
-          },
-
-
-        }
-      },
-      {
-        "$lookup": {
-          "from": "interests_repo",
-          "as": "kategori",
-          "let": {
-            "local_id": "$category.$id",
-
-          },
-          "pipeline": [
-            {
-              $match:
+            },
+            "pipeline": [
               {
-                $and: [
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$postid', '$$local_id']
+                  }
+                }
+              },
+              {
+                $project: {
+                  iduserbuyer: 1,
+                  status: 1,
+                  timestamp: 1
+                }
+              },
+              {
+                $match: {
+                  "iduserbuyer": iduser,
+                  "status": "Success"
+                }
+              },
+              {
+                $sort: {
+                  timestamp: - 1
+                },
+
+              },
+              {
+                $limit: 1
+              },
+
+            ],
+
+          },
+
+        },
+        {
+          $addFields: {
+
+
+            'auth': {
+              $arrayElemAt: ['$authdata', 0]
+            },
+            'iduser': {
+              $arrayElemAt: ['$basicdata.iduser', 0]
+            },
+
+
+          }
+        },
+        {
+          "$lookup": {
+            "from": "interests_repo",
+            "as": "kategori",
+            "let": {
+              "local_id": "$category.$id",
+
+            },
+            "pipeline": [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+
+                        $in: ['$_id', {
+                          $ifNull: ['$$local_id', []]
+                        }]
+                      }
+                    },
+
+                  ]
+                }
+              },
+              {
+                $project: {
+                  interestName: 1,
+
+                }
+              },
+
+            ],
+
+          },
+
+        },
+        {
+          $project: {
+            refs: {
+              $arrayElemAt: ['$contentMedias', 0]
+            },
+            username: "$auth.username",
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            iduser: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            reportedUserCount: 1,
+            trans:
+            {
+              $size: "$trans"
+            },
+            certified:
+            {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$certi", - 1]
+                  }, {
+                    $eq: ["$certi", 0]
+                  }]
+                },
+                then: false,
+                else: "$certified"
+              }
+            },
+            visibility: 1,
+            saleAmount: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$salePrice", - 1]
+                  }, {
+                    $eq: ["$salePrice", 0]
+                  }]
+                },
+                then: 0,
+                else: "$saleAmount"
+              }
+            },
+            monetize: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$salePrice", - 1]
+                  }, {
+                    $eq: ["$salePrice", 0]
+                  }]
+                },
+                then: false,
+                else: true
+              }
+            },
+            reported: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$reportedCount", - 1]
+                  }, {
+                    $eq: ["$reportedCount", 0]
+                  }]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
+
+          }
+        },
+        {
+          $project: {
+            refs: '$refs.$ref',
+            idmedia: '$refs.$id',
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            reported: 1,
+            buy: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$trans", 0]
+                  }]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
+            type: {
+              $switch: {
+                branches: [
                   {
-                    $expr: {
-
-                      $in: ['$_id', {
-                        $ifNull: ['$$local_id', []]
-                      }]
-                    }
+                    'case': {
+                      '$eq': ['$postType', 'pict']
+                    },
+                    'then': "HyppePic"
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'vid']
+                    },
+                    'then': "HyppeVid"
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'diary']
+                    },
+                    'then': "HyppeDiary"
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'story']
+                    },
+                    'then': "HyppeStory"
                   },
 
-                ]
+                ],
+                default: ''
               }
             },
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan:
             {
-              $project: {
-                interestName: 1,
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$certified", false]
+                  }, {
+                    $eq: ["$certified", ""]
+                  }]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
+            visibility: 1,
+            saleAmount: 1,
+            statusJual:
+            {
+              $cond: {
+                if: {
 
+                  $eq: ["$monetize", false]
+                },
+                then: "TIDAK",
+                else: "YA"
               }
             },
 
-          ],
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediapicts',
+            localField: 'idmedia',
+            foreignField: '_id',
+            as: 'mediaPict_data',
+
+          },
 
         },
+        {
+          $lookup: {
+            from: 'mediadiaries',
+            localField: 'idmedia',
+            foreignField: '_id',
+            as: 'mediadiaries_data',
 
-      },
-      {
-        $project: {
-          refs: {
-            $arrayElemAt: ['$contentMedias', 0]
-          },
-          username: "$auth.username",
-          createdAt: 1,
-          updatedAt: 1,
-          postID: 1,
-          iduser: 1,
-          email: 1,
-          postType: 1,
-          description: 1,
-          title: 1,
-          active: 1,
-          kategori: 1,
-          reportedUserCount: 1,
-          trans:
-          {
-            $size: "$trans"
-          },
-          certified:
-          {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$certi", - 1]
-                }, {
-                  $eq: ["$certi", 0]
-                }]
-              },
-              then: false,
-              else: "$certified"
-            }
-          },
-          visibility: 1,
-          saleAmount: {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$salePrice", - 1]
-                }, {
-                  $eq: ["$salePrice", 0]
-                }]
-              },
-              then: 0,
-              else: "$saleAmount"
-            }
-          },
-          monetize: {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$salePrice", - 1]
-                }, {
-                  $eq: ["$salePrice", 0]
-                }]
-              },
-              then: false,
-              else: true
-            }
-          },
-          reported: {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$reportedCount", - 1]
-                }, {
-                  $eq: ["$reportedCount", 0]
-                }]
-              },
-              then: "TIDAK",
-              else: "YA"
-            }
           },
 
+        },
+        {
+          $lookup: {
+            from: 'mediavideos',
+            localField: 'idmedia',
+            foreignField: '_id',
+            as: 'mediavideos_data',
+
+          },
+
+        },
+        {
+          $lookup: {
+            from: 'mediastories',
+            localField: 'idmedia',
+            foreignField: '_id',
+            as: 'mediastories_data',
+
+          },
+
+        },
+        {
+          $project: {
+            mediapict: {
+              $arrayElemAt: ['$mediaPict_data', 0]
+            },
+            mediadiaries: {
+              $arrayElemAt: ['$mediadiaries_data', 0]
+            },
+            mediavideos: {
+              $arrayElemAt: ['$mediavideos_data', 0]
+            },
+            mediastories: {
+              $arrayElemAt: ['$mediastories_data', 0]
+            },
+            refs: 1,
+            idmedia: 1,
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            type: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan: 1,
+            visibility: 1,
+            saleAmount: 1,
+            statusJual: 1,
+            reported: 1,
+            buy: 1,
+
+          }
+        },
+        {
+          $addFields: {
+
+
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+            concatmediapict: '/pict',
+            media_pict: {
+              $replaceOne: {
+                input: "$mediapict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+            concatmediadiari: '/stream',
+            concatthumbdiari: '/thumb',
+            media_diari: '$mediadiaries.mediaUri',
+            concatmediavideo: '/stream',
+            concatthumbvideo: '/thumb',
+            media_video: '$mediavideos.mediaUri',
+            concatmediastory:
+            {
+              $cond: {
+                if: {
+
+                  $eq: ["$mediastories.mediaType", "image"]
+                },
+                then: '/pict',
+                else: '/stream',
+
+              }
+            },
+            concatthumbstory: '/thumb',
+            media_story: '$mediastories.mediaUri'
+          },
+
+        },
+        {
+          $project: {
+
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            type: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan: 1,
+            visibility: 1,
+            saleAmount: 1,
+            statusJual: 1,
+            reported: 1,
+            buy: 1,
+            mediaBasePath: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediapicts']
+                    },
+                    'then': '$mediapict.mediaBasePath'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediadiaries']
+                    },
+                    'then': '$mediadiaries.mediaBasePath'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediavideos']
+                    },
+                    'then': '$mediavideos.mediaBasePath'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediastories']
+                    },
+                    'then': '$mediastories.mediaBasePath'
+                  }
+                ],
+                default: ''
+              }
+            },
+            mediaUri: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediapicts']
+                    },
+                    'then': '$mediapict.mediaUri'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediadiaries']
+                    },
+                    'then': '$mediadiaries.mediaUri'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediavideos']
+                    },
+                    'then': '$mediavideos.mediaUri'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediastories']
+                    },
+                    'then': '$mediastories.mediaUri'
+                  }
+                ],
+                default: ''
+              }
+            },
+            mediaType: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediapicts']
+                    },
+                    'then': '$mediapict.mediaType'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediadiaries']
+                    },
+                    'then': '$mediadiaries.mediaType'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediavideos']
+                    },
+                    'then': '$mediavideos.mediaType'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediastories']
+                    },
+                    'then': '$mediastories.mediaType'
+                  }
+                ],
+                default: ''
+              }
+            },
+            mediaThumbEndpoint: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediapicts']
+                    },
+                    'then': '$mediadiaries.mediaThumb'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediadiaries']
+                    },
+                    'then': {
+                      $concat: ["$concatthumbdiari", "/", "$postID"]
+                    },
+
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediavideos']
+                    },
+                    'then': {
+                      $concat: ["$concatthumbvideo", "/", "$postID"]
+                    },
+
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediastories']
+                    },
+                    'then': {
+                      $concat: ["$concatthumbstory", "/", "$postID"]
+                    },
+
+                  },
+
+                ],
+                default: ''
+              }
+            },
+            mediaEndpoint: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediapicts']
+                    },
+                    'then': {
+                      $concat: ["$concatmediapict", "/", "$postID"]
+                    },
+
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediadiaries']
+                    },
+                    'then': {
+                      $concat: ["$concatmediadiari", "/", "$postID"]
+                    },
+
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediavideos']
+                    },
+                    'then': {
+                      $concat: ["$concatmediavideo", "/", "$postID"]
+                    },
+
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediastories']
+                    },
+                    'then': {
+                      $concat: ["$concatmediastory", "/", "$postID"]
+                    },
+
+                  }
+                ],
+                default: ''
+              }
+            },
+            mediaThumbUri: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediapicts']
+                    },
+                    'then': '$mediadiaries.mediaThumb'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediadiaries']
+                    },
+                    'then': '$mediadiaries.mediaThumb'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediavideos']
+                    },
+                    'then': '$mediavideos.mediaThumb'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediastories']
+                    },
+                    'then': '$mediastories.mediaThumb'
+                  }
+                ],
+                default: ''
+              }
+            },
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediastories"
+                      ]
+                    },
+                    then: "$mediastories.apsaraId"
+                  }
+                ],
+                default: false
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediastories"
+                      ]
+                    },
+                    then: "$mediastories.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
+
+          }
+        },
+        {
+          $match: {
+            iduser: iduser
+          }
         }
-      },
-      {
-        $project: {
-          refs: '$refs.$ref',
-          idmedia: '$refs.$id',
-          username: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          postID: 1,
-          postType: 1,
-          iduser: 1,
-          email: 1,
-          reported: 1,
-          buy: {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$trans", 0]
-                }]
+      );
+
+    }
+    else {
+      pipeline.push(
+
+        {
+          $addFields: {
+
+            salePrice: {
+              $cmp: ["$saleAmount", 0]
+            },
+            sLike: {
+              $cmp: ["$saleLike", 0]
+            },
+            sView: {
+              $cmp: ["$saleView", 0]
+            },
+            certi: {
+              $cmp: ["$certified", 0]
+            },
+            reportedCount: {
+              $cmp: ["$reportedUserCount", 0]
+            },
+
+          }
+        },
+
+        {
+          $lookup: {
+            from: 'userauths',
+            localField: 'email',
+            foreignField: 'email',
+            as: 'authdata',
+
+          }
+        },
+        {
+          "$lookup": {
+            "from": "userbasics",
+            "as": "basicdata",
+            "let": {
+              "local_id": "$email",
+
+            },
+            "pipeline": [
+              {
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$email', '$$local_id']
+                  }
+                }
               },
-              then: "TIDAK",
-              else: "YA"
-            }
-          },
-          type: {
-            $switch: {
-              branches: [
-                {
-                  'case': {
-                    '$eq': ['$postType', 'pict']
-                  },
-                  'then': "HyppePic"
-                },
-                {
-                  'case': {
-                    '$eq': ['$postType', 'vid']
-                  },
-                  'then': "HyppeVid"
-                },
-                {
-                  'case': {
-                    '$eq': ['$postType', 'diary']
-                  },
-                  'then': "HyppeDiary"
-                },
-                {
-                  'case': {
-                    '$eq': ['$postType', 'story']
-                  },
-                  'then': "HyppeStory"
-                },
+              {
+                $project: {
+                  iduser: "$_id",
 
-              ],
-              default: ''
-            }
-          },
-          description: 1,
-          title: 1,
-          active: 1,
-          kategori: 1,
-          kepemilikan:
-          {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$certified", false]
-                }, {
-                  $eq: ["$certified", ""]
-                }]
+                }
               },
-              then: "TIDAK",
-              else: "YA"
-            }
-          },
-          visibility: 1,
-          saleAmount: 1,
-          statusJual:
-          {
-            $cond: {
-              if: {
 
-                $eq: ["$monetize", false]
+
+            ],
+
+          },
+
+        },
+        {
+          "$lookup": {
+            "from": "transactions",
+            "as": "trans",
+            "let": {
+              "local_id": "$postID",
+
+            },
+            "pipeline": [
+              {
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$postid', '$$local_id']
+                  }
+                }
               },
-              then: "TIDAK",
-              else: "YA"
-            }
-          },
-
-        }
-      },
-      {
-        $lookup: {
-          from: 'mediapicts',
-          localField: 'idmedia',
-          foreignField: '_id',
-          as: 'mediaPict_data',
-
-        },
-
-      },
-      {
-        $lookup: {
-          from: 'mediadiaries',
-          localField: 'idmedia',
-          foreignField: '_id',
-          as: 'mediadiaries_data',
-
-        },
-
-      },
-      {
-        $lookup: {
-          from: 'mediavideos',
-          localField: 'idmedia',
-          foreignField: '_id',
-          as: 'mediavideos_data',
-
-        },
-
-      },
-      {
-        $lookup: {
-          from: 'mediastories',
-          localField: 'idmedia',
-          foreignField: '_id',
-          as: 'mediastories_data',
-
-        },
-
-      },
-      {
-        $project: {
-          mediapict: {
-            $arrayElemAt: ['$mediaPict_data', 0]
-          },
-          mediadiaries: {
-            $arrayElemAt: ['$mediadiaries_data', 0]
-          },
-          mediavideos: {
-            $arrayElemAt: ['$mediavideos_data', 0]
-          },
-          mediastories: {
-            $arrayElemAt: ['$mediastories_data', 0]
-          },
-          refs: 1,
-          idmedia: 1,
-          username: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          postID: 1,
-          postType: 1,
-          iduser: 1,
-          email: 1,
-          type: 1,
-          description: 1,
-          title: 1,
-          active: 1,
-          kategori: 1,
-          kepemilikan: 1,
-          visibility: 1,
-          saleAmount: 1,
-          statusJual: 1,
-          reported: 1,
-          buy: 1,
-
-        }
-      },
-      {
-        $addFields: {
-
-
-          pict: {
-            $replaceOne: {
-              input: "$profilpict.mediaUri",
-              find: "_0001.jpeg",
-              replacement: ""
-            }
-          },
-          concatmediapict: '/pict',
-          media_pict: {
-            $replaceOne: {
-              input: "$mediapict.mediaUri",
-              find: "_0001.jpeg",
-              replacement: ""
-            }
-          },
-          concatmediadiari: '/stream',
-          concatthumbdiari: '/thumb',
-          media_diari: '$mediadiaries.mediaUri',
-          concatmediavideo: '/stream',
-          concatthumbvideo: '/thumb',
-          media_video: '$mediavideos.mediaUri',
-          concatmediastory:
-          {
-            $cond: {
-              if: {
-
-                $eq: ["$mediastories.mediaType", "image"]
+              {
+                $project: {
+                  iduserbuyer: 1,
+                  status: 1,
+                  timestamp: 1
+                }
               },
-              then: '/pict',
-              else: '/stream',
+              {
+                $match: {
+                  "iduserbuyer": iduser,
+                  "status": "Success"
+                }
+              },
+              {
+                $sort: {
+                  timestamp: - 1
+                },
 
-            }
+              },
+              {
+                $limit: 1
+              },
+
+            ],
+
           },
-          concatthumbstory: '/thumb',
-          media_story: '$mediastories.mediaUri'
+
         },
+        {
+          $addFields: {
 
-      },
-      {
-        $project: {
 
-          username: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          postID: 1,
-          postType: 1,
-          iduser: 1,
-          email: 1,
-          type: 1,
-          description: 1,
-          title: 1,
-          active: 1,
-          kategori: 1,
-          kepemilikan: 1,
-          visibility: 1,
-          saleAmount: 1,
-          statusJual: 1,
-          reported: 1,
-          buy: 1,
-          mediaBasePath: {
-            $switch: {
-              branches: [
+            'auth': {
+              $arrayElemAt: ['$authdata', 0]
+            },
+            'iduser': {
+              $arrayElemAt: ['$basicdata.iduser', 0]
+            },
+
+
+          }
+        },
+        {
+          "$lookup": {
+            "from": "interests_repo",
+            "as": "kategori",
+            "let": {
+              "local_id": "$category.$id",
+
+            },
+            "pipeline": [
+              {
+                $match:
                 {
-                  'case': {
-                    '$eq': ['$refs', 'mediapicts']
-                  },
-                  'then': '$mediapict.mediaBasePath'
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediadiaries']
-                  },
-                  'then': '$mediadiaries.mediaBasePath'
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediavideos']
-                  },
-                  'then': '$mediavideos.mediaBasePath'
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediastories']
-                  },
-                  'then': '$mediastories.mediaBasePath'
+                  $and: [
+                    {
+                      $expr: {
+
+                        $in: ['$_id', {
+                          $ifNull: ['$$local_id', []]
+                        }]
+                      }
+                    },
+
+                  ]
                 }
-              ],
-              default: ''
-            }
-          },
-          mediaUri: {
-            $switch: {
-              branches: [
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediapicts']
-                  },
-                  'then': '$mediapict.mediaUri'
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediadiaries']
-                  },
-                  'then': '$mediadiaries.mediaUri'
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediavideos']
-                  },
-                  'then': '$mediavideos.mediaUri'
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediastories']
-                  },
-                  'then': '$mediastories.mediaUri'
-                }
-              ],
-              default: ''
-            }
-          },
-          mediaType: {
-            $switch: {
-              branches: [
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediapicts']
-                  },
-                  'then': '$mediapict.mediaType'
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediadiaries']
-                  },
-                  'then': '$mediadiaries.mediaType'
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediavideos']
-                  },
-                  'then': '$mediavideos.mediaType'
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediastories']
-                  },
-                  'then': '$mediastories.mediaType'
-                }
-              ],
-              default: ''
-            }
-          },
-          mediaThumbEndpoint: {
-            $switch: {
-              branches: [
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediapicts']
-                  },
-                  'then': '$mediadiaries.mediaThumb'
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediadiaries']
-                  },
-                  'then': {
-                    $concat: ["$concatthumbdiari", "/", "$postID"]
-                  },
-
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediavideos']
-                  },
-                  'then': {
-                    $concat: ["$concatthumbvideo", "/", "$postID"]
-                  },
-
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediastories']
-                  },
-                  'then': {
-                    $concat: ["$concatthumbstory", "/", "$postID"]
-                  },
-
-                },
-
-              ],
-              default: ''
-            }
-          },
-          mediaEndpoint: {
-            $switch: {
-              branches: [
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediapicts']
-                  },
-                  'then': {
-                    $concat: ["$concatmediapict", "/", "$postID"]
-                  },
-
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediadiaries']
-                  },
-                  'then': {
-                    $concat: ["$concatmediadiari", "/", "$postID"]
-                  },
-
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediavideos']
-                  },
-                  'then': {
-                    $concat: ["$concatmediavideo", "/", "$postID"]
-                  },
-
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediastories']
-                  },
-                  'then': {
-                    $concat: ["$concatmediastory", "/", "$postID"]
-                  },
+              },
+              {
+                $project: {
+                  interestName: 1,
 
                 }
-              ],
-              default: ''
-            }
-          },
-          mediaThumbUri: {
-            $switch: {
-              branches: [
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediapicts']
-                  },
-                  'then': '$mediadiaries.mediaThumb'
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediadiaries']
-                  },
-                  'then': '$mediadiaries.mediaThumb'
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediavideos']
-                  },
-                  'then': '$mediavideos.mediaThumb'
-                },
-                {
-                  'case': {
-                    '$eq': ['$refs', 'mediastories']
-                  },
-                  'then': '$mediastories.mediaThumb'
-                }
-              ],
-              default: ''
-            }
-          },
-          apsaraId: {
-            $switch: {
-              branches: [
-                {
-                  case: {
-                    $eq: [
-                      "$refs",
-                      "mediapicts"
-                    ]
-                  },
-                  then: "$mediapict.apsaraId"
-                },
-                {
-                  case: {
-                    $eq: [
-                      "$refs",
-                      "mediadiaries"
-                    ]
-                  },
-                  then: "$mediadiaries.apsaraId"
-                },
-                {
-                  case: {
-                    $eq: [
-                      "$refs",
-                      "mediavideos"
-                    ]
-                  },
-                  then: "$mediavideos.apsaraId"
-                },
-                {
-                  case: {
-                    $eq: [
-                      "$refs",
-                      "mediastories"
-                    ]
-                  },
-                  then: "$mediastories.apsaraId"
-                }
-              ],
-              default: false
-            }
-          },
-          apsara: {
-            $switch: {
-              branches: [
-                {
-                  case: {
-                    $eq: [
-                      "$refs",
-                      "mediapicts"
-                    ]
-                  },
-                  then: "$mediapict.apsara"
-                },
-                {
-                  case: {
-                    $eq: [
-                      "$refs",
-                      "mediadiaries"
-                    ]
-                  },
-                  then: "$mediadiaries.apsara"
-                },
-                {
-                  case: {
-                    $eq: [
-                      "$refs",
-                      "mediavideos"
-                    ]
-                  },
-                  then: "$mediavideos.apsara"
-                },
-                {
-                  case: {
-                    $eq: [
-                      "$refs",
-                      "mediastories"
-                    ]
-                  },
-                  then: "$mediastories.apsara"
-                }
-              ],
-              default: false
-            }
+              },
+
+            ],
+
           },
 
-        }
-      },
+        },
+        {
+          $project: {
+            refs: {
+              $arrayElemAt: ['$contentMedias', 0]
+            },
+            username: "$auth.username",
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            iduser: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            reportedUserCount: 1,
+            trans:
+            {
+              $size: "$trans"
+            },
+            certified:
+            {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$certi", - 1]
+                  }, {
+                    $eq: ["$certi", 0]
+                  }]
+                },
+                then: false,
+                else: "$certified"
+              }
+            },
+            visibility: 1,
+            saleAmount: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$salePrice", - 1]
+                  }, {
+                    $eq: ["$salePrice", 0]
+                  }]
+                },
+                then: 0,
+                else: "$saleAmount"
+              }
+            },
+            monetize: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$salePrice", - 1]
+                  }, {
+                    $eq: ["$salePrice", 0]
+                  }]
+                },
+                then: false,
+                else: true
+              }
+            },
+            reported: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$reportedCount", - 1]
+                  }, {
+                    $eq: ["$reportedCount", 0]
+                  }]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
 
-    );
+          }
+        },
+        {
+          $project: {
+            refs: '$refs.$ref',
+            idmedia: '$refs.$id',
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            reported: 1,
+            buy: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$trans", 0]
+                  }]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
+            type: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'pict']
+                    },
+                    'then': "HyppePic"
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'vid']
+                    },
+                    'then': "HyppeVid"
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'diary']
+                    },
+                    'then': "HyppeDiary"
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'story']
+                    },
+                    'then': "HyppeStory"
+                  },
+
+                ],
+                default: ''
+              }
+            },
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan:
+            {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$certified", false]
+                  }, {
+                    $eq: ["$certified", ""]
+                  }]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
+            visibility: 1,
+            saleAmount: 1,
+            statusJual:
+            {
+              $cond: {
+                if: {
+
+                  $eq: ["$monetize", false]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
+
+          }
+        },
+        {
+          $lookup: {
+            from: 'mediapicts',
+            localField: 'idmedia',
+            foreignField: '_id',
+            as: 'mediaPict_data',
+
+          },
+
+        },
+        {
+          $lookup: {
+            from: 'mediadiaries',
+            localField: 'idmedia',
+            foreignField: '_id',
+            as: 'mediadiaries_data',
+
+          },
+
+        },
+        {
+          $lookup: {
+            from: 'mediavideos',
+            localField: 'idmedia',
+            foreignField: '_id',
+            as: 'mediavideos_data',
+
+          },
+
+        },
+        {
+          $lookup: {
+            from: 'mediastories',
+            localField: 'idmedia',
+            foreignField: '_id',
+            as: 'mediastories_data',
+
+          },
+
+        },
+        {
+          $project: {
+            mediapict: {
+              $arrayElemAt: ['$mediaPict_data', 0]
+            },
+            mediadiaries: {
+              $arrayElemAt: ['$mediadiaries_data', 0]
+            },
+            mediavideos: {
+              $arrayElemAt: ['$mediavideos_data', 0]
+            },
+            mediastories: {
+              $arrayElemAt: ['$mediastories_data', 0]
+            },
+            refs: 1,
+            idmedia: 1,
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            type: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan: 1,
+            visibility: 1,
+            saleAmount: 1,
+            statusJual: 1,
+            reported: 1,
+            buy: 1,
+
+          }
+        },
+        {
+          $addFields: {
+
+
+            pict: {
+              $replaceOne: {
+                input: "$profilpict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+            concatmediapict: '/pict',
+            media_pict: {
+              $replaceOne: {
+                input: "$mediapict.mediaUri",
+                find: "_0001.jpeg",
+                replacement: ""
+              }
+            },
+            concatmediadiari: '/stream',
+            concatthumbdiari: '/thumb',
+            media_diari: '$mediadiaries.mediaUri',
+            concatmediavideo: '/stream',
+            concatthumbvideo: '/thumb',
+            media_video: '$mediavideos.mediaUri',
+            concatmediastory:
+            {
+              $cond: {
+                if: {
+
+                  $eq: ["$mediastories.mediaType", "image"]
+                },
+                then: '/pict',
+                else: '/stream',
+
+              }
+            },
+            concatthumbstory: '/thumb',
+            media_story: '$mediastories.mediaUri'
+          },
+
+        },
+        {
+          $project: {
+
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            type: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan: 1,
+            visibility: 1,
+            saleAmount: 1,
+            statusJual: 1,
+            reported: 1,
+            buy: 1,
+            mediaBasePath: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediapicts']
+                    },
+                    'then': '$mediapict.mediaBasePath'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediadiaries']
+                    },
+                    'then': '$mediadiaries.mediaBasePath'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediavideos']
+                    },
+                    'then': '$mediavideos.mediaBasePath'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediastories']
+                    },
+                    'then': '$mediastories.mediaBasePath'
+                  }
+                ],
+                default: ''
+              }
+            },
+            mediaUri: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediapicts']
+                    },
+                    'then': '$mediapict.mediaUri'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediadiaries']
+                    },
+                    'then': '$mediadiaries.mediaUri'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediavideos']
+                    },
+                    'then': '$mediavideos.mediaUri'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediastories']
+                    },
+                    'then': '$mediastories.mediaUri'
+                  }
+                ],
+                default: ''
+              }
+            },
+            mediaType: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediapicts']
+                    },
+                    'then': '$mediapict.mediaType'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediadiaries']
+                    },
+                    'then': '$mediadiaries.mediaType'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediavideos']
+                    },
+                    'then': '$mediavideos.mediaType'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediastories']
+                    },
+                    'then': '$mediastories.mediaType'
+                  }
+                ],
+                default: ''
+              }
+            },
+            mediaThumbEndpoint: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediapicts']
+                    },
+                    'then': '$mediadiaries.mediaThumb'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediadiaries']
+                    },
+                    'then': {
+                      $concat: ["$concatthumbdiari", "/", "$postID"]
+                    },
+
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediavideos']
+                    },
+                    'then': {
+                      $concat: ["$concatthumbvideo", "/", "$postID"]
+                    },
+
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediastories']
+                    },
+                    'then': {
+                      $concat: ["$concatthumbstory", "/", "$postID"]
+                    },
+
+                  },
+
+                ],
+                default: ''
+              }
+            },
+            mediaEndpoint: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediapicts']
+                    },
+                    'then': {
+                      $concat: ["$concatmediapict", "/", "$postID"]
+                    },
+
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediadiaries']
+                    },
+                    'then': {
+                      $concat: ["$concatmediadiari", "/", "$postID"]
+                    },
+
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediavideos']
+                    },
+                    'then': {
+                      $concat: ["$concatmediavideo", "/", "$postID"]
+                    },
+
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediastories']
+                    },
+                    'then': {
+                      $concat: ["$concatmediastory", "/", "$postID"]
+                    },
+
+                  }
+                ],
+                default: ''
+              }
+            },
+            mediaThumbUri: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediapicts']
+                    },
+                    'then': '$mediadiaries.mediaThumb'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediadiaries']
+                    },
+                    'then': '$mediadiaries.mediaThumb'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediavideos']
+                    },
+                    'then': '$mediavideos.mediaThumb'
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$refs', 'mediastories']
+                    },
+                    'then': '$mediastories.mediaThumb'
+                  }
+                ],
+                default: ''
+              }
+            },
+            apsaraId: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsaraId"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediastories"
+                      ]
+                    },
+                    then: "$mediastories.apsaraId"
+                  }
+                ],
+                default: false
+              }
+            },
+            apsara: {
+              $switch: {
+                branches: [
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediapicts"
+                      ]
+                    },
+                    then: "$mediapict.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediadiaries"
+                      ]
+                    },
+                    then: "$mediadiaries.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediavideos"
+                      ]
+                    },
+                    then: "$mediavideos.apsara"
+                  },
+                  {
+                    case: {
+                      $eq: [
+                        "$refs",
+                        "mediastories"
+                      ]
+                    },
+                    then: "$mediastories.apsara"
+                  }
+                ],
+                default: false
+              }
+            },
+
+          }
+        },
+      );
+    }
+
 
     if (username && username !== undefined) {
 
@@ -11927,15 +12702,7 @@ export class GetusercontentsService {
       },);
 
     }
-    if (iduser && iduser !== undefined) {
 
-      pipeline.push({
-        $match: {
-          iduser: iduser
-        }
-      },);
-
-    }
 
     if (description && description !== undefined) {
 
@@ -12094,381 +12861,769 @@ export class GetusercontentsService {
     var pipeline = [];
 
 
-    pipeline.push(
-      {
-        $addFields: {
 
-          salePrice: {
-            $cmp: ["$saleAmount", 0]
-          },
-          sLike: {
-            $cmp: ["$saleLike", 0]
-          },
-          sView: {
-            $cmp: ["$saleView", 0]
-          },
-          certi: {
-            $cmp: ["$certified", 0]
-          },
-          reportedCount: {
-            $cmp: ["$reportedUserCount", 0]
-          },
 
-        }
-      },
+    if (iduser && iduser !== undefined) {
+      pipeline.push(
+        {
+          $addFields: {
 
-      {
-        $lookup: {
-          from: 'userauths',
-          localField: 'email',
-          foreignField: 'email',
-          as: 'authdata',
-
-        }
-      },
-      {
-        "$lookup": {
-          "from": "userbasics",
-          "as": "basicdata",
-          "let": {
-            "local_id": "$email",
-
-          },
-          "pipeline": [
-            {
-              $match:
-              {
-                $expr: {
-                  $eq: ['$email', '$$local_id']
-                }
-              }
+            salePrice: {
+              $cmp: ["$saleAmount", 0]
             },
-            {
-              $project: {
-                iduser: "$_id",
-
-              }
+            sLike: {
+              $cmp: ["$saleLike", 0]
+            },
+            sView: {
+              $cmp: ["$saleView", 0]
+            },
+            certi: {
+              $cmp: ["$certified", 0]
+            },
+            reportedCount: {
+              $cmp: ["$reportedUserCount", 0]
             },
 
-
-          ],
-
+          }
         },
 
-      },
-      {
-        "$lookup": {
-          "from": "transactions",
-          "as": "trans",
-          "let": {
-            "local_id": "$postID",
+        {
+          $lookup: {
+            from: 'userauths',
+            localField: 'email',
+            foreignField: 'email',
+            as: 'authdata',
 
-          },
-          "pipeline": [
-            {
-              $match:
+          }
+        },
+        {
+          "$lookup": {
+            "from": "userbasics",
+            "as": "basicdata",
+            "let": {
+              "local_id": "$email",
+
+            },
+            "pipeline": [
               {
-                $expr: {
-                  $eq: ['$postid', '$$local_id']
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$email', '$$local_id']
+                  }
                 }
-              }
-            },
-            {
-              $project: {
-                iduserbuyer: 1,
-                status: 1,
-                timestamp: 1
-              }
-            },
-            {
-              $match: {
-                "iduserbuyer": iduser,
-                "status": "Success"
-              }
-            },
-            {
-              $sort: {
-                timestamp: - 1
+              },
+              {
+                $project: {
+                  iduser: "$_id",
+
+                }
               },
 
-            },
-            {
-              $limit: 1
-            },
 
-          ],
+            ],
+
+          },
 
         },
+        {
+          "$lookup": {
+            "from": "transactions",
+            "as": "trans",
+            "let": {
+              "local_id": "$postID",
 
-      },
-      {
-        $addFields: {
-
-
-          'auth': {
-            $arrayElemAt: ['$authdata', 0]
-          },
-          'iduser': {
-            $arrayElemAt: ['$basicdata.iduser', 0]
-          },
-
-
-        }
-      },
-      {
-        "$lookup": {
-          "from": "interests_repo",
-          "as": "kategori",
-          "let": {
-            "local_id": "$category.$id",
-
-          },
-          "pipeline": [
-            {
-              $match:
+            },
+            "pipeline": [
               {
-                $and: [
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$postid', '$$local_id']
+                  }
+                }
+              },
+              {
+                $project: {
+                  iduserbuyer: 1,
+                  status: 1,
+                  timestamp: 1
+                }
+              },
+              {
+                $match: {
+                  "iduserbuyer": iduser,
+                  "status": "Success"
+                }
+              },
+              {
+                $sort: {
+                  timestamp: - 1
+                },
+
+              },
+              {
+                $limit: 1
+              },
+
+            ],
+
+          },
+
+        },
+        {
+          $addFields: {
+
+
+            'auth': {
+              $arrayElemAt: ['$authdata', 0]
+            },
+            'iduser': {
+              $arrayElemAt: ['$basicdata.iduser', 0]
+            },
+
+
+          }
+        },
+        {
+          "$lookup": {
+            "from": "interests_repo",
+            "as": "kategori",
+            "let": {
+              "local_id": "$category.$id",
+
+            },
+            "pipeline": [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+
+                        $in: ['$_id', {
+                          $ifNull: ['$$local_id', []]
+                        }]
+                      }
+                    },
+
+                  ]
+                }
+              },
+              {
+                $project: {
+                  interestName: 1,
+
+                }
+              },
+
+            ],
+
+          },
+
+        },
+        {
+          $project: {
+
+            username: "$auth.username",
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            iduser: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            reportedUserCount: 1,
+            trans:
+            {
+              $size: "$trans"
+            },
+            certified:
+            {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$certi", - 1]
+                  }, {
+                    $eq: ["$certi", 0]
+                  }]
+                },
+                then: false,
+                else: "$certified"
+              }
+            },
+            visibility: 1,
+            saleAmount: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$salePrice", - 1]
+                  }, {
+                    $eq: ["$salePrice", 0]
+                  }]
+                },
+                then: 0,
+                else: "$saleAmount"
+              }
+            },
+            monetize: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$salePrice", - 1]
+                  }, {
+                    $eq: ["$salePrice", 0]
+                  }]
+                },
+                then: false,
+                else: true
+              }
+            },
+            reported: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$reportedCount", - 1]
+                  }, {
+                    $eq: ["$reportedCount", 0]
+                  }]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
+
+          }
+        },
+        {
+          $project: {
+
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            reported: 1,
+            buy: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$trans", 0]
+                  }]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
+            type: {
+              $switch: {
+                branches: [
                   {
-                    $expr: {
-
-                      $in: ['$_id', {
-                        $ifNull: ['$$local_id', []]
-                      }]
-                    }
+                    'case': {
+                      '$eq': ['$postType', 'pict']
+                    },
+                    'then': "HyppePic"
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'vid']
+                    },
+                    'then': "HyppeVid"
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'diary']
+                    },
+                    'then': "HyppeDiary"
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'story']
+                    },
+                    'then': "HyppeStory"
                   },
 
-                ]
+                ],
+                default: ''
               }
             },
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan:
             {
-              $project: {
-                interestName: 1,
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$certified", false]
+                  }, {
+                    $eq: ["$certified", ""]
+                  }]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
+            visibility: 1,
+            saleAmount: 1,
+            statusJual:
+            {
+              $cond: {
+                if: {
 
+                  $eq: ["$monetize", false]
+                },
+                then: "TIDAK",
+                else: "YA"
               }
             },
 
-          ],
-
+          }
         },
 
-      },
-      {
-        $project: {
+        {
+          $project: {
 
-          username: "$auth.username",
-          createdAt: 1,
-          updatedAt: 1,
-          postID: 1,
-          iduser: 1,
-          email: 1,
-          postType: 1,
-          description: 1,
-          title: 1,
-          active: 1,
-          kategori: 1,
-          reportedUserCount: 1,
-          trans:
-          {
-            $size: "$trans"
-          },
-          certified:
-          {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$certi", - 1]
-                }, {
-                  $eq: ["$certi", 0]
-                }]
-              },
-              then: false,
-              else: "$certified"
-            }
-          },
-          visibility: 1,
-          saleAmount: {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$salePrice", - 1]
-                }, {
-                  $eq: ["$salePrice", 0]
-                }]
-              },
-              then: 0,
-              else: "$saleAmount"
-            }
-          },
-          monetize: {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$salePrice", - 1]
-                }, {
-                  $eq: ["$salePrice", 0]
-                }]
-              },
-              then: false,
-              else: true
-            }
-          },
-          reported: {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$reportedCount", - 1]
-                }, {
-                  $eq: ["$reportedCount", 0]
-                }]
-              },
-              then: "TIDAK",
-              else: "YA"
-            }
-          },
 
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            type: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan: 1,
+            visibility: 1,
+            saleAmount: 1,
+            statusJual: 1,
+            reported: 1,
+            buy: 1,
+
+          }
+        },
+
+        {
+          $project: {
+
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            type: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan: 1,
+            visibility: 1,
+            saleAmount: 1,
+            statusJual: 1,
+            reported: 1,
+            buy: 1,
+
+
+          }
+        },
+        {
+          $match: {
+            iduser: iduser
+          }
         }
-      },
-      {
-        $project: {
+      );
 
-          username: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          postID: 1,
-          postType: 1,
-          iduser: 1,
-          email: 1,
-          reported: 1,
-          buy: {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$trans", 0]
-                }]
+
+    } else {
+      pipeline.push(
+        {
+          $addFields: {
+
+            salePrice: {
+              $cmp: ["$saleAmount", 0]
+            },
+            sLike: {
+              $cmp: ["$saleLike", 0]
+            },
+            sView: {
+              $cmp: ["$saleView", 0]
+            },
+            certi: {
+              $cmp: ["$certified", 0]
+            },
+            reportedCount: {
+              $cmp: ["$reportedUserCount", 0]
+            },
+
+          }
+        },
+
+        {
+          $lookup: {
+            from: 'userauths',
+            localField: 'email',
+            foreignField: 'email',
+            as: 'authdata',
+
+          }
+        },
+        {
+          "$lookup": {
+            "from": "userbasics",
+            "as": "basicdata",
+            "let": {
+              "local_id": "$email",
+
+            },
+            "pipeline": [
+              {
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$email', '$$local_id']
+                  }
+                }
               },
-              then: "TIDAK",
-              else: "YA"
-            }
-          },
-          type: {
-            $switch: {
-              branches: [
-                {
-                  'case': {
-                    '$eq': ['$postType', 'pict']
-                  },
-                  'then': "HyppePic"
-                },
-                {
-                  'case': {
-                    '$eq': ['$postType', 'vid']
-                  },
-                  'then': "HyppeVid"
-                },
-                {
-                  'case': {
-                    '$eq': ['$postType', 'diary']
-                  },
-                  'then': "HyppeDiary"
-                },
-                {
-                  'case': {
-                    '$eq': ['$postType', 'story']
-                  },
-                  'then': "HyppeStory"
-                },
+              {
+                $project: {
+                  iduser: "$_id",
 
-              ],
-              default: ''
-            }
-          },
-          description: 1,
-          title: 1,
-          active: 1,
-          kategori: 1,
-          kepemilikan:
-          {
-            $cond: {
-              if: {
-                $or: [{
-                  $eq: ["$certified", false]
-                }, {
-                  $eq: ["$certified", ""]
-                }]
+                }
               },
-              then: "TIDAK",
-              else: "YA"
-            }
-          },
-          visibility: 1,
-          saleAmount: 1,
-          statusJual:
-          {
-            $cond: {
-              if: {
 
-                $eq: ["$monetize", false]
+
+            ],
+
+          },
+
+        },
+        {
+          "$lookup": {
+            "from": "transactions",
+            "as": "trans",
+            "let": {
+              "local_id": "$postID",
+
+            },
+            "pipeline": [
+              {
+                $match:
+                {
+                  $expr: {
+                    $eq: ['$postid', '$$local_id']
+                  }
+                }
               },
-              then: "TIDAK",
-              else: "YA"
-            }
+              {
+                $project: {
+                  iduserbuyer: 1,
+                  status: 1,
+                  timestamp: 1
+                }
+              },
+              {
+                $match: {
+                  "iduserbuyer": iduser,
+                  "status": "Success"
+                }
+              },
+              {
+                $sort: {
+                  timestamp: - 1
+                },
+
+              },
+              {
+                $limit: 1
+              },
+
+            ],
+
           },
 
-        }
-      },
-
-      {
-        $project: {
+        },
+        {
+          $addFields: {
 
 
-          username: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          postID: 1,
-          postType: 1,
-          iduser: 1,
-          email: 1,
-          type: 1,
-          description: 1,
-          title: 1,
-          active: 1,
-          kategori: 1,
-          kepemilikan: 1,
-          visibility: 1,
-          saleAmount: 1,
-          statusJual: 1,
-          reported: 1,
-          buy: 1,
-
-        }
-      },
-
-      {
-        $project: {
-
-          username: 1,
-          createdAt: 1,
-          updatedAt: 1,
-          postID: 1,
-          postType: 1,
-          iduser: 1,
-          email: 1,
-          type: 1,
-          description: 1,
-          title: 1,
-          active: 1,
-          kategori: 1,
-          kepemilikan: 1,
-          visibility: 1,
-          saleAmount: 1,
-          statusJual: 1,
-          reported: 1,
-          buy: 1,
+            'auth': {
+              $arrayElemAt: ['$authdata', 0]
+            },
+            'iduser': {
+              $arrayElemAt: ['$basicdata.iduser', 0]
+            },
 
 
-        }
-      },
-    );
+          }
+        },
+        {
+          "$lookup": {
+            "from": "interests_repo",
+            "as": "kategori",
+            "let": {
+              "local_id": "$category.$id",
+
+            },
+            "pipeline": [
+              {
+                $match:
+                {
+                  $and: [
+                    {
+                      $expr: {
+
+                        $in: ['$_id', {
+                          $ifNull: ['$$local_id', []]
+                        }]
+                      }
+                    },
+
+                  ]
+                }
+              },
+              {
+                $project: {
+                  interestName: 1,
+
+                }
+              },
+
+            ],
+
+          },
+
+        },
+        {
+          $project: {
+
+            username: "$auth.username",
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            iduser: 1,
+            email: 1,
+            postType: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            reportedUserCount: 1,
+            trans:
+            {
+              $size: "$trans"
+            },
+            certified:
+            {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$certi", - 1]
+                  }, {
+                    $eq: ["$certi", 0]
+                  }]
+                },
+                then: false,
+                else: "$certified"
+              }
+            },
+            visibility: 1,
+            saleAmount: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$salePrice", - 1]
+                  }, {
+                    $eq: ["$salePrice", 0]
+                  }]
+                },
+                then: 0,
+                else: "$saleAmount"
+              }
+            },
+            monetize: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$salePrice", - 1]
+                  }, {
+                    $eq: ["$salePrice", 0]
+                  }]
+                },
+                then: false,
+                else: true
+              }
+            },
+            reported: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$reportedCount", - 1]
+                  }, {
+                    $eq: ["$reportedCount", 0]
+                  }]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
+
+          }
+        },
+        {
+          $project: {
+
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            reported: 1,
+            buy: {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$trans", 0]
+                  }]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
+            type: {
+              $switch: {
+                branches: [
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'pict']
+                    },
+                    'then': "HyppePic"
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'vid']
+                    },
+                    'then': "HyppeVid"
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'diary']
+                    },
+                    'then': "HyppeDiary"
+                  },
+                  {
+                    'case': {
+                      '$eq': ['$postType', 'story']
+                    },
+                    'then': "HyppeStory"
+                  },
+
+                ],
+                default: ''
+              }
+            },
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan:
+            {
+              $cond: {
+                if: {
+                  $or: [{
+                    $eq: ["$certified", false]
+                  }, {
+                    $eq: ["$certified", ""]
+                  }]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
+            visibility: 1,
+            saleAmount: 1,
+            statusJual:
+            {
+              $cond: {
+                if: {
+
+                  $eq: ["$monetize", false]
+                },
+                then: "TIDAK",
+                else: "YA"
+              }
+            },
+
+          }
+        },
+
+        {
+          $project: {
+
+
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            type: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan: 1,
+            visibility: 1,
+            saleAmount: 1,
+            statusJual: 1,
+            reported: 1,
+            buy: 1,
+
+          }
+        },
+
+        {
+          $project: {
+
+            username: 1,
+            createdAt: 1,
+            updatedAt: 1,
+            postID: 1,
+            postType: 1,
+            iduser: 1,
+            email: 1,
+            type: 1,
+            description: 1,
+            title: 1,
+            active: 1,
+            kategori: 1,
+            kepemilikan: 1,
+            visibility: 1,
+            saleAmount: 1,
+            statusJual: 1,
+            reported: 1,
+            buy: 1,
+
+
+          }
+        },
+
+      );
+    }
 
     if (username && username !== undefined) {
 
@@ -12484,15 +13639,7 @@ export class GetusercontentsService {
 
     }
 
-    if (iduser && iduser !== undefined) {
 
-      pipeline.push({
-        $match: {
-          iduser: iduser
-        }
-      },);
-
-    }
 
     if (description && description !== undefined) {
 

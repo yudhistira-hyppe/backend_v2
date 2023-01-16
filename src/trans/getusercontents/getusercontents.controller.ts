@@ -1173,13 +1173,25 @@ export class GetusercontentsController {
         var query = null;
         var datasearch = null;
         var dataall = null;
-        try {
-            query = await this.getusercontentsService.databasenew(buy, report, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
-            data = query;
-        } catch (e) {
-            query = null;
-            data = [];
+
+        if (iduser !== undefined) {
+            try {
+                query = await this.getusercontentsService.databasenew(buy, report, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
+                data = query;
+            } catch (e) {
+                query = null;
+                data = [];
+            }
+        } else {
+            try {
+                query = await this.getusercontentsService.databasenew(buy, report, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
+                data = query;
+            } catch (e) {
+                query = null;
+                data = [];
+            }
         }
+
 
 
         try {
@@ -1188,14 +1200,24 @@ export class GetusercontentsController {
             total = 0;
         }
 
-        if (total <= 10) {
+        if (total < 10) {
             totalsearch = total;
         } else {
-            try {
-                datasearch = await this.getusercontentsService.databasenewcount(buy, report, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
-                totalsearch = datasearch[0].totalpost;
-            } catch (e) {
-                totalsearch = 0;
+
+            if (iduser !== undefined) {
+                try {
+                    datasearch = await this.getusercontentsService.databasenewcount(buy, report, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+                    totalsearch = datasearch[0].totalpost;
+                } catch (e) {
+                    totalsearch = 0;
+                }
+            } else {
+                try {
+                    datasearch = await this.getusercontentsService.databasenewcount(buy, report, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+                    totalsearch = datasearch[0].totalpost;
+                } catch (e) {
+                    totalsearch = 0;
+                }
             }
         }
 
