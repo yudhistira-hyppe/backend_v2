@@ -9012,6 +9012,31 @@ export class AdsService {
                                     
                             }
                         ],
+                        "totalarea": [
+                            {
+                                $unwind: {
+                                    path: "$areaView",
+                                    
+                                }
+                            },
+                            {
+                                $group: 
+                                {
+                                    _id: "totalarea",
+                                    total: 
+                                    {
+                                        $sum: 1
+                                    },
+                                    //totaldata:total
+                                }
+                            },
+                            {
+                                $project: {
+                                    total: 1,
+                                    
+                                }
+                            }
+                        ],
                         "areas": [
                             {
                                 $unwind: {
@@ -10423,6 +10448,36 @@ export class AdsService {
                                 }
                             }
                         ],
+                        area:[
+                            {
+                                $unwind:{
+                                    path: "$areas",
+                                    preserveNullAndEmptyArrays:true,
+                                }
+                            },
+                            {
+                                $project:{
+                                    remark: "$areas._id",
+                                    range: "$areas.count",
+                                    percent: 
+                                    {
+                                        $multiply: 
+                                        [
+                                            {
+                                                $divide: 
+                                                [
+                                                    "$areas.count",
+                                                    {
+                                                        $arrayElemAt: ["$totalarea.total", 0]
+                                                    }
+                                                ]
+                                            },
+                                            100
+                                        ]
+                                    }
+                                }
+                            }
+                        ],
                         age: [
                             {
                                 $unwind: {
@@ -10493,8 +10548,32 @@ export class AdsService {
                         ]
                     }
                 },
+                
         ]);
+
+        console.log(query[0].area);
         
+        var resultquery = query[0].area;
+
+        resultquery.forEach(function (data){
+            var getdata = data.percent;
+            data.percent = getdata.toFixed(2);
+        });
+
+        var resultquery = query[0].genders;
+
+        resultquery.forEach(function (data){
+            var getdata = data.percent;
+            data.percent = getdata.toFixed(2);
+        });
+
+        var resultquery = query[0].age;
+
+        resultquery.forEach(function (data){
+            var getdata = data.percent;
+            data.percent = getdata.toFixed(2);
+        });
+
         return query;
     }
 }
