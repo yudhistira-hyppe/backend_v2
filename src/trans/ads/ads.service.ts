@@ -233,6 +233,7 @@ export class AdsService {
 
         var arrgen = groupByMake(datasumdetailgender);
 
+
         if (idapsara === undefined || idapsara === "" || idapsara === null) {
             idapsaradefine = "";
             apsaradefine = false

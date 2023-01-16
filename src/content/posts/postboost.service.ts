@@ -2842,18 +2842,14 @@ export class PostBoostService {
   private processDataV2(src: any[], xvids: string[], xpics: string[], isLike: any[], isView: any[], email: string): PostData[] {
     let res: PostData[] = [];
     var boost = null;
+
     if (src == undefined) {
       return res;
     }
 
     for (let i = 0; i < src.length; i++) {
       let obj = src[i];
-      if (obj.boosted != undefined) {
-
-        boost = obj.boosted[0];
-
-      }
-
+      boost = obj.boosted[0];
       //console.log(JSON.stringify(obj));
 
       let pd = new PostData();
@@ -2980,6 +2976,7 @@ export class PostBoostService {
       } else {
         pd.boosted = obj.boosted;
       }
+
       pd.music = null;
       if (obj.music != undefined) {
         if (Array.isArray(obj.music)) {
@@ -3001,8 +2998,7 @@ export class PostBoostService {
       if (obj.boosted != undefined) {
         console.log("boosted: " + pd.postID);
         this.postxService.updateBoostViewer(pd.postID, email);
-        // pd.boostJangkauan = this.countBoosted(obj, email);
-        pd.boostJangkauan = obj.boostCount;
+        pd.boostJangkauan = this.countBoosted(obj, email);
       }
 
       if (obj.statusCB == undefined || obj.statusCB == 'PENDING') {
@@ -4143,12 +4139,6 @@ export class PostBoostService {
             //   }
             // },
             {
-              $unwind: {
-                path: "$boosted.boostViewer",
-                preserveNullAndEmptyArrays: true
-              }
-            },
-            {
               $project: {
                 "musicTitle": "$music.musicTitle",
                 "postID": 1,
@@ -4200,35 +4190,24 @@ export class PostBoostService {
                 "start": "$boosted.boostSession.start",
                 "isBoost": 1,
                 "boostViewer": 1,
-                "boostCount":
-                {
-                  $cond: {
-                    if: {
-                      $isArray: "$boosted.boostViewer"
-                    },
-                    then: {
-                      $size: "$boosted.boostViewer"
-                    },
-                    else: 0
-                  }
-                },
+                "boostCount": 1,
                 "boosted":
-                {
-                  $cond: {
-                    if: {
-                      $gt: [{
-                        "$dateToString": {
-                          "format": "%Y-%m-%d %H:%M:%S",
-                          "date": {
-                            $add: [new Date(), 25200000]
+                  [{
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                              $add: [new Date(), 25200000]
+                            }
                           }
-                        }
-                      }, "$boosted.boostSession.end"]
-                    },
-                    then: [],
-                    else: '$boosted'
-                  }
-                },
+                        }, "$boosted.boostSession.end"]
+                      },
+                      then: "$kampretTaslim",
+                      else: '$boosted'
+                    }
+                  }],
                 "contentModeration": 1,
                 "reportedStatus": 1,
                 "reportedUserCount": 1,
@@ -4695,12 +4674,6 @@ export class PostBoostService {
               }
             },
             {
-              $unwind: {
-                path: "$boosted.boostViewer",
-                preserveNullAndEmptyArrays: true
-              }
-            },
-            {
               $project: {
                 "musicTitle": "$music.musicTitle",
                 "postID": 1,
@@ -4743,35 +4716,24 @@ export class PostBoostService {
                 "start": "$boosted.boostSession.start",
                 "isBoost": 1,
                 "boostViewer": 1,
-                "boostCount":
-                {
-                  $cond: {
-                    if: {
-                      $isArray: "$boosted.boostViewer"
-                    },
-                    then: {
-                      $size: "$boosted.boostViewer"
-                    },
-                    else: 0
-                  }
-                },
+                "boostCount": 1,
                 "boosted":
-                {
-                  $cond: {
-                    if: {
-                      $gt: [{
-                        "$dateToString": {
-                          "format": "%Y-%m-%d %H:%M:%S",
-                          "date": {
-                            $add: [new Date(), 25200000]
+                  [{
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                              $add: [new Date(), 25200000]
+                            }
                           }
-                        }
-                      }, "$boosted.boostSession.end"]
-                    },
-                    then: [],
-                    else: '$boosted'
-                  }
-                },
+                        }, "$boosted.boostSession.end"]
+                      },
+                      then: "$kampretTaslim",
+                      else: '$boosted'
+                    }
+                  }],
                 "contentModeration": 1,
                 "reportedStatus": 1,
                 "reportedUserCount": 1,
@@ -5247,12 +5209,6 @@ export class PostBoostService {
               }
             },
             {
-              $unwind: {
-                path: "$boosted.boostViewer",
-                preserveNullAndEmptyArrays: true
-              }
-            },
-            {
               $project: {
                 "musicTitle": "$music.musicTitle",
                 "postID": 1,
@@ -5295,35 +5251,24 @@ export class PostBoostService {
                 "start": "$boosted.boostSession.start",
                 "isBoost": 1,
                 "boostViewer": 1,
-                "boostCount":
-                {
-                  $cond: {
-                    if: {
-                      $isArray: "$boosted.boostViewer"
-                    },
-                    then: {
-                      $size: "$boosted.boostViewer"
-                    },
-                    else: 0
-                  }
-                },
+                "boostCount": 1,
                 "boosted":
-                {
-                  $cond: {
-                    if: {
-                      $gt: [{
-                        "$dateToString": {
-                          "format": "%Y-%m-%d %H:%M:%S",
-                          "date": {
-                            $add: [new Date(), 25200000]
+                  [{
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                              $add: [new Date(), 25200000]
+                            }
                           }
-                        }
-                      }, "$boosted.boostSession.end"]
-                    },
-                    then: [],
-                    else: '$boosted'
-                  }
-                },
+                        }, "$boosted.boostSession.end"]
+                      },
+                      then: "$kampretTaslim",
+                      else: '$boosted'
+                    }
+                  }],
                 "contentModeration": 1,
                 "reportedStatus": 1,
                 "reportedUserCount": 1,
@@ -5686,12 +5631,6 @@ export class PostBoostService {
               }
             },
             {
-              $unwind: {
-                path: "$boosted.boostViewer",
-                preserveNullAndEmptyArrays: true
-              }
-            },
-            {
               $project: {
                 "storyDate": 1,
                 "postID": 1,
@@ -5732,38 +5671,27 @@ export class PostBoostService {
                 "metadata": 1,
                 "boostDate": 1,
                 "boosted":
-                {
-                  $cond: {
-                    if: {
-                      $gt: [{
-                        "$dateToString": {
-                          "format": "%Y-%m-%d %H:%M:%S",
-                          "date": {
-                            $add: [new Date(), 25200000]
+                  [{
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                              $add: [new Date(), 25200000]
+                            }
                           }
-                        }
-                      }, "$boosted.boostSession.end"]
-                    },
-                    then: [],
-                    else: '$boosted'
-                  }
-                },
+                        }, "$boosted.boostSession.end"]
+                      },
+                      then: "$kampretTaslim",
+                      else: '$boosted'
+                    }
+                  }],
                 "end": "$boosted.boostSession.end",
                 "start": "$boosted.boostSession.start",
                 "isBoost": 1,
                 "boostViewer": 1,
-                "boostCount":
-                {
-                  $cond: {
-                    if: {
-                      $isArray: "$boosted.boostViewer"
-                    },
-                    then: {
-                      $size: "$boosted.boostViewer"
-                    },
-                    else: 0
-                  }
-                },
+                "boostCount": 1,
                 "contentModeration": 1,
                 "reportedStatus": 1,
                 "reportedUserCount": 1,
@@ -6315,12 +6243,6 @@ export class PostBoostService {
               }
             },
             {
-              $unwind: {
-                path: "$boosted.boostViewer",
-                preserveNullAndEmptyArrays: true
-              }
-            },
-            {
               $project: {
                 "postID": 1,
                 "isLike": "$isLike",
@@ -6356,18 +6278,7 @@ export class PostBoostService {
                 "boostSession": 1,
                 "isBoost": 1,
                 "boostViewer": 1,
-                "boostCount":
-                {
-                  $cond: {
-                    if: {
-                      $isArray: "$boosted.boostViewer"
-                    },
-                    then: {
-                      $size: "$boosted.boostViewer"
-                    },
-                    else: 0
-                  }
-                },
+                "boostCount": 1,
                 "contentModeration": 1,
                 "reportedStatus": 1,
                 "reportedUserCount": 1,
@@ -6712,12 +6623,6 @@ export class PostBoostService {
               }
             },
             {
-              $unwind: {
-                path: "$boosted.boostViewer",
-                preserveNullAndEmptyArrays: true
-              }
-            },
-            {
               $project: {
                 "postID": 1,
                 "isLike": "$isLike",
@@ -6753,18 +6658,7 @@ export class PostBoostService {
                 "boostSession": 1,
                 "isBoost": 1,
                 "boostViewer": 1,
-                "boostCount":
-                {
-                  $cond: {
-                    if: {
-                      $isArray: "$boosted.boostViewer"
-                    },
-                    then: {
-                      $size: "$boosted.boostViewer"
-                    },
-                    else: 0
-                  }
-                },
+                "boostCount": 1,
                 "contentModeration": 1,
                 "reportedStatus": 1,
                 "reportedUserCount": 1,
@@ -7109,12 +7003,6 @@ export class PostBoostService {
               }
             },
             {
-              $unwind: {
-                path: "$boosted.boostViewer",
-                preserveNullAndEmptyArrays: true
-              }
-            },
-            {
               $project: {
                 "postID": 1,
                 "isLike": "$isLike",
@@ -7150,18 +7038,7 @@ export class PostBoostService {
                 "boostSession": 1,
                 "isBoost": 1,
                 "boostViewer": 1,
-                "boostCount":
-                {
-                  $cond: {
-                    if: {
-                      $isArray: "$boosted.boostViewer"
-                    },
-                    then: {
-                      $size: "$boosted.boostViewer"
-                    },
-                    else: 0
-                  }
-                },
+                "boostCount": 1,
                 "contentModeration": 1,
                 "reportedStatus": 1,
                 "reportedUserCount": 1,
@@ -7513,12 +7390,6 @@ export class PostBoostService {
               }
             },
             {
-              $unwind: {
-                path: "$boosted.boostViewer",
-                preserveNullAndEmptyArrays: true
-              }
-            },
-            {
               $project: {
                 "postID": 1,
                 "isLike": "$isLike",
@@ -7554,18 +7425,7 @@ export class PostBoostService {
                 "boostSession": 1,
                 "isBoost": 1,
                 "boostViewer": 1,
-                "boostCount":
-                {
-                  $cond: {
-                    if: {
-                      $isArray: "$boosted.boostViewer"
-                    },
-                    then: {
-                      $size: "$boosted.boostViewer"
-                    },
-                    else: 0
-                  }
-                },
+                "boostCount": 1,
                 "contentModeration": 1,
                 "reportedStatus": 1,
                 "reportedUserCount": 1,
