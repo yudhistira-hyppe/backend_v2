@@ -2839,7 +2839,7 @@ export class PostBoostService {
     return res;
   }
 
-  private processDataV2(src: any[], xvids: string[], xpics: string[], isLike: any[], isView: any[], email: string): PostData[] {
+  private async processDataV2(src: any[], xvids: string[], xpics: string[], isLike: any[], isView: any[], email: string): Promise<PostData[]> {
     let res: PostData[] = [];
     var boost = null;
 
@@ -2849,8 +2849,23 @@ export class PostBoostService {
 
     for (let i = 0; i < src.length; i++) {
       let obj = src[i];
-      boost = obj.boosted[0];
-      //console.log(JSON.stringify(obj));
+      // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",obj.boosted);
+      // if (obj.boosted != undefined) {
+      //   console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> leght", obj.boosted.leght);
+      //   if (obj.boosted[0] !=undefined) {
+      //     if (await this.utilService.ceckData(obj.boosted[0])) {
+      //       console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> O", obj.boosted[0]);
+      //       boost = obj.boosted[0];
+      //     } else {
+      //       boost = null;
+      //     }
+      //   } else {
+      //     boost = null;
+      //   }
+      // } else {
+      //   boost = null;
+      // }
+      // console.log("CECK BOOST", boost);
 
       let pd = new PostData();
       pd.active = obj.active;
@@ -2971,11 +2986,6 @@ export class PostBoostService {
       pd.apsaraMusic = undefined;
 
       pd.isBoost = obj.isBoost;
-      if (boost === null || boost === "") {
-        pd.boosted = [];
-      } else {
-        pd.boosted = obj.boosted;
-      }
 
       pd.music = null;
       if (obj.music != undefined) {
@@ -2998,7 +3008,22 @@ export class PostBoostService {
       if (obj.boosted != undefined) {
         console.log("boosted: " + pd.postID);
         this.postxService.updateBoostViewer(pd.postID, email);
-        pd.boostJangkauan = this.countBoosted(obj, email);
+        //pd.boostJangkauan = this.countBoosted(obj, email);
+        if (obj.boosted.length > 0) {
+          if (obj.boosted[0] != undefined) {
+            pd.boostJangkauan = (obj.boosted[0].boostViewer != undefined) ? obj.boosted[0].boostViewer.length : 0;
+            pd.boosted = obj.boosted;
+          }else{
+            pd.boostJangkauan = 0;
+            pd.boosted = [];
+          }
+        } else {
+          pd.boostJangkauan = 0;
+          pd.boosted = [];
+        }
+      } else {
+        pd.boostJangkauan = 0;
+        pd.boosted = [];
       }
 
       if (obj.statusCB == undefined || obj.statusCB == 'PENDING') {
@@ -3094,17 +3119,17 @@ export class PostBoostService {
 
 
     if (body.postType == 'ALL' || body.postType == 'pict') {
-      opic = this.processDataV2(obj.pict, xvids, xpics, isLike, isView, String(profile.email));
+      opic = await this.processDataV2(obj.pict, xvids, xpics, isLike, isView, String(profile.email));
     }
     if (body.postType == 'ALL' || body.postType == 'vid') {
-      ovid = this.processDataV2(obj.video, xvids, xpics, isLike, isView, String(profile.email));
+      ovid = await this.processDataV2(obj.video, xvids, xpics, isLike, isView, String(profile.email));
     }
 
     if (body.postType == 'ALL' || body.postType == 'diary') {
-      odia = this.processDataV2(obj.diary, xvids, xpics, isLike, isView, String(profile.email));
+      odia = await this.processDataV2(obj.diary, xvids, xpics, isLike, isView, String(profile.email));
     }
     if (body.postType == 'ALL' || body.postType == 'story') {
-      osto = this.processDataV2(obj.story, xvids, xpics, isLike, isView, String(profile.email));
+      osto = await this.processDataV2(obj.story, xvids, xpics, isLike, isView, String(profile.email));
     }
 
 
@@ -6054,7 +6079,6 @@ export class PostBoostService {
 
               }
             },
-
             {
               "$lookup": {
                 from: "userauths",
@@ -6276,6 +6300,23 @@ export class PostBoostService {
                 "boostDate": 1,
                 "boostInterval": 1,
                 "boostSession": 1,
+                "boosted":
+                  {
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                              $add: [new Date(), 25200000]
+                            }
+                          }
+                        }, "$boosted.boostSession.end"]
+                      },
+                      then: "$kampretTaslim",
+                      else: '$boosted'
+                    }
+                  },
                 "isBoost": 1,
                 "boostViewer": 1,
                 "boostCount": 1,
@@ -6645,6 +6686,23 @@ export class PostBoostService {
                 "saleAmount": 1,
                 "saleLike": 1,
                 "saleView": 1,
+                "boosted":
+                  {
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                              $add: [new Date(), 25200000]
+                            }
+                          }
+                        }, "$boosted.boostSession.end"]
+                      },
+                      then: "$kampretTaslim",
+                      else: '$boosted'
+                    }
+                  },
                 "likes": 1,
                 "views": 1,
                 "shares": 1,
@@ -7027,6 +7085,23 @@ export class PostBoostService {
                 "saleView": 1,
                 "likes": 1,
                 "views": 1,
+                "boosted":
+                  {
+                    $cond: {
+                      if: {
+                        $gt: [{
+                          "$dateToString": {
+                            "format": "%Y-%m-%d %H:%M:%S",
+                            "date": {
+                              $add: [new Date(), 25200000]
+                            }
+                          }
+                        }, "$boosted.boostSession.end"]
+                      },
+                      then: "$kampretTaslim",
+                      else: '$boosted'
+                    }
+                  },
                 "shares": 1,
                 "userProfile": 1,
                 "contentMedias": 1,
