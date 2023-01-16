@@ -1141,7 +1141,7 @@ export class GetusercontentsController {
         var descending = null;
         var iduser = null;
         var buy = null;
-        var report = null;
+        var reported = null;
         const mongoose = require('mongoose');
         var ObjectId = require('mongodb').ObjectId;
         if (request_json["limit"] !== undefined) {
@@ -1168,7 +1168,7 @@ export class GetusercontentsController {
         descending = request_json["descending"];
         iduser = request_json["iduser"];
         buy = request_json["buy"];
-        report = request_json["report"];
+        reported = request_json["reported"];
         var userid = mongoose.Types.ObjectId(iduser);
         var query = null;
         var datasearch = null;
@@ -1176,7 +1176,7 @@ export class GetusercontentsController {
 
         if (iduser !== undefined) {
             try {
-                query = await this.getusercontentsService.databasenew(buy, report, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
+                query = await this.getusercontentsService.databasenew(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
                 data = query;
             } catch (e) {
                 query = null;
@@ -1184,7 +1184,7 @@ export class GetusercontentsController {
             }
         } else {
             try {
-                query = await this.getusercontentsService.databasenew(buy, report, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
+                query = await this.getusercontentsService.databasenew(buy, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending, page, limit);
                 data = query;
             } catch (e) {
                 query = null;
@@ -1206,14 +1206,14 @@ export class GetusercontentsController {
 
             if (iduser !== undefined) {
                 try {
-                    datasearch = await this.getusercontentsService.databasenewcount(buy, report, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+                    datasearch = await this.getusercontentsService.databasenewcount(buy, reported, userid, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
                     totalsearch = datasearch[0].totalpost;
                 } catch (e) {
                     totalsearch = 0;
                 }
             } else {
                 try {
-                    datasearch = await this.getusercontentsService.databasenewcount(buy, report, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
+                    datasearch = await this.getusercontentsService.databasenewcount(undefined, reported, undefined, username, description, kepemilikan, statusjual, postType, kategori, startdate, enddate, startmount, endmount, descending);
                     totalsearch = datasearch[0].totalpost;
                 } catch (e) {
                     totalsearch = 0;

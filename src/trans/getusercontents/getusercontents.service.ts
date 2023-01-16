@@ -11142,12 +11142,7 @@ export class GetusercontentsService {
       },
 
     },);
-    if (page > 0) {
-      pipeline.push({ $skip: (page * limit) });
-    }
-    if (limit > 0) {
-      pipeline.push({ $limit: limit });
-    }
+
 
     if (iduser && iduser !== undefined) {
       pipeline.push(
@@ -11955,81 +11950,7 @@ export class GetusercontentsService {
 
           }
         },
-        {
-          "$lookup": {
-            "from": "userbasics",
-            "as": "basicdata",
-            "let": {
-              "local_id": "$email",
 
-            },
-            "pipeline": [
-              {
-                $match:
-                {
-                  $expr: {
-                    $eq: ['$email', '$$local_id']
-                  }
-                }
-              },
-              {
-                $project: {
-                  iduser: "$_id",
-
-                }
-              },
-
-
-            ],
-
-          },
-
-        },
-        {
-          "$lookup": {
-            "from": "transactions",
-            "as": "trans",
-            "let": {
-              "local_id": "$postID",
-
-            },
-            "pipeline": [
-              {
-                $match:
-                {
-                  $expr: {
-                    $eq: ['$postid', '$$local_id']
-                  }
-                }
-              },
-              {
-                $project: {
-                  iduserbuyer: 1,
-                  status: 1,
-                  timestamp: 1
-                }
-              },
-              {
-                $match: {
-                  "iduserbuyer": iduser,
-                  "status": "Success"
-                }
-              },
-              {
-                $sort: {
-                  timestamp: - 1
-                },
-
-              },
-              {
-                $limit: 1
-              },
-
-            ],
-
-          },
-
-        },
         {
           $addFields: {
 
@@ -12037,10 +11958,6 @@ export class GetusercontentsService {
             'auth': {
               $arrayElemAt: ['$authdata', 0]
             },
-            'iduser': {
-              $arrayElemAt: ['$basicdata.iduser', 0]
-            },
-
 
           }
         },
@@ -12090,7 +12007,6 @@ export class GetusercontentsService {
             createdAt: 1,
             updatedAt: 1,
             postID: 1,
-            iduser: 1,
             email: 1,
             postType: 1,
             description: 1,
@@ -12098,10 +12014,7 @@ export class GetusercontentsService {
             active: 1,
             kategori: 1,
             reportedUserCount: 1,
-            trans:
-            {
-              $size: "$trans"
-            },
+
             certified:
             {
               $cond: {
@@ -12168,20 +12081,8 @@ export class GetusercontentsService {
             updatedAt: 1,
             postID: 1,
             postType: 1,
-            iduser: 1,
             email: 1,
             reported: 1,
-            buy: {
-              $cond: {
-                if: {
-                  $or: [{
-                    $eq: ["$trans", 0]
-                  }]
-                },
-                then: "TIDAK",
-                else: "YA"
-              }
-            },
             type: {
               $switch: {
                 branches: [
@@ -12375,7 +12276,6 @@ export class GetusercontentsService {
             updatedAt: 1,
             postID: 1,
             postType: 1,
-            iduser: 1,
             email: 1,
             type: 1,
             description: 1,
@@ -12387,7 +12287,6 @@ export class GetusercontentsService {
             saleAmount: 1,
             statusJual: 1,
             reported: 1,
-            buy: 1,
             mediaBasePath: {
               $switch: {
                 branches: [
@@ -12747,7 +12646,7 @@ export class GetusercontentsService {
         }
       },);
     }
-    if (buy && buy !== undefined) {
+    if (buy !== undefined && buy === "YA") {
       pipeline.push({
         $match: {
           buy: buy
@@ -12757,7 +12656,7 @@ export class GetusercontentsService {
     if (report && report !== undefined) {
       pipeline.push({
         $match: {
-          report: report
+          reported: report
         }
       },);
     }
@@ -12802,7 +12701,12 @@ export class GetusercontentsService {
     if (enddate && enddate !== undefined) {
       pipeline.push({ $match: { createdAt: { $lte: dt } } });
     }
-
+    if (page > 0) {
+      pipeline.push({ $skip: (page * limit) });
+    }
+    if (limit > 0) {
+      pipeline.push({ $limit: limit });
+    }
 
     let query = await this.getusercontentsModel.aggregate(pipeline);
 
@@ -13279,81 +13183,7 @@ export class GetusercontentsService {
 
           }
         },
-        {
-          "$lookup": {
-            "from": "userbasics",
-            "as": "basicdata",
-            "let": {
-              "local_id": "$email",
 
-            },
-            "pipeline": [
-              {
-                $match:
-                {
-                  $expr: {
-                    $eq: ['$email', '$$local_id']
-                  }
-                }
-              },
-              {
-                $project: {
-                  iduser: "$_id",
-
-                }
-              },
-
-
-            ],
-
-          },
-
-        },
-        {
-          "$lookup": {
-            "from": "transactions",
-            "as": "trans",
-            "let": {
-              "local_id": "$postID",
-
-            },
-            "pipeline": [
-              {
-                $match:
-                {
-                  $expr: {
-                    $eq: ['$postid', '$$local_id']
-                  }
-                }
-              },
-              {
-                $project: {
-                  iduserbuyer: 1,
-                  status: 1,
-                  timestamp: 1
-                }
-              },
-              {
-                $match: {
-                  "iduserbuyer": iduser,
-                  "status": "Success"
-                }
-              },
-              {
-                $sort: {
-                  timestamp: - 1
-                },
-
-              },
-              {
-                $limit: 1
-              },
-
-            ],
-
-          },
-
-        },
         {
           $addFields: {
 
@@ -13361,10 +13191,6 @@ export class GetusercontentsService {
             'auth': {
               $arrayElemAt: ['$authdata', 0]
             },
-            'iduser': {
-              $arrayElemAt: ['$basicdata.iduser', 0]
-            },
-
 
           }
         },
@@ -13412,7 +13238,6 @@ export class GetusercontentsService {
             createdAt: 1,
             updatedAt: 1,
             postID: 1,
-            iduser: 1,
             email: 1,
             postType: 1,
             description: 1,
@@ -13420,10 +13245,6 @@ export class GetusercontentsService {
             active: 1,
             kategori: 1,
             reportedUserCount: 1,
-            trans:
-            {
-              $size: "$trans"
-            },
             certified:
             {
               $cond: {
@@ -13489,20 +13310,8 @@ export class GetusercontentsService {
             updatedAt: 1,
             postID: 1,
             postType: 1,
-            iduser: 1,
             email: 1,
             reported: 1,
-            buy: {
-              $cond: {
-                if: {
-                  $or: [{
-                    $eq: ["$trans", 0]
-                  }]
-                },
-                then: "TIDAK",
-                else: "YA"
-              }
-            },
             type: {
               $switch: {
                 branches: [
@@ -13579,7 +13388,6 @@ export class GetusercontentsService {
             updatedAt: 1,
             postID: 1,
             postType: 1,
-            iduser: 1,
             email: 1,
             type: 1,
             description: 1,
@@ -13590,37 +13398,12 @@ export class GetusercontentsService {
             visibility: 1,
             saleAmount: 1,
             statusJual: 1,
-            reported: 1,
-            buy: 1,
+            reported: 1
 
           }
         },
 
-        {
-          $project: {
 
-            username: 1,
-            createdAt: 1,
-            updatedAt: 1,
-            postID: 1,
-            postType: 1,
-            iduser: 1,
-            email: 1,
-            type: 1,
-            description: 1,
-            title: 1,
-            active: 1,
-            kategori: 1,
-            kepemilikan: 1,
-            visibility: 1,
-            saleAmount: 1,
-            statusJual: 1,
-            reported: 1,
-            buy: 1,
-
-
-          }
-        },
 
       );
     }
@@ -13714,7 +13497,7 @@ export class GetusercontentsService {
       },);
     }
 
-    if (buy && buy !== undefined) {
+    if (buy !== undefined && buy === "YA") {
       pipeline.push({
         $match: {
           buy: buy
@@ -13724,7 +13507,7 @@ export class GetusercontentsService {
     if (report && report !== undefined) {
       pipeline.push({
         $match: {
-          report: report
+          reported: report
         }
       },);
     }
