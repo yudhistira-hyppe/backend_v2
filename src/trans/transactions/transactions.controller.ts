@@ -6281,103 +6281,105 @@ export class TransactionsController {
         var apsara = null;
         var idapsaradefine = null;
         var apsaradefine = null;
+        console.log(query);
         for (var i = 0; i < query.length; i++) {
-            try {
-                idapsara = query[i].apsaraId;
-            } catch (e) {
-                idapsara = "";
-            }
-            try {
-                apsara = query[i].apsara;
-            } catch (e) {
-                apsara = false;
-            }
+            if (await this.utilsService.ceckData(query[i])) {
+                try {
+                    idapsara = query[i].apsaraId;
+                } catch (e) {
+                    idapsara = "";
+                }
+                try {
+                    apsara = query[i].apsara;
+                } catch (e) {
+                    apsara = false;
+                }
 
-            if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
-                apsaradefine = false;
-            } else {
-                apsaradefine = true;
-            }
+                if (apsara === undefined || apsara === "" || apsara === null || apsara === false) {
+                    apsaradefine = false;
+                } else {
+                    apsaradefine = true;
+                }
 
-            if (idapsara === undefined || idapsara === "" || idapsara === null || idapsara === "other") {
-                idapsaradefine = "";
-            } else {
-                idapsaradefine = idapsara;
-            }
-            var type = query[i].postType;
-            pict = [idapsara];
+                if (idapsara === undefined || idapsara === "" || idapsara === null || idapsara === "other") {
+                    idapsaradefine = "";
+                } else {
+                    idapsaradefine = idapsara;
+                }
+                var type = query[i].postType;
+                pict = [idapsara];
 
-            if (idapsara === "") {
+                if (idapsara === "") {
 
-            } else {
-                if (type === "pict") {
+                } else {
+                    if (type === "pict") {
 
-                    try {
-                        datanew = await this.postContentService.getImageApsara(pict);
-                    } catch (e) {
-                        datanew = [];
+                        try {
+                            datanew = await this.postContentService.getImageApsara(pict);
+                        } catch (e) {
+                            datanew = [];
+                        }
+                    }
+                    else if (type === "vid") {
+                        try {
+                            datanew = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datanew = [];
+                        }
+
+                    }
+                    else if (type === "story") {
+                        try {
+                            datanew = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datanew = [];
+                        }
+                    }
+                    else if (type === "diary") {
+                        try {
+                            datanew = await this.postContentService.getVideoApsara(pict);
+                        } catch (e) {
+                            datanew = [];
+                        }
                     }
                 }
-                else if (type === "vid") {
-                    try {
-                        datanew = await this.postContentService.getVideoApsara(pict);
-                    } catch (e) {
-                        datanew = [];
-                    }
+                objk = {
+                    "_id": query[i]._id,
+                    "iduser": query[i].iduser,
+                    "type": query[i].type,
+                    "jenis": query[i].jenis,
+                    "timestamp": query[i].timestamp,
+                    "description": query[i].description,
+                    "noinvoice": query[i].noinvoice,
+                    "nova": query[i].nova,
+                    "expiredtimeva": query[i].expiredtimeva,
+                    "salelike": query[i].salelike,
+                    "saleview": query[i].saleview,
+                    "bank": query[i].bank,
+                    "amount": query[i].amount,
+                    "totalamount": query[i].totalamount,
+                    "status": query[i].status,
+                    "fullName": query[i].fullName,
+                    "email": query[i].email,
+                    "pembeli": query[i].pembeli,
+                    "emailpembeli": query[i].emailpembeli,
+                    "penjual": query[i].penjual,
+                    "emailpenjual": query[i].emailpenjual,
+                    "userNamePenjual": query[i].userNamePenjual,
+                    "postID": query[i].postID,
+                    "postType": query[i].postType,
+                    "descriptionContent": query[i].descriptionContent,
+                    "title": query[i].descriptionContent,
+                    "mediaType": query[i].mediaType,
+                    "mediaEndpoint": query[i].mediaEndpoint,
+                    "apsaraId": idapsaradefine,
+                    "apsara": apsaradefine,
+                    "debetKredit": query[i].debetKredit,
+                    "media": datanew
 
-                }
-                else if (type === "story") {
-                    try {
-                        datanew = await this.postContentService.getVideoApsara(pict);
-                    } catch (e) {
-                        datanew = [];
-                    }
-                }
-                else if (type === "diary") {
-                    try {
-                        datanew = await this.postContentService.getVideoApsara(pict);
-                    } catch (e) {
-                        datanew = [];
-                    }
-                }
+                };
+                data.push(objk);
             }
-            objk = {
-                "_id": query[i]._id,
-                "iduser": query[i].iduser,
-                "type": query[i].type,
-                "jenis": query[i].jenis,
-                "timestamp": query[i].timestamp,
-                "description": query[i].description,
-                "noinvoice": query[i].noinvoice,
-                "nova": query[i].nova,
-                "expiredtimeva": query[i].expiredtimeva,
-                "salelike": query[i].salelike,
-                "saleview": query[i].saleview,
-                "bank": query[i].bank,
-                "amount": query[i].amount,
-                "totalamount": query[i].totalamount,
-                "status": query[i].status,
-                "fullName": query[i].fullName,
-                "email": query[i].email,
-                "pembeli": query[i].pembeli,
-                "emailpembeli": query[i].emailpembeli,
-                "penjual": query[i].penjual,
-                "emailpenjual": query[i].emailpenjual,
-                "userNamePenjual": query[i].userNamePenjual,
-                "postID": query[i].postID,
-                "postType": query[i].postType,
-                "descriptionContent": query[i].descriptionContent,
-                "title": query[i].descriptionContent,
-                "mediaType": query[i].mediaType,
-                "mediaEndpoint": query[i].mediaEndpoint,
-                "apsaraId": idapsaradefine,
-                "apsara": apsaradefine,
-                "debetKredit": query[i].debetKredit,
-                "media": datanew
-
-            };
-
-            data.push(objk);
         }
 
         var datatrpending = null;
