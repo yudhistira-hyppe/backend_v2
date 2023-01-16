@@ -188,12 +188,16 @@ export class UtilsService {
       if (Templates_.subject != undefined) {
         if (Templates_.subject.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
+        } else if (Templates_.subject.toString() == "Hi, ${user_name}") {
+          title_send = "Hi, @" + get_username_senderParty;
         } else {
           title_send = Templates_.subject.toString();
         }
       } else {
         if (Templates_.subject_id.toString() == "${user_name}") {
           title_send = "@" + get_username_senderParty;
+        } else if (Templates_.subject.toString() == "Hi, ${user_name}") {
+          title_send = "Hi, @" + get_username_senderParty;
         } else {
           title_send = Templates_.subject_id.toString();
         }

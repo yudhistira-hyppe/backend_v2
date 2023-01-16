@@ -2849,9 +2849,13 @@ export class PostBoostService {
 
     for (let i = 0; i < src.length; i++) {
       let obj = src[i];
-      boost = obj.boosted[0];
-
-
+      if (obj.boosted != undefined) {
+        if (obj.boosted[0] != undefined) {
+          boost = obj.boosted[0];
+        } else {
+          boost = [];
+        }
+      }
 
       //console.log(JSON.stringify(obj));
 
