@@ -11316,6 +11316,9 @@ export class GetusercontentsService {
             iduser: 1,
             email: 1,
             postType: 1,
+            views: 1,
+            likes: 1,
+            shares: 1,
             description: 1,
             title: 1,
             active: 1,
@@ -11394,6 +11397,9 @@ export class GetusercontentsService {
             iduser: 1,
             email: 1,
             reported: 1,
+            views: 1,
+            likes: 1,
+            shares: 1,
             buy: {
               $cond: {
                 if: {
@@ -11534,6 +11540,9 @@ export class GetusercontentsService {
             postType: 1,
             iduser: 1,
             email: 1,
+            views: 1,
+            likes: 1,
+            shares: 1,
             type: 1,
             description: 1,
             title: 1,
@@ -11611,6 +11620,9 @@ export class GetusercontentsService {
             statusJual: 1,
             reported: 1,
             buy: 1,
+            views: 1,
+            likes: 1,
+            shares: 1,
             mediaBasePath: {
               $switch: {
                 branches: [
@@ -12014,7 +12026,9 @@ export class GetusercontentsService {
             active: 1,
             kategori: 1,
             reportedUserCount: 1,
-
+            views: 1,
+            likes: 1,
+            shares: 1,
             certified:
             {
               $cond: {
@@ -12083,6 +12097,9 @@ export class GetusercontentsService {
             postType: 1,
             email: 1,
             reported: 1,
+            views: 1,
+            likes: 1,
+            shares: 1,
             type: {
               $switch: {
                 branches: [
@@ -12222,7 +12239,9 @@ export class GetusercontentsService {
             saleAmount: 1,
             statusJual: 1,
             reported: 1,
-            buy: 1,
+            views: 1,
+            likes: 1,
+            shares: 1,
 
           }
         },
@@ -12287,6 +12306,9 @@ export class GetusercontentsService {
             saleAmount: 1,
             statusJual: 1,
             reported: 1,
+            views: 1,
+            likes: 1,
+            shares: 1,
             mediaBasePath: {
               $switch: {
                 branches: [
