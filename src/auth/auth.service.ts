@@ -6178,6 +6178,7 @@ export class AuthService {
         }
         data["roles"] = datauserauthsService.roles;
         data["fullName"] = datauserbasicsService.fullName;
+        data["bio"] = datauserbasicsService.bio;
         if (await this.utilsService.ceckData(mediaprofilepicts_res)) {
           data['avatar'] = mediaprofilepicts_res;
         }
