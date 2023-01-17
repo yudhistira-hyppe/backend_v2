@@ -11146,6 +11146,13 @@ export class GetusercontentsService {
 
     if (iduser && iduser !== undefined) {
       pipeline.push(
+        {
+
+          $match: {
+
+            active: true
+          }
+        },
 
         {
           $addFields: {
@@ -11930,7 +11937,13 @@ export class GetusercontentsService {
     }
     else {
       pipeline.push(
+        {
 
+          $match: {
+
+            active: true
+          }
+        },
         {
           $addFields: {
 
@@ -12792,6 +12805,13 @@ export class GetusercontentsService {
     if (iduser && iduser !== undefined) {
       pipeline.push(
         {
+
+          $match: {
+
+            active: true
+          }
+        },
+        {
           $addFields: {
 
             salePrice: {
@@ -13174,6 +13194,13 @@ export class GetusercontentsService {
 
     } else {
       pipeline.push(
+        {
+
+          $match: {
+
+            active: true
+          }
+        },
         {
           $addFields: {
 
