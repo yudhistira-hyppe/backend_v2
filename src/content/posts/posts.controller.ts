@@ -457,7 +457,7 @@ export class PostsController {
     var userEmail = headers['x-auth-user'];
     var post = await this.PostsService.findByPostId(body.postId.toString());
     let following = await this.contenteventsService.findFollowing(userEmail);
-    if (await this.utilsService.ceckData(post)){
+    if (await this.utilsService.ceckData(post)) {
       if (post.tagPeople != undefined && post.tagPeople.length > 0) {
         let atp = post.tagPeople;
         let atp1 = Array<TagPeople>();
@@ -900,7 +900,7 @@ export class PostsController {
           var thum_data = "";
           if (dataMedia[0].datacontent[0].fsTargetThumbUri != undefined) {
             thum_data = dataMedia[0].datacontent[0].fsTargetThumbUri;
-          }else{
+          } else {
             thum_data = dataMedia[0].datacontent[0].fsSourceUri;
           }
           if (thum_data != '') {
@@ -1009,6 +1009,31 @@ export class PostsController {
     return await this.cmodService.getMax2();
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Put('api/posts/delete/:id')
+  async deletePost(@Res() res, @Param('id') id: string) {
+    const mongoose = require('mongoose');
+    var ObjectId = require('mongodb').ObjectId;
+    const messages = {
+      "info": ["The update successful"],
+    };
 
+    const messagesEror = {
+      "info": ["Todo is not found!"],
+    };
+    // var idobj = mongoose.Types.ObjectId(id);
+    try {
+      let data = await this.PostsService.updatenonaktif(id);
+      res.status(HttpStatus.OK).json({
+        response_code: 202,
+        "message": messages
+      });
+    } catch (e) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+
+        "message": messagesEror
+      });
+    }
+  }
 
 }
