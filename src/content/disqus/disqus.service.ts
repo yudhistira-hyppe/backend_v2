@@ -523,13 +523,13 @@ export class DisqusService {
                         discustId = deleteDiscussLog.discustId;
                     }
                     var getDiscussLog = await this.disquslogsService.finddiscussLogByDiscussID(discustId.toString());
-                    if (await this.utilsService.ceckData(getDiscussLog)){
+                    if (await this.utilsService.ceckData(getDiscussLog)) {
                         var lastestMessage = "";
-                        if (getDiscussLog[0].txtMessages!=undefined){
+                        if (getDiscussLog[0].txtMessages != undefined) {
                             lastestMessage = getDiscussLog[0].txtMessages.toString();
-                        }else{
+                        } else {
                             var reactionUri = "";
-                            if (getDiscussLog[0].reactionUri != undefined){
+                            if (getDiscussLog[0].reactionUri != undefined) {
                                 reactionUri = getDiscussLog[0].reactionUri.toString();
                                 var getReaction = await this.reactionsRepoService.findByUrl(reactionUri);
                                 if (await this.utilsService.ceckData(getReaction)) {
@@ -548,6 +548,21 @@ export class DisqusService {
                                 }
                             }
                         );
+                    }else{
+                        this.DisqusModel.updateOne(
+                            { _id: discustId, },
+                            {
+                                emailActive: false,
+                                mateActive: false,
+                                lastestMessage: ""
+                            },
+                            function (err, docs) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    console.log(docs);
+                                }
+                        });
                     }
                 }
             }
