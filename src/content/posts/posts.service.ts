@@ -297,6 +297,15 @@ export class PostsService {
     return data;
   }
 
+  async updatenonaktif(id: string): Promise<Object> {
+    let data = await this.PostsModel.updateOne({ "_id": id },
+      {
+        $set: {
+          "active": false
+        }
+      });
+    return data;
+  }
   async updateTag(id: string, tagPeople: []): Promise<Object> {
     let data = await this.PostsModel.updateOne({ "_id": id },
       {

@@ -221,17 +221,7 @@ export class AdsService {
 
 
 
-        const groupByMake = (arr = []) => {
-            let result = [];
-            result = arr.reduce((r, a) => {
-                r[a.date] = r[a.date] || [];
-                r[a.date].push(a);
-                return r;
-            }, Object.create(null));
-            return result;
-        };
 
-        var arrgen = groupByMake(datasumdetailgender);
 
 
         if (idapsara === undefined || idapsara === "" || idapsara === null) {
@@ -256,7 +246,7 @@ export class AdsService {
                     obj[0].wilayah = dataSumwilayah;
                     obj[0].sumview = arrdata;
                     obj[0].sumclick = arrdataclick;
-                    obj[0].detailgender = arrgen;
+
                     obj[0].media = await this.postContentService.getImageApsara(pict);
                 } catch (e) {
                     obj[0].media = {};
@@ -270,7 +260,7 @@ export class AdsService {
                     obj[0].wilayah = dataSumwilayah;
                     obj[0].sumview = arrdata;
                     obj[0].sumclick = arrdataclick;
-                    obj[0].detailgender = arrgen;
+
                     obj[0].media = await this.postContentService.getVideoApsara(pict);
                 } catch (e) {
                     obj[0].media = {};
@@ -6763,7 +6753,7 @@ export class AdsService {
             {
                 "$lookup": {
                     "from": "userads",
-                    "as": "detailgender",
+                    "as": "male",
                     "let": {
                         "local_id": "$_id",
 
@@ -6834,10 +6824,8 @@ export class AdsService {
 
                                 gender: '$ubasic.gender',
                                 createdAt: 1
-
                             }
                         },
-
                         {
                             $project: {
                                 createdAt: 1,
@@ -6912,9 +6900,14 @@ export class AdsService {
                             }
                         },
                         {
+                            $match: {
+                                gender: "MALE"
+                            }
+                        },
+                        {
                             $group: {
                                 _id: {
-                                    gender: '$gender',
+
                                     tanggal: {
                                         $substrCP: [
                                             "$createdAt",
@@ -6932,9 +6925,198 @@ export class AdsService {
                             $project: {
                                 _id: 0,
                                 date: "$_id.tanggal",
-                                gender: "$_id.gender",
                                 total: 1,
+                                gender: "MALE"
+                            }
+                        },
+                        {
+                            $sort: {
+                                date: 1
+                            }
+                        },
 
+                    ],
+
+                },
+
+            },
+            {
+                "$lookup": {
+                    "from": "userads",
+                    "as": "female",
+                    "let": {
+                        "local_id": "$_id",
+
+                    },
+                    "pipeline": [
+                        {
+                            $match:
+                            {
+
+
+                                $expr: {
+                                    $eq: ['$adsID', '$$local_id']
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+
+                                userID: 1,
+                                createdAt: 1,
+                                statusClick: 1,
+                                statusView: 1,
+
+                            }
+                        },
+                        {
+                            $match: {
+                                statusView: true,
+                                createdAt: {
+                                    $gte: "2023-01-12",
+                                    $lte: "2023-01-13"
+                                }
+                            }
+                        },
+                        {
+                            "$lookup": {
+                                "from": "userbasics",
+                                "as": "ubasic",
+                                "let": {
+                                    "local_id": "$userID"
+                                },
+                                "pipeline": [
+                                    {
+                                        "$match": {
+                                            "$expr": {
+                                                "$eq": [
+                                                    "$_id",
+                                                    "$$local_id"
+                                                ]
+                                            }
+                                        }
+                                    },
+
+                                ],
+
+                            }
+                        },
+                        {
+                            $project: {
+                                ubasic: {
+                                    $arrayElemAt: ['$ubasic', 0]
+                                },
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+
+                                gender: '$ubasic.gender',
+                                createdAt: 1
+                            }
+                        },
+                        {
+                            $project: {
+                                createdAt: 1,
+                                gender: {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
+                                    },
+
+                                },
+
+                            }
+                        },
+                        {
+                            $match: {
+                                gender: "FEMALE"
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: {
+
+                                    tanggal: {
+                                        $substrCP: [
+                                            "$createdAt",
+                                            0,
+                                            10
+                                        ]
+                                    }
+                                },
+                                total: {
+                                    $sum: 1
+                                }
+                            }
+                        },
+                        {
+                            $project: {
+                                _id: 0,
+                                date: "$_id.tanggal",
+                                total: 1,
+                                gender: "FEMALE"
                             }
                         },
                         {
@@ -6984,10 +7166,10 @@ export class AdsService {
                     gender: 1,
                     sumview: 1,
                     sumclick: 1,
-                    detailgender: 1
+                    male: 1,
+                    female: 1
                 }
             },
-
         ]);
         var arrayData = [];
         let data = await this.getapsaraDatabaseAds(query, startdate, enddate);
@@ -8667,1909 +8849,1909 @@ export class AdsService {
         //     },
         // ]);
 
-        const query = await this.adsModel.aggregate([    
+        const query = await this.adsModel.aggregate([
+            {
+                $match:
                 {
-                    $match: 
-                    {
-                        $and: [
-                            {
-                                "userID": userid
-                            },
-                            {
-                                "status": "APPROVE"
-                            },
-                            //{
-                            //    $expr: {
-                            //        $gt: ["$liveAt", "$timeStart"]
-                            //    }
-                            //},
-                            //{
-                            //    $expr: {
-                            //        $lt: ["$liveAt", "$timeEnd"]
-                            //    }
-                            //},
-                        ]
-                    },
-                    
-                },
-                {
-                    $lookup: {
-                        from: 'userads',
-                        as: 'view',
-                        let: {
-                            localID: '$_id'
+                    $and: [
+                        {
+                            "userID": userid
                         },
-                        pipeline: [
-                            {
-                                $match: 
-                                {
-                                    $and: [
-                                        {
-                                            $expr: {
-                                                $eq: ['$adsID', '$$localID']
-                                            }
-                                        },
-                                        {
-                                            "statusView": true,
-                                            
-                                        },
-                                        
-                                    ]
-                                }
-                            },
-                            
-                        ],
-                        
-                    },
-                    
-                },
-                {
-                    $lookup: {
-                        from: 'userads',
-                        as: 'click',
-                        let: {
-                            localID: '$_id'
+                        {
+                            "status": "APPROVE"
                         },
-                        pipeline: [
-                            {
-                                $match: 
-                                {
-                                    $and: [
-                                        {
-                                            $expr: {
-                                                $eq: ['$adsID', '$$localID']
-                                            }
-                                        },
-                                        {
-                                            "statusClick": true,
-                                            
-                                        },
-                                        
-                                    ]
-                                }
-                            },
-                            
-                        ],
-                        
-                    },
-                    
+                        //{
+                        //    $expr: {
+                        //        $gt: ["$liveAt", "$timeStart"]
+                        //    }
+                        //},
+                        //{
+                        //    $expr: {
+                        //        $lt: ["$liveAt", "$timeEnd"]
+                        //    }
+                        //},
+                    ]
                 },
-                {
-                    "$lookup": {
-                        from: "userbasics",
-                        as: "userView",
-                        let: {
-                            localID: '$view.userID'
-                        },
-                        pipeline: [
+
+            },
+            {
+                $lookup: {
+                    from: 'userads',
+                    as: 'view',
+                    let: {
+                        localID: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
                             {
-                                $match: 
-                                {
-                                    $expr: {
-                                        $in: ['$_id', '$$localID']
-                                    }
-                                }
-                            },
-                            {
-                                $project: {
-                                    "_id": 1,
-                                    "gender": {
-                                        
-                                        $switch: {
-                                            branches: [
-                                                {
-                                                    case: {
-                                                        $eq: ['$gender', 'FEMALE']
-                                                    },
-                                                    then: 'FEMALE',
-                                                    
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: ['$gender', ' FEMALE']
-                                                    },
-                                                    then: 'FEMALE',
-                                                    
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: ['$gender', 'Perempuan']
-                                                    },
-                                                    then: 'FEMALE',
-                                                    
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: ['$gender', 'Wanita']
-                                                    },
-                                                    then: 'FEMALE',
-                                                    
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: ['$gender', 'MALE']
-                                                    },
-                                                    then: 'MALE',
-                                                    
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: ['$gender', ' MALE']
-                                                    },
-                                                    then: 'MALE',
-                                                    
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: ['$gender', 'Laki-laki']
-                                                    },
-                                                    then: 'MALE',
-                                                    
-                                                },
-                                                {
-                                                    case: {
-                                                        $eq: ['$gender', 'Pria']
-                                                    },
-                                                    then: 'MALE',
-                                                    
-                                                },
-                                                
-                                            ],
-                                            default: "OTHER",
-                                            
-                                        },
-                                                  
-                                    },
-                                    "cities": 1,
-                                    "dob": 
+                                $and: [
                                     {
-                                        $cond: {
-                                            if : {
-                                                $and: ['$dob', {
-                                                    $ne: ["$dob", ""]
-                                                }]
-                                            },
-                                            then: {
-                                                $toInt: {
-                                                    $divide: [{
-                                                        $subtract: [new Date(), {
-                                                            $toDate: "$dob"
-                                                        }]
-                                                    }, (365 * 24 * 60 * 60 * 1000)]
-                                                }
-                                            },
-                                            else : 0
+                                        $expr: {
+                                            $eq: ['$adsID', '$$localID']
                                         }
                                     },
-                                    
-                                }
-                            },
-                            {
-                                $project: {
-                                    "_id": 1,
-                                    "gender": 1,
-                                    "cities": 1,
-                                    "dob": 
                                     {
-                                        $switch: {
-                                            branches: [
-                                                {
-                                                    case: {
-                                                        $gt: ["$dob", 44]
-                                                    },
-                                                    then: "< 44 Tahun"
-                                                },
-                                                {
-                                                    case: {
-                                                        $and: [{
-                                                            $gte: ["$dob", 36]
-                                                        }, {
-                                                            $lte: ["$dob", 44]
-                                                        }]
-                                                    },
-                                                    then: "35-44 Tahun"
-                                                },
-                                                {
-                                                    case: {
-                                                        $and: [{
-                                                            $gte: ["$dob", 25]
-                                                        }, {
-                                                            $lte: ["$dob", 35]
-                                                        }]
-                                                    },
-                                                    then: "24-35 Tahun"
-                                                },
-                                                {
-                                                    case: {
-                                                        $and: [{
-                                                            $gte: ["$dob", 14]
-                                                        }, {
-                                                            $lte: ["$dob", 24]
-                                                        }]
-                                                    },
-                                                    then: "14-24 Tahun"
-                                                },
-                                                {
-                                                    case: {
-                                                        $and: [{
-                                                            $gte: ["$dob", 1]
-                                                        }, {
-                                                            $lt: ["$dob", 14]
-                                                        }]
-                                                    },
-                                                    then: "< 14 Tahun"
-                                                }
-                                            ],
-                                            "default": "other"
-                                        }
+                                        "statusView": true,
+
                                     },
-                                    
-                                }
-                            }
-                        ],
-                        
-                    }
-                },
-                {
-                    $lookup: {
-                        from: 'cities',
-                        localField: 'userView.cities.$id',
-                        foreignField: '_id',
-                        as: 'citiesView',
-                        
-                    },
-                    
-                },
-                {
-                    $lookup: {
-                        from: 'areas',
-                        localField: 'citiesView.stateID',
-                        foreignField: 'stateID',
-                        as: 'areasView',
-                        
-                    },
-                    
-                },
-                {
-                    $project: {
-                        "start": "$timeStart",
-                        "end": "$timeEnd",
-                        "_id": 1,
-                        "userID": "$userID",
-                        "areaView": "$areasView.stateName",
-                        "genderView": "$userView.gender",
-                        "dobView": "$userView.dob",
-                        "dobClick": "$userView.dob",
-                        "view": {
-                            $cond: {
-                                if : {
-                                    $isArray: "$view"
-                                },
-                                then: {
-                                    $size: "$view"
-                                },
-                                else : 0
+
+                                ]
                             }
                         },
-                        "click": {
-                            $cond: {
-                                if : {
-                                    $isArray: "$click"
-                                },
-                                then: {
-                                    $size: "$click"
-                                },
-                                else : 0
+
+                    ],
+
+                },
+
+            },
+            {
+                $lookup: {
+                    from: 'userads',
+                    as: 'click',
+                    let: {
+                        localID: '$_id'
+                    },
+                    pipeline: [
+                        {
+                            $match:
+                            {
+                                $and: [
+                                    {
+                                        $expr: {
+                                            $eq: ['$adsID', '$$localID']
+                                        }
+                                    },
+                                    {
+                                        "statusClick": true,
+
+                                    },
+
+                                ]
                             }
                         },
-                        
-                    }
+
+                    ],
+
                 },
-                {
-                    $facet: {
-                        "view": [
+
+            },
+            {
+                "$lookup": {
+                    from: "userbasics",
+                    as: "userView",
+                    let: {
+                        localID: '$view.userID'
+                    },
+                    pipeline: [
+                        {
+                            $match:
                             {
-                                $group: {
-                                    _id: "allView",
-                                    view: {
-                                        $sum: "$view"
-                                    },
-                                            
+                                $expr: {
+                                    $in: ['$_id', '$$localID']
                                 }
-                                    
                             }
-                        ],
-                        "click": [
-                            {
-                                $group: {
-                                    _id: "allClick",
-                                    click: {
-                                        
-                                        $sum: "$click"
+                        },
+                        {
+                            $project: {
+                                "_id": 1,
+                                "gender": {
+
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' FEMALE']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Perempuan']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Wanita']
+                                                },
+                                                then: 'FEMALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', ' MALE']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Laki-laki']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+                                            {
+                                                case: {
+                                                    $eq: ['$gender', 'Pria']
+                                                },
+                                                then: 'MALE',
+
+                                            },
+
+                                        ],
+                                        default: "OTHER",
+
                                     },
-                                            
-                                }
-                                    
-                            }
-                        ],
-                        "totalarea": [
-                            {
-                                $unwind: {
-                                    path: "$areaView",
-                                    
-                                }
-                            },
-                            {
-                                $group: 
+
+                                },
+                                "cities": 1,
+                                "dob":
                                 {
-                                    _id: "totalarea",
-                                    total: 
-                                    {
-                                        $sum: 1
-                                    },
-                                    //totaldata:total
-                                }
-                            },
-                            {
-                                $project: {
-                                    total: 1,
-                                    
-                                }
-                            }
-                        ],
-                        "areas": [
-                            {
-                                $unwind: {
-                                    path: "$areaView",
-                                    
-                                }
-                            },
-                            {
-                                $project: {
-                                    "area": "$areaView"
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: '$area',
-                                    count: {
-                                        $sum: 1
+                                    $cond: {
+                                        if: {
+                                            $and: ['$dob', {
+                                                $ne: ["$dob", ""]
+                                            }]
+                                        },
+                                        then: {
+                                            $toInt: {
+                                                $divide: [{
+                                                    $subtract: [new Date(), {
+                                                        $toDate: "$dob"
+                                                    }]
+                                                }, (365 * 24 * 60 * 60 * 1000)]
+                                            }
+                                        },
+                                        else: 0
                                     }
-                                }
+                                },
+
                             }
-                        ],
-                        "totalage": [
-                            {
-                                $unwind: {
-                                    path: "$dobView",
-                                    
-                                }
-                            },
-                            {
-                                $group: 
+                        },
+                        {
+                            $project: {
+                                "_id": 1,
+                                "gender": 1,
+                                "cities": 1,
+                                "dob":
                                 {
-                                    _id: "$kancut",
-                                    total: 
-                                    {
-                                        $sum: 1
-                                    },
-                                    //totaldata:total
-                                }
-                            },
-                            {
-                                $project: {
-                                    total: 1,
-                                    
-                                }
+                                    $switch: {
+                                        branches: [
+                                            {
+                                                case: {
+                                                    $gt: ["$dob", 44]
+                                                },
+                                                then: "< 44 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: ["$dob", 36]
+                                                    }, {
+                                                        $lte: ["$dob", 44]
+                                                    }]
+                                                },
+                                                then: "35-44 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: ["$dob", 25]
+                                                    }, {
+                                                        $lte: ["$dob", 35]
+                                                    }]
+                                                },
+                                                then: "24-35 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: ["$dob", 14]
+                                                    }, {
+                                                        $lte: ["$dob", 24]
+                                                    }]
+                                                },
+                                                then: "14-24 Tahun"
+                                            },
+                                            {
+                                                case: {
+                                                    $and: [{
+                                                        $gte: ["$dob", 1]
+                                                    }, {
+                                                        $lt: ["$dob", 14]
+                                                    }]
+                                                },
+                                                then: "< 14 Tahun"
+                                            }
+                                        ],
+                                        "default": "other"
+                                    }
+                                },
+
                             }
-                        ],
-                        "age": [
-                            {
-                                $unwind: {
-                                    path: "$dobView",
-                                    
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: '$dobView',
-                                    age: {
-                                        $sum: 1
-                                    },
-                                    
-                                }
-                            },
-                            
-                        ],
-                        "gender": [
-                            {
-                                $unwind: {
-                                    path: "$genderView",
-                                    
-                                }
-                            },
-                            {
-                                $project: {
-                                    "gender": "$genderView"
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: '$gender',
-                                    count: {
-                                        $sum: 1
-                                    }
-                                }
-                            }
-                        ],
-                        "totalGender": [
-                            {
-                                $unwind: {
-                                    path: "$genderView",
-                                    
-                                }
-                            },
-                            {
-                                $group: 
-                                {
-                                    _id: "$kancut",
-                                    total: 
-                                    {
-                                        $sum: 1
-                                    },
-                                    //totaldata:total
-                                }
-                            },
-                            {
-                                $project: {
-                                    total: 1,
-                                    
-                                }
-                            }
-                        ],
-                        "day7": [
-                            {
-                                $set: {
-                                    "timeStart": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), - 61200000] // 1 hari 61200000
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $set: {
-                                    "timeEnd": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), 25200000]
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'ads',
-                                    as: 'dodol',
-                                    let: {
-                                        localID: userid
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$userID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "status": "APPROVE"
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $gt: ["$liveAt", "$timeStart"]
-                                                        }
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $lt: ["$liveAt", "$timeEnd"]
-                                                        }
-                                                    },
-                                                    
-                                                ]
-                                            },
-                                            
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'view',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusView": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'click',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusClick": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $project: {
-                                    "start": "$timeStart",
-                                    "end": "$timeEnd",
-                                    "view": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$view"
-                                            },
-                                            then: {
-                                                $size: "$view"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    "click": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$click"
-                                            },
-                                            then: {
-                                                $size: "$click"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: "Day7",
-                                    view: {
-                                        $sum: "$view"
-                                    },
-                                    click: {
-                                        $sum: "$click"
-                                    },
-                                    timeStart: {
-                                        $first: "$start"
-                                    },
-                                    timeEndt: {
-                                        $first: "$end"
-                                    },
-                                                 
-                                }
-                                    
-                            }
-                        ],
-                        "day6": [
-                            {
-                                $set: {
-                                    "timeStart": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), - 147600000] // 1 hari 61200000
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $set: {
-                                    "timeEnd": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), - 61200000]
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'ads',
-                                    as: 'dodol',
-                                    let: {
-                                        localID: userid
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$userID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "status": "APPROVE"
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $gt: ["$liveAt", "$timeStart"]
-                                                        }
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $lt: ["$liveAt", "$timeEnd"]
-                                                        }
-                                                    },
-                                                    
-                                                ]
-                                            },
-                                            
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'view',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusView": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'click',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusClick": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $project: {
-                                    "start": "$timeStart",
-                                    "end": "$timeEnd",
-                                    "view": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$view"
-                                            },
-                                            then: {
-                                                $size: "$view"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    "click": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$click"
-                                            },
-                                            then: {
-                                                $size: "$click"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: "Day6",
-                                    view: {
-                                        $sum: "$view"
-                                    },
-                                    click: {
-                                        $sum: "$click"
-                                    },
-                                    timeStart: {
-                                        $first: "$start"
-                                    },
-                                    timeEndt: {
-                                        $first: "$end"
-                                    },
-                                     
-                                            
-                                }
-                                    
-                            }
-                        ],
-                        "day5": [
-                            {
-                                $set: {
-                                    "timeStart": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), - 234000000] // 1 hari 61200000
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $set: {
-                                    "timeEnd": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), - 147600000]
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'ads',
-                                    as: 'dodol',
-                                    let: {
-                                        localID: userid
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$userID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "status": "APPROVE"
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $gt: ["$liveAt", "$timeStart"]
-                                                        }
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $lt: ["$liveAt", "$timeEnd"]
-                                                        }
-                                                    },
-                                                    
-                                                ]
-                                            },
-                                            
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'view',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusView": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'click',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusClick": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $project: {
-                                    "start": "$timeStart",
-                                    "end": "$timeEnd",
-                                    "view": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$view"
-                                            },
-                                            then: {
-                                                $size: "$view"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    "click": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$click"
-                                            },
-                                            then: {
-                                                $size: "$click"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: "Day5",
-                                    view: {
-                                        $sum: "$view"
-                                    },
-                                    click: {
-                                        $sum: "$click"
-                                    },
-                                    timeStart: {
-                                        $first: "$start"
-                                    },
-                                    timeEndt: {
-                                        $first: "$end"
-                                    },
-                                     
-                                            
-                                }
-                                    
-                            }
-                        ],
-                        "day4": [
-                            {
-                                $set: {
-                                    "timeStart": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), - 320400000] // 1 hari 61200000
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $set: {
-                                    "timeEnd": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), - 234000000]
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'ads',
-                                    as: 'dodol',
-                                    let: {
-                                        localID: userid
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$userID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "status": "APPROVE"
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $gt: ["$liveAt", "$timeStart"]
-                                                        }
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $lt: ["$liveAt", "$timeEnd"]
-                                                        }
-                                                    },
-                                                    
-                                                ]
-                                            },
-                                            
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'view',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusView": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'click',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusClick": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $project: {
-                                    "start": "$timeStart",
-                                    "end": "$timeEnd",
-                                    "view": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$view"
-                                            },
-                                            then: {
-                                                $size: "$view"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    "click": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$click"
-                                            },
-                                            then: {
-                                                $size: "$click"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: "Day4",
-                                    view: {
-                                        $sum: "$view"
-                                    },
-                                    click: {
-                                        $sum: "$click"
-                                    },
-                                    timeStart: {
-                                        $first: "$start"
-                                    },
-                                    timeEndt: {
-                                        $first: "$end"
-                                    },
-                                     
-                                            
-                                }
-                                    
-                            }
-                        ],
-                        "day3": [
-                            {
-                                $set: {
-                                    "timeStart": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), - 406800000] // 1 hari 61200000
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $set: {
-                                    "timeEnd": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), - 320400000]
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'ads',
-                                    as: 'dodol',
-                                    let: {
-                                        localID: userid
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$userID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "status": "APPROVE"
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $gt: ["$liveAt", "$timeStart"]
-                                                        }
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $lt: ["$liveAt", "$timeEnd"]
-                                                        }
-                                                    },
-                                                    
-                                                ]
-                                            },
-                                            
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'view',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusView": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'click',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusClick": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $project: {
-                                    "start": "$timeStart",
-                                    "end": "$timeEnd",
-                                    "view": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$view"
-                                            },
-                                            then: {
-                                                $size: "$view"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    "click": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$click"
-                                            },
-                                            then: {
-                                                $size: "$click"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: "Day3",
-                                    view: {
-                                        $sum: "$view"
-                                    },
-                                    click: {
-                                        $sum: "$click"
-                                    },
-                                    timeStart: {
-                                        $first: "$start"
-                                    },
-                                    timeEndt: {
-                                        $first: "$end"
-                                    },
-                                     
-                                            
-                                }
-                                    
-                            }
-                        ],
-                        "day2": [
-                            {
-                                $set: {
-                                    "timeStart": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), - 493200000] // 1 hari 61200000
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $set: {
-                                    "timeEnd": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), - 406800000]
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'ads',
-                                    as: 'dodol',
-                                    let: {
-                                        localID: userid
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$userID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "status": "APPROVE"
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $gt: ["$liveAt", "$timeStart"]
-                                                        }
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $lt: ["$liveAt", "$timeEnd"]
-                                                        }
-                                                    },
-                                                    
-                                                ]
-                                            },
-                                            
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'view',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusView": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'click',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusClick": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $project: {
-                                    "start": "$timeStart",
-                                    "end": "$timeEnd",
-                                    "view": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$view"
-                                            },
-                                            then: {
-                                                $size: "$view"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    "click": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$click"
-                                            },
-                                            then: {
-                                                $size: "$click"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: "Day2",
-                                    view: {
-                                        $sum: "$view"
-                                    },
-                                    click: {
-                                        $sum: "$click"
-                                    },
-                                    timeStart: {
-                                        $first: "$start"
-                                    },
-                                    timeEndt: {
-                                        $first: "$end"
-                                    },
-                                     
-                                            
-                                }
-                                    
-                            }
-                        ],
-                        "day1": [
-                            {
-                                $set: {
-                                    "timeStart": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), - 579600000] // 1 hari 61200000
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $set: {
-                                    "timeEnd": 
-                                    {
-                                        "$dateToString": {
-                                            "format": "%Y-%m-%d %H:%M:%S",
-                                            "date": {
-                                                $add: [new Date(), - 493200000]
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                $lookup: {
-                                    from: 'ads',
-                                    as: 'dodol',
-                                    let: {
-                                        localID: userid
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$userID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "status": "APPROVE"
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $gt: ["$liveAt", "$timeStart"]
-                                                        }
-                                                    },
-                                                    {
-                                                        $expr: {
-                                                            $lt: ["$liveAt", "$timeEnd"]
-                                                        }
-                                                    },
-                                                    
-                                                ]
-                                            },
-                                            
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'view',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusView": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $lookup: {
-                                    from: 'userads',
-                                    as: 'click',
-                                    let: {
-                                        localID: '$dodol._id'
-                                    },
-                                    pipeline: [
-                                        {
-                                            $match: 
-                                            {
-                                                $and: [
-                                                    {
-                                                        $expr: {
-                                                            $eq: ['$adsID', '$$localID']
-                                                        }
-                                                    },
-                                                    {
-                                                        "statusClick": true,
-                                                        
-                                                    },
-                                                    
-                                                ]
-                                            }
-                                        },
-                                        
-                                    ],
-                                    
-                                },
-                                
-                            },
-                            {
-                                $project: {
-                                    "start": "$timeStart",
-                                    "end": "$timeEnd",
-                                    "view": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$view"
-                                            },
-                                            then: {
-                                                $size: "$view"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    "click": {
-                                        $cond: {
-                                            if : {
-                                                $isArray: "$click"
-                                            },
-                                            then: {
-                                                $size: "$click"
-                                            },
-                                            else : 0
-                                        }
-                                    },
-                                    
-                                }
-                            },
-                            {
-                                $group: {
-                                    _id: "Day1",
-                                    view: {
-                                        $sum: "$view"
-                                    },
-                                    click: {
-                                        $sum: "$click"
-                                    },
-                                    timeStart: {
-                                        $first: "$start"
-                                    },
-                                    timeEndt: {
-                                        $first: "$end"
-                                    },
-                                            
-                                }
-                                    
-                            },
-                            
-                        ],
-                        
-                    }
+                        }
+                    ],
+
+                }
+            },
+            {
+                $lookup: {
+                    from: 'cities',
+                    localField: 'userView.cities.$id',
+                    foreignField: '_id',
+                    as: 'citiesView',
+
                 },
-                {
-                    $facet: {
-                        genders: [
-                            {
-                                $unwind: {
-                                    path: "$totaGender",
-                                    preserveNullAndEmptyArrays: true
-                                }
+
+            },
+            {
+                $lookup: {
+                    from: 'areas',
+                    localField: 'citiesView.stateID',
+                    foreignField: 'stateID',
+                    as: 'areasView',
+
+                },
+
+            },
+            {
+                $project: {
+                    "start": "$timeStart",
+                    "end": "$timeEnd",
+                    "_id": 1,
+                    "userID": "$userID",
+                    "areaView": "$areasView.stateName",
+                    "genderView": "$userView.gender",
+                    "dobView": "$userView.dob",
+                    "dobClick": "$userView.dob",
+                    "view": {
+                        $cond: {
+                            if: {
+                                $isArray: "$view"
                             },
-                            {
-                                $unwind: {
-                                    path: "$gender",
-                                    preserveNullAndEmptyArrays: true
-                                }
+                            then: {
+                                $size: "$view"
                             },
+                            else: 0
+                        }
+                    },
+                    "click": {
+                        $cond: {
+                            if: {
+                                $isArray: "$click"
+                            },
+                            then: {
+                                $size: "$click"
+                            },
+                            else: 0
+                        }
+                    },
+
+                }
+            },
+            {
+                $facet: {
+                    "view": [
+                        {
+                            $group: {
+                                _id: "allView",
+                                view: {
+                                    $sum: "$view"
+                                },
+
+                            }
+
+                        }
+                    ],
+                    "click": [
+                        {
+                            $group: {
+                                _id: "allClick",
+                                click: {
+
+                                    $sum: "$click"
+                                },
+
+                            }
+
+                        }
+                    ],
+                    "totalarea": [
+                        {
+                            $unwind: {
+                                path: "$areaView",
+
+                            }
+                        },
+                        {
+                            $group:
                             {
-                                $project: {
-                                    remark: "$gender._id",
-                                    range: "$gender.count",
-                                    percent: 
+                                _id: "totalarea",
+                                total:
+                                {
+                                    $sum: 1
+                                },
+                                //totaldata:total
+                            }
+                        },
+                        {
+                            $project: {
+                                total: 1,
+
+                            }
+                        }
+                    ],
+                    "areas": [
+                        {
+                            $unwind: {
+                                path: "$areaView",
+
+                            }
+                        },
+                        {
+                            $project: {
+                                "area": "$areaView"
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: '$area',
+                                count: {
+                                    $sum: 1
+                                }
+                            }
+                        }
+                    ],
+                    "totalage": [
+                        {
+                            $unwind: {
+                                path: "$dobView",
+
+                            }
+                        },
+                        {
+                            $group:
+                            {
+                                _id: "$kancut",
+                                total:
+                                {
+                                    $sum: 1
+                                },
+                                //totaldata:total
+                            }
+                        },
+                        {
+                            $project: {
+                                total: 1,
+
+                            }
+                        }
+                    ],
+                    "age": [
+                        {
+                            $unwind: {
+                                path: "$dobView",
+
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: '$dobView',
+                                age: {
+                                    $sum: 1
+                                },
+
+                            }
+                        },
+
+                    ],
+                    "gender": [
+                        {
+                            $unwind: {
+                                path: "$genderView",
+
+                            }
+                        },
+                        {
+                            $project: {
+                                "gender": "$genderView"
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: '$gender',
+                                count: {
+                                    $sum: 1
+                                }
+                            }
+                        }
+                    ],
+                    "totalGender": [
+                        {
+                            $unwind: {
+                                path: "$genderView",
+
+                            }
+                        },
+                        {
+                            $group:
+                            {
+                                _id: "$kancut",
+                                total:
+                                {
+                                    $sum: 1
+                                },
+                                //totaldata:total
+                            }
+                        },
+                        {
+                            $project: {
+                                total: 1,
+
+                            }
+                        }
+                    ],
+                    "day7": [
+                        {
+                            $set: {
+                                "timeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 61200000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), 25200000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'ads',
+                                as: 'dodol',
+                                let: {
+                                    localID: userid
+                                },
+                                pipeline: [
                                     {
-                                        $multiply: 
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$userID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "status": "APPROVE"
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $gt: ["$liveAt", "$timeStart"]
+                                                    }
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $lt: ["$liveAt", "$timeEnd"]
+                                                    }
+                                                },
+
+                                            ]
+                                        },
+
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'view',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusView": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'click',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusClick": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $project: {
+                                "start": "$timeStart",
+                                "end": "$timeEnd",
+                                "view": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$view"
+                                        },
+                                        then: {
+                                            $size: "$view"
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                "click": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$click"
+                                        },
+                                        then: {
+                                            $size: "$click"
+                                        },
+                                        else: 0
+                                    }
+                                },
+
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "Day7",
+                                view: {
+                                    $sum: "$view"
+                                },
+                                click: {
+                                    $sum: "$click"
+                                },
+                                timeStart: {
+                                    $first: "$start"
+                                },
+                                timeEndt: {
+                                    $first: "$end"
+                                },
+
+                            }
+
+                        }
+                    ],
+                    "day6": [
+                        {
+                            $set: {
+                                "timeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 147600000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 61200000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'ads',
+                                as: 'dodol',
+                                let: {
+                                    localID: userid
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$userID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "status": "APPROVE"
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $gt: ["$liveAt", "$timeStart"]
+                                                    }
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $lt: ["$liveAt", "$timeEnd"]
+                                                    }
+                                                },
+
+                                            ]
+                                        },
+
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'view',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusView": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'click',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusClick": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $project: {
+                                "start": "$timeStart",
+                                "end": "$timeEnd",
+                                "view": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$view"
+                                        },
+                                        then: {
+                                            $size: "$view"
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                "click": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$click"
+                                        },
+                                        then: {
+                                            $size: "$click"
+                                        },
+                                        else: 0
+                                    }
+                                },
+
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "Day6",
+                                view: {
+                                    $sum: "$view"
+                                },
+                                click: {
+                                    $sum: "$click"
+                                },
+                                timeStart: {
+                                    $first: "$start"
+                                },
+                                timeEndt: {
+                                    $first: "$end"
+                                },
+
+
+                            }
+
+                        }
+                    ],
+                    "day5": [
+                        {
+                            $set: {
+                                "timeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 234000000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 147600000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'ads',
+                                as: 'dodol',
+                                let: {
+                                    localID: userid
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$userID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "status": "APPROVE"
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $gt: ["$liveAt", "$timeStart"]
+                                                    }
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $lt: ["$liveAt", "$timeEnd"]
+                                                    }
+                                                },
+
+                                            ]
+                                        },
+
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'view',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusView": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'click',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusClick": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $project: {
+                                "start": "$timeStart",
+                                "end": "$timeEnd",
+                                "view": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$view"
+                                        },
+                                        then: {
+                                            $size: "$view"
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                "click": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$click"
+                                        },
+                                        then: {
+                                            $size: "$click"
+                                        },
+                                        else: 0
+                                    }
+                                },
+
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "Day5",
+                                view: {
+                                    $sum: "$view"
+                                },
+                                click: {
+                                    $sum: "$click"
+                                },
+                                timeStart: {
+                                    $first: "$start"
+                                },
+                                timeEndt: {
+                                    $first: "$end"
+                                },
+
+
+                            }
+
+                        }
+                    ],
+                    "day4": [
+                        {
+                            $set: {
+                                "timeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 320400000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 234000000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'ads',
+                                as: 'dodol',
+                                let: {
+                                    localID: userid
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$userID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "status": "APPROVE"
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $gt: ["$liveAt", "$timeStart"]
+                                                    }
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $lt: ["$liveAt", "$timeEnd"]
+                                                    }
+                                                },
+
+                                            ]
+                                        },
+
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'view',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusView": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'click',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusClick": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $project: {
+                                "start": "$timeStart",
+                                "end": "$timeEnd",
+                                "view": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$view"
+                                        },
+                                        then: {
+                                            $size: "$view"
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                "click": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$click"
+                                        },
+                                        then: {
+                                            $size: "$click"
+                                        },
+                                        else: 0
+                                    }
+                                },
+
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "Day4",
+                                view: {
+                                    $sum: "$view"
+                                },
+                                click: {
+                                    $sum: "$click"
+                                },
+                                timeStart: {
+                                    $first: "$start"
+                                },
+                                timeEndt: {
+                                    $first: "$end"
+                                },
+
+
+                            }
+
+                        }
+                    ],
+                    "day3": [
+                        {
+                            $set: {
+                                "timeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 406800000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 320400000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'ads',
+                                as: 'dodol',
+                                let: {
+                                    localID: userid
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$userID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "status": "APPROVE"
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $gt: ["$liveAt", "$timeStart"]
+                                                    }
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $lt: ["$liveAt", "$timeEnd"]
+                                                    }
+                                                },
+
+                                            ]
+                                        },
+
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'view',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusView": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'click',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusClick": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $project: {
+                                "start": "$timeStart",
+                                "end": "$timeEnd",
+                                "view": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$view"
+                                        },
+                                        then: {
+                                            $size: "$view"
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                "click": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$click"
+                                        },
+                                        then: {
+                                            $size: "$click"
+                                        },
+                                        else: 0
+                                    }
+                                },
+
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "Day3",
+                                view: {
+                                    $sum: "$view"
+                                },
+                                click: {
+                                    $sum: "$click"
+                                },
+                                timeStart: {
+                                    $first: "$start"
+                                },
+                                timeEndt: {
+                                    $first: "$end"
+                                },
+
+
+                            }
+
+                        }
+                    ],
+                    "day2": [
+                        {
+                            $set: {
+                                "timeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 493200000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 406800000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'ads',
+                                as: 'dodol',
+                                let: {
+                                    localID: userid
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$userID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "status": "APPROVE"
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $gt: ["$liveAt", "$timeStart"]
+                                                    }
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $lt: ["$liveAt", "$timeEnd"]
+                                                    }
+                                                },
+
+                                            ]
+                                        },
+
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'view',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusView": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'click',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusClick": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $project: {
+                                "start": "$timeStart",
+                                "end": "$timeEnd",
+                                "view": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$view"
+                                        },
+                                        then: {
+                                            $size: "$view"
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                "click": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$click"
+                                        },
+                                        then: {
+                                            $size: "$click"
+                                        },
+                                        else: 0
+                                    }
+                                },
+
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "Day2",
+                                view: {
+                                    $sum: "$view"
+                                },
+                                click: {
+                                    $sum: "$click"
+                                },
+                                timeStart: {
+                                    $first: "$start"
+                                },
+                                timeEndt: {
+                                    $first: "$end"
+                                },
+
+
+                            }
+
+                        }
+                    ],
+                    "day1": [
+                        {
+                            $set: {
+                                "timeStart":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 579600000] // 1 hari 61200000
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $set: {
+                                "timeEnd":
+                                {
+                                    "$dateToString": {
+                                        "format": "%Y-%m-%d %H:%M:%S",
+                                        "date": {
+                                            $add: [new Date(), - 493200000]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: 'ads',
+                                as: 'dodol',
+                                let: {
+                                    localID: userid
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$userID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "status": "APPROVE"
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $gt: ["$liveAt", "$timeStart"]
+                                                    }
+                                                },
+                                                {
+                                                    $expr: {
+                                                        $lt: ["$liveAt", "$timeEnd"]
+                                                    }
+                                                },
+
+                                            ]
+                                        },
+
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'view',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusView": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $lookup: {
+                                from: 'userads',
+                                as: 'click',
+                                let: {
+                                    localID: '$dodol._id'
+                                },
+                                pipeline: [
+                                    {
+                                        $match:
+                                        {
+                                            $and: [
+                                                {
+                                                    $expr: {
+                                                        $eq: ['$adsID', '$$localID']
+                                                    }
+                                                },
+                                                {
+                                                    "statusClick": true,
+
+                                                },
+
+                                            ]
+                                        }
+                                    },
+
+                                ],
+
+                            },
+
+                        },
+                        {
+                            $project: {
+                                "start": "$timeStart",
+                                "end": "$timeEnd",
+                                "view": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$view"
+                                        },
+                                        then: {
+                                            $size: "$view"
+                                        },
+                                        else: 0
+                                    }
+                                },
+                                "click": {
+                                    $cond: {
+                                        if: {
+                                            $isArray: "$click"
+                                        },
+                                        then: {
+                                            $size: "$click"
+                                        },
+                                        else: 0
+                                    }
+                                },
+
+                            }
+                        },
+                        {
+                            $group: {
+                                _id: "Day1",
+                                view: {
+                                    $sum: "$view"
+                                },
+                                click: {
+                                    $sum: "$click"
+                                },
+                                timeStart: {
+                                    $first: "$start"
+                                },
+                                timeEndt: {
+                                    $first: "$end"
+                                },
+
+                            }
+
+                        },
+
+                    ],
+
+                }
+            },
+            {
+                $facet: {
+                    genders: [
+                        {
+                            $unwind: {
+                                path: "$totaGender",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$gender",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $project: {
+                                remark: "$gender._id",
+                                range: "$gender.count",
+                                percent:
+                                {
+                                    $multiply:
                                         [
                                             {
-                                                $divide: 
-                                                [
-                                                    "$gender.count",
-                                                    {
-                                                        $arrayElemAt: ["$totalGender.total", 0]
-                                                    }
-                                                ]
+                                                $divide:
+                                                    [
+                                                        "$gender.count",
+                                                        {
+                                                            $arrayElemAt: ["$totalGender.total", 0]
+                                                        }
+                                                    ]
                                             },
                                             100
                                         ]
-                                    },
-                                    
-                                }
-                            }
-                        ],
-                        area:[
-                            {
-                                $unwind:{
-                                    path: "$areas",
-                                    preserveNullAndEmptyArrays:true,
-                                }
-                            },
-                            {
-                                $project:{
-                                    remark: "$areas._id",
-                                    range: "$areas.count",
-                                    percent: 
-                                    {
-                                        $multiply: 
-                                        [
-                                            {
-                                                $divide: 
-                                                [
-                                                    "$areas.count",
-                                                    {
-                                                        $arrayElemAt: ["$totalarea.total", 0]
-                                                    }
-                                                ]
-                                            },
-                                            100
-                                        ]
-                                    }
-                                }
-                            }
-                        ],
-                        age: [
-                            {
-                                $unwind: {
-                                    path: "$age",
-                                    preserveNullAndEmptyArrays: true
-                                }
-                            },
-                            {
-                                $project: {
-                                    remark: "$age._id",
-                                    range: "$age.age",
-                                    percent: 
-                                    {
-                                        $multiply: 
-                                        [
-                                            {
-                                                $divide: 
-                                                [
-                                                    "$age.age",
-                                                    {
-                                                        $arrayElemAt: ["$totalage.total", 0]
-                                                    }
-                                                ]
-                                            },
-                                            100
-                                        ]
-                                    }
-                                }
-                            }
-                        ],
-                        All: [
-                            {
-                                $unwind: {
-                                    path: "$view",
-                                    preserveNullAndEmptyArrays: true
-                                }
-                            },
-                            {
-                                $unwind: {
-                                    path: "$click",
-                                    preserveNullAndEmptyArrays: true
-                                }
-                            },
-                            {
-                                $project: {
-                                    view: "$view.view",
-                                    click: "$click.click",
-                                    
-                                }
-                            }
-                        ],
-                        day: [
-                            
-                            {
-                                $project: {
-                                    day1: 1,
-                                    day2: 1,
-                                    day3: 1,
-                                    day4: 1,
-                                    day5: 1,
-                                    day6: 1,
-                                    day7: 1,
-                                    
                                 },
-                                
+
+                            }
+                        }
+                    ],
+                    area: [
+                        {
+                            $unwind: {
+                                path: "$areas",
+                                preserveNullAndEmptyArrays: true,
+                            }
+                        },
+                        {
+                            $project: {
+                                remark: "$areas._id",
+                                range: "$areas.count",
+                                percent:
+                                {
+                                    $multiply:
+                                        [
+                                            {
+                                                $divide:
+                                                    [
+                                                        "$areas.count",
+                                                        {
+                                                            $arrayElemAt: ["$totalarea.total", 0]
+                                                        }
+                                                    ]
+                                            },
+                                            100
+                                        ]
+                                }
+                            }
+                        }
+                    ],
+                    age: [
+                        {
+                            $unwind: {
+                                path: "$age",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $project: {
+                                remark: "$age._id",
+                                range: "$age.age",
+                                percent:
+                                {
+                                    $multiply:
+                                        [
+                                            {
+                                                $divide:
+                                                    [
+                                                        "$age.age",
+                                                        {
+                                                            $arrayElemAt: ["$totalage.total", 0]
+                                                        }
+                                                    ]
+                                            },
+                                            100
+                                        ]
+                                }
+                            }
+                        }
+                    ],
+                    All: [
+                        {
+                            $unwind: {
+                                path: "$view",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $unwind: {
+                                path: "$click",
+                                preserveNullAndEmptyArrays: true
+                            }
+                        },
+                        {
+                            $project: {
+                                view: "$view.view",
+                                click: "$click.click",
+
+                            }
+                        }
+                    ],
+                    day: [
+
+                        {
+                            $project: {
+                                day1: 1,
+                                day2: 1,
+                                day3: 1,
+                                day4: 1,
+                                day5: 1,
+                                day6: 1,
+                                day7: 1,
+
                             },
-                            
-                        ]
-                    }
-                },
-                
+
+                        },
+
+                    ]
+                }
+            },
+
         ]);
 
         console.log(query[0].area);
-        
+
         var resultquery = query[0].area;
 
-        resultquery.forEach(function (data){
+        resultquery.forEach(function (data) {
             var getdata = data.percent;
             data.percent = getdata.toFixed(2);
         });
 
         var resultquery = query[0].genders;
 
-        resultquery.forEach(function (data){
+        resultquery.forEach(function (data) {
             var getdata = data.percent;
             data.percent = getdata.toFixed(2);
         });
 
         var resultquery = query[0].age;
 
-        resultquery.forEach(function (data){
+        resultquery.forEach(function (data) {
             var getdata = data.percent;
             data.percent = getdata.toFixed(2);
         });
